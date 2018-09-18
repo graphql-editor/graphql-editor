@@ -1,0 +1,20 @@
+:root{
+    --main-color: #00A0E0;
+    --color-one: #000;
+    --color-two: #fff;
+    --color-three: #aaa;
+    --color-four: #ccc;
+    --color-white:#6ED6FF;
+    --color-white-background:#428bca;
+    --color-five: #db0000;
+    
+    --font-color: #fff;
+    --background-package: #fcfcfc;
+    --font-color-second: #1d2026;
+    --font-color-third: #717274;
+    --color-czynne: #2eb4af;
+    --transition: 0.5s all;
+    
+    --menu-models:#2D0D37;
+    --menu-settings:#041922;
+}
