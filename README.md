@@ -1,10 +1,10 @@
-![](Header-100.jpg)
+![](assets/header.jpg)
 
 Graphql editors makes it easier to understand graphql schema. Create schema by joining visual blocks. GraphQLEditor will transform them into code.
 
 With GraphQLEditor you can create visual diagrams without writing any code. 
 
-![](FEATURES-100.jpg)
+![](assets/features.jpg)
 
 ## Live Demo
 
