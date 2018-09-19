@@ -24,6 +24,7 @@ import {
 import { nodeTypes, SubTypes } from '../nodeTypes';
 import { GraphQLNodeType } from '../livegen/gens';
 import * as cx from 'classnames';
+import { crudMacroTemplate } from '../livegen/gens/graphql/macros/crud';
 
 export type ModelState = {
   nodes: Array<NodeType>;
@@ -141,6 +142,7 @@ class Home extends React.Component<{}, ModelState> {
             const inputsCode = generator(nodeTypes.input, inputTemplate);
             const queriesCode = rootQueryTemplate(generator(nodeTypes.query, queryTemplate));
             const mutationsCode = rootMutationTemplate(generator(nodeTypes.query, queryTemplate));
+            const crudMacroCode = crudMacroTemplate(nodes,links)
             const mainCode = `schema{
   query: Query,
   mutation: Mutation
@@ -152,6 +154,7 @@ class Home extends React.Component<{}, ModelState> {
               typesCode,
               queriesCode,
               mutationsCode,
+              crudMacroCode,
               mainCode
             ].join('\n');
             this.setState({

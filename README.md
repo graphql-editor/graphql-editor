@@ -1,10 +1,10 @@
-![](assets/Header-GraphQL.jpg)
+![](assets/GraphQL_header.jpg)
 
 Graphql editors makes it easier to understand graphql schema. Create schema by joining visual blocks. GraphQLEditor will transform them into code.
 
 With GraphQLEditor you can create visual diagrams without writing any code. 
 
-![](assets/Features-GraphQL.jpg)
+![](assets/GraphQL_features.jpg)
 
 ## Live Demo
 
@@ -62,3 +62,6 @@ To create nodes press and hold spacebar then hover mouse button on chosen catego
 ## Contribute
 
 Feel free to contanct us and contribute in graphql editor project. aexol@aexol.com
+
+![](assets/roadmap_graphql_header.jpg)
+![](assets/roadmap_graphql_features.jpg)
