@@ -18,10 +18,13 @@ export enum argumentTypes {
   ID = 'ID'
 }
 
+export enum Macros {
+  crud = 'crud'
+}
 export enum SubTypes {
   definition = 'definition',
   clone = 'clone',
   field = 'field',
 }
 
-export type allTypes = keyof typeof nodeTypes | keyof typeof argumentTypes
+export type allTypes = keyof typeof nodeTypes | keyof typeof argumentTypes | keyof typeof Macros

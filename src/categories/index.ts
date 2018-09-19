@@ -1,5 +1,5 @@
 import { ActionCategory, Item, PortType, AcceptedConnection } from '@slothking-online/diagram';
-import { argumentTypes, nodeTypes, SubTypes } from '../nodeTypes';
+import { argumentTypes, nodeTypes, SubTypes, Macros } from '../nodeTypes';
 import { GraphQLNodeType } from '../livegen/gens';
 export const noPort = [];
 export const singlePortOutput: PortType[] = [
@@ -146,6 +146,44 @@ export const categories: ActionCategory[] = [
             {
               name: '',
               accepted
+            }
+          ],
+          outputs: noPort
+        }
+      },
+      {
+        name: nodeTypes.mutation,
+        node: {
+          ...baseDefinitionNode(nodeTypes.mutation),
+          inputs: [
+            {
+              name: '',
+              accepted
+            }
+          ],
+          outputs: noPort
+        }
+      }
+    ]
+  },
+  {
+    name: 'macros',
+    items: [
+      {
+        name: Macros.crud,
+        node: {
+          ...baseDefinitionNode(Macros.crud),
+          inputs: [
+            {
+              name: '',
+              accepted: [
+                {
+                  count: 1,
+                  node: {
+                    type: nodeTypes.type
+                  }
+                }
+              ]
             }
           ],
           outputs: noPort

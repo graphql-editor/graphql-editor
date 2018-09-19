@@ -1,7 +1,8 @@
 import { TransformedInput, GraphQLNodeType } from '..';
-import { NodeType } from '@slothking-online/diagram';
+import { NodeType, LinkType } from '@slothking-online/diagram';
 import { resolveType } from './map';
-import { SubTypes, nodeTypes } from '../../../nodeTypes';
+import { SubTypes, nodeTypes, allTypes } from '../../../nodeTypes';
+import { getDefinitionInputs, find } from '../utils';
 
 const notDefinition = (inputs: TransformedInput[]): TransformedInput[] =>
   inputs.filter((i) => i.subType !== SubTypes.definition);
@@ -14,14 +15,16 @@ const implementsInterface = (inputs: TransformedInput[]) => {
   }
   return '';
 };
+export const baseTypeContentTemplate = (node: GraphQLNodeType, inputs: TransformedInput[]) =>
+  `\t${notInterface(notDefinition(inputs))
+    .map((i) => resolveType(i, 'type', 'input'))
+    .join(',\n\t')}`;
 
 export const baseTypeTemplate = (name: keyof typeof nodeTypes) => (
   node: GraphQLNodeType,
   inputs: TransformedInput[]
 ) => `${name} ${node.name}${implementsInterface(inputs)}{
-\t${notInterface(notDefinition(inputs))
-  .map((i) => resolveType(i, 'type', 'input'))
-  .join(',\n\t')}
+${baseTypeContentTemplate(node, inputs)}
 }`;
 
 export const typeTemplate = baseTypeTemplate('type');
@@ -45,7 +48,18 @@ export const queryTemplate = (node: GraphQLNodeType, inputs: TransformedInput[])
 export const rootQueryTemplate = (queries: string) => `type Query{
 ${queries}
 }`;
+export const rootMutationTemplate = (mutations: string) => `type Mutation{
+${mutations}
+}`;
 
 export const enumTemplate = (node: NodeType, inputs: TransformedInput[]) => `enum ${node.name}{
 \t${inputs.map((i) => resolveType(i, 'enum', 'input')).join(',\n\t')}
 }`;
+
+export const generateCode = (nodes: GraphQLNodeType[], links: LinkType[]) => (
+  type: allTypes,
+  func: (node: GraphQLNodeType, inputs: TransformedInput[]) => string
+) =>
+  find(nodes, type)
+    .map((t) => func(t, getDefinitionInputs(links, nodes, t)))
+    .join('\n\n');

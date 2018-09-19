@@ -11,14 +11,15 @@ import { categories, singlePortOutput } from '../categories';
 import { xonokai } from 'react-syntax-highlighter/styles/prism';
 import SyntaxHighlighter from 'react-syntax-highlighter/prism';
 import * as styles from '../style/Home';
-import { getDefinitionInputs, find } from '../livegen/gens/utils';
 import {
   typeTemplate,
   interfaceTemplate,
   enumTemplate,
   inputTemplate,
   queryTemplate,
-  rootQueryTemplate
+  rootQueryTemplate,
+  rootMutationTemplate,
+  generateCode
 } from '../livegen/gens/graphql/template';
 import { nodeTypes, SubTypes } from '../nodeTypes';
 import { GraphQLNodeType } from '../livegen/gens';
@@ -133,23 +134,13 @@ class Home extends React.Component<{}, ModelState> {
           loaded={this.state.loaded}
           serialize={(node, links, tabs) => {
             const nodes = node as GraphQLNodeType[];
-            const typesCode = find(nodes, nodeTypes.type)
-              .map((t) => typeTemplate(t, getDefinitionInputs(links, nodes, t)))
-              .join('\n\n');
-            const enumsCode = find(nodes, nodeTypes.enum)
-              .map((t) => enumTemplate(t, getDefinitionInputs(links, nodes, t)))
-              .join('\n\n');
-            const interfacesCode = find(nodes, nodeTypes.interface)
-              .map((t) => interfaceTemplate(t, getDefinitionInputs(links, nodes, t)))
-              .join('\n\n');
-            const inputsCode = find(nodes, nodeTypes.input)
-              .map((t) => inputTemplate(t, getDefinitionInputs(links, nodes, t)))
-              .join('\n\n');
-            const queriesCode = rootQueryTemplate(
-              find(nodes, nodeTypes.query)
-                .map((t) => queryTemplate(t, getDefinitionInputs(links, nodes, t)))
-                .join('\n')
-            );
+            const generator = generateCode(nodes, links);
+            const typesCode = generator(nodeTypes.type, typeTemplate);
+            const enumsCode = generator(nodeTypes.enum, enumTemplate);
+            const interfacesCode = generator(nodeTypes.interface, interfaceTemplate);
+            const inputsCode = generator(nodeTypes.input, inputTemplate);
+            const queriesCode = rootQueryTemplate(generator(nodeTypes.query, queryTemplate));
+            const mutationsCode = rootMutationTemplate(generator(nodeTypes.query, queryTemplate));
             const mainCode = `schema{
   query: Query,
   mutation: Mutation
@@ -160,6 +151,7 @@ class Home extends React.Component<{}, ModelState> {
               interfacesCode,
               typesCode,
               queriesCode,
+              mutationsCode,
               mainCode
             ].join('\n');
             this.setState({

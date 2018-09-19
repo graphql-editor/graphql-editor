@@ -9,10 +9,7 @@ export type Transforms = {
 };
 export type Requester = { [x in allTypes]?: Transforms };
 
-export type TransformedInput = Pick<
-  GraphQLNodeType,
-  'subType' | 'type' | 'kind' | 'name' | 'required'
-> & {
+export type TransformedInput = GraphQLNodeType & {
   array?: boolean;
   args?: TransformedInput[];
 };
