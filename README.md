@@ -61,7 +61,7 @@ To create nodes press and hold spacebar then hover mouse button on chosen catego
 
 ## Contribute
 
-Feel free to contanct us and contribute in graphql editor project. aexol@aexol.com
+Feel free to contact us and contribute in graphql editor project. aexol@aexol.com
 
 ![](assets/roadmap_graphql_header.jpg)
 ![](assets/roadmap_graphql_features.jpg)

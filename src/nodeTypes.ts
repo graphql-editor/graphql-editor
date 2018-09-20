@@ -25,6 +25,7 @@ export enum SubTypes {
   definition = 'definition',
   clone = 'clone',
   field = 'field',
+  faker = 'faker'
 }
 
 export type allTypes = keyof typeof nodeTypes | keyof typeof argumentTypes | keyof typeof Macros

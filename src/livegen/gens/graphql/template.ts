@@ -1,12 +1,15 @@
 import { TransformedInput, GraphQLNodeType } from '..';
-import { NodeType, LinkType } from '@slothking-online/diagram';
 import { resolveType } from './map';
-import { SubTypes, nodeTypes, allTypes } from '../../../nodeTypes';
-import { getDefinitionInputs, find } from '../utils';
+import { SubTypes, nodeTypes } from '../../../nodeTypes';
 
-const notDefinition = (inputs: TransformedInput[]): TransformedInput[] =>
+export type TemplateProps = {
+  node: GraphQLNodeType;
+  inputs: TransformedInput[];
+};
+
+export const notDefinition = (inputs: TransformedInput[]): TransformedInput[] =>
   inputs.filter((i) => i.subType !== SubTypes.definition);
-const notInterface = (inputs: TransformedInput[]): TransformedInput[] =>
+export const notInterface = (inputs: TransformedInput[]): TransformedInput[] =>
   inputs.filter((i) => i.type !== nodeTypes.interface);
 const implementsInterface = (inputs: TransformedInput[]) => {
   const interfaces = inputs.filter((i) => i.type === 'interface').map((i) => i.kind);
@@ -20,17 +23,17 @@ export const baseTypeContentTemplate = (node: GraphQLNodeType, inputs: Transform
     .map((i) => resolveType(i, 'type', 'input'))
     .join(',\n\t')}`;
 
-export const baseTypeTemplate = (name: keyof typeof nodeTypes) => (
-  node: GraphQLNodeType,
-  inputs: TransformedInput[]
-) => `${name} ${node.name}${implementsInterface(inputs)}{
+export const baseTypeTemplate = (name: keyof typeof nodeTypes) => ({
+  node,
+  inputs
+}: TemplateProps) => `${name} ${node.name}${implementsInterface(inputs)}{
 ${baseTypeContentTemplate(node, inputs)}
 }`;
 
 export const typeTemplate = baseTypeTemplate('type');
 export const interfaceTemplate = baseTypeTemplate('interface');
 export const inputTemplate = baseTypeTemplate('input');
-export const queryTemplate = (node: GraphQLNodeType, inputs: TransformedInput[]) =>
+export const queryTemplate = ({ node, inputs }: TemplateProps) =>
   `${notInterface(notDefinition(inputs))
     .map(
       (i) =>
@@ -52,14 +55,21 @@ export const rootMutationTemplate = (mutations: string) => `type Mutation{
 ${mutations}
 }`;
 
-export const enumTemplate = (node: NodeType, inputs: TransformedInput[]) => `enum ${node.name}{
+export const enumTemplate = ({ node, inputs }: TemplateProps) => `enum ${node.name}{
 \t${inputs.map((i) => resolveType(i, 'enum', 'input')).join(',\n\t')}
 }`;
 
-export const generateCode = (nodes: GraphQLNodeType[], links: LinkType[]) => (
-  type: allTypes,
-  func: (node: GraphQLNodeType, inputs: TransformedInput[]) => string
-) =>
-  find(nodes, type)
-    .map((t) => func(t, getDefinitionInputs(links, nodes, t)))
-    .join('\n\n');
+//TODO: Implement front queries
+export const frontQueries = () => `
+  {
+    allFilms(first: 5) {
+      totalCount
+      pageInfo {
+        endCursor
+      }
+      films {
+        title
+      }
+    }
+  }
+`;

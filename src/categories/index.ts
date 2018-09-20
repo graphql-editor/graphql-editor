@@ -1,6 +1,7 @@
 import { ActionCategory, Item, PortType, AcceptedConnection } from '@slothking-online/diagram';
 import { argumentTypes, nodeTypes, SubTypes, Macros } from '../nodeTypes';
 import { GraphQLNodeType } from '../livegen/gens';
+import { getFakerMethods } from '../livegen/gens/faker';
 export const noPort = [];
 export const singlePortOutput: PortType[] = [
   {
@@ -12,6 +13,11 @@ const accepted: AcceptedConnection[] = [
   {
     node: {
       subType: SubTypes.field
+    }
+  },
+  {
+    node: {
+      subType: SubTypes.faker
     }
   },
   {
@@ -52,6 +58,43 @@ const baseFieldNode = (type: GraphQLNodeType['type']): GraphQLNodeType => ({
     }
   ]
 });
+
+const getFakerNodes = (): ActionCategory => {
+  const fkNodes = getFakerMethods();
+  return {
+    name: 'faker',
+    items: Object.keys(fkNodes).map(
+      (k: keyof typeof fkNodes) =>
+        ({
+          name: k,
+          items: fkNodes[k].items.map(
+            (i) =>
+              ({
+                name: i.name,
+                node: {
+                  ...baseNode('faker', argumentTypes.String),
+                  name: i.name,
+                  editable: true,
+                  kind: `${k}.${i.name}`,
+                  inputs: [
+                    {
+                      name: '',
+                      accepted
+                    }
+                  ],
+                  outputs: [
+                    {
+                      name: ''
+                    }
+                  ]
+                }
+              } as Item)
+          )
+        } as Item)
+    )
+  };
+};
+
 export const categories: ActionCategory[] = [
   {
     name: 'arguments',
@@ -190,5 +233,6 @@ export const categories: ActionCategory[] = [
         }
       }
     ]
-  }
+  },
+  getFakerNodes()
 ];

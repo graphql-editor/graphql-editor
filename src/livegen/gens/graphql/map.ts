@@ -33,6 +33,9 @@ export const resolveType = (i: TransformedInput, requester: allTypes, io: 'input
     interface: {
       input: baseResolver
     },
+    ID: {
+      input: baseResolver
+    },
     String: {
       input: baseResolver
     },

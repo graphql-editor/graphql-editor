@@ -19,12 +19,14 @@ import {
   queryTemplate,
   rootQueryTemplate,
   rootMutationTemplate,
-  generateCode
+  TemplateProps
 } from '../livegen/gens/graphql/template';
 import { nodeTypes, SubTypes } from '../nodeTypes';
-import { GraphQLNodeType } from '../livegen/gens';
+import { GraphQLNodeType, TransformedInput } from '../livegen/gens';
 import * as cx from 'classnames';
 import { crudMacroTemplate } from '../livegen/gens/graphql/macros/crud';
+import { generateFakerResolver } from '../livegen/gens/faker';
+import { getDefinitionInputs } from '../livegen/gens/utils';
 
 export type ModelState = {
   nodes: Array<NodeType>;
@@ -44,6 +46,7 @@ class Home extends React.Component<{}, ModelState> {
     projectId: null,
     liveCode: ''
   };
+  componentDidMount() {}
   render() {
     const addType = (nodes: NodeType[], type: keyof typeof nodeTypes): Item[] =>
       nodes
@@ -134,15 +137,30 @@ class Home extends React.Component<{}, ModelState> {
           categories={allCategories}
           loaded={this.state.loaded}
           serialize={(node, links, tabs) => {
-            const nodes = node as GraphQLNodeType[];
-            const generator = generateCode(nodes, links);
+            let nodes = node as GraphQLNodeType[];
+            nodes = [...nodes];
+            const crudMacroNodes = crudMacroTemplate(nodes, links);
+            const nodeInputs: {
+              node: GraphQLNodeType;
+              inputs: TransformedInput[];
+            }[] = nodes
+              .filter((n) => n.subType === SubTypes.definition)
+              .map((n) => ({
+                node: n,
+                inputs: getDefinitionInputs(links, nodes, n)
+              }))
+              .concat(crudMacroNodes.reduce((a, b) => [...a, ...b], []));
+            const generator = (
+              type: keyof typeof nodeTypes,
+              template: (props: TemplateProps) => string
+            ) => nodeInputs.filter((n) => n.node.type === type).map(template).join('\n');
             const typesCode = generator(nodeTypes.type, typeTemplate);
             const enumsCode = generator(nodeTypes.enum, enumTemplate);
             const interfacesCode = generator(nodeTypes.interface, interfaceTemplate);
             const inputsCode = generator(nodeTypes.input, inputTemplate);
             const queriesCode = rootQueryTemplate(generator(nodeTypes.query, queryTemplate));
-            const mutationsCode = rootMutationTemplate(generator(nodeTypes.query, queryTemplate));
-            const crudMacroCode = crudMacroTemplate(nodes,links)
+            const mutationsCode = rootMutationTemplate(generator(nodeTypes.mutation, queryTemplate));
+            generateFakerResolver(nodes, links);
             const mainCode = `schema{
   query: Query,
   mutation: Mutation
@@ -154,7 +172,6 @@ class Home extends React.Component<{}, ModelState> {
               typesCode,
               queriesCode,
               mutationsCode,
-              crudMacroCode,
               mainCode
             ].join('\n');
             this.setState({
