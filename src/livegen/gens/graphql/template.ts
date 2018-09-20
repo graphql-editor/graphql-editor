@@ -29,10 +29,16 @@ export const baseTypeTemplate = (name: keyof typeof nodeTypes) => ({
 }: TemplateProps) => `${name} ${node.name}${implementsInterface(inputs)}{
 ${baseTypeContentTemplate(node, inputs)}
 }`;
+export const baseInputTemplate = (name: keyof typeof nodeTypes) => ({
+  node,
+  inputs
+}: TemplateProps) => `${name} ${node.name}{
+${baseTypeContentTemplate(node, inputs)}
+}`;
 
 export const typeTemplate = baseTypeTemplate('type');
-export const interfaceTemplate = baseTypeTemplate('interface');
-export const inputTemplate = baseTypeTemplate('input');
+export const interfaceTemplate = baseInputTemplate('interface');
+export const inputTemplate = baseInputTemplate('input');
 export const queryTemplate = ({ node, inputs }: TemplateProps) =>
   `${notInterface(notDefinition(inputs))
     .map(

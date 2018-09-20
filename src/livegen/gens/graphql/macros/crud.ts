@@ -90,7 +90,7 @@ export const crudMacroTemplate = (
           {
             ...clonedTypeNode(originalNode),
             name: 'list',
-            array: true,
+            array: true
           },
           {
             ...clonedTypeNode(originalNode),

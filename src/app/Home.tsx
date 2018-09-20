@@ -119,11 +119,6 @@ class Home extends React.Component<{}, ModelState> {
             [styles.ShowEditor]: !this.state.editor,
             [styles.Editor]: true
           })}
-          onDoubleClick={() => {
-            this.setState({
-              editor: !this.state.editor
-            });
-          }}
         >
           <SyntaxHighlighter
             PreTag={({ children }) => <div className={styles.Pre}>{children}</div>}
@@ -132,6 +127,14 @@ class Home extends React.Component<{}, ModelState> {
           >
             {this.state.liveCode}
           </SyntaxHighlighter>
+          <div
+            className={styles.ClickInfo}
+            onClick={() => {
+              this.setState({
+                editor: !this.state.editor
+              });
+            }}
+          >{this.state.editor ? `>>` : `<<`}</div>
         </div>
         <Graph
           categories={allCategories}
@@ -153,13 +156,19 @@ class Home extends React.Component<{}, ModelState> {
             const generator = (
               type: keyof typeof nodeTypes,
               template: (props: TemplateProps) => string
-            ) => nodeInputs.filter((n) => n.node.type === type).map(template).join('\n');
+            ) =>
+              nodeInputs
+                .filter((n) => n.node.type === type)
+                .map(template)
+                .join('\n');
             const typesCode = generator(nodeTypes.type, typeTemplate);
             const enumsCode = generator(nodeTypes.enum, enumTemplate);
             const interfacesCode = generator(nodeTypes.interface, interfaceTemplate);
             const inputsCode = generator(nodeTypes.input, inputTemplate);
             const queriesCode = rootQueryTemplate(generator(nodeTypes.query, queryTemplate));
-            const mutationsCode = rootMutationTemplate(generator(nodeTypes.mutation, queryTemplate));
+            const mutationsCode = rootMutationTemplate(
+              generator(nodeTypes.mutation, queryTemplate)
+            );
             generateFakerResolver(nodes, links);
             const mainCode = `schema{
   query: Query,

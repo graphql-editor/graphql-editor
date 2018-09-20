@@ -12,6 +12,12 @@ Here is [Live demo](https://demo.graphqleditor.com) of GraphQLEditor
 
 ## Setup
 
+Clone the repository
+```
+$ git clone https://github.com/slothking-online/grqphql-editor
+$ cd graphql-editor
+```
+
 Install with npm package manager
 
 ```
