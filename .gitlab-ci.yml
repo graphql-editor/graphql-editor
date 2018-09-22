@@ -1,0 +1,20 @@
+image: node:carbon
+
+cache:
+  paths:
+  - node_modules/
+
+stages:
+  - build
+  - test
+
+build:
+  stage: build
+  script:
+    - npm install
+
+test:
+  stage: test
+  script:
+   - npm install
+   - npm run test
