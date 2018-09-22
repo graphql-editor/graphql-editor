@@ -30,7 +30,7 @@ $ npm install
 $ npm run start
 ```
 
-Adter that you should have editor running on 
+After that you should have editor running on 
 ```
 http://localhost:1569
 ```
