@@ -14,7 +14,7 @@ Here is [Live demo](https://demo.graphqleditor.com) of GraphQLEditor
 
 Clone the repository
 ```
-$ git clone https://github.com/slothking-online/grqphql-editor
+$ git clone https://github.com/slothking-online/graphql-editor
 $ cd graphql-editor
 ```
 
