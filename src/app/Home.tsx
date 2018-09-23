@@ -134,7 +134,9 @@ class Home extends React.Component<{}, ModelState> {
                 editor: !this.state.editor
               });
             }}
-          >{this.state.editor ? `>>` : `<<`}</div>
+          >
+            {this.state.editor ? `>>` : `<<`}
+          </div>
         </div>
         <Graph
           categories={allCategories}
@@ -169,7 +171,8 @@ class Home extends React.Component<{}, ModelState> {
             const mutationsCode = rootMutationTemplate(
               generator(nodeTypes.mutation, queryTemplate)
             );
-            generateFakerResolver(nodes, links);
+            const resolverCode = nodeInputs.map(generateFakerResolver).join('\n')
+            console.log(resolverCode)
             const mainCode = `schema{
   query: Query,
   mutation: Mutation

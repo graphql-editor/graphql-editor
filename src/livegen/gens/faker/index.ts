@@ -1,8 +1,6 @@
 import * as faker from 'faker';
 import { argumentTypes, nodeTypes } from '../../../nodeTypes';
-import { GraphQLNodeType } from '..';
-import { LinkType } from '@slothking-online/diagram';
-import { find, getDefinitionInputs } from '../utils';
+import { TemplateProps } from '../graphql/template';
 
 export const getFakerMethods = () => {
   const fakerKeys: Array<keyof typeof faker> = [
@@ -55,7 +53,16 @@ export const fakerMap = {
   [argumentTypes.Float]: 'faker.random.number'
 };
 
-export const generateFakerResolver = (nodes: GraphQLNodeType[], links: LinkType[]) => {
-  const queries = find(nodes,nodeTypes.query).map( q => getDefinitionInputs(links,nodes,q))
-  return queries
+export const generateFakerResolver = ({ node, inputs }: TemplateProps): string => {
+
+  const queriesCode = `${inputs
+    .filter((i) => i.type === nodeTypes.query )
+    .map(
+      (i) =>
+        '\t' +
+        `${i.name}:${i.kind}`
+    )
+    .join(',\n')}`;
+
+  return [queriesCode].join('\n');
 };

@@ -2,17 +2,18 @@
 
 Graphql editors makes it easier to understand graphql schema. Create schema by joining visual blocks. GraphQLEditor will transform them into code.
 
-With GraphQLEditor you can create visual diagrams without writing any code. 
+With GraphQLEditor you can create visual diagrams without writing any code.
 
 ![](assets/GraphQL_features.jpg)
 
-## Live Demo
+## Live Demo [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=First%20visual%20GraphQL%20Editor&url=https://github.com/slothking-online/graphql-editor)
 
-Here is [Live demo](https://demo.graphqleditor.com) of GraphQLEditor 
+Here is [Live demo](https://demo.graphqleditor.com) of GraphQLEditor
 
 ## Setup
 
 Clone the repository
+
 ```
 $ git clone https://github.com/slothking-online/grqphql-editor
 $ cd graphql-editor
@@ -30,11 +31,11 @@ $ npm install
 $ npm run start
 ```
 
-Adter that you should have editor running on 
+Adter that you should have editor running on
+
 ```
 http://localhost:1569
 ```
-
 
 ## How it works
 
@@ -58,16 +59,21 @@ To create nodes press and hold spacebar then hover mouse button on chosen catego
 
 ### Small tutorial
 
-1. Create graph -> "type" node
-2. Rename it to "Cat"
-3. Create fields -> "String" node
-4. Rename it to "name"
-5. Connect "name"
-
+1.  Create graph -> "type" node
+2.  Rename it to "Cat"
+3.  Create fields -> "String" node
+4.  Rename it to "name"
+5.  Connect "name"
 
 ## Contribute
 
 Feel free to contact us and contribute in graphql editor project. aexol@aexol.com
+
+1.  fork this repo
+2.  Create your feature branch: git checkout -b feature-name
+3.  Commit your changes: git commit -am 'Add some feature'
+4.  Push to the branch: git push origin my-new-feature
+5.  Submit a pull request
 
 ![](assets/roadmap_graphql_header.jpg)
 ![](assets/roadmap_graphql_features.jpg)
