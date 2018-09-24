@@ -8,8 +8,6 @@ import {
   Item
 } from '@slothking-online/diagram';
 import { categories, singlePortOutput } from '../categories';
-import { xonokai } from 'react-syntax-highlighter/styles/prism';
-import SyntaxHighlighter from 'react-syntax-highlighter/prism';
 import * as styles from '../style/Home';
 import {
   typeTemplate,
@@ -22,11 +20,11 @@ import {
   TemplateProps
 } from '../livegen/gens/graphql/template';
 import { nodeTypes, SubTypes } from '../nodeTypes';
-import { GraphQLNodeType, TransformedInput } from '../livegen/gens';
-import * as cx from 'classnames';
+import { GraphQLNodeType } from '../livegen/gens';
 import { crudMacroTemplate } from '../livegen/gens/graphql/macros/crud';
 import { generateFakerResolver } from '../livegen/gens/faker';
-import { getDefinitionInputs } from '../livegen/gens/utils';
+import { getDefinitionInputs, getDefinitionOutputs } from '../livegen/gens/utils';
+import { CodeEditor } from './Code';
 
 export type ModelState = {
   nodes: Array<NodeType>;
@@ -35,7 +33,6 @@ export type ModelState = {
   loaded?: LoadedFile;
   projectId?: string;
   liveCode: string;
-  editor?: boolean;
 };
 
 class Home extends React.Component<{}, ModelState> {
@@ -67,6 +64,12 @@ class Home extends React.Component<{}, ModelState> {
                   {
                     node: {
                       subType: SubTypes.field
+                    }
+                  },
+                  {
+                    node: {
+                      subType: SubTypes.definition,
+                      type: nodeTypes.query
                     }
                   },
                   {
@@ -113,31 +116,7 @@ class Home extends React.Component<{}, ModelState> {
     ];
     return (
       <div className={styles.Full}>
-        <div
-          className={cx({
-            [styles.HideEditor]: this.state.editor,
-            [styles.ShowEditor]: !this.state.editor,
-            [styles.Editor]: true
-          })}
-        >
-          <SyntaxHighlighter
-            PreTag={({ children }) => <div className={styles.Pre}>{children}</div>}
-            language="graphql"
-            style={xonokai}
-          >
-            {this.state.liveCode}
-          </SyntaxHighlighter>
-          <div
-            className={styles.ClickInfo}
-            onClick={() => {
-              this.setState({
-                editor: !this.state.editor
-              });
-            }}
-          >
-            {this.state.editor ? `>>` : `<<`}
-          </div>
-        </div>
+        <CodeEditor liveCode={this.state.liveCode} />
         <Graph
           categories={allCategories}
           loaded={this.state.loaded}
@@ -145,16 +124,14 @@ class Home extends React.Component<{}, ModelState> {
             let nodes = node as GraphQLNodeType[];
             nodes = [...nodes];
             const crudMacroNodes = crudMacroTemplate(nodes, links);
-            const nodeInputs: {
-              node: GraphQLNodeType;
-              inputs: TransformedInput[];
-            }[] = nodes
+            let nodeInputs: TemplateProps[] = nodes
               .filter((n) => n.subType === SubTypes.definition)
               .map((n) => ({
                 node: n,
-                inputs: getDefinitionInputs(links, nodes, n)
-              }))
-              .concat(crudMacroNodes.reduce((a, b) => [...a, ...b], []));
+                inputs: getDefinitionInputs(links, nodes, n),
+                outputs: getDefinitionOutputs(links, nodes, n)
+              }));
+            nodeInputs = [...nodeInputs, ...crudMacroNodes];
             const generator = (
               type: keyof typeof nodeTypes,
               template: (props: TemplateProps) => string
@@ -171,8 +148,8 @@ class Home extends React.Component<{}, ModelState> {
             const mutationsCode = rootMutationTemplate(
               generator(nodeTypes.mutation, queryTemplate)
             );
-            const resolverCode = nodeInputs.map(generateFakerResolver).join('\n')
-            console.log(resolverCode)
+            const resolverCode = nodeInputs.map(generateFakerResolver).join('\n');
+            resolverCode;
             const mainCode = `schema{
   query: Query,
   mutation: Mutation

@@ -20,12 +20,35 @@ export const resolveType = (i: TransformedInput, requester: allTypes, io: 'input
     [nodeTypes.enum]: `${hasArgs(name)}: ${isRequired(isArray(className))}`,
     [nodeTypes.input]: `${hasArgs(name)}: ${isRequired(isArray(className))}`
   };
+  const queryResolverInput: AllTypes = {
+    ...Object.keys(argumentTypes).reduce((a, b) => {
+      a[b] = `${name}:${type}`;
+      return a;
+    }, {}),
+    [nodeTypes.type]: `${name}:${isRequired(isArray(className))}`,
+    [nodeTypes.enum]: `${name}:${isRequired(isArray(className))}`,
+    [nodeTypes.input]: `${name}:${isRequired(isArray(className))}`
+  };
+  const queryResolverOutput: AllTypes = {
+    ...Object.keys(argumentTypes).reduce((a, b) => {
+      a[b] = `${type}`;
+      return a;
+    }, {}),
+    [nodeTypes.type]: `${isRequired(isArray(className))}`,
+    [nodeTypes.enum]: `${isRequired(isArray(className))}`,
+    [nodeTypes.input]: `${isRequired(isArray(className))}`
+  };
   const transform: Requester = {
     type: {
       input: baseResolver
     },
     query: {
-      input: baseResolver
+      input: queryResolverInput,
+      output: queryResolverOutput
+    },
+    mutation: {
+      input: queryResolverInput,
+      output: queryResolverOutput
     },
     input: {
       input: baseResolver

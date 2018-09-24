@@ -22,6 +22,16 @@ const accepted: AcceptedConnection[] = [
   },
   {
     node: {
+      type: nodeTypes.query
+    }
+  },
+  {
+    node: {
+      type: nodeTypes.mutation
+    }
+  },
+  {
+    node: {
       subType: SubTypes.clone
     }
   }
@@ -191,7 +201,11 @@ export const categories: ActionCategory[] = [
               accepted
             }
           ],
-          outputs: noPort
+          outputs: [
+            {
+              name: ''
+            }
+          ]
         }
       },
       {
@@ -204,7 +218,11 @@ export const categories: ActionCategory[] = [
               accepted
             }
           ],
-          outputs: noPort
+          outputs: [
+            {
+              name: ''
+            }
+          ]
         }
       }
     ]

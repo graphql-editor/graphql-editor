@@ -5,12 +5,14 @@ import { SubTypes, nodeTypes } from '../../../nodeTypes';
 export type TemplateProps = {
   node: GraphQLNodeType;
   inputs: TransformedInput[];
+  outputs?: TransformedInput[];
 };
 
 export const notDefinition = (inputs: TransformedInput[]): TransformedInput[] =>
   inputs.filter((i) => i.subType !== SubTypes.definition);
 export const notInterface = (inputs: TransformedInput[]): TransformedInput[] =>
   inputs.filter((i) => i.type !== nodeTypes.interface);
+
 const implementsInterface = (inputs: TransformedInput[]) => {
   const interfaces = inputs.filter((i) => i.type === 'interface').map((i) => i.kind);
   if (interfaces.length) {
@@ -39,21 +41,18 @@ ${baseTypeContentTemplate(node, inputs)}
 export const typeTemplate = baseTypeTemplate('type');
 export const interfaceTemplate = baseInputTemplate('interface');
 export const inputTemplate = baseInputTemplate('input');
-export const queryTemplate = ({ node, inputs }: TemplateProps) =>
-  `${notInterface(notDefinition(inputs))
-    .map(
-      (i) =>
-        '\t' +
-        resolveType(
-          {
-            ...i,
-            name: `${i.name}${node.name}`
-          },
-          'query',
-          'input'
-        )
-    )
-    .join(',\n')}`;
+export const queryTemplate = ({ node, inputs, outputs }: TemplateProps) =>
+  outputs && outputs.length > 0
+    ? `\t${node.name}${
+        inputs.length > 0
+          ? `(${inputs.map((i) => `${resolveType(i, nodeTypes.query, 'input')}`).join(', ')})`
+          : ''
+      }:${
+        outputs.length === 1
+          ? resolveType(outputs[0], nodeTypes.query, 'output')
+          : `[${outputs.map((o) => resolveType(o, nodeTypes.query, 'output')).join(', ')}]`
+      }`
+    : '';
 export const rootQueryTemplate = (queries: string) => `type Query{
 ${queries}
 }`;
