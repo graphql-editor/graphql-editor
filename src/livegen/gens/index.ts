@@ -11,6 +11,7 @@ export type Requester = { [x in allTypes]?: Transforms };
 
 export type TransformedInput = GraphQLNodeType & {
   array?: boolean;
+  arrayRequired?:boolean;
   args?: TransformedInput[];
 };
 

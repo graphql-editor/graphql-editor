@@ -3,10 +3,7 @@ import { TransformedInput, GraphQLNodeType } from '.';
 import { SubTypes, allTypes } from '../../nodeTypes';
 // import * as FileSaver from "file-saver";
 
-export const find = (
-  nodes: Array<GraphQLNodeType>,
-  type: allTypes
-): Array<GraphQLNodeType> => {
+export const find = (nodes: Array<GraphQLNodeType>, type: allTypes): Array<GraphQLNodeType> => {
   return nodes.filter((n) => n.type === type && n.subType === SubTypes.definition);
 };
 export const getPath = (
@@ -63,17 +60,28 @@ export type definitionPoints = (
   nodes: Array<GraphQLNodeType>,
   n: GraphQLNodeType,
   io: keyof Pick<LinkType, 'from' | 'to'>,
-  array?: boolean
+  array?: boolean,
+  arrayRequired?: boolean
 ) => TransformedInput[];
 
 export const getArgumentNodes = (
   node: GraphQLNodeType,
   links: Array<LinkType>,
   nodes: Array<GraphQLNodeType>
-): Array<GraphQLNodeType> => links.filter(l => l.to.nodeId === node.id).map( l=> l.from).map( l => nodes.find( n=> n.id === l.nodeId))
+): Array<GraphQLNodeType> =>
+  links
+    .filter((l) => l.to.nodeId === node.id)
+    .map((l) => l.from)
+    .map((l) => nodes.find((n) => n.id === l.nodeId));
 
-
-export const getDefinitionPoints: definitionPoints = (links, nodes, n, io, array = false) =>
+export const getDefinitionPoints: definitionPoints = (
+  links,
+  nodes,
+  n,
+  io,
+  array = false,
+  arrayRequired = false
+) =>
   links
     .filter((l) => l[io].nodeId === n.id)
     .map(
@@ -82,11 +90,11 @@ export const getDefinitionPoints: definitionPoints = (links, nodes, n, io, array
     .filter((n) => n)
     .map((l) => {
       //Zamienić na Transformed Inpute
-      const argumentNodes: GraphQLNodeType[] = getArgumentNodes(l, links, nodes)
+      const argumentNodes: GraphQLNodeType[] = getArgumentNodes(l, links, nodes);
       if (l.type === 'array') {
-        return getDefinitionPoints(links, nodes, l, io, true);
+        return getDefinitionPoints(links, nodes, l, io, true, l.required);
       }
-      return [{ ...l, array, args: argumentNodes } as TransformedInput];
+      return [{ ...l, array, arrayRequired, args: argumentNodes } as TransformedInput];
     })
     .reduce((a, b) => [...a, ...b], [])
     .map((n) => ({

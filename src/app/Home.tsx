@@ -45,44 +45,47 @@ class Home extends React.Component<{}, ModelState> {
   };
   componentDidMount() {}
   render() {
-    const addType = (nodes: NodeType[], type: keyof typeof nodeTypes): Item[] =>
-      nodes
-        .filter((n: NodeType) => n.type === type && n.subType === SubTypes.definition)
-        .map((n: NodeType) => ({
-          name: n.name,
-          node: {
-            name: n.name,
-            type,
-            subType: SubTypes.clone,
-            kind: n.name,
-            clone: n.id,
-            outputs: singlePortOutput,
-            inputs: [
+    const filterDefinitions = (nodes: NodeType[], type: keyof typeof nodeTypes) =>
+      nodes.filter((n: NodeType) => n.type === type && n.subType === SubTypes.definition);
+    const mapToNode = (type: keyof typeof nodeTypes) => (n: NodeType) => ({
+      name: n.name,
+      node: {
+        name: n.name,
+        type,
+        subType: SubTypes.clone,
+        kind: n.name,
+        clone: n.id,
+        outputs: singlePortOutput,
+        inputs: [
+          {
+            name: '',
+            accepted: [
               {
-                name: '',
-                accepted: [
-                  {
-                    node: {
-                      subType: SubTypes.field
-                    }
-                  },
-                  {
-                    node: {
-                      subType: SubTypes.definition,
-                      type: nodeTypes.query
-                    }
-                  },
-                  {
-                    node: {
-                      subType: SubTypes.clone
-                    }
-                  }
-                ]
+                node: {
+                  subType: SubTypes.field
+                }
+              },
+              {
+                node: {
+                  subType: SubTypes.definition,
+                  type: nodeTypes.query
+                }
+              },
+              {
+                node: {
+                  subType: SubTypes.clone
+                }
               }
-            ],
-            editable: true
+            ]
           }
-        }));
+        ],
+        editable: true
+      }
+    });
+    const addType = (nodes: NodeType[], type: keyof typeof nodeTypes): Item[] =>
+      filterDefinitions(nodes, type).map(mapToNode(type));
+    const addImplements = (nodes: NodeType[]): Item[] =>
+      filterDefinitions(nodes, nodeTypes.interface).map(mapToNode(nodeTypes.implements));
     const allCategories: ActionCategory[] = [
       ...categories.map(
         (c) =>
@@ -95,9 +98,13 @@ class Home extends React.Component<{}, ModelState> {
                       name: nodeTypes.type,
                       items: addType(this.state.nodes, nodeTypes.type)
                     },
+                    // {
+                    //   name: nodeTypes.interface,
+                    //   items: addType(this.state.nodes, nodeTypes.interface)
+                    // }, SOON
                     {
-                      name: nodeTypes.interface,
-                      items: addType(this.state.nodes, nodeTypes.interface)
+                      name: nodeTypes.implements,
+                      items: addImplements(this.state.nodes)
                     },
                     {
                       name: nodeTypes.input,
@@ -123,7 +130,6 @@ class Home extends React.Component<{}, ModelState> {
           serialize={(node, links, tabs) => {
             let nodes = node as GraphQLNodeType[];
             nodes = [...nodes];
-            const crudMacroNodes = crudMacroTemplate(nodes, links);
             let nodeInputs: TemplateProps[] = nodes
               .filter((n) => n.subType === SubTypes.definition)
               .map((n) => ({
@@ -131,6 +137,26 @@ class Home extends React.Component<{}, ModelState> {
                 inputs: getDefinitionInputs(links, nodes, n),
                 outputs: getDefinitionOutputs(links, nodes, n)
               }));
+            nodeInputs = nodeInputs.map(
+              (n) =>
+                n.node.type === nodeTypes.type
+                  ? {
+                      ...n,
+                      inputs: [
+                        ...n.inputs,
+                        ...n.inputs
+                          .filter((ni) => ni.type === nodeTypes.implements)
+                          .map(
+                            (interfaceTypeInput) =>
+                              nodeInputs.find((ni) => ni.node.id === interfaceTypeInput.clone)
+                                .inputs
+                          )
+                          .reduce((a, b) => [...a, ...b], [])
+                      ]
+                    }
+                  : n
+            );
+            const crudMacroNodes = crudMacroTemplate(nodes, links, nodeInputs);
             nodeInputs = [...nodeInputs, ...crudMacroNodes];
             const generator = (
               type: keyof typeof nodeTypes,

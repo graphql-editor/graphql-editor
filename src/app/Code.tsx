@@ -4,6 +4,7 @@ import { xonokai } from 'react-syntax-highlighter/styles/prism';
 import SyntaxHighlighter from 'react-syntax-highlighter/prism';
 import * as FileSaver from 'file-saver';
 import * as cx from 'classnames';
+// import { importSchema, getTypes, getBuiltInTypes } from '../livegen/import';
 
 export type CodeEditorProps = {
   liveCode: string;
@@ -30,6 +31,29 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
         >
           {this.props.liveCode}
         </SyntaxHighlighter>
+
+        {/* <input
+          type="file"
+          id="load"
+          style={{ display: 'none' }}
+          onChange={(e) => {
+            const file = e.target.files[0];
+            // if (file.type.match('application/json')) {
+            console.log(file.type);
+            const reader = new FileReader();
+            reader.onload = (f) => {
+              const schema = importSchema((f.target as any).result);
+              const types = getTypes(schema);
+              console.log(getBuiltInTypes());
+              console.log(types);
+            };
+            reader.readAsText(file);
+            // }
+          }}
+        />
+        <label htmlFor="load" className={styles.Load} onClick={() => {}}>
+          Load
+        </label>  WORK IN PROGRESS*/}
         <div
           className={styles.Save}
           onClick={() => {

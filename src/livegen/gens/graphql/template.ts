@@ -11,10 +11,10 @@ export type TemplateProps = {
 export const notDefinition = (inputs: TransformedInput[]): TransformedInput[] =>
   inputs.filter((i) => i.subType !== SubTypes.definition);
 export const notInterface = (inputs: TransformedInput[]): TransformedInput[] =>
-  inputs.filter((i) => i.type !== nodeTypes.interface);
+  inputs.filter((i) => i.type !== nodeTypes.implements);
 
 const implementsInterface = (inputs: TransformedInput[]) => {
-  const interfaces = inputs.filter((i) => i.type === 'interface').map((i) => i.kind);
+  const interfaces = inputs.filter((i) => i.type === nodeTypes.implements).map((i) => i.kind);
   if (interfaces.length) {
     return ` implements ${interfaces.join(' & ')}`;
   }

@@ -12,7 +12,11 @@ const IDInputGenerate: TransformedInput = {
   subType: SubTypes.field
 };
 
-export const crudMacroTemplate = (nodes: GraphQLNodeType[], links: LinkType[]): TemplateProps[] =>
+export const crudMacroTemplate = (
+  nodes: GraphQLNodeType[],
+  links: LinkType[],
+  nodeInputs: TemplateProps[]
+): TemplateProps[] =>
   find(nodes, Macros.crud)
     .map((n) => {
       const newNodes: {
@@ -66,11 +70,10 @@ export const crudMacroTemplate = (nodes: GraphQLNodeType[], links: LinkType[]): 
       });
       const macroTypeInputs = getDefinitionInputs(links, nodes, n);
       for (var typeInput of macroTypeInputs) {
-        const originalNode = nodes.find((o) => o.id === typeInput.clone);
-        const inps = getDefinitionInputs(links, nodes, originalNode);
+        const { node, inputs } = nodeInputs.find((n) => n.node.id === typeInput.clone);
         const [createInput, updateInput, readInput, removeInput] = [
-          createBaseInputNode(typeInput, 'CreateInput', inps),
-          createBaseInputNode(typeInput, 'UpdateInput', inps.concat([IDInputGenerate])),
+          createBaseInputNode(typeInput, 'CreateInput', inputs),
+          createBaseInputNode(typeInput, 'UpdateInput', inputs.concat([IDInputGenerate])),
           createBaseInputNode(typeInput, 'ReadInput', [IDInputGenerate]),
           createBaseInputNode(typeInput, 'RemoveInput', [IDInputGenerate])
         ];
@@ -86,52 +89,52 @@ export const crudMacroTemplate = (nodes: GraphQLNodeType[], links: LinkType[]): 
           kind: n.name
         });
         newNodes.push(
-          createBaseQueryNode(`list${originalNode.name}`, {
-            inputs: [createInput.node],
+          createBaseQueryNode(`list${node.name}`, {
+            inputs: [],
             outputs: [
               {
                 array: true,
-                ...clonedTypeNode(originalNode)
+                ...clonedTypeNode(node)
               }
             ]
           })
         );
         newNodes.push(
-          createBaseQueryNode(`read${originalNode.name}`, {
-            inputs: [{ ...clonedTypeNode(readInput.node), name: originalNode.name }],
+          createBaseQueryNode(`read${node.name}`, {
+            inputs: [{ ...clonedTypeNode(readInput.node), name: node.name }],
             outputs: [
               {
-                ...clonedTypeNode(originalNode)
+                ...clonedTypeNode(node)
               }
             ]
           })
         );
         newNodes.push(
-          createBaseMutationNode(`create${originalNode.name}`, {
-            inputs: [{ ...clonedTypeNode(createInput.node), name: originalNode.name }],
+          createBaseMutationNode(`create${node.name}`, {
+            inputs: [{ ...clonedTypeNode(createInput.node), name: node.name }],
             outputs: [
               {
-                ...clonedTypeNode(originalNode)
+                ...clonedTypeNode(node)
               }
             ]
           })
         );
         newNodes.push(
-          createBaseMutationNode(`update${originalNode.name}`, {
-            inputs: [{ ...clonedTypeNode(updateInput.node), name: originalNode.name }],
+          createBaseMutationNode(`update${node.name}`, {
+            inputs: [{ ...clonedTypeNode(updateInput.node), name: node.name }],
             outputs: [
               {
-                ...clonedTypeNode(originalNode)
+                ...clonedTypeNode(node)
               }
             ]
           })
         );
         newNodes.push(
-          createBaseMutationNode(`remove${originalNode.name}`, {
-            inputs: [{ ...clonedTypeNode(removeInput.node), name: originalNode.name }],
+          createBaseMutationNode(`remove${node.name}`, {
+            inputs: [{ ...clonedTypeNode(removeInput.node), name: node.name }],
             outputs: [
               {
-                ...clonedTypeNode(originalNode)
+                ...clonedTypeNode(node)
               }
             ]
           })

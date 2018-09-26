@@ -7,7 +7,8 @@ export enum nodeTypes {
   array = 'array',
   query = 'query',
   mutation = 'mutation',
-  interface = 'interface'
+  interface = 'interface',
+  implements = 'implements'
 }
 
 export enum argumentTypes {

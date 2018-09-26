@@ -1,10 +1,12 @@
 import { TransformedInput, Requester, AllTypes } from '..';
 import { argumentTypes, nodeTypes, allTypes } from '../../../nodeTypes';
 export const resolveType = (i: TransformedInput, requester: allTypes, io: 'input' | 'output') => {
-  const { type, name, array, required, kind, args } = i;
+  const { type, name, array, required,arrayRequired, kind, args } = i;
   const className = kind || name;
   const isArray = (word) => (array ? `[${word}]` : word);
   const isRequired = (word) => (required ? `${word}!` : word);
+  const isArrayRequired = (word) => (arrayRequired ? `${word}!` : word);
+  const check = (word) => isArrayRequired(isArray(isRequired(word)))
   const hasArgs = (name) =>
     args
       ? args.length > 0
@@ -13,30 +15,30 @@ export const resolveType = (i: TransformedInput, requester: allTypes, io: 'input
       : name;
   const baseResolver: AllTypes = {
     ...Object.keys(argumentTypes).reduce((a, b) => {
-      a[b] = `${hasArgs(name)}: ${isRequired(isArray(b))}`;
+      a[b] = `${hasArgs(name)}: ${check(b)}`;
       return a;
     }, {}),
-    [nodeTypes.type]: `${hasArgs(name)}: ${isRequired(isArray(className))}`,
-    [nodeTypes.enum]: `${hasArgs(name)}: ${isRequired(isArray(className))}`,
-    [nodeTypes.input]: `${hasArgs(name)}: ${isRequired(isArray(className))}`
+    [nodeTypes.type]: `${hasArgs(name)}: ${check(className)}`,
+    [nodeTypes.enum]: `${hasArgs(name)}: ${check(className)}`,
+    [nodeTypes.input]: `${hasArgs(name)}: ${check(className)}`
   };
   const queryResolverInput: AllTypes = {
     ...Object.keys(argumentTypes).reduce((a, b) => {
       a[b] = `${name}:${type}`;
       return a;
     }, {}),
-    [nodeTypes.type]: `${name}:${isRequired(isArray(className))}`,
-    [nodeTypes.enum]: `${name}:${isRequired(isArray(className))}`,
-    [nodeTypes.input]: `${name}:${isRequired(isArray(className))}`
+    [nodeTypes.type]: `${name}:${check(className)}`,
+    [nodeTypes.enum]: `${name}:${check(className)}`,
+    [nodeTypes.input]: `${name}:${check(className)}`
   };
   const queryResolverOutput: AllTypes = {
     ...Object.keys(argumentTypes).reduce((a, b) => {
       a[b] = `${type}`;
       return a;
     }, {}),
-    [nodeTypes.type]: `${isRequired(isArray(className))}`,
-    [nodeTypes.enum]: `${isRequired(isArray(className))}`,
-    [nodeTypes.input]: `${isRequired(isArray(className))}`
+    [nodeTypes.type]: `${check(className)}`,
+    [nodeTypes.enum]: `${check(className)}`,
+    [nodeTypes.input]: `${check(className)}`
   };
   const transform: Requester = {
     type: {
