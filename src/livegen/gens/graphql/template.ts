@@ -23,7 +23,7 @@ const implementsInterface = (inputs: TransformedInput[]) => {
 export const baseTypeContentTemplate = (node: GraphQLNodeType, inputs: TransformedInput[]) =>
   `\t${notInterface(notDefinition(inputs))
     .map((i) => resolveType(i, nodeTypes.type, 'input'))
-    .join(',\n\t')}`;
+    .join('\n\t')}`;
 
 export const baseTypeTemplate = (name: keyof typeof nodeTypes) => ({
   node,
@@ -64,7 +64,7 @@ ${subscriptions}
 }`;
 
 export const enumTemplate = ({ node, inputs }: TemplateProps) => `enum ${node.name}{
-\t${inputs.map((i) => resolveType(i, 'enum', 'input')).join(',\n\t')}
+\t${inputs.map((i) => resolveType(i, 'enum', 'input')).join('\n\t')}
 }`;
 
 //TODO: Implement front queries
