@@ -1,6 +1,6 @@
 import { NodeType, LinkType } from '@slothking-online/diagram';
 import { TransformedInput, GraphQLNodeType } from '.';
-import { SubTypes, allTypes } from '../../nodeTypes';
+import { SubTypes, allTypes, nodeTypes } from '../../nodeTypes';
 // import * as FileSaver from "file-saver";
 
 export const find = (nodes: Array<GraphQLNodeType>, type: allTypes): Array<GraphQLNodeType> => {
@@ -72,7 +72,14 @@ export const getArgumentNodes = (
   links
     .filter((l) => l.to.nodeId === node.id)
     .map((l) => l.from)
-    .map((l) => nodes.find((n) => n.id === l.nodeId));
+    .map((l) => nodes.find((n) => n.id === l.nodeId))
+    .map(
+      (n) =>
+        n.type === nodeTypes.array
+          ? getDefinitionPoints(links, nodes, n, 'to', true, n.required)
+          : [n]
+    )
+    .reduce((a, b) => [...a, ...b], []);
 
 export const getDefinitionPoints: definitionPoints = (
   links,
@@ -91,7 +98,7 @@ export const getDefinitionPoints: definitionPoints = (
     .map((l) => {
       //Zamienić na Transformed Inpute
       const argumentNodes: GraphQLNodeType[] = getArgumentNodes(l, links, nodes);
-      if (l.type === 'array') {
+      if (l.type === nodeTypes.array) {
         return getDefinitionPoints(links, nodes, l, io, true, l.required);
       }
       return [{ ...l, array, arrayRequired, args: argumentNodes } as TransformedInput];

@@ -1,4 +1,4 @@
-import { style } from 'typestyle';
+import { style, classes } from 'typestyle';
 export const Editor = style({
   position: 'absolute',
   width: 500,
@@ -45,6 +45,7 @@ export const Save = style({
   alignItems: 'center',
   justifyContent: 'center',
   top: 0,
+  width:100,
   textAlign: 'center',
   height: 50,
   fontSize: 14,
@@ -54,3 +55,6 @@ export const Save = style({
   background: '#ffffff22',
   cursor: 'pointer'
 });
+export const Load = classes(Save,style({
+  right:160
+}))

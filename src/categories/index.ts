@@ -9,7 +9,7 @@ export const singlePortOutput: PortType[] = [
     output: true
   }
 ];
-const accepted: AcceptedConnection[] = [
+export const accepted: AcceptedConnection[] = [
   {
     node: {
       subType: SubTypes.field
@@ -28,6 +28,11 @@ const accepted: AcceptedConnection[] = [
   {
     node: {
       type: nodeTypes.mutation
+    }
+  },
+  {
+    node: {
+      type: nodeTypes.subscription
     }
   },
   {
@@ -180,16 +185,7 @@ export const categories: ActionCategory[] = [
       },
       {
         name: nodeTypes.array,
-        node: {
-          ...baseFieldNode(nodeTypes.array),
-          inputs: [
-            {
-              name: '',
-              accepted
-            }
-          ],
-          outputs: singlePortOutput
-        }
+        node: baseFieldNode(nodeTypes.array)
       },
       {
         name: nodeTypes.query,
@@ -212,6 +208,23 @@ export const categories: ActionCategory[] = [
         name: nodeTypes.mutation,
         node: {
           ...baseDefinitionNode(nodeTypes.mutation),
+          inputs: [
+            {
+              name: '',
+              accepted
+            }
+          ],
+          outputs: [
+            {
+              name: ''
+            }
+          ]
+        }
+      },
+      {
+        name: nodeTypes.subscription,
+        node: {
+          ...baseDefinitionNode(nodeTypes.subscription),
           inputs: [
             {
               name: '',

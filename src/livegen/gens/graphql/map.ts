@@ -1,12 +1,12 @@
 import { TransformedInput, Requester, AllTypes } from '..';
 import { argumentTypes, nodeTypes, allTypes } from '../../../nodeTypes';
 export const resolveType = (i: TransformedInput, requester: allTypes, io: 'input' | 'output') => {
-  const { type, name, array, required,arrayRequired, kind, args } = i;
+  const { type, name, array, required, arrayRequired, kind, args } = i;
   const className = kind || name;
   const isArray = (word) => (array ? `[${word}]` : word);
   const isRequired = (word) => (required ? `${word}!` : word);
   const isArrayRequired = (word) => (arrayRequired ? `${word}!` : word);
-  const check = (word) => isArrayRequired(isArray(isRequired(word)))
+  const check = (word) => isArrayRequired(isArray(isRequired(word)));
   const hasArgs = (name) =>
     args
       ? args.length > 0
@@ -19,6 +19,7 @@ export const resolveType = (i: TransformedInput, requester: allTypes, io: 'input
       return a;
     }, {}),
     [nodeTypes.type]: `${hasArgs(name)}: ${check(className)}`,
+    [nodeTypes.interface]: `${hasArgs(name)}: ${check(className)}`,
     [nodeTypes.enum]: `${hasArgs(name)}: ${check(className)}`,
     [nodeTypes.input]: `${hasArgs(name)}: ${check(className)}`
   };
@@ -28,6 +29,7 @@ export const resolveType = (i: TransformedInput, requester: allTypes, io: 'input
       return a;
     }, {}),
     [nodeTypes.type]: `${name}:${check(className)}`,
+    [nodeTypes.interface]: `${name}:${check(className)}`,
     [nodeTypes.enum]: `${name}:${check(className)}`,
     [nodeTypes.input]: `${name}:${check(className)}`
   };
@@ -37,6 +39,7 @@ export const resolveType = (i: TransformedInput, requester: allTypes, io: 'input
       return a;
     }, {}),
     [nodeTypes.type]: `${check(className)}`,
+    [nodeTypes.interface]: `${check(className)}`,
     [nodeTypes.enum]: `${check(className)}`,
     [nodeTypes.input]: `${check(className)}`
   };
@@ -49,6 +52,10 @@ export const resolveType = (i: TransformedInput, requester: allTypes, io: 'input
       output: queryResolverOutput
     },
     mutation: {
+      input: queryResolverInput,
+      output: queryResolverOutput
+    },
+    subscription: {
       input: queryResolverInput,
       output: queryResolverOutput
     },

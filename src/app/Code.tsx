@@ -4,10 +4,18 @@ import { xonokai } from 'react-syntax-highlighter/styles/prism';
 import SyntaxHighlighter from 'react-syntax-highlighter/prism';
 import * as FileSaver from 'file-saver';
 import * as cx from 'classnames';
-// import { importSchema, getTypes, getBuiltInTypes } from '../livegen/import';
+import { makeNodes } from '../livegen/import/makeNodes';
+import { GraphQLNodeType } from 'livegen/gens';
+import { LinkType } from '@slothking-online/diagram';
 
 export type CodeEditorProps = {
   liveCode: string;
+  loadNodes: (
+    props: {
+      nodes: GraphQLNodeType[];
+      links: LinkType[];
+    }
+  ) => void;
 };
 export type CodeEditorState = {
   editor?: boolean;
@@ -32,7 +40,7 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
           {this.props.liveCode}
         </SyntaxHighlighter>
 
-        {/* <input
+        <input
           type="file"
           id="load"
           style={{ display: 'none' }}
@@ -42,10 +50,8 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
             console.log(file.type);
             const reader = new FileReader();
             reader.onload = (f) => {
-              const schema = importSchema((f.target as any).result);
-              const types = getTypes(schema);
-              console.log(getBuiltInTypes());
-              console.log(types);
+              const result = makeNodes((f.target as any).result);
+              this.props.loadNodes(result);
             };
             reader.readAsText(file);
             // }
@@ -53,7 +59,7 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
         />
         <label htmlFor="load" className={styles.Load} onClick={() => {}}>
           Load
-        </label>  WORK IN PROGRESS*/}
+        </label>
         <div
           className={styles.Save}
           onClick={() => {

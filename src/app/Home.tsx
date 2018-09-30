@@ -17,7 +17,8 @@ import {
   queryTemplate,
   rootQueryTemplate,
   rootMutationTemplate,
-  TemplateProps
+  TemplateProps,
+  rootSubscriptionTemplate
 } from '../livegen/gens/graphql/template';
 import { nodeTypes, SubTypes } from '../nodeTypes';
 import { GraphQLNodeType } from '../livegen/gens';
@@ -39,7 +40,11 @@ class Home extends React.Component<{}, ModelState> {
   state: ModelState = {
     nodes: [],
     links: [],
-    loaded: null,
+    loaded: {
+      nodes: [],
+      links: [],
+      tabs: []
+    },
     projectId: null,
     liveCode: ''
   };
@@ -98,10 +103,10 @@ class Home extends React.Component<{}, ModelState> {
                       name: nodeTypes.type,
                       items: addType(this.state.nodes, nodeTypes.type)
                     },
-                    // {
-                    //   name: nodeTypes.interface,
-                    //   items: addType(this.state.nodes, nodeTypes.interface)
-                    // }, SOON
+                    {
+                      name: nodeTypes.interface,
+                      items: addType(this.state.nodes, nodeTypes.interface)
+                    },
                     {
                       name: nodeTypes.implements,
                       items: addImplements(this.state.nodes)
@@ -123,7 +128,17 @@ class Home extends React.Component<{}, ModelState> {
     ];
     return (
       <div className={styles.Full}>
-        <CodeEditor liveCode={this.state.liveCode} />
+        <CodeEditor
+          liveCode={this.state.liveCode}
+          loadNodes={(props) => {
+            this.setState({
+              loaded: {
+                ...this.state.loaded,
+                ...props
+              }
+            });
+          }}
+        />
         <Graph
           categories={allCategories}
           loaded={this.state.loaded}
@@ -174,11 +189,15 @@ class Home extends React.Component<{}, ModelState> {
             const mutationsCode = rootMutationTemplate(
               generator(nodeTypes.mutation, queryTemplate)
             );
+            const subscriptionsCode = rootSubscriptionTemplate(
+              generator(nodeTypes.subscription, queryTemplate)
+            );
             const resolverCode = nodeInputs.map(generateFakerResolver).join('\n');
             resolverCode;
             const mainCode = `schema{
   query: Query,
-  mutation: Mutation
+  mutation: Mutation,
+  subscription: Subscription
 }`;
             const liveCode = [
               enumsCode,
@@ -187,6 +206,7 @@ class Home extends React.Component<{}, ModelState> {
               typesCode,
               queriesCode,
               mutationsCode,
+              subscriptionsCode,
               mainCode
             ].join('\n');
             this.setState({

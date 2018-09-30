@@ -21,7 +21,7 @@ module.exports = {
   },
   target: 'web',
   resolve: {
-    extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    extensions: ['.mjs','.js', '.jsx', '.ts', '.tsx'],
     mainFields: ['module', 'browser', 'main'],
     alias: {
       app: path.resolve(__dirname, 'src/app/')

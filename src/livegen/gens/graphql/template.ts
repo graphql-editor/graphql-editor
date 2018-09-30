@@ -22,7 +22,7 @@ const implementsInterface = (inputs: TransformedInput[]) => {
 };
 export const baseTypeContentTemplate = (node: GraphQLNodeType, inputs: TransformedInput[]) =>
   `\t${notInterface(notDefinition(inputs))
-    .map((i) => resolveType(i, 'type', 'input'))
+    .map((i) => resolveType(i, nodeTypes.type, 'input'))
     .join(',\n\t')}`;
 
 export const baseTypeTemplate = (name: keyof typeof nodeTypes) => ({
@@ -45,7 +45,7 @@ export const queryTemplate = ({ node, inputs, outputs }: TemplateProps) =>
   outputs && outputs.length > 0
     ? `\t${node.name}${
         inputs.length > 0
-          ? `(${inputs.map((i) => `${resolveType(i, nodeTypes.query, 'input')}`).join(', ')})`
+          ? `(${inputs.map((i) => `${resolveType(i, nodeTypes.type, 'input')}`).join(', ')})`
           : ''
       }:${
         outputs.length === 1
@@ -58,6 +58,9 @@ ${queries}
 }`;
 export const rootMutationTemplate = (mutations: string) => `type Mutation{
 ${mutations}
+}`;
+export const rootSubscriptionTemplate = (subscriptions: string) => `type Subscription{
+${subscriptions}
 }`;
 
 export const enumTemplate = ({ node, inputs }: TemplateProps) => `enum ${node.name}{
