@@ -41,6 +41,18 @@ export const accepted: AcceptedConnection[] = [
     }
   }
 ];
+//Accepted inputs
+export const inputs: PortType[] = [
+  {
+    name: '',
+    accepted
+  }
+];
+export const outputs:PortType[] = [
+  {
+    name:''
+  }
+]
 const baseNode = (
   subType: GraphQLNodeType['subType'],
   type: GraphQLNodeType['type']
@@ -61,12 +73,7 @@ const baseDefinitionNode = (type: GraphQLNodeType['type']): GraphQLNodeType => (
 const baseFieldNode = (type: GraphQLNodeType['type']): GraphQLNodeType => ({
   ...baseNode('field', type),
   editable: true,
-  inputs: [
-    {
-      name: '',
-      accepted
-    }
-  ],
+  inputs,
   outputs: [
     {
       name: ''
@@ -91,12 +98,7 @@ const getFakerNodes = (): ActionCategory => {
                   name: i.name,
                   editable: true,
                   kind: `${k}.${i.name}`,
-                  inputs: [
-                    {
-                      name: '',
-                      accepted
-                    }
-                  ],
+                  inputs,
                   outputs: [
                     {
                       name: ''
@@ -132,36 +134,21 @@ export const categories: ActionCategory[] = [
         name: nodeTypes.type,
         node: {
           ...baseDefinitionNode(nodeTypes.type),
-          inputs: [
-            {
-              name: '',
-              accepted
-            }
-          ]
+          inputs
         }
       },
       {
         name: nodeTypes.input,
         node: {
           ...baseDefinitionNode(nodeTypes.input),
-          inputs: [
-            {
-              name: '',
-              accepted
-            }
-          ]
+          inputs
         }
       },
       {
         name: nodeTypes.interface,
         node: {
           ...baseDefinitionNode(nodeTypes.interface),
-          inputs: [
-            {
-              name: '',
-              accepted
-            }
-          ]
+          inputs
         }
       },
       {
@@ -184,6 +171,32 @@ export const categories: ActionCategory[] = [
         }
       },
       {
+        name: nodeTypes.scalar,
+        node: {
+          ...baseDefinitionNode(nodeTypes.scalar),
+          inputs: noPort
+        }
+      },
+      {
+        name: nodeTypes.union,
+        node: {
+          ...baseDefinitionNode(nodeTypes.union),
+          inputs:[
+            {
+              name:'',
+              accepted:[
+                {
+                  node:{
+                    type:nodeTypes.type,
+                    subType:SubTypes.clone
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
         name: nodeTypes.array,
         node: baseFieldNode(nodeTypes.array)
       },
@@ -191,57 +204,30 @@ export const categories: ActionCategory[] = [
         name: nodeTypes.query,
         node: {
           ...baseDefinitionNode(nodeTypes.query),
-          inputs: [
-            {
-              name: '',
-              accepted
-            }
-          ],
-          outputs: [
-            {
-              name: ''
-            }
-          ]
+          inputs,
+          outputs,
         }
       },
       {
         name: nodeTypes.mutation,
         node: {
           ...baseDefinitionNode(nodeTypes.mutation),
-          inputs: [
-            {
-              name: '',
-              accepted
-            }
-          ],
-          outputs: [
-            {
-              name: ''
-            }
-          ]
+          inputs,
+          outputs,
         }
       },
       {
         name: nodeTypes.subscription,
         node: {
           ...baseDefinitionNode(nodeTypes.subscription),
-          inputs: [
-            {
-              name: '',
-              accepted
-            }
-          ],
-          outputs: [
-            {
-              name: ''
-            }
-          ]
+          inputs,
+          outputs,
         }
       }
     ]
   },
   {
-    name: 'macros',
+    name: 'cloud',
     items: [
       {
         name: Macros.crud,
@@ -252,7 +238,6 @@ export const categories: ActionCategory[] = [
               name: '',
               accepted: [
                 {
-                  count: 1,
                   node: {
                     type: nodeTypes.type
                   }

@@ -15,7 +15,10 @@ import {
   GraphQLFieldMap,
   GraphQLInputFieldMap,
   isNonNullType,
-  GraphQLField
+  GraphQLField,
+  GraphQLScalarType,
+  isUnionType,
+  GraphQLUnionType
 } from 'graphql';
 import { TypeMap } from 'graphql/type/schema';
 import { nodeTypes, SubTypes, allTypes, argumentTypes } from '../../nodeTypes';
@@ -48,8 +51,9 @@ export const resolveGraphQLType = (
   required,
   ...(isScalarType(t)
     ? {
-        type: argumentTypes[t.name],
-        subType: SubTypes.field
+        type: argumentTypes[t.name] || nodeTypes.scalar,
+        subType: SubTypes.field,
+        kind: argumentTypes[t.name] ? undefined : t.name
       }
     : isObjectType(t)
       ? {
@@ -83,11 +87,16 @@ export const resolveGraphQLType = (
                 }
               : isNonNullType(t)
                 ? { ...resolveGraphQLType(name, t.ofType, true) }
-                : {
-                    type: nodeTypes.union,
-                    subType: SubTypes.clone,
-                    kind: t.name
-                  })
+                : isUnionType(t)
+                  ? {
+                      type: nodeTypes.union,
+                      subType: SubTypes.clone,
+                      kind: t.name
+                    }
+                  : {
+                      type: argumentTypes.String,
+                      subType: SubTypes.field
+                    })
 });
 
 export type GraphQLAllTypes = GraphQLType[];
@@ -117,6 +126,9 @@ export type EditorSchemaImport = {
   type: EditorSchemaType[];
   input: EditorSchemaBasicType[];
   interface: EditorSchemaBasicType[];
+  enum: EditorSchemaBasicType[];
+  scalar: EditorSchemaBasicType[];
+  union: EditorSchemaBasicType[];
   query: [EditorSchemaBasicType];
   mutation: [EditorSchemaBasicType];
   subscription?: [EditorSchemaBasicType];
@@ -130,6 +142,8 @@ export const getTypes = (schema: GraphQLSchema): EditorSchemaImport => {
   const legitInterfaces: GraphQLInterfaceType[] = [];
   const legitInputs: GraphQLInputObjectType[] = [];
   const legitEnums: GraphQLEnumType[] = [];
+  const legitScalars: GraphQLScalarType[] = [];
+  const legitUnions: GraphQLUnionType[] = [];
   let legitQueries: GraphQLObjectType;
   let legitMutations: GraphQLObjectType;
   const legitTypes = Object.keys(typeMap)
@@ -147,6 +161,14 @@ export const getTypes = (schema: GraphQLSchema): EditorSchemaImport => {
         legitEnums.push(typeMap[b] as GraphQLEnumType);
         return a;
       }
+      if (isScalarType(typeMap[b])) {
+        legitScalars.push(typeMap[b] as GraphQLScalarType);
+        return a;
+      }
+      if (isUnionType(typeMap[b])) {
+        legitUnions.push(typeMap[b] as GraphQLUnionType);
+        return a;
+      }
       if (b === queryType) {
         legitQueries = typeMap[b] as GraphQLObjectType;
         return a;
@@ -160,9 +182,12 @@ export const getTypes = (schema: GraphQLSchema): EditorSchemaImport => {
     }, []) as GraphQLObjectType[];
   const mapFields = (fieldMap: GraphQLFieldMap<any, any>) => {
     return Object.keys(fieldMap)
-      .reduce((a, b) => {
-        return [...a, fieldMap[b] as GraphQLField<any, any>];
-      }, [])
+      .reduce(
+        (a, b) => {
+          return [...a, fieldMap[b] as GraphQLField<any, any>];
+        },
+        [] as GraphQLField<any, any>[]
+      )
       .map((n) => ({
         ...resolveGraphQLType(n.name, n.type),
         args: n.args.map((a) => resolveGraphQLType(a.name, a.type))
@@ -178,6 +203,7 @@ export const getTypes = (schema: GraphQLSchema): EditorSchemaImport => {
         args: []
       }));
   };
+  console.log(legitTypes);
   const legitTypeNodes: EditorSchemaType[] = legitTypes.map((typeNode) => ({
     type: nodeTypes.type,
     subType: SubTypes.definition,
@@ -209,12 +235,46 @@ export const getTypes = (schema: GraphQLSchema): EditorSchemaImport => {
     name: legitMutations.name,
     fields: mapFields(legitMutations.getFields())
   };
-  console.log(legitQueryNode)
+  const legitScalarNodes: EditorSchemaBasicType[] = legitScalars.map((scalarNode) => ({
+    type: nodeTypes.scalar,
+    subType: SubTypes.definition,
+    name: scalarNode.name,
+    fields: []
+  }));
+  const legitUnionNodes: EditorSchemaBasicType[] = legitUnions.map((unionNode) => ({
+    type: nodeTypes.union,
+    subType: SubTypes.definition,
+    name: unionNode.name,
+    fields: unionNode.getTypes().map((n) => ({
+      name: n.name,
+      required: isNonNullType(typeof n),
+      type: nodeTypes.type,
+      subType: SubTypes.clone,
+      kind: n.name
+    }))
+  }));
+
+  const legitEnumNodes: EditorSchemaBasicType[] = legitEnums.map((enumNode) => ({
+    type: nodeTypes.enum,
+    subType: SubTypes.definition,
+    name: enumNode.name,
+    fields: enumNode.getValues().map(
+      (ev) =>
+        ({
+          name: ev.value,
+          type: argumentTypes.String,
+          subType: SubTypes.field
+        } as EditorSchemaField)
+    )
+  }));
   return {
     mutation: [legitMutationNode],
     query: [legitQueryNode],
     interface: legitInterfaceNodes,
     type: legitTypeNodes,
-    input: legitInputNodes
+    input: legitInputNodes,
+    scalar: legitScalarNodes,
+    union: legitUnionNodes,
+    enum: legitEnumNodes
   };
 };
