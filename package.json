@@ -12,7 +12,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@types/classnames": "2.2.3",
+    "@types/classnames": "^2.2.6",
     "@types/faker": "^4.1.4",
     "@types/graphql": "^14.0.1",
     "@types/history": "4.6.2",
