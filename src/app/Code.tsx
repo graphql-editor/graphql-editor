@@ -3,7 +3,7 @@ import * as styles from '../style/Code';
 import { xonokai } from 'react-syntax-highlighter/styles/prism';
 import SyntaxHighlighter from 'react-syntax-highlighter/prism';
 import * as FileSaver from 'file-saver';
-import * as cx from 'classnames';
+import cx from 'classnames';
 import { makeNodes } from '../livegen/import/makeNodes';
 import { GraphQLNodeType } from 'livegen/gens';
 import { LinkType } from '@slothking-online/diagram';
