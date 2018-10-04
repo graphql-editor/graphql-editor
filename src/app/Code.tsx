@@ -69,12 +69,6 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
             Save to file
           </Button>
           <Button
-            icon={Pushpin}
-            active={this.props.pinned}
-            className={styles.SidebarControl}
-            onClick={() => this.props.onPinChange(!this.props.pinned)}
-          />
-          <Button
             rounded={this.props.hidden}
             disabled={this.props.pinned}
             className={cx(styles.SidebarControl, { [styles.FlippedButton]: this.props.hidden })}
