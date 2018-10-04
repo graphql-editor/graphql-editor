@@ -146,6 +146,7 @@ export const getTypes = (schema: GraphQLSchema): EditorSchemaImport => {
   const legitUnions: GraphQLUnionType[] = [];
   let legitQueries: GraphQLObjectType;
   let legitMutations: GraphQLObjectType;
+  console.log(typeMap)
   const legitTypes = Object.keys(typeMap)
     .filter((t) => !builtIns.includes(t))
     .reduce((a, b) => {
