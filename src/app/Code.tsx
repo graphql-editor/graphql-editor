@@ -10,7 +10,7 @@ import { LinkType } from '@slothking-online/diagram';
 import { Button } from '../ui/Button';
 import { ButtonFile } from '../ui/ButtonFile';
 
-import { ArrowLeft2, Pushpin, CloudUpload, Download } from '../assets/icons';
+import { ArrowLeft2, CloudUpload, Download } from '../assets/icons';
 
 export type CodeEditorProps = {
   liveCode: string;
