@@ -9,6 +9,7 @@ import {
 } from '@slothking-online/diagram';
 import { categories, singlePortOutput } from '../categories';
 import * as styles from '../style/Home';
+import cx from 'classnames';
 import {
   typeTemplate,
   interfaceTemplate,
@@ -34,6 +35,8 @@ export type ModelState = {
   loaded?: LoadedFile;
   projectId?: string;
   liveCode: string;
+  sidebarPinned: boolean;
+  sidebarHidden: boolean;
 };
 
 class Home extends React.Component<{}, ModelState> {
@@ -46,7 +49,9 @@ class Home extends React.Component<{}, ModelState> {
       tabs: []
     },
     projectId: null,
-    liveCode: ''
+    liveCode: '',
+    sidebarPinned: false,
+    sidebarHidden: false,
   };
   componentDidMount() {}
   render() {
@@ -127,9 +132,13 @@ class Home extends React.Component<{}, ModelState> {
       )
     ];
     return (
-      <div className={styles.Full}>
+      <div className={cx(styles.Full, {[styles.Pinned]: this.state.sidebarPinned})}>
         <CodeEditor
           liveCode={this.state.liveCode}
+          onPinChange={pinned => this.setState({ sidebarPinned: pinned })}
+          onHide={hidden => this.setState({sidebarHidden: hidden})}
+          hidden={this.state.sidebarHidden}
+          pinned={this.state.sidebarPinned}
           loadNodes={(props) => {
             this.setState({
               loaded: {
