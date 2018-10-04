@@ -10,38 +10,47 @@ export const resolveType = (i: TransformedInput, requester: allTypes, io: 'input
   const hasArgs = (name) =>
     args
       ? args.length > 0
-        ? `${name}(${args.map((a) => resolveType(a, a.type, 'input')).join(',')})`
+        ? `${name}(${args.map((a) => resolveType(a, nodeTypes.type, 'input')).join(',\n\t\t')})`
         : name
       : name;
+
+  const definitionTypes = [
+    nodeTypes.type,
+    nodeTypes.union,
+    nodeTypes.interface,
+    nodeTypes.enum,
+    nodeTypes.input,
+    nodeTypes.scalar
+  ];
   const baseResolver: AllTypes = {
     ...Object.keys(argumentTypes).reduce((a, b) => {
       a[b] = `${hasArgs(name)}: ${check(b)}`;
       return a;
     }, {}),
-    [nodeTypes.type]: `${hasArgs(name)}: ${check(className)}`,
-    [nodeTypes.interface]: `${hasArgs(name)}: ${check(className)}`,
-    [nodeTypes.enum]: `${hasArgs(name)}: ${check(className)}`,
-    [nodeTypes.input]: `${hasArgs(name)}: ${check(className)}`
+    ...definitionTypes.reduce((a, b) => {
+      a[b] = `${hasArgs(name)}: ${check(className)}`;
+      return a;
+    }, {})
   };
   const queryResolverInput: AllTypes = {
     ...Object.keys(argumentTypes).reduce((a, b) => {
       a[b] = `${name}:${type}`;
       return a;
     }, {}),
-    [nodeTypes.type]: `${name}:${check(className)}`,
-    [nodeTypes.interface]: `${name}:${check(className)}`,
-    [nodeTypes.enum]: `${name}:${check(className)}`,
-    [nodeTypes.input]: `${name}:${check(className)}`
+    ...definitionTypes.reduce((a, b) => {
+      a[b] = `${name}: ${check(className)}`;
+      return a;
+    }, {})
   };
   const queryResolverOutput: AllTypes = {
     ...Object.keys(argumentTypes).reduce((a, b) => {
       a[b] = `${type}`;
       return a;
     }, {}),
-    [nodeTypes.type]: `${check(className)}`,
-    [nodeTypes.interface]: `${check(className)}`,
-    [nodeTypes.enum]: `${check(className)}`,
-    [nodeTypes.input]: `${check(className)}`
+    ...definitionTypes.reduce((a, b) => {
+      a[b] = `${check(className)}`;
+      return a;
+    }, {})
   };
   const transform: Requester = {
     type: {
@@ -78,6 +87,12 @@ export const resolveType = (i: TransformedInput, requester: allTypes, io: 'input
       input: baseResolver
     },
     Int: {
+      input: baseResolver
+    },
+    union: {
+      input: baseResolver
+    },
+    scalar: {
       input: baseResolver
     },
     enum: {

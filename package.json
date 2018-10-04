@@ -12,7 +12,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@types/classnames": "2.2.3",
+    "@types/classnames": "^2.2.6",
     "@types/faker": "^4.1.4",
     "@types/graphql": "^14.0.1",
     "@types/history": "4.6.2",
@@ -41,7 +41,7 @@
     "webpack-dev-server": "^3.1.8"
   },
   "dependencies": {
-    "@slothking-online/diagram": "^0.2.12",
+    "@slothking-online/diagram": "^0.2.15",
     "@slothking-online/form": "^0.1.36",
     "classnames": "^2.2.5",
     "faker": "^4.1.0",

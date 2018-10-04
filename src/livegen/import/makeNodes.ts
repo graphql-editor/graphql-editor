@@ -43,6 +43,10 @@ export const makeNodes = (
       type: t.type,
       subType: t.subType
     });
+  const makeCustomScalarDefinitionNode = (t: EditorSchemaType): GraphQLNodeType => ({
+    ...makeCustomDefinitionNode(t),
+    inputs: []
+  });
   const makeCustomOperationNode = (
     name: string,
     operationType: nodeTypes.query | nodeTypes.mutation
@@ -104,11 +108,11 @@ export const makeNodes = (
       x: props.x,
       y: props.y
     });
-  let nodes: GraphQLNodeType[] = [types.interface, types.type, types.input]
+  let nodes: GraphQLNodeType[] = [types.interface, types.type, types.input, types.enum, types.union]
     .map((t) => t.map(makeCustomDefinitionNode))
     .reduce((a, b) => [...a, ...b], []);
-
   nodes = [
+    ...types.scalar.map(makeCustomScalarDefinitionNode),
     ...nodes,
     ...types.query[0].fields.map((f) => makeCustomOperationNode(f.name, nodeTypes.query)),
     ...types.mutation[0].fields.map((f) => makeCustomOperationNode(f.name, nodeTypes.mutation))
@@ -398,15 +402,18 @@ export const makeNodes = (
       .reduce((a, b) => [...a, ...b], []);
   };
   operationNodesCreation;
+  nodes = [
+    ...nodes,
+    ...fieldNodesCreation(types.enum, nodeTypes.enum),
+    ...fieldNodesCreation(types.union, nodeTypes.union),
+    ...fieldNodesCreation(types.type, nodeTypes.type),
+    ...fieldNodesCreation(types.interface, nodeTypes.interface),
+    ...fieldNodesCreation(types.input, nodeTypes.input),
+    ...operationNodesCreation(types.query[0], nodeTypes.query),
+    ...operationNodesCreation(types.mutation[0], nodeTypes.mutation)
+  ]
   return {
-    nodes: [
-      ...nodes,
-      ...fieldNodesCreation(types.type, nodeTypes.type),
-      ...fieldNodesCreation(types.interface, nodeTypes.interface),
-      ...fieldNodesCreation(types.input, nodeTypes.input),
-      ...operationNodesCreation(types.query[0], nodeTypes.query),
-      ...operationNodesCreation(types.mutation[0], nodeTypes.mutation)
-    ],
+    nodes,
     links
   };
 };

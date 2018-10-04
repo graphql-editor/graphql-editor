@@ -45,7 +45,7 @@ export const queryTemplate = ({ node, inputs, outputs }: TemplateProps) =>
   outputs && outputs.length > 0
     ? `\t${node.name}${
         inputs.length > 0
-          ? `(${inputs.map((i) => `${resolveType(i, nodeTypes.type, 'input')}`).join(', ')})`
+          ? `(\n\t\t${inputs.map((i) => `${resolveType(i, nodeTypes.type, 'input')}`).join(',\n\t\t')}\n\t)`
           : ''
       }:${
         outputs.length === 1
@@ -53,16 +53,24 @@ export const queryTemplate = ({ node, inputs, outputs }: TemplateProps) =>
           : `[${outputs.map((o) => resolveType(o, nodeTypes.query, 'output')).join(', ')}]`
       }`
     : '';
-export const rootQueryTemplate = (queries: string) => `type Query{
+export const rootQueryTemplate = (queries: string) =>
+  queries &&
+  `type Query{
 ${queries}
 }`;
-export const rootMutationTemplate = (mutations: string) => `type Mutation{
+export const rootMutationTemplate = (mutations: string) =>
+  mutations &&
+  `type Mutation{
 ${mutations}
 }`;
-export const rootSubscriptionTemplate = (subscriptions: string) => `type Subscription{
+export const rootSubscriptionTemplate = (subscriptions: string) =>
+  subscriptions &&
+  `type Subscription{
 ${subscriptions}
 }`;
-
+export const scalarTemplate = ({ node }: TemplateProps) => `scalar ${node.name}`;
+export const unionTemplate = ({ node, inputs }: TemplateProps) =>
+  `union ${node.name} = ${inputs.map((i) => i.kind).join(' | ')}`;
 export const enumTemplate = ({ node, inputs }: TemplateProps) => `enum ${node.name}{
 \t${inputs.map((i) => resolveType(i, 'enum', 'input')).join('\n\t')}
 }`;

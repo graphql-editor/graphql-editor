@@ -9,6 +9,7 @@ import {
 } from '@slothking-online/diagram';
 import { categories, singlePortOutput } from '../categories';
 import * as styles from '../style/Home';
+import cx from 'classnames';
 import {
   typeTemplate,
   interfaceTemplate,
@@ -18,7 +19,9 @@ import {
   rootQueryTemplate,
   rootMutationTemplate,
   TemplateProps,
-  rootSubscriptionTemplate
+  rootSubscriptionTemplate,
+  scalarTemplate,
+  unionTemplate
 } from '../livegen/gens/graphql/template';
 import { nodeTypes, SubTypes } from '../nodeTypes';
 import { GraphQLNodeType } from '../livegen/gens';
@@ -34,6 +37,8 @@ export type ModelState = {
   loaded?: LoadedFile;
   projectId?: string;
   liveCode: string;
+  sidebarPinned: boolean;
+  sidebarHidden: boolean;
 };
 
 class Home extends React.Component<{}, ModelState> {
@@ -46,7 +51,9 @@ class Home extends React.Component<{}, ModelState> {
       tabs: []
     },
     projectId: null,
-    liveCode: ''
+    liveCode: '',
+    sidebarPinned: false,
+    sidebarHidden: false,
   };
   componentDidMount() {}
   render() {
@@ -116,6 +123,14 @@ class Home extends React.Component<{}, ModelState> {
                       items: addType(this.state.nodes, nodeTypes.input)
                     },
                     {
+                      name: nodeTypes.scalar,
+                      items: addType(this.state.nodes, nodeTypes.scalar)
+                    },
+                    {
+                      name: nodeTypes.union,
+                      items: addType(this.state.nodes, nodeTypes.union)
+                    },
+                    {
                       name: nodeTypes.enum,
                       items: addType(this.state.nodes, nodeTypes.enum)
                     }
@@ -127,9 +142,13 @@ class Home extends React.Component<{}, ModelState> {
       )
     ];
     return (
-      <div className={styles.Full}>
+      <div className={cx(styles.Full, {[styles.Pinned]: this.state.sidebarPinned})}>
         <CodeEditor
           liveCode={this.state.liveCode}
+          onPinChange={pinned => this.setState({ sidebarPinned: pinned })}
+          onHide={hidden => this.setState({sidebarHidden: hidden})}
+          hidden={this.state.sidebarHidden}
+          pinned={this.state.sidebarPinned}
           loadNodes={(props) => {
             this.setState({
               loaded: {
@@ -175,40 +194,53 @@ class Home extends React.Component<{}, ModelState> {
             nodeInputs = [...nodeInputs, ...crudMacroNodes];
             const generator = (
               type: keyof typeof nodeTypes,
-              template: (props: TemplateProps) => string
+              template: (props: TemplateProps) => string,
+              joinString = '\n\n'
             ) =>
               nodeInputs
                 .filter((n) => n.node.type === type)
                 .map(template)
-                .join('\n');
+                .join(joinString);
+            const scalarsCode = generator(nodeTypes.scalar, scalarTemplate);
             const typesCode = generator(nodeTypes.type, typeTemplate);
             const enumsCode = generator(nodeTypes.enum, enumTemplate);
             const interfacesCode = generator(nodeTypes.interface, interfaceTemplate);
             const inputsCode = generator(nodeTypes.input, inputTemplate);
-            const queriesCode = rootQueryTemplate(generator(nodeTypes.query, queryTemplate));
+            const unionsCode = generator(nodeTypes.union, unionTemplate);
+            const queriesCode = rootQueryTemplate(generator(nodeTypes.query, queryTemplate, '\n'));
             const mutationsCode = rootMutationTemplate(
-              generator(nodeTypes.mutation, queryTemplate)
+              generator(nodeTypes.mutation, queryTemplate, '\n')
             );
             const subscriptionsCode = rootSubscriptionTemplate(
-              generator(nodeTypes.subscription, queryTemplate)
+              generator(nodeTypes.subscription, queryTemplate, '\n')
             );
             const resolverCode = nodeInputs.map(generateFakerResolver).join('\n');
             resolverCode;
-            const mainCode = `schema{
-  query: Query,
-  mutation: Mutation,
-  subscription: Subscription
-}`;
+            let mainCode = 'schema{';
+            if (queriesCode) {
+              mainCode += '\n\tquery: Query';
+            }
+            if (mutationsCode) {
+              mainCode += '\n\tmutation: Mutation';
+            }
+            if (subscriptionsCode) {
+              mainCode += '\n\tsubscription: Subscription';
+            }
+            mainCode += '\n}';
             const liveCode = [
+              scalarsCode,
               enumsCode,
               inputsCode,
               interfacesCode,
               typesCode,
+              unionsCode,
               queriesCode,
               mutationsCode,
               subscriptionsCode,
               mainCode
-            ].join('\n');
+            ]
+              .filter((c) => c.length > 0)
+              .join('\n\n');
             this.setState({
               liveCode,
               nodes,

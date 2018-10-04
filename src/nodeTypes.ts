@@ -6,6 +6,7 @@ export enum nodeTypes {
   union = 'union',
   array = 'array',
   query = 'query',
+  scalar = 'scalar',
   mutation = 'mutation',
   subscription = 'subscription',
   interface = 'interface',
@@ -30,4 +31,4 @@ export enum SubTypes {
   faker = 'faker'
 }
 
-export type allTypes = keyof typeof nodeTypes | keyof typeof argumentTypes | keyof typeof Macros
+export type allTypes = keyof typeof nodeTypes | keyof typeof argumentTypes | keyof typeof Macros;
