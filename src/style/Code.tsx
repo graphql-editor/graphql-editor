@@ -1,60 +1,57 @@
-import { style, classes } from 'typestyle';
-export const Editor = style({
-  position: 'absolute',
-  width: 500,
+import { style } from 'typestyle';
+
+import { sizeSidebar } from './vars';
+
+export const Sidebar = style({
+  position: 'fixed',
+  width: sizeSidebar,
   zIndex: 2,
   height: '100vh',
+  transition: 'transform 0.4s, background-color 0.4s',
+  display: 'flex',
+  left: 0,
+  top: 0,
+  flexDirection: 'column',
   background: '#000000aa',
-  overflowY: 'auto',
-  overflowX: 'hidden',
-  transition: 'all 0.5s'
+  transform: 'translate(0,0)'
 });
 
-export const ShowEditor = style({
-  left: 0
+export const SidebarHidden = style({
+  background: 'transparent',
+  transform: `translate(${-sizeSidebar + 50}px,0)`
 });
-export const HideEditor = style({
-  left: -450
-});
+
 export const Pre = style({
   padding: 20,
-  paddingTop: 100
 });
 
-export const ClickInfo = style({
-  color: '#ffffffdd',
-  position: 'absolute',
+export const Toolbar = style({
+  flex: '0 0 52px',
+  padding: 8,
   display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  top: 0,
-  textAlign: 'center',
-  width: 50,
-  height: 50,
-  fontSize: 25,
-  right: 0,
-  padding: 20,
-  background: '#000000dd',
-  cursor: 'pointer'
+  background: '#00000033',
+  justifyContent: 'flex-end',
 });
 
-export const Save = style({
-  color: '#ffffffdd',
-  position: 'absolute',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  top: 0,
-  width:100,
-  textAlign: 'center',
-  height: 50,
-  fontSize: 14,
-  textTransform:'uppercase',
-  right: 50,
-  padding: 20,
-  background: '#ffffff22',
-  cursor: 'pointer'
+export const ToolbarHidden = style({
+  borderBottomRightRadius: 16,
 });
-export const Load = classes(Save,style({
-  right:160
-}))
+
+export const CodeContainer = style({
+  flex: 1,
+  overflowY: 'auto',
+  overflowX: 'hidden',
+});
+
+export const CodeContainerHidden = style({
+  flex: 1,
+  overflowY: 'hidden',
+});
+
+export const SidebarControl = style({
+  marginLeft: 12,
+});
+
+export const FlippedButton = style({
+  transform: 'rotate(180deg)',
+});
