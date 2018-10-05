@@ -5,7 +5,7 @@ import { getDefinitionInputs, find } from '../../utils';
 import { TemplateProps } from '../template';
 
 const IDInputGenerate: TransformedInput = {
-  name: argumentTypes.ID,
+  name: 'id',
   type: argumentTypes.ID,
   inputs: [],
   outputs: [],
@@ -70,17 +70,26 @@ export const crudMacroTemplate = (
       });
       const macroTypeInputs = getDefinitionInputs(links, nodes, n);
       for (var typeInput of macroTypeInputs) {
-        const { node, inputs } = nodeInputs.find((n) => n.node.id === typeInput.clone);
-        const [createInput, updateInput, readInput, removeInput] = [
+        let { node, inputs } = nodeInputs.find((n) => n.node.id === typeInput.clone);
+        const hasId = inputs.find((i) => i.type === argumentTypes.ID && i.name === 'id');
+        const InputIDNode: TransformedInput = hasId || IDInputGenerate;
+        if (!!hasId) {
+          inputs = inputs.filter((i) => i.id !== hasId.id);
+        } else {
+          nodeInputs = nodeInputs.map(
+            (i) => (i.node.id === node.id ? { ...i, inputs: [...i.inputs, InputIDNode] } : i)
+          );
+        }
+        const [createInput, updateInput, readInput, deleteInput] = [
           createBaseInputNode(typeInput, 'CreateInput', inputs),
-          createBaseInputNode(typeInput, 'UpdateInput', inputs.concat([IDInputGenerate])),
-          createBaseInputNode(typeInput, 'ReadInput', [IDInputGenerate]),
-          createBaseInputNode(typeInput, 'RemoveInput', [IDInputGenerate])
+          createBaseInputNode(typeInput, 'UpdateInput', inputs.concat([InputIDNode])),
+          createBaseInputNode(typeInput, 'ReadInput', [InputIDNode]),
+          createBaseInputNode(typeInput, 'DeleteInput', [InputIDNode])
         ];
         newNodes.push(createInput);
         newNodes.push(updateInput);
         newNodes.push(readInput);
-        newNodes.push(removeInput);
+        newNodes.push(deleteInput);
         const clonedTypeNode = (n: GraphQLNodeType): GraphQLNodeType => ({
           ...n,
           id: generateId(),
@@ -130,8 +139,8 @@ export const crudMacroTemplate = (
           })
         );
         newNodes.push(
-          createBaseMutationNode(`remove${node.name}`, {
-            inputs: [{ ...clonedTypeNode(removeInput.node), name: node.name }],
+          createBaseMutationNode(`delete${node.name}`, {
+            inputs: [{ ...clonedTypeNode(deleteInput.node), name: node.name }],
             outputs: [
               {
                 ...clonedTypeNode(node)
@@ -142,4 +151,5 @@ export const crudMacroTemplate = (
       }
       return newNodes;
     })
-    .reduce((a, b) => [...a, ...b], []);
+    .reduce((a, b) => [...a, ...b], [])
+    .concat(nodeInputs);

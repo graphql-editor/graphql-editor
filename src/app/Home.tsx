@@ -53,7 +53,7 @@ class Home extends React.Component<{}, ModelState> {
     projectId: null,
     liveCode: '',
     sidebarPinned: false,
-    sidebarHidden: false,
+    sidebarHidden: false
   };
   componentDidMount() {}
   render() {
@@ -142,11 +142,11 @@ class Home extends React.Component<{}, ModelState> {
       )
     ];
     return (
-      <div className={cx(styles.Full, {[styles.Pinned]: this.state.sidebarPinned})}>
+      <div className={cx(styles.Full, { [styles.Pinned]: this.state.sidebarPinned })}>
         <CodeEditor
           liveCode={this.state.liveCode}
-          onPinChange={pinned => this.setState({ sidebarPinned: pinned })}
-          onHide={hidden => this.setState({sidebarHidden: hidden})}
+          onPinChange={(pinned) => this.setState({ sidebarPinned: pinned })}
+          onHide={(hidden) => this.setState({ sidebarHidden: hidden })}
           hidden={this.state.sidebarHidden}
           pinned={this.state.sidebarPinned}
           loadNodes={(props) => {
@@ -191,7 +191,7 @@ class Home extends React.Component<{}, ModelState> {
                   : n
             );
             const crudMacroNodes = crudMacroTemplate(nodes, links, nodeInputs);
-            nodeInputs = [...nodeInputs, ...crudMacroNodes];
+            nodeInputs = [...crudMacroNodes];
             const generator = (
               type: keyof typeof nodeTypes,
               template: (props: TemplateProps) => string,

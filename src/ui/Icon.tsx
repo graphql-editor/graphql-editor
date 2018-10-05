@@ -17,7 +17,6 @@ export class Icon extends React.Component<IconProps> {
     return iconString.indexOf('data:') === 0 || iconString.substr(-4) === '.svg';
   }
   render() {
-    console.info(this.props.icon);
     const iconSize = this.props.size || 16;
     const iconType = (Icon.isUrl(this.props.icon) ? this.props.icon : iconSet[this.props.icon]) || '';
 
