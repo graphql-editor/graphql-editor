@@ -10,7 +10,7 @@ import { LinkType } from '@slothking-online/diagram';
 import { Button } from '../ui/Button';
 import { ButtonFile } from '../ui/ButtonFile';
 
-import { ArrowLeft2, Pushpin, CloudUpload, Download } from '../assets/icons';
+import { ArrowLeft2, CloudUpload, Download } from '../assets/icons';
 
 export type CodeEditorProps = {
   liveCode: string;
@@ -68,12 +68,6 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
           <Button icon={Download} onClick={this.saveToFile} className={styles.SidebarControl}>
             Save to file
           </Button>
-          <Button
-            icon={Pushpin}
-            active={this.props.pinned}
-            className={styles.SidebarControl}
-            onClick={() => this.props.onPinChange(!this.props.pinned)}
-          />
           <Button
             rounded={this.props.hidden}
             disabled={this.props.pinned}
