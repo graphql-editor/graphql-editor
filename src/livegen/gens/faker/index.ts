@@ -1,6 +1,7 @@
 import * as faker from 'faker';
-import { argumentTypes, nodeTypes } from '../../../nodeTypes';
+import { argumentTypes } from '../../../nodeTypes';
 import { TemplateProps } from '../graphql/template';
+import { TransformedInput } from '..';
 
 export const getFakerMethods = () => {
   const fakerKeys: Array<keyof typeof faker> = [
@@ -46,23 +47,75 @@ export const getFakerMethods = () => {
 };
 
 export const fakerMap = {
-  [argumentTypes.String]: 'faker.lorem.word',
-  [argumentTypes.Boolean]: 'faker.random.boolean',
-  [argumentTypes.Int]: 'faker.random.number',
-  [argumentTypes.ID]: 'faker.random.alphaNumeric',
-  [argumentTypes.Float]: 'faker.random.number'
+  [argumentTypes.String]: 'lorem.word',
+  [argumentTypes.Boolean]: 'random.boolean',
+  [argumentTypes.Int]: 'random.number',
+  [argumentTypes.ID]: 'random.alphaNumeric',
+  [argumentTypes.Float]: 'random.number'
+};
+export const arrayToDict = (a: any[]) =>
+  a.reduce((a, b) => {
+    a = {
+      ...a,
+      ...b
+    };
+    return a;
+  }, {});
+export type FakerResolverReturn = {
+  type?: string;
+  inputs?: {
+    [x: string]: FakerResolverReturn;
+  };
+  array: boolean;
+  required: boolean;
+  arrayRequired: boolean;
+};
+export type FakerDict = {
+  [x: string]: FakerResolverReturn;
+};
+export const generateFakerResolver = (template: TemplateProps, allProps: TemplateProps[]) => {
+  const mapClone = (i: TransformedInput): FakerDict =>
+    i.clone
+      ? {
+          [i.name]: {
+            inputs: mapInputs(allProps.find((a) => a.node.id === i.clone)),
+            array: i.array,
+            required: i.required,
+            arrayRequired: i.arrayRequired
+          }
+        }
+      : {
+          [i.name]: {
+            type: i.kind || fakerMap[i.type],
+            array: i.array,
+            required: i.required,
+            arrayRequired: i.arrayRequired
+          }
+        };
+  const mapInputs = (t: TemplateProps) => arrayToDict(t.inputs.map(mapClone));
+  const queriesCode = arrayToDict(template.outputs.map(mapClone));
+  return queriesCode;
 };
 
-export const generateFakerResolver = ({ node, inputs }: TemplateProps): string => {
-
-  const queriesCode = `${inputs
-    .filter((i) => i.type === nodeTypes.query )
-    .map(
-      (i) =>
-        '\t' +
-        `${i.name}:${i.kind}`
-    )
-    .join(',\n')}`;
-
-  return [queriesCode].join('\n');
+const roll = () => Math.random() > 0.5;
+const randomArray = () => new Array(Math.floor(Math.random() * 100)).fill(0);
+export const generateFakerServerQuery = (t: FakerResolverReturn, name: string): any => {
+  const resolveQuery = (q: FakerResolverReturn, name: string) => {
+    if (q.array) {
+      if (!q.arrayRequired && roll()) {
+        return { [name]: null };
+      }
+      return randomArray().map((i) => resolveQuery({ ...q, array: false }, name));
+    }
+    if (q.inputs) {
+      return { [name]: Object.keys(q.inputs).map((o) => resolveQuery(q.inputs[o], o)) };
+    }
+    if (!q.required && roll()) {
+      return { [name]: null };
+    }
+    return { [name]: q.type };
+  };
+  console.log(t)
+  const fQuery = resolveQuery(t, name);
+  return fQuery;
 };

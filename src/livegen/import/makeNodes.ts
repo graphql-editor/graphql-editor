@@ -1,4 +1,4 @@
-import { getTypes, importSchema } from '.';
+import { getTypes } from '.';
 import { GraphQLNodeType } from '../gens';
 import { nodeTypes, SubTypes, allTypes } from '../../nodeTypes';
 import { noPort, accepted } from '../../categories';
@@ -9,6 +9,11 @@ import {
   EditorSchemaImport,
   EditorSchemaField
 } from './import';
+import { GraphQLSchema } from 'graphql';
+
+const isNotCircularReferenceType = (disallowedTypes: string[]) => (fieldType: string) => {
+  return !disallowedTypes.includes(fieldType);
+};
 
 const makeCustomNode = (
   node: PartialPick<GraphQLNodeType, 'subType' | 'type' | 'name'>
@@ -31,12 +36,17 @@ const makeCustomNode = (
 });
 
 export const makeNodes = (
-  schema: string
+  schema: GraphQLSchema
 ): {
   nodes: GraphQLNodeType[];
   links: LinkType[];
 } => {
-  const types: EditorSchemaImport = getTypes(importSchema(schema));
+  const types: EditorSchemaImport = getTypes(schema);
+  const allowType = isNotCircularReferenceType([
+    ...(types.query ? [types.query[0].name] : []),
+    ...(types.mutation ? [types.mutation[0].name] : []),
+    ...(types.subscription ? [types.subscription[0].name] : [])
+  ]);
   const makeCustomDefinitionNode = (t: EditorSchemaType) =>
     makeCustomNode({
       name: t.name,
@@ -49,7 +59,7 @@ export const makeNodes = (
   });
   const makeCustomOperationNode = (
     name: string,
-    operationType: nodeTypes.query | nodeTypes.mutation
+    operationType: nodeTypes.query | nodeTypes.mutation | nodeTypes.subscription
   ) =>
     makeCustomNode({
       name,
@@ -114,8 +124,21 @@ export const makeNodes = (
   nodes = [
     ...types.scalar.map(makeCustomScalarDefinitionNode),
     ...nodes,
-    ...types.query[0].fields.map((f) => makeCustomOperationNode(f.name, nodeTypes.query)),
-    ...types.mutation[0].fields.map((f) => makeCustomOperationNode(f.name, nodeTypes.mutation))
+    ...(types.query
+      ? types.query[0].fields
+          .filter((f) => allowType(f.name))
+          .map((f) => makeCustomOperationNode(f.name, nodeTypes.query))
+      : []),
+    ...(types.mutation
+      ? types.mutation[0].fields
+          .filter((f) => allowType(f.name))
+          .map((f) => makeCustomOperationNode(f.name, nodeTypes.mutation))
+      : []),
+    ...(types.subscription
+      ? types.subscription[0].fields
+          .filter((f) => allowType(f.name))
+          .map((f) => makeCustomOperationNode(f.name, nodeTypes.subscription))
+      : [])
   ];
 
   const links: LinkType[] = [];
@@ -126,6 +149,7 @@ export const makeNodes = (
   const nodeWidth = 180;
   const fieldNodesCreation = (f: EditorSchemaBasicType[], type: allTypes): GraphQLNodeType[] =>
     f
+      .filter((f) => allowType(f.name))
       .map((t, i) => {
         if (nowY > flowHeight) {
           (nowY = 0), (nowX += nodeWidth * 3);
@@ -269,6 +293,7 @@ export const makeNodes = (
       .reduce((a, b) => [...a, ...b], []);
   const operationNodesCreation = (f: EditorSchemaBasicType, type: allTypes): GraphQLNodeType[] => {
     return f.fields
+      .filter((f) => allowType(f.kind || 'allowed'))
       .map((f) => {
         if (nowY > flowHeight) {
           (nowY = 0), (nowX += nodeWidth * 3);
@@ -409,9 +434,12 @@ export const makeNodes = (
     ...fieldNodesCreation(types.type, nodeTypes.type),
     ...fieldNodesCreation(types.interface, nodeTypes.interface),
     ...fieldNodesCreation(types.input, nodeTypes.input),
-    ...operationNodesCreation(types.query[0], nodeTypes.query),
-    ...operationNodesCreation(types.mutation[0], nodeTypes.mutation)
-  ]
+    ...(types.query ? operationNodesCreation(types.query[0], nodeTypes.query) : []),
+    ...(types.mutation ? operationNodesCreation(types.mutation[0], nodeTypes.mutation) : []),
+    ...(types.subscription
+      ? operationNodesCreation(types.subscription[0], nodeTypes.subscription)
+      : [])
+  ];
   return {
     nodes,
     links

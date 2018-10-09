@@ -48,11 +48,11 @@ export const inputs: PortType[] = [
     accepted
   }
 ];
-export const outputs:PortType[] = [
+export const outputs: PortType[] = [
   {
-    name:''
+    name: ''
   }
-]
+];
 const baseNode = (
   subType: GraphQLNodeType['subType'],
   type: GraphQLNodeType['type']
@@ -113,10 +113,6 @@ const getFakerNodes = (): ActionCategory => {
 };
 
 export const categories: ActionCategory[] = [
-  {
-    name: 'arguments',
-    items: []
-  },
   {
     name: 'scalars',
     items: Object.keys(argumentTypes).map(
@@ -181,14 +177,14 @@ export const categories: ActionCategory[] = [
         name: nodeTypes.union,
         node: {
           ...baseDefinitionNode(nodeTypes.union),
-          inputs:[
+          inputs: [
             {
-              name:'',
-              accepted:[
+              name: '',
+              accepted: [
                 {
-                  node:{
-                    type:nodeTypes.type,
-                    subType:SubTypes.clone
+                  node: {
+                    type: nodeTypes.type,
+                    subType: SubTypes.clone
                   }
                 }
               ]
@@ -205,7 +201,7 @@ export const categories: ActionCategory[] = [
         node: {
           ...baseDefinitionNode(nodeTypes.query),
           inputs,
-          outputs,
+          outputs
         }
       },
       {
@@ -213,7 +209,7 @@ export const categories: ActionCategory[] = [
         node: {
           ...baseDefinitionNode(nodeTypes.mutation),
           inputs,
-          outputs,
+          outputs
         }
       },
       {
@@ -221,7 +217,7 @@ export const categories: ActionCategory[] = [
         node: {
           ...baseDefinitionNode(nodeTypes.subscription),
           inputs,
-          outputs,
+          outputs
         }
       }
     ]

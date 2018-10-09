@@ -10,25 +10,9 @@ import {
 import { categories, singlePortOutput } from '../categories';
 import * as styles from '../style/Home';
 import cx from 'classnames';
-import {
-  typeTemplate,
-  interfaceTemplate,
-  enumTemplate,
-  inputTemplate,
-  queryTemplate,
-  rootQueryTemplate,
-  rootMutationTemplate,
-  TemplateProps,
-  rootSubscriptionTemplate,
-  scalarTemplate,
-  unionTemplate
-} from '../livegen/gens/graphql/template';
 import { nodeTypes, SubTypes } from '../nodeTypes';
-import { GraphQLNodeType } from '../livegen/gens';
-import { crudMacroTemplate } from '../livegen/gens/graphql/macros/crud';
-import { generateFakerResolver } from '../livegen/gens/faker';
-import { getDefinitionInputs, getDefinitionOutputs } from '../livegen/gens/utils';
 import { CodeEditor } from './Code';
+import { serialize } from '../livegen/serialize';
 
 export type ModelState = {
   nodes: Array<NodeType>;
@@ -98,49 +82,32 @@ class Home extends React.Component<{}, ModelState> {
       filterDefinitions(nodes, type).map(mapToNode(type));
     const addImplements = (nodes: NodeType[]): Item[] =>
       filterDefinitions(nodes, nodeTypes.interface).map(mapToNode(nodeTypes.implements));
-    const allCategories: ActionCategory[] = [
-      ...categories.map(
-        (c) =>
-          c.name === 'arguments'
-            ? {
-                ...c,
-                items: [
-                  ...[
-                    {
-                      name: nodeTypes.type,
-                      items: addType(this.state.nodes, nodeTypes.type)
-                    },
-                    {
-                      name: nodeTypes.interface,
-                      items: addType(this.state.nodes, nodeTypes.interface)
-                    },
-                    {
-                      name: nodeTypes.implements,
-                      items: addImplements(this.state.nodes)
-                    },
-                    {
-                      name: nodeTypes.input,
-                      items: addType(this.state.nodes, nodeTypes.input)
-                    },
-                    {
-                      name: nodeTypes.scalar,
-                      items: addType(this.state.nodes, nodeTypes.scalar)
-                    },
-                    {
-                      name: nodeTypes.union,
-                      items: addType(this.state.nodes, nodeTypes.union)
-                    },
-                    {
-                      name: nodeTypes.enum,
-                      items: addType(this.state.nodes, nodeTypes.enum)
-                    }
-                  ],
-                  ...c.items
-                ]
-              }
-            : c
-      )
-    ];
+    const mirrorNodes: ActionCategory = {
+      name: 'mirror',
+      items: [
+        ...[
+          ...[
+            nodeTypes.type,
+            nodeTypes.interface,
+            nodeTypes.input,
+            nodeTypes.scalar,
+            nodeTypes.union,
+            nodeTypes.enum
+          ].map((n) => ({
+            name: n,
+            items: addType(this.state.nodes, n)
+          })),
+          {
+            name: nodeTypes.implements,
+            items: addImplements(this.state.nodes)
+          }
+        ]
+      ].filter((n) => n.items.length > 0)
+    };
+    let allCategories: ActionCategory[] = [...categories];
+    if (mirrorNodes.items.length > 0) {
+      allCategories = [mirrorNodes, ...allCategories];
+    }
     return (
       <div className={cx(styles.Full, { [styles.Pinned]: this.state.sidebarPinned })}>
         <CodeEditor
@@ -161,92 +128,8 @@ class Home extends React.Component<{}, ModelState> {
         <Graph
           categories={allCategories}
           loaded={this.state.loaded}
-          serialize={(node, links, tabs) => {
-            let nodes = node as GraphQLNodeType[];
-            nodes = [...nodes];
-            let nodeInputs: TemplateProps[] = nodes
-              .filter((n) => n.subType === SubTypes.definition)
-              .map((n) => ({
-                node: n,
-                inputs: getDefinitionInputs(links, nodes, n),
-                outputs: getDefinitionOutputs(links, nodes, n)
-              }));
-            nodeInputs = nodeInputs.map(
-              (n) =>
-                n.node.type === nodeTypes.type
-                  ? {
-                      ...n,
-                      inputs: [
-                        ...n.inputs,
-                        ...n.inputs
-                          .filter((ni) => ni.type === nodeTypes.implements)
-                          .map(
-                            (interfaceTypeInput) =>
-                              nodeInputs.find((ni) => ni.node.id === interfaceTypeInput.clone)
-                                .inputs
-                          )
-                          .reduce((a, b) => [...a, ...b], [])
-                      ]
-                    }
-                  : n
-            );
-            const crudMacroNodes = crudMacroTemplate(nodes, links, nodeInputs);
-            nodeInputs = [...crudMacroNodes];
-            const generator = (
-              type: keyof typeof nodeTypes,
-              template: (props: TemplateProps) => string,
-              joinString = '\n\n'
-            ) =>
-              nodeInputs
-                .filter((n) => n.node.type === type)
-                .map(template)
-                .join(joinString);
-            const scalarsCode = generator(nodeTypes.scalar, scalarTemplate);
-            const typesCode = generator(nodeTypes.type, typeTemplate);
-            const enumsCode = generator(nodeTypes.enum, enumTemplate);
-            const interfacesCode = generator(nodeTypes.interface, interfaceTemplate);
-            const inputsCode = generator(nodeTypes.input, inputTemplate);
-            const unionsCode = generator(nodeTypes.union, unionTemplate);
-            const queriesCode = rootQueryTemplate(generator(nodeTypes.query, queryTemplate, '\n'));
-            const mutationsCode = rootMutationTemplate(
-              generator(nodeTypes.mutation, queryTemplate, '\n')
-            );
-            const subscriptionsCode = rootSubscriptionTemplate(
-              generator(nodeTypes.subscription, queryTemplate, '\n')
-            );
-            const resolverCode = nodeInputs.map(generateFakerResolver).join('\n');
-            resolverCode;
-            let mainCode = 'schema{';
-            if (queriesCode) {
-              mainCode += '\n\tquery: Query';
-            }
-            if (mutationsCode) {
-              mainCode += '\n\tmutation: Mutation';
-            }
-            if (subscriptionsCode) {
-              mainCode += '\n\tsubscription: Subscription';
-            }
-            mainCode += '\n}';
-            const liveCode = [
-              scalarsCode,
-              enumsCode,
-              inputsCode,
-              interfacesCode,
-              typesCode,
-              unionsCode,
-              queriesCode,
-              mutationsCode,
-              subscriptionsCode,
-              mainCode
-            ]
-              .filter((c) => c.length > 0)
-              .join('\n\n');
-            this.setState({
-              liveCode,
-              nodes,
-              links,
-              tabs
-            });
+          serialize={(nodes, links, tabs) => {
+            this.setState(serialize(nodes, links, tabs));
           }}
         />
       </div>

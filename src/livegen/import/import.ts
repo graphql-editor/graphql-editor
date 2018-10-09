@@ -130,13 +130,14 @@ export type EditorSchemaImport = {
   scalar: EditorSchemaBasicType[];
   union: EditorSchemaBasicType[];
   query: [EditorSchemaBasicType];
-  mutation: [EditorSchemaBasicType];
+  mutation?: [EditorSchemaBasicType];
   subscription?: [EditorSchemaBasicType];
 };
 
 export const getTypes = (schema: GraphQLSchema): EditorSchemaImport => {
-  const queryType = schema.getQueryType().name;
-  const mutationType = schema.getMutationType().name;
+  const { name: queryType = 'Query' } = schema.getQueryType() || {};
+  const { name: mutationType = 'Mutation' } = schema.getMutationType() || {};
+  const { name: subscriptionType = 'Subscription' } = schema.getSubscriptionType() || {};
   const typeMap: TypeMap = schema.getTypeMap();
   const builtIns = getBuiltInTypes();
   const legitInterfaces: GraphQLInterfaceType[] = [];
@@ -146,7 +147,8 @@ export const getTypes = (schema: GraphQLSchema): EditorSchemaImport => {
   const legitUnions: GraphQLUnionType[] = [];
   let legitQueries: GraphQLObjectType;
   let legitMutations: GraphQLObjectType;
-  console.log(typeMap)
+  let legitSubscriptions: GraphQLObjectType;
+
   const legitTypes = Object.keys(typeMap)
     .filter((t) => !builtIns.includes(t))
     .reduce((a, b) => {
@@ -178,6 +180,10 @@ export const getTypes = (schema: GraphQLSchema): EditorSchemaImport => {
         legitMutations = typeMap[b] as GraphQLObjectType;
         return a;
       }
+      if (b === subscriptionType) {
+        legitSubscriptions = typeMap[b] as GraphQLObjectType;
+        return a;
+      }
       a = [typeMap[b], ...a];
       return a;
     }, []) as GraphQLObjectType[];
@@ -204,78 +210,70 @@ export const getTypes = (schema: GraphQLSchema): EditorSchemaImport => {
         args: []
       }));
   };
-  console.log(legitTypes);
-  const legitTypeNodes: EditorSchemaType[] = legitTypes.map((typeNode) => ({
-    type: nodeTypes.type,
-    subType: SubTypes.definition,
-    name: typeNode.name,
-    fields: mapFields(typeNode.getFields()),
-    interfaces: typeNode.getInterfaces().map((i) => i.name)
-  }));
-  const legitInputNodes: EditorSchemaBasicType[] = legitInputs.map((inputNode) => ({
-    name: inputNode.name,
-    type: nodeTypes.input,
-    subType: SubTypes.definition,
-    fields: mapInputFields(inputNode.getFields())
-  }));
-  const legitInterfaceNodes: EditorSchemaBasicType[] = legitInterfaces.map((interfaceNode) => ({
-    type: nodeTypes.interface,
-    subType: SubTypes.definition,
-    name: interfaceNode.name,
-    fields: mapFields(interfaceNode.getFields())
-  }));
-  const legitQueryNode: EditorSchemaBasicType = {
-    type: nodeTypes.query,
-    subType: SubTypes.definition,
-    name: legitQueries.name,
-    fields: mapFields(legitQueries.getFields())
-  };
-  const legitMutationNode: EditorSchemaBasicType = {
-    type: nodeTypes.mutation,
-    subType: SubTypes.definition,
-    name: legitMutations.name,
-    fields: mapFields(legitMutations.getFields())
-  };
-  const legitScalarNodes: EditorSchemaBasicType[] = legitScalars.map((scalarNode) => ({
-    type: nodeTypes.scalar,
-    subType: SubTypes.definition,
-    name: scalarNode.name,
-    fields: []
-  }));
-  const legitUnionNodes: EditorSchemaBasicType[] = legitUnions.map((unionNode) => ({
-    type: nodeTypes.union,
-    subType: SubTypes.definition,
-    name: unionNode.name,
-    fields: unionNode.getTypes().map((n) => ({
-      name: n.name,
-      required: isNonNullType(typeof n),
-      type: nodeTypes.type,
-      subType: SubTypes.clone,
-      kind: n.name
-    }))
-  }));
-
-  const legitEnumNodes: EditorSchemaBasicType[] = legitEnums.map((enumNode) => ({
-    type: nodeTypes.enum,
-    subType: SubTypes.definition,
-    name: enumNode.name,
-    fields: enumNode.getValues().map(
-      (ev) =>
-        ({
-          name: ev.value,
-          type: argumentTypes.String,
-          subType: SubTypes.field
-        } as EditorSchemaField)
-    )
-  }));
+  const createNode = (
+    node: GraphQLInterfaceType | GraphQLObjectType,
+    subType,
+    type
+  ): EditorSchemaBasicType => ({
+    type,
+    subType,
+    name: node.name,
+    fields: mapFields(node.getFields())
+  });
   return {
-    mutation: [legitMutationNode],
-    query: [legitQueryNode],
-    interface: legitInterfaceNodes,
-    type: legitTypeNodes,
-    input: legitInputNodes,
-    scalar: legitScalarNodes,
-    union: legitUnionNodes,
-    enum: legitEnumNodes
+    mutation: legitMutations && [
+      createNode(legitMutations, SubTypes.definition, nodeTypes.mutation)
+    ],
+    query: legitQueries && [createNode(legitQueries, SubTypes.definition, nodeTypes.query)],
+    subscription: legitSubscriptions && [
+      createNode(legitSubscriptions, SubTypes.definition, nodeTypes.subscription)
+    ],
+    interface: legitInterfaces.map((interfaceNode) =>
+      createNode(interfaceNode, SubTypes.definition, nodeTypes.interface)
+    ),
+    type: legitTypes.map((typeNode) => ({
+      type: nodeTypes.type,
+      subType: SubTypes.definition,
+      name: typeNode.name,
+      fields: mapFields(typeNode.getFields()),
+      interfaces: typeNode.getInterfaces().map((i) => i.name)
+    })),
+    input: legitInputs.map((inputNode) => ({
+      name: inputNode.name,
+      type: nodeTypes.input,
+      subType: SubTypes.definition,
+      fields: mapInputFields(inputNode.getFields())
+    })),
+    scalar: legitScalars.map((scalarNode) => ({
+      type: nodeTypes.scalar,
+      subType: SubTypes.definition,
+      name: scalarNode.name,
+      fields: []
+    })),
+    union: legitUnions.map((unionNode) => ({
+      type: nodeTypes.union,
+      subType: SubTypes.definition,
+      name: unionNode.name,
+      fields: unionNode.getTypes().map((n) => ({
+        name: n.name,
+        required: isNonNullType(typeof n),
+        type: nodeTypes.type,
+        subType: SubTypes.clone,
+        kind: n.name
+      }))
+    })),
+    enum: legitEnums.map((enumNode) => ({
+      type: nodeTypes.enum,
+      subType: SubTypes.definition,
+      name: enumNode.name,
+      fields: enumNode.getValues().map(
+        (ev) =>
+          ({
+            name: ev.value,
+            type: argumentTypes.String,
+            subType: SubTypes.field
+          } as EditorSchemaField)
+      )
+    }))
   };
 };
