@@ -77,6 +77,7 @@ export const serialize = (
   const subscriptionsCode = rootSubscriptionTemplate(
     generator(nodeTypes.subscription, queryTemplate, '\n')
   );
+  console.log(nodes,links)
   // const fakeResolvers = [nodeTypes.query, nodeTypes.mutation, nodeTypes.subscription].reduce(
   //   (a, b) => {
   //     a[b] = arrayToDict(

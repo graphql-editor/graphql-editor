@@ -208,6 +208,7 @@ export const makeNodes = (
                 }
               });
             }
+            let argY = nowY - nodeHeight / 2.0;
             if (f.args && f.args.length > 0) {
               f.args.map((arg) => {
                 const argOutputId = generateId();
@@ -269,11 +270,12 @@ export const makeNodes = (
                     : arg.array
                       ? nowX - nodeWidth * 3
                       : nowX - nodeWidth * 2,
-                  y: nowY,
+                  y: argY,
                   fieldInputId: argFieldInputId,
                   outputId: argOutputId
                 });
                 returnNodes.push(customFieldNode);
+                argY += nodeHeight;
               });
             }
             const customFieldNode = makeCustomFieldNode(f, {
@@ -410,6 +412,7 @@ export const makeNodes = (
               outputId: argOutputId
             });
             returnNodes.push(customFieldNode);
+            nowY += nodeHeight;
           });
         }
         const customFieldNode = makeCustomFieldNode(f, {
