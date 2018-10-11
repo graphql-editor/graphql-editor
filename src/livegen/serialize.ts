@@ -15,7 +15,7 @@ import {
 import { getDefinitionInputs, getDefinitionOutputs } from './gens/utils';
 import { SubTypes, nodeTypes } from '../nodeTypes';
 import { crudMacroTemplate } from './gens/graphql/macros/crud';
-// import { arrayToDict, generateFakerResolver, generateFakerServerQuery } from './gens/faker';
+import { arrayToDict, generateFakerResolver, generateFakerServerQuery } from './gens/faker';
 import { NodeType, LinkType } from '@slothking-online/diagram';
 
 export const serialize = (
@@ -77,23 +77,22 @@ export const serialize = (
   const subscriptionsCode = rootSubscriptionTemplate(
     generator(nodeTypes.subscription, queryTemplate, '\n')
   );
-  console.log(nodes,links)
-  // const fakeResolvers = [nodeTypes.query, nodeTypes.mutation, nodeTypes.subscription].reduce(
-  //   (a, b) => {
-  //     a[b] = arrayToDict(
-  //       nodeInputs.filter((n) => n.node.type === b).map((n) => generateFakerResolver(n, nodeInputs))
-  //     );
-  //     return a;
-  //   },
-  //   {}
-  // );
+  console.log(nodeInputs)
+  const fakeResolvers = [nodeTypes.query, nodeTypes.mutation, nodeTypes.subscription].reduce(
+    (a, b) => {
+      a[b] = arrayToDict(
+        nodeInputs.filter((n) => n.node.type === b).map((n) => generateFakerResolver(n, nodeInputs))
+      );
+      return a;
+    },
+    {}
+  );
+  console.log(fakeResolvers)
+  const fakeQueriesGen = Object.keys(fakeResolvers[nodeTypes.query]).map((fr) =>
+    generateFakerServerQuery(fakeResolvers[nodeTypes.query][fr], fr)
+  );
+  console.log(fakeQueriesGen);
 
-  // const fakeQueriesGen = Object.keys(fakeResolvers[nodeTypes.query]).map((fr) =>
-  //   generateFakerServerQuery(fakeResolvers[nodeTypes.query][fr], fr)
-  // );
-  // console.log(fakeQueriesGen);
-
-  // console.log(fakeResolvers);
   let mainCode = 'schema{';
   if (queriesCode) {
     mainCode += '\n\tquery: Query';
