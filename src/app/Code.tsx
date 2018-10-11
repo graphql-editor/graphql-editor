@@ -33,9 +33,13 @@ export type CodeEditorState = {
 };
 
 export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState> {
+
   state: CodeEditorState = {
     loadingUrl: false
   };
+
+
+  private newStyle: {}
 
   loadFromFile = (e) => {
     const file = e.target.files[0];
@@ -56,6 +60,11 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
     });
     FileSaver.saveAs(file, `graphql-editor-schema.gql`);
   };
+
+  componentDidMount() {
+    this.newStyle = Object.assign({}, xonokai)
+    this.newStyle['code[class*="language-"]'].display = 'block'
+  }
 
   render() {
     return (
@@ -118,7 +127,8 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
           <SyntaxHighlighter
             PreTag={({ children }) => <div className={styles.Pre}>{children}</div>}
             language="graphql"
-            style={xonokai}
+            style={this.newStyle}
+            showLineNumbers
           >
             {this.props.liveCode}
           </SyntaxHighlighter>
