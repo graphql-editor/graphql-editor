@@ -10,6 +10,12 @@ With GraphQLEditor you can create visual diagrams without writing any code.
 
 Here is [Live demo](https://demo.graphqleditor.com) of GraphQLEditor
 
+## Cloud Backend
+
+[GraphQL Editor Website](https://graphqleditor.com)
+
+As cloud backend is coming soon, please do subscribe on our website to stay tuned.
+
 ## Setup
 
 Clone the repository
