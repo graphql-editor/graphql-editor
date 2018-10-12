@@ -59,7 +59,7 @@ export const makeNodes = (
   });
   const makeCustomOperationNode = (
     name: string,
-    operationType: nodeTypes.query | nodeTypes.mutation | nodeTypes.subscription
+    operationType: nodeTypes.Query | nodeTypes.Mutation | nodeTypes.Subscription
   ) =>
     makeCustomNode({
       name,
@@ -127,17 +127,17 @@ export const makeNodes = (
     ...(types.query
       ? types.query[0].fields
           .filter((f) => allowType(f.name))
-          .map((f) => makeCustomOperationNode(f.name, nodeTypes.query))
+          .map((f) => makeCustomOperationNode(f.name, nodeTypes.Query))
       : []),
     ...(types.mutation
       ? types.mutation[0].fields
           .filter((f) => allowType(f.name))
-          .map((f) => makeCustomOperationNode(f.name, nodeTypes.mutation))
+          .map((f) => makeCustomOperationNode(f.name, nodeTypes.Mutation))
       : []),
     ...(types.subscription
       ? types.subscription[0].fields
           .filter((f) => allowType(f.name))
-          .map((f) => makeCustomOperationNode(f.name, nodeTypes.subscription))
+          .map((f) => makeCustomOperationNode(f.name, nodeTypes.Subscription))
       : [])
   ];
 
@@ -437,10 +437,10 @@ export const makeNodes = (
     ...fieldNodesCreation(types.type, nodeTypes.type),
     ...fieldNodesCreation(types.interface, nodeTypes.interface),
     ...fieldNodesCreation(types.input, nodeTypes.input),
-    ...(types.query ? operationNodesCreation(types.query[0], nodeTypes.query) : []),
-    ...(types.mutation ? operationNodesCreation(types.mutation[0], nodeTypes.mutation) : []),
+    ...(types.query ? operationNodesCreation(types.query[0], nodeTypes.Query) : []),
+    ...(types.mutation ? operationNodesCreation(types.mutation[0], nodeTypes.Mutation) : []),
     ...(types.subscription
-      ? operationNodesCreation(types.subscription[0], nodeTypes.subscription)
+      ? operationNodesCreation(types.subscription[0], nodeTypes.Subscription)
       : [])
   ];
   return {

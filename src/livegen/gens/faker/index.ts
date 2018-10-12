@@ -63,6 +63,7 @@ export const arrayToDict = (a: any[]) =>
   }, {});
 export type FakerResolverReturn = {
   type?: string;
+  ref?: string;
   inputs?: {
     [x: string]: FakerResolverReturn;
   };
@@ -73,12 +74,12 @@ export type FakerResolverReturn = {
 export type FakerDict = {
   [x: string]: FakerResolverReturn;
 };
-export const generateFakerResolver = (template: TemplateProps, allProps: TemplateProps[]) => {
+export const generateFakerResolverBase = (template: TemplateProps, io: 'inputs' | 'outputs') => {
   const mapClone = (i: TransformedInput): FakerDict =>
     i.clone
       ? {
           [i.name]: {
-            inputs: mapInputs(allProps.find((a) => a.node.id === i.clone)),
+            ref: i.kind,
             array: i.array,
             required: i.required,
             arrayRequired: i.arrayRequired
@@ -92,9 +93,17 @@ export const generateFakerResolver = (template: TemplateProps, allProps: Templat
             arrayRequired: i.arrayRequired
           }
         };
-  const mapInputs = (t: TemplateProps) => arrayToDict(t.inputs.map(mapClone));
-  const queriesCode = arrayToDict(template.outputs.map(mapClone));
-  return queriesCode;
+  return arrayToDict(template[io].map(mapClone));
+};
+
+export const generateFakerResolverType = (template: TemplateProps) => {
+  return {
+    [template.node.name]: generateFakerResolverBase(template, 'inputs')
+  };
+};
+
+export const generateFakerResolverOperation = (template: TemplateProps) => {
+  return generateFakerResolverBase(template, 'outputs');
 };
 
 const roll = () => Math.random() > 0.5;
@@ -115,7 +124,6 @@ export const generateFakerServerQuery = (t: FakerResolverReturn, name: string): 
     }
     return { [name]: q.type };
   };
-  console.log(t)
   const fQuery = resolveQuery(t, name);
   return fQuery;
 };

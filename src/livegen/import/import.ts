@@ -222,11 +222,11 @@ export const getTypes = (schema: GraphQLSchema): EditorSchemaImport => {
   });
   return {
     mutation: legitMutations && [
-      createNode(legitMutations, SubTypes.definition, nodeTypes.mutation)
+      createNode(legitMutations, SubTypes.definition, nodeTypes.Mutation)
     ],
-    query: legitQueries && [createNode(legitQueries, SubTypes.definition, nodeTypes.query)],
+    query: legitQueries && [createNode(legitQueries, SubTypes.definition, nodeTypes.Query)],
     subscription: legitSubscriptions && [
-      createNode(legitSubscriptions, SubTypes.definition, nodeTypes.subscription)
+      createNode(legitSubscriptions, SubTypes.definition, nodeTypes.Subscription)
     ],
     interface: legitInterfaces.map((interfaceNode) =>
       createNode(interfaceNode, SubTypes.definition, nodeTypes.interface)

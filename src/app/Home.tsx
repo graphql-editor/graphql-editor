@@ -64,7 +64,7 @@ class Home extends React.Component<{}, ModelState> {
               {
                 node: {
                   subType: SubTypes.definition,
-                  type: nodeTypes.query
+                  type: nodeTypes.Query
                 }
               },
               {

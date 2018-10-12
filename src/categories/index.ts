@@ -22,17 +22,17 @@ export const accepted: AcceptedConnection[] = [
   },
   {
     node: {
-      type: nodeTypes.query
+      type: nodeTypes.Query
     }
   },
   {
     node: {
-      type: nodeTypes.mutation
+      type: nodeTypes.Mutation
     }
   },
   {
     node: {
-      type: nodeTypes.subscription
+      type: nodeTypes.Subscription
     }
   },
   {
@@ -197,25 +197,25 @@ export const categories: ActionCategory[] = [
         node: baseFieldNode(nodeTypes.array)
       },
       {
-        name: nodeTypes.query,
+        name: nodeTypes.Query,
         node: {
-          ...baseDefinitionNode(nodeTypes.query),
+          ...baseDefinitionNode(nodeTypes.Query),
           inputs,
           outputs
         }
       },
       {
-        name: nodeTypes.mutation,
+        name: nodeTypes.Mutation,
         node: {
-          ...baseDefinitionNode(nodeTypes.mutation),
+          ...baseDefinitionNode(nodeTypes.Mutation),
           inputs,
           outputs
         }
       },
       {
-        name: nodeTypes.subscription,
+        name: nodeTypes.Subscription,
         node: {
-          ...baseDefinitionNode(nodeTypes.subscription),
+          ...baseDefinitionNode(nodeTypes.Subscription),
           inputs,
           outputs
         }

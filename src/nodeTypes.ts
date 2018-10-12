@@ -5,12 +5,12 @@ export enum nodeTypes {
   enum = 'enum',
   union = 'union',
   array = 'array',
-  query = 'query',
   scalar = 'scalar',
-  mutation = 'mutation',
-  subscription = 'subscription',
   interface = 'interface',
-  implements = 'implements'
+  implements = 'implements',
+  Mutation = 'Mutation',
+  Subscription = 'Subscription',
+  Query = 'Query'
 }
 
 export enum argumentTypes {

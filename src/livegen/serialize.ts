@@ -15,7 +15,11 @@ import {
 import { getDefinitionInputs, getDefinitionOutputs } from './gens/utils';
 import { SubTypes, nodeTypes } from '../nodeTypes';
 import { crudMacroTemplate } from './gens/graphql/macros/crud';
-import { arrayToDict, generateFakerResolver, generateFakerServerQuery } from './gens/faker';
+import {
+  arrayToDict,
+  generateFakerResolverOperation,
+  generateFakerResolverType
+} from './gens/faker';
 import { NodeType, LinkType } from '@slothking-online/diagram';
 
 export const serialize = (
@@ -72,27 +76,29 @@ export const serialize = (
   const interfacesCode = generator(nodeTypes.interface, interfaceTemplate);
   const inputsCode = generator(nodeTypes.input, inputTemplate);
   const unionsCode = generator(nodeTypes.union, unionTemplate);
-  const queriesCode = rootQueryTemplate(generator(nodeTypes.query, queryTemplate, '\n'));
-  const mutationsCode = rootMutationTemplate(generator(nodeTypes.mutation, queryTemplate, '\n'));
+  const queriesCode = rootQueryTemplate(generator(nodeTypes.Query, queryTemplate, '\n'));
+  const mutationsCode = rootMutationTemplate(generator(nodeTypes.Mutation, queryTemplate, '\n'));
   const subscriptionsCode = rootSubscriptionTemplate(
-    generator(nodeTypes.subscription, queryTemplate, '\n')
+    generator(nodeTypes.Subscription, queryTemplate, '\n')
   );
-  console.log(nodeInputs)
-  const fakeResolvers = [nodeTypes.query, nodeTypes.mutation, nodeTypes.subscription].reduce(
-    (a, b) => {
-      a[b] = arrayToDict(
-        nodeInputs.filter((n) => n.node.type === b).map((n) => generateFakerResolver(n, nodeInputs))
-      );
-      return a;
-    },
-    {}
-  );
-  console.log(fakeResolvers)
-  const fakeQueriesGen = Object.keys(fakeResolvers[nodeTypes.query]).map((fr) =>
-    generateFakerServerQuery(fakeResolvers[nodeTypes.query][fr], fr)
-  );
-  console.log(fakeQueriesGen);
-
+  const fakeResolvers = [nodeTypes.type, nodeTypes.interface, nodeTypes.input].reduce((a, b) => {
+    a = {
+      ...a,
+      ...arrayToDict(nodeInputs.filter((n) => n.node.type === b).map(generateFakerResolverType))
+    };
+    return a;
+  }, {});
+  const fakeOperationResolvers = [
+    nodeTypes.Query,
+    nodeTypes.Mutation,
+    nodeTypes.Subscription
+  ].reduce((a, b) => {
+    a[b] = arrayToDict(
+      nodeInputs.filter((n) => n.node.type === b).map(generateFakerResolverOperation)
+    );
+    return a;
+  }, {});
+  console.log({ ...fakeOperationResolvers, ...fakeResolvers });
   let mainCode = 'schema{';
   if (queriesCode) {
     mainCode += '\n\tquery: Query';

@@ -44,7 +44,7 @@ export const crudMacroTemplate = (
       ): TemplateProps => ({
         node: {
           id: generateId(),
-          type: nodeTypes.query,
+          type: nodeTypes.Query,
           subType: SubTypes.definition,
           name: `${name}`,
           inputs: [],
@@ -59,7 +59,7 @@ export const crudMacroTemplate = (
       ): TemplateProps => ({
         node: {
           id: generateId(),
-          type: nodeTypes.mutation,
+          type: nodeTypes.Mutation,
           subType: SubTypes.definition,
           name: `${name}`,
           inputs: [],

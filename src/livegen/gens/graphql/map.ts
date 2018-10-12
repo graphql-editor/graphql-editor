@@ -56,15 +56,15 @@ export const resolveType = (i: TransformedInput, requester: allTypes, io: 'input
     type: {
       input: baseResolver
     },
-    query: {
+    Query: {
       input: queryResolverInput,
       output: queryResolverOutput
     },
-    mutation: {
+    Mutation: {
       input: queryResolverInput,
       output: queryResolverOutput
     },
-    subscription: {
+    Subscription: {
       input: queryResolverInput,
       output: queryResolverOutput
     },

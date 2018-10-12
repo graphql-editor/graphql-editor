@@ -49,8 +49,8 @@ export const queryTemplate = ({ node, inputs, outputs }: TemplateProps) =>
           : ''
       }:${
         outputs.length === 1
-          ? resolveType(outputs[0], nodeTypes.query, 'output')
-          : `[${outputs.map((o) => resolveType(o, nodeTypes.query, 'output')).join(', ')}]`
+          ? resolveType(outputs[0], nodeTypes.Query, 'output')
+          : `[${outputs.map((o) => resolveType(o, nodeTypes.Query, 'output')).join(', ')}]`
       }`
     : '';
 export const rootQueryTemplate = (queries: string) =>
