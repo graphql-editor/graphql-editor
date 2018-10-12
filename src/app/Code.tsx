@@ -10,7 +10,7 @@ import { LinkType } from '@slothking-online/diagram';
 import { Button } from '../ui/Button';
 import { ButtonFile } from '../ui/ButtonFile';
 
-import { ArrowLeft2, CloudUpload, Download, Upload } from '../assets/icons';
+import { ArrowLeft2, CloudUpload, Download, Upload, Spinner11 } from '../assets/icons';
 import { importSchema } from '../livegen/import';
 import { URLBar } from '../ui/URLBar';
 import { getSchemaFromURL } from '../livegen/import/fromUrl';
@@ -19,6 +19,7 @@ export type CodeEditorProps = {
   liveCode: string;
   onPinChange?: (pinned) => void;
   onHide?: (hidden) => void;
+  onReset?: () => void;
   pinned: boolean;
   hidden: boolean;
   loadNodes: (
@@ -96,6 +97,9 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
           )}
           {!this.state.loadingUrl && (
             <React.Fragment>
+              <Button icon={Spinner11} onClick={this.props.onReset} className={styles.SidebarControl}>
+                Reset
+              </Button>
               <Button
                 icon={CloudUpload}
                 onClick={() => {

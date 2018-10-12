@@ -40,6 +40,20 @@ class Home extends React.Component<{}, ModelState> {
     sidebarHidden: false
   };
   componentDidMount() {}
+
+  resetCode = () => {
+    this.setState({
+      nodes: [],
+      links: [],
+      loaded: {
+        nodes: [],
+        links: [],
+        tabs: []
+      },
+      liveCode: '',
+    })
+  }
+
   render() {
     const filterDefinitions = (nodes: NodeType[], type: keyof typeof nodeTypes) =>
       nodes.filter((n: NodeType) => n.type === type && n.subType === SubTypes.definition);
@@ -114,6 +128,7 @@ class Home extends React.Component<{}, ModelState> {
           liveCode={this.state.liveCode}
           onPinChange={(pinned) => this.setState({ sidebarPinned: pinned })}
           onHide={(hidden) => this.setState({ sidebarHidden: hidden })}
+          onReset={this.resetCode}
           hidden={this.state.sidebarHidden}
           pinned={this.state.sidebarPinned}
           loadNodes={(props) => {
