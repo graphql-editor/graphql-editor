@@ -98,7 +98,9 @@ export const serialize = (
     );
     return a;
   }, {});
-  console.log({ ...fakeOperationResolvers, ...fakeResolvers });
+  const fakeSchema = { ...fakeOperationResolvers, ...fakeResolvers }
+  fakeSchema;
+  // console.log({ ...fakeOperationResolvers, ...fakeResolvers });
   let mainCode = 'schema{';
   if (queriesCode) {
     mainCode += '\n\tquery: Query';
