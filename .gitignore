@@ -7,3 +7,4 @@ build
 dist
 deploy.sh
 deploy-toolkit.yaml
+.idea
