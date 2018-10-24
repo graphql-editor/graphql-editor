@@ -41,7 +41,7 @@
     "webpack-dev-server": "^3.1.8"
   },
   "dependencies": {
-    "@slothking-online/diagram": "^0.2.21",
+    "@slothking-online/diagram": "^1.0.4",
     "@slothking-online/form": "^0.1.36",
     "classnames": "^2.2.5",
     "faker": "^4.1.0",

@@ -20,7 +20,7 @@ export type ModelState = {
   links: Array<LinkType>;
   loaded?: LoadedFile;
   projectId?: string;
-  liveCode: string;
+  schema: string;
   sidebarPinned: boolean;
   sidebarHidden: boolean;
 };
@@ -35,7 +35,7 @@ class Home extends React.Component<{}, ModelState> {
       tabs: []
     },
     projectId: null,
-    liveCode: '',
+    schema: '',
     sidebarPinned: false,
     sidebarHidden: false
   };
@@ -50,7 +50,7 @@ class Home extends React.Component<{}, ModelState> {
         links: [],
         tabs: []
       },
-      liveCode: '',
+      schema: '',
     })
   }
 
@@ -125,7 +125,7 @@ class Home extends React.Component<{}, ModelState> {
     return (
       <div className={cx(styles.Full, { [styles.Pinned]: this.state.sidebarPinned })}>
         <CodeEditor
-          liveCode={this.state.liveCode}
+          schema={this.state.schema}
           onPinChange={(pinned) => this.setState({ sidebarPinned: pinned })}
           onHide={(hidden) => this.setState({ sidebarHidden: hidden })}
           onReset={this.resetCode}

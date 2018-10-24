@@ -103,7 +103,16 @@ export const generateFakerResolverType = (template: TemplateProps) => {
 };
 
 export const generateFakerResolverOperation = (template: TemplateProps) => {
-  return generateFakerResolverBase(template, 'outputs');
+  const outputs = generateFakerResolverBase(template, 'outputs');
+  return {
+    [template.node.name]: Object.keys(outputs).reduce((a, b) => {
+      a = {
+        ...a,
+        ...outputs[b]
+      };
+      return a;
+    }, {})
+  };
 };
 
 const roll = () => Math.random() > 0.5;
