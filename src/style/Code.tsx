@@ -12,7 +12,7 @@ export const Sidebar = style({
   left: 0,
   top: 0,
   flexDirection: 'column',
-  background: '#000000aa',
+  background: '#000000dd',
   transform: 'translate(0,0)',
 });
 
