@@ -50,9 +50,9 @@ class Home extends React.Component<{}, ModelState> {
         links: [],
         tabs: []
       },
-      schema: '',
-    })
-  }
+      schema: ''
+    });
+  };
 
   render() {
     const filterDefinitions = (nodes: NodeType[], type: keyof typeof nodeTypes) =>
@@ -124,6 +124,13 @@ class Home extends React.Component<{}, ModelState> {
     }
     return (
       <div className={cx(styles.Full, { [styles.Pinned]: this.state.sidebarPinned })}>
+        <Graph
+          categories={allCategories}
+          loaded={this.state.loaded}
+          serialize={(nodes, links, tabs) => {
+            this.setState(serialize(nodes, links, tabs));
+          }}
+        />
         <CodeEditor
           schema={this.state.schema}
           onPinChange={(pinned) => this.setState({ sidebarPinned: pinned })}
@@ -138,13 +145,6 @@ class Home extends React.Component<{}, ModelState> {
                 ...props
               }
             });
-          }}
-        />
-        <Graph
-          categories={allCategories}
-          loaded={this.state.loaded}
-          serialize={(nodes, links, tabs) => {
-            this.setState(serialize(nodes, links, tabs));
           }}
         />
       </div>

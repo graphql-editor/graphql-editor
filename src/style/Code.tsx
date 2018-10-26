@@ -5,7 +5,7 @@ import { sizeSidebar } from './vars';
 export const Sidebar = style({
   position: 'fixed',
   width: sizeSidebar,
-  zIndex: 2,
+  zIndex: 2000,
   height: '100vh',
   transition: 'transform 0.4s, background-color 0.4s',
   display: 'flex',
@@ -13,7 +13,7 @@ export const Sidebar = style({
   top: 0,
   flexDirection: 'column',
   background: '#000000aa',
-  transform: 'translate(0,0)'
+  transform: 'translate(0,0)',
 });
 
 export const SidebarHidden = style({
@@ -30,6 +30,7 @@ export const Toolbar = style({
   padding: 8,
   display: 'flex',
   background: '#00000033',
+  alignItems:'center',
   justifyContent: 'flex-end'
 });
 

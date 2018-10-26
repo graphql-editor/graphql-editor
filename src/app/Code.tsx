@@ -67,8 +67,30 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
 
   render() {
     return (
-      <div className={cx(styles.Sidebar, { [styles.SidebarHidden]: this.props.hidden })}>
+      <div className={cx(styles.Sidebar, { [styles.SidebarHidden]: this.props.hidden })} 
+      onMouseDown={e=>{
+        console.log("HG")
+        e.stopPropagation()
+        e.preventDefault()
+        return false;
+      }}
+      onMouseDownCapture={e=>{
+        console.log("mds")
+        e.stopPropagation()
+        e.preventDefault()
+        return false;
+      }}
+      onMouseUp={e=>{
+        console.log("mdu")
+        e.stopPropagation()
+        e.preventDefault()
+        return false;
+      }}
+      >
         <div className={cx(styles.Toolbar, { [styles.ToolbarHidden]: this.props.hidden })}>
+          <a style={{ marginRight: 'auto', marginLeft: 10 }} href="https://graphqleditor.com">
+            <img style={{ height: 30 }} src={require('../../logo.png')} />
+          </a>
           {this.state.loadingUrl && (
             <React.Fragment>
               <URLBar
@@ -127,13 +149,13 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
             onClick={() => this.props.onHide(!this.props.hidden)}
           />
         </div>
-          <div className={styles.Tabs}>
-            {['schema', 'frontend'].map((k) => (
-              <div className={styles.Tab} key={k}>
-                {k}
-              </div>
-            ))}
-          </div>
+        <div className={styles.Tabs}>
+          {['schema', 'frontend'].map((k) => (
+            <div className={styles.Tab} key={k}>
+              {k}
+            </div>
+          ))}
+        </div>
         <div
           className={cx(styles.CodeContainer, { [styles.CodeContainerHidden]: this.props.hidden })}
         >
