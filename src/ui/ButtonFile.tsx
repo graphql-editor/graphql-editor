@@ -26,7 +26,7 @@ export class ButtonFile extends React.Component<ButtonFileProps> {
           onChange={this.props.onChange}
         />
         <label htmlFor={`load${this.randomRefId}`}>
-          <Button {...buttonProps} onClick={this.buttonClicked}>Load file</Button>
+          <Button {...buttonProps} onClick={this.buttonClicked}>Load</Button>
         </label>
       </React.Fragment>
     );

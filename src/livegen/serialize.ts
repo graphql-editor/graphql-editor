@@ -1,14 +1,8 @@
 import { GraphQLNodeType } from './gens';
 import {
   TemplateProps,
-  scalarTemplate,
-  typeTemplate,
-  enumTemplate,
-  interfaceTemplate,
-  inputTemplate,
-  unionTemplate,
+  templates,
   rootQueryTemplate,
-  queryTemplate,
   rootMutationTemplate,
   rootSubscriptionTemplate
 } from './gens/graphql/template';
@@ -27,11 +21,12 @@ export const serialize = (
   links: LinkType[],
   tabs: string[]
 ): {
-  liveCode: string;
+  schema: string;
   nodes: GraphQLNodeType[];
   links: LinkType[];
   tabs: string[];
 } => {
+  console.time('serialize');
   let nodes = node as GraphQLNodeType[];
   nodes = [...nodes];
   let nodeInputs: TemplateProps[] = nodes
@@ -70,16 +65,12 @@ export const serialize = (
       .filter((n) => n.node.type === type)
       .map(template)
       .join(joinString);
-  const scalarsCode = generator(nodeTypes.scalar, scalarTemplate);
-  const typesCode = generator(nodeTypes.type, typeTemplate);
-  const enumsCode = generator(nodeTypes.enum, enumTemplate);
-  const interfacesCode = generator(nodeTypes.interface, interfaceTemplate);
-  const inputsCode = generator(nodeTypes.input, inputTemplate);
-  const unionsCode = generator(nodeTypes.union, unionTemplate);
-  const queriesCode = rootQueryTemplate(generator(nodeTypes.Query, queryTemplate, '\n'));
-  const mutationsCode = rootMutationTemplate(generator(nodeTypes.Mutation, queryTemplate, '\n'));
+  const queriesCode = rootQueryTemplate(generator(nodeTypes.Query, templates.Query, '\n'));
+  const mutationsCode = rootMutationTemplate(
+    generator(nodeTypes.Mutation, templates.Mutation, '\n')
+  );
   const subscriptionsCode = rootSubscriptionTemplate(
-    generator(nodeTypes.Subscription, queryTemplate, '\n')
+    generator(nodeTypes.Subscription, templates.Subscription, '\n')
   );
   const fakeResolvers = [nodeTypes.type, nodeTypes.interface, nodeTypes.input].reduce((a, b) => {
     a = {
@@ -98,9 +89,8 @@ export const serialize = (
     );
     return a;
   }, {});
-  const fakeSchema = { ...fakeOperationResolvers, ...fakeResolvers }
-  fakeSchema;
-  // console.log({ ...fakeOperationResolvers, ...fakeResolvers });
+  const fakeSchema = { ...fakeOperationResolvers, ...fakeResolvers };
+  console.log(fakeSchema);
   let mainCode = 'schema{';
   if (queriesCode) {
     mainCode += '\n\tquery: Query';
@@ -112,22 +102,26 @@ export const serialize = (
     mainCode += '\n\tsubscription: Subscription';
   }
   mainCode += '\n}';
-  const liveCode = [
-    scalarsCode,
-    enumsCode,
-    inputsCode,
-    interfacesCode,
-    typesCode,
-    unionsCode,
-    queriesCode,
-    mutationsCode,
-    subscriptionsCode,
-    mainCode
+  const schema = [
+    nodeTypes.scalar,
+    nodeTypes.enum,
+    nodeTypes.interface,
+    nodeTypes.type,
+    nodeTypes.input,
+    nodeTypes.union
   ]
+    .map((n) => generator(nodeTypes[n], templates[nodeTypes[n]]))
     .filter((c) => c.length > 0)
-    .join('\n\n');
+    .join('\n\n')
+    .concat('\n\n')
+    .concat(
+      [queriesCode, mutationsCode, subscriptionsCode].filter((c) => c.length > 0).join('\n\n')
+    )
+    .concat('\n\n')
+    .concat(mainCode);
+  console.timeEnd('serialize');
   return {
-    liveCode,
+    schema,
     nodes,
     links,
     tabs

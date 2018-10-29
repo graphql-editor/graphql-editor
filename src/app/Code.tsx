@@ -16,7 +16,7 @@ import { URLBar } from '../ui/URLBar';
 import { getSchemaFromURL } from '../livegen/import/fromUrl';
 
 export type CodeEditorProps = {
-  liveCode: string;
+  schema: string;
   onPinChange?: (pinned) => void;
   onHide?: (hidden) => void;
   onReset?: () => void;
@@ -34,13 +34,11 @@ export type CodeEditorState = {
 };
 
 export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState> {
-
   state: CodeEditorState = {
     loadingUrl: false
   };
 
-
-  private newStyle: {}
+  private newStyle: {};
 
   loadFromFile = (e) => {
     const file = e.target.files[0];
@@ -56,21 +54,44 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
   };
 
   saveToFile = () => {
-    var file = new File([this.props.liveCode], `graphql-editor-schema.gql`, {
+    var file = new File([this.props.schema], `graphql-editor-schema.gql`, {
       type: 'application/json'
     });
     FileSaver.saveAs(file, `graphql-editor-schema.gql`);
   };
 
   componentDidMount() {
-    this.newStyle = Object.assign({}, xonokai)
-    this.newStyle['code[class*="language-"]'].display = 'block'
+    this.newStyle = Object.assign({}, xonokai);
+    this.newStyle['code[class*="language-"]'].display = 'block';
   }
 
   render() {
     return (
-      <div className={cx(styles.Sidebar, { [styles.SidebarHidden]: this.props.hidden })}>
+      <div
+        className={cx(styles.Sidebar, { [styles.SidebarHidden]: this.props.hidden })}
+        onMouseDown={(e) => {
+          console.log('HG');
+          e.stopPropagation();
+          e.preventDefault();
+          return false;
+        }}
+        onMouseDownCapture={(e) => {
+          console.log('mds');
+          e.stopPropagation();
+          e.preventDefault();
+          return false;
+        }}
+        onMouseUp={(e) => {
+          console.log('mdu');
+          e.stopPropagation();
+          e.preventDefault();
+          return false;
+        }}
+      >
         <div className={cx(styles.Toolbar, { [styles.ToolbarHidden]: this.props.hidden })}>
+          <a style={{ marginRight: 'auto', marginLeft: 10 }} href="https://graphqleditor.com">
+            <img style={{ height: 30 }} src={require('../../logo.png')} />
+          </a>
           {this.state.loadingUrl && (
             <React.Fragment>
               <URLBar
@@ -97,7 +118,11 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
           )}
           {!this.state.loadingUrl && (
             <React.Fragment>
-              <Button icon={Spinner11} onClick={this.props.onReset} className={styles.SidebarControl}>
+              <Button
+                icon={Spinner11}
+                onClick={this.props.onReset}
+                className={styles.SidebarControl}
+              >
                 Reset
               </Button>
               <Button
@@ -109,11 +134,11 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
                 }}
                 className={styles.SidebarControl}
               >
-                Load URL
+                URL
               </Button>
               <ButtonFile icon={Upload} onChange={this.loadFromFile} />
               <Button icon={Download} onClick={this.saveToFile} className={styles.SidebarControl}>
-                Save to file
+                Save
               </Button>
             </React.Fragment>
           )}
@@ -125,6 +150,13 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
             onClick={() => this.props.onHide(!this.props.hidden)}
           />
         </div>
+        {/* <div className={styles.Tabs}>
+          {['schema', 'frontend'].map((k) => (
+            <div className={styles.Tab} key={k}>
+              {k}
+            </div>
+          ))}
+        </div> */}
         <div
           className={cx(styles.CodeContainer, { [styles.CodeContainerHidden]: this.props.hidden })}
         >
@@ -134,7 +166,7 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
             style={this.newStyle}
             showLineNumbers
           >
-            {this.props.liveCode}
+            {this.props.schema}
           </SyntaxHighlighter>
         </div>
       </div>
