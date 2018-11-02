@@ -13,7 +13,7 @@ export const Sidebar = style({
   top: 0,
   flexDirection: 'column',
   background: '#000000dd',
-  transform: 'translate(0,0)',
+  transform: 'translate(0,0)'
 });
 
 export const SidebarHidden = style({
@@ -30,7 +30,7 @@ export const Toolbar = style({
   padding: 8,
   display: 'flex',
   background: '#00000033',
-  alignItems:'center',
+  alignItems: 'center',
   justifyContent: 'flex-end'
 });
 
@@ -56,18 +56,10 @@ export const SidebarControl = style({
 export const FlippedButton = style({
   transform: 'rotate(180deg)'
 });
-
-export const Tabs = style({
-  position: 'relative',
-  display: 'flex',
-  background: '#ffffff11'
-});
-export const Tab = style({
-  display: 'inline-flex',
-  padding: '10px 24px',
-  borderRight: '1px solid #00000022',
-  fontSize: 12,
-  color: '#fff',
-  background: '#ffffff05',
-  cursor: 'pointer'
+export const ClipboardButton = style({
+  position: 'absolute',
+  padding: 15,
+  bottom: 0,
+  right: 0,
+  textAlign: 'right'
 });

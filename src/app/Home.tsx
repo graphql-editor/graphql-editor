@@ -20,9 +20,10 @@ export type ModelState = {
   links: Array<LinkType>;
   loaded?: LoadedFile;
   projectId?: string;
-  schema: string;
+  code: string;
   sidebarPinned: boolean;
   sidebarHidden: boolean;
+  serializeFunction: keyof typeof serialize;
 };
 
 class Home extends React.Component<{}, ModelState> {
@@ -35,8 +36,9 @@ class Home extends React.Component<{}, ModelState> {
       tabs: []
     },
     projectId: null,
-    schema: '',
+    code: '',
     sidebarPinned: false,
+    serializeFunction: 'graphql',
     sidebarHidden: false
   };
   componentDidMount() {}
@@ -50,7 +52,7 @@ class Home extends React.Component<{}, ModelState> {
         links: [],
         tabs: []
       },
-      schema: ''
+      code: ''
     });
   };
 
@@ -128,16 +130,25 @@ class Home extends React.Component<{}, ModelState> {
           categories={allCategories}
           loaded={this.state.loaded}
           serialize={(nodes, links, tabs) => {
-            this.setState(serialize(nodes, links, tabs));
+            this.setState(serialize[this.state.serializeFunction].fn(nodes, links, tabs));
           }}
         />
         <CodeEditor
-          schema={this.state.schema}
+          schema={this.state.code}
+          onTabChange={(e) => {
+            const { nodes, links, tabs } = this.state;
+            console.log(e);
+            this.setState({
+              serializeFunction: e
+            });
+            this.setState(serialize[e].fn(nodes, links, tabs));
+          }}
           onPinChange={(pinned) => this.setState({ sidebarPinned: pinned })}
           onHide={(hidden) => this.setState({ sidebarHidden: hidden })}
           onReset={this.resetCode}
           hidden={this.state.sidebarHidden}
           pinned={this.state.sidebarPinned}
+          language={this.state.serializeFunction}
           loadNodes={(props) => {
             this.setState({
               loaded: {

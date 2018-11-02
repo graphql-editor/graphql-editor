@@ -10,18 +10,29 @@ import { LinkType } from '@slothking-online/diagram';
 import { Button } from '../ui/Button';
 import { ButtonFile } from '../ui/ButtonFile';
 
-import { ArrowLeft2, CloudUpload, Download, Upload, Spinner11 } from '../assets/icons';
+import { ArrowLeft2, CloudUpload, Download, Upload, ArrowUp2, Spinner11 } from '../assets/icons';
 import { importSchema } from '../livegen/import';
 import { URLBar } from '../ui/URLBar';
 import { getSchemaFromURL } from '../livegen/import/fromUrl';
+import { Tabs } from '../ui/Tabs';
+import { serialize } from '../livegen/serialize';
+export const TABS = Object.keys(serialize).reduce(
+  (a, b) => {
+    a[b] = {};
+    return a;
+  },
+  {} as { [x in keyof typeof serialize]: any }
+);
 
 export type CodeEditorProps = {
   schema: string;
   onPinChange?: (pinned) => void;
   onHide?: (hidden) => void;
+  onTabChange: (name: keyof typeof TABS) => void;
   onReset?: () => void;
   pinned: boolean;
   hidden: boolean;
+  language: string;
   loadNodes: (
     props: {
       nodes: GraphQLNodeType[];
@@ -31,11 +42,13 @@ export type CodeEditorProps = {
 };
 export type CodeEditorState = {
   loadingUrl: boolean;
+  currentTab: keyof typeof TABS;
 };
 
 export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState> {
   state: CodeEditorState = {
-    loadingUrl: false
+    loadingUrl: false,
+    currentTab: 'graphql'
   };
 
   private newStyle: {};
@@ -67,27 +80,7 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
 
   render() {
     return (
-      <div
-        className={cx(styles.Sidebar, { [styles.SidebarHidden]: this.props.hidden })}
-        onMouseDown={(e) => {
-          console.log('HG');
-          e.stopPropagation();
-          e.preventDefault();
-          return false;
-        }}
-        onMouseDownCapture={(e) => {
-          console.log('mds');
-          e.stopPropagation();
-          e.preventDefault();
-          return false;
-        }}
-        onMouseUp={(e) => {
-          console.log('mdu');
-          e.stopPropagation();
-          e.preventDefault();
-          return false;
-        }}
-      >
+      <div className={cx(styles.Sidebar, { [styles.SidebarHidden]: this.props.hidden })}>
         <div className={cx(styles.Toolbar, { [styles.ToolbarHidden]: this.props.hidden })}>
           <a style={{ marginRight: 'auto', marginLeft: 10 }} href="https://graphqleditor.com">
             <img style={{ height: 30 }} src={require('../../logo.png')} />
@@ -150,24 +143,37 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
             onClick={() => this.props.onHide(!this.props.hidden)}
           />
         </div>
-        {/* <div className={styles.Tabs}>
-          {['schema', 'frontend'].map((k) => (
-            <div className={styles.Tab} key={k}>
-              {k}
-            </div>
-          ))}
-        </div> */}
+        <Tabs
+          tabs={Object.keys(TABS)}
+          active={this.state.currentTab}
+          onTabClick={(currentTab) => {
+            this.setState({ currentTab });
+            this.props.onTabChange(currentTab);
+          }}
+        />
         <div
           className={cx(styles.CodeContainer, { [styles.CodeContainerHidden]: this.props.hidden })}
         >
           <SyntaxHighlighter
             PreTag={({ children }) => <div className={styles.Pre}>{children}</div>}
-            language="graphql"
+            language={this.props.language}
             style={this.newStyle}
             showLineNumbers
           >
             {this.props.schema}
           </SyntaxHighlighter>
+          <div className={styles.ClipboardButton}>
+            <Button
+              icon={ArrowUp2}
+              onClick={() => {
+                const { clipboard } = window.navigator as any;
+                clipboard.writeText(this.props.schema);
+              }}
+              className={styles.SidebarControl}
+            >
+              Copy
+            </Button>
+          </div>
         </div>
       </div>
     );

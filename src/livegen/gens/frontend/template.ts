@@ -28,24 +28,26 @@ export const baseTypeContentTemplate = (node: GraphQLNodeType, inputs: Transform
 export const baseTypeTemplate = (name: keyof typeof nodeTypes) => ({
   node,
   inputs
-}: TemplateProps) => `${name} ${node.name}${implementsInterface(inputs)}{
+}: TemplateProps) => `${name} ${node.name}${implementsInterface(inputs)} = {
+${baseTypeContentTemplate(node, inputs)}
+}`;
+export const baseInterfaceTemplate = (name: keyof typeof nodeTypes) => ({
+  node,
+  inputs
+}: TemplateProps) => `${name} ${node.name}${implementsInterface(inputs)}  {
 ${baseTypeContentTemplate(node, inputs)}
 }`;
 export const baseInputTemplate = (name: keyof typeof nodeTypes) => ({
   node,
   inputs
-}: TemplateProps) => `${name} ${node.name}{
+}: TemplateProps) => `${name} ${node.name} = {
 ${baseTypeContentTemplate(node, inputs)}
 }`;
 export const operationTemplate = ({ node, inputs, outputs }: TemplateProps) =>
   outputs && outputs.length > 0
-    ? `\t${node.name}${
-        inputs.length > 0
-          ? `(\n\t\t${inputs
-              .map((i) => `${resolveType(i, nodeTypes.type, 'input')}`)
-              .join(',\n\t\t')}\n\t)`
-          : ''
-      }:${
+    ? `\t${node.name}${`:(props: {\n\t\t${inputs
+        .map((i) => `${resolveType(i, nodeTypes.type, 'input')}`)
+        .join(',\n\t\t')}\n\t})`} => ${
         outputs.length === 1
           ? resolveType(outputs[0], nodeTypes.Query, 'output')
           : `[${outputs.map((o) => resolveType(o, nodeTypes.Query, 'output')).join(', ')}]`
@@ -54,13 +56,13 @@ export const operationTemplate = ({ node, inputs, outputs }: TemplateProps) =>
 
 export const templates = {
   [nodeTypes.type]: baseTypeTemplate('type'),
-  [nodeTypes.interface]: baseInputTemplate('interface'),
-  [nodeTypes.input]: baseInputTemplate('input'),
+  [nodeTypes.interface]: baseInterfaceTemplate('interface'),
+  [nodeTypes.input]: baseTypeTemplate('type'),
   [nodeTypes.union]: ({ node, inputs }: TemplateProps) =>
-    `union ${node.name} = ${inputs.map((i) => i.kind).join(' | ')}`,
-  [nodeTypes.scalar]: ({ node }: TemplateProps) => `scalar ${node.name}`,
-  [nodeTypes.enum]: ({ node, inputs }: TemplateProps) => `enum ${node.name}{
-    \t${inputs.map((i) => resolveType(i, 'enum', 'input')).join('\n\t')}
+    `type ${node.name} = ${inputs.map((i) => i.kind).join(' | ')}`,
+  [nodeTypes.scalar]: ({ node }: TemplateProps) => `type ${node.name} = any;`,
+  [nodeTypes.enum]: ({ node, inputs }: TemplateProps) => `enum ${node.name} {
+    \t${inputs.map((i) => resolveType(i, 'enum', 'input')).join(',\n\t')}
     }`,
   [nodeTypes.Query]: operationTemplate,
   [nodeTypes.Mutation]: operationTemplate,
@@ -68,30 +70,16 @@ export const templates = {
 };
 export const rootQueryTemplate = (queries: string) =>
   queries &&
-  `type Query{
+  `type Query = {
 ${queries}
 }`;
 export const rootMutationTemplate = (mutations: string) =>
   mutations &&
-  `type Mutation{
+  `type Mutation = {
 ${mutations}
 }`;
 export const rootSubscriptionTemplate = (subscriptions: string) =>
   subscriptions &&
-  `type Subscription{
+  `type Subscription = {
 ${subscriptions}
 }`;
-//TODO: Implement front queries
-export const frontQueries = () => `
-  {
-    allFilms(first: 5) {
-      totalCount
-      pageInfo {
-        endCursor
-      }
-      films {
-        title
-      }
-    }
-  }
-`;

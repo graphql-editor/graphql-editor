@@ -1,5 +1,17 @@
 import { TransformedInput, Requester, AllTypes } from '..';
 import { argumentTypes, nodeTypes, allTypes } from '../../../nodeTypes';
+
+const typeScriptMap: Partial<{ [x in allTypes]: string }> = {
+  Int: 'number',
+  Float: 'number',
+  Boolean: 'boolean',
+  ID: 'string',
+  String: 'string'
+};
+
+const changeTypeScriptType = (type: allTypes): string =>
+  Object.keys(typeScriptMap).includes(type) ? typeScriptMap[type] : type;
+
 export const resolveType = (i: TransformedInput, requester: allTypes, io: 'input' | 'output') => {
   const { type, name, array, required, kind, args } = i;
   const className = kind || name;
@@ -8,10 +20,13 @@ export const resolveType = (i: TransformedInput, requester: allTypes, io: 'input
   const hasArgs = (name) =>
     args
       ? args.length > 0
-        ? `${name}(${args.map((a) => resolveType(a, nodeTypes.type, 'input')).join(',\n\t\t')})`
+        ? `(props:{${args
+            .map((a) => resolveType(a, nodeTypes.type, 'input'))
+            .join(',\n\t\t')}}) => ${name}`
         : name
       : name;
-  const check = (word) => hasArgs(isArray(word));
+  const check = (word) => hasArgs(isArray(changeTypeScriptType(word)));
+  const queryOutputCheck = (word) => isArray(changeTypeScriptType(word));
 
   const definitionTypes = [
     nodeTypes.type,
@@ -47,7 +62,7 @@ export const resolveType = (i: TransformedInput, requester: allTypes, io: 'input
       return a;
     }, {}),
     ...definitionTypes.reduce((a, b) => {
-      a[b] = `${check(className)}`;
+      a[b] = `${queryOutputCheck(className)}`;
       return a;
     }, {})
   };
