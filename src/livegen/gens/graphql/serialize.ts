@@ -7,7 +7,6 @@ import {
   rootSubscriptionTemplate
 } from './template';
 import { nodeTypes } from '../../../nodeTypes';
-import { arrayToDict, generateFakerResolverOperation, generateFakerResolverType } from '../faker';
 import { NodeType, LinkType } from '@slothking-online/diagram';
 import { regenerateNodes } from '../../serialize';
 export const serializeSchema = (
@@ -37,25 +36,6 @@ export const serializeSchema = (
   const subscriptionsCode = rootSubscriptionTemplate(
     generator(nodeTypes.Subscription, templates.Subscription, '\n')
   );
-  const fakeResolvers = [nodeTypes.type, nodeTypes.interface, nodeTypes.input].reduce((a, b) => {
-    a = {
-      ...a,
-      ...arrayToDict(nodeInputs.filter((n) => n.node.type === b).map(generateFakerResolverType))
-    };
-    return a;
-  }, {});
-  const fakeOperationResolvers = [
-    nodeTypes.Query,
-    nodeTypes.Mutation,
-    nodeTypes.Subscription
-  ].reduce((a, b) => {
-    a[b] = arrayToDict(
-      nodeInputs.filter((n) => n.node.type === b).map(generateFakerResolverOperation)
-    );
-    return a;
-  }, {});
-  const fakeSchema = { ...fakeOperationResolvers, ...fakeResolvers };
-  console.log(fakeSchema);
   let mainCode = 'schema{';
   if (queriesCode) {
     mainCode += '\n\tquery: Query';

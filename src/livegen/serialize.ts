@@ -6,6 +6,7 @@ import { crudMacroTemplate } from './gens/graphql/macros/crud';
 import { LinkType } from '@slothking-online/diagram';
 import { serializeSchema } from './gens/graphql/serialize';
 import { serializeFrontend } from './gens/frontend/serialize';
+import { serializeFaker } from './gens/faker/serialize';
 export const regenerateNodes = (nodes: GraphQLNodeType[], links: LinkType[]) => {
   let nodeInputs: TemplateProps[] = nodes
     .filter((n) => n.subType === SubTypes.definition)
@@ -41,5 +42,8 @@ export const serialize = {
   },
   typescript: {
     fn: serializeFrontend
+  },
+  json: {
+    fn: serializeFaker
   }
 };

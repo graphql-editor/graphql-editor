@@ -47,7 +47,7 @@ export const getFakerMethods = () => {
 };
 
 export const fakerMap = {
-  [argumentTypes.String]: 'lorem.word',
+  [argumentTypes.String]: 'String',
   [argumentTypes.Boolean]: 'random.boolean',
   [argumentTypes.Int]: 'random.number',
   [argumentTypes.ID]: 'random.alphaNumeric',
@@ -64,6 +64,8 @@ export const arrayToDict = (a: any[]) =>
 export type FakerResolverReturn = {
   type?: string;
   ref?: string;
+  enum?: string[];
+  options?: FakerResolverReturn[];
   inputs?: {
     [x: string]: FakerResolverReturn;
   };
@@ -95,13 +97,20 @@ export const generateFakerResolverBase = (template: TemplateProps, io: 'inputs' 
         };
   return arrayToDict(template[io].map(mapClone));
 };
-
 export const generateFakerResolverType = (template: TemplateProps) => {
   return {
     [template.node.name]: generateFakerResolverBase(template, 'inputs')
   };
 };
 
+export const generateFakerResolverEnum = (template: TemplateProps) => {
+  return {
+    [template.node.name]: {
+      type: 'enum',
+      enum: template.inputs.map((i) => i.name)
+    }
+  };
+};
 export const generateFakerResolverOperation = (template: TemplateProps) => {
   const outputs = generateFakerResolverBase(template, 'outputs');
   return {

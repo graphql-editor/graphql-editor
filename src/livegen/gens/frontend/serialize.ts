@@ -13,7 +13,7 @@ import { regenerateNodes } from '../../serialize';
 export const serializeFrontend = (
   node: NodeType[],
   links: LinkType[],
-  tabs: string[]
+  tabs:string[]
 ): {
   code: string;
   nodes: GraphQLNodeType[];
