@@ -12,7 +12,8 @@ export const notDefinition = (inputs: TransformedInput[]): TransformedInput[] =>
   inputs.filter((i) => i.subType !== SubTypes.definition);
 export const notInterface = (inputs: TransformedInput[]): TransformedInput[] =>
   inputs.filter((i) => i.type !== nodeTypes.implements);
-
+export const renderInputs = (inputs: TransformedInput[]) => (content: string) =>
+  inputs.length > 0 ? `{\n${content}\n}` : '';
 const implementsInterface = (inputs: TransformedInput[]) => {
   const interfaces = inputs.filter((i) => i.type === nodeTypes.implements).map((i) => i.kind);
   if (interfaces.length) {
@@ -28,15 +29,15 @@ export const baseTypeContentTemplate = (node: GraphQLNodeType, inputs: Transform
 export const baseTypeTemplate = (name: keyof typeof nodeTypes) => ({
   node,
   inputs
-}: TemplateProps) => `${name} ${node.name}${implementsInterface(inputs)}{
-${baseTypeContentTemplate(node, inputs)}
-}`;
+}: TemplateProps) =>
+  `${name} ${node.name}${implementsInterface(inputs)}${renderInputs(inputs)(
+    baseTypeContentTemplate(node, inputs)
+  )}`;
 export const baseInputTemplate = (name: keyof typeof nodeTypes) => ({
   node,
   inputs
-}: TemplateProps) => `${name} ${node.name}{
-${baseTypeContentTemplate(node, inputs)}
-}`;
+}: TemplateProps) =>
+  `${name} ${node.name}${renderInputs(inputs)(baseTypeContentTemplate(node, inputs))}`;
 export const operationTemplate = ({ node, inputs, outputs }: TemplateProps) =>
   outputs && outputs.length > 0
     ? `\t${node.name}${
@@ -57,11 +58,12 @@ export const templates = {
   [nodeTypes.interface]: baseInputTemplate('interface'),
   [nodeTypes.input]: baseInputTemplate('input'),
   [nodeTypes.union]: ({ node, inputs }: TemplateProps) =>
-    `union ${node.name} = ${inputs.map((i) => i.kind).join(' | ')}`,
+    `union ${node.name} ${inputs.length > 0 ? `= ${inputs.map((i) => i.kind).join(' | ')}` : ''}`,
   [nodeTypes.scalar]: ({ node }: TemplateProps) => `scalar ${node.name}`,
-  [nodeTypes.enum]: ({ node, inputs }: TemplateProps) => `enum ${node.name}{
-    \t${inputs.map((i) => resolveType(i, 'enum', 'input')).join('\n\t')}
-    }`,
+  [nodeTypes.enum]: ({ node, inputs }: TemplateProps) =>
+    `enum ${node.name}${renderInputs(inputs)(
+      `\t${inputs.map((i) => resolveType(i, 'enum', 'input')).join('\n\t')}`
+    )}`,
   [nodeTypes.Query]: operationTemplate,
   [nodeTypes.Mutation]: operationTemplate,
   [nodeTypes.Subscription]: operationTemplate

@@ -129,7 +129,7 @@ class Home extends React.Component<{}, ModelState> {
         <Graph
           categories={allCategories}
           loaded={this.state.loaded}
-          serialize={(nodes, links, tabs) => {
+          dataSerialize={(nodes, links, tabs) => {
             this.setState(serialize[this.state.serializeFunction].fn(nodes, links, tabs));
           }}
         />
@@ -137,7 +137,6 @@ class Home extends React.Component<{}, ModelState> {
           schema={this.state.code}
           onTabChange={(e) => {
             const { nodes, links, tabs } = this.state;
-            console.log(e);
             this.setState({
               serializeFunction: e
             });
