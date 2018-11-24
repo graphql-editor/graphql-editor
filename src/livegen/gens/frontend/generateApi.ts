@@ -1,9 +1,39 @@
-const generateOperation = (t: 'query' | 'mutation' | 'subscription', schemaType, name) => `
-${name}: ((props) => (o) =>
-    fullConstruct(options)(${t}, '${name}')(props)(o).then(
-    (response) => response as ReturnType<${schemaType}['${name}']>
-    )) as FunctionToGraphQL<${schemaType}['${name}']>
-`;
+const generateOperation = (
+  t: 'query' | 'mutation' | 'subscription',
+  schemaType,
+  name
+) => `\t${name}: ((props) => (o) =>
+\t\tfullConstruct(options)('${t}', '${name}')(props)(o).then(
+\t\t\t(response) => response as ReturnType<${schemaType}['${name}']>
+\t\t)) as FunctionToGraphQL<${schemaType}['${name}']>`;
+
+const generateOperations = ({
+  queries,
+  mutations,
+  subscriptions
+}: {
+  queries: string[];
+  mutations?: string[];
+  subscriptions?: string[];
+}):string[] => {
+  let allOps = [];
+  allOps.push(`Query: {${queries.map((q) => generateOperation('query', 'Query', q)).join(',\n')}}`);
+  if (mutations) {
+    allOps.push(
+      `Mutation: {${mutations
+        .map((q) => generateOperation('mutation', 'Mutation', q))
+        .join(',\n')}}`
+    );
+  }
+  if (subscriptions) {
+    allOps.push(
+      `Subscription: {${subscriptions
+        .map((q) => generateOperation('subscription', 'Subscription', q))
+        .join(',\n')}}`
+    );
+  }
+  return allOps
+};
 export const body = ({
   queries,
   mutations,
@@ -81,8 +111,6 @@ const fullConstruct = (options: fetchOptions) => (
 
 
 export const Api = (...options: fetchOptions) => ({
-    ${queries && queries.map(q => generateOperation("query","Query",q))}
-    ${mutations && mutations.map(q => generateOperation("mutation","Mutation",q))}
-    ${subscriptions && subscriptions.map(q => generateOperation("subscription","Subscription",q))}
+    ${generateOperations({queries,mutations,subscriptions}).join(",\n")}
 });
 `;
