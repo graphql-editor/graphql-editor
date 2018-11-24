@@ -47,11 +47,11 @@ export const operationTemplate = ({ node, inputs, outputs }: TemplateProps) =>
   outputs && outputs.length > 0
     ? `\t${node.name}${`:(props: {\n\t\t${inputs
         .map((i) => `${resolveType(i, nodeTypes.type, 'input')}`)
-        .join(',\n\t\t')}\n\t})`} => ${
+        .join(',\n\t\t')}\n\t})`} => Promise<${
         outputs.length === 1
           ? resolveType(outputs[0], nodeTypes.Query, 'output')
           : `[${outputs.map((o) => resolveType(o, nodeTypes.Query, 'output')).join(', ')}]`
-      }`
+      }>`
     : '';
 
 export const templates = {
