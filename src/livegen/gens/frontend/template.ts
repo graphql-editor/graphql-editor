@@ -28,30 +28,30 @@ export const baseTypeContentTemplate = (node: GraphQLNodeType, inputs: Transform
 export const baseTypeTemplate = (name: keyof typeof nodeTypes) => ({
   node,
   inputs
-}: TemplateProps) => `${name} ${node.name}${implementsInterface(inputs)} = {
+}: TemplateProps) => `export ${name} ${node.name}${implementsInterface(inputs)} = {
 ${baseTypeContentTemplate(node, inputs)}
 }`;
 export const baseInterfaceTemplate = (name: keyof typeof nodeTypes) => ({
   node,
   inputs
-}: TemplateProps) => `${name} ${node.name}${implementsInterface(inputs)}  {
+}: TemplateProps) => `export ${name} ${node.name}${implementsInterface(inputs)}  {
 ${baseTypeContentTemplate(node, inputs)}
 }`;
 export const baseInputTemplate = (name: keyof typeof nodeTypes) => ({
   node,
   inputs
-}: TemplateProps) => `${name} ${node.name} = {
+}: TemplateProps) => `export ${name} ${node.name} = {
 ${baseTypeContentTemplate(node, inputs)}
 }`;
 export const operationTemplate = ({ node, inputs, outputs }: TemplateProps) =>
   outputs && outputs.length > 0
     ? `\t${node.name}${`:(props: {\n\t\t${inputs
         .map((i) => `${resolveType(i, nodeTypes.type, 'input')}`)
-        .join(',\n\t\t')}\n\t})`} => Promise<${
+        .join(',\n\t\t')}\n\t})`} => ${
         outputs.length === 1
           ? resolveType(outputs[0], nodeTypes.Query, 'output')
           : `[${outputs.map((o) => resolveType(o, nodeTypes.Query, 'output')).join(', ')}]`
-      }>`
+      }`
     : '';
 
 export const templates = {
@@ -59,9 +59,9 @@ export const templates = {
   [nodeTypes.interface]: baseInterfaceTemplate('interface'),
   [nodeTypes.input]: baseTypeTemplate('type'),
   [nodeTypes.union]: ({ node, inputs }: TemplateProps) =>
-    `type ${node.name} = ${inputs.map((i) => i.kind).join(' | ')}`,
-  [nodeTypes.scalar]: ({ node }: TemplateProps) => `type ${node.name} = any;`,
-  [nodeTypes.enum]: ({ node, inputs }: TemplateProps) => `enum ${node.name} {
+    `export type ${node.name} = ${inputs.map((i) => i.kind).join(' | ')}`,
+  [nodeTypes.scalar]: ({ node }: TemplateProps) => `export type ${node.name} = any;`,
+  [nodeTypes.enum]: ({ node, inputs }: TemplateProps) => `export enum ${node.name} {
     \t${inputs.map((i) => resolveType(i, 'enum', 'input')).join(',\n\t')}
     }`,
   [nodeTypes.Query]: operationTemplate,
@@ -70,16 +70,16 @@ export const templates = {
 };
 export const rootQueryTemplate = (queries: string) =>
   queries &&
-  `type Query = {
+  `export type Query = {
 ${queries}
 }`;
 export const rootMutationTemplate = (mutations: string) =>
   mutations &&
-  `type Mutation = {
+  `export type Mutation = {
 ${mutations}
 }`;
 export const rootSubscriptionTemplate = (subscriptions: string) =>
   subscriptions &&
-  `type Subscription = {
+  `export type Subscription = {
 ${subscriptions}
 }`;
