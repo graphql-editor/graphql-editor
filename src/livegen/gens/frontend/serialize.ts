@@ -7,9 +7,9 @@ import {
   rootSubscriptionTemplate
 } from './template';
 import { nodeTypes } from '../../../nodeTypes';
-import { arrayToDict, generateFakerResolverOperation, generateFakerResolverType } from '../faker';
 import { NodeType, LinkType } from '@slothking-online/diagram';
 import { regenerateNodes } from '../../serialize';
+import { body } from './generateApi';
 export const serializeFrontend = (
   node: NodeType[],
   links: LinkType[],
@@ -37,25 +37,6 @@ export const serializeFrontend = (
   const subscriptionsCode = rootSubscriptionTemplate(
     generator(nodeTypes.Subscription, templates.Subscription, '\n')
   );
-  const fakeResolvers = [nodeTypes.type, nodeTypes.interface, nodeTypes.input].reduce((a, b) => {
-    a = {
-      ...a,
-      ...arrayToDict(nodeInputs.filter((n) => n.node.type === b).map(generateFakerResolverType))
-    };
-    return a;
-  }, {});
-  const fakeOperationResolvers = [
-    nodeTypes.Query,
-    nodeTypes.Mutation,
-    nodeTypes.Subscription
-  ].reduce((a, b) => {
-    a[b] = arrayToDict(
-      nodeInputs.filter((n) => n.node.type === b).map(generateFakerResolverOperation)
-    );
-    return a;
-  }, {});
-  const fakeSchema = { ...fakeOperationResolvers, ...fakeResolvers };
-  console.log(fakeSchema);
   const code = [
     nodeTypes.scalar,
     nodeTypes.enum,
@@ -71,6 +52,11 @@ export const serializeFrontend = (
     .concat(
       [queriesCode, mutationsCode, subscriptionsCode].filter((c) => c.length > 0).join('\n\n')
     )
+    .concat(body({
+      queries:nodeInputs.filter(n => n.node.type === nodeTypes.Query).map(n => n.node.name),
+      mutations:nodeInputs.filter(n => n.node.type === nodeTypes.Mutation).map(n => n.node.name),
+      subscriptions:nodeInputs.filter(n => n.node.type === nodeTypes.Subscription).map(n => n.node.name)
+    }))
   return {
     code,
     nodes,
