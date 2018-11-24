@@ -1,9 +1,7 @@
-const generateOperation = (t: 'query' | 'mutation' | 'subscription', schemaType, name) => `
-${name}: ((props) => (o) =>
-    fullConstruct(options)(${t}, '${name}')(props)(o).then(
-    (response) => response as ReturnType<${schemaType}['${name}']>
-    )) as FunctionToGraphQL<${schemaType}['${name}']>
-`;
+const generateOperation = (t: 'query' | 'mutation' | 'subscription', schemaType, name) => `\t${name}: ((props) => (o) =>
+\t\tfullConstruct(options)(${t}, '${name}')(props)(o).then(
+\t\t\t(response) => response as ReturnType<${schemaType}['${name}']>
+\t\t)) as FunctionToGraphQL<${schemaType}['${name}']>`;
 export const body = ({
   queries,
   mutations,
