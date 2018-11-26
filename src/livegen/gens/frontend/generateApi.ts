@@ -4,7 +4,7 @@ const generateOperation = (
   name
 ) => `\t${name}: ((props) => (o) =>
 \t\tfullConstruct(options)('${t}', '${name}')(props)(o).then(
-\t\t\t(response) => response as ReturnType<${schemaType}['${name}']>
+\t\t\t(response) => response as GraphQLDictReturnType<${schemaType}['${name}']>
 \t\t)) as FunctionToGraphQL<${schemaType}['${name}']>`;
 
 const generateOperations = ({
@@ -54,15 +54,24 @@ type Dict = {
 };
 
 type ArrayToType<T> = T extends (infer R)[] ? R : T;
+type DictOrFunction<T> = {
+  [P in keyof T]?: T[P] extends {
+    [x: string]: infer R;
+  }
+    ? DictOrString<T[P]>
+    : T[P] extends Func<any, any> ? DictOrFunction<ReturnType<T[P]>> : T[P]
+};
+type GraphQLDictReturnType<T> = T extends Func<any, any> ? DictOrFunction<ReturnType<T>> : T;
 type DictOrString<T> = {
   [P in keyof T]?: T[P] extends {
     [x: string]: infer R;
   }
     ? DictOrString<T[P]>
-    : true
+    : T[P] extends Func<any, any> ? [ArgsType<T[P]>[0], DictOrString<ReturnType<T[P]>>] : true
 };
 type FlattenDict<T> = { [P in keyof T]: ArrayToType<T[P]> };
 type GraphQLReturner<T> = DictOrString<FlattenDict<T>>;
+
 const joinArgs = (q: Dict) =>
   Array.isArray(q)
     ? \`[\${q.map(joinArgs).join(',')}]\`
@@ -80,35 +89,57 @@ const resolveArgs = (q: Dict): string =>
         .join(',')})\`
     : \`\`;
 
-const constructReturner = (a: GraphQLReturner<any>) =>
-  JSON.stringify(a)
-    .replace(/:true/g, '')
-    .replace(/:/g, '')
-    .replace(/"/g, '')
-    .slice(1, -1);
+const isArrayFunction = (a) => {
+  const [values, r] = a;
+  const argumentString = \`(\${Object.keys(values)
+    .map(
+      (v) => \`\${v}:\${typeof values[v] === 'string' ? \`"\${values[v]}"\` : JSON.stringify(values[v])}\`
+    )
+    .join(',')})\${traverseToSeekArrays(r)}\`;
+  return argumentString;
+};
+const resolveKV = (k: string, v: boolean | string | { [x: string]: boolean | string }) =>
+  typeof v === 'boolean' ? k : typeof v === 'object' ? \`\${k}{\${objectToTree(v)}}\` : \`\${k}\${v}\`;
+const objectToTree = (o: { [x: string]: boolean | string }) =>
+  \`{\${Object.keys(o).map((k) => \`\${resolveKV(k, o[k])}\`)}}\`;
+const traverseToSeekArrays = (a) => {
+  let b = {};
+  Object.keys(a).map((k) => {
+    if (Array.isArray(a[k])) {
+      b[k] = isArrayFunction(a[k]);
+    } else {
+      if (typeof a[k] === 'object') {
+        b[k] = traverseToSeekArrays(a[k]);
+      } else {
+        b[k] = a[k];
+      }
+    }
+	});
+  return objectToTree(b)
+};
+
+const buildQuery = a => traverseToSeekArrays(a).replace(/\\"([^{^,^\\n^\\"]*)\\":([^{^,^\\n^\\"]*)/g,"$1:$2")
+
 const construct = (t: 'query' | 'mutation' | 'subscription', name: string, args: Dict = {}) => (
   returnedQuery?: string
 ) => \`
       \${t === 'query' ? '' : t}{
-        \${name}\${resolveArgs(args)}{
-          \${returnedQuery}
-        }
+        \${name}\${resolveArgs(args)}\${returnedQuery}
       }
 \`;
 
 type FunctionToGraphQL<T extends Func<any, any>> = (
   props?: ArgsType<T>[0]
-) => (o: GraphQLReturner<ReturnType<T>>) => Promise<ReturnType<T>>;
+) => (o: GraphQLReturner<ReturnType<T>>) => Promise<GraphQLDictReturnType<T>>;
 type fetchOptions = ArgsType<typeof fetch>;
 
 const fullConstruct = (options: fetchOptions) => (
   t: 'query' | 'mutation' | 'subscription',
   name: string
 ) => (props) => (o) =>
-  apiFetch(options, construct(t, name, props)(constructReturner(o))).then((response) =>
+  apiFetch(options, construct(t, name, props)(buildQuery(o))).then((response) =>
     response.json()
   );
-
 
 export const Api = (...options: fetchOptions) => ({
     ${generateOperations({queries,mutations,subscriptions}).join(",\n")}
