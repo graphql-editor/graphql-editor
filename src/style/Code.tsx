@@ -4,7 +4,7 @@ import { sizeSidebar } from './vars';
 
 export const Sidebar = style({
   position: 'fixed',
-  minWidth: sizeSidebar,
+  width: sizeSidebar,
   zIndex: 2000,
   height: '100vh',
   transition: 'transform 0.4s, background-color 0.4s',
@@ -22,7 +22,8 @@ export const SidebarHidden = style({
 });
 
 export const Pre = style({
-  padding: 20
+  padding: 20,
+  width:'100vw'
 });
 
 export const Toolbar = style({
