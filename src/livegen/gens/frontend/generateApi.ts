@@ -118,13 +118,19 @@ const resolveArgs = (q: Dict): string =>
 
 const isArrayFunction = (a) => {
   const [values, r] = a;
-  const argumentString = \`(\${Object.keys(values)
-    .map(
-      (v) => \`\${v}:\${typeof values[v] === 'string' ? \`"\${values[v]}"\` : JSON.stringify(values[v])}\`
-    )
-    .join(',')})\${traverseToSeekArrays(r)}\`;
+  const keyValues = Object.keys(values);
+  const argumentString =
+    keyValues.length > 0
+      ? \`(\${keyValues
+          .map(
+            (v) =>
+              \`\${v}:\${typeof values[v] === 'string' ? \`"\${values[v]}"\` : JSON.stringify(values[v])}\`
+          )
+          .join(',')})\${traverseToSeekArrays(r)}\`
+      : traverseToSeekArrays(r);
   return argumentString;
 };
+
 const resolveKV = (k: string, v: boolean | string | { [x: string]: boolean | string }) =>
   typeof v === 'boolean' ? k : typeof v === 'object' ? \`\${k}{\${objectToTree(v)}}\` : \`\${k}\${v}\`;
 const objectToTree = (o: { [x: string]: boolean | string }) =>
