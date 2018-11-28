@@ -1,6 +1,6 @@
 // faker.com
 import { Container } from 'unstated';
-import { ProjectConnection, User, Project, Api, Namespace,ResolveReturned } from './types';
+import { ProjectConnection, User, Project, Api, Namespace, ResolveReturned } from './types';
 import { WebAuth } from 'auth0-js';
 
 const auth = new WebAuth({
@@ -34,10 +34,10 @@ export type CloudState = {
 export const api = Api(fakerApi, {});
 export const userApi = (token: string) =>
   Api(fakerApi, {
-    method:"GET",
-    mode:"cors",
-    headers:new Headers({
-      "DDD":"DDD"
+    method: 'GET',
+    mode: 'cors',
+    headers: new Headers({
+      Authorization: `Bearer ${token}`
     })
   });
 
@@ -45,7 +45,6 @@ export class CloudContainer extends Container<CloudState> {
   state: CloudState = {};
   setToken() {
     auth.parseHash((error, result) => {
-      console.log(result);
       if (
         result &&
         result.idToken &&
@@ -60,16 +59,26 @@ export class CloudContainer extends Container<CloudState> {
             id: result.idTokenPayload.sub
           }
         });
-        userApi(result.idToken).Query.getUser({ username: result.idTokenPayload.sub })({
-          id: true,
-          namespace: {
-            slug: true,
-            public: true
-          }
-        }).then(({ id, username, namespace }) => {
-          if (id) {
-          }
-        });
+        userApi(result.idToken)
+          .Query.getUser({ username: result.idTokenPayload.sub })({
+            id: true,
+            namespace: {
+              slug: true,
+              public: true
+            }
+          })
+          .then((response) => {
+            console.log(response)
+            const {namespace,id} = response
+            this.setState({
+              namespace,
+              user: {
+                id
+              }
+            });
+          }).catch((errr) =>{
+            console.log(errr)
+          })
       }
     });
   }
