@@ -159,6 +159,7 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
             language={this.props.language}
             style={this.newStyle}
             showLineNumbers
+            wrapLines
           >
             {this.props.schema}
           </SyntaxHighlighter>

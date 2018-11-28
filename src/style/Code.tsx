@@ -4,8 +4,13 @@ import { sizeSidebar } from './vars';
 
 export const Sidebar = style({
   position: 'fixed',
+<<<<<<< HEAD
   minWidth: sizeSidebar,
   zIndex: 2,
+=======
+  width: sizeSidebar,
+  zIndex: 2000,
+>>>>>>> 86ffda69f8026bce1ba164ae3be921a86e122c04
   height: '100vh',
   transition: 'transform 0.4s, background-color 0.4s',
   display: 'flex',
@@ -22,7 +27,8 @@ export const SidebarHidden = style({
 });
 
 export const Pre = style({
-  padding: 20
+  padding: 20,
+  width:'100vw'
 });
 
 export const Toolbar = style({
