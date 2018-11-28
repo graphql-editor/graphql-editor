@@ -15,7 +15,7 @@ const generateOperations = ({
   queries: string[];
   mutations?: string[];
   subscriptions?: string[];
-}):string[] => {
+}): string[] => {
   let allOps = [];
   allOps.push(`Query: {${queries.map((q) => generateOperation('query', 'Query', q)).join(',\n')}}`);
   if (mutations) {
@@ -32,7 +32,7 @@ const generateOperations = ({
         .join(',\n')}}`
     );
   }
-  return allOps
+  return allOps;
 };
 export const body = ({
   queries,
@@ -46,31 +46,68 @@ export const body = ({
 type Func<P extends any[], R> = (...args: P) => R;
 type ArgsType<F extends Func<any, any>> = F extends Func<infer P, any> ? P : never;
 
-const apiFetch = (options: fetchOptions, query: string) =>
-  fetch(\`\${options[0]}?query=\${encodeURIComponent(query)}\`, options[1] || {});
+type GraphQLResponse = {
+  data?: {
+    [x: string]: any;
+  };
+  errors?: {
+    message: string;
+  }[];
+};
 
+class GraphQLError extends Error {
+  constructor(public response: GraphQLResponse) {
+    super('');
+    console.error(response);
+  }
+  toString() {
+    return 'GraphQL Response Error';
+  }
+}
 type Dict = {
   [x: string]: Dict | any | Dict[] | any[];
 };
 
-type ArrayToType<T> = T extends (infer R)[] ? R : T;
-type DictOrFunction<T> = {
-  [P in keyof T]?: T[P] extends {
-    [x: string]: infer R;
-  }
-    ? DictOrString<T[P]>
-    : T[P] extends Func<any, any> ? DictOrFunction<ReturnType<T[P]>> : T[P]
+type ResolveReturned<T> = {
+  [P in keyof T]?: T[P] extends (infer R)[]
+    ? ResolveReturned<R>[]
+    : T[P] extends {
+        [x: string]: infer R;
+      }
+      ? ResolveReturned<T[P]>
+      : T[P] extends Func<any, any> ? ResolveReturned<ReturnType<T[P]>> : T[P]
 };
-type GraphQLDictReturnType<T> = T extends Func<any, any> ? DictOrFunction<ReturnType<T>> : T;
-type DictOrString<T> = {
-  [P in keyof T]?: T[P] extends {
-    [x: string]: infer R;
-  }
-    ? DictOrString<T[P]>
-    : T[P] extends Func<any, any> ? [ArgsType<T[P]>[0], DictOrString<ReturnType<T[P]>>] : true
+
+export type State<T> = ResolveReturned<T> 
+
+type GraphQLDictReturnType<T> = T extends Func<any, any> ? ResolveReturned<ReturnType<T>> : T;
+
+type ResolveArgs<T> = {
+  [P in keyof T]?: T[P] extends (infer R)[]
+    ? ResolveArgs<R>
+    : T[P] extends {
+        [x: string]: infer R;
+      }
+      ? ResolveArgs<T[P]>
+      : T[P] extends Func<any, any> ? [ArgsType<T[P]>[0], ResolveArgs<ReturnType<T[P]>>] : true
 };
-type FlattenDict<T> = { [P in keyof T]: ArrayToType<T[P]> };
-type GraphQLReturner<T> = DictOrString<FlattenDict<T>>;
+type GraphQLReturner<T> = ResolveArgs<T>;
+
+type FunctionToGraphQL<T extends Func<any, any>> = (
+  props?: ArgsType<T>[0]
+) => (o: GraphQLReturner<ReturnType<T>>) => Promise<GraphQLDictReturnType<T>>;
+type fetchOptions = ArgsType<typeof fetch>;
+
+
+const apiFetch = (options: fetchOptions, query: string) =>
+  fetch(\`\${options[0]}?query=\${encodeURIComponent(query)}\`, options[1] || {})
+    .then((response) => response.json() as Promise<GraphQLResponse>)
+    .then((response) => {
+      if (response.errors) {
+        throw new GraphQLError(response);
+      }
+      return response.data;
+    });
 
 const joinArgs = (q: Dict) =>
   Array.isArray(q)
@@ -114,11 +151,12 @@ const traverseToSeekArrays = (a) => {
         b[k] = a[k];
       }
     }
-	});
-  return objectToTree(b)
+  });
+  return objectToTree(b);
 };
 
-const buildQuery = a => traverseToSeekArrays(a).replace(/\\"([^{^,^\\n^\\"]*)\\":([^{^,^\\n^\\"]*)/g,"$1:$2")
+const buildQuery = (a) =>
+  traverseToSeekArrays(a).replace(/\\"([^{^,^\\n^\\"]*)\\":([^{^,^\\n^\\"]*)/g, '$1:$2');
 
 const construct = (t: 'query' | 'mutation' | 'subscription', name: string, args: Dict = {}) => (
   returnedQuery?: string
@@ -128,20 +166,13 @@ const construct = (t: 'query' | 'mutation' | 'subscription', name: string, args:
       }
 \`;
 
-type FunctionToGraphQL<T extends Func<any, any>> = (
-  props?: ArgsType<T>[0]
-) => (o: GraphQLReturner<ReturnType<T>>) => Promise<GraphQLDictReturnType<T>>;
-type fetchOptions = ArgsType<typeof fetch>;
-
 const fullConstruct = (options: fetchOptions) => (
   t: 'query' | 'mutation' | 'subscription',
   name: string
 ) => (props) => (o) =>
-  apiFetch(options, construct(t, name, props)(buildQuery(o))).then((response) =>
-    response.json()
-  );
+  apiFetch(options, construct(t, name, props)(buildQuery(o))).then((response) => response.json());
 
 export const Api = (...options: fetchOptions) => ({
-    ${generateOperations({queries,mutations,subscriptions}).join(",\n")}
+    ${generateOperations({ queries, mutations, subscriptions }).join(',\n')}
 });
 `;
