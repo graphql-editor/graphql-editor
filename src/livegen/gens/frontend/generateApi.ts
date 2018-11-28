@@ -99,16 +99,6 @@ type FunctionToGraphQL<T extends Func<any, any>> = (
 type fetchOptions = ArgsType<typeof fetch>;
 
 
-const apiFetch = (options: fetchOptions, query: string) =>
-  fetch(\`\${options[0]}?query=\${encodeURIComponent(query)}\`, options[1] || {})
-    .then((response) => response.json() as Promise<GraphQLResponse>)
-    .then((response) => {
-      if (response.errors) {
-        throw new GraphQLError(response);
-      }
-      return response.data;
-    });
-
 const joinArgs = (q: Dict) =>
   Array.isArray(q)
     ? \`[\${q.map(joinArgs).join(',')}]\`
@@ -166,11 +156,20 @@ const construct = (t: 'query' | 'mutation' | 'subscription', name: string, args:
       }
 \`;
 
+const apiFetch = (options: fetchOptions, query: string, name: string) =>
+  fetch(\`\${options[0]}?query=\${encodeURIComponent(query)}\`, options[1] || {})
+    .then((response) => response.json() as Promise<GraphQLResponse>)
+    .then((response) => {
+      if (response.errors) {
+        throw new GraphQLError(response);
+      }
+      return response.data[name];
+    });
+
 const fullConstruct = (options: fetchOptions) => (
   t: 'query' | 'mutation' | 'subscription',
   name: string
-) => (props) => (o) =>
-  apiFetch(options, construct(t, name, props)(buildQuery(o))).then((response) => response.json());
+) => (props) => (o) => apiFetch(options, construct(t, name, props)(buildQuery(o)), name);
 
 export const Api = (...options: fetchOptions) => ({
     ${generateOperations({ queries, mutations, subscriptions }).join(',\n')}
