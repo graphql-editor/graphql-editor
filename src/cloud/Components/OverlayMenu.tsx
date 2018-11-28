@@ -54,9 +54,9 @@ export class OverlayMenu extends React.Component<{}, OverlayMenuState> {
                     <React.Fragment>
                       {!cloud.state.namespace && (
                         <OverlayAdd
-                          placeholder="Add your namespace( your base username )..."
+                          placeholder="Name your namespace!"
                           onSubmit={(e) => {
-                            cloud.userApi.Mutation.createUser({
+                            cloud.userApi().Mutation.createUser({
                               namespace: e
                             })({
                               namespace: {

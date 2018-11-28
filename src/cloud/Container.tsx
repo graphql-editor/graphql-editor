@@ -34,9 +34,11 @@ export type CloudState = {
 export const api = Api(fakerApi, {});
 export const userApi = (token: string) =>
   Api(fakerApi, {
-    headers: {
-      Authorization: token
-    }
+    method:"GET",
+    mode:"cors",
+    headers:new Headers({
+      "DDD":"DDD"
+    })
   });
 
 export class CloudContainer extends Container<CloudState> {
@@ -58,7 +60,7 @@ export class CloudContainer extends Container<CloudState> {
             id: result.idTokenPayload.sub
           }
         });
-        api.Query.getUser({ username: result.idTokenPayload.sub })({
+        userApi(result.idToken).Query.getUser({ username: result.idTokenPayload.sub })({
           id: true,
           namespace: {
             slug: true,
@@ -71,7 +73,7 @@ export class CloudContainer extends Container<CloudState> {
       }
     });
   }
-  userApi = userApi(this.state.token);
+  userApi = () => userApi(this.state.token);
   login = () => auth.authorize();
 }
 
