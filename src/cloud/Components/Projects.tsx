@@ -17,7 +17,7 @@ export class Projects extends React.Component {
                   api.Mutation.createProject();
                 }}
               />
-              {cloud.state.projects && cloud.state.projects.projects.map((p) => <Project {...p} />)}
+              {cloud.state.projects && cloud.state.projects.map((p) => <Project {...p} />)}
             </React.Fragment>
           )}
         </Subscribe>

@@ -1,6 +1,6 @@
 // faker.com
 import { Container } from 'unstated';
-import { ProjectConnection, User, Project, Api, Namespace, ResolveReturned } from './types';
+import { User, Project, Api, Namespace, State } from './types';
 import { WebAuth } from 'auth0-js';
 
 const auth = new WebAuth({
@@ -25,10 +25,10 @@ const fakerApi = `https://faker-api.graphqleditor.com/graphql`;
 
 export type CloudState = {
   token?: string;
-  projects?: ProjectConnection;
-  user?: User;
-  currentProject?: Project;
-  namespace?: ResolveReturned<Namespace>;
+  projects?: State<Project>[];
+  user?: State<User>;
+  currentProject?: State<Project>;
+  namespace?: State<Namespace>;
 };
 
 export const api = Api(fakerApi, {});
@@ -64,21 +64,35 @@ export class CloudContainer extends Container<CloudState> {
             id: true,
             namespace: {
               slug: true,
-              public: true
+              public: true,
+              projects: [
+                {},
+                {
+                  projects: {
+                    id: true,
+                    name: true,
+                    slug: true
+                  }
+                }
+              ]
             }
           })
-          .then((response) => {
-            console.log(response)
-            const {namespace,id} = response
+          .then(({ namespace, id }) => {
+            const {
+              projects: { projects },
+              ...restNamespace
+            } = namespace;
             this.setState({
-              namespace,
+              namespace: restNamespace,
+              projects,
               user: {
                 id
               }
             });
-          }).catch((errr) =>{
-            console.log(errr)
           })
+          .catch((errr) => {
+            console.log(errr);
+          });
       }
     });
   }

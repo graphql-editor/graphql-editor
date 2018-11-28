@@ -139,7 +139,7 @@ type Dict = {
   [x: string]: Dict | any | Dict[] | any[];
 };
 
-export type ResolveReturned<T> = {
+type ResolveReturned<T> = {
   [P in keyof T]?: T[P] extends (infer R)[]
     ? ResolveReturned<R>[]
     : T[P] extends {
@@ -148,6 +148,9 @@ export type ResolveReturned<T> = {
       ? ResolveReturned<T[P]>
       : T[P] extends Func<any, any> ? ResolveReturned<ReturnType<T[P]>> : T[P]
 };
+
+export type State<T> = ResolveReturned<T>;
+
 type GraphQLDictReturnType<T> = T extends Func<any, any> ? ResolveReturned<ReturnType<T>> : T;
 
 type ResolveArgs<T> = {
@@ -185,11 +188,16 @@ const resolveArgs = (q: Dict): string =>
 
 const isArrayFunction = (a) => {
   const [values, r] = a;
-  const argumentString = `(${Object.keys(values)
-    .map(
-      (v) => `${v}:${typeof values[v] === 'string' ? `"${values[v]}"` : JSON.stringify(values[v])}`
-    )
-    .join(',')})${traverseToSeekArrays(r)}`;
+  const keyValues = Object.keys(values);
+  const argumentString =
+    keyValues.length > 0
+      ? `(${keyValues
+          .map(
+            (v) =>
+              `${v}:${typeof values[v] === 'string' ? `"${values[v]}"` : JSON.stringify(values[v])}`
+          )
+          .join(',')})${traverseToSeekArrays(r)}`
+      : traverseToSeekArrays(r);
   return argumentString;
 };
 const resolveKV = (k: string, v: boolean | string | { [x: string]: boolean | string }) =>
@@ -218,10 +226,11 @@ const buildQuery = (a) =>
 const construct = (t: 'query' | 'mutation' | 'subscription', name: string, args: Dict = {}) => (
   returnedQuery?: string
 ) => `
-        ${t === 'query' ? '' : t}{
-          ${name}${resolveArgs(args)}${returnedQuery}
-        }
-  `;
+      ${t === 'query' ? '' : t}{
+        ${name}${resolveArgs(args)}${returnedQuery}
+      }
+`;
+
 const apiFetch = (options: fetchOptions, query: string, name: string) =>
   fetch(`${options[0]}?query=${encodeURIComponent(query)}`, options[1] || {})
     .then((response) => response.json() as Promise<GraphQLResponse>)
