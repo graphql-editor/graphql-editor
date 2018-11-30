@@ -91,7 +91,7 @@ type ResolveArgs<T> = {
       ? ResolveArgs<T[P]>
       : T[P] extends Func<any, any> ? [ArgsType<T[P]>[0], ResolveArgs<ReturnType<T[P]>>] : true
 };
-type GraphQLReturner<T> = ResolveArgs<T>;
+type GraphQLReturner<T> = T extends (infer R)[] ? ResolveArgs<R> : ResolveArgs<T>;
 
 type FunctionToGraphQL<T extends Func<any, any>> = (
   props?: ArgsType<T>[0]
