@@ -13,6 +13,7 @@ import cx from 'classnames';
 import { nodeTypes, SubTypes } from '../nodeTypes';
 import { CodeEditor } from './Code';
 import { serialize } from '../livegen/serialize';
+import { OverlayMenu } from '../cloud/Components/OverlayMenu';
 
 export type ModelState = {
   nodes: Array<NodeType>;
@@ -125,39 +126,42 @@ class Home extends React.Component<{}, ModelState> {
       allCategories = [mirrorNodes, ...allCategories];
     }
     return (
-      <div className={cx(styles.Full, { [styles.Pinned]: this.state.sidebarPinned })}>
-        <Graph
-          categories={allCategories}
-          loaded={this.state.loaded}
-          dataSerialize={(nodes, links, tabs) => {
-            this.setState(serialize[this.state.serializeFunction].fn(nodes, links, tabs));
-          }}
-        />
-        <CodeEditor
-          schema={this.state.code}
-          onTabChange={(e) => {
-            const { nodes, links, tabs } = this.state;
-            this.setState({
-              serializeFunction: e
-            });
-            this.setState(serialize[e].fn(nodes, links, tabs));
-          }}
-          onPinChange={(pinned) => this.setState({ sidebarPinned: pinned })}
-          onHide={(hidden) => this.setState({ sidebarHidden: hidden })}
-          onReset={this.resetCode}
-          hidden={this.state.sidebarHidden}
-          pinned={this.state.sidebarPinned}
-          language={this.state.serializeFunction}
-          loadNodes={(props) => {
-            this.setState({
-              loaded: {
-                ...this.state.loaded,
-                ...props
-              }
-            });
-          }}
-        />
-      </div>
+      <React.Fragment>
+        <div className={cx(styles.Full, { [styles.Pinned]: this.state.sidebarPinned })}>
+          <Graph
+            categories={allCategories}
+            loaded={this.state.loaded}
+            dataSerialize={(nodes, links, tabs) => {
+              this.setState(serialize[this.state.serializeFunction].fn(nodes, links, tabs));
+            }}
+          />
+          <CodeEditor
+            schema={this.state.code}
+            onTabChange={(e) => {
+              const { nodes, links, tabs } = this.state;
+              this.setState({
+                serializeFunction: e
+              });
+              this.setState(serialize[e].fn(nodes, links, tabs));
+            }}
+            onPinChange={(pinned) => this.setState({ sidebarPinned: pinned })}
+            onHide={(hidden) => this.setState({ sidebarHidden: hidden })}
+            onReset={this.resetCode}
+            hidden={this.state.sidebarHidden}
+            pinned={this.state.sidebarPinned}
+            language={this.state.serializeFunction}
+            loadNodes={(props) => {
+              this.setState({
+                loaded: {
+                  ...this.state.loaded,
+                  ...props
+                }
+              });
+            }}
+          />
+        </div>
+        <OverlayMenu />
+      </React.Fragment>
     );
   }
 }

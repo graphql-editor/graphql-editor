@@ -3,7 +3,7 @@ import { Subscribe, Provider } from 'unstated';
 import { CloudContainer, Cloud } from '../Container';
 import { Project } from '../ui/Project';
 import { OverlayAdd } from '../ui/OverlayAdd';
-
+import * as styles from '../style/Projects';
 export class Projects extends React.Component {
   render() {
     return (
@@ -30,7 +30,9 @@ export class Projects extends React.Component {
                     );
                 }}
               />
-              {cloud.state.projects && cloud.state.projects.map((p) => <Project {...p} />)}
+              <div className={styles.Projects}>
+                {cloud.state.projects && cloud.state.projects.map((p) => <Project {...p} />)}
+              </div>
             </React.Fragment>
           )}
         </Subscribe>

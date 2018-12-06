@@ -1,6 +1,6 @@
 // faker.com
 import { Container } from 'unstated';
-import { User, Project, Api, Namespace, State } from './types';
+import { User, Project, Api, Namespace, State } from './types/project';
 import { WebAuth } from 'auth0-js';
 
 const auth = new WebAuth({
@@ -21,8 +21,13 @@ const auth = new WebAuth({
 //   nonce: 'nonce'
 // });
 
-const fakerApi = `https://faker-api.graphqleditor.com/graphql`;
+const fakerApi = `https://project-api.graphqleditor.com/graphql`;
 
+const prefix = (k: string) => `GraphQLEditor-${k}`;
+const ls = {
+  get: (key: string) => window.localStorage.getItem(prefix(key)),
+  set: (key: string, value: string) => window.localStorage.setItem(prefix(key), value)
+};
 export type CloudState = {
   token?: string;
   projects?: State<Project>[];
@@ -43,6 +48,62 @@ export const userApi = (token: string) =>
 
 export class CloudContainer extends Container<CloudState> {
   state: CloudState = {};
+  constructor() {
+    super();
+    this.onMount();
+  }
+  onMount() {
+    this.storageToState().then(() => {
+      this.afterLogin();
+    });
+  }
+  setStorage(state: Partial<CloudState>) {
+    return this.setState(state).then(() => {
+      ls.set('faker', JSON.stringify(state));
+    });
+  }
+  storageToState() {
+    return this.setState(JSON.parse(ls.get('faker')));
+  }
+  afterLogin() {
+    if (!this.state.token) {
+      return;
+    }
+    return userApi(this.state.token)
+      .Query.getUser({ username: this.state.user.id })({
+        id: true,
+        namespace: {
+          slug: true,
+          public: true,
+          projects: [
+            {},
+            {
+              projects: {
+                id: true,
+                name: true,
+                slug: true
+              }
+            }
+          ]
+        }
+      })
+      .then(({ namespace, id }) => {
+        const {
+          projects: { projects },
+          ...restNamespace
+        } = namespace;
+        this.setState({
+          namespace: restNamespace,
+          projects,
+          user: {
+            id
+          }
+        });
+      })
+      .catch((errr) => {
+        console.log(errr);
+      });
+  }
   setToken() {
     auth.parseHash((error, result) => {
       if (
@@ -52,47 +113,15 @@ export class CloudContainer extends Container<CloudState> {
         result.idTokenPayload.sub &&
         result.idTokenPayload.nickname
       ) {
-        this.setState({
+        this.setStorage({
           token: result.idToken,
           user: {
             username: result.idTokenPayload.nickname,
             id: result.idTokenPayload.sub
           }
+        }).then(() => {
+          this.afterLogin();
         });
-        userApi(result.idToken)
-          .Query.getUser({ username: result.idTokenPayload.sub })({
-            id: true,
-            namespace: {
-              slug: true,
-              public: true,
-              projects: [
-                {},
-                {
-                  projects: {
-                    id: true,
-                    name: true,
-                    slug: true
-                  }
-                }
-              ]
-            }
-          })
-          .then(({ namespace, id }) => {
-            const {
-              projects: { projects },
-              ...restNamespace
-            } = namespace;
-            this.setState({
-              namespace: restNamespace,
-              projects,
-              user: {
-                id
-              }
-            });
-          })
-          .catch((errr) => {
-            console.log(errr);
-          });
       }
     });
   }

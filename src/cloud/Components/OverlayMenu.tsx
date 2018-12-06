@@ -41,8 +41,14 @@ export class OverlayMenu extends React.Component<{}, OverlayMenuState> {
                   }}
                 >{`projects`}</OverlayButton>
               </div>
-              {!this.state.visible && (
-                <Overlay>
+              {this.state.visible && (
+                <Overlay
+                  onClose={() => {
+                    this.setState({
+                      visible: false
+                    });
+                  }}
+                >
                   {!cloud.state.token && (
                     <React.Fragment>
                       <OverlaySubmit onSubmit={cloud.login} visible={true}>
@@ -56,15 +62,18 @@ export class OverlayMenu extends React.Component<{}, OverlayMenuState> {
                         <OverlayAdd
                           placeholder="Name your namespace!"
                           onSubmit={(e) => {
-                            cloud.userApi().Mutation.createUser({
-                              namespace: e
-                            })({
-                              namespace: {
-                                slug: true
-                              }
-                            }).then((response) => {
-                              cloud.setState({ namespace: response.namespace });
-                            });
+                            cloud
+                              .userApi()
+                              .Mutation.createUser({
+                                namespace: e
+                              })({
+                                namespace: {
+                                  slug: true
+                                }
+                              })
+                              .then((response) => {
+                                cloud.setState({ namespace: response.namespace });
+                              });
                           }}
                         />
                       )}
