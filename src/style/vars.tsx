@@ -11,3 +11,4 @@ export const sizeSidebar = 500;
 
 export const overlayBackground = '#000000ee'
 export const overlayText = '#fff'
+export const transition = '.25s all'

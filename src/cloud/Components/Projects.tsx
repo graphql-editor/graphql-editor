@@ -4,7 +4,14 @@ import { CloudContainer, Cloud } from '../Container';
 import { Project } from '../ui/Project';
 import { OverlayAdd } from '../ui/OverlayAdd';
 import * as styles from '../style/Projects';
-export class Projects extends React.Component {
+import { OverlayMenuProps } from './OverlayMenu';
+export type ProjectsType = Pick<
+  OverlayMenuProps,
+  'deployFaker' | 'deployProject' | 'loadProject'
+> & {
+  closeOverlay: () => void;
+};
+export class Projects extends React.Component<ProjectsType> {
   render() {
     return (
       <Provider>
@@ -23,15 +30,37 @@ export class Projects extends React.Component {
                       name: true,
                       slug: true
                     })
-                    .then(({ name, id, slug }) =>
-                      cloud.setState({
-                        projects: [...cloud.state.projects, { name, id, slug }]
-                      })
-                    );
+                    .then((project) => {
+                      console.log(project);
+                      return cloud
+                        .setState({
+                          cloud: {
+                            ...cloud.state.cloud,
+                            projects: [...cloud.state.cloud.projects, project],
+                            currentProject: project
+                          }
+                        })
+                        .then(this.props.closeOverlay);
+                    });
                 }}
               />
               <div className={styles.Projects}>
-                {cloud.state.projects && cloud.state.projects.map((p) => <Project {...p} />)}
+                {cloud.state.cloud.projects &&
+                  cloud.state.cloud.projects.map((p) => (
+                    <Project
+                      key={p.id}
+                      project={p}
+                      deployProject={(id) => {
+                        this.props.deployProject(id);
+                      }}
+                      loadProject={(id) => {
+                        this.props.loadProject(id);
+                      }}
+                      deployFaker={(id) => {
+                        this.props.deployFaker(id);
+                      }}
+                    />
+                  ))}
               </div>
             </React.Fragment>
           )}

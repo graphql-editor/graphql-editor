@@ -35,7 +35,7 @@
     "react-hot-loader": "^4.3.11",
     "style-loader": "^0.20.2",
     "ts-loader": "^4.5.0",
-    "typescript": "^3.0.3",
+    "typescript": "^3.2.2",
     "url-loader": "^1.1.1",
     "webpack": "^4.19.1",
     "webpack-cleanup-plugin": "^0.5.1",

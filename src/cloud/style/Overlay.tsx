@@ -17,9 +17,10 @@ export const Overlay = style({
 
 export const CloseButton = style({
   position: 'absolute',
-  top: 20,
-  right: 20,
-  fontSize: 100,
+  right: 0,
+  top:0,
+  padding:20,
+  fontSize: 18,
   cursor:'pointer',
   color: vars.overlayText
 });

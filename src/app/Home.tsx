@@ -14,6 +14,7 @@ import { nodeTypes, SubTypes } from '../nodeTypes';
 import { CodeEditor } from './Code';
 import { serialize } from '../livegen/serialize';
 import { OverlayMenu } from '../cloud/Components/OverlayMenu';
+import { Cloud } from '../cloud/Container';
 
 export type ModelState = {
   nodes: Array<NodeType>;
@@ -160,7 +161,33 @@ class Home extends React.Component<{}, ModelState> {
             }}
           />
         </div>
-        <OverlayMenu />
+        <OverlayMenu
+          deployFaker={(id) => {
+            Cloud.fakerDeployProject({
+              project: id,
+              links: this.state.links,
+              nodes: this.state.nodes,
+              tabs: this.state.tabs
+            });
+          }}
+          deployProject={(projectName) => {
+            Cloud.saveProject({
+              project: projectName,
+              links: this.state.links,
+              nodes: this.state.nodes,
+              tabs: this.state.tabs
+            });
+          }}
+          loadProject={async (project) => {
+            await Cloud.loadProject(project);
+            const projectURL = Cloud.state.cloud.currentProject.sources.sources.find(
+              (s) => s.filename === 'project.json'
+            ).getUrl;
+            const { nodes, links, tabs } = await (await fetch(projectURL)).json();
+            console.log(nodes);
+            this.setState({ loaded: { nodes, links, tabs } });
+          }}
+        />
       </React.Fragment>
     );
   }

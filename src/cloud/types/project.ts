@@ -117,6 +117,8 @@ export type Mutation = {
 };
 type Func<P extends any[], R> = (...args: P) => R;
 type ArgsType<F extends Func<any, any>> = F extends Func<infer P, any> ? P : never;
+// type ResolveReturnType<A,R extends A> = Pick<R,keyof A>
+
 
 type GraphQLResponse = {
   data?: {
@@ -164,6 +166,7 @@ type ResolveArgs<T> = {
       : T[P] extends Func<any, any> ? [ArgsType<T[P]>[0], ResolveArgs<ReturnType<T[P]>>] : true
 };
 type GraphQLReturner<T> = T extends (infer R)[] ? ResolveArgs<R> : ResolveArgs<T>;
+
 
 type FunctionToGraphQL<T extends Func<any, any>> = (
   props?: ArgsType<T>[0]

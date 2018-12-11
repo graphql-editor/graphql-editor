@@ -4,5 +4,6 @@ export const Wrapper = style({
   display: 'flex',
   flexFlow: 'column nowrap',
   alignItems:"center",
-  justifyContent:"center"
+  justifyContent:"center",
+  padding:'20px 0'
 });
