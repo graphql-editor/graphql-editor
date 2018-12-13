@@ -136,6 +136,9 @@ const resolveKV = (k: string, v: boolean | string | { [x: string]: boolean | str
 const objectToTree = (o: { [x: string]: boolean | string }) =>
   \`{\${Object.keys(o).map((k) => \`\${resolveKV(k, o[k])}\`)}}\`;
 const traverseToSeekArrays = (a) => {
+  if (Object.keys(a).length === 0) {
+    return '';
+  }
   let b = {};
   Object.keys(a).map((k) => {
     if (Array.isArray(a[k])) {
