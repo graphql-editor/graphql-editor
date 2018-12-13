@@ -11,8 +11,9 @@ export const Overlay = style({
   zIndex: 3,
   display: 'flex',
   flexFlow: 'column nowrap',
-  justifyContent: 'center',
-  padding:20
+  justifyContent: 'flex-start',
+  overflowY:'auto',
+  padding:30
 });
 
 export const CloseButton = style({

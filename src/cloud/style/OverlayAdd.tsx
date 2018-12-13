@@ -5,5 +5,5 @@ export const Wrapper = style({
   flexFlow: 'column nowrap',
   alignItems:"center",
   justifyContent:"center",
-  padding:'20px 0'
+  padding:'30px 0'
 });

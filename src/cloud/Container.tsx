@@ -11,7 +11,7 @@ const redirectUri = 'http://localhost:1569/';
 const auth = new WebAuth({
   audience: 'https://graphqleditor.com/',
   clientID: 'yKOZj61N2Bih0AsOIn8qpI1tm9d7TBKM',
-  domain: 'aexol.auth0.com',
+  domain: 'auth.graphqleditor.com',
   responseType: 'id_token',
   redirectUri,
   scope: 'openid profile'
@@ -97,6 +97,44 @@ export class CloudContainer extends Container<CloudState> {
       this.afterLoginTemplate(fakerUserApi, 'faker');
     });
   }
+  removeProject = (project: State<Project>) => {
+    if (this.state.cloud.currentProject && project.id === this.state.cloud.currentProject.id) {
+      this.setState((state) => ({
+        cloud: {
+          ...state.cloud,
+          currentProject: null
+        }
+      }));
+    }
+    const fakerProject = this.state.faker.projects.find((p) => p.slug === project.slug);
+    return userApi(this.state.token)
+      .Mutation.removeProject({
+        project: project.id
+      })({})
+      .then(() => {
+        if (fakerProject) {
+          return fakerUserApi(this.state.token).Mutation.removeProject({
+            project: fakerProject.id
+          })({});
+        }
+      })
+      .then(() => {
+        if (fakerProject) {
+          this.setState((state) => ({
+            faker: {
+              ...state.faker,
+              projects: state.faker.projects.filter((p) => p.id !== fakerProject.id)
+            }
+          }));
+        }
+        this.setState((state) => ({
+          cloud: {
+            ...state.cloud,
+            projects: state.cloud.projects.filter((p) => p.id !== project.id)
+          }
+        }));
+      });
+  };
   loadProject = (project: State<Project>) => {
     const sm = `Loading project...`;
     this.upStack(sm);

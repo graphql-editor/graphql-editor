@@ -5,10 +5,7 @@ import { Project } from '../ui/Project';
 import { OverlayAdd } from '../ui/OverlayAdd';
 import * as styles from '../style/Projects';
 import { OverlayMenuProps } from './OverlayMenu';
-export type ProjectsType = Pick<
-  OverlayMenuProps,
-  'deployFaker' | 'deployProject' | 'loadProject'
-> & {
+export type ProjectsType = OverlayMenuProps & {
   closeOverlay: () => void;
 };
 export class Projects extends React.Component<ProjectsType> {
@@ -31,12 +28,17 @@ export class Projects extends React.Component<ProjectsType> {
                       slug: true
                     })
                     .then((project) => {
-                      console.log(project);
                       return cloud
                         .setState({
                           cloud: {
                             ...cloud.state.cloud,
-                            projects: [...cloud.state.cloud.projects, project],
+                            projects: [
+                              ...cloud.state.cloud.projects,
+                              {
+                                ...project,
+                                owner: { namespace: { slug: cloud.state.cloud.namespace.slug } }
+                              }
+                            ],
                             currentProject: project
                           }
                         })
@@ -50,15 +52,18 @@ export class Projects extends React.Component<ProjectsType> {
                     <Project
                       key={p.id}
                       project={p}
-                      deployProject={(id) => {
-                        this.props.deployProject(id);
-                      }}
-                      loadProject={(id) => {
-                        this.props.loadProject(id);
-                      }}
-                      deployFaker={(id) => {
-                        this.props.deployFaker(id);
-                      }}
+                      current={
+                        cloud.state.cloud.currentProject &&
+                        cloud.state.cloud.currentProject.slug === p.slug
+                      }
+                      fakerEnabled={
+                        cloud.state.faker.projects &&
+                        !!cloud.state.faker.projects.find((pf) => pf.slug === p.slug)
+                      }
+                      deployProject={this.props.deployProject}
+                      loadProject={this.props.loadProject}
+                      deployFaker={this.props.deployFaker}
+                      removeProject={this.props.removeProject}
                     />
                   ))}
               </div>

@@ -11,10 +11,13 @@ import { Welcome } from '../ui/Welcome';
 import { DisplayCurrent } from '../ui/DisplayCurrent';
 import { Loading } from '../ui/Loading';
 
+type ProjectFunction = (project: State<Project>) => void;
+
 export type OverlayMenuProps = {
-  deployProject: (project: State<Project>) => void;
-  loadProject: (project: State<Project>) => void;
-  deployFaker: (project: State<Project>) => void;
+  deployProject: ProjectFunction;
+  loadProject: ProjectFunction;
+  deployFaker: ProjectFunction;
+  removeProject: ProjectFunction;
 };
 type OverlayMenuState = {
   visible: boolean;
@@ -120,6 +123,7 @@ export class OverlayMenu extends React.Component<OverlayMenuProps, OverlayMenuSt
                               this.setState({ visible: false });
                             }}
                             deployFaker={this.props.deployFaker}
+                            removeProject={this.props.removeProject}
                           />
                         </React.Fragment>
                       )}

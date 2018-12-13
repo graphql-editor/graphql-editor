@@ -162,30 +162,35 @@ class Home extends React.Component<{}, ModelState> {
           />
         </div>
         <OverlayMenu
-          deployFaker={(id) => {
+          deployFaker={(project) => {
             Cloud.fakerDeployProject({
-              project: id,
+              project,
               links: this.state.links,
               nodes: this.state.nodes,
               tabs: this.state.tabs
             });
           }}
-          deployProject={(projectName) => {
+          deployProject={(project) => {
             Cloud.saveProject({
-              project: projectName,
+              project,
               links: this.state.links,
               nodes: this.state.nodes,
               tabs: this.state.tabs
             });
+          }}
+          removeProject={(project) => {
+            Cloud.removeProject(project)
           }}
           loadProject={async (project) => {
             await Cloud.loadProject(project);
-            const projectURL = Cloud.state.cloud.currentProject.sources.sources.find(
-              (s) => s.filename === 'project.json'
-            ).getUrl;
-            const { nodes, links, tabs } = await (await fetch(projectURL)).json();
-            console.log(nodes);
-            this.setState({ loaded: { nodes, links, tabs } });
+            const { sources } = Cloud.state.cloud.currentProject.sources;
+            if (sources.length > 0) {
+              const projectURL = sources.find((s) => s.filename === 'project.json').getUrl;
+              const { nodes, links, tabs } = await (await fetch(projectURL)).json();
+              this.setState({ loaded: { nodes, links, tabs } });
+            } else {
+              this.resetCode();
+            }
           }}
         />
       </React.Fragment>

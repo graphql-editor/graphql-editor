@@ -6,7 +6,7 @@ export const Project = style({
   flexFlow: 'column nowrap',
   borderWidth: 2,
   borderColor: vars.overlayText,
-  padding: 5,
+  padding: 10,
   borderStyle: 'solid',
   borderRadius: 10
 });
@@ -14,14 +14,22 @@ export const Name = style({
   marginTop: 'auto',
   alignSelf: 'center',
   textTransform: 'uppercase',
-  letterSpacing:2,
-  marginBottom:5
+  letterSpacing: 2,
+  marginBottom: 5
 });
 export const Delete = style({
   fontSize: 18,
   alignSelf: 'flex-end',
   cursor: 'pointer',
-  padding: 10
+  position: 'absolute',
+  padding: 10,
+  color: vars.overlayText,
+  transition: vars.transition,
+  $nest: {
+    '&:hover': {
+      color: vars.colorHighlightRed
+    }
+  }
 });
 export const Actions = style({
   display: 'grid',
@@ -31,7 +39,11 @@ export const Actions = style({
 });
 export const fakerURL = style({
   marginBottom: 'auto',
-  textAlign:'center',
+  textAlign: 'center',
   textDecoration: 'none',
   color: vars.colorHighlightContra
+});
+
+export const fakerURLDisabled = style({
+  opacity: 0.3
 });

@@ -1,7 +1,25 @@
 import * as React from 'react';
 import * as styles from '../style/ActionButton';
-export const ActionButton = ({ children, onClick }) => (
-  <a className={styles.ActionButton} onClick={onClick}>
+import * as cx from 'classnames';
+export const ActionButton = ({
+  children,
+  onClick,
+  disabled,
+  active
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+  disabled?: boolean;
+  active?: boolean;
+}) => (
+  <a
+    className={cx({
+      [styles.ActionButton]: true,
+      [styles.Disabled]: disabled,
+      [styles.Active]: active
+    })}
+    onClick={onClick}
+  >
     {children}
   </a>
 );

@@ -5,6 +5,7 @@ export const Submit = style({
   borderStyle: 'solid',
   borderColor: vars.overlayText,
   borderWidth: 2,
+  borderRadius:3,
   opacity: 0,
   transition: '.25s all',
   alignSelf: 'center',
