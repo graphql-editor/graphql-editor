@@ -1,6 +1,6 @@
 import { cssRaw } from 'typestyle';
 cssRaw(`
 body{
-    font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 `);

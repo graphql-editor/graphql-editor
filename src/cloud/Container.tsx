@@ -3,10 +3,14 @@ import { Container } from 'unstated';
 import { User, Project, Api, Namespace, State } from './types/project';
 import { WebAuth } from 'auth0-js';
 import { NewSource } from './types';
-import { NodeType, LinkType } from '@slothking-online/diagram';
+import { NodeType, LinkType, LoadedFile } from '@slothking-online/diagram';
 import { serializeSchema } from '../livegen/gens/graphql/serialize';
 import { serializeFaker } from '../livegen/gens/faker/serialize';
-const redirectUri = 'http://localhost:1569/';
+const DEV_HOSTNAME = 'http://localhost:1569/';
+const PRODUCTION_HOSTNAME = 'https://app.graphqleditor.com/';
+
+export const redirectUri =
+  process.env.NODE_ENV === 'development' ? DEV_HOSTNAME : PRODUCTION_HOSTNAME;
 
 const auth = new WebAuth({
   audience: 'https://graphqleditor.com/',
@@ -17,36 +21,45 @@ const auth = new WebAuth({
   scope: 'openid profile'
 });
 
-const projectApi = `https://project-api.graphqleditor.com/graphql`;
-const fakerApi = `https://faker-api.graphqleditor.com/graphql`;
+const projectApiURL = `https://project-api.graphqleditor.com/graphql`;
+const fakerApiURL = `https://faker-api.graphqleditor.com/graphql`;
 
 const prefix = (k: string) => `GraphQLEditor-${k}`;
 const ls = {
   get: (key: string) => window.localStorage.getItem(prefix(key)),
   set: (key: string, value: string) => window.localStorage.setItem(prefix(key), value)
 };
+
+type CloudFakerMirror = {
+  projects?: State<Project>[];
+  searchProjects?: State<Project>[];
+  exampleProjects?: State<Project>[];
+  user?: State<User>;
+  namespace?: State<Namespace>;
+};
 export type CloudState = {
   loadingStack: string[];
   errorStack: string[];
   token?: string;
   expire?: number;
-  cloud: {
-    projects?: State<Project>[];
-    user?: State<User>;
+  popup: null | 'createProject' | 'onBoarding' | 'loadURL';
+  loaded: LoadedFile;
+  nodes: Array<NodeType>;
+  tabs?: Array<string>;
+  links: Array<LinkType>;
+  code: string;
+  category: 'my' | 'public' | 'examples' | 'new' | 'edit';
+  cloud: CloudFakerMirror & {
     currentProject?: State<Project>;
-    namespace?: State<Namespace>;
   };
-  faker: {
-    projects?: State<Project>[];
-    namespace?: State<Namespace>;
-    user?: State<User>;
-  };
+  faker: CloudFakerMirror;
   user?: State<User>;
 };
 
-export const api = Api(projectApi, {});
+export const api = Api(projectApiURL, {});
+export const fakerApi = Api(fakerApiURL, {});
 export const userApi = (token: string) =>
-  Api(projectApi, {
+  Api(projectApiURL, {
     method: 'GET',
     mode: 'cors',
     headers: new Headers({
@@ -54,7 +67,7 @@ export const userApi = (token: string) =>
     })
   });
 export const fakerUserApi = (token: string) =>
-  Api(fakerApi, {
+  Api(fakerApiURL, {
     method: 'GET',
     mode: 'cors',
     headers: new Headers({
@@ -63,7 +76,22 @@ export const fakerUserApi = (token: string) =>
   });
 
 export class CloudContainer extends Container<CloudState> {
-  state: CloudState = { cloud: {}, faker: {}, loadingStack: [], errorStack: [] };
+  state: CloudState = {
+    cloud: {},
+    faker: {},
+    loadingStack: [],
+    errorStack: [],
+    category: 'my',
+    code: '',
+    popup: 'onBoarding',
+    nodes: [],
+    links: [],
+    loaded: {
+      nodes: [],
+      links: [],
+      tabs: []
+    }
+  };
   constructor() {
     super();
     this.onMount();
@@ -135,6 +163,19 @@ export class CloudContainer extends Container<CloudState> {
         }));
       });
   };
+  resetProject = () => {
+    this.setState((state) => ({
+      cloud: {
+        ...state.cloud,
+        currentProject: null
+      },
+      loaded: {
+        links: [],
+        nodes: [],
+        tabs: []
+      }
+    }));
+  };
   loadProject = (project: State<Project>) => {
     const sm = `Loading project...`;
     this.upStack(sm);
@@ -146,6 +187,9 @@ export class CloudContainer extends Container<CloudState> {
         name: true,
         slug: true,
         public: true,
+        endpoint: {
+          uri: true
+        },
         sources: [
           {},
           {
@@ -156,21 +200,78 @@ export class CloudContainer extends Container<CloudState> {
           }
         ]
       })
-      .then((project) => {
-        this.setState({
+      .then(async (project) => {
+        const { sources } = project.sources;
+        if (sources.length > 0) {
+          const projectURL = sources.find((s) => s.filename === 'project.json').getUrl;
+          const { nodes, links, tabs } = await (await fetch(projectURL)).json();
+          this.setState((state) => ({ loaded: { nodes, links, tabs } }));
+        } else {
+          this.resetProject();
+        }
+        this.setState((state) => ({
           cloud: {
             ...this.state.cloud,
             currentProject: project
           }
-        }).then(() => this.deStack(sm));
+        })).then(() => this.deStack(sm));
       });
   };
-  saveProject = (props: {
-    project: State<Project>;
-    nodes: NodeType[];
-    links: LinkType[];
-    tabs: string[];
-  }) => this.saveProjectTemplate(userApi, { ...props, project: props.project.id });
+  loadExamples = () => {
+    if (!this.state.cloud.exampleProjects) {
+      return api.Query.listProjects()({
+        projects: {
+          id: true,
+          name: true,
+          public: true,
+          slug: true,
+          endpoint: {
+            uri: true
+          }
+        }
+      })
+        .then((response) =>
+          this.setState((state) => ({
+            cloud: {
+              ...state.cloud,
+              exampleProjects: response.projects.filter(
+                (p) => p.endpoint.uri.split('/')[0] === 'showcase'
+              )
+            }
+          }))
+        )
+        .then(() =>
+          fakerApi.Query.listProjects()({
+            projects: {
+              id: true,
+              name: true,
+              public: true,
+              slug: true,
+              endpoint: {
+                uri: true
+              }
+            }
+          })
+        )
+        .then((response) => {
+          this.setState((state) => ({
+            faker: {
+              ...state.faker,
+              exampleProjects: response.projects.filter(
+                (p) => p.endpoint.uri.split('/')[0] === 'showcase'
+              )
+            }
+          }));
+        });
+    }
+  };
+  saveProject = () =>
+    this.saveProjectTemplate(userApi, {
+      nodes: this.state.nodes,
+      links: this.state.links,
+      tabs: this.state.tabs,
+      project: this.state.cloud.currentProject
+    });
   fakerDeployProject = async ({
     nodes,
     links,
@@ -199,9 +300,13 @@ export class CloudContainer extends Container<CloudState> {
             {},
             {
               projects: {
+                public: true,
                 name: true,
                 id: true,
-                slug: true
+                slug: true,
+                endpoint: {
+                  uri: true
+                }
               }
             }
           ]
@@ -216,14 +321,7 @@ export class CloudContainer extends Container<CloudState> {
           user: {
             id: response.id
           },
-          projects: response.namespace.projects.projects.map((p) => ({
-            ...p,
-            owner: {
-              namespace: {
-                slug: response.namespace.slug
-              }
-            }
-          }))
+          projects: response.namespace.projects.projects
         }
       });
     }
@@ -237,7 +335,11 @@ export class CloudContainer extends Container<CloudState> {
       })({
         name: true,
         id: true,
-        slug: true
+        slug: true,
+        public: true,
+        endpoint: {
+          uri: true
+        }
       });
       this.setState({
         faker: {
@@ -247,7 +349,7 @@ export class CloudContainer extends Container<CloudState> {
     }
     this.deStack(sm);
     return this.saveProjectTemplate(fakerUserApi, {
-      project: correspondingFakerProject.id,
+      project: correspondingFakerProject,
       nodes,
       links,
       tabs
@@ -261,7 +363,7 @@ export class CloudContainer extends Container<CloudState> {
       links,
       tabs
     }: {
-      project: string;
+      project: State<Project>;
       nodes: NodeType[];
       links: LinkType[];
       tabs: string[];
@@ -333,7 +435,7 @@ export class CloudContainer extends Container<CloudState> {
     ];
     return apiFunc(this.state.token)
       .Mutation.updateSources({
-        project,
+        project: project.id,
         sources: sources.map((s) => s.source)
       })({
         filename: true,
@@ -366,6 +468,48 @@ export class CloudContainer extends Container<CloudState> {
   storageToState() {
     return this.setState(JSON.parse(ls.get('faker')));
   }
+  createProject = (name: string, is_public: boolean) =>
+    userApi(this.state.token)
+      .Mutation.createProject({
+        name,
+        public: is_public
+      })({
+        id: true,
+        name: true,
+        public: true,
+        slug: true,
+        endpoint: { uri: true }
+      })
+      .then((p) =>
+        this.setState((state) => ({
+          ...state,
+          cloud: {
+            ...state.cloud,
+            currentProject: p,
+            projects: [...state.cloud.projects, p]
+          }
+        }))
+      );
+  listPublicProjects = () => {
+    return api.Query.listProjects()({
+      projects: {
+        id: true,
+        name: true,
+        public: true,
+        slug: true,
+        endpoint: {
+          uri: true
+        }
+      }
+    }).then((response) => {
+      this.setState((state) => ({
+        cloud: {
+          ...state.cloud,
+          searchProjects: response.projects
+        }
+      }));
+    });
+  };
   afterLoginTemplate = (apiFunction: typeof userApi, fakerCloud: 'faker' | 'cloud') => {
     if (!this.state.token) {
       return;
@@ -383,14 +527,22 @@ export class CloudContainer extends Container<CloudState> {
             {
               projects: {
                 id: true,
+                public: true,
                 name: true,
-                slug: true
+                slug: true,
+                endpoint: {
+                  uri: true
+                }
               }
             }
           ]
         }
       })
-      .then(({ namespace, id }) => {
+      .then((res) => {
+        if (res === null) {
+          return this.deStack(sm);
+        }
+        const { namespace, id } = res;
         const {
           projects: { projects },
           ...restNamespace
@@ -398,14 +550,7 @@ export class CloudContainer extends Container<CloudState> {
         this.setState({
           [fakerCloud]: {
             namespace: restNamespace,
-            projects: projects.map((p) => ({
-              ...p,
-              owner: {
-                namespace: {
-                  slug: namespace.slug
-                }
-              }
-            })),
+            projects,
             user: {
               id
             }
@@ -414,8 +559,13 @@ export class CloudContainer extends Container<CloudState> {
           return this.deStack(sm);
         });
       })
-      .catch(({ response }) => {
-        this.errStack(response.errors[0].message);
+      .catch((res) => {
+        console.log(res);
+        if (res === null) {
+          this.deStack(sm);
+        } else {
+          this.errStack(res.errors[0].message);
+        }
       });
   };
   setToken() {

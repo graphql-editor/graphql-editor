@@ -1,19 +1,17 @@
 import { style } from 'typestyle';
 
 import { sizeSidebar } from './vars';
+import { Colors } from './colors';
 
 export const Sidebar = style({
-  position: 'fixed',
   width: sizeSidebar,
+  maxHeight:'100vh',
+  flex: 1,
   zIndex: 2,
-  height: '100vh',
   transition: 'transform 0.4s, background-color 0.4s',
   display: 'flex',
-  left: 0,
-  top: 0,
   flexDirection: 'column',
-  background: '#000000dd',
-  transform: 'translate(0,0)'
+  background: Colors.grey[8],
 });
 
 export const SidebarHidden = style({
@@ -23,7 +21,9 @@ export const SidebarHidden = style({
 
 export const Pre = style({
   padding: 20,
-  width:'100vw'
+  paddingBottom:100,
+  fontSize:12,
+  width: '100vw'
 });
 
 export const Toolbar = style({
@@ -42,6 +42,7 @@ export const ToolbarHidden = style({
 export const CodeContainer = style({
   flex: 1,
   overflowY: 'auto',
+  paddingBottom:100,
   overflowX: 'hidden'
 });
 
