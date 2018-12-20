@@ -8,7 +8,9 @@ export const TopButton = ({
   active,
   small,
   big,
-  disabled
+  disabled,
+  target,
+  href
 }: {
   children: React.ReactNode;
   onClick: () => void;
@@ -17,8 +19,10 @@ export const TopButton = ({
   small?: boolean;
   big?: boolean;
   disabled?: string;
+  href?: string;
+  target?: React.AnchorHTMLAttributes<HTMLAnchorElement>['target'];
 }) => (
-  <div
+  <a
     onClick={onClick}
     className={cx({
       [styles[variant]]: true,
@@ -27,7 +31,9 @@ export const TopButton = ({
       big,
       disabled: !!disabled
     })}
+    href={href}
+    target={target}
   >
     {children}
-  </div>
+  </a>
 );

@@ -54,9 +54,9 @@
     "moment": "^2.21.0",
     "query-string": "^6.2.0",
     "react": "^16.5.2",
+    "react-ace": "^6.2.0",
     "react-dom": "^16.5.2",
     "react-router-dom": "^4.3.1",
-    "react-syntax-highlighter": "^8.0.1",
     "typestyle": "^1.7.2",
     "unstated": "^2.1.1",
     "utility-types": "^1.1.0"

@@ -2,10 +2,17 @@
 import { Container } from 'unstated';
 import { User, Project, Api, Namespace, State } from './types/project';
 import { WebAuth } from 'auth0-js';
-import { NewSource } from './types';
 import { NodeType, LinkType, LoadedFile } from '@slothking-online/diagram';
-import { serializeSchema } from '../livegen/gens/graphql/serialize';
-import { serializeFaker } from '../livegen/gens/faker/serialize';
+import { saveProjectTemplate } from './funcs/saveProject';
+import { loadProject } from './funcs/loadProject';
+import { fakerDeployProject } from './funcs/fakerDeploy';
+import { loadExamples } from './funcs/loadExamples';
+import { listPublicProjects } from './funcs/listPublicProjects';
+import { createProject } from './funcs/createProject';
+import { removeProject } from './funcs/removeProject';
+import { loadFromURL } from './funcs/loadFromURL';
+import { createUser } from './funcs/createUser';
+import { afterLogin } from './funcs/afterLogin';
 const DEV_HOSTNAME = 'http://localhost:1569/';
 const PRODUCTION_HOSTNAME = 'https://app.graphqleditor.com/';
 
@@ -42,13 +49,25 @@ export type CloudState = {
   errorStack: string[];
   token?: string;
   expire?: number;
-  popup: null | 'createProject' | 'onBoarding' | 'loadURL';
+  popup:
+    | null
+    | 'createProject'
+    | 'createUser'
+    | 'notYourProject'
+    | 'notYetProject'
+    | 'notYetDeploy'
+    | 'loginToContinue'
+    | 'onBoarding'
+    | 'loadURL'
+    | 'fakerDeployed'
+    | 'deleteProject';
   loaded: LoadedFile;
   nodes: Array<NodeType>;
   tabs?: Array<string>;
   links: Array<LinkType>;
   code: string;
   category: 'my' | 'public' | 'examples' | 'new' | 'edit';
+  removedProject?: State<Project>;
   cloud: CloudFakerMirror & {
     currentProject?: State<Project>;
   };
@@ -96,6 +115,57 @@ export class CloudContainer extends Container<CloudState> {
     super();
     this.onMount();
   }
+  get allProjects() {
+    return [
+      ...(this.state.faker.exampleProjects || []),
+      ...(this.state.faker.searchProjects || []),
+      ...(this.state.faker.projects || [])
+    ];
+  }
+  findInAllFakerProjects = (p: State<Project>) =>
+    this.allProjects.find((pr) => pr.endpoint.uri === p.endpoint.uri);
+  setNodes = (state: Pick<CloudState, 'nodes' | 'code' | 'links'>) => {
+    return this.setState(state).then(() => {
+      ls.set('nodes', JSON.stringify(state));
+    });
+  };
+  nodesToState = () => {
+    const loadedState = JSON.parse(ls.get('nodes'));
+    if (!loadedState) {
+      return;
+    }
+    const { nodes, links } = loadedState;
+    return this.setState({ ...loadedState, loaded: { nodes, links } });
+  };
+  setStorage = (state: Pick<CloudState, 'user' | 'token' | 'expire'>) => {
+    return this.setState(state).then(() => {
+      ls.set('faker', JSON.stringify(state));
+    });
+  };
+  storageToState = () => {
+    return this.setState(JSON.parse(ls.get('faker')));
+  };
+  setCloud = () => {
+    ls.set(
+      'cloud',
+      JSON.stringify({
+        cloud: this.state.cloud,
+        faker: this.state.faker
+      } as Pick<CloudState, 'cloud' | 'faker'>)
+    );
+  };
+  clearCloud = () => {
+    ls.set(
+      'cloud',
+      JSON.stringify({
+        cloud: {},
+        faker: {}
+      } as Pick<CloudState, 'cloud' | 'faker'>)
+    );
+  };
+  cloudToState = () => {
+    return this.setState(JSON.parse(ls.get('cloud')));
+  };
   errStack = (s: string) =>
     this.setState((state) => ({
       errorStack: [...state.errorStack, s]
@@ -108,62 +178,41 @@ export class CloudContainer extends Container<CloudState> {
     this.setState((state) => ({
       loadingStack: state.loadingStack.filter((ls) => ls !== s)
     }));
-  onMount() {
-    return this.storageToState().then(() => {
-      if (!this.state.expire) {
-        return this.setState({
-          token: null
-        });
-      }
-      const dateExp = new Date(0).setUTCSeconds(this.state.expire) - new Date().valueOf();
-      if (dateExp < 0) {
-        return this.setState({
-          token: null
-        });
-      }
-      this.afterLoginTemplate(userApi, 'cloud');
-      this.afterLoginTemplate(fakerUserApi, 'faker');
-    });
-  }
-  removeProject = (project: State<Project>) => {
-    if (this.state.cloud.currentProject && project.id === this.state.cloud.currentProject.id) {
-      this.setState((state) => ({
-        cloud: {
-          ...state.cloud,
-          currentProject: null
-        }
-      }));
-    }
-    const fakerProject = this.state.faker.projects.find((p) => p.slug === project.slug);
-    return userApi(this.state.token)
-      .Mutation.removeProject({
-        project: project.id
-      })({})
-      .then(() => {
-        if (fakerProject) {
-          return fakerUserApi(this.state.token).Mutation.removeProject({
-            project: fakerProject.id
-          })({});
-        }
-      })
-      .then(() => {
-        if (fakerProject) {
-          this.setState((state) => ({
-            faker: {
-              ...state.faker,
-              projects: state.faker.projects.filter((p) => p.id !== fakerProject.id)
-            }
-          }));
-        }
-        this.setState((state) => ({
-          cloud: {
-            ...state.cloud,
-            projects: state.cloud.projects.filter((p) => p.id !== project.id)
-          }
-        }));
-      });
+  unStackAll = () => {
+    this.setState((state) => ({
+      loadingStack: [],
+      errorStack: []
+    }));
   };
-  resetProject = () => {
+  onMount = async () => {
+    await this.nodesToState();
+    await this.storageToState();
+    await this.cloudToState();
+    console.log(this.state);
+    if (!this.state.expire) {
+      return this.setState({
+        token: null
+      });
+    }
+    const dateExp = new Date(0).setUTCSeconds(this.state.expire) - new Date().valueOf();
+    if (dateExp < 0) {
+      return this.setState({
+        token: null
+      });
+    }
+    await this.afterLoginTemplate(userApi, 'cloud');
+    return this.afterLoginTemplate(fakerUserApi, 'faker');
+  };
+  closePopup = () =>
+    this.setState({
+      popup: null
+    });
+  createUser = async (name: string) => {
+    await createUser(this)(userApi, 'cloud')(name);
+    return createUser(this)(fakerUserApi, 'faker')(name);
+  };
+  removeProject = (project: State<Project>) => removeProject(this)(project).then(this.setCloud);
+  resetProject = () =>
     this.setState((state) => ({
       cloud: {
         ...state.cloud,
@@ -173,404 +222,40 @@ export class CloudContainer extends Container<CloudState> {
         links: [],
         nodes: [],
         tabs: []
-      }
-    }));
-  };
-  loadProject = (project: State<Project>) => {
-    const sm = `Loading project...`;
-    this.upStack(sm);
-    return userApi(this.state.token)
-      .Query.getProject({
-        project: project.id
-      })({
-        id: true,
-        name: true,
-        slug: true,
-        public: true,
-        endpoint: {
-          uri: true
-        },
-        sources: [
-          {},
-          {
-            sources: {
-              getUrl: true,
-              filename: true
-            }
-          }
-        ]
-      })
-      .then(async (project) => {
-        const { sources } = project.sources;
-        if (sources.length > 0) {
-          const projectURL = sources.find((s) => s.filename === 'project.json').getUrl;
-          const { nodes, links, tabs } = await (await fetch(projectURL)).json();
-          this.setState((state) => ({ loaded: { nodes, links, tabs } }));
-        } else {
-          this.resetProject();
-        }
-        this.setState((state) => ({
-          cloud: {
-            ...this.state.cloud,
-            currentProject: project
-          }
-        })).then(() => this.deStack(sm));
-      });
-  };
-  loadExamples = () => {
-    if (!this.state.cloud.exampleProjects) {
-      return api.Query.listProjects()({
-        projects: {
-          id: true,
-          name: true,
-          public: true,
-          slug: true,
-          endpoint: {
-            uri: true
-          }
-        }
-      })
-        .then((response) =>
-          this.setState((state) => ({
-            cloud: {
-              ...state.cloud,
-              exampleProjects: response.projects.filter(
-                (p) => p.endpoint.uri.split('/')[0] === 'showcase'
-              )
-            }
-          }))
-        )
-        .then(() =>
-          fakerApi.Query.listProjects()({
-            projects: {
-              id: true,
-              name: true,
-              public: true,
-              slug: true,
-              endpoint: {
-                uri: true
-              }
-            }
-          })
-        )
-        .then((response) => {
-          this.setState((state) => ({
-            faker: {
-              ...state.faker,
-              exampleProjects: response.projects.filter(
-                (p) => p.endpoint.uri.split('/')[0] === 'showcase'
-              )
-            }
-          }));
-        });
-    }
-  };
+      },
+      nodes: [],
+      links: [],
+      tabs: []
+    })).then(this.setCloud);
+  canCreateProject = (name: string) =>
+    !this.allProjects.find((p) => p.name.toLowerCase() === name.toLowerCase());
+  loadProject = (project: State<Project>) => loadProject(this)(project).then(this.setCloud);
+  loadExamples = loadExamples(this);
+  loadFromURL = loadFromURL(this);
   saveProject = () =>
-    this.saveProjectTemplate(userApi, {
+    saveProjectTemplate(this)(userApi, {
       nodes: this.state.nodes,
       links: this.state.links,
       tabs: this.state.tabs,
       project: this.state.cloud.currentProject
     });
-  fakerDeployProject = async ({
-    nodes,
-    links,
-    tabs,
-    project
-  }: {
-    project: State<Project>;
-    nodes: NodeType[];
-    links: LinkType[];
-    tabs: string[];
-  }) => {
-    const sm = `deploying faker...`;
-    this.upStack(sm);
-    const fakerNamespace = this.state.faker.namespace;
-    if (!(fakerNamespace && fakerNamespace.slug)) {
-      const response = await fakerUserApi(this.state.token).Mutation.createUser({
-        namespace: this.state.cloud.namespace.slug,
-        public: !!this.state.cloud.namespace.public
-      })({
-        id: true,
-        username: true,
-        namespace: {
-          public: true,
-          slug: true,
-          projects: [
-            {},
-            {
-              projects: {
-                public: true,
-                name: true,
-                id: true,
-                slug: true,
-                endpoint: {
-                  uri: true
-                }
-              }
-            }
-          ]
-        }
-      });
-      await this.setState({
-        faker: {
-          namespace: {
-            public: response.namespace.public,
-            slug: response.namespace.slug
-          },
-          user: {
-            id: response.id
-          },
-          projects: response.namespace.projects.projects
-        }
-      });
-    }
-    let correspondingFakerProject = this.state.faker.projects.find(
-      (fp) => fp.name === project.name
-    );
-    if (!correspondingFakerProject) {
-      correspondingFakerProject = await fakerUserApi(this.state.token).Mutation.createProject({
-        name: project.name,
-        public: true
-      })({
-        name: true,
-        id: true,
-        slug: true,
-        public: true,
-        endpoint: {
-          uri: true
-        }
-      });
-      this.setState({
-        faker: {
-          projects: [...this.state.faker.projects, correspondingFakerProject]
-        }
-      });
-    }
-    this.deStack(sm);
-    return this.saveProjectTemplate(fakerUserApi, {
-      project: correspondingFakerProject,
-      nodes,
-      links,
-      tabs
+  fakerDeployProject = async () =>
+    fakerDeployProject(this)({
+      links: this.state.links,
+      nodes: this.state.nodes,
+      project: this.state.cloud.currentProject,
+      tabs: this.state.tabs
     });
-  };
-  saveProjectTemplate = (
-    apiFunc: typeof userApi,
-    {
-      project,
-      nodes,
-      links,
-      tabs
-    }: {
-      project: State<Project>;
-      nodes: NodeType[];
-      links: LinkType[];
-      tabs: string[];
-    }
-  ) => {
-    const sm = 'Saving...';
-    this.upStack(sm);
-    const projectSchema = JSON.stringify({
-      nodes,
-      links,
-      tabs
-    });
-    const graphQLSchema = serializeSchema(nodes, links, tabs).code;
-    const fakerSchema = serializeFaker(nodes, links, tabs).code;
-    const files = [
-      new File(
-        [
-          new Blob([projectSchema], {
-            type: 'application/json'
-          })
-        ],
-        'project.json'
-      ),
-      new File(
-        [
-          new Blob([graphQLSchema], {
-            type: 'application/graphql'
-          })
-        ],
-        'schema.graphql'
-      ),
-      new File(
-        [
-          new Blob([fakerSchema], {
-            type: 'application/json'
-          })
-        ],
-        'faker.json'
-      )
-    ];
-    const sources: {
-      file: File;
-      source: NewSource;
-    }[] = [
-      {
-        file: files[0],
-        source: {
-          filename: 'project.json',
-          contentLength: files[0].size,
-          contentType: 'application/json'
-        }
-      },
-      {
-        file: files[1],
-        source: {
-          filename: 'schema.graphql',
-          contentLength: files[1].size,
-          contentType: 'application/graphql'
-        }
-      },
-      {
-        file: files[2],
-        source: {
-          filename: 'faker.json',
-          contentLength: files[2].size,
-          contentType: 'application/json'
-        }
-      }
-    ];
-    return apiFunc(this.state.token)
-      .Mutation.updateSources({
-        project: project.id,
-        sources: sources.map((s) => s.source)
-      })({
-        filename: true,
-        headers: {
-          key: true,
-          value: true
-        },
-        putUrl: true
-      })
-      .then(async (response) => {
-        for (const { putUrl, headers, filename } of response) {
-          await fetch(putUrl, {
-            method: 'PUT',
-            mode: 'cors',
-            headers: headers.reduce((a, b) => {
-              a[b.key] = b.value;
-              return a;
-            }, {}),
-            body: sources.find((s) => s.source.filename === filename).file
-          });
-        }
-        return this.deStack(sm);
-      });
-  };
-  setStorage(state: Partial<CloudState>) {
-    return this.setState(state).then(() => {
-      ls.set('faker', JSON.stringify(state));
-    });
-  }
-  storageToState() {
-    return this.setState(JSON.parse(ls.get('faker')));
-  }
   createProject = (name: string, is_public: boolean) =>
-    userApi(this.state.token)
-      .Mutation.createProject({
-        name,
-        public: is_public
-      })({
-        id: true,
-        name: true,
-        public: true,
-        slug: true,
-        endpoint: { uri: true }
-      })
-      .then((p) =>
-        this.setState((state) => ({
-          ...state,
-          cloud: {
-            ...state.cloud,
-            currentProject: p,
-            projects: [...state.cloud.projects, p]
-          }
-        }))
-      );
-  listPublicProjects = () => {
-    return api.Query.listProjects()({
-      projects: {
-        id: true,
-        name: true,
-        public: true,
-        slug: true,
-        endpoint: {
-          uri: true
-        }
-      }
-    }).then((response) => {
-      this.setState((state) => ({
-        cloud: {
-          ...state.cloud,
-          searchProjects: response.projects
-        }
-      }));
-    });
-  };
-  afterLoginTemplate = (apiFunction: typeof userApi, fakerCloud: 'faker' | 'cloud') => {
-    if (!this.state.token) {
-      return;
-    }
-    const sm = `Logging ${fakerCloud}  in...`;
-    this.upStack(sm);
-    return apiFunction(this.state.token)
-      .Query.getUser({ username: this.state.user.id })({
-        id: true,
-        namespace: {
-          slug: true,
-          public: true,
-          projects: [
-            {},
-            {
-              projects: {
-                id: true,
-                public: true,
-                name: true,
-                slug: true,
-                endpoint: {
-                  uri: true
-                }
-              }
-            }
-          ]
-        }
-      })
-      .then((res) => {
-        if (res === null) {
-          return this.deStack(sm);
-        }
-        const { namespace, id } = res;
-        const {
-          projects: { projects },
-          ...restNamespace
-        } = namespace;
-        this.setState({
-          [fakerCloud]: {
-            namespace: restNamespace,
-            projects,
-            user: {
-              id
-            }
-          }
-        }).then(() => {
-          return this.deStack(sm);
-        });
-      })
-      .catch((res) => {
-        console.log(res);
-        if (res === null) {
-          this.deStack(sm);
-        } else {
-          this.errStack(res.errors[0].message);
-        }
-      });
-  };
+    createProject(this)(name, is_public).then(this.setCloud);
+  listPublicProjects = listPublicProjects(this);
+  getFakerURL = () =>
+    this.state.cloud.currentProject
+      ? `https://faker.graphqleditor.com/${this.state.cloud.currentProject.endpoint.uri}/graphql`
+      : null;
+  afterLoginTemplate = afterLogin(this);
   setToken() {
     auth.parseHash((error, result) => {
-      console.log(result);
       if (
         result &&
         result.idToken &&
@@ -586,24 +271,24 @@ export class CloudContainer extends Container<CloudState> {
             username: result.idTokenPayload.nickname,
             id: result.idTokenPayload.sub
           }
-        }).then(() => {
-          this.afterLoginTemplate(userApi, 'cloud');
+        }).then(async () => {
+          await this.afterLoginTemplate(userApi, 'cloud');
+          return this.afterLoginTemplate(fakerUserApi, 'faker');
         });
       }
     });
   }
-  logout = () =>
-    this.setStorage({
+  logout = async () => {
+    await this.setStorage({
       user: null,
       token: null,
-      expire: null,
-      cloud: {},
-      faker: {}
-    }).then(() =>
-      auth.logout({
-        returnTo: redirectUri
-      })
-    );
+      expire: null
+    });
+    await this.clearCloud();
+    auth.logout({
+      returnTo: redirectUri
+    });
+  };
   userApi = () => userApi(this.state.token);
   login = () => auth.authorize();
 }

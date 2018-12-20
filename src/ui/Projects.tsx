@@ -15,6 +15,19 @@ export class Projects extends React.Component {
         {(cloud: typeof Cloud) => {
           const { category } = cloud.state;
           const { projects, searchProjects, exampleProjects } = cloud.state.cloud;
+          const findFakerProject = (
+            where: keyof Pick<
+              typeof cloud.state.cloud,
+              'projects' | 'exampleProjects' | 'searchProjects'
+            >,
+            uri: string
+          ) => {
+            const searchIn = cloud.state.faker[where];
+            if (!searchIn) {
+              return undefined;
+            }
+            return searchIn.find((p) => p.endpoint.uri === uri);
+          };
           return (
             <div className={styles.Container}>
               <div className={styles.Left}>
@@ -27,12 +40,18 @@ export class Projects extends React.Component {
                       }));
                     }}
                     className={styles.AddImage}
-                    src="../assets/export/addIcon.png"
+                    src={require('../assets/export/addIcon.png')}
                   />
                 </div>
                 <div
                   onClick={() => {
-                    cloud.setState(state =>({
+                    if (!cloud.state.token) {
+                      cloud.setState((state) => ({
+                        popup: 'loginToContinue'
+                      }));
+                      return;
+                    }
+                    cloud.setState((state) => ({
                       category: 'my'
                     }));
                   }}
@@ -42,7 +61,7 @@ export class Projects extends React.Component {
                 </div>
                 <div
                   onClick={() => {
-                    cloud.setState(state =>({
+                    cloud.setState((state) => ({
                       category: 'public'
                     }));
                   }}
@@ -53,7 +72,7 @@ export class Projects extends React.Component {
                 <div
                   onClick={() => {
                     cloud.loadExamples();
-                    cloud.setState(state =>({
+                    cloud.setState((state) => ({
                       category: 'examples'
                     }));
                   }}
@@ -64,10 +83,26 @@ export class Projects extends React.Component {
                 <div
                   onClick={() => {
                     cloud.setState((state) => ({
+                      popup: 'loadURL'
+                    }));
+                  }}
+                  className={cx(styles.Link)}
+                >
+                  Load GraphQL URL
+                </div>
+                <div
+                  onClick={() => {
+                    if (!cloud.state.token) {
+                      cloud.setState((state) => ({
+                        popup: 'loginToContinue'
+                      }));
+                      return;
+                    }
+                    cloud.setState((state) => ({
                       popup: 'createProject'
                     }));
                   }}
-                  className={cx(styles.Link, { active: category === 'new' })}
+                  className={cx(styles.Link)}
                 >
                   Add project +
                 </div>
@@ -77,7 +112,7 @@ export class Projects extends React.Component {
                 {(category === 'my' || category === 'public') && (
                   <ProjectSearch
                     onSubmit={(e) => {
-                      cloud.listPublicProjects();
+                      cloud.listPublicProjects(e);
                     }}
                   />
                 )}
@@ -85,7 +120,18 @@ export class Projects extends React.Component {
                   projects && (
                     <div className={styles.ProjectsGrid}>
                       {projects.map((p) => (
-                        <ProjectTile key={p.id} project={p} onLoad={() => cloud.loadProject(p)} />
+                        <ProjectTile
+                          key={p.id}
+                          project={p}
+                          onLoad={() => cloud.loadProject(p)}
+                          onDelete={() =>
+                            cloud.setState({
+                              popup: 'deleteProject',
+                              removedProject: p
+                            })
+                          }
+                          fakerProject={findFakerProject('projects', p.endpoint.uri)}
+                        />
                       ))}
                     </div>
                   )}
@@ -93,7 +139,12 @@ export class Projects extends React.Component {
                   searchProjects && (
                     <div className={styles.ProjectsGrid}>
                       {searchProjects.map((p) => (
-                        <ProjectTile key={p.id} project={p} onLoad={() => cloud.loadProject(p)} />
+                        <ProjectTile
+                          key={p.id}
+                          project={p}
+                          onLoad={() => cloud.loadProject(p)}
+                          fakerProject={findFakerProject('searchProjects', p.endpoint.uri)}
+                        />
                       ))}
                     </div>
                   )}
@@ -101,7 +152,12 @@ export class Projects extends React.Component {
                   exampleProjects && (
                     <div className={styles.ProjectsGrid}>
                       {exampleProjects.map((p) => (
-                        <ProjectTile key={p.id} project={p} onLoad={() => cloud.loadProject(p)} />
+                        <ProjectTile
+                          key={p.id}
+                          project={p}
+                          onLoad={() => cloud.loadProject(p)}
+                          fakerProject={findFakerProject('exampleProjects', p.endpoint.uri)}
+                        />
                       ))}
                     </div>
                   )}

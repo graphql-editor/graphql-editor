@@ -21,17 +21,6 @@ export type FakerSourceConnection = {
   sources?: FakerSource[];
 };
 
-export type PageInfo = {
-  last?: string;
-  limit?: number;
-  next?: boolean;
-};
-
-export type ProjectConnection = {
-  pageInfo: PageInfo;
-  projects?: Project[];
-};
-
 export type Namespace = {
   projects?: (
     props: {
@@ -62,20 +51,38 @@ export type Project = {
   slug?: string;
   sources?: (
     props: {
-      last?: string;
       limit?: number;
+      last?: string;
     }
   ) => FakerSourceConnection;
 };
 
+export type PageInfo = {
+  last?: string;
+  limit?: number;
+  next?: boolean;
+};
+
+export type ProjectConnection = {
+  pageInfo: PageInfo;
+  projects?: Project[];
+};
+
 export type NewSource = {
+  filename?: string;
   contentLength?: number;
   contentType?: string;
   checksum?: string;
-  filename?: string;
 };
 
 export type Query = {
+  findProjects: (
+    props: {
+      query: string;
+      last?: string;
+      limit?: number;
+    }
+  ) => ProjectConnection;
   getProject: (
     props: {
       project: string;
@@ -98,8 +105,8 @@ export type Query = {
 export type Mutation = {
   createProject: (
     props: {
-      public?: boolean;
       name: string;
+      public?: boolean;
     }
   ) => Project;
   createUser: (
@@ -212,10 +219,10 @@ const resolveKV = (k: string, v: boolean | string | { [x: string]: boolean | str
 const objectToTree = (o: { [x: string]: boolean | string }) =>
   `{${Object.keys(o).map((k) => `${resolveKV(k, o[k])}`)}}`;
 const traverseToSeekArrays = (a) => {
-  let b = {};
   if (Object.keys(a).length === 0) {
     return '';
   }
+  let b = {};
   Object.keys(a).map((k) => {
     if (Array.isArray(a[k])) {
       b[k] = isArrayFunction(a[k]);
@@ -258,6 +265,10 @@ const fullConstruct = (options: fetchOptions) => (
 
 export const Api = (...options: fetchOptions) => ({
   Query: {
+    findProjects: ((props) => (o) =>
+      fullConstruct(options)('query', 'findProjects')(props)(o).then(
+        (response) => response as GraphQLDictReturnType<Query['findProjects']>
+      )) as FunctionToGraphQL<Query['findProjects']>,
     getProject: ((props) => (o) =>
       fullConstruct(options)('query', 'getProject')(props)(o).then(
         (response) => response as GraphQLDictReturnType<Query['getProject']>

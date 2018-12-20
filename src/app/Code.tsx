@@ -1,16 +1,19 @@
 import * as React from 'react';
 import * as styles from '../style/Code';
-import { atomDark } from 'react-syntax-highlighter/styles/prism';
-import SyntaxHighlighter from 'react-syntax-highlighter/prism';
-import * as FileSaver from 'file-saver';
 import cx from 'classnames';
 import { makeNodes } from '../livegen/import/makeNodes';
-import { GraphQLNodeType } from '../livegen/gens';
-import { LinkType } from '@slothking-online/diagram';
 
 import { importSchema } from '../livegen/import';
 import { SelectLanguage } from '../ui/SelectLanguage';
 import { serialize } from '../livegen/serialize';
+
+import AceEditor from 'react-ace';
+import { Cloud } from '../cloud/Container';
+require(`brace/theme/twilight`);
+
+require(`brace/mode/typescript`);
+require(`brace/mode/graphqlschema`);
+require(`brace/mode/json`);
 export const TABS = Object.keys(serialize).reduce(
   (a, b) => {
     a[b] = {};
@@ -23,12 +26,6 @@ export type CodeEditorProps = {
   schema: string;
   onTabChange: (name: keyof typeof TABS) => void;
   language: string;
-  loadNodes: (
-    props: {
-      nodes: GraphQLNodeType[];
-      links: LinkType[];
-    }
-  ) => void;
 };
 export type CodeEditorState = {
   loadingUrl: boolean;
@@ -40,26 +37,51 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
     loadingUrl: false,
     currentTab: 'graphql'
   };
+  taskRunner: number;
+  lastSchema: string;
+  lastEdit = 0;
+  lastGeneration = 0;
+  componentDidMount() {
+    this.taskRunner = setInterval(() => {
+      if (this.lastEdit > this.lastGeneration) {
+        try {
+          const { nodes, links } = makeNodes(importSchema(this.lastSchema));
+          Cloud.setState({
+            nodes,
+            links,
+            code: this.lastSchema,
+            loaded: {
+              nodes,
+              links
+            }
+          });
+          this.lastGeneration = Date.now();
+        } catch (error) {}
+      }
+    }, 300) as any;
+  }
+  componentWillUnmount() {
+    clearInterval(this.taskRunner);
+  }
+  // loadFromFile = (e) => {
+  //   const file = e.target.files[0];
+  //   // if (file.type.match('application/json')) {
+  //   console.log(file.type);
+  //   const reader = new FileReader();
+  //   reader.onload = (f) => {
+  //     const result = makeNodes(importSchema((f.target as any).result));
+  //     this.props.loadNodes(result);
+  //   };
+  //   reader.readAsText(file);
+  //   // }
+  // };
 
-  loadFromFile = (e) => {
-    const file = e.target.files[0];
-    // if (file.type.match('application/json')) {
-    console.log(file.type);
-    const reader = new FileReader();
-    reader.onload = (f) => {
-      const result = makeNodes(importSchema((f.target as any).result));
-      this.props.loadNodes(result);
-    };
-    reader.readAsText(file);
-    // }
-  };
-
-  saveToFile = () => {
-    var file = new File([this.props.schema], `graphql-editor-schema.gql`, {
-      type: 'application/json'
-    });
-    FileSaver.saveAs(file, `graphql-editor-schema.gql`);
-  };
+  // saveToFile = () => {
+  //   var file = new File([this.props.schema], `graphql-editor-schema.gql`, {
+  //     type: 'application/json'
+  //   });
+  //   FileSaver.saveAs(file, `graphql-editor-schema.gql`);
+  // };
   render() {
     return (
       <div className={cx(styles.Sidebar)}>
@@ -75,15 +97,50 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
           }}
         />
         <div className={cx(styles.CodeContainer)}>
-          <SyntaxHighlighter
-            PreTag={({ children }) => <div className={styles.Pre}>{children}</div>}
-            language={this.props.language}
-            style={atomDark}
-            showLineNumbers
-            wrapLines
-          >
-            {this.props.schema}
-          </SyntaxHighlighter>
+          <AceEditor
+            mode={
+              {
+                graphql: 'graphqlschema',
+                typescript: 'typescript',
+                json: 'json'
+              }[this.props.language]
+            }
+            onBlur={(e) => {
+              this.lastEdit = Date.now();
+            }}
+            onChange={(
+              e,
+              v: {
+                action: 'insert' | 'remove';
+                lines: string[];
+                end: { row: number; column: number };
+                start: { row: number; column: number };
+              }
+            ) => {
+              console.log(v);
+              if (v.action === 'insert' && v.lines.includes('}')) {
+                this.lastEdit = Date.now();
+              }
+              this.lastSchema = e;
+            }}
+            style={{
+              flex: 1,
+              height: 'auto'
+            }}
+            editorProps={{
+              $blockScrolling: Infinity
+            }}
+            setOptions={{
+              readOnly: {
+                graphql: false,
+                typescript: true,
+                json: true
+              }[this.props.language],
+              showLineNumbers: true
+            }}
+            theme={'twilight'}
+            value={this.props.schema}
+          />
         </div>
       </div>
     );

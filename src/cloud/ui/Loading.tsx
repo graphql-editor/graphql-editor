@@ -1,6 +1,15 @@
 import * as React from 'react';
 import * as styles from '../style/Loading';
-export const Loading = ({ text, errors }: { text: string[]; errors: string[] }) => (
+import { TopButton } from '../../ui/TopButton';
+export const Loading = ({
+  text,
+  errors,
+  onDismiss
+}: {
+  text: string[];
+  errors: string[];
+  onDismiss: () => void;
+}) => (
   <div className={styles.Main}>
     {text.map((t) => (
       <div className={styles.Text} key={t}>
@@ -12,5 +21,10 @@ export const Loading = ({ text, errors }: { text: string[]; errors: string[] }) 
         {t}
       </div>
     ))}
+    {errors.length > 0 && (
+      <TopButton onClick={onDismiss} variant={'Pink'} big>
+        Dismiss
+      </TopButton>
+    )}
   </div>
 );

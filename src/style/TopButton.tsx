@@ -8,14 +8,15 @@ export const Button = style({
   transition: vars.transition,
   textAlign: 'center',
   cursor: 'pointer',
-  display:'flex',
-  alignItems:'center',
+  display: 'flex',
+  alignItems: 'center',
   '-moz-user-select': 'none',
+  textDecoration: 'none',
   userSelect: 'none',
   $nest: {
     '&.small': {
       padding: `5px 9px`,
-      fontSize: 10
+      fontSize: 11
     },
     '&.big': {
       padding: `12px 21px`,
@@ -23,7 +24,7 @@ export const Button = style({
     },
     '&.disabled': {
       pointerEvents: 'none',
-      opacity: 0.7
+      opacity: 0.5
     }
   }
 });
@@ -116,12 +117,27 @@ export const Yellow = classes(
     }
   })
 );
+export const Grey = classes(
+  Button,
+  style({
+    color: Colors.grey[5],
+    background: 'transparent',
+    border: `1px solid`,
+    borderColor: Colors.grey[5],
+    $nest: {
+      '&:hover': {
+        background: Colors.grey[5],
+        color: Colors.grey[0]
+      }
+    }
+  })
+);
 
 export const Deploy = classes(
   Button,
   style({
     fontWeight: 700,
-    color: Colors.main[7],
+    color: Colors.grey[7],
     background: Colors.yellow[0],
     border: `1px solid ${Colors.yellow[0]}`
   })

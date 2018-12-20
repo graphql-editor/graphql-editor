@@ -17,8 +17,8 @@ export const Top = style({
   alignSelf: 'stretch'
 });
 export const Name = style({
-  fontSize: 18,
-  fontWeight: 700
+  fontSize: 14,
+  fontWeight: 600
 });
 export const Updated = style({
   fontSize: 10,

@@ -1,5 +1,30 @@
-import { style } from 'typestyle';
+import { style, keyframes } from 'typestyle';
 import { Colors } from './Colors';
+
+const blink = keyframes({
+  '0%': {
+    color: Colors.grey[3]
+  },
+  '10%': {
+    color: Colors.grey[0]
+  },
+  '50%': {
+    color: Colors.grey[0]
+  },
+  '60%': {
+    color: Colors.grey[3]
+  },
+  '70%': {
+    color: Colors.grey[0]
+  },
+  '80%': {
+    color: Colors.grey[3]
+  },
+  '100%': {
+    color: Colors.grey[3]
+  }
+});
+
 export const UI = style({
   height: '100vh',
   display: 'flex',
@@ -19,7 +44,9 @@ export const Center = style({
   color: Colors.grey[3],
   letterSpacing: 2,
   fontSize: 14,
-  fontWeight: 100
+  fontWeight: 100,
+  animationName: blink,
+  animationDuration: '3s'
 });
 export const Left = style({
   marginRight: 'auto',

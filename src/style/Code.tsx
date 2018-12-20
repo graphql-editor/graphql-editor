@@ -5,13 +5,13 @@ import { Colors } from './colors';
 
 export const Sidebar = style({
   width: sizeSidebar,
-  maxHeight:'100vh',
+  maxHeight: '100vh',
   flex: 1,
   zIndex: 2,
   transition: 'transform 0.4s, background-color 0.4s',
   display: 'flex',
   flexDirection: 'column',
-  background: Colors.grey[8],
+  background: Colors.grey[8]
 });
 
 export const SidebarHidden = style({
@@ -21,8 +21,8 @@ export const SidebarHidden = style({
 
 export const Pre = style({
   padding: 20,
-  paddingBottom:100,
-  fontSize:12,
+  paddingBottom: 100,
+  fontSize: 12,
   width: '100vw'
 });
 
@@ -42,8 +42,9 @@ export const ToolbarHidden = style({
 export const CodeContainer = style({
   flex: 1,
   overflowY: 'auto',
-  paddingBottom:100,
-  overflowX: 'hidden'
+  overflowX: 'hidden',
+  display: 'flex',
+  flexFlow: 'column'
 });
 
 export const CodeContainerHidden = style({

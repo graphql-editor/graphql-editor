@@ -29,17 +29,19 @@ export const Text = style({
   animationDuration: '3s',
   animationIterationCount: 'infinite',
   color: vars.overlayText,
-  padding:10
+  padding: 10,
+  maxWidth: 640
 });
 export const Err = style({
-  padding:10,
-  color:'red'
+  padding: 10,
+  color: 'red',
+  maxWidth: 640
 });
 export const Main = style({
   top: 0,
   left: 0,
   position: 'fixed',
-  zIndex: 5,
+  zIndex: 7,
   background: '#000000cc',
   animationName: fadeIn,
   animationDuration: '1s',
@@ -49,5 +51,5 @@ export const Main = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  flexDirection:'column'
+  flexDirection: 'column'
 });

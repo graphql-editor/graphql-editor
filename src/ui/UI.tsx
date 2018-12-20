@@ -7,9 +7,16 @@ import { Subscribe } from 'unstated';
 import { Cloud } from '../cloud/Container';
 import { Popup, Actions } from './Popup';
 import { Logo } from './Logo';
-import { State, Project } from '../cloud/types/project';
 import { Loading } from '../cloud/ui/Loading';
-
+import { CreateProject } from '../popups/CreateProject';
+import { SaveNotYourProject } from '../popups/SaveNotYourProject';
+import { DeleteProject } from '../popups/DeleteProject';
+import { SaveNotExistingProject } from '../popups/SaveNotExisitingProject';
+import { FakerDeployed } from '../popups/FakerDeployed';
+import { DeployNotExistingProject } from '../popups/DeployNotExistingProject';
+import { LoginToDoThis } from '../popups/LoginToDoThis';
+import { LoadFromURL } from '../popups/LoadFromURL';
+import { CreateNamespace } from '../popups/CreateNamespace';
 type MenuCategory = {
   active: boolean;
   click: () => void;
@@ -20,16 +27,7 @@ export type UIProps = {
   projects: MenuCategory;
   examples: MenuCategory;
 };
-export type UIState = {
-  project?: State<Project>;
-};
-export class UI extends React.Component<UIProps, UIState> {
-  state: UIState = {
-    project: {
-      name: '',
-      public: true
-    }
-  };
+export class UI extends React.Component<UIProps> {
   render() {
     return (
       <Subscribe to={[Cloud]}>
@@ -38,7 +36,11 @@ export class UI extends React.Component<UIProps, UIState> {
           return (
             <React.Fragment>
               {cloud.state.loadingStack.length > 0 && (
-                <Loading text={cloud.state.loadingStack} errors={cloud.state.errorStack} />
+                <Loading
+                  onDismiss={cloud.unStackAll}
+                  text={cloud.state.loadingStack}
+                  errors={cloud.state.errorStack}
+                />
               )}
               {cloud.state.popup === 'onBoarding' && (
                 <Popup onClose={() => cloud.setState({ popup: null })}>
@@ -82,41 +84,17 @@ export class UI extends React.Component<UIProps, UIState> {
                   </Actions>
                 </Popup>
               )}
-              {cloud.state.popup === 'createProject' && (
-                <Popup onClose={() => cloud.setState({ popup: null })}>
-                  <h2>Create project</h2>
-                  <h3>Stored in GraphQL Editor Cloud</h3>
-                  <VerticalSpacer height={50} />
-                  <input
-                    type="text"
-                    placeholder="Project name..."
-                    value={this.state.project.name}
-                    onChange={(e) =>
-                      this.setState({
-                        project: {
-                          ...this.state.project,
-                          name: e.target.value
-                        }
-                      })
-                    }
-                  />
-                  <VerticalSpacer height={50} />
-                  <Actions>
-                    <TopButton
-                      variant={'GreenMidFull'}
-                      big
-                      onClick={() => {
-                        if (!cloud.state.token) {
-                          cloud.login();
-                          return;
-                        }
-                      }}
-                    >
-                      Create new project
-                    </TopButton>
-                  </Actions>
-                </Popup>
+              {cloud.state.popup === 'createUser' && <CreateNamespace />}
+              {cloud.state.popup === 'createProject' && <CreateProject />}
+              {cloud.state.popup === 'deleteProject' && <DeleteProject />}
+              {cloud.state.popup === 'notYourProject' && (
+                <SaveNotYourProject name={currentProject.name} />
               )}
+              {cloud.state.popup === 'notYetProject' && <SaveNotExistingProject />}
+              {cloud.state.popup === 'notYetDeploy' && <DeployNotExistingProject />}
+              {cloud.state.popup === 'fakerDeployed' && <FakerDeployed />}
+              {cloud.state.popup === 'loginToContinue' && <LoginToDoThis />}
+              {cloud.state.popup === 'loadURL' && <LoadFromURL />}
               <div className={styles.UI}>
                 <div className={styles.TopBar}>
                   <div className={styles.Left}>
@@ -149,13 +127,90 @@ export class UI extends React.Component<UIProps, UIState> {
                     <div className={styles.Center}>{currentProject.endpoint.uri}</div>
                   )}
                   <div className={styles.Right}>
-                    {cloud.state.cloud.currentProject && (
-                      <TopButton variant={'Yellow'} onClick={cloud.saveProject}>
-                        Save
-                      </TopButton>
+                    {cloud.state.token ? (
+                      <>
+                        <TopButton variant={'Grey'} onClick={cloud.logout}>
+                          Logout
+                        </TopButton>
+                        <HorizontalSpacer />
+                      </>
+                    ) : (
+                      <>
+                        <TopButton variant={'Grey'} onClick={cloud.login}>
+                          Login
+                        </TopButton>
+                        <HorizontalSpacer />
+                      </>
                     )}
+                    {currentProject &&
+                      cloud.findInAllFakerProjects(currentProject) && (
+                        <>
+                          <TopButton
+                            variant={'Green'}
+                            onClick={() => {}}
+                            href={cloud.getFakerURL()}
+                            target="_blank"
+                          >
+                            Faker Cloud
+                          </TopButton>
+                          <HorizontalSpacer />
+                        </>
+                      )}
+                    <TopButton
+                      variant={'Yellow'}
+                      onClick={() => {
+                        if (!cloud.state.token) {
+                          cloud.setState({
+                            popup: 'loginToContinue'
+                          });
+                          return;
+                        }
+                        if (!currentProject) {
+                          cloud.setState({
+                            popup: 'notYetProject'
+                          });
+                          return;
+                        }
+                        if (cloud.state.cloud.projects.find((p) => p.id === currentProject.id)) {
+                          cloud.saveProject();
+                          return;
+                        }
+                        cloud.setState({
+                          popup: 'notYourProject'
+                        });
+                      }}
+                    >
+                      Save
+                    </TopButton>
                     <HorizontalSpacer />
-                    <TopButton variant={'Deploy'} onClick={() => {}}>
+                    <TopButton
+                      variant={'Deploy'}
+                      onClick={() => {
+                        if (!cloud.state.token) {
+                          cloud.setState({
+                            popup: 'loginToContinue'
+                          });
+                          return;
+                        }
+                        if (!currentProject) {
+                          cloud.setState({
+                            popup: 'notYetDeploy'
+                          });
+                          return;
+                        }
+                        if (cloud.state.cloud.projects.find((p) => p.id === currentProject.id)) {
+                          cloud.fakerDeployProject().then(() =>
+                            cloud.setState({
+                              popup: 'fakerDeployed'
+                            })
+                          );
+                          return;
+                        }
+                        cloud.setState({
+                          popup: 'notYourProject'
+                        });
+                      }}
+                    >
                       Mock Backend
                       <img
                         style={{

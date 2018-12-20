@@ -68,35 +68,36 @@ class Home extends React.Component<{}, ModelState> {
       filterDefinitions(nodes, type).map(mapToNode(type));
     const addImplements = (nodes: NodeType[]): Item[] =>
       filterDefinitions(nodes, nodeTypes.interface).map(mapToNode(nodeTypes.implements));
-    const mirrorNodes: ActionCategory = {
-      name: 'mirror',
-      items: [
-        ...[
-          ...[
-            nodeTypes.type,
-            nodeTypes.interface,
-            nodeTypes.input,
-            nodeTypes.scalar,
-            nodeTypes.union,
-            nodeTypes.enum
-          ].map((n) => ({
-            name: n,
-            items: addType(Cloud.state.nodes, n)
-          })),
-          {
-            name: nodeTypes.implements,
-            items: addImplements(Cloud.state.nodes)
-          }
-        ]
-      ].filter((n) => n.items.length > 0)
-    };
-    let allCategories: ActionCategory[] = [...categories];
-    if (mirrorNodes.items.length > 0) {
-      allCategories = [mirrorNodes, ...allCategories];
-    }
+
     return (
       <Subscribe to={[Cloud]}>
         {(cloud: typeof Cloud) => {
+          const mirrorNodes: ActionCategory = {
+            name: 'mirror',
+            items: [
+              ...[
+                ...[
+                  nodeTypes.type,
+                  nodeTypes.interface,
+                  nodeTypes.input,
+                  nodeTypes.scalar,
+                  nodeTypes.union,
+                  nodeTypes.enum
+                ].map((n) => ({
+                  name: n,
+                  items: addType(cloud.state.nodes, n)
+                })),
+                {
+                  name: nodeTypes.implements,
+                  items: addImplements(cloud.state.nodes)
+                }
+              ]
+            ].filter((n) => n.items.length > 0)
+          };
+          let allCategories: ActionCategory[] = [...categories];
+          if (mirrorNodes.items.length > 0) {
+            allCategories = [mirrorNodes, ...allCategories];
+          }
           return (
             <React.Fragment>
               <div className={cx(styles.Full)}>
@@ -114,6 +115,16 @@ class Home extends React.Component<{}, ModelState> {
                       this.setState({
                         visibleMenu: this.state.visibleMenu === 'projects' ? null : 'projects'
                       });
+                      if (!cloud.state.token) {
+                        cloud
+                          .setState((state) => ({
+                            category: 'examples'
+                          }))
+                          .then(() => {
+                            cloud.loadExamples();
+                          });
+                        return;
+                      }
                       cloud
                         .setState((state) => ({
                           category: 'my'
@@ -150,14 +161,6 @@ class Home extends React.Component<{}, ModelState> {
                         cloud.setState(serialize[e].fn(nodes, links, tabs));
                       }}
                       language={this.state.serializeFunction}
-                      loadNodes={(props) => {
-                        cloud.setState((state) => ({
-                          loaded: {
-                            ...state.loaded,
-                            ...props
-                          }
-                        }));
-                      }}
                     />
                   )}
                   {this.state.visibleMenu === 'projects' && <Projects />}
@@ -165,8 +168,15 @@ class Home extends React.Component<{}, ModelState> {
                     <Graph
                       categories={allCategories}
                       loaded={cloud.state.loaded}
+                      serialize={(nodes, links, tabs) => {
+                        if (nodes.length < 500) {
+                          cloud.setNodes(
+                            serialize[this.state.serializeFunction].fn(nodes, links, tabs)
+                          );
+                        }
+                      }}
                       dataSerialize={(nodes, links, tabs) => {
-                        cloud.setState(
+                        cloud.setNodes(
                           serialize[this.state.serializeFunction].fn(nodes, links, tabs)
                         );
                       }}
