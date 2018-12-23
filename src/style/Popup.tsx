@@ -83,7 +83,13 @@ export const DialogContent = style({
       padding: `15px 0 5px 0`,
       fontSize: 18,
       background: 'transparent',
-      textAlign: 'center'
+      textAlign: 'center',
+      $nest: {
+        '&.url': {
+          width: '100%',
+          fontSize: 12
+        }
+      }
     }
   }
 });

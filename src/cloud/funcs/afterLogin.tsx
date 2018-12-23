@@ -1,4 +1,5 @@
 import { userApi, Cloud } from '../Container';
+import { Analytics } from '../analytics';
 
 export const afterLogin = (instance: typeof Cloud) => async (
   apiFunction: typeof userApi,
@@ -7,7 +8,10 @@ export const afterLogin = (instance: typeof Cloud) => async (
   if (!instance.state.token) {
     return;
   }
-  if (instance.state.popup === 'onBoarding') {
+  Analytics.events.user({
+    action: 'login'
+  });
+  if (instance.state.popup === 'onBoarding' && instance.state.cloud.currentProject) {
     await instance.closePopup();
   }
   const sm = `Logging ${fakerCloud}  in...`;
@@ -37,7 +41,6 @@ export const afterLogin = (instance: typeof Cloud) => async (
       }
     })
     .then(async (res) => {
-      console.log(res);
       if (res === null) {
         await instance.setState({
           popup: 'createUser'

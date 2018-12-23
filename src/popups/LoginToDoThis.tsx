@@ -4,7 +4,14 @@ import { Cloud } from '../cloud/Container';
 import { Popup, Actions } from '../ui/Popup';
 // import { VerticalSpacer } from '../ui/VerticalSpacer';
 import { TopButton } from '../ui/TopButton';
+import { Analytics } from '../cloud/analytics';
 export class LoginToDoThis extends React.Component {
+  componentDidMount(){
+    Analytics.events.ui({
+      action:'open',
+      label:'loginToDoThis'
+    })
+  }
   render() {
     return (
       <Subscribe to={[Cloud]}>

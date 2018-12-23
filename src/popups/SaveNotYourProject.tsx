@@ -4,6 +4,7 @@ import { Cloud } from '../cloud/Container';
 import { Popup, Actions } from '../ui/Popup';
 import { VerticalSpacer } from '../ui/VerticalSpacer';
 import { TopButton } from '../ui/TopButton';
+import { Analytics } from '../cloud/analytics';
 type CreateProjectState = {
   name: string;
   public: boolean;
@@ -25,6 +26,12 @@ export class SaveNotYourProject extends React.Component<
     }
     return null;
   }
+  componentDidMount(){
+    Analytics.events.ui({
+      action:'open',
+      label:'saveNotYourProject'
+    })
+  }
   render() {
     return (
       <Subscribe to={[Cloud]}>
@@ -35,7 +42,8 @@ export class SaveNotYourProject extends React.Component<
               <h3>Stored in GraphQL Editor Cloud</h3>
               <VerticalSpacer height={30} />
               <p>
-                This project does not belong to you. Do you want to save copy of it on your account?
+                This project does not belong to you. Do you want to create a copy and save it to
+                your account?
               </p>
               <input
                 type="text"

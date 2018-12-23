@@ -3,15 +3,43 @@ import { Switch, Route, RouteComponentProps } from 'react-router-dom';
 import Home from './Home';
 import { Cloud } from '../cloud/Container';
 import { Provider } from 'unstated';
-class AppContainer extends React.Component<RouteComponentProps<any>> {
+import * as ReactGA from 'react-ga';
+class AppContainer extends React.Component<
+  RouteComponentProps<{
+    project?: string;
+    namespace?: string;
+  }>
+> {
   componentDidMount() {
-    Cloud.setToken();
+    const { namespace, project } = this.props.match.params;
+    Cloud.setState({
+      pushHistory: this.props.history.push,
+      location: this.props.location
+    });
+    if (namespace && project) {
+      Cloud.setState({
+        projectEndpoint: `${namespace}/${project}`
+      });
+    }
+    Cloud.setToken().then(() => {
+      if (namespace && project) {
+      }
+    });
+  }
+  componentDidUpdate(prevProps:
+    RouteComponentProps<{
+      project?: string;
+      namespace?: string;
+    }>){
+    if(prevProps.location.pathname !== this.props.location.pathname){
+      ReactGA.pageview(this.props.location.pathname)
+    }
   }
   render() {
     return (
       <Provider inject={[Cloud]}>
         <Switch>
-          <Route component={Home} exact path="/" />
+          <Route component={Home} path="/" />
         </Switch>
       </Provider>
     );

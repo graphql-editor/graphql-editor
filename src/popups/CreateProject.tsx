@@ -4,6 +4,7 @@ import { Cloud } from '../cloud/Container';
 import { Popup, Actions } from '../ui/Popup';
 import { VerticalSpacer } from '../ui/VerticalSpacer';
 import { TopButton } from '../ui/TopButton';
+import { Analytics } from '../cloud/analytics';
 type CreateProjectState = {
   name: string;
   public: boolean;
@@ -13,6 +14,13 @@ export class CreateProject extends React.Component<{}, CreateProjectState> {
     name: '',
     public: true
   };
+  
+  componentDidMount(){
+    Analytics.events.ui({
+      action:'open',
+      label:'createProject'
+    })
+  }
   render() {
     return (
       <Subscribe to={[Cloud]}>
@@ -42,10 +50,10 @@ export class CreateProject extends React.Component<{}, CreateProjectState> {
                     cloud.closePopup();
                     cloud
                       .createProject(this.state.name, this.state.public)
-                      .then(cloud.resetProject)
+                      .then(cloud.resetWorkspace);
                   }}
                 >
-                  Create new project
+                  Create new project +
                 </TopButton>
               </Actions>
             </Popup>

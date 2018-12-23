@@ -4,6 +4,7 @@ import { Project, State } from 'cloud/types/project';
 import { TopButton } from './TopButton';
 import { HorizontalSpacer } from './HorizontalSpacer';
 import { VerticalSpacer } from './VerticalSpacer';
+import { Analytics } from '../cloud/analytics';
 
 export const ProjectTile = ({
   project,
@@ -40,7 +41,11 @@ export const ProjectTile = ({
           fakerProject && `https://faker.graphqleditor.com/${fakerProject.endpoint.uri}/graphql`
         }
         target={fakerProject && '_blank'}
-        onClick={() => {}}
+        onClick={() => {
+          Analytics.events.faker({
+            action:'openProjectURL'
+          })
+        }}
       >
         Mock Backend
       </TopButton>

@@ -1,9 +1,14 @@
 import { Cloud, userApi } from '../Container';
+import { Analytics } from '../analytics';
 
 export const createUser = (instance: typeof Cloud) => (
   apiFunction: typeof userApi,
   fakerCloud: 'faker' | 'cloud'
 ) => async (namespace: string) => {
+
+  Analytics.events.user({
+    action: 'create'
+  });
   const sm = `Creating ${fakerCloud} user...`;
   await instance.upStack(sm);
   await instance.closePopup();

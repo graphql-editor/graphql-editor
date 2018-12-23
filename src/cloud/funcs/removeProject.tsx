@@ -1,8 +1,13 @@
 import { Cloud, userApi, fakerUserApi } from '../Container';
 import { State, Project } from '../types/project';
+import { Analytics } from '../analytics';
 
 export const removeProject = (instance: typeof Cloud) => async (project: State<Project>) => {
   const sm = `Removing project...`;
+  Analytics.events.project({
+    action: 'remove'
+  });
+  
   await instance.upStack(sm);
   if (
     instance.state.cloud.currentProject &&

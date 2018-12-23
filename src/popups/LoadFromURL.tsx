@@ -4,6 +4,7 @@ import { Cloud } from '../cloud/Container';
 import { Popup, Actions } from '../ui/Popup';
 import { VerticalSpacer } from '../ui/VerticalSpacer';
 import { TopButton } from '../ui/TopButton';
+import { Analytics } from '../cloud/analytics';
 type LoadFromURLState = {
   name: string;
 };
@@ -11,6 +12,12 @@ export class LoadFromURL extends React.Component<{}, LoadFromURLState> {
   state: LoadFromURLState = {
     name: ''
   };
+  componentDidMount(){
+    Analytics.events.ui({
+      action:'open',
+      label:'loadFromURL'
+    })
+  }
   render() {
     return (
       <Subscribe to={[Cloud]}>
@@ -22,6 +29,7 @@ export class LoadFromURL extends React.Component<{}, LoadFromURLState> {
               <VerticalSpacer height={50} />
               <input
                 type="text"
+                className="url"
                 placeholder="GraphQL URL..."
                 value={this.state.name}
                 onChange={(e) =>
@@ -37,8 +45,8 @@ export class LoadFromURL extends React.Component<{}, LoadFromURLState> {
                   big
                   disabled={this.state.name ? undefined : 'Please type any name'}
                   onClick={() => {
-                    cloud.closePopup()
-                    cloud.loadFromURL(this.state.name)
+                    cloud.closePopup();
+                    cloud.loadFromURL(this.state.name);
                   }}
                 >
                   Load project

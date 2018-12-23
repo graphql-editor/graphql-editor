@@ -15,14 +15,12 @@ export type ModelState = {
   projectId?: string;
   code: string;
   serializeFunction: keyof typeof serialize;
-  visibleMenu: null | 'code' | 'projects';
 };
 
 class Home extends React.Component<{}, ModelState> {
   state: ModelState = {
     projectId: null,
     code: '',
-    visibleMenu: null,
     serializeFunction: 'graphql'
   };
   componentDidMount() {}
@@ -103,54 +101,45 @@ class Home extends React.Component<{}, ModelState> {
               <div className={cx(styles.Full)}>
                 <UI
                   code={{
-                    active: this.state.visibleMenu === 'code',
+                    active: cloud.state.visibleMenu === 'code',
                     click: () =>
-                      this.setState({
-                        visibleMenu: this.state.visibleMenu === 'code' ? null : 'code'
+                      cloud.setState({
+                        visibleMenu: cloud.state.visibleMenu === 'code' ? null : 'code'
                       })
                   }}
                   projects={{
-                    active: this.state.visibleMenu === 'projects',
+                    active: cloud.state.visibleMenu === 'projects',
                     click: () => {
-                      this.setState({
-                        visibleMenu: this.state.visibleMenu === 'projects' ? null : 'projects'
-                      });
                       if (!cloud.state.token) {
                         cloud
                           .setState((state) => ({
-                            category: 'examples'
+                            category: 'examples',
+                            visibleMenu: cloud.state.visibleMenu === 'projects' ? null : 'projects'
                           }))
-                          .then(() => {
-                            cloud.loadExamples();
-                          });
+                          .then(cloud.loadExamples);
                         return;
                       }
                       cloud
                         .setState((state) => ({
-                          category: 'my'
+                          category: 'my',
+                          visibleMenu: cloud.state.visibleMenu === 'projects' ? null : 'projects'
                         }))
-                        .then(() => {
-                          cloud.loadExamples();
-                        });
+                        .then(cloud.loadExamples);
                     }
                   }}
                   examples={{
                     active: true,
                     click: () => {
-                      this.setState({
-                        visibleMenu: 'projects'
-                      });
                       cloud
-                        .setState((state) => ({
+                        .setState({
+                          visibleMenu: 'projects',
                           category: 'examples'
-                        }))
-                        .then(() => {
-                          cloud.loadExamples();
-                        });
+                        })
+                        .then(cloud.loadExamples);
                     }
                   }}
                 >
-                  {this.state.visibleMenu === 'code' && (
+                  {cloud.state.visibleMenu === 'code' && (
                     <CodeEditor
                       schema={cloud.state.code}
                       onTabChange={(e) => {
@@ -163,7 +152,7 @@ class Home extends React.Component<{}, ModelState> {
                       language={this.state.serializeFunction}
                     />
                   )}
-                  {this.state.visibleMenu === 'projects' && <Projects />}
+                  {cloud.state.visibleMenu === 'projects' && <Projects />}
                   <div style={{ position: 'absolute' }}>
                     <Graph
                       categories={allCategories}

@@ -1,10 +1,15 @@
 import { Cloud, userApi } from '../Container';
+import { Analytics } from '../analytics';
 
 export const createProject = (instance: typeof Cloud) => async (
   name: string,
   is_public: boolean
 ) => {
   const sm = 'Creating project...';
+
+  Analytics.events.project({
+    action: 'create'
+  });
   await instance.upStack(sm);
   return userApi(instance.state.token)
     .Mutation.createProject({

@@ -4,6 +4,7 @@ import { Cloud } from '../cloud/Container';
 import { Popup, Actions } from '../ui/Popup';
 import { VerticalSpacer } from '../ui/VerticalSpacer';
 import { TopButton } from '../ui/TopButton';
+import { Analytics } from '../cloud/analytics';
 type SaveNotExistingProjectState = {
   name: string;
   public: boolean;
@@ -13,6 +14,12 @@ export class SaveNotExistingProject extends React.Component<{}, SaveNotExistingP
     name: '',
     public: true
   };
+  componentDidMount(){
+    Analytics.events.ui({
+      action:'open',
+      label:'saveNotExisitingProject'
+    })
+  }
   render() {
     return (
       <Subscribe to={[Cloud]}>

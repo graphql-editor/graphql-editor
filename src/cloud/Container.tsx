@@ -13,6 +13,8 @@ import { removeProject } from './funcs/removeProject';
 import { loadFromURL } from './funcs/loadFromURL';
 import { createUser } from './funcs/createUser';
 import { afterLogin } from './funcs/afterLogin';
+import { findProjectByEndpoint } from './funcs/findProjectByEndpoint';
+import { History, Location } from 'history';
 const DEV_HOSTNAME = 'http://localhost:1569/';
 const PRODUCTION_HOSTNAME = 'https://app.graphqleditor.com/';
 
@@ -45,8 +47,10 @@ type CloudFakerMirror = {
   namespace?: State<Namespace>;
 };
 export type CloudState = {
+  visibleMenu: null | 'code' | 'projects';
   loadingStack: string[];
   errorStack: string[];
+  projectEndpoint?: string;
   token?: string;
   expire?: number;
   popup:
@@ -68,6 +72,8 @@ export type CloudState = {
   code: string;
   category: 'my' | 'public' | 'examples' | 'new' | 'edit';
   removedProject?: State<Project>;
+  pushHistory?: History['push'];
+  location?: Location;
   cloud: CloudFakerMirror & {
     currentProject?: State<Project>;
   };
@@ -77,7 +83,7 @@ export type CloudState = {
 
 export const api = Api(projectApiURL, {});
 export const fakerApi = Api(fakerApiURL, {});
-export const userApi = (token: string) =>
+export const userApi = (token: string = '') =>
   Api(projectApiURL, {
     method: 'GET',
     mode: 'cors',
@@ -85,7 +91,7 @@ export const userApi = (token: string) =>
       Authorization: `Bearer ${token}`
     })
   });
-export const fakerUserApi = (token: string) =>
+export const fakerUserApi = (token: string = '') =>
   Api(fakerApiURL, {
     method: 'GET',
     mode: 'cors',
@@ -96,6 +102,7 @@ export const fakerUserApi = (token: string) =>
 
 export class CloudContainer extends Container<CloudState> {
   state: CloudState = {
+    visibleMenu: null,
     cloud: {},
     faker: {},
     loadingStack: [],
@@ -113,7 +120,15 @@ export class CloudContainer extends Container<CloudState> {
   };
   constructor() {
     super();
-    this.onMount();
+    this.onMount().then(() => {
+      if (this.state.projectEndpoint) {
+        this.findProjectByEndpoint(this.state.projectEndpoint);
+      } else {
+        if (this.state.cloud.currentProject) {
+          this.moveToCurrentProject();
+        }
+      }
+    });
   }
   get allProjects() {
     return [
@@ -188,7 +203,6 @@ export class CloudContainer extends Container<CloudState> {
     await this.nodesToState();
     await this.storageToState();
     await this.cloudToState();
-    console.log(this.state);
     if (!this.state.expire) {
       return this.setState({
         token: null
@@ -201,7 +215,7 @@ export class CloudContainer extends Container<CloudState> {
       });
     }
     await this.afterLoginTemplate(userApi, 'cloud');
-    return this.afterLoginTemplate(fakerUserApi, 'faker');
+    await this.afterLoginTemplate(fakerUserApi, 'faker');
   };
   closePopup = () =>
     this.setState({
@@ -211,13 +225,13 @@ export class CloudContainer extends Container<CloudState> {
     await createUser(this)(userApi, 'cloud')(name);
     return createUser(this)(fakerUserApi, 'faker')(name);
   };
+  moveToCurrentProject = () =>
+    this.state.pushHistory &&
+    this.state.cloud.currentProject &&
+    this.state.pushHistory(`/${this.state.cloud.currentProject.endpoint.uri}`);
   removeProject = (project: State<Project>) => removeProject(this)(project).then(this.setCloud);
-  resetProject = () =>
+  resetWorkspace = () =>
     this.setState((state) => ({
-      cloud: {
-        ...state.cloud,
-        currentProject: null
-      },
       loaded: {
         links: [],
         nodes: [],
@@ -226,10 +240,13 @@ export class CloudContainer extends Container<CloudState> {
       nodes: [],
       links: [],
       tabs: []
-    })).then(this.setCloud);
+    }));
   canCreateProject = (name: string) =>
     !this.allProjects.find((p) => p.name.toLowerCase() === name.toLowerCase());
-  loadProject = (project: State<Project>) => loadProject(this)(project).then(this.setCloud);
+  loadProject = (project: State<Project>) =>
+    loadProject(this)(project)
+      .then(this.setCloud)
+      .then(this.moveToCurrentProject);
   loadExamples = loadExamples(this);
   loadFromURL = loadFromURL(this);
   saveProject = () =>
@@ -247,37 +264,42 @@ export class CloudContainer extends Container<CloudState> {
       tabs: this.state.tabs
     });
   createProject = (name: string, is_public: boolean) =>
-    createProject(this)(name, is_public).then(this.setCloud);
+    createProject(this)(name, is_public)
+      .then(this.setCloud)
+      .then(this.moveToCurrentProject);
   listPublicProjects = listPublicProjects(this);
   getFakerURL = () =>
     this.state.cloud.currentProject
       ? `https://faker.graphqleditor.com/${this.state.cloud.currentProject.endpoint.uri}/graphql`
       : null;
   afterLoginTemplate = afterLogin(this);
-  setToken() {
-    auth.parseHash((error, result) => {
-      if (
-        result &&
-        result.idToken &&
-        result.idTokenPayload &&
-        result.idTokenPayload.sub &&
-        result.idTokenPayload.exp &&
-        result.idTokenPayload.nickname
-      ) {
-        this.setStorage({
-          token: result.idToken,
-          expire: result.idTokenPayload.exp,
-          user: {
-            username: result.idTokenPayload.nickname,
-            id: result.idTokenPayload.sub
-          }
-        }).then(async () => {
-          await this.afterLoginTemplate(userApi, 'cloud');
-          return this.afterLoginTemplate(fakerUserApi, 'faker');
-        });
-      }
+  findProjectByEndpoint = findProjectByEndpoint(this);
+  setToken = () =>
+    new Promise((resolve) => {
+      auth.parseHash((error, result) => {
+        if (
+          result &&
+          result.idToken &&
+          result.idTokenPayload &&
+          result.idTokenPayload.sub &&
+          result.idTokenPayload.exp &&
+          result.idTokenPayload.nickname
+        ) {
+          this.setStorage({
+            token: result.idToken,
+            expire: result.idTokenPayload.exp,
+            user: {
+              username: result.idTokenPayload.nickname,
+              id: result.idTokenPayload.sub
+            }
+          }).then(async () => {
+            await this.afterLoginTemplate(userApi, 'cloud');
+            await this.afterLoginTemplate(fakerUserApi, 'faker');
+            resolve();
+          });
+        }
+      });
     });
-  }
   logout = async () => {
     await this.setStorage({
       user: null,

@@ -4,6 +4,7 @@ import { Cloud } from '../cloud/Container';
 import { Popup, Actions } from '../ui/Popup';
 import { VerticalSpacer } from '../ui/VerticalSpacer';
 import { TopButton } from '../ui/TopButton';
+import { Analytics } from '../cloud/analytics';
 type CreateNamespaceState = {
   name: string;
   public: boolean;
@@ -13,6 +14,13 @@ export class CreateNamespace extends React.Component<{}, CreateNamespaceState> {
     name: '',
     public: true
   };
+
+  componentDidMount(){
+    Analytics.events.ui({
+      action:'open',
+      label:'createNamespace'
+    })
+  }
   render() {
     return (
       <Subscribe to={[Cloud]}>

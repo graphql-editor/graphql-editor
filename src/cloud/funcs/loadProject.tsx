@@ -1,9 +1,13 @@
 import { Cloud, userApi } from '../Container';
 import { State, Project } from '../types/project';
+import { Analytics } from '../analytics';
 
 export const loadProject = (instance: typeof Cloud) => (project: State<Project>) => {
   const sm = `Loading project...`;
   instance.upStack(sm);
+  Analytics.events.project({
+    action: 'load'
+  });
   return userApi(instance.state.token)
     .Query.getProject({
       project: project.id
@@ -32,7 +36,7 @@ export const loadProject = (instance: typeof Cloud) => (project: State<Project>)
         const { nodes, links, tabs } = await (await fetch(projectURL)).json();
         await instance.setState((state) => ({ loaded: { nodes, links, tabs } }));
       } else {
-        await instance.resetProject();
+        await instance.resetWorkspace();
       }
       await instance.setState((state) => ({
         cloud: {

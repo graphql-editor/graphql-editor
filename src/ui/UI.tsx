@@ -2,11 +2,8 @@ import * as React from 'react';
 import { TopButton } from './TopButton';
 import * as styles from '../style/UI';
 import { HorizontalSpacer } from './HorizontalSpacer';
-import { VerticalSpacer } from './VerticalSpacer';
 import { Subscribe } from 'unstated';
 import { Cloud } from '../cloud/Container';
-import { Popup, Actions } from './Popup';
-import { Logo } from './Logo';
 import { Loading } from '../cloud/ui/Loading';
 import { CreateProject } from '../popups/CreateProject';
 import { SaveNotYourProject } from '../popups/SaveNotYourProject';
@@ -17,6 +14,8 @@ import { DeployNotExistingProject } from '../popups/DeployNotExistingProject';
 import { LoginToDoThis } from '../popups/LoginToDoThis';
 import { LoadFromURL } from '../popups/LoadFromURL';
 import { CreateNamespace } from '../popups/CreateNamespace';
+import { OnBoarding } from '../popups/OnBoarding';
+import { Analytics } from '../cloud/analytics';
 type MenuCategory = {
   active: boolean;
   click: () => void;
@@ -42,48 +41,7 @@ export class UI extends React.Component<UIProps> {
                   errors={cloud.state.errorStack}
                 />
               )}
-              {cloud.state.popup === 'onBoarding' && (
-                <Popup onClose={() => cloud.setState({ popup: null })}>
-                  <Logo height={60} />
-                  <VerticalSpacer height={50} />
-                  <p>
-                    Start designing unified systems and enter the future of backend/frontend
-                    definition design and <b>deploy mock backends</b> from <b>GraphQL</b> code in
-                    minutes.
-                  </p>
-                  <VerticalSpacer height={50} />
-                  <Actions>
-                    <TopButton
-                      variant={'GreenMidFull'}
-                      big
-                      onClick={() => {
-                        if (!cloud.state.token) {
-                          cloud.login();
-                        }
-                        cloud.setState({
-                          popup: 'createProject'
-                        });
-                      }}
-                    >
-                      Create new project
-                    </TopButton>
-                    <HorizontalSpacer />
-                    <TopButton
-                      big
-                      variant={'PinkFull'}
-                      onClick={() => {
-                        cloud
-                          .setState((state) => ({
-                            popup: null
-                          }))
-                          .then(this.props.examples.click);
-                      }}
-                    >
-                      Explore examples
-                    </TopButton>
-                  </Actions>
-                </Popup>
-              )}
+              {cloud.state.popup === 'onBoarding' && <OnBoarding />}
               {cloud.state.popup === 'createUser' && <CreateNamespace />}
               {cloud.state.popup === 'createProject' && <CreateProject />}
               {cloud.state.popup === 'deleteProject' && <DeleteProject />}
@@ -142,12 +100,38 @@ export class UI extends React.Component<UIProps> {
                         <HorizontalSpacer />
                       </>
                     )}
+                    {
+                      <>
+                        <TopButton
+                          variant={'Pink'}
+                          onClick={() => {
+                            if (!cloud.state.token) {
+                              cloud.setState({
+                                popup: 'loginToContinue'
+                              });
+                              return;
+                            }
+                            cloud.setState({
+                              popup: 'createProject'
+                            });
+                          }}
+                        >
+                          New
+                        </TopButton>
+                        <HorizontalSpacer />
+                      </>
+                    }
                     {currentProject &&
                       cloud.findInAllFakerProjects(currentProject) && (
                         <>
                           <TopButton
                             variant={'Green'}
-                            onClick={() => {}}
+                            onClick={() => {
+
+          Analytics.events.faker({
+            action:'openMyProjectURL'
+          })
+                            }}
                             href={cloud.getFakerURL()}
                             target="_blank"
                           >

@@ -1,5 +1,20 @@
-import { style } from 'typestyle';
+import { style, keyframes } from 'typestyle';
 import { Colors } from './colors';
+
+const copyAnim = keyframes({
+  '0%': {
+    opacity: 0.0
+  },
+  '25%': {
+    opacity: 1.0
+  },
+  '75%': {
+    opacity: 1.0
+  },
+  '100%': {
+    opacity: 0.0
+  }
+});
 
 export const SelectLangugage = style({
   overflow: 'hidden',
@@ -7,6 +22,7 @@ export const SelectLangugage = style({
   background: `url(${require('../assets/export/arrowDown.png')}) no-repeat right`,
   height: 35,
   outline: 'none',
+  marginRight: 'auto',
   backgroundSize: 18
 });
 export const Select = style({
@@ -39,11 +55,19 @@ export const Bar = style({
   display: 'flex',
   flexFlow: 'row nowrap',
   alignItems: 'center',
+  justifyItems: 'flex-end',
   padding: 5
 });
 export const CopyIcon = style({
-  marginLeft: 'auto',
   height: 24,
   marginRight: 5,
   cursor: 'pointer'
+});
+export const Copied = style({
+  color: Colors.green[0],
+  fontSize: 10,
+  marginRight: 10,
+  letterSpacing: 1,
+  animationName: copyAnim,
+  animationDuration: '1s'
 });

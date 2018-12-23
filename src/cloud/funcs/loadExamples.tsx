@@ -1,4 +1,5 @@
 import { Cloud, fakerApi, api } from '../Container';
+import { Analytics } from '../analytics';
 
 let examplesLoadedOnce = false;
 
@@ -7,6 +8,10 @@ export const loadExamples = (instance: typeof Cloud) => async () => {
     return;
   }
   const sm = `loading examples...`;
+
+  Analytics.events.project({
+    action: 'examples'
+  });
   await instance.upStack(sm);
   examplesLoadedOnce = true;
   return api.Query.listProjects()({

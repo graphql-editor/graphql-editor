@@ -2,6 +2,7 @@ import { Cloud, fakerUserApi } from '../Container';
 import { saveProjectTemplate } from './saveProject';
 import { State, Project } from '../types/project';
 import { NodeType, LinkType } from '@slothking-online/diagram';
+import { Analytics } from '../analytics';
 
 export const fakerDeployProject = (instance: typeof Cloud) => async ({
   nodes,
@@ -15,6 +16,10 @@ export const fakerDeployProject = (instance: typeof Cloud) => async ({
   tabs: string[];
 }) => {
   const sm = `deploying faker...`;
+
+  Analytics.events.faker({
+    action: 'deploy'
+  });
   await instance.upStack(sm);
   const fakerNamespace = instance.state.faker.namespace;
   if (!(fakerNamespace && fakerNamespace.slug)) {

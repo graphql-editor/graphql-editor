@@ -9,11 +9,13 @@ import { serialize } from '../livegen/serialize';
 
 import AceEditor from 'react-ace';
 import { Cloud } from '../cloud/Container';
+import { Analytics } from '../cloud/analytics';
 require(`brace/theme/twilight`);
 
 require(`brace/mode/typescript`);
 require(`brace/mode/graphqlschema`);
 require(`brace/mode/json`);
+require(`brace/ext/searchbox`);
 export const TABS = Object.keys(serialize).reduce(
   (a, b) => {
     a[b] = {};
@@ -56,7 +58,9 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
             }
           });
           this.lastGeneration = Date.now();
-        } catch (error) {}
+        } catch (error) {
+          console.log(error)
+        }
       }
     }, 300) as any;
   }
@@ -117,9 +121,10 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
                 start: { row: number; column: number };
               }
             ) => {
-              console.log(v);
-              if (v.action === 'insert' && v.lines.includes('}')) {
-                this.lastEdit = Date.now();
+              if(!this.lastSchema){
+                Analytics.events.code({
+                  action:'edit'
+                })
               }
               this.lastSchema = e;
             }}
@@ -136,7 +141,7 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
                 typescript: true,
                 json: true
               }[this.props.language],
-              showLineNumbers: true
+              showLineNumbers: true,
             }}
             theme={'twilight'}
             value={this.props.schema}

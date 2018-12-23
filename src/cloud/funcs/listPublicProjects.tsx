@@ -1,7 +1,13 @@
 import { Cloud, fakerApi, api } from '../Container';
+import { Analytics } from '../analytics';
 
 export const listPublicProjects = (instance: typeof Cloud) => async (query: string) => {
   const sm = `searching projects...`;
+
+  Analytics.events.project({
+    action: 'search',
+    label: query
+  });
   await instance.upStack(sm);
   return api.Query.findProjects({ query })({
     projects: {

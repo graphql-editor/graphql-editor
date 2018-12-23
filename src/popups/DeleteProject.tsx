@@ -4,11 +4,19 @@ import { Cloud } from '../cloud/Container';
 import { Popup, Actions } from '../ui/Popup';
 import { VerticalSpacer } from '../ui/VerticalSpacer';
 import { TopButton } from '../ui/TopButton';
+import { Analytics } from '../cloud/analytics';
 export type DeleteProjectState = {
   name: string;
 };
 export class DeleteProject extends React.Component<{}, DeleteProjectState> {
   state: DeleteProjectState = { name: '' };
+
+  componentDidMount(){
+    Analytics.events.ui({
+      action:'open',
+      label:'deleteProject'
+    })
+  }
   render() {
     return (
       <Subscribe to={[Cloud]}>
@@ -18,8 +26,8 @@ export class DeleteProject extends React.Component<{}, DeleteProjectState> {
               <h2>Delete project</h2>
               <VerticalSpacer height={50} />
               <p>
-                Are you sure? you want to delete project <b>{cloud.state.removedProject.name}</b>?
-                If yes please rewrite its name below.
+                Are you want to delete the project <b>{cloud.state.removedProject.name}</b>? Please
+                rewrite its name below to confirm.
               </p>
               <input
                 type="text"

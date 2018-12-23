@@ -4,6 +4,7 @@ import { NodeType, LinkType } from '@slothking-online/diagram';
 import { serializeSchema } from '../../livegen/gens/graphql/serialize';
 import { serializeFaker } from '../../livegen/gens/faker/serialize';
 import { NewSource } from '../types';
+import { Analytics } from '../analytics';
 
 export const saveProjectTemplate = (instance: typeof Cloud) => (
   apiFunc: typeof userApi,
@@ -21,6 +22,9 @@ export const saveProjectTemplate = (instance: typeof Cloud) => (
 ) => {
   const sm = 'Saving...';
   instance.upStack(sm);
+  Analytics.events.project({
+    action: 'save'
+  });
   const projectSchema = JSON.stringify({
     nodes,
     links,
