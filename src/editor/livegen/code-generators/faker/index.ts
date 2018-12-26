@@ -2,7 +2,7 @@ import * as faker from 'faker';
 import { argumentTypes } from '../../../nodeTypes';
 import { TemplateProps } from '../graphql/template';
 import { TransformedInput } from '..';
-
+export * from './serialize'
 export const getFakerMethods = () => {
   const fakerKeys: Array<keyof typeof faker> = [
     'address',

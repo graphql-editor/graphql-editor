@@ -1,8 +1,7 @@
 import { userApi, Cloud } from '../Container';
 import { Project, State } from '../types/project';
 import { NodeType, LinkType } from '@slothking-online/diagram';
-import { serializeSchema } from '../../livegen/gens/graphql/serialize';
-import { serializeFaker } from '../../livegen/gens/faker/serialize';
+import { codeGenerators } from '../../editor';
 import { NewSource } from '../types';
 import { Analytics } from '../analytics';
 
@@ -30,8 +29,8 @@ export const saveProjectTemplate = (instance: typeof Cloud) => (
     links,
     tabs
   });
-  const graphQLSchema = serializeSchema(nodes, links, tabs).code;
-  const fakerSchema = serializeFaker(nodes, links, tabs).code;
+  const graphQLSchema = codeGenerators.graphql.serializeSchema(nodes, links, tabs).code;
+  const fakerSchema = codeGenerators.faker.serializeFaker(nodes, links, tabs).code;
   const files = [
     new File(
       [

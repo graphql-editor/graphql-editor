@@ -1,5 +1,5 @@
 import { getTypes } from '.';
-import { GraphQLNodeType } from '../gens';
+import { GraphQLNodeType } from '../code-generators';
 import { nodeTypes, SubTypes, allTypes } from '../../nodeTypes';
 import { noPort, accepted } from '../../categories';
 import { MAIN_TAB_NAME, generateId, LinkType } from '@slothking-online/diagram';

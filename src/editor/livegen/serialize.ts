@@ -1,19 +1,15 @@
-import { GraphQLNodeType } from './gens';
-import { TemplateProps } from './gens/graphql/template';
-import { getDefinitionInputs, getDefinitionOutputs } from './gens/utils';
-import { SubTypes, nodeTypes } from '../nodeTypes';
-import { crudMacroTemplate } from './gens/graphql/macros/crud';
 import { LinkType } from '@slothking-online/diagram';
-import { serializeSchema } from './gens/graphql/serialize';
-import { serializeFrontend } from './gens/frontend/serialize';
-import { serializeFaker } from './gens/faker/serialize';
+import { nodeTypes, SubTypes } from '../nodeTypes';
+import { GraphQLNodeType, utils } from './code-generators';
+import { TemplateProps } from './code-generators/graphql/template';
+import { crudMacroTemplate } from './code-generators/graphql/macros';
 export const regenerateNodes = (nodes: GraphQLNodeType[], links: LinkType[]) => {
   let nodeInputs: TemplateProps[] = nodes
     .filter((n) => n.subType === SubTypes.definition)
     .map((n) => ({
       node: n,
-      inputs: getDefinitionInputs(links, nodes, n),
-      outputs: getDefinitionOutputs(links, nodes, n)
+      inputs: utils.getDefinitionInputs(links, nodes, n),
+      outputs: utils.getDefinitionOutputs(links, nodes, n)
     }));
   nodeInputs = nodeInputs.map(
     (n) =>
@@ -34,16 +30,4 @@ export const regenerateNodes = (nodes: GraphQLNodeType[], links: LinkType[]) => 
         : n
   );
   return crudMacroTemplate(nodes, links, nodeInputs);
-};
-
-export const serialize = {
-  graphql: {
-    fn: serializeSchema
-  },
-  typescript: {
-    fn: serializeFrontend
-  },
-  json: {
-    fn: serializeFaker
-  }
 };

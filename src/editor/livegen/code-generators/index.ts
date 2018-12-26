@@ -11,7 +11,7 @@ export type Requester = { [x in allTypes]?: Transforms };
 
 export type TransformedInput = GraphQLNodeType & {
   array?: boolean;
-  arrayRequired?:boolean;
+  arrayRequired?: boolean;
   args?: TransformedInput[];
 };
 
@@ -19,3 +19,9 @@ export interface GraphQLNodeType extends NodeType {
   subType: keyof typeof SubTypes;
   type: allTypes;
 }
+import * as faker from './faker';
+import * as frontend from './frontend';
+import * as graphql from './graphql';
+import * as nodes from './nodes';
+import * as utils from './utils';
+export { faker, frontend, graphql, nodes, utils };

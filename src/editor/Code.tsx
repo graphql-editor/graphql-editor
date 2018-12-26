@@ -1,29 +1,22 @@
 import * as React from 'react';
 import * as styles from '../style/Code';
 import cx from 'classnames';
-import { makeNodes } from '../livegen/import/makeNodes';
 
-import { importSchema } from '../livegen/import';
+import { importSchema, makeNodes } from './livegen/load';
 import { SelectLanguage } from '../ui/SelectLanguage';
-import { serialize } from '../livegen/serialize';
-
 import AceEditor from 'react-ace';
 import { Cloud } from '../cloud/Container';
 import { Analytics } from '../cloud/analytics';
 require(`brace/theme/twilight`);
-
 require(`brace/mode/typescript`);
 require(`brace/mode/graphqlschema`);
 require(`brace/mode/json`);
 require(`brace/ext/searchbox`);
-export const TABS = Object.keys(serialize).reduce(
-  (a, b) => {
-    a[b] = {};
-    return a;
-  },
-  {} as { [x in keyof typeof serialize]: any }
-);
-
+export const TABS = {
+  graphql:{},
+  typescript:{},
+  json:{}
+}
 export type CodeEditorProps = {
   schema: string;
   onTabChange: (name: keyof typeof TABS) => void;
@@ -59,7 +52,7 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
           });
           this.lastGeneration = Date.now();
         } catch (error) {
-          console.log(error)
+          console.log(error);
         }
       }
     }, 300) as any;
@@ -121,10 +114,10 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
                 start: { row: number; column: number };
               }
             ) => {
-              if(!this.lastSchema){
+              if (!this.lastSchema) {
                 Analytics.events.code({
-                  action:'edit'
-                })
+                  action: 'edit'
+                });
               }
               this.lastSchema = e;
             }}
@@ -141,7 +134,7 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
                 typescript: true,
                 json: true
               }[this.props.language],
-              showLineNumbers: true,
+              showLineNumbers: true
             }}
             theme={'twilight'}
             value={this.props.schema}

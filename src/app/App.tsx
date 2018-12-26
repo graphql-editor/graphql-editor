@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { Switch, Route, RouteComponentProps } from 'react-router-dom';
-import Home from './Home';
 import { Cloud } from '../cloud/Container';
 import { Provider } from 'unstated';
 import * as ReactGA from 'react-ga';
+import { Home } from './Home';
 class AppContainer extends React.Component<
   RouteComponentProps<{
     project?: string;
@@ -26,13 +26,14 @@ class AppContainer extends React.Component<
       }
     });
   }
-  componentDidUpdate(prevProps:
-    RouteComponentProps<{
+  componentDidUpdate(
+    prevProps: RouteComponentProps<{
       project?: string;
       namespace?: string;
-    }>){
-    if(prevProps.location.pathname !== this.props.location.pathname){
-      ReactGA.pageview(this.props.location.pathname)
+    }>
+  ) {
+    if (prevProps.location.pathname !== this.props.location.pathname) {
+      ReactGA.pageview(this.props.location.pathname);
     }
   }
   render() {

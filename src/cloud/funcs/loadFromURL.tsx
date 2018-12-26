@@ -1,6 +1,5 @@
 import { Cloud } from '../Container';
-import { getSchemaFromURL } from '../../livegen/import/fromUrl';
-import { makeNodes } from '../../livegen/import/makeNodes';
+import { load } from '../../editor';
 import { Analytics } from '../analytics';
 
 export const loadFromURL = (instance: typeof Cloud) => async (url: string) => {
@@ -11,8 +10,8 @@ export const loadFromURL = (instance: typeof Cloud) => async (url: string) => {
   });
   await instance.upStack(sm);
   try {
-    const schema = await getSchemaFromURL(url);
-    const { nodes, links } = makeNodes(schema);
+    const schema = await load.getSchemaFromURL(url);
+    const { nodes, links } = load.makeNodes(schema);
     return instance
       .setState((state) => ({
         nodes,
