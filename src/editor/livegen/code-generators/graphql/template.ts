@@ -83,17 +83,3 @@ export const rootSubscriptionTemplate = (subscriptions: string) =>
   `type Subscription{
 ${subscriptions}
 }`;
-//TODO: Implement front queries
-export const frontQueries = () => `
-  {
-    allFilms(first: 5) {
-      totalCount
-      pageInfo {
-        endCursor
-      }
-      films {
-        title
-      }
-    }
-  }
-`;

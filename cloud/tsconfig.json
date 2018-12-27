@@ -9,8 +9,8 @@
     "declaration": false,
     "removeComments": true,
     "noUnusedLocals": true,
-    "lib": ["es6", "es7", "dom"],
-    "outDir": "./lib",
+    "lib": ["es6", "es7", "esnext", "dom"],
+    "outDir": "../dist",
     "baseUrl": "./",
     "rootDir": "../"
   },

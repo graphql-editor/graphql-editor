@@ -103,7 +103,10 @@ export const generateFakerResolverBase = (
 };
 export const generateFakerResolverType = (template: TemplateProps) => {
   return {
-    [template.node.name]: generateFakerResolverBase(template, 'inputs')
+    [template.node.name]: {
+      type: 'type',
+      object: generateFakerResolverBase(template, 'inputs')
+    }
   };
 };
 
@@ -118,15 +121,16 @@ export const generateFakerResolverEnum = (template: TemplateProps) => {
 export const generateFakerResolverScalar = (template: TemplateProps) => {
   return {
     [template.node.name]: {
-      type: 'scalar'
+      type: 'scalar',
+      scalar: `scalar.${template.node.name}`
     }
   };
 };
 export const generateFakerResolverUnion = (template: TemplateProps) => {
   return {
     [template.node.name]: {
-      type: 'union',
-      union: template.inputs.map(i => i.name)
+      type:'union',
+      union: template.inputs.map((i) => i.name)
     }
   };
 };

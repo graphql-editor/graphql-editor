@@ -47,7 +47,10 @@ export const serializeSchema = (
     mainCode += '\n\tsubscription: Subscription';
   }
   mainCode += '\n}';
-  const code = [
+  if (!queriesCode && !mutationsCode && !subscriptionsCode) {
+    mainCode = '';
+  }
+  let code = [
     nodeTypes.scalar,
     nodeTypes.enum,
     nodeTypes.interface,
@@ -57,13 +60,16 @@ export const serializeSchema = (
   ]
     .map((n) => generator(nodeTypes[n], templates[nodeTypes[n]]))
     .filter((c) => c.length > 0)
-    .join('\n\n')
-    .concat('\n\n')
-    .concat(
-      [queriesCode, mutationsCode, subscriptionsCode].filter((c) => c.length > 0).join('\n\n')
-    )
-    .concat('\n\n')
-    .concat(mainCode);
+    .join('\n\n');
+  if (mainCode) {
+    code = code
+      .concat('\n\n')
+      .concat(
+        [queriesCode, mutationsCode, subscriptionsCode].filter((c) => c.length > 0).join('\n\n')
+      )
+      .concat('\n\n')
+      .concat(mainCode);
+  }
   return {
     code,
     nodes,

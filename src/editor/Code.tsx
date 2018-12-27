@@ -33,20 +33,24 @@ export type CodeEditorProps = {
 export type CodeEditorState = {
   loadingUrl: boolean;
   currentTab: keyof typeof TABS;
+  canMountAce: boolean;
 };
 
 export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState> {
   state: CodeEditorState = {
     loadingUrl: false,
+    canMountAce: false,
     currentTab: 'graphql'
   };
   taskRunner: number;
   lastSchema: string;
   lastEdit = 0;
   lastGeneration = 0;
+  holder: HTMLDivElement;
+  editor: AceEditor;
   componentDidMount() {
     this.taskRunner = setInterval(() => {
-      if (this.lastEdit > this.lastGeneration) {
+      if (this.lastSchema && this.lastEdit > this.lastGeneration) {
         try {
           const { nodes, links } = makeNodes(importSchema(this.lastSchema));
           this.props.remakeNodes && this.props.remakeNodes(nodes, links, this.lastSchema);
@@ -95,8 +99,19 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
             clipboard.writeText(this.props.schema);
           }}
         />
-        <div className={cx(styles.CodeContainer)}>
+        <div
+          className={cx(styles.CodeContainer)}
+          ref={(ref) => {
+            if (ref && !this.holder) {
+              this.holder = ref;
+              setTimeout(() => {
+                (this.refs.editor as any).editor.resize();
+              }, 1);
+            }
+          }}
+        >
           <AceEditor
+            ref={'editor'}
             mode={
               {
                 graphql: 'graphqlschema',

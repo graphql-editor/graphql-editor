@@ -37,5 +37,14 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: 'assets/index.html'
     })
-  ]
+  ],
+  devServer: {
+    contentBase: sourcePath,
+    hot: true,
+    inline: true,
+    historyApiFallback: {
+      disableDotRule: true
+    },
+    stats: 'minimal'
+  }
 };

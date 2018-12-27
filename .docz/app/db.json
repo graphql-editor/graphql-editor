@@ -1,0 +1,79 @@
+{
+  "config": {
+    "title": "GraphQL Editor Docs",
+    "description": "graphqleditor.com documentation",
+    "menu": [],
+    "ordering": "descending",
+    "version": "0.8.0",
+    "repository": null,
+    "native": false,
+    "codeSandbox": true,
+    "themeConfig": {},
+    "typescript": true,
+    "src": "./docs",
+    "dest": "./docs-dist"
+  },
+  "entries": {
+    "Editor.mdx": {
+      "name": "Editor",
+      "menu": "Components",
+      "id": "7d63859af549dac4b2bd9e69882aa227",
+      "filepath": "Editor.mdx",
+      "link": null,
+      "slug": "editor",
+      "route": "/editor",
+      "order": 0,
+      "headings": [
+        {
+          "depth": 1,
+          "slug": "editor-component",
+          "value": "Editor component"
+        }
+      ]
+    },
+    "FakerExample.mdx": {
+      "name": "Faker Example",
+      "menu": "Examples",
+      "id": "2c0b2c176afc6d2dabcf651803c71fba",
+      "filepath": "FakerExample.mdx",
+      "link": null,
+      "slug": "faker-example",
+      "route": "/faker-example",
+      "order": 0,
+      "headings": [
+        {
+          "depth": 1,
+          "slug": "create-and-use-mock-twitter",
+          "value": "Create and use mock twitter"
+        }
+      ]
+    },
+    "index.mdx": {
+      "name": "Getting started",
+      "route": "/",
+      "id": "73498ad0e1e62a714b08085d318f9de1",
+      "filepath": "index.mdx",
+      "link": null,
+      "slug": "index",
+      "order": 0,
+      "menu": null,
+      "headings": [
+        {
+          "depth": 1,
+          "slug": "getting-started",
+          "value": "Getting started"
+        },
+        {
+          "depth": 2,
+          "slug": "using-graphql-editor-component",
+          "value": "Using GraphQL Editor Component"
+        },
+        {
+          "depth": 2,
+          "slug": "development",
+          "value": "Development"
+        }
+      ]
+    }
+  }
+}

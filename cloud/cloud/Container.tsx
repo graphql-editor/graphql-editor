@@ -121,14 +121,18 @@ export class CloudContainer extends Container<CloudState> {
   constructor() {
     super();
     this.onMount().then(() => {
-      if (
-        this.state.projectEndpoint &&
-        (!this.state.cloud.currentProject ||
-          this.state.projectEndpoint !== this.state.cloud.currentProject.endpoint.uri)
-      ) {
-        this.findProjectByEndpoint(this.state.projectEndpoint);
+      const {
+        projectEndpoint,
+        cloud: { currentProject }
+      } = this.state;
+      if (projectEndpoint) {
+        if (currentProject) {
+          if (currentProject.endpoint.uri !== projectEndpoint) {
+            this.findProjectByEndpoint(projectEndpoint);
+          }
+        }
       } else {
-        if (this.state.cloud.currentProject) {
+        if (currentProject) {
           this.moveToCurrentProject();
         }
       }
@@ -277,7 +281,10 @@ export class CloudContainer extends Container<CloudState> {
       ? `https://faker.graphqleditor.com/${this.state.cloud.currentProject.endpoint.uri}/graphql`
       : null;
   afterLoginTemplate = afterLogin(this);
-  findProjectByEndpoint = findProjectByEndpoint(this);
+  findProjectByEndpoint = (endpoint: string) =>
+    findProjectByEndpoint(this)(endpoint)
+      .then(this.setCloud)
+      .then(this.moveToCurrentProject);
   setToken = () =>
     new Promise((resolve) => {
       auth.parseHash((error, result) => {

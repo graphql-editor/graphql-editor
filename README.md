@@ -8,7 +8,7 @@ With GraphQLEditor you can create visual diagrams without writing any code.
 
 ## Live Demo [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=First%20visual%20GraphQL%20Editor&url=https://github.com/slothking-online/graphql-editor)
 
-Here is a [live demo](https://demo.graphqleditor.com) example of GraphQLEditor.
+Here is a [live demo](https://app.graphqleditor.com) example of GraphQLEditor.
 
 ## Cloud Backend
 

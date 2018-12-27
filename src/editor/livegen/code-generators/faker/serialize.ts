@@ -1,7 +1,14 @@
 import { GraphQLNodeType } from '../';
 import { TemplateProps } from '../graphql/template';
 import { nodeTypes } from '../../../nodeTypes';
-import { arrayToDict, generateFakerResolverOperation, generateFakerResolverType, generateFakerResolverEnum, generateFakerResolverScalar, generateFakerResolverUnion } from '../faker';
+import {
+  arrayToDict,
+  generateFakerResolverOperation,
+  generateFakerResolverType,
+  generateFakerResolverEnum,
+  generateFakerResolverScalar,
+  generateFakerResolverUnion
+} from '../faker';
 import { NodeType, LinkType } from '@slothking-online/diagram';
 import { regenerateNodes } from '../../serialize';
 export const serializeFaker = (
@@ -31,7 +38,6 @@ export const serializeFaker = (
     return a;
   }, {});
 
-
   const fakeScalarResolvers = [nodeTypes.scalar].reduce((a, b) => {
     a = {
       ...a,
@@ -52,9 +58,12 @@ export const serializeFaker = (
     nodeTypes.Mutation,
     nodeTypes.Subscription
   ].reduce((a, b) => {
-    a[b] = arrayToDict(
-      nodeInputs.filter((n) => n.node.type === b).map(generateFakerResolverOperation)
-    );
+    a[b] = {
+      type: 'type',
+      object: arrayToDict(
+        nodeInputs.filter((n) => n.node.type === b).map(generateFakerResolverOperation)
+      )
+    };
     return a;
   }, {});
   const fakeSchema = {

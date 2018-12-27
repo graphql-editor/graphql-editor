@@ -34,5 +34,5 @@ export const findProjectByEndpoint = (instance: typeof Cloud) => async (endpoint
         instance.state.pushHistory('/');
       }
       return null;
-    });
+    })
 };

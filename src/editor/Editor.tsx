@@ -14,7 +14,6 @@ import { GraphQLNodeType, frontend, graphql, faker } from './livegen/code-genera
 
 export type EditorState = {
   projectId?: string;
-  code: string;
   serializeFunction: keyof typeof TABS;
 };
 export type EditorProps = {
@@ -36,7 +35,6 @@ export type EditorProps = {
 export class Editor extends React.Component<EditorProps, EditorState> {
   state: EditorState = {
     projectId: null,
-    code: '',
     serializeFunction: 'graphql'
   };
   componentDidMount() {}
@@ -133,7 +131,7 @@ export class Editor extends React.Component<EditorProps, EditorState> {
             language={this.state.serializeFunction}
           />
         )}
-        <div style={{ position: 'absolute' }}>
+        <div style={{ position: 'absolute', left: 0, top: 0 }}>
           <Graph
             categories={allCategories}
             loaded={this.props.loaded}
