@@ -78,9 +78,9 @@ type ResolveReturned<T> = {
       : T[P] extends Func<any, any> ? ResolveReturned<ReturnType<T[P]>> : T[P]
 };
 
-export type State<T> = ResolveReturned<T> 
+export type State<T> = T extends (infer R)[] ? ResolveReturned<R>[] : ResolveReturned<T> 
 
-type GraphQLDictReturnType<T> = T extends Func<any, any> ? ResolveReturned<ReturnType<T>> : T;
+type GraphQLDictReturnType<T> = T extends Func<any, any> ? ResolveReturned<State<T>> : T;
 
 type ResolveArgs<T> = {
   [P in keyof T]?: T[P] extends (infer R)[]

@@ -3,6 +3,10 @@ name: Getting started
 route: /
 ---
 
+import { Link } from 'docz';
+import { Analytics } from './Analytics';
+Analytics.init();
+
 # Getting started
 
 Getting started with graphql editor is very easy.
@@ -26,3 +30,17 @@ $ npm run start
 
 It will run sandboxed environment with basic GraphQL Editor and code.
 Feel free to contribute or file an issue.
+
+## Visual Editor Usage
+
+You can import your GraphQL Schema or create your own from scratch. To create your schema you have 2 ways:
+
+1. Code schema in code editor
+2. Draw it with spacebar menu
+
+If you dont know GraphQL language here are some good resources to start:
+
+https://www.howtographql.com/
+
+https://graphql.github.io/learn/
+

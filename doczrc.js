@@ -3,5 +3,5 @@ export default {
   typescript: true,
   src: './docs',
   dest: './docs-dist',
-  description: 'graphqleditor.com documentation'
+  description: 'graphqleditor.com documentation',
 };

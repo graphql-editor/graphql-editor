@@ -14,40 +14,6 @@
     "dest": "./docs-dist"
   },
   "entries": {
-    "Editor.mdx": {
-      "name": "Editor",
-      "menu": "Components",
-      "id": "7d63859af549dac4b2bd9e69882aa227",
-      "filepath": "Editor.mdx",
-      "link": null,
-      "slug": "editor",
-      "route": "/editor",
-      "order": 0,
-      "headings": [
-        {
-          "depth": 1,
-          "slug": "editor-component",
-          "value": "Editor component"
-        }
-      ]
-    },
-    "FakerExample.mdx": {
-      "name": "Faker Example",
-      "menu": "Examples",
-      "id": "2c0b2c176afc6d2dabcf651803c71fba",
-      "filepath": "FakerExample.mdx",
-      "link": null,
-      "slug": "faker-example",
-      "route": "/faker-example",
-      "order": 0,
-      "headings": [
-        {
-          "depth": 1,
-          "slug": "create-and-use-mock-twitter",
-          "value": "Create and use mock twitter"
-        }
-      ]
-    },
     "index.mdx": {
       "name": "Getting started",
       "route": "/",
@@ -72,6 +38,62 @@
           "depth": 2,
           "slug": "development",
           "value": "Development"
+        },
+        {
+          "depth": 2,
+          "slug": "visual-editor-usage",
+          "value": "Visual Editor Usage"
+        }
+      ]
+    },
+    "Components/Editor.mdx": {
+      "name": "Editor",
+      "menu": "Components",
+      "id": "d52867194eb3fd8141d2e3f5913c7f38",
+      "filepath": "Components/Editor.mdx",
+      "link": null,
+      "slug": "components-editor",
+      "route": "/components-editor",
+      "order": 0,
+      "headings": [
+        {
+          "depth": 1,
+          "slug": "editor-component",
+          "value": "Editor component"
+        }
+      ]
+    },
+    "Examples/FakeTwitterExample.mdx": {
+      "name": "Fake Twitter Example",
+      "menu": "Examples",
+      "id": "f9a32bc34c44a8d0517d5f9970f263d8",
+      "filepath": "Examples/FakeTwitterExample.mdx",
+      "link": null,
+      "slug": "examples-fake-twitter-example",
+      "route": "/examples-fake-twitter-example",
+      "order": 0,
+      "headings": [
+        {
+          "depth": 1,
+          "slug": "create-and-use-mock-twitter",
+          "value": "Create and use mock twitter"
+        }
+      ]
+    },
+    "VisualTool/index.mdx": {
+      "name": "Getting started",
+      "menu": "Visual Editor",
+      "route": "/visual",
+      "id": "e2008ff3b77fe31b9f48acf0bf50220e",
+      "filepath": "VisualTool/index.mdx",
+      "link": null,
+      "slug": "visual-tool-index",
+      "order": 0,
+      "headings": [
+        {
+          "depth": 1,
+          "slug": "getting-started",
+          "value": "Getting started"
         }
       ]
     }
