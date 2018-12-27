@@ -2,7 +2,7 @@ import * as faker from 'faker';
 import { argumentTypes } from '../../../nodeTypes';
 import { TemplateProps } from '../graphql/template';
 import { TransformedInput } from '..';
-export * from './serialize'
+export * from './serialize';
 export const getFakerMethods = () => {
   const fakerKeys: Array<keyof typeof faker> = [
     'address',
@@ -65,6 +65,7 @@ export type FakerResolverReturn = {
   type?: string;
   ref?: string;
   enum?: string[];
+  union?: string[];
   options?: FakerResolverReturn[];
   inputs?: {
     [x: string]: FakerResolverReturn;
@@ -76,7 +77,10 @@ export type FakerResolverReturn = {
 export type FakerDict = {
   [x: string]: FakerResolverReturn;
 };
-export const generateFakerResolverBase = (template: TemplateProps, io: 'inputs' | 'outputs') => {
+export const generateFakerResolverBase = (
+  template: TemplateProps,
+  io: 'inputs' | 'outputs'
+): Record<string, FakerDict> => {
   const mapClone = (i: TransformedInput): FakerDict =>
     i.clone
       ? {
@@ -108,6 +112,21 @@ export const generateFakerResolverEnum = (template: TemplateProps) => {
     [template.node.name]: {
       type: 'enum',
       enum: template.inputs.map((i) => i.name)
+    } as FakerResolverReturn
+  };
+};
+export const generateFakerResolverScalar = (template: TemplateProps) => {
+  return {
+    [template.node.name]: {
+      type: 'scalar'
+    }
+  };
+};
+export const generateFakerResolverUnion = (template: TemplateProps) => {
+  return {
+    [template.node.name]: {
+      type: 'union',
+      union: template.inputs.map(i => i.name)
     }
   };
 };

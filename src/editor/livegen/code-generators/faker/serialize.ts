@@ -1,7 +1,7 @@
 import { GraphQLNodeType } from '../';
 import { TemplateProps } from '../graphql/template';
 import { nodeTypes } from '../../../nodeTypes';
-import { arrayToDict, generateFakerResolverOperation, generateFakerResolverType } from '../faker';
+import { arrayToDict, generateFakerResolverOperation, generateFakerResolverType, generateFakerResolverEnum, generateFakerResolverScalar, generateFakerResolverUnion } from '../faker';
 import { NodeType, LinkType } from '@slothking-online/diagram';
 import { regenerateNodes } from '../../serialize';
 export const serializeFaker = (
@@ -23,10 +23,19 @@ export const serializeFaker = (
     return a;
   }, {});
 
-  const fakeEnumResolvers = [nodeTypes.scalar].reduce((a, b) => {
+  const fakeEnumResolvers = [nodeTypes.enum].reduce((a, b) => {
     a = {
       ...a,
-      ...arrayToDict(nodeInputs.filter((n) => n.node.type === b).map(generateFakerResolverType))
+      ...arrayToDict(nodeInputs.filter((n) => n.node.type === b).map(generateFakerResolverEnum))
+    };
+    return a;
+  }, {});
+
+
+  const fakeScalarResolvers = [nodeTypes.scalar].reduce((a, b) => {
+    a = {
+      ...a,
+      ...arrayToDict(nodeInputs.filter((n) => n.node.type === b).map(generateFakerResolverScalar))
     };
     return a;
   }, {});
@@ -34,7 +43,7 @@ export const serializeFaker = (
   const fakeUnionResolvers = [nodeTypes.union].reduce((a, b) => {
     a = {
       ...a,
-      ...arrayToDict(nodeInputs.filter((n) => n.node.type === b).map(generateFakerResolverType))
+      ...arrayToDict(nodeInputs.filter((n) => n.node.type === b).map(generateFakerResolverUnion))
     };
     return a;
   }, {});
@@ -52,6 +61,7 @@ export const serializeFaker = (
     ...fakeOperationResolvers,
     ...fakeResolvers,
     ...fakeEnumResolvers,
+    ...fakeScalarResolvers,
     ...fakeUnionResolvers
   };
   return {

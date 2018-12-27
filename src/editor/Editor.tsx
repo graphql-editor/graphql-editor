@@ -7,7 +7,7 @@ import {
   LoadedFile
 } from '@slothking-online/diagram';
 import * as React from 'react';
-import { CodeEditor, TABS } from './Code';
+import { CodeEditor, TABS, CodeEditorOuterProps } from './Code';
 import { categories, singlePortOutput } from './categories';
 import { nodeTypes, SubTypes } from './nodeTypes';
 import { GraphQLNodeType, frontend, graphql, faker } from './livegen/code-generators';
@@ -31,7 +31,7 @@ export type EditorProps = {
       links: LinkType[];
     }
   ) => void;
-};
+} & CodeEditorOuterProps;
 
 export class Editor extends React.Component<EditorProps, EditorState> {
   state: EditorState = {
@@ -109,7 +109,6 @@ export class Editor extends React.Component<EditorProps, EditorState> {
     if (mirrorNodes.items.length > 0) {
       allCategories = [mirrorNodes, ...allCategories];
     }
-
     const serializeFunction = {
       graphql: graphql.serializeSchema,
       typescript: frontend.serializeFrontend,
@@ -121,6 +120,9 @@ export class Editor extends React.Component<EditorProps, EditorState> {
         {this.props.editorVisible === true && (
           <CodeEditor
             schema={this.props.code}
+            schemaChanged={this.props.schemaChanged}
+            copiedToClipboard={this.props.copiedToClipboard}
+            remakeNodes={this.props.remakeNodes}
             onTabChange={(e) => {
               const { nodes, links, tabs } = this.props;
               this.setState({

@@ -1,27 +1,35 @@
 import * as React from 'react';
-import * as styles from '../style/Code';
+import * as styles from './style/Code';
 import cx from 'classnames';
 
 import { importSchema, makeNodes } from './livegen/load';
-import { SelectLanguage } from '../ui/SelectLanguage';
+import { SelectLanguage } from './SelectLanguage';
 import AceEditor from 'react-ace';
-import { Cloud } from '../cloud/Container';
-import { Analytics } from '../cloud/analytics';
+import { GraphQLNodeType } from './livegen/code-generators';
+import { LinkType } from '@slothking-online/diagram';
 require(`brace/theme/twilight`);
 require(`brace/mode/typescript`);
 require(`brace/mode/graphqlschema`);
 require(`brace/mode/json`);
 require(`brace/ext/searchbox`);
 export const TABS = {
-  graphql:{},
-  typescript:{},
-  json:{}
-}
+  graphql: {},
+  typescript: {},
+  json: {}
+};
+
+export type CodeEditorOuterProps = {
+  languageChanged?: (language: string) => void;
+  schemaChanged?: (schema: string) => void;
+  copiedToClipboard?: () => void;
+  remakeNodes?: (nodes: GraphQLNodeType[], links: LinkType[], code: string) => void;
+};
+
 export type CodeEditorProps = {
   schema: string;
   onTabChange: (name: keyof typeof TABS) => void;
   language: string;
-};
+} & CodeEditorOuterProps;
 export type CodeEditorState = {
   loadingUrl: boolean;
   currentTab: keyof typeof TABS;
@@ -41,15 +49,7 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
       if (this.lastEdit > this.lastGeneration) {
         try {
           const { nodes, links } = makeNodes(importSchema(this.lastSchema));
-          Cloud.setState({
-            nodes,
-            links,
-            code: this.lastSchema,
-            loaded: {
-              nodes,
-              links
-            }
-          });
+          this.props.remakeNodes && this.props.remakeNodes(nodes, links, this.lastSchema);
           this.lastGeneration = Date.now();
         } catch (error) {
           console.log(error);
@@ -85,11 +85,13 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
         <SelectLanguage
           tabs={Object.keys(TABS)}
           onSelect={(currentTab) => {
+            this.props.languageChanged && this.props.languageChanged(currentTab);
             this.setState({ currentTab });
             this.props.onTabChange(currentTab);
           }}
           onCopy={() => {
             const { clipboard } = window.navigator as any;
+            this.props.copiedToClipboard && this.props.copiedToClipboard();
             clipboard.writeText(this.props.schema);
           }}
         />
@@ -115,9 +117,7 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
               }
             ) => {
               if (!this.lastSchema) {
-                Analytics.events.code({
-                  action: 'edit'
-                });
+                this.props.schemaChanged && this.props.schemaChanged(e);
               }
               this.lastSchema = e;
             }}

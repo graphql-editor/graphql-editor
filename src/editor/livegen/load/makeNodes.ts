@@ -16,7 +16,7 @@ const isNotCircularReferenceType = (disallowedTypes: string[]) => (fieldType: st
 };
 
 const makeCustomNode = (
-  node: PartialPick<GraphQLNodeType, 'subType' | 'type' | 'name'>
+  node: Partial<GraphQLNodeType> & Pick<GraphQLNodeType, 'subType' | 'type' | 'name'>
 ): GraphQLNodeType => ({
   id: generateId(),
   outputs: noPort,

@@ -8,7 +8,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server --mode development --hot --progress --color --port 1569 --open",
     "build": "webpack -p --progress --colors",
-    "prettier": "prettier --write \"src/**/*.{ts,tsx,css}\""
+    "prettier": "prettier --write \"src/**/*.{ts,tsx,css}\"",
+    "cloud": "webpack-dev-server --config ./cloud/webpack.config.dev.js --content-base ./cloud/ --hot --inline --open",
+    "build-cloud": "webpack-dev-server --config ./cloud/webpack.config.production.js --content-base ./cloud/ --hot --inline --open",
+    "sandbox": "webpack-dev-server --config ./sandbox/webpack.config.js --content-base ./sandbox/ --hot --inline --open"
   },
   "license": "MIT",
   "devDependencies": {
@@ -24,10 +27,15 @@
     "@types/react-router": "4.0.22",
     "@types/react-router-dom": "^4.3.1",
     "@types/webpack": "3.8.8",
-    "@types/webpack-env": "1.13.5",
+    "@types/webpack-env": "^1.13.5",
     "babel-loader": "^7.1.5",
     "css-loader": "^0.28.10",
     "file-loader": "^1.1.11",
+    "grunt": "^1.0.3",
+    "grunt-contrib-clean": "^1.1.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-watch": "^1.1.0",
+    "grunt-ts": "^6.0.0-beta.19",
     "html-loader": "^1.0.0-alpha.0",
     "html-webpack-plugin": "^3.0.4",
     "mini-css-extract-plugin": "^0.4.3",
