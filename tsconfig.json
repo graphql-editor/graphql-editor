@@ -14,5 +14,5 @@
     "rootDir": "./src",
     "baseUrl": "./src/"
   },
-  "exclude": ["lib", "node_modules", "sandbox", "cloud"]
+  "exclude": ["lib", "node_modules", "sandbox", "cloud", "docs"]
 }

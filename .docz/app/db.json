@@ -49,11 +49,11 @@
     "Components/Editor.mdx": {
       "name": "Editor",
       "menu": "Components",
+      "route": "/editor",
       "id": "d52867194eb3fd8141d2e3f5913c7f38",
       "filepath": "Components/Editor.mdx",
       "link": null,
       "slug": "components-editor",
-      "route": "/components-editor",
       "order": 0,
       "headings": [
         {
@@ -77,6 +77,23 @@
           "depth": 1,
           "slug": "create-and-use-mock-twitter",
           "value": "Create and use mock twitter"
+        }
+      ]
+    },
+    "VisualTool/Controls.mdx": {
+      "name": "Cotrols",
+      "menu": "Visual Editor",
+      "route": "/visual/controls",
+      "id": "8243a83150a8e950a829ff0bfd8273de",
+      "filepath": "VisualTool/Controls.mdx",
+      "link": null,
+      "slug": "visual-tool-controls",
+      "order": 0,
+      "headings": [
+        {
+          "depth": 1,
+          "slug": "controls",
+          "value": "Controls"
         }
       ]
     },
