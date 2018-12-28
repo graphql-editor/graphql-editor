@@ -5,6 +5,8 @@ node_modules
 *.log*
 build
 dist
-deploy.sh
-deploy-toolkit.yaml
+docs-dist
+lib
 .idea
+.docz
+.tscache

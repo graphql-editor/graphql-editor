@@ -10,37 +10,21 @@ With GraphQLEditor you can create visual diagrams without writing any code.
 
 Here is a [live demo](https://app.graphqleditor.com) example of GraphQLEditor.
 
+## Docs
+
+Full docs are available here. How to use in your project, develop etc.
+
+https://docs.graphqleditor.com
+
 ## Cloud Backend
 
 [GraphQL Editor Website](https://graphqleditor.com)
 
 As cloud backend is coming soon, please do subscribe on our website to stay tuned.
 
-## Setup
+## License
 
-Clone the repository
-
-```
-$ git clone https://github.com/slothking-online/graphql-editor
-$ cd graphql-editor
-```
-
-Install with npm package manager
-
-```
-$ npm install
-```
-
-## Running
-
-```
-$ npm run start
-```
-
-After that the editor should be running on localhost:
-```
-http://localhost:1569
-```
+MIT
 
 ## How It Works
 
@@ -50,29 +34,15 @@ Create GraphQL nodes and connect them to generate a database schema.
 
 To create nodes press and hold *spacebar*, then hover mouse button on chosen category. Click the mouse button on node to create it. Connect nodes with each other.
 
-### Controls
+## Support 
 
-- **Create** - Press and hold *spacebar* and choose *category* » *node* and *Left Mouse Button click*
-- **Pan** - Press and hold *Left Mouse Button* and move mouse
-- **Move** - Press and hold *Left Mouse Button* on node
-- **Rename** - To rename node simply start typing when one node is selected
-- **Connect** - Click and hold desired node output and move it to other node's output then release mouse button
-  IMPORTANT: Every node is connectable only if it creates a valid schema. Experiment to test it.
-- **Node Properties** - Click right mouse button on node
-- ⌘/Ctrl + *Left Mouse Button click* - select multiple nodes
-- **Delete** - Click *delete* button when node/nodes are selected or right click » *delete*
+Ask the community on [Spectrum](https://spectrum.chat/graphql-editor)
 
-### Small Tutorial
-
-1.  Create *graph* » *type* node
-2.  Rename it to "Cat"
-3.  Create *fields* » *"String"* node
-4.  Rename it to "name"
-5.  Connect "name"
+or [Join our Slack Channel](https://join.slack.com/t/graphqleditor/shared_invite/enQtNDkwOTgyOTM5OTc1LWI4YjU3N2U5NGVkNzQ2NzY5MGUxMTJiNjFlZDM1Zjc2OWRmNTI0NDM3OWUxYTk4Yjk3MzZlY2QwOWUzZmM2NDI)
 
 ## Contribute
 
-Feel free to contact us and contribute in this GraphQL Editor project. aexol@aexol.com
+For a complete guide to contributing to GraphQL Editor, see the [Contribution Guide](CONTRIBUTING.md).
 
 1.  Fork this repo
 2.  Create your feature branch: git checkout -b feature-name

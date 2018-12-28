@@ -1,0 +1,72 @@
+---
+name: Getting started
+route: /
+---
+
+import { Link } from 'docz';
+import * as ReactGA from 'react-ga';
+class AnalyticsClass {
+  initDone = false;
+  lastLocation = '/';
+  tick = () => {
+    const page = window.location.pathname;
+    if (this.lastLocation !== page) {
+      this.lastLocation = page;
+      this.page(page);
+    }
+  };
+  init = () => {
+    if (this.initDone) {
+      return;
+    }
+    this.initDone = true;
+    ReactGA.initialize('UA-127595045-5', {
+      debug: process.env.NODE_ENV === 'development'
+    });
+    setInterval(this.tick, 10000);
+  };
+  page = (path) => {
+    if (!this.initDone) {
+      this.init();
+    }
+    return ReactGA.pageview(path);
+  };
+}
+new AnalyticsClass().init();
+
+# Getting started
+
+Getting started with graphql editor is very easy.
+
+## Using GraphQL Editor Component
+
+```sh
+$ npm i graphql-editor
+```
+
+Navigate to [Editor](./Editor)
+
+## Development
+
+```sh
+$ git clone https://github.com/slothking-online/graphql-editor
+$ cd graphql-editor
+$ npm i
+$ npm run start
+```
+
+It will run sandboxed environment with basic GraphQL Editor and code.
+Feel free to contribute or file an issue.
+
+## Visual Editor Usage
+
+You can import your GraphQL Schema or create your own from scratch. To create your schema you have 2 ways:
+
+1. Code schema in code editor
+2. Draw it with spacebar menu
+
+If you dont know GraphQL language here are some good resources to start:
+
+https://www.howtographql.com/
+
+https://graphql.github.io/learn/
