@@ -1,7 +1,7 @@
 var webpack = require('webpack');
 var path = require('path');
 var sourcePath = path.join(__dirname, './');
-var outPath = path.join(__dirname, './');
+var outPath = path.join(__dirname, '../dist');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
