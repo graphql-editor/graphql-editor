@@ -4,6 +4,7 @@ node_modules
 .module-cache
 *.log*
 build
+assets
 dist
 src
 deploy.sh

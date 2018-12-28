@@ -1,9 +1,10 @@
 {
   "name": "graphql-editor",
   "version": "0.8.0",
-  "private": true,
+  "private": false,
   "description": "Visual node editor for GraphQL",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "start": "webpack-dev-server --config ./sandbox/webpack.config.js --content-base ./sandbox/ --hot --inline --open",
     "build": "grunt",
