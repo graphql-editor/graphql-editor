@@ -3,6 +3,7 @@ import { argumentTypes } from '../../../nodeTypes';
 import { TemplateProps } from '../graphql/template';
 import { TransformedInput } from '..';
 export * from './serialize';
+
 export const getFakerMethods = () => {
   const fakerKeys: Array<keyof typeof faker> = [
     'address',
@@ -26,19 +27,16 @@ export const getFakerMethods = () => {
         faker: string;
       }[];
     };
-  } = fakerKeys.reduce((a, b) => {
-    if (typeof faker[b] !== 'object') {
+  } = fakerKeys.reduce((a, name) => {
+    if (typeof faker[name] !== 'object') {
       return a;
     }
-    if (name === 'between') {
-      return a;
-    }
-    a[b] = {
+    a[name] = {
       name,
-      items: Object.keys(faker[b]).map((fb) => ({
-        type: typeof faker[b][fb](),
+      items: Object.keys(faker[name]).map((fb) => ({
+        type: typeof faker[name][fb](),
         name: fb,
-        faker: `${b}.${fb}`
+        faker: `${name}.${fb}`
       }))
     };
     return a;
@@ -129,7 +127,7 @@ export const generateFakerResolverScalar = (template: TemplateProps) => {
 export const generateFakerResolverUnion = (template: TemplateProps) => {
   return {
     [template.node.name]: {
-      type:'union',
+      type: 'union',
       union: template.inputs.map((i) => i.name)
     }
   };

@@ -8,3 +8,5 @@ dist
 docs-dist
 lib
 .idea
+.docz
+.tscache

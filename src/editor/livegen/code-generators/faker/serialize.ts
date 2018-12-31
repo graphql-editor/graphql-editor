@@ -8,7 +8,7 @@ import {
   generateFakerResolverEnum,
   generateFakerResolverScalar,
   generateFakerResolverUnion
-} from '../faker';
+} from './';
 import { NodeType, LinkType } from '@slothking-online/diagram';
 import { regenerateNodes } from '../../serialize';
 export const serializeFaker = (

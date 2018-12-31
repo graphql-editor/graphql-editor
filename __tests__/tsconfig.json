@@ -9,10 +9,10 @@
     "declaration": true,
     "removeComments": true,
     "noUnusedLocals": true,
-    "outDir": "./lib",
     "lib": ["es6", "es7", "esnext", "dom"],
-    "rootDir": "./src",
-    "baseUrl": "./src/"
+    "outDir": "./lib",
+    "baseUrl": "./",
+    "rootDir": "../"
   },
-  "exclude": ["lib", "node_modules", "sandbox", "cloud", "docs", "cypress", "__tests__"]
+  "exclude": ["dist", "build", "node_modules"]
 }

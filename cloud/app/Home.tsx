@@ -7,6 +7,8 @@ import { UI } from '../cloud/ui/UI';
 import { Editor } from '../../src';
 import { Projects } from '../cloud/ui/Projects';
 import { Analytics } from '../cloud/analytics';
+import Intercom from 'react-intercom';
+
 export type HomeState = {
   projectId?: string;
   code: string;
@@ -84,11 +86,12 @@ export class Home extends React.Component<{}, HomeState> {
                       action: 'edit'
                     });
                   }}
-                  languageChanged={(label)=>{
+                  languageChanged={(label) => {
                     Analytics.events.code({
                       action: 'select',
                       label
-                    });}}
+                    });
+                  }}
                   remakeNodes={(nodes, links, code) => {
                     cloud
                       .setNodes({
@@ -107,6 +110,7 @@ export class Home extends React.Component<{}, HomeState> {
                   }}
                 />
               </UI>
+              <Intercom appID="k0lckhv8" user_id={cloud.state.user && cloud.state.user.id} />
             </div>
           );
         }}
