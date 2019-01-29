@@ -7,6 +7,7 @@ import { SelectLanguage } from './SelectLanguage';
 import AceEditor from 'react-ace';
 import { GraphQLNodeType } from './livegen/code-generators';
 import { LinkType } from '@slothking-online/diagram';
+import { Parser } from '../Parser';
 require(`brace/theme/twilight`);
 require(`brace/mode/typescript`);
 require(`brace/mode/graphqlschema`);
@@ -21,13 +22,11 @@ export const TABS = {
 export type CodeEditorOuterProps = {
   languageChanged?: (language: string) => void;
   schemaChanged?: (schema: string) => void;
-  copiedToClipboard?: () => void;
   remakeNodes?: (nodes: GraphQLNodeType[], links: LinkType[], code: string) => void;
 };
 
 export type CodeEditorProps = {
   schema: string;
-  onTabChange: (name: keyof typeof TABS) => void;
   language: string;
 } & CodeEditorOuterProps;
 export type CodeEditorState = {
@@ -48,7 +47,9 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
   lastGeneration = 0;
   holder: HTMLDivElement;
   editor: AceEditor;
+  parser = new Parser();
   componentDidMount() {
+    this.parser.parserTest()
     this.taskRunner = setInterval(() => {
       if (this.lastSchema && this.lastEdit > this.lastGeneration) {
         try {
@@ -64,25 +65,25 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
   componentWillUnmount() {
     clearInterval(this.taskRunner);
   }
-  // loadFromFile = (e) => {
-  //   const file = e.target.files[0];
-  //   // if (file.type.match('application/json')) {
-  //   console.log(file.type);
-  //   const reader = new FileReader();
-  //   reader.onload = (f) => {
-  //     const result = makeNodes(importSchema((f.target as any).result));
-  //     this.props.loadNodes(result);
-  //   };
-  //   reader.readAsText(file);
-  //   // }
-  // };
+  loadFromFile = (e) => {
+    const file = e.target.files[0];
+    // if (file.type.match('application/json')) {
+    console.log(file.type);
+    const reader = new FileReader();
+    reader.onload = (f) => {
+      this.parser.importSchema((f.target as any).result as string);
+      this.parser.parse();
+    };
+    reader.readAsText(file);
+    // }
+  };
 
-  // saveToFile = () => {
-  //   var file = new File([this.props.schema], `graphql-editor-schema.gql`, {
-  //     type: 'application/json'
-  //   });
-  //   FileSaver.saveAs(file, `graphql-editor-schema.gql`);
-  // };
+  saveToFile = () => {
+    // var file = new File([this.props.schema], `graphql-editor-schema.gql`, {
+    //   type: 'application/json'
+    // });
+    // FileSaver.saveAs(file, `graphql-editor-schema.gql`);
+  };
   render() {
     return (
       <div className={cx(styles.Sidebar)}>
@@ -91,14 +92,13 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
           onSelect={(currentTab) => {
             this.props.languageChanged && this.props.languageChanged(currentTab);
             this.setState({ currentTab });
-            this.props.onTabChange(currentTab);
           }}
           onCopy={() => {
             const { clipboard } = window.navigator as any;
-            this.props.copiedToClipboard && this.props.copiedToClipboard();
             clipboard.writeText(this.props.schema);
           }}
         />
+        <input type="file" onChange={this.loadFromFile} />
         <div
           className={cx(styles.CodeContainer)}
           ref={(ref) => {

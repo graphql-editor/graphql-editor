@@ -80,6 +80,15 @@ export class UI extends React.Component<UIProps> {
                     >
                       examples
                     </TopButton>
+                    <HorizontalSpacer />
+                    <TopButton
+                      variant={'Pink'}
+                      href={'https://docs.graphqleditor.com'}
+                      onClick={() => {}}
+                      target={'_blank'}
+                    >
+                      docs
+                    </TopButton>
                   </div>
                   {currentProject && (
                     <div className={styles.Center}>{currentProject.endpoint.uri}</div>
@@ -127,10 +136,9 @@ export class UI extends React.Component<UIProps> {
                           <TopButton
                             variant={'Green'}
                             onClick={() => {
-
-          Analytics.events.faker({
-            action:'openMyProjectURL'
-          })
+                              Analytics.events.faker({
+                                action: 'openMyProjectURL'
+                              });
                             }}
                             href={cloud.getFakerURL()}
                             target="_blank"

@@ -3,7 +3,8 @@ import { vars, Colors } from '../../../src';
 export const Button = style({
   padding: `10px 18px`,
   borderRadius: 3,
-  fontSize: 12,
+  fontSize: 11,
+  fontWeight:700,
   transition: vars.transition,
   textAlign: 'center',
   cursor: 'pointer',
@@ -15,7 +16,7 @@ export const Button = style({
   $nest: {
     '&.small': {
       padding: `5px 9px`,
-      fontSize: 11
+      fontSize: 10
     },
     '&.big': {
       padding: `12px 21px`,

@@ -1,29 +1,31 @@
-/* eslint-disable import/default */
 import * as React from 'react';
 import { render } from 'react-dom';
-import { AppContainer } from 'react-hot-loader';
-import App from './app/App';
+import { Editor } from '../src/index';
 
-import { cssRaw } from 'typestyle';
-cssRaw(`
-body{
-    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+class App extends React.Component<
+  {},
+  {
+    editorVisible: boolean;
+  }
+> {
+  state = {
+    editorVisible: true
+  };
+  render() {
+    return (
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'grid',
+          gridTemplateColumns: this.state.editorVisible ? `auto 1fr` : '1fr',
+          gridTemplateRows: '1fr'
+        }}
+      >
+        <Editor editorVisible={this.state.editorVisible} code="" />
+      </div>
+    );
+  }
 }
-`);
 
-const renderFunc = (Component: React.ComponentType<any>) =>
-  render(
-    <AppContainer>
-      <Component />
-    </AppContainer>,
-    document.getElementById('root')
-  );
-
-renderFunc(App);
-
-if (module.hot) {
-  module.hot.accept('./app/App', () => {
-    const NewRoot = require('./app/App').default;
-    renderFunc(NewRoot);
-  });
-}
+render(<App />, document.getElementById('root'));

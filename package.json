@@ -6,7 +6,7 @@
   "description": "Visual node editor for GraphQL",
   "main": "index.js",
   "scripts": {
-    "start": "webpack-dev-server --config ./sandbox/webpack.config.js --content-base ./sandbox/ --hot --inline --open",
+    "start": "webpack-dev-server --config ./sandbox/webpack.config.js --content-base ./sandbox/ --port 1569 --hot --inline --open",
     "build": "grunt",
     "prettier": "prettier --write \"src/**/*.{ts,tsx,css}\"",
     "cloud": "webpack-dev-server --config ./cloud/webpack.config.dev.js --content-base ./cloud/ --port 1569 --hot --inline --open",
@@ -59,7 +59,7 @@
     "webpack": "^4.19.1",
     "webpack-cleanup-plugin": "^0.5.1",
     "webpack-cli": "^3.1.2",
-    "webpack-dev-server": "^3.1.8",
+    "webpack-dev-server": "^3.1.14",
     "webpack-merge": "^4.1.5"
   },
   "dependencies": {
@@ -70,6 +70,7 @@
     "faker": "^4.1.0",
     "file-saver": "^2.0.0",
     "graphql": "^14.0.2",
+    "graphsource": "file:../diagram",
     "moment": "^2.21.0",
     "query-string": "^6.2.0",
     "react": "^16.5.2",

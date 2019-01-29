@@ -2,8 +2,8 @@ import * as React from 'react';
 import { Switch, Route, RouteComponentProps } from 'react-router-dom';
 import { Cloud } from '../cloud/Container';
 import { Provider } from 'unstated';
-import * as ReactGA from 'react-ga';
 import { Home } from './Home';
+import { Analytics } from '../cloud/analytics';
 class AppContainer extends React.Component<
   RouteComponentProps<{
     project?: string;
@@ -33,7 +33,7 @@ class AppContainer extends React.Component<
     }>
   ) {
     if (prevProps.location.pathname !== this.props.location.pathname) {
-      ReactGA.pageview(this.props.location.pathname);
+      Analytics.page(this.props.location.pathname);
     }
   }
   render() {
