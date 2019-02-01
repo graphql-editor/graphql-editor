@@ -7,7 +7,7 @@ import { SelectLanguage } from './SelectLanguage';
 import AceEditor from 'react-ace';
 import { GraphQLNodeType } from './livegen/code-generators';
 import { LinkType } from '@slothking-online/diagram';
-import { Parser } from '../Parser';
+import { GraphController } from '../Graph';
 require(`brace/theme/twilight`);
 require(`brace/mode/typescript`);
 require(`brace/mode/graphqlschema`);
@@ -27,7 +27,8 @@ export type CodeEditorOuterProps = {
 
 export type CodeEditorProps = {
   schema: string;
-  language: string;
+  language: 'graphql' | 'typescript' | 'json';
+  controller: GraphController;
 } & CodeEditorOuterProps;
 export type CodeEditorState = {
   loadingUrl: boolean;
@@ -41,15 +42,13 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
     canMountAce: false,
     currentTab: 'graphql'
   };
-  taskRunner: number;
-  lastSchema: string;
+  taskRunner?: number;
+  lastSchema?: string;
   lastEdit = 0;
   lastGeneration = 0;
-  holder: HTMLDivElement;
-  editor: AceEditor;
-  parser = new Parser();
+  holder?: HTMLDivElement;
+  editor?: AceEditor;
   componentDidMount() {
-    this.parser.parserTest()
     this.taskRunner = setInterval(() => {
       if (this.lastSchema && this.lastEdit > this.lastGeneration) {
         try {
@@ -65,17 +64,13 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
   componentWillUnmount() {
     clearInterval(this.taskRunner);
   }
-  loadFromFile = (e) => {
-    const file = e.target.files[0];
-    // if (file.type.match('application/json')) {
-    console.log(file.type);
+  loadFromFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target!.files![0];
     const reader = new FileReader();
     reader.onload = (f) => {
-      this.parser.importSchema((f.target as any).result as string);
-      this.parser.parse();
+      this.props.controller.load((f.target! as any).result);
     };
     reader.readAsText(file);
-    // }
   };
 
   saveToFile = () => {
@@ -85,6 +80,11 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
     // FileSaver.saveAs(file, `graphql-editor-schema.gql`);
   };
   render() {
+    const aceMode = {
+      graphql: 'graphqlschema',
+      typescript: 'typescript',
+      json: 'json'
+    }[this.props.language];
     return (
       <div className={cx(styles.Sidebar)}>
         <SelectLanguage
@@ -112,13 +112,7 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
         >
           <AceEditor
             ref={'editor'}
-            mode={
-              {
-                graphql: 'graphqlschema',
-                typescript: 'typescript',
-                json: 'json'
-              }[this.props.language]
-            }
+            mode={aceMode}
             onBlur={(e) => {
               this.lastEdit = Date.now();
             }}
@@ -144,11 +138,7 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
               $blockScrolling: Infinity
             }}
             setOptions={{
-              readOnly: {
-                graphql: false,
-                typescript: true,
-                json: true
-              }[this.props.language],
+              readOnly: aceMode !== 'graphqlschema',
               showLineNumbers: true
             }}
             theme={'twilight'}

@@ -4,6 +4,7 @@ export const testSchema = `type Author{
 	lastName: String!
 }
 
+"""Book the book """
 type Book{
     
     """Identifies the book """

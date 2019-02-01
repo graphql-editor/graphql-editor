@@ -1,13 +1,25 @@
-import { NodeDefinition, NodeOption, Diagram } from 'graphsource';
+import { NodeDefinition, NodeOption, Diagram, NodeUtils } from 'graphsource';
 import { help } from './help';
+import { TreeToNodes } from '../TreeToNodes';
+import { Parser } from '../Parser';
 
 export class GraphController {
   diagram?: Diagram;
+  public definitions?: NodeDefinition[];
+  parser = new Parser();
   setDOMElement = (element: HTMLElement) => {
     this.diagram = new Diagram(element);
     this.loadDefinitions();
   };
   loadOldNodes = () => {};
+  load = (schema: string) => {
+    const tree = this.parser.parse(schema);
+    const result = TreeToNodes.resolveTree(tree.tree, this.definitions!);
+    this.diagram!.setDefinitions(this.definitions!);
+    NodeUtils.beautifyDiagram(result.nodes);
+    this.diagram!.setNodes(result.nodes);
+    this.diagram!.setLinks(result.links);
+  };
   loadDefinitions = () => {
     const createOND = (name: string): NodeDefinition['node'] => ({
       name: `${name}Node`,
@@ -126,6 +138,9 @@ export class GraphController {
       ...builtInEnumObjects,
       ...builtInUnionObjects
     ];
-    this.diagram.setDefinitions(nodeDefinitions);
+
+    this.definitions = nodeDefinitions;
+
+    this.diagram!.setDefinitions(this.definitions);
   };
 }

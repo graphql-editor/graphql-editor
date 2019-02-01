@@ -12,7 +12,7 @@ export type EditorProps = {
 
 export class Editor extends React.Component<EditorProps, EditorState> {
   state: EditorState = {
-    projectId: null,
+    projectId: undefined,
     serializeFunction: 'graphql'
   };
   private containerRef = React.createRef<HTMLDivElement>();
@@ -28,6 +28,7 @@ export class Editor extends React.Component<EditorProps, EditorState> {
       <>
         {this.props.editorVisible === true && (
           <CodeEditor
+            controller={this.controller}
             schema={this.props.code}
             schemaChanged={this.props.schemaChanged}
             remakeNodes={this.props.remakeNodes}

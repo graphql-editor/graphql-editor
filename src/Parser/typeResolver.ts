@@ -4,7 +4,6 @@ import {
   InputValueDefinitionNode,
   TypeNode
 } from 'graphql';
-import { Colors } from '../Colors';
 import { ParserField, ScalarTypes, Options } from '../Models';
 
 export class TypeResolver {
@@ -39,17 +38,25 @@ export class TypeResolver {
     };
   }
   static iterateObjectTypeFields(fields: ReadonlyArray<FieldDefinitionNode>): ParserField[] {
-    return fields.map((n) => ({
-      name: n.name.value,
-      args: n.arguments && TypeResolver.iterateInputValueFields(n.arguments),
-      type: TypeResolver.resolveSingleField(n.type)
-    }));
+    return fields.map(
+      (n) =>
+        ({
+          name: n.name.value,
+          description: n.description && n.description.value,
+          args: n.arguments && TypeResolver.iterateInputValueFields(n.arguments),
+          type: TypeResolver.resolveSingleField(n.type)
+        } as ParserField)
+    );
   }
   static iterateInputValueFields(fields: ReadonlyArray<InputValueDefinitionNode>): ParserField[] {
-    return fields.map((n) => ({
-      name: n.name.value,
-      type: TypeResolver.resolveSingleField(n.type)
-    }));
+    return fields.map(
+      (n) =>
+        ({
+          name: n.name.value,
+          description: n.description && n.description.value,
+          type: TypeResolver.resolveSingleField(n.type)
+        } as ParserField)
+    );
   }
   static resolveFields(n: TypeDefinitionNode): ParserField[] | null {
     if (n.kind === 'EnumTypeDefinition') {
@@ -78,28 +85,10 @@ export class TypeResolver {
     if (n.kind === 'InputObjectTypeDefinition') {
       if (!n.fields) return null;
       const fields = TypeResolver.iterateInputValueFields(n.fields);
-      for (const f of fields) {
-        console.log(
-          `\t %c${f.name}: %c${f.type.name} ${
-            f.type.options ? '| ' + f.type.options.join(',') : ''
-          }`,
-          `color:${Colors.grey[3]}`,
-          `color:${Colors.yellow[0]}`
-        );
-      }
-      console.log('Fields', n.fields);
       return fields;
     }
     if (!n.fields) return null;
     const fields = TypeResolver.iterateObjectTypeFields(n.fields);
-    for (const f of fields) {
-      console.log(
-        `\t %c${f.name}: %c${f.type.name} ${f.type.options ? '| ' + f.type.options.join(',') : ''}`,
-        `color:${Colors.grey[3]}`,
-        `color:${Colors.yellow[0]}`
-      );
-    }
-    console.log('Fields', n.fields);
     return fields;
   }
 }

@@ -1,29 +1,30 @@
 import { GraphQLSchema, buildASTSchema, parse, GraphQLNamedType } from 'graphql';
-import { testSchemaComplicated } from './testSchema';
 import { TypeResolver } from './typeResolver';
-import { Colors } from '../Colors';
 import { ParserTree, ParserRoot } from '../Models';
 export class Parser {
   private schema?: GraphQLSchema;
-  importSchema = (schema: string): GraphQLSchema => (this.schema = buildASTSchema(parse(schema)));
-  namedTypeToSerializedNodeTree = (n: GraphQLNamedType):ParserRoot => {
+  static importSchema = (schema: string): GraphQLSchema => buildASTSchema(parse(schema));
+  namedTypeToSerializedNodeTree = (n: GraphQLNamedType): ParserRoot => {
     const { name } = n;
     const type = TypeResolver.resolveRootNode(n.astNode!.kind);
-    console.log(`%c${type} %c${name}`, `color:${Colors.main[0]}`, `color:${Colors.green[0]}`);
     return {
       name,
       type,
+      description: n.description ? n.description : undefined,
       fields: TypeResolver.resolveFields(n.astNode!)
     };
   };
-  parse = () => {
-    console.log(this.schema);
+  parse = (schema: string) => {
+    this.schema = Parser.importSchema(schema);
     const typeMap = this.schema!.getTypeMap();
-    // const operations = {
-    //   Query: this.schema.getQueryType(),
-    //   Mutation: this.schema.getMutationType(),
-    //   Subscription: this.schema.getSubscriptionType()
-    // };
+    const operations = {
+      Query: this.schema.getQueryType(),
+      Mutation: this.schema.getMutationType(),
+      Subscription: this.schema.getSubscriptionType()
+    };
+    if (!operations.Query) {
+      throw new Error('Query is required for schema to work. INVALID SCHEMA');
+    }
     const rootNodes = Object.keys(typeMap)
       .map((t) => ({
         key: t,
@@ -35,11 +36,8 @@ export class Parser {
     const nodeTree: ParserTree = {
       nodes: rootNodes.map(this.namedTypeToSerializedNodeTree)
     };
-    console.log(nodeTree);
-    return nodeTree;
-  };
-  parserTest = () => {
-    this.importSchema(testSchemaComplicated);
-    this.parse();
+    return {
+      tree: nodeTree
+    };
   };
 }
