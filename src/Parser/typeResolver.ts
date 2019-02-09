@@ -20,14 +20,19 @@ export class TypeResolver {
   }
   static resolveSingleField(n: TypeNode, options: Options[] = []): ParserField['type'] {
     if (n.kind === 'ListType') {
-      const opts = [...options, Options.array];
+      let opts = [...options, Options.array];
       return {
         options: opts,
         ...TypeResolver.resolveSingleField(n.type, opts)
       };
     }
     if (n.kind === 'NonNullType') {
-      const opts = [...options, Options.required];
+      const opts = [...options];
+      if (opts.indexOf(Options.required) >= 0 && opts.indexOf(Options.array) >= 0) {
+        opts.push(Options.arrayRequired);
+      } else {
+        opts.push(Options.required);
+      }
       return {
         options: opts,
         ...TypeResolver.resolveSingleField(n.type, opts)
@@ -58,6 +63,10 @@ export class TypeResolver {
         } as ParserField)
     );
   }
+  static resolveInterfaces(n: TypeDefinitionNode) {
+    if (n.kind !== 'ObjectTypeDefinition' || !n.interfaces) return;
+    return n.interfaces.map((i) => i.name.value);
+  }
   static resolveFields(n: TypeDefinitionNode): ParserField[] | null {
     if (n.kind === 'EnumTypeDefinition') {
       if (!n.values) return null;
@@ -65,6 +74,7 @@ export class TypeResolver {
         (v) =>
           ({
             name: v.name.value,
+            description:v.description && v.description.value,
             type: { name: ScalarTypes.EnumValue }
           } as ParserField)
       );
@@ -78,7 +88,7 @@ export class TypeResolver {
         (t) =>
           ({
             name: t.name.value,
-            type: { name: t.name.kind }
+            type: { name: t.name.value }
           } as ParserField)
       );
     }

@@ -1,4 +1,18 @@
-export const help: Record<string, string> = {
+export const help: {
+  type: string;
+  interface: string;
+  input: string;
+  union: string;
+  scalar: string;
+  enum: string;
+  EnumValue: string;
+  String: string;
+  Int: string;
+  Float: string;
+  Boolean: string;
+  ID: string;
+  implements: string;
+} = {
   type:
     'The most basic components of a GraphQL schema are object types, which just represent a kind of object you can fetch from your service, and what fields it has. ',
   interface:
@@ -10,10 +24,12 @@ export const help: Record<string, string> = {
   scalar: 'Custom scalar type',
   enum:
     'Enumeration types are a special kind of scalar that is restricted to a particular set of allowed string values',
+  EnumValue: 'Value of Enum',
   String: "Character sequence like 'Hello' or 'person' etc.",
   Int: 'Integer value like 1 or -2 or 0 or 1234',
   Float: 'Floating point value like 2.345, 3334.1, -11.2, 0, 1.0',
   Boolean: 'true or false value',
   ID:
-    'The ID scalar type represents a unique identifier, often used to refetch an object or as the key for a cache. The ID type is serialized in the same way as a String; however, defining it as an ID signifies that it is not intended to be human‐readable'
+    'The ID scalar type represents a unique identifier, often used to refetch an object or as the key for a cache. The ID type is serialized in the same way as a String; however, defining it as an ID signifies that it is not intended to be human‐readable',
+  implements: 'Connect interface nodes to make type implements them'
 };

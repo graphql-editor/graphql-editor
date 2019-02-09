@@ -1,4 +1,5 @@
 export enum Options {
   array = 'array',
-  required = 'required'
+  required = 'required',
+  arrayRequired = 'arrayRequired'
 }

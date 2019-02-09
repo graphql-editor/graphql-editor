@@ -2,7 +2,6 @@ import * as React from 'react';
 import * as styles from './style/Code';
 import cx from 'classnames';
 
-import { importSchema, makeNodes } from './livegen/load';
 import { SelectLanguage } from './SelectLanguage';
 import AceEditor from 'react-ace';
 import { GraphQLNodeType } from './livegen/code-generators';
@@ -52,8 +51,6 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
     this.taskRunner = setInterval(() => {
       if (this.lastSchema && this.lastEdit > this.lastGeneration) {
         try {
-          const { nodes, links } = makeNodes(importSchema(this.lastSchema));
-          this.props.remakeNodes && this.props.remakeNodes(nodes, links, this.lastSchema);
           this.lastGeneration = Date.now();
         } catch (error) {
           console.log(error);

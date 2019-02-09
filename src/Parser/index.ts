@@ -11,6 +11,7 @@ export class Parser {
       name,
       type,
       description: n.description ? n.description : undefined,
+      interfaces: TypeResolver.resolveInterfaces(n.astNode!),
       fields: TypeResolver.resolveFields(n.astNode!)
     };
   };
@@ -36,8 +37,6 @@ export class Parser {
     const nodeTree: ParserTree = {
       nodes: rootNodes.map(this.namedTypeToSerializedNodeTree)
     };
-    return {
-      tree: nodeTree
-    };
+    return nodeTree;
   };
 }

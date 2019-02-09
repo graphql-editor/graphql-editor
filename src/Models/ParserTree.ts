@@ -14,6 +14,7 @@ export interface ParserRoot {
   name: string;
   type: string;
   fields: ParserField[] | null;
+  interfaces?: string[];
   description?: string;
 }
 

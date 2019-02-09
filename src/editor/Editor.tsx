@@ -4,6 +4,7 @@ import { GraphController } from '../Graph';
 export type EditorState = {
   projectId?: string;
   serializeFunction: keyof typeof TABS;
+  code: string;
 };
 export type EditorProps = {
   code: string;
@@ -13,7 +14,8 @@ export type EditorProps = {
 export class Editor extends React.Component<EditorProps, EditorState> {
   state: EditorState = {
     projectId: undefined,
-    serializeFunction: 'graphql'
+    serializeFunction: 'graphql',
+    code: ''
   };
   private containerRef = React.createRef<HTMLDivElement>();
   controller: GraphController = new GraphController();
@@ -22,6 +24,9 @@ export class Editor extends React.Component<EditorProps, EditorState> {
       return;
     }
     this.controller.setDOMElement(this.containerRef.current);
+    this.controller.setPassSchema((code) => {
+      this.setState({ code });
+    });
   }
   render() {
     return (
@@ -29,7 +34,7 @@ export class Editor extends React.Component<EditorProps, EditorState> {
         {this.props.editorVisible === true && (
           <CodeEditor
             controller={this.controller}
-            schema={this.props.code}
+            schema={this.state.code}
             schemaChanged={this.props.schemaChanged}
             remakeNodes={this.props.remakeNodes}
             language={this.state.serializeFunction}
