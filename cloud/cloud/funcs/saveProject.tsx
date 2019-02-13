@@ -1,7 +1,5 @@
 import { userApi, Cloud } from '../Container';
 import { Project, State } from '../types/project';
-import { NodeType, LinkType } from '@slothking-online/diagram';
-import { codeGenerators } from '../../../src';
 import { NewSource } from '../types';
 import { Analytics } from '../analytics';
 
@@ -9,13 +7,9 @@ export const saveProjectTemplate = (instance: typeof Cloud) => (
   apiFunc: typeof userApi,
   {
     project,
-    nodes,
-    links,
     tabs
   }: {
     project: State<Project>;
-    nodes: NodeType[];
-    links: LinkType[];
     tabs: string[];
   }
 ) => {

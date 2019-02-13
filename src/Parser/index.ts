@@ -1,6 +1,6 @@
 import { GraphQLSchema, buildASTSchema, parse, GraphQLNamedType } from 'graphql';
 import { TypeResolver } from './typeResolver';
-import { ParserTree, ParserRoot } from '../Models';
+import { ParserTree, ParserRoot, ObjectTypes, Operations } from '../Models';
 export class Parser {
   private schema?: GraphQLSchema;
   static importSchema = (schema: string): GraphQLSchema => buildASTSchema(parse(schema));
@@ -9,7 +9,9 @@ export class Parser {
     const type = TypeResolver.resolveRootNode(n.astNode!.kind);
     return {
       name,
-      type,
+      type: {
+        name: type
+      },
       description: n.description ? n.description : undefined,
       interfaces: TypeResolver.resolveInterfaces(n.astNode!),
       fields: TypeResolver.resolveFields(n.astNode!)
@@ -23,6 +25,7 @@ export class Parser {
       Mutation: this.schema.getMutationType(),
       Subscription: this.schema.getSubscriptionType()
     };
+    console.log(operations.Query!.name)
     if (!operations.Query) {
       throw new Error('Query is required for schema to work. INVALID SCHEMA');
     }
@@ -37,6 +40,20 @@ export class Parser {
     const nodeTree: ParserTree = {
       nodes: rootNodes.map(this.namedTypeToSerializedNodeTree)
     };
+    nodeTree.nodes.forEach((n) => {
+      if (n.type.name === ObjectTypes.type) {
+        if (operations.Query && operations.Query.name === n.name) {
+          n.type.options = [Operations.query];
+        }
+        if (operations.Mutation && operations.Mutation.name === n.name) {
+          n.type.options = [Operations.mutation];
+        }
+        if (operations.Subscription && operations.Subscription.name === n.name) {
+          n.type.options = [Operations.subscription];
+        }
+      }
+    });
+    console.log(nodeTree)
     return nodeTree;
   };
 }

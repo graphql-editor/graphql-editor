@@ -1,9 +1,8 @@
 import * as React from 'react';
-import { CodeEditor, TABS, CodeEditorOuterProps } from './Code';
+import { CodeEditor, CodeEditorOuterProps } from './Code';
 import { GraphController } from '../Graph';
 export type EditorState = {
   projectId?: string;
-  serializeFunction: keyof typeof TABS;
   code: string;
 };
 export type EditorProps = {
@@ -14,7 +13,6 @@ export type EditorProps = {
 export class Editor extends React.Component<EditorProps, EditorState> {
   state: EditorState = {
     projectId: undefined,
-    serializeFunction: 'graphql',
     code: ''
   };
   private containerRef = React.createRef<HTMLDivElement>();
@@ -36,8 +34,6 @@ export class Editor extends React.Component<EditorProps, EditorState> {
             controller={this.controller}
             schema={this.state.code}
             schemaChanged={this.props.schemaChanged}
-            remakeNodes={this.props.remakeNodes}
-            language={this.state.serializeFunction}
           />
         )}
         <div ref={this.containerRef} />

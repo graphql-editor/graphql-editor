@@ -2,19 +2,20 @@ import {
   TypeDefinitionNode,
   FieldDefinitionNode,
   InputValueDefinitionNode,
-  TypeNode
+  TypeNode,
+  ValueNode
 } from 'graphql';
-import { ParserField, ScalarTypes, Options } from '../Models';
+import { ParserField, ScalarTypes, Options, ObjectTypes } from '../Models';
 
 export class TypeResolver {
   static resolveRootNode(n: TypeDefinitionNode['kind']): string {
     const map: Record<TypeDefinitionNode['kind'], string> = {
-      EnumTypeDefinition: 'enum',
-      InputObjectTypeDefinition: 'input',
-      InterfaceTypeDefinition: 'interface',
-      ObjectTypeDefinition: 'type',
-      ScalarTypeDefinition: 'scalar',
-      UnionTypeDefinition: 'union'
+      EnumTypeDefinition: ObjectTypes.enum,
+      InputObjectTypeDefinition: ObjectTypes.input,
+      InterfaceTypeDefinition: ObjectTypes.interface,
+      ObjectTypeDefinition: ObjectTypes.type,
+      ScalarTypeDefinition: ObjectTypes.scalar,
+      UnionTypeDefinition: ObjectTypes.union
     };
     return map[n];
   }
@@ -49,9 +50,32 @@ export class TypeResolver {
           name: n.name.value,
           description: n.description && n.description.value,
           args: n.arguments && TypeResolver.iterateInputValueFields(n.arguments),
-          type: TypeResolver.resolveSingleField(n.type)
+          type: TypeResolver.resolveSingleField(n.type),
+          nodeParams: {
+            field: true
+          }
         } as ParserField)
     );
+  }
+  static resolveDefaultValues(value: ValueNode): string[] {
+    if (value.kind === 'ListValue') {
+      return value.values.map(TypeResolver.resolveDefaultValues).reduce((a, b) => a.concat(b), []);
+    }
+    if (
+      value.kind === 'EnumValue' ||
+      value.kind === 'FloatValue' ||
+      value.kind === 'IntValue' ||
+      value.kind === 'BooleanValue'
+    ) {
+      return [`${value.value}`];
+    }
+    if (value.kind === 'Variable') {
+      return [value.name.value];
+    }
+    if (value.kind === 'StringValue') {
+      return [`"${value.value}"`];
+    }
+    return [];
   }
   static iterateInputValueFields(fields: ReadonlyArray<InputValueDefinitionNode>): ParserField[] {
     return fields.map(
@@ -59,7 +83,24 @@ export class TypeResolver {
         ({
           name: n.name.value,
           description: n.description && n.description.value,
-          type: TypeResolver.resolveSingleField(n.type)
+          type: TypeResolver.resolveSingleField(n.type),
+          nodeParams: {
+            argument: true
+          },
+          args: n.defaultValue
+            ? TypeResolver.resolveDefaultValues(n.defaultValue).map(
+                (d) =>
+                  ({
+                    name: d,
+                    type: {
+                      name: ScalarTypes.DefaultValue
+                    },
+                    nodeParams: {
+                      defaultValue: true
+                    }
+                  } as ParserField)
+              )
+            : undefined
         } as ParserField)
     );
   }
@@ -67,37 +108,43 @@ export class TypeResolver {
     if (n.kind !== 'ObjectTypeDefinition' || !n.interfaces) return;
     return n.interfaces.map((i) => i.name.value);
   }
-  static resolveFields(n: TypeDefinitionNode): ParserField[] | null {
+  static resolveFields(n: TypeDefinitionNode): ParserField[] | undefined {
     if (n.kind === 'EnumTypeDefinition') {
-      if (!n.values) return null;
+      if (!n.values) return;
       return n.values.map(
         (v) =>
           ({
             name: v.name.value,
-            description:v.description && v.description.value,
-            type: { name: ScalarTypes.EnumValue }
+            description: v.description && v.description.value,
+            type: { name: ScalarTypes.EnumValue },
+            nodeParams: {
+              enumValue: true
+            }
           } as ParserField)
       );
     }
     if (n.kind === 'ScalarTypeDefinition') {
-      return null;
+      return;
     }
     if (n.kind === 'UnionTypeDefinition') {
-      if (!n.types) return null;
+      if (!n.types) return;
       return n.types.map(
         (t) =>
           ({
             name: t.name.value,
-            type: { name: t.name.value }
+            type: { name: t.name.value },
+            nodeParams: {
+              unionType: true
+            }
           } as ParserField)
       );
     }
     if (n.kind === 'InputObjectTypeDefinition') {
-      if (!n.fields) return null;
+      if (!n.fields) return;
       const fields = TypeResolver.iterateInputValueFields(n.fields);
       return fields;
     }
-    if (!n.fields) return null;
+    if (!n.fields) return;
     const fields = TypeResolver.iterateObjectTypeFields(n.fields);
     return fields;
   }

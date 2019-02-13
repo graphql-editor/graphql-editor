@@ -12,6 +12,12 @@ export const help: {
   Boolean: string;
   ID: string;
   implements: string;
+  required: string;
+  array: string;
+  arrayRequired: string;
+  query:string;
+  mutation:string;
+  subscription:string;
 } = {
   type:
     'The most basic components of a GraphQL schema are object types, which just represent a kind of object you can fetch from your service, and what fields it has. ',
@@ -31,5 +37,13 @@ export const help: {
   Boolean: 'true or false value',
   ID:
     'The ID scalar type represents a unique identifier, often used to refetch an object or as the key for a cache. The ID type is serialized in the same way as a String; however, defining it as an ID signifies that it is not intended to be human‐readable',
-  implements: 'Connect interface nodes to make type implements them'
+  implements: 'Connect interface nodes to make type implements them',
+  required:
+    'Check this if this node is required for creation of the type or is required in input | interface',
+  array:
+    "Check this if you want a list here for example 'Hello' is a String however ['Hello', 'Me', 'World', 'Sloth'] its an array of strings",
+  arrayRequired: 'Check this if you want a list here and you dont want null',
+  query:'This is your endpoint where you serve your data out of your server.',
+  mutation:'Mutation is the same as query but here you also mutate data in your database',
+  subscription:'Subscribe to some real-time event in your database'
 };

@@ -76,38 +76,6 @@ export class Home extends React.Component<{}, HomeState> {
                   loaded={cloud.state.loaded}
                   tabs={cloud.state.tabs}
                   result={cloud.setNodes}
-                  copiedToClipboard={() => {
-                    Analytics.events.code({
-                      action: 'copyToClipboard'
-                    });
-                  }}
-                  schemaChanged={(schema) => {
-                    Analytics.events.code({
-                      action: 'edit'
-                    });
-                  }}
-                  languageChanged={(label) => {
-                    Analytics.events.code({
-                      action: 'select',
-                      label
-                    });
-                  }}
-                  remakeNodes={(nodes, links, code) => {
-                    cloud
-                      .setNodes({
-                        nodes,
-                        links,
-                        code
-                      })
-                      .then(() =>
-                        cloud.setState({
-                          loaded: {
-                            nodes,
-                            links
-                          }
-                        })
-                      );
-                  }}
                 />
               </UI>
               <Intercom appID="k0lckhv8" user_id={cloud.state.user && cloud.state.user.id} />

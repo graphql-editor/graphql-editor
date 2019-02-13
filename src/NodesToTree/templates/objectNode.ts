@@ -1,16 +1,20 @@
-import { GraphQLTemplateField, BaseField } from '../../Models';
+import { ParserRoot, ParserField, Options } from '../../Models';
 
-const isArray = (f: BaseField, type: string) => (f.array ? `[${type}]` : type);
-const isRequired = (f: BaseField, type: string) => (f.required ? `${type}!` : type);
-const isArrayRequired = (f: BaseField, type: string) => (f.arrayRequired ? `${type}!` : type);
-const resolveFieldType = (f: BaseField) => isArrayRequired(f, isArray(f, isRequired(f, f.type)));
+const isArray = (f: ParserField, type: string) =>
+  f.type.options && f.type.options.find((o) => o === Options.array) ? `[${type}]` : type;
+const isRequired = (f: ParserField, type: string) =>
+  f.type.options && f.type.options.find((o) => o === Options.required) ? `${type}!` : type;
+const isArrayRequired = (f: ParserField, type: string) =>
+  f.type.options && f.type.options.find((o) => o === Options.arrayRequired) ? `${type}!` : type;
+const resolveFieldType = (f: ParserField) =>
+  isArrayRequired(f, isArray(f, isRequired(f, f.type.name)));
 
 const descriptionResolver = (description?: string, prefix = '') =>
   description ? `${prefix}"""\n${prefix}${description}\n${prefix}"""\n` : '';
 
-const argsResolver = (f: GraphQLTemplateField) =>
+const argsResolver = (f: ParserField) =>
   f.args && f.args.length
-    ? f.array
+    ? f.type.options && f.type.options.find((o) => o === Options.array)
       ? ` = [${f.args.map((a) => a.name).join(', ')}]`
       : ` = ${f.args[0].name}`
     : '';
@@ -19,65 +23,43 @@ export const rootFieldTemplate = ({
   description,
   name,
   type
-}: Pick<GraphQLTemplateField, 'description' | 'name' | 'type'>) =>
-  `${descriptionResolver(description)}${type} ${name}`;
+}: Pick<ParserRoot, 'description' | 'name' | 'type'>) =>
+  `${descriptionResolver(description)}${type.name} ${name}`;
 
-export const typeNodeTemplate = ({
-  name,
-  description,
-  type,
-  interfaces,
-  fields
-}: {
-  name: string;
-  type: string;
-  description?: string;
-  interfaces?: string[];
-  fields?: GraphQLTemplateField[];
-}) =>
+export const typeNodeTemplate = ({ name, description, type, interfaces, fields }: ParserRoot) =>
   rootFieldTemplate({ name, description, type }) +
-  `${interfaces && interfaces.length ? ` implements ${interfaces.join(',')}` : ''}${
+  `${interfaces && interfaces.length ? ` implements ${interfaces.join(' & ')}` : ''}${
     fields && fields.length ? `{\n${fields.map(fieldNodeTemplate).join('\n')}\n}` : ''
   }`;
-export const inputNodeTemplate = ({
-  name,
-  description,
-  type,
-  fields
-}: {
-  name: string;
-  type: string;
-  description?: string;
-  fields?: GraphQLTemplateField[];
-}) =>
-  rootFieldTemplate({ name, description, type }) +
-  `${fields && fields.length ? `{\n${fields.map(inputFieldNodeTemplate).join('\n')}\n}` : ''}`;
+export const inputNodeTemplate = ({ name, description, type, args }: ParserField) =>
+  rootFieldTemplate({ name, description, type: { name: type.name } }) +
+  `${args && args.length ? `{\n${args.map(inputFieldNodeTemplate).join('\n')}\n}` : ''}`;
 
 export const unionNodeTemplate = (
-  { name, description }: Pick<GraphQLTemplateField, 'description' | 'name'>,
+  { name, description }: Pick<ParserRoot, 'description' | 'name'>,
   types: string[]
-) => `${rootFieldTemplate({ name, description, type: 'union' })} = ${types.join(' | ')}`;
+) => `${rootFieldTemplate({ name, description, type: { name: 'union' } })} = ${types.join(' | ')}`;
 
 export const enumNodeTemplate = (
-  { name, description }: Pick<GraphQLTemplateField, 'description' | 'name'>,
-  values: Pick<GraphQLTemplateField, 'description' | 'name'>[]
+  { name, description }: Pick<ParserRoot, 'description' | 'name'>,
+  values: Pick<ParserRoot, 'description' | 'name'>[]
 ) =>
-  `${rootFieldTemplate({ name, description, type: 'enum' })} {\n${values
+  `${rootFieldTemplate({ name, description, type: { name: 'enum' } })} {\n${values
     .map((v) => `${descriptionResolver(v.description, '\t')}\t${v.name}`)
     .join(',\n')}\n}`;
 export const scalarNodeTemplate = ({
   name,
   description
-}: Pick<GraphQLTemplateField, 'description' | 'name'>) =>
-  rootFieldTemplate({ name, description, type: 'scalar' });
+}: Pick<ParserField, 'description' | 'name'>) =>
+  rootFieldTemplate({ name, description, type: { name: 'scalar' } });
 
-export const inputFieldNodeTemplate = (f: GraphQLTemplateField) =>
+export const inputFieldNodeTemplate = (f: ParserField) =>
   `${descriptionResolver(f.description, '\t')}\t${f.name} : ${resolveFieldType(f)}${argsResolver(
     f
   )}`;
-export const fieldNodeTemplate = (f: GraphQLTemplateField) =>
+export const fieldNodeTemplate = (f: ParserField) =>
   `${descriptionResolver(f.description, '\t')}\t${f.name}${
     f.args && f.args.length
-      ? `(${f.args.map((a) => `${a.name}:${resolveFieldType(a)}`).join(', ')})`
+      ? `(${f.args.map((a) => `${a.name}:${resolveFieldType(a)}${argsResolver(a)}`).join(', ')})`
       : ''
   } : ${resolveFieldType(f)}`;

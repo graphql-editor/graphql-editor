@@ -6,93 +6,83 @@ import {
   typeNodeTemplate,
   inputNodeTemplate
 } from './templates/objectNode';
-import {
-  ObjectTypes,
-  GraphQLTemplateField,
-  Options,
-  GraphQLTemplateObject,
-  BaseField
-} from '../Models';
+import { ObjectTypes, ParserRoot, ParserField, Operations } from '../Models';
 
 export class NodesToTree {
-  static resolveFieldNode = (i: Node) =>
+  static resolveFieldNode = (i: Node): ParserField =>
     ({
-      array: !!i.options.find((o) => o === Options.array),
-      required: !!i.options.find((o) => o === Options.required),
-      arrayRequired: !!i.options.find((o) => o === Options.arrayRequired),
       name: i.name,
-      type: i.definition.type,
+      type: {
+        name: i.definition.type,
+        options: i.options
+      },
       description: i.description,
-      args: i.inputs
-        ? i.inputs.map(
-            (a) =>
-              ({
-                array: !!a.options.find((o) => o === Options.array),
-                required: !!a.options.find((o) => o === Options.required),
-                arrayRequired: !!a.options.find((o) => o === Options.arrayRequired),
-                name: a.name,
-                type: a.definition.type
-              } as BaseField)
-          )
-        : undefined
-    } as GraphQLTemplateField);
+      args: i.inputs ? i.inputs.map(NodesToTree.resolveFieldNode) : undefined
+    } as ParserField);
   static resolveInputObjectNode = (n: Node) => {
-    let templateField: GraphQLTemplateObject = {
+    let templateField: ParserField = {
       name: n.name,
       description: n.description,
-      type: n.definition.type
+      type: {
+        name: n.definition.type
+      },
+      args: n.inputs ? n.inputs.map(NodesToTree.resolveFieldNode) : undefined
     };
-    if (!n.inputs) {
-      return typeNodeTemplate(templateField);
-    }
-    const fields: GraphQLTemplateField[] = n.inputs
-      .filter((i) => i.definition.type !== 'implements')
-      .map(NodesToTree.resolveFieldNode);
     return inputNodeTemplate({
-      ...templateField,
-      fields
+      ...templateField
     });
   };
   static resolveObjectNode = (n: Node) => {
-    let templateField: GraphQLTemplateObject = {
+    let templateField: ParserRoot = {
       name: n.name,
       description: n.description,
-      type: n.definition.type
+      type: {
+        name: n.definition.type
+      },
+      interfaces: n.inputs
+        ? n.inputs
+            .filter((i) => i.definition.type === 'implements')
+            .map((i) => (i.inputs ? i.inputs.map((n) => n.definition.type) : []))
+            .reduce((a, b) => a.concat(b), [])
+        : undefined,
+      fields: n.inputs
+        ? n.inputs
+            .filter((i) => i.definition.type !== 'implements')
+            .map(NodesToTree.resolveFieldNode)
+        : undefined
     };
     if (!n.inputs) {
       return typeNodeTemplate(templateField);
     }
-    const fields: GraphQLTemplateField[] = n.inputs
-      .filter((i) => i.definition.type !== 'implements')
-      .map(NodesToTree.resolveFieldNode);
-    const interfaces = n.inputs
-      .filter((i) => i.definition.type === 'implements')
-      .map((i) => (i.inputs ? i.inputs.map((n) => n.definition.type) : []))
-      .reduce((a, b) => a.concat(b), []);
-    return typeNodeTemplate({
-      ...templateField,
-      interfaces,
-      fields
-    });
+    return typeNodeTemplate(templateField);
   };
   static parse(nodes: Node[], links: Link[]) {
-    const objectNodes = nodes.filter((n) => n.definition.object);
+    if (!nodes.length) {
+      return '';
+    }
+    const objectNodes = nodes.filter((n) => n.definition.root);
     const joinDefinitions = (...defintions: string[]) => defintions.join('\n\n');
-    const scalars: string[] = objectNodes
-      .filter((n) => n.definition.type === ObjectTypes.scalar)
-      .map((n) =>
-        scalarNodeTemplate({
-          name: n.name,
-          description: n.description
-        })
-      );
-    const enums: string[] = objectNodes
-      .filter((n) => n.definition.type === ObjectTypes.enum)
-      .map((n) =>
-        enumNodeTemplate(
+    let operations: Record<Operations, string | null> = {
+      [Operations.query]: null,
+      [Operations.mutation]: null,
+      [Operations.subscription]: null
+    };
+    const definitions = objectNodes.map((n) => {
+      const {
+        name,
+        description,
+        definition: { type }
+      } = n;
+      if (type === ObjectTypes.scalar)
+        return scalarNodeTemplate({
+          name,
+          description
+        });
+      if (type === ObjectTypes.enum)
+        return enumNodeTemplate(
           {
-            name: n.name,
-            description: n.description
+            name,
+            description
           },
           n.inputs
             ? n.inputs.map(
@@ -100,31 +90,51 @@ export class NodesToTree {
                   ({
                     name: i.name,
                     description: i.description
-                  } as Pick<GraphQLTemplateField, 'description' | 'name'>)
+                  } as Pick<ParserField, 'description' | 'name'>)
               )
             : []
-        )
-      );
-    const unions: string[] = objectNodes
-      .filter((n) => n.definition.type === ObjectTypes.union)
-      .map((n) =>
-        unionNodeTemplate(
+        );
+      if (type === ObjectTypes.union)
+        return unionNodeTemplate(
           {
-            name: n.name,
-            description: n.description
+            name,
+            description
           },
           n.inputs ? n.inputs.map((i) => i.definition.type) : []
-        )
+        );
+      if (type === ObjectTypes.input) return NodesToTree.resolveInputObjectNode(n);
+      if (type === ObjectTypes.interface) return NodesToTree.resolveObjectNode(n);
+      if (type === ObjectTypes.type) {
+        if (n.options) {
+          if (n.options.find((o) => o === Operations.query)) {
+            operations[Operations.query] = name;
+          }
+          if (n.options.find((o) => o === Operations.mutation)) {
+            operations[Operations.mutation] = name;
+          }
+          if (n.options.find((o) => o === Operations.subscription)) {
+            operations[Operations.subscription] = name;
+          }
+        }
+        return NodesToTree.resolveObjectNode(n);
+      }
+      return '';
+    });
+    const resolvedOperations = Object.keys(operations)
+      .filter((k) => operations[k as Operations])
+      .map((k) => `\t${k}: ${operations[k as Operations]}`)
+      .join(',\n');
+
+    return joinDefinitions(...definitions)
+      .concat('\n')
+      .concat(
+        operations[Operations.query]
+          ? `schema{\n${resolvedOperations}\n}`
+          : `
+"""
+You need root query type for your schema to work. To create root query type right click any type node and choose 'query'
+"""
+      `
       );
-    const inputs = objectNodes
-      .filter((n) => n.definition.type === ObjectTypes.input)
-      .map(NodesToTree.resolveInputObjectNode);
-    const types = objectNodes
-      .filter((n) => n.definition.type === ObjectTypes.type)
-      .map(NodesToTree.resolveObjectNode);
-    const interfaces = objectNodes
-      .filter((n) => n.definition.type === ObjectTypes.interface)
-      .map(NodesToTree.resolveObjectNode);
-    return joinDefinitions(...scalars, ...enums, ...unions, ...types, ...inputs, ...interfaces);
   }
 }

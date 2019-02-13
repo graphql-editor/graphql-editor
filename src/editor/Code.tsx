@@ -4,34 +4,24 @@ import cx from 'classnames';
 
 import { SelectLanguage } from './SelectLanguage';
 import AceEditor from 'react-ace';
-import { GraphQLNodeType } from './livegen/code-generators';
-import { LinkType } from '@slothking-online/diagram';
 import { GraphController } from '../Graph';
+import { ParsingFunction } from '../Models';
 require(`brace/theme/twilight`);
 require(`brace/mode/typescript`);
 require(`brace/mode/graphqlschema`);
 require(`brace/mode/json`);
 require(`brace/ext/searchbox`);
-export const TABS = {
-  graphql: {},
-  typescript: {},
-  json: {}
-};
-
 export type CodeEditorOuterProps = {
-  languageChanged?: (language: string) => void;
   schemaChanged?: (schema: string) => void;
-  remakeNodes?: (nodes: GraphQLNodeType[], links: LinkType[], code: string) => void;
 };
 
 export type CodeEditorProps = {
   schema: string;
-  language: 'graphql' | 'typescript' | 'json';
   controller: GraphController;
 } & CodeEditorOuterProps;
 export type CodeEditorState = {
   loadingUrl: boolean;
-  currentTab: keyof typeof TABS;
+  currentTab: ParsingFunction;
   canMountAce: boolean;
 };
 
@@ -39,7 +29,7 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
   state: CodeEditorState = {
     loadingUrl: false,
     canMountAce: false,
-    currentTab: 'graphql'
+    currentTab: ParsingFunction.graphql
   };
   taskRunner?: number;
   lastSchema?: string;
@@ -77,18 +67,19 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
     // FileSaver.saveAs(file, `graphql-editor-schema.gql`);
   };
   render() {
-    const aceMode = {
-      graphql: 'graphqlschema',
-      typescript: 'typescript',
-      json: 'json'
-    }[this.props.language];
+    const aceChoices: Record<ParsingFunction, string> = {
+      [ParsingFunction.graphql]: 'graphqlschema',
+      [ParsingFunction.typescript]: 'typescript',
+      [ParsingFunction.faker]: 'json'
+    };
+    const aceMode = aceChoices[this.state.currentTab];
     return (
       <div className={cx(styles.Sidebar)}>
         <SelectLanguage
-          tabs={Object.keys(TABS)}
+          tabs={Object.keys(ParsingFunction)}
           onSelect={(currentTab) => {
-            this.props.languageChanged && this.props.languageChanged(currentTab);
             this.setState({ currentTab });
+            this.props.controller.setParsingFunction(currentTab);
           }}
           onCopy={() => {
             const { clipboard } = window.navigator as any;

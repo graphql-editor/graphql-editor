@@ -1,40 +1,17 @@
-import { NodeOption, Diagram, NodeUtils, Node, Link } from 'graphsource';
-import { help } from './help';
-import { TreeToNodes } from '../TreeToNodes';
-import { Parser } from '../Parser';
-import { NodesToTree } from '../NodesToTree';
-import { ObjectTypes, EditorNodeDefinition, AcceptedEditorNodeDefinition } from '../Models';
+import {
+  EditorNodeDefinition,
+  AcceptedEditorNodeDefinition,
+  GraphQLNodeParams,
+  ObjectTypes,
+  Operations
+} from '../Models';
 
-export class GraphController {
-  diagram?: Diagram;
-  public definitions?: EditorNodeDefinition[];
-  passSchema?: (schema: string) => void;
-  parser = new Parser();
-  setDOMElement = (element: HTMLElement) => {
-    this.diagram = new Diagram(element);
-    this.loadDefinitions();
-  };
-  loadOldNodes = () => {};
-  load = (schema: string) => {
-    const tree = this.parser.parse(schema);
-    const result = TreeToNodes.resolveTree(tree, this.definitions!);
-    this.diagram!.setDefinitions(this.definitions!);
-    NodeUtils.beautifyDiagram(result.nodes);
-    this.diagram!.setNodes(result.nodes);
-    this.serialise({
-      nodes: result.nodes,
-      links: result.links
-    });
-    this.diagram!.setLinks(result.links);
-  };
-  setPassSchema(fn: (schema: string) => void) {
-    this.passSchema = fn;
-  }
-  serialise = ({ nodes, links }: { nodes: Node[]; links: Link[] }) => {
-    const schema = NodesToTree.parse(nodes, links);
-    this.passSchema && this.passSchema(schema);
-  };
-  loadDefinitions = () => {
+import { NodeOption } from 'graphsource';
+
+import { help } from './help';
+
+export class Definitions {
+  static generate() {
     const createOND = (name: string): EditorNodeDefinition['node'] => ({
       name: `${name}Node`,
       description: `${name} object node`,
@@ -51,50 +28,58 @@ export class GraphController {
           definitions: definitions.map(nodeDefinitionToAcceptedEditorNodeDefinition)
         }
       }));
-    const fieldDefinitionsByParent = (types: string[]) => (
-      _: EditorNodeDefinition,
-      defs: EditorNodeDefinition[]
-    ): AcceptedEditorNodeDefinition[] =>
+    const DefinitionsByParent = (
+      types: string[],
+      dataFunction: (data?: GraphQLNodeParams) => boolean
+    ) => (_: EditorNodeDefinition, defs: EditorNodeDefinition[]): AcceptedEditorNodeDefinition[] =>
       getParents(
         types.map((name) =>
-          defs.filter((def) => def.parent && def.parent.type === name && def.data && def.data.field)
+          defs.filter((def) => def.parent && def.parent.type === name && dataFunction(def.data))
         )
       );
-    const argumentDefinitionsByParent = (types: string[]) => (
-      _: EditorNodeDefinition,
-      defs: EditorNodeDefinition[]
-    ): AcceptedEditorNodeDefinition[] =>
-      getParents(
-        types.map((name) =>
-          defs.filter(
-            (def) => def.parent && def.parent.type === name && def.data && def.data.argument
-          )
-        )
-      );
-    const noInputsFieldDefinitionsByParent = (types: string[]) => (
-      _: EditorNodeDefinition,
-      defs: EditorNodeDefinition[]
-    ): AcceptedEditorNodeDefinition[] =>
-      getParents(
-        types.map((name) =>
-          defs.filter((def) => def.parent && def.parent.type === name && !def.node.inputs)
-        )
-      );
+    const fieldDefinitionsByParent = (types: string[]) =>
+      DefinitionsByParent(types, (d) => !!(d && d.field));
+    const argumentDefinitionsByParent = (types: string[]) =>
+      DefinitionsByParent(types, (d) => !!(d && d.argument));
+    const interfaceDefinitionsByParent = (types: string[]) =>
+      DefinitionsByParent(types, (d) => !!(d && d.implements));
+    const unionTypeDefinitionsByParent = (types: string[]) =>
+      DefinitionsByParent(types, (d) => !!(d && d.unionType));
+
+    const objectDefinitionsByParent = fieldDefinitionsByParent([
+      ObjectTypes.type,
+      ObjectTypes.interface,
+      ObjectTypes.union,
+      ObjectTypes.enum,
+      ObjectTypes.scalar
+    ]);
 
     const options: NodeOption[] = [
       {
         name: 'required',
-        help:
-          'Check this if this node is required for creation of the type or is required in input | interface'
+        help: help.required
       },
       {
         name: 'array',
-        help:
-          "Check this if you want a list here for example 'Hello' is a String however ['Hello', 'Me', 'World', 'Sloth'] its an array of strings"
+        help: help.array
       },
       {
         name: 'arrayRequired',
-        help: 'Check this if you want a list here and you dont want null'
+        help: help.arrayRequired
+      }
+    ];
+    const rootOptions: NodeOption[] = [
+      {
+        name: Operations.query,
+        help: help.query
+      },
+      {
+        name: Operations.mutation,
+        help: help.mutation
+      },
+      {
+        name: Operations.subscription,
+        help: help.subscription
       }
     ];
     const instanceOptions = options;
@@ -119,6 +104,14 @@ export class GraphController {
           definition: builtInDefaultValue
         }
       ]
+    };
+    const implementsInstance: Partial<EditorNodeDefinition> = {
+      data: {
+        implements: true
+      },
+      node: {
+        inputs: null
+      }
     };
     const builtInScalarFields = ([
       'String',
@@ -149,6 +142,9 @@ export class GraphController {
       (sf) =>
         ({
           ...sf,
+          data: {
+            argument: true
+          },
           acceptsInputs: argumentInstance.acceptsInputs
         } as EditorNodeDefinition)
     );
@@ -157,7 +153,7 @@ export class GraphController {
         name: 'implementsNode'
       },
       type: 'implements',
-      acceptsInputs: noInputsFieldDefinitionsByParent([ObjectTypes.interface]),
+      acceptsInputs: interfaceDefinitionsByParent([ObjectTypes.interface]),
       help: help.implements
     };
     const builtInEnumValue: EditorNodeDefinition = {
@@ -177,32 +173,21 @@ export class GraphController {
       node: createOND('interface'),
       type: 'interface',
       help: help.interface,
-      object: true,
+      root: true,
       acceptsInputs: (d, defs) =>
-        fieldDefinitionsByParent([
-          ObjectTypes.type,
-          ObjectTypes.interface,
-          ObjectTypes.union,
-          ObjectTypes.enum,
-          ObjectTypes.scalar
-        ])(d, defs).concat(
+        objectDefinitionsByParent(d, defs).concat(
           [...builtInScalarFields].map(nodeDefinitionToAcceptedEditorNodeDefinition)
         ),
-      instances: [fieldInstance]
+      instances: [fieldInstance, implementsInstance]
     };
     const builtInTypeObject: EditorNodeDefinition = {
       node: createOND('type'),
       type: 'type',
       help: help.type,
-      object: true,
+      options: rootOptions,
+      root: true,
       acceptsInputs: (d, defs) =>
-        fieldDefinitionsByParent([
-          ObjectTypes.type,
-          ObjectTypes.interface,
-          ObjectTypes.union,
-          ObjectTypes.enum,
-          ObjectTypes.scalar
-        ])(d, defs).concat(
+        objectDefinitionsByParent(d, defs).concat(
           [implementsObject, ...builtInScalarFields].map(
             nodeDefinitionToAcceptedEditorNodeDefinition
           )
@@ -227,10 +212,10 @@ export class GraphController {
       node: createOND('input'),
       type: 'input',
       help: help.input,
-      object: true,
+      root: true,
       acceptsInputs: (d, defs) =>
         fieldDefinitionsByParent([ObjectTypes.enum, ObjectTypes.scalar])(d, defs)
-          .concat(noInputsFieldDefinitionsByParent([ObjectTypes.input])(d, defs))
+          .concat(argumentDefinitionsByParent([ObjectTypes.input])(d, defs))
           .concat(builtInScalarArguments.map(nodeDefinitionToAcceptedEditorNodeDefinition)),
       instances: [
         {
@@ -246,28 +231,29 @@ export class GraphController {
       node: { ...createOND('scalar'), inputs: null, outputs: null },
       type: 'scalar',
       help: help.scalar,
-      object: true,
+      root: true,
       instances: [fieldInstance, argumentInstance]
     };
     const builtInUnionObject: EditorNodeDefinition = {
       node: createOND('union'),
       type: 'union',
       help: help.union,
-      acceptsInputs: noInputsFieldDefinitionsByParent([ObjectTypes.type]),
+      acceptsInputs: unionTypeDefinitionsByParent([ObjectTypes.type]),
       instances: [fieldInstance],
-      object: true
+      root: true
     };
     const builtInEnumObject: EditorNodeDefinition = {
       node: createOND('enum'),
       type: 'enum',
       help: help.enum,
       instances: [fieldInstance, argumentInstance],
-      object: true,
+      root: true,
       acceptsInputs: (d, defs) => [{ definition: builtInEnumValue }]
     };
     const nodeDefinitions: EditorNodeDefinition[] = [
       ...builtInScalarFields,
       ...builtInScalarArguments,
+      builtInDefaultValue,
       builtInEnumObject,
       builtInEnumValue,
       builtInInputObject,
@@ -277,10 +263,6 @@ export class GraphController {
       builtInUnionObject,
       implementsObject
     ];
-
-    this.definitions = nodeDefinitions;
-
-    this.diagram!.setDefinitions(this.definitions);
-    this.diagram!.setSerialisationFunction(this.serialise);
-  };
+    return nodeDefinitions;
+  }
 }

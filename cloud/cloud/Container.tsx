@@ -66,9 +66,7 @@ export type CloudState = {
     | 'fakerDeployed'
     | 'deleteProject';
   loaded: LoadedFile;
-  nodes: Array<NodeType>;
   tabs?: Array<string>;
-  links: Array<LinkType>;
   code: string;
   category: 'my' | 'public' | 'examples' | 'new' | 'edit';
   removedProject?: State<Project>;
@@ -110,13 +108,6 @@ export class CloudContainer extends Container<CloudState> {
     category: 'my',
     code: '',
     popup: 'onBoarding',
-    nodes: [],
-    links: [],
-    loaded: {
-      nodes: [],
-      links: [],
-      tabs: []
-    }
   };
   constructor() {
     super();
@@ -147,11 +138,6 @@ export class CloudContainer extends Container<CloudState> {
   }
   findInAllFakerProjects = (p: State<Project>) =>
     this.allProjects.find((pr) => pr.endpoint.uri === p.endpoint.uri);
-  setNodes = (state: Pick<CloudState, 'nodes' | 'code' | 'links'>) => {
-    return this.setState(state).then(() => {
-      ls.set('nodes', JSON.stringify(state));
-    });
-  };
   nodesToState = () => {
     const loadedState = JSON.parse(ls.get('nodes'));
     if (!loadedState) {

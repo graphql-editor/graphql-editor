@@ -1,39 +1,24 @@
-import { ParserRoot, ParserTree, ParserField, ObjectTypes, EditorNodeDefinition } from '../Models';
+import { ParserRoot, ParserTree, ParserField, EditorNodeDefinition } from '../Models';
 import { NodeUtils, Node, Link } from 'graphsource';
 import { ScreenPosition } from 'graphsource/lib/IO/ScreenPosition';
 
 export class TreeToNodes {
-  static resolveRootNodeDefintion(node: ParserRoot, nodeDefinitions: EditorNodeDefinition[]): void {
+  static resolveRootNodeDefintion(root: ParserRoot, nodeDefinitions: EditorNodeDefinition[]): void {
     const definingObjectDefinition = nodeDefinitions.find(
-      (nd) => !!nd.object && nd.type === node.type
+      (nd) => !!nd.root && nd.type === root.type.name
     )!;
-    const newDefinitions = NodeUtils.createObjectDefinition(definingObjectDefinition, node.name);
+    const newDefinitions = NodeUtils.createObjectDefinition(definingObjectDefinition, root.name);
     newDefinitions.forEach((newDefinition) => {
-      newDefinition.help = node.description || newDefinition.help;
+      newDefinition.help = root.description || newDefinition.help;
       nodeDefinitions.push(newDefinition);
     });
   }
-  static resolveField(
-    node: ParserField,
-    nodeDefinitions: EditorNodeDefinition[],
-    nodes: Node[]
-  ): Node {
-    const def = nodeDefinitions.find((nd) => nd.type === node.type.name)!;
-    const nodeCreated = NodeUtils.createBasicNode({ x: 0, y: 0 }, def, {
-      name: node.name,
-      description: node.description,
-      options: node.type.options || []
-    });
-    return nodeCreated;
-  }
-  static resolveArgument(
-    node: ParserField,
-    nodeDefinitions: EditorNodeDefinition[],
-    nodes: Node[]
-  ): Node {
-    const def = nodeDefinitions.find(
-      (nd) => nd.type === node.type.name && !!nd.data && !!nd.data.argument
-    )!;
+  static resolveField(node: ParserField, nodeDefinitions: EditorNodeDefinition[]): Node {
+    const defs = nodeDefinitions.filter((nd) => nd.type === node.type.name)!;
+    let def = defs[0];
+    if (defs.length > 1) {
+      def = defs.filter((d) => JSON.stringify(d.data) === JSON.stringify(node.nodeParams))[0];
+    }
     const nodeCreated = NodeUtils.createBasicNode({ x: 0, y: 0 }, def, {
       name: node.name,
       description: node.description,
@@ -42,100 +27,66 @@ export class TreeToNodes {
     return nodeCreated;
   }
   static resolveFields(
-    node: ParserRoot,
+    root: ParserRoot,
     nodeDefinitions: EditorNodeDefinition[],
     nodes: Node[],
     links: Link[]
   ) {
+    const connectAndCreate = (n: ParserField, rootNode: Node) => {
+      const createdNode = TreeToNodes.resolveField(n, nodeDefinitions);
+      links.push({
+        centerPoint: 0.5,
+        o: createdNode,
+        i: rootNode
+      });
+      rootNode.inputs!.push(createdNode);
+      createdNode.outputs!.push(rootNode);
+      nodes.push(createdNode);
+      if (n.args) {
+        n.args.forEach((a) => {
+          connectAndCreate(a, createdNode);
+        });
+      }
+      return createdNode;
+    };
     const e: ScreenPosition = { x: 0, y: 0 };
     const definingObjectDefinition = nodeDefinitions.find(
-      (nd) => !!nd.object && nd.type === node.type
+      (nd) => !!nd.root && nd.type === root.type.name
     )!;
     const createdRootNode = NodeUtils.createBasicNode(e, definingObjectDefinition, {
-      name: node.name,
-      description: node.description
+      name: root.name,
+      description: root.description,
+      options: root.type.options
     });
     nodes.push(createdRootNode);
-    if (node.type === ObjectTypes.input) {
-      // if (node.fields) {
-      //   n.args.forEach((a) => {
-      //     const createdArgNode = TreeToNodes.resolveField(a, nodeDefinitions, nodes);
-      //     createdArgNode.outputs = [createdNode];
-      //     createdNode.inputs!.push(createdArgNode);
-      //     nodes.push(createdArgNode);
-      //     links.push({
-      //       centerPoint: 0.5,
-      //       o: createdArgNode,
-      //       i: createdNode
-      //     });
-      //   });
-      // }
-      // return;
-    }
-    if (node.interfaces && node.interfaces.length) {
-      const createdNode = TreeToNodes.resolveField(
+    if (root.interfaces && root.interfaces.length) {
+      const createdNode = connectAndCreate(
         {
           name: 'implements',
           type: {
             name: 'implements'
           }
         },
-        nodeDefinitions,
-        nodes
+        createdRootNode
       );
-      links.push({
-        centerPoint: 0.5,
-        o: createdNode,
-        i: createdRootNode
-      });
-      createdRootNode.inputs!.push(createdNode);
-      createdNode.outputs!.push(createdRootNode);
-      nodes.push(createdNode);
-      node.interfaces.forEach((i) => {
-        const createdArgNode = TreeToNodes.resolveField(
+      root.interfaces.forEach((i) => {
+        connectAndCreate(
           {
             type: {
               name: i
             },
-            name: i
+            name: i,
+            nodeParams: {
+              implements: true
+            }
           },
-          nodeDefinitions,
-          nodes
+          createdNode
         );
-        createdArgNode.outputs = [createdNode];
-        createdNode.inputs!.push(createdArgNode);
-        nodes.push(createdArgNode);
-        links.push({
-          centerPoint: 0.5,
-          o: createdArgNode,
-          i: createdNode
-        });
       });
     }
-    if (node.fields) {
-      node.fields.forEach((n) => {
-        const createdNode = TreeToNodes.resolveField(n, nodeDefinitions, nodes);
-        links.push({
-          centerPoint: 0.5,
-          o: createdNode,
-          i: createdRootNode
-        });
-        createdRootNode.inputs!.push(createdNode);
-        createdNode.outputs!.push(createdRootNode);
-        if (n.args) {
-          n.args.forEach((a) => {
-            const createdArgNode = TreeToNodes.resolveField(a, nodeDefinitions, nodes);
-            createdArgNode.outputs = [createdNode];
-            createdNode.inputs!.push(createdArgNode);
-            nodes.push(createdArgNode);
-            links.push({
-              centerPoint: 0.5,
-              o: createdArgNode,
-              i: createdNode
-            });
-          });
-        }
-        nodes.push(createdNode);
+    if (root.fields) {
+      root.fields.forEach((n) => {
+        connectAndCreate(n, createdRootNode);
       });
     }
   }
