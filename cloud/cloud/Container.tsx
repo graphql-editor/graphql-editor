@@ -129,6 +129,8 @@ export class CloudContainer extends Container<CloudState> {
               }
             });
           }
+        } else {
+          this.findProjectByEndpoint(projectEndpoint);
         }
       } else {
         if (currentProject) {

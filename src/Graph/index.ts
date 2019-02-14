@@ -20,6 +20,9 @@ export class GraphController {
     this.diagram = new Diagram(element);
     this.loadDefinitions();
   };
+  isEmpty = () => {
+    return this.nodes.length === 0;
+  };
   resizeDiagram = () => {
     this.diagram!.resize();
   };
@@ -33,13 +36,14 @@ export class GraphController {
   load = (nodes: Node[], links: Link[]) => {
     this.diagram!.setNodes(nodes, true);
     this.diagram!.setLinks(links);
-    this.diagram!.zeroDiagram()
+    this.diagram!.zeroDiagram();
     this.serialise({
       nodes,
       links
     });
   };
   loadGraphQL = (schema: string) => {
+    this.loadDefinitions();
     const result = TreeToNodes.resolveTree(this.parser.parse(schema), this.definitions!);
     this.load(result.nodes, result.links);
   };
