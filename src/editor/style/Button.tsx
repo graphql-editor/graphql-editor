@@ -54,7 +54,8 @@ export const YellowButton = classes(
 export const FileButton = style({
   position: 'relative',
   overflow: 'hidden',
-  margin: 10
+  margin: 10,
+  cursor: 'pointer'
 });
 export const FileButtonLayer = style({
   position: 'absolute',
@@ -62,7 +63,7 @@ export const FileButtonLayer = style({
   right: 0,
   margin: 0,
   padding: 0,
-  fontSize: 12,
+  fontSize: 20,
   cursor: 'pointer',
   opacity: 0
 });

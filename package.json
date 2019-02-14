@@ -63,14 +63,13 @@
     "webpack-merge": "^4.1.5"
   },
   "dependencies": {
-    "@slothking-online/diagram": "^1.1.0",
     "auth0-js": "^9.8.2",
     "auth0-lock": "^11.12.1",
     "classnames": "^2.2.5",
     "faker": "^4.1.0",
     "file-saver": "^2.0.0",
     "graphql": "^14.0.2",
-    "graphsource": "file:../diagram",
+    "graphsource": "1.00.0",
     "moment": "^2.21.0",
     "query-string": "^6.2.0",
     "react": "^16.5.2",
