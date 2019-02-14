@@ -30,7 +30,10 @@ describe('I can login', function() {
         cy.contains('Are you want to delete')
           .parent()
           .within(($popup) => {
-            cy.get('input').type('test-project-1');
+            cy.contains('Are you want to delete')
+              .parent()
+              .get('input')
+              .type('test-project-1');
             cy.get('a')
               .contains('Delete project')
               .click();

@@ -2,7 +2,6 @@
 import { Container } from 'unstated';
 import { User, Project, Api, Namespace, State } from './types/project';
 import { WebAuth } from 'auth0-js';
-import { NodeType, LinkType, LoadedFile } from '@slothking-online/diagram';
 import { saveProjectTemplate } from './funcs/saveProject';
 import { loadProject } from './funcs/loadProject';
 import { fakerDeployProject } from './funcs/fakerDeploy';
@@ -15,6 +14,7 @@ import { createUser } from './funcs/createUser';
 import { afterLogin } from './funcs/afterLogin';
 import { findProjectByEndpoint } from './funcs/findProjectByEndpoint';
 import { History, Location } from 'history';
+import { GraphController } from '../../src/Graph';
 const DEV_HOSTNAME = 'http://localhost:1569/';
 const PRODUCTION_HOSTNAME = 'https://app.graphqleditor.com/';
 
@@ -65,10 +65,10 @@ export type CloudState = {
     | 'loadURL'
     | 'fakerDeployed'
     | 'deleteProject';
-  loaded: LoadedFile;
   tabs?: Array<string>;
   code: string;
   category: 'my' | 'public' | 'examples' | 'new' | 'edit';
+  autosavedSchema: string;
   removedProject?: State<Project>;
   pushHistory?: History['push'];
   location?: Location;
@@ -99,15 +99,17 @@ export const fakerUserApi = (token: string = '') =>
   });
 
 export class CloudContainer extends Container<CloudState> {
+  controller?: GraphController;
   state: CloudState = {
     visibleMenu: null,
     cloud: {},
     faker: {},
     loadingStack: [],
     errorStack: [],
+    autosavedSchema: '',
     category: 'my',
     code: '',
-    popup: 'onBoarding',
+    popup: 'onBoarding'
   };
   constructor() {
     super();
@@ -120,6 +122,12 @@ export class CloudContainer extends Container<CloudState> {
         if (currentProject) {
           if (currentProject.endpoint.uri !== projectEndpoint) {
             this.findProjectByEndpoint(projectEndpoint);
+          } else {
+            this.loadAutosave().then(() => {
+              if (this.controller) {
+                this.controller.loadGraphQL(this.state.autosavedSchema);
+              }
+            });
           }
         }
       } else {
@@ -136,6 +144,17 @@ export class CloudContainer extends Container<CloudState> {
       ...(this.state.faker.projects || [])
     ];
   }
+  setController = (controller: GraphController) => {
+    this.controller = controller;
+    this.controller.setOnSerialise((autosavedSchema) => {
+      this.autosave(autosavedSchema);
+    });
+
+    if (this.state.autosavedSchema) {
+      console.log(this.state.autosavedSchema);
+      this.controller.loadGraphQL(this.state.autosavedSchema);
+    }
+  };
   findInAllFakerProjects = (p: State<Project>) =>
     this.allProjects.find((pr) => pr.endpoint.uri === p.endpoint.uri);
   nodesToState = () => {
@@ -153,6 +172,17 @@ export class CloudContainer extends Container<CloudState> {
   };
   storageToState = () => {
     return this.setState(JSON.parse(ls.get('faker')));
+  };
+  autosave = (autosavedSchema: string) => {
+    return this.setState({ autosavedSchema }).then(() => {
+      ls.set('autosave', autosavedSchema);
+    });
+  };
+  loadAutosave = () => {
+    console.log(ls.get('autosave'), this.controller);
+    return this.setState({
+      autosavedSchema: ls.get('autosave')
+    });
   };
   setCloud = () => {
     ls.set(
@@ -245,17 +275,13 @@ export class CloudContainer extends Container<CloudState> {
   loadFromURL = loadFromURL(this);
   saveProject = () =>
     saveProjectTemplate(this)(userApi, {
-      nodes: this.state.nodes,
-      links: this.state.links,
-      tabs: this.state.tabs,
-      project: this.state.cloud.currentProject
+      project: this.state.cloud.currentProject,
+      schemas: this.controller!.generateFromAllParsingFunctions()
     });
   fakerDeployProject = async () =>
     fakerDeployProject(this)({
-      links: this.state.links,
-      nodes: this.state.nodes,
       project: this.state.cloud.currentProject,
-      tabs: this.state.tabs
+      schemas: this.controller!.generateFromAllParsingFunctions()
     });
   createProject = (name: string, is_public: boolean) =>
     createProject(this)(name, is_public)

@@ -22,7 +22,7 @@ class App extends React.Component<
           gridTemplateRows: '1fr'
         }}
       >
-        <Editor editorVisible={this.state.editorVisible} code="" />
+        <Editor editorVisible={this.state.editorVisible} />
       </div>
     );
   }

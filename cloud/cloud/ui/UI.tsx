@@ -214,7 +214,8 @@ export class UI extends React.Component<UIProps> {
                     </TopButton>
                   </div>
                 </div>
-                {this.props.children}
+                
+                  {this.props.children}
               </div>
             </React.Fragment>
           );

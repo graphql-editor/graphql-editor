@@ -32,9 +32,9 @@ export const loadProject = (instance: typeof Cloud) => (project: State<Project>)
     .then(async (project) => {
       const { sources } = project.sources;
       if (sources.length > 0) {
-        const projectURL = sources.find((s) => s.filename === 'project.json').getUrl;
-        const { nodes, links, tabs } = await (await fetch(projectURL)).json();
-        await instance.setState((state) => ({ loaded: { nodes, links, tabs } }));
+        const projectURL = sources.find((s) => s.filename === 'schema.graphql').getUrl;
+        const project = await (await fetch(projectURL)).text();
+        instance.controller.loadGraphQL(project);
       } else {
         await instance.resetWorkspace();
       }

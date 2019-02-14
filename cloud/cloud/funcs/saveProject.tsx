@@ -2,15 +2,16 @@ import { userApi, Cloud } from '../Container';
 import { Project, State } from '../types/project';
 import { NewSource } from '../types';
 import { Analytics } from '../analytics';
+import { Schemas } from '../models';
 
 export const saveProjectTemplate = (instance: typeof Cloud) => (
   apiFunc: typeof userApi,
   {
     project,
-    tabs
+    schemas
   }: {
     project: State<Project>;
-    tabs: string[];
+    schemas: Schemas;
   }
 ) => {
   const sm = 'Saving...';
@@ -18,17 +19,10 @@ export const saveProjectTemplate = (instance: typeof Cloud) => (
   Analytics.events.project({
     action: 'save'
   });
-  const projectSchema = JSON.stringify({
-    nodes,
-    links,
-    tabs
-  });
-  const graphQLSchema = codeGenerators.graphql.serializeSchema(nodes, links, tabs).code;
-  const fakerSchema = codeGenerators.faker.serializeFaker(nodes, links, tabs).code;
   const files = [
     new File(
       [
-        new Blob([projectSchema], {
+        new Blob([schemas.project], {
           type: 'application/json'
         })
       ],
@@ -36,7 +30,7 @@ export const saveProjectTemplate = (instance: typeof Cloud) => (
     ),
     new File(
       [
-        new Blob([graphQLSchema], {
+        new Blob([schemas.graphql], {
           type: 'application/graphql'
         })
       ],
@@ -44,7 +38,7 @@ export const saveProjectTemplate = (instance: typeof Cloud) => (
     ),
     new File(
       [
-        new Blob([fakerSchema], {
+        new Blob([schemas.faker], {
           type: 'application/json'
         })
       ],

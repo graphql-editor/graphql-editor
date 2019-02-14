@@ -25,9 +25,8 @@ export class Parser {
       Mutation: this.schema.getMutationType(),
       Subscription: this.schema.getSubscriptionType()
     };
-    console.log(operations.Query!.name)
     if (!operations.Query) {
-      throw new Error('Query is required for schema to work. INVALID SCHEMA');
+      console.warn('Query is required for schema to work. INVALID SCHEMA');
     }
     const rootNodes = Object.keys(typeMap)
       .map((t) => ({
@@ -53,7 +52,6 @@ export class Parser {
         }
       }
     });
-    console.log(nodeTree)
     return nodeTree;
   };
 }

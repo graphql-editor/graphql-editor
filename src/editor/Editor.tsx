@@ -6,8 +6,8 @@ export type EditorState = {
   code: string;
 };
 export type EditorProps = {
-  code: string;
   editorVisible: boolean;
+  graphController?: (controller: GraphController) => void;
 } & CodeEditorOuterProps;
 
 export class Editor extends React.Component<EditorProps, EditorState> {
@@ -25,6 +25,12 @@ export class Editor extends React.Component<EditorProps, EditorState> {
     this.controller.setPassSchema((code) => {
       this.setState({ code });
     });
+    this.props.graphController && this.props.graphController(this.controller);
+  }
+  componentDidUpdate(prevProps: EditorProps) {
+    if (this.props.editorVisible !== prevProps.editorVisible) {
+      this.controller.resizeDiagram();
+    }
   }
   render() {
     return (
@@ -36,7 +42,13 @@ export class Editor extends React.Component<EditorProps, EditorState> {
             schemaChanged={this.props.schemaChanged}
           />
         )}
-        <div ref={this.containerRef} />
+        <div
+          style={{
+            maxHeight: '100%',
+            maxWidth: '100%'
+          }}
+          ref={this.containerRef}
+        />
       </>
     );
   }

@@ -1,39 +1,70 @@
-import { Diagram, Node, Link } from 'graphsource';
+import { Diagram, Node, Link, Serializer, Old } from 'graphsource';
 import { TreeToNodes } from '../TreeToNodes';
 import { Parser } from '../Parser';
 import { NodesToTree } from '../NodesToTree';
-import { EditorNodeDefinition, ParsingFunction } from '../Models';
+import { EditorNodeDefinition, ParsingFunction, ParserTree } from '../Models';
 import { TreeToTS } from '../TreeToTS';
 import { Definitions } from './definitions';
 import { TreeToFaker } from '../TreeToFaker';
-import { GraphQLSchema, buildClientSchema, introspectionQuery } from 'graphql';
-
-
+import { introspectionQuery, buildClientSchema, printSchema } from 'graphql';
 export class GraphController {
-  diagram?: Diagram;
+  private nodes: Node[] = [];
+  private links: Link[] = [];
+  private diagram?: Diagram;
   public definitions?: EditorNodeDefinition[];
-  passSchema?: (schema: string) => void;
-  parser = new Parser();
-  currentParsingFunction: ParsingFunction = ParsingFunction.graphql;
+  private passSchema?: (schema: string) => void;
+  private onSerialize?: (schema: string) => void;
+  private parser = new Parser();
+  private currentParsingFunction: ParsingFunction = ParsingFunction.graphql;
   setDOMElement = (element: HTMLElement) => {
     this.diagram = new Diagram(element);
     this.loadDefinitions();
+  };
+  resizeDiagram = () => {
+    this.diagram!.resize();
   };
   setParsingFunction = (f: ParsingFunction) => {
     this.currentParsingFunction = f;
     this.diagram!.requestSerialise();
   };
-  load = (schema: string) => {
-    const result = TreeToNodes.resolveTree(this.parser.parse(schema), this.definitions!);
-    this.diagram!.setDefinitions(this.definitions!);
-    this.diagram!.setNodes(result.nodes, true);
-    this.serialise({
-      nodes: result.nodes,
-      links: result.links
-    });
-    this.diagram!.setLinks(result.links);
+  setOnSerialise = (f: (schema: string) => void) => {
+    this.onSerialize = f;
   };
-  static getSchemaFromURL = async (url: string): Promise<GraphQLSchema> => {
+  load = (nodes: Node[], links: Link[]) => {
+    this.diagram!.setNodes(nodes, true);
+    this.diagram!.setLinks(links);
+    this.diagram!.zeroDiagram()
+    this.serialise({
+      nodes,
+      links
+    });
+  };
+  loadGraphQL = (schema: string) => {
+    const result = TreeToNodes.resolveTree(this.parser.parse(schema), this.definitions!);
+    this.load(result.nodes, result.links);
+  };
+  loadOldFormat = (serializedDiagram: string) => {
+    const deserializedOldVersion = Old.deserialize(JSON.parse(serializedDiagram));
+    const deserialized = Serializer.deserialize(
+      {
+        nodes: deserializedOldVersion.nodes,
+        links: deserializedOldVersion.links
+      },
+      this.definitions
+    );
+    this.load(deserialized.nodes, deserialized.links);
+    return deserialized;
+  };
+  loadSerialized = (serializedDiagram: ParserTree) => {
+    const deserialized = TreeToNodes.resolveTree(serializedDiagram, this.definitions!);
+    this.load(deserialized.nodes, deserialized.links);
+  };
+  saveSerialized = () => {
+    const graphql = NodesToTree.parse(this.nodes, this.links);
+    const tree = this.parser.parse(graphql);
+    return JSON.stringify(tree);
+  };
+  getSchemaFromURL = async (url: string): Promise<void> => {
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -45,24 +76,38 @@ export class GraphController {
     if (errors) {
       throw new Error(JSON.stringify(errors, null, 2));
     }
-    const schema = buildClientSchema(data);
-    return schema;
+    const c = buildClientSchema(data);
+    this.loadGraphQL(printSchema(c));
   };
   setPassSchema = (fn: (schema: string) => void) => (this.passSchema = fn);
-  serialise = ({ nodes, links }: { nodes: Node[]; links: Link[] }) =>
+  generateFromAllParsingFunctions = () => {
+    const graphql = NodesToTree.parse(this.nodes, this.links);
+    const tree = this.parser.parse(graphql);
+    const faker = TreeToFaker.resolveTree(tree);
+    const project = this.saveSerialized();
+    return {
+      graphql,
+      faker,
+      project
+    };
+  };
+  serialise = ({ nodes, links }: { nodes: Node[]; links: Link[] }) => {
+    this.nodes = nodes;
+    this.links = links;
+    const graphQLSchema = NodesToTree.parse(nodes, links);
+    this.onSerialize && this.onSerialize(graphQLSchema);
     this.passSchema &&
-    this.passSchema(
-      {
-        [ParsingFunction.graphql]: () => NodesToTree.parse(nodes, links),
-        [ParsingFunction.typescript]: () =>
-          TreeToTS.resolveTree(this.parser.parse(NodesToTree.parse(nodes, links))),
-        [ParsingFunction.faker]: () =>
-          TreeToFaker.resolveTree(this.parser.parse(NodesToTree.parse(nodes, links)))
-      }[this.currentParsingFunction]()
-    );
+      this.passSchema(
+        {
+          [ParsingFunction.graphql]: () => graphQLSchema,
+          [ParsingFunction.typescript]: () =>
+            TreeToTS.resolveTree(this.parser.parse(graphQLSchema)),
+          [ParsingFunction.faker]: () => TreeToFaker.resolveTree(this.parser.parse(graphQLSchema))
+        }[this.currentParsingFunction]()
+      );
+  };
   loadDefinitions = () => {
     this.definitions = Definitions.generate();
-
     this.diagram!.setDefinitions(this.definitions);
     this.diagram!.setSerialisationFunction(this.serialise);
   };

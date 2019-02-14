@@ -1,4 +1,4 @@
-import { ParserRoot, ParserTree, ParserField, EditorNodeDefinition } from '../Models';
+import { ParserRoot, ParserTree, ParserField, EditorNodeDefinition, NodeData } from '../Models';
 import { NodeUtils, Node, Link } from 'graphsource';
 import { ScreenPosition } from 'graphsource/lib/IO/ScreenPosition';
 
@@ -56,7 +56,8 @@ export class TreeToNodes {
     const createdRootNode = NodeUtils.createBasicNode(e, definingObjectDefinition, {
       name: root.name,
       description: root.description,
-      options: root.type.options
+      options: root.type.options,
+      editsDefinitions: nodeDefinitions.filter((nd) => nd.type === root.name)
     });
     nodes.push(createdRootNode);
     if (root.interfaces && root.interfaces.length) {
@@ -77,7 +78,7 @@ export class TreeToNodes {
             },
             name: i,
             nodeParams: {
-              implements: true
+              type: NodeData.implements
             }
           },
           createdNode

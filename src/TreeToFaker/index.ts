@@ -41,9 +41,9 @@ export const generateFakerResolverBase = (
     [f.name]: {
       type: f.type.name in ScalarTypes ? fakerMap[f.type.name] || f.type.name : undefined,
       ref: f.type.name in ScalarTypes ? undefined : f.type.name,
-      array: f.type.options && f.type.options.find((o) => o === Options.array),
-      required: f.type.options && f.type.options.find((o) => o === Options.required),
-      arrayRequired: f.type.options && f.type.options.find((o) => o === Options.arrayRequired)
+      array: f.type.options && !!f.type.options.find((o) => o === Options.array),
+      required: f.type.options && !!f.type.options.find((o) => o === Options.required),
+      arrayRequired: f.type.options && !!f.type.options.find((o) => o === Options.arrayRequired)
     }
   }));
   return arrayToDict(rf);

@@ -1,6 +1,6 @@
 import { Cloud } from '../Container';
 import { Analytics } from '../analytics';
-import { GraphController } from '../../../src/Graph';
+// import { GraphController } from '../../../src/Graph';
 
 export const loadFromURL = (instance: typeof Cloud) => async (url: string) => {
   const sm = `loading schema from url...`;
@@ -10,8 +10,7 @@ export const loadFromURL = (instance: typeof Cloud) => async (url: string) => {
   });
   await instance.upStack(sm);
   try {
-    const schema = await GraphController.getSchemaFromURL(url);
-    const { nodes, links } = load.makeNodes(schema);
+    await instance.controller!.getSchemaFromURL(url);
     return instance
       .setState((state) => ({
         cloud: {

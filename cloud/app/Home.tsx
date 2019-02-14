@@ -6,8 +6,8 @@ import * as styles from '../cloud/style/Home';
 import { UI } from '../cloud/ui/UI';
 import { Editor } from '../../src';
 import { Projects } from '../cloud/ui/Projects';
-import { Analytics } from '../cloud/analytics';
 import Intercom from 'react-intercom';
+import { GraphController } from '../../src/Graph';
 
 export type HomeState = {
   projectId?: string;
@@ -15,6 +15,7 @@ export type HomeState = {
 };
 
 export class Home extends React.Component<{}, HomeState> {
+  graphController: GraphController;
   state: HomeState = {
     projectId: null,
     code: ''
@@ -30,9 +31,13 @@ export class Home extends React.Component<{}, HomeState> {
                 code={{
                   active: cloud.state.visibleMenu === 'code',
                   click: () =>
-                    cloud.setState({
-                      visibleMenu: cloud.state.visibleMenu === 'code' ? null : 'code'
-                    })
+                    cloud
+                      .setState({
+                        visibleMenu: cloud.state.visibleMenu === 'code' ? null : 'code'
+                      })
+                      .then(() => {
+                        this.graphController.resizeDiagram();
+                      })
                 }}
                 projects={{
                   active: cloud.state.visibleMenu === 'projects',
@@ -43,7 +48,10 @@ export class Home extends React.Component<{}, HomeState> {
                           category: 'examples',
                           visibleMenu: cloud.state.visibleMenu === 'projects' ? null : 'projects'
                         }))
-                        .then(cloud.loadExamples);
+                        .then(cloud.loadExamples)
+                        .then(() => {
+                          this.graphController.resizeDiagram();
+                        });
                       return;
                     }
                     cloud
@@ -51,7 +59,10 @@ export class Home extends React.Component<{}, HomeState> {
                         category: 'my',
                         visibleMenu: cloud.state.visibleMenu === 'projects' ? null : 'projects'
                       }))
-                      .then(cloud.loadExamples);
+                      .then(cloud.loadExamples)
+                      .then(() => {
+                        this.graphController.resizeDiagram();
+                      });
                   }
                 }}
                 examples={{
@@ -62,21 +73,28 @@ export class Home extends React.Component<{}, HomeState> {
                         visibleMenu: 'projects',
                         category: 'examples'
                       })
-                      .then(cloud.loadExamples);
+                      .then(cloud.loadExamples)
+                      .then(() => {
+                        this.graphController.resizeDiagram();
+                      });
                   }
                 }}
               >
-                {cloud.state.visibleMenu === 'projects' && <Projects />}
-
-                <Editor
-                  code={cloud.state.code}
-                  editorVisible={cloud.state.visibleMenu === 'code'}
-                  nodes={cloud.state.nodes}
-                  links={cloud.state.links}
-                  loaded={cloud.state.loaded}
-                  tabs={cloud.state.tabs}
-                  result={cloud.setNodes}
-                />
+                <div
+                  className={cx({
+                    [styles.UiDiagram]: true,
+                    [styles.UIDiagramFull]: !cloud.state.visibleMenu
+                  })}
+                >
+                  {cloud.state.visibleMenu === 'projects' && <Projects />}
+                  <Editor
+                    graphController={(controller) => {
+                      this.graphController = controller;
+                      Cloud.setController(controller);
+                    }}
+                    editorVisible={cloud.state.visibleMenu === 'code'}
+                  />
+                </div>
               </UI>
               <Intercom appID="k0lckhv8" user_id={cloud.state.user && cloud.state.user.id} />
             </div>

@@ -33,21 +33,8 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
   };
   taskRunner?: number;
   lastSchema?: string;
-  lastEdit = 0;
-  lastGeneration = 0;
   holder?: HTMLDivElement;
   editor?: AceEditor;
-  componentDidMount() {
-    this.taskRunner = setInterval(() => {
-      if (this.lastSchema && this.lastEdit > this.lastGeneration) {
-        try {
-          this.lastGeneration = Date.now();
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    }, 300) as any;
-  }
   componentWillUnmount() {
     clearInterval(this.taskRunner);
   }
@@ -55,7 +42,7 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
     const file = e.target!.files![0];
     const reader = new FileReader();
     reader.onload = (f) => {
-      this.props.controller.load((f.target! as any).result);
+      this.props.controller.loadGraphQL((f.target! as any).result);
     };
     reader.readAsText(file);
   };
@@ -85,8 +72,12 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
             const { clipboard } = window.navigator as any;
             clipboard.writeText(this.props.schema);
           }}
+          onGenerate={() => {
+            this.props.controller.loadGraphQL(this.lastSchema);
+          }}
+          loadFile={this.loadFromFile}
+          generateVisible={this.state.currentTab === ParsingFunction.graphql}
         />
-        <input type="file" onChange={this.loadFromFile} />
         <div
           className={cx(styles.CodeContainer)}
           ref={(ref) => {
@@ -101,9 +92,6 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
           <AceEditor
             ref={'editor'}
             mode={aceMode}
-            onBlur={(e) => {
-              this.lastEdit = Date.now();
-            }}
             onChange={(
               e,
               v: {

@@ -33,5 +33,8 @@ export const createProject = (instance: typeof Cloud) => async (
       }))
     )
     .then(instance.setCloud)
-    .then(() => instance.deStack(sm));
+    .then(() => instance.deStack(sm))
+    .then(() => {
+      instance.controller.loadGraphQL('');
+    });
 };

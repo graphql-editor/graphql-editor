@@ -27,13 +27,12 @@ const blink = keyframes({
 
 export const UI = style({
   height: '100vh',
-  display: 'grid',
-  gridTemplateColumns: this.state.editorVisible ? `auto 1fr` : '1fr',
-  gridTemplateRows: '1fr'
+  display: 'flex',
+  flexFlow:'column nowrap'
 });
 export const TopBar = style({
   padding: 8,
-  background: Colors.grey[6],
+  background: Colors.grey[7],
   display: 'flex',
   flexFlow: 'row nowrap',
   zIndex: 2,

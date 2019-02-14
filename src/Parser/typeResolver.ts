@@ -5,7 +5,7 @@ import {
   TypeNode,
   ValueNode
 } from 'graphql';
-import { ParserField, ScalarTypes, Options, ObjectTypes } from '../Models';
+import { ParserField, ScalarTypes, Options, ObjectTypes, NodeData } from '../Models';
 
 export class TypeResolver {
   static resolveRootNode(n: TypeDefinitionNode['kind']): string {
@@ -52,7 +52,7 @@ export class TypeResolver {
           args: n.arguments && TypeResolver.iterateInputValueFields(n.arguments),
           type: TypeResolver.resolveSingleField(n.type),
           nodeParams: {
-            field: true
+            type: NodeData.field
           }
         } as ParserField)
     );
@@ -85,7 +85,7 @@ export class TypeResolver {
           description: n.description && n.description.value,
           type: TypeResolver.resolveSingleField(n.type),
           nodeParams: {
-            argument: true
+            type: NodeData.argument
           },
           args: n.defaultValue
             ? TypeResolver.resolveDefaultValues(n.defaultValue).map(
@@ -96,7 +96,7 @@ export class TypeResolver {
                       name: ScalarTypes.DefaultValue
                     },
                     nodeParams: {
-                      defaultValue: true
+                      type: NodeData.defaultValue
                     }
                   } as ParserField)
               )
@@ -118,7 +118,7 @@ export class TypeResolver {
             description: v.description && v.description.value,
             type: { name: ScalarTypes.EnumValue },
             nodeParams: {
-              enumValue: true
+              type: NodeData.enumValue
             }
           } as ParserField)
       );
@@ -134,7 +134,7 @@ export class TypeResolver {
             name: t.name.value,
             type: { name: t.name.value },
             nodeParams: {
-              unionType: true
+              type: NodeData.unionType
             }
           } as ParserField)
       );

@@ -24,14 +24,18 @@ export enum Operations {
   subscription = 'subscription'
 }
 
+export enum NodeData {
+  argument="argument",
+  field="field",
+  unionType="unionType",
+  implements="implements",
+  enumValue="enumValue",
+  defaultValue="defaultValue",
+  defaultEnumValue="defaultEnumValue"
+}
+
 export interface GraphQLNodeParams {
-  argument?: boolean;
-  field?: boolean;
-  unionType?: boolean;
-  implements?: boolean;
-  enumValue?: boolean;
-  defaultValue?: boolean;
-  defaultEnumValue?: boolean;
+  type?:NodeData
 }
 
 export type EditorNodeDefinition = NodeDefinition<GraphQLNodeParams>;

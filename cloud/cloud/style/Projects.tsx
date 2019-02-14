@@ -8,7 +8,8 @@ export const Container = style({
   width: 500,
   zIndex: 2,
   overflowY: 'auto',
-  position: 'relative'
+  position: 'relative',
+  maxHeight: '100%'
 });
 
 export const Left = style({
@@ -33,7 +34,6 @@ export const ProjectsGrid = style({
   display: 'grid',
   gridTemplateColumns: '1fr',
   gridTemplateRows: 'auto',
-  overflowY: 'auto',
   gridGap: 10
 });
 

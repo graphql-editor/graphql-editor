@@ -3,7 +3,8 @@ import {
   AcceptedEditorNodeDefinition,
   GraphQLNodeParams,
   ObjectTypes,
-  Operations
+  Operations,
+  NodeData
 } from '../Models';
 
 import { NodeOption } from 'graphsource';
@@ -38,13 +39,13 @@ export class Definitions {
         )
       );
     const fieldDefinitionsByParent = (types: string[]) =>
-      DefinitionsByParent(types, (d) => !!(d && d.field));
+      DefinitionsByParent(types, (d) => !!(d && d.type === NodeData.field));
     const argumentDefinitionsByParent = (types: string[]) =>
-      DefinitionsByParent(types, (d) => !!(d && d.argument));
+      DefinitionsByParent(types, (d) => !!(d && d.type === NodeData.argument));
     const interfaceDefinitionsByParent = (types: string[]) =>
-      DefinitionsByParent(types, (d) => !!(d && d.implements));
+      DefinitionsByParent(types, (d) => !!(d && d.type === NodeData.implements));
     const unionTypeDefinitionsByParent = (types: string[]) =>
-      DefinitionsByParent(types, (d) => !!(d && d.unionType));
+      DefinitionsByParent(types, (d) => !!(d && d.type === NodeData.unionType));
 
     const objectDefinitionsByParent = fieldDefinitionsByParent([
       ObjectTypes.type,
@@ -86,7 +87,7 @@ export class Definitions {
     const fieldInstance: Partial<EditorNodeDefinition> = {
       options: instanceOptions,
       data: {
-        field: true
+        type: NodeData.field
       },
       acceptsInputs: (d, defs) =>
         argumentDefinitionsByParent([ObjectTypes.scalar, ObjectTypes.enum, ObjectTypes.input])(
@@ -97,7 +98,7 @@ export class Definitions {
     const argumentInstance: Partial<EditorNodeDefinition> = {
       options: instanceOptions,
       data: {
-        argument: true
+        type: NodeData.argument
       },
       acceptsInputs: (d, defs) => [
         {
@@ -107,7 +108,7 @@ export class Definitions {
     };
     const implementsInstance: Partial<EditorNodeDefinition> = {
       data: {
-        implements: true
+        type: NodeData.implements
       },
       node: {
         inputs: null
@@ -134,7 +135,7 @@ export class Definitions {
       help: help.EnumValue,
       type: 'DefaultValue',
       data: {
-        defaultValue: true
+        type: NodeData.defaultValue
       },
       options
     };
@@ -143,7 +144,7 @@ export class Definitions {
         ({
           ...sf,
           data: {
-            argument: true
+            type:NodeData.argument
           },
           acceptsInputs: argumentInstance.acceptsInputs
         } as EditorNodeDefinition)
@@ -163,7 +164,7 @@ export class Definitions {
       instances: [
         {
           data: {
-            defaultEnumValue: true
+            type: NodeData.enumValue
           }
         }
       ],
@@ -198,7 +199,7 @@ export class Definitions {
         // Union type instance
         {
           data: {
-            unionType: true
+            type: NodeData.unionType
           },
           node: {
             name: 'typeNode',

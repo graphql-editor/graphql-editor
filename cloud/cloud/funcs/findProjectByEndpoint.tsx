@@ -21,9 +21,7 @@ export const findProjectByEndpoint = (instance: typeof Cloud) => async (endpoint
     .then(async (response) => {
       const hasProject = response.projects.find((p) => p.endpoint.uri === endpoint);
       await instance.deStack(sm);
-      console.log('FINDING');
       if (hasProject) {
-        console.log('HAS PROJECT');
         return loadProject(instance)(hasProject);
       }
       await instance.upStack(`Check if you provided URL correctly`);

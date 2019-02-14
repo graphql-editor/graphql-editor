@@ -131,9 +131,6 @@ export class NodesToTree {
         operations[Operations.query]
           ? `schema{\n${resolvedOperations}\n}`
           : `
-"""
-You need root query type for your schema to work. To create root query type right click any type node and choose 'query'
-"""
       `
       );
   }

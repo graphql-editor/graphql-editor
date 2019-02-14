@@ -1,19 +1,15 @@
 import { Cloud, fakerUserApi } from '../Container';
 import { saveProjectTemplate } from './saveProject';
 import { State, Project } from '../types/project';
-import { NodeType, LinkType } from '@slothking-online/diagram';
 import { Analytics } from '../analytics';
+import { Schemas } from '../models';
 
 export const fakerDeployProject = (instance: typeof Cloud) => async ({
-  nodes,
-  links,
-  tabs,
+  schemas,
   project
 }: {
   project: State<Project>;
-  nodes: NodeType[];
-  links: LinkType[];
-  tabs: string[];
+  schemas: Schemas;
 }) => {
   const sm = `deploying faker...`;
 
@@ -86,8 +82,6 @@ export const fakerDeployProject = (instance: typeof Cloud) => async ({
   await instance.deStack(sm);
   return saveProjectTemplate(instance)(fakerUserApi, {
     project: correspondingFakerProject,
-    nodes,
-    links,
-    tabs
+    schemas
   });
 };
