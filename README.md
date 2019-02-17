@@ -1,6 +1,6 @@
 ![GraphQLEditor Editor](assets/graphql-header.jpg)
 
-GraphQLEditor makes it easier to understand GrapHQL schemas. Create a schema by joining visual blocks. GraphQLEditor will transform them into code.
+GraphQLEditor makes it easier to understand GraphQL schemas. Create a schema by joining visual blocks. GraphQLEditor will transform them into code.
 
 With GraphQLEditor you can create visual diagrams without writing any code.
 
