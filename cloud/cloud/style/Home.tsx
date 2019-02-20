@@ -14,9 +14,7 @@ export const UiDiagram = style({
   width:'100%',
   height:'100%',
   alignSelf: 'stretch',
-  display: 'grid',
-  gridTemplateRows: '1fr',
-  gridTemplateColumns: '1fr auto'
+  display: 'flex',
 });
 export const UIDiagramFull = style({
   gridTemplateColumns: '1fr'

@@ -1,13 +1,14 @@
-import { Cloud, userApi, fakerUserApi } from '../Container';
+import { Cloud } from '../Container';
 import { State, Project } from '../types/project';
 import { Analytics } from '../analytics';
+import { Calls } from './calls';
 
 export const removeProject = (instance: typeof Cloud) => async (project: State<Project>) => {
   const sm = `Removing project...`;
   Analytics.events.project({
     action: 'remove'
   });
-  
+
   await instance.upStack(sm);
   if (
     instance.state.cloud.currentProject &&
@@ -20,36 +21,21 @@ export const removeProject = (instance: typeof Cloud) => async (project: State<P
       }
     }));
   }
-  const fakerProject =
-    instance.state.faker.projects &&
-    instance.state.faker.projects.find((p) => p.slug === project.slug);
-  return userApi(instance.state.token)
-    .Mutation.removeProject({
-      project: project.id
-    })({})
-    .then(() => {
-      if (fakerProject) {
-        return fakerUserApi(instance.state.token).Mutation.removeProject({
-          project: fakerProject.id
-        })({});
+  const [projectProject, fakerProject] = await Calls.removeProject(instance)(project);
+  if (fakerProject) {
+    await instance.setState((state) => ({
+      faker: {
+        ...state.faker,
+        projects: state.faker.projects.filter((p) => p.id !== fakerProject.id)
       }
-      return;
-    })
-    .then(async () => {
-      if (fakerProject) {
-        await instance.setState((state) => ({
-          faker: {
-            ...state.faker,
-            projects: state.faker.projects.filter((p) => p.id !== fakerProject.id)
-          }
-        }));
-      }
-      return instance.setState((state) => ({
-        cloud: {
-          ...state.cloud,
-          projects: state.cloud.projects.filter((p) => p.id !== project.id)
-        }
-      }));
-    })
-    .then(() => instance.deStack(sm));
+    }));
+  }
+  await instance.setState((state) => ({
+    cloud: {
+      ...state.cloud,
+      projects: state.cloud.projects.filter((p) => p.id !== projectProject.id)
+    }
+  }));
+  await instance.deStack(sm);
+  return [projectProject, fakerProject];
 };

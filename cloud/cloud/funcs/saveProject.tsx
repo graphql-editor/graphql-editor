@@ -87,17 +87,19 @@ export const saveProjectTemplate = (instance: typeof Cloud) => (
       putUrl: true
     })
     .then(async (response) => {
-      for (const { putUrl, headers, filename } of response) {
-        await fetch(putUrl, {
-          method: 'PUT',
-          mode: 'cors',
-          headers: headers.reduce((a, b) => {
-            a[b.key] = b.value;
-            return a;
-          }, {}),
-          body: sources.find((s) => s.source.filename === filename).file
-        });
-      }
+      await Promise.all(
+        response.map(({ putUrl, headers, filename }) =>
+          fetch(putUrl, {
+            method: 'PUT',
+            mode: 'cors',
+            headers: headers.reduce((a, b) => {
+              a[b.key] = b.value;
+              return a;
+            }, {}),
+            body: sources.find((s) => s.source.filename === filename).file
+          })
+        )
+      );
       return instance.deStack(sm);
     });
 };

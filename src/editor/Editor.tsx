@@ -18,14 +18,15 @@ export class Editor extends React.Component<EditorProps, EditorState> {
   };
   private containerRef = React.createRef<HTMLDivElement>();
   controller: GraphController = new GraphController();
+  receiveSchema = (code:string) => {
+    this.setState({ code });
+  }
   componentDidMount() {
     if (!this.containerRef.current) {
       return;
     }
     this.controller.setDOMElement(this.containerRef.current);
-    this.controller.setPassSchema((code) => {
-      this.setState({ code });
-    });
+    this.controller.setPassSchema(this.receiveSchema);
     this.props.graphController && this.props.graphController(this.controller);
   }
   componentDidUpdate(prevProps: EditorProps) {
@@ -40,7 +41,12 @@ export class Editor extends React.Component<EditorProps, EditorState> {
           <CodeEditor
             controller={this.controller}
             schema={this.state.code}
-            schemaChanged={this.props.schemaChanged}
+            schemaChanged={(e)=>{
+              this.setState({
+                code:e
+              })
+              this.props.schemaChanged && this.props.schemaChanged(e)
+            }}
           />
         )}
         <div

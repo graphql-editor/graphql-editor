@@ -12,15 +12,22 @@ import { GraphController } from '../../src/Graph';
 export type HomeState = {
   projectId?: string;
   code: string;
+  activeCategory: string;
 };
 
 export class Home extends React.Component<{}, HomeState> {
   graphController: GraphController;
   state: HomeState = {
     projectId: null,
-    code: ''
+    code: '',
+    activeCategory: Cloud.state.visibleMenu
   };
-  componentDidMount() {}
+  componentDidUpdate(_, prevState: HomeState) {
+    if (prevState.activeCategory !== this.state.activeCategory) {
+      console.log('RESIZING');
+      this.graphController.resizeDiagram();
+    }
+  }
   render() {
     return (
       <Subscribe to={[Cloud]}>
@@ -35,8 +42,15 @@ export class Home extends React.Component<{}, HomeState> {
                       .setState({
                         visibleMenu: cloud.state.visibleMenu === 'code' ? null : 'code'
                       })
+                      .then(() =>
+                        cloud.setState({
+                          visibleMenu: cloud.state.visibleMenu
+                        })
+                      )
                       .then(() => {
-                        this.graphController.resizeDiagram();
+                        this.setState({
+                          activeCategory: cloud.state.visibleMenu
+                        });
                       })
                 }}
                 projects={{
@@ -50,7 +64,9 @@ export class Home extends React.Component<{}, HomeState> {
                         }))
                         .then(cloud.loadExamples)
                         .then(() => {
-                          this.graphController.resizeDiagram();
+                          this.setState({
+                            activeCategory: cloud.state.visibleMenu
+                          });
                         });
                       return;
                     }
@@ -61,7 +77,9 @@ export class Home extends React.Component<{}, HomeState> {
                       }))
                       .then(cloud.loadExamples)
                       .then(() => {
-                        this.graphController.resizeDiagram();
+                        this.setState({
+                          activeCategory: cloud.state.visibleMenu
+                        });
                       });
                   }
                 }}
@@ -75,7 +93,9 @@ export class Home extends React.Component<{}, HomeState> {
                       })
                       .then(cloud.loadExamples)
                       .then(() => {
-                        this.graphController.resizeDiagram();
+                        this.setState({
+                          activeCategory: cloud.state.visibleMenu
+                        });
                       });
                   }
                 }}
@@ -94,6 +114,7 @@ export class Home extends React.Component<{}, HomeState> {
                     }}
                     editorVisible={cloud.state.visibleMenu === 'code'}
                   />
+                  )
                 </div>
               </UI>
               <Intercom appID="k0lckhv8" user_id={cloud.state.user && cloud.state.user.id} />

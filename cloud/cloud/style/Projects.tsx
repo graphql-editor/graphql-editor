@@ -1,20 +1,21 @@
-import { style } from 'typestyle';
+import { style, media } from 'typestyle';
 import { vars, Colors } from '../../../src';
 
 export const Container = style({
   display: 'flex',
   flexFlow: 'row nowrap',
   flex: 1,
-  width: 500,
+  width: '100vw',
   zIndex: 2,
   overflowY: 'auto',
-  position: 'relative',
-  maxHeight: '100%'
+  position: 'absolute',
+  maxHeight: '100%',
+  height: '100%'
 });
 
 export const Left = style({
   width: 180,
-  background: Colors.main[3],
+  background: Colors.main[6],
   color: Colors.grey[0],
   alignSelf: 'stretch',
   padding: 10
@@ -22,20 +23,25 @@ export const Left = style({
 
 export const Right = style({
   flex: 1,
-  background: Colors.grey[1],
+  background: Colors.main[5],
+  padding: 30,
   alignSelf: 'stretch',
   display: 'flex',
   flexFlow: 'column nowrap',
-  overflowY: 'auto',
-  padding: 10
+  overflowY: 'auto'
 });
 
-export const ProjectsGrid = style({
-  display: 'grid',
-  gridTemplateColumns: '1fr',
-  gridTemplateRows: 'auto',
-  gridGap: 10
-});
+export const ProjectsGrid = style(
+  {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr 1fr',
+    gridTemplateRows: 'auto',
+    gridGap: 10
+  },
+  media({ maxWidth: 1300 }, { gridTemplateColumns: '1fr 1fr' }),
+  media({ maxWidth: 900 }, { gridTemplateColumns: '1fr' }),
+  media({ maxWidth: 700 }, { gridTemplateColumns: '1fr' })
+);
 
 export const Title = style({
   display: 'flex',

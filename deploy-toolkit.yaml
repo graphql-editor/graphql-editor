@@ -1,5 +1,5 @@
 static:
   path: ./dist
-  host: app.graphqleditor.com
+  host: nightly.graphqleditor.com
   cloudflare:
     zone: graphqleditor.com

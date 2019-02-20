@@ -1,5 +1,6 @@
-import { Cloud, fakerApi, api } from '../Container';
+import { Cloud } from '../Container';
 import { Analytics } from '../analytics';
+import { Calls } from './calls';
 
 let examplesLoadedOnce = false;
 
@@ -14,49 +15,22 @@ export const loadExamples = (instance: typeof Cloud) => async () => {
   });
   await instance.upStack(sm);
   examplesLoadedOnce = true;
-  return api.Query.listProjects()({
-    projects: {
-      id: true,
-      name: true,
-      public: true,
-      slug: true,
-      endpoint: {
-        uri: true
-      }
+  const [projectProjects, fakerProjects] = await Calls.searchProjects('showcase');
+  await instance.setState((state) => ({
+    cloud: {
+      ...state.cloud,
+      exampleProjects: projectProjects.projects.filter(
+        (p) => p.endpoint.uri.split('/')[0] === 'showcase'
+      )
     }
-  })
-    .then((response) =>
-      instance.setState((state) => ({
-        cloud: {
-          ...state.cloud,
-          exampleProjects: response.projects.filter(
-            (p) => p.endpoint.uri.split('/')[0] === 'showcase'
-          )
-        }
-      }))
-    )
-    .then(() =>
-      fakerApi.Query.listProjects()({
-        projects: {
-          id: true,
-          name: true,
-          public: true,
-          slug: true,
-          endpoint: {
-            uri: true
-          }
-        }
-      })
-    )
-    .then((response) => {
-      instance.setState((state) => ({
-        faker: {
-          ...state.faker,
-          exampleProjects: response.projects.filter(
-            (p) => p.endpoint.uri.split('/')[0] === 'showcase'
-          )
-        }
-      }));
-    })
-    .then(() => instance.deStack(sm));
+  }));
+  await instance.setState((state) => ({
+    faker: {
+      ...state.faker,
+      exampleProjects: fakerProjects.projects.filter(
+        (p) => p.endpoint.uri.split('/')[0] === 'showcase'
+      )
+    }
+  }));
+  await instance.deStack(sm);
 };

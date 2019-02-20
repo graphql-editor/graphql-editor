@@ -31,20 +31,19 @@ export const UI = style({
   flexFlow:'column nowrap'
 });
 export const TopBar = style({
-  padding: 8,
-  background: Colors.grey[7],
+  background: Colors.main[7],
   display: 'flex',
   flexFlow: 'row nowrap',
-  zIndex: 2,
+  zIndex: 3,
   justifyContent: 'space-between',
-  width: '100%'
+  width: '100%',
+  flex:'none'
 });
 export const Center = style({
   margin: 'auto',
-  color: Colors.grey[3],
-  letterSpacing: 2,
-  fontSize: 14,
-  fontWeight: 100,
+  color: Colors.grey[0],
+  fontSize: 13,
+  fontWeight: 400,
   animationName: blink,
   animationDuration: '3s'
 });

@@ -10,6 +10,7 @@ export const TopButton = ({
   big,
   disabled,
   target,
+  top,
   href
 }: {
   children: React.ReactNode;
@@ -18,6 +19,7 @@ export const TopButton = ({
   active?: boolean;
   small?: boolean;
   big?: boolean;
+  top?: boolean;
   disabled?: string;
   href?: string;
   target?: React.AnchorHTMLAttributes<HTMLAnchorElement>['target'];
@@ -29,6 +31,7 @@ export const TopButton = ({
       active,
       small,
       big,
+      top,
       disabled: !!disabled
     })}
     href={href}

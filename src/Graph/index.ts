@@ -54,7 +54,7 @@ export class GraphController {
         nodes: deserializedOldVersion.nodes,
         links: deserializedOldVersion.links
       },
-      this.definitions
+      this.definitions!
     );
     this.load(deserialized.nodes, deserialized.links);
     return deserialized;

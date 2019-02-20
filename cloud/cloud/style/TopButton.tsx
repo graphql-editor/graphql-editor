@@ -1,10 +1,9 @@
 import { style, classes } from 'typestyle';
 import { vars, Colors } from '../../../src';
 export const Button = style({
-  padding: `10px 18px`,
-  borderRadius: 3,
+  padding: `10px 24px`,
   fontSize: 11,
-  fontWeight:700,
+  fontWeight: 700,
   transition: vars.transition,
   textAlign: 'center',
   cursor: 'pointer',
@@ -13,9 +12,14 @@ export const Button = style({
   '-moz-user-select': 'none',
   textDecoration: 'none',
   userSelect: 'none',
+  borderRadius: 1,
   $nest: {
+    '&.top': {
+      fontSize: 10,
+      border: 0
+    },
     '&.small': {
-      padding: `5px 9px`,
+      padding: `5px 12px`,
       fontSize: 10
     },
     '&.big': {
@@ -68,7 +72,7 @@ export const Green = classes(
 export const PinkFull = classes(
   Button,
   style({
-    background: Colors.main[0],
+    background: Colors.main[6],
     border: `1px solid`,
     borderColor: Colors.main[0],
     color: Colors.grey[0]
@@ -77,10 +81,16 @@ export const PinkFull = classes(
 export const RedFull = classes(
   Button,
   style({
-    background: Colors.red[0],
+    background: Colors.red[6],
     border: `1px solid`,
     borderColor: Colors.red[0],
-    color: Colors.grey[0]
+    color: Colors.grey[0],
+    $nest: {
+      '&:hover': {
+        background: Colors.grey[8],
+        color: Colors.red[0]
+      }
+    }
   })
 );
 
@@ -96,10 +106,16 @@ export const GreenFull = classes(
 export const GreenMidFull = classes(
   Button,
   style({
-    background: Colors.green[2],
+    background: Colors.green[6],
     border: `1px solid`,
     borderColor: Colors.green[2],
-    color: Colors.grey[0]
+    color: Colors.grey[0],
+    $nest: {
+      '&:hover': {
+        background: Colors.grey[8],
+        color: Colors.green[0]
+      }
+    }
   })
 );
 export const Yellow = classes(
@@ -133,12 +149,18 @@ export const Grey = classes(
   })
 );
 
-export const Deploy = classes(
+export const DeployNeon = classes(
   Button,
   style({
     fontWeight: 700,
-    color: Colors.grey[7],
-    background: Colors.yellow[0],
-    border: `1px solid ${Colors.yellow[0]}`
+    color: Colors.grey[0],
+    background: Colors.yellow[5],
+    border: `1px solid ${Colors.yellow[0]}`,
+    $nest: {
+      '&:hover': {
+        background: Colors.grey[8],
+        color: Colors.yellow[0]
+      }
+    }
   })
 );

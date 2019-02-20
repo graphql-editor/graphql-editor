@@ -1,40 +1,27 @@
 import { Cloud, userApi } from '../Container';
 import { Analytics } from '../analytics';
+import { Calls } from './calls';
 
-export const createProject = (instance: typeof Cloud) => async (
-  name: string,
-  is_public: boolean
-) => {
+export const createProject = (instance: typeof Cloud) => (
+  apiFunction: typeof userApi,
+  fakerCloud: 'faker' | 'cloud'
+) => async (name: string, is_public: boolean) => {
   const sm = 'Creating project...';
-
   Analytics.events.project({
     action: 'create'
   });
   await instance.upStack(sm);
-  return userApi(instance.state.token)
-    .Mutation.createProject({
-      name,
-      public: is_public
-    })({
-      id: true,
-      name: true,
-      public: true,
-      slug: true,
-      endpoint: { uri: true }
-    })
-    .then((p) =>
-      instance.setState((state) => ({
-        ...state,
-        cloud: {
-          ...state.cloud,
-          currentProject: p,
-          projects: [...state.cloud.projects, p]
-        }
-      }))
-    )
-    .then(instance.setCloud)
-    .then(() => instance.deStack(sm))
-    .then(() => {
-      instance.controller.loadGraphQL('');
-    });
+  const project = await Calls.createProject(instance)(apiFunction)(name, is_public);
+  await instance.setState((state) => ({
+    ...state,
+    [fakerCloud]: {
+      ...state[fakerCloud],
+      currentProject: project,
+      projects: [...state[fakerCloud].projects, project]
+    }
+  }));
+  await instance.setCloud();
+  await instance.deStack(sm);
+  instance.controller.loadGraphQL('');
+  return project;
 };

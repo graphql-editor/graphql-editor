@@ -16,6 +16,7 @@ import { LoadFromURL } from '../popups/LoadFromURL';
 import { CreateNamespace } from '../popups/CreateNamespace';
 import { OnBoarding } from '../popups/OnBoarding';
 import { Analytics } from '../analytics';
+import { TopBarIcon } from './Icon';
 type MenuCategory = {
   active: boolean;
   click: () => void;
@@ -56,39 +57,24 @@ export class UI extends React.Component<UIProps> {
               <div className={styles.UI}>
                 <div className={styles.TopBar}>
                   <div className={styles.Left}>
-                    <TopButton
-                      active={this.props.code.active}
-                      variant={'Pink'}
-                      onClick={this.props.code.click}
-                    >
-                      code
-                    </TopButton>
-                    <HorizontalSpacer />
-                    <TopButton
+                    <TopBarIcon
+                      name="burger"
+                      hint="projects"
                       active={this.props.projects.active}
-                      variant={'Pink'}
                       onClick={this.props.projects.click}
-                    >
-                      projects
-                    </TopButton>
-                    <HorizontalSpacer />
-                    <TopButton
-                      variant={'Pink'}
-                      onClick={() => {
-                        this.props.examples.click();
-                      }}
-                    >
-                      examples
-                    </TopButton>
-                    <HorizontalSpacer />
-                    <TopButton
-                      variant={'Pink'}
-                      href={'https://docs.graphqleditor.com'}
-                      onClick={() => {}}
-                      target={'_blank'}
-                    >
-                      docs
-                    </TopButton>
+                    />
+                    <TopBarIcon
+                      name="terminal"
+                      hint="code"
+                      active={this.props.code.active}
+                      onClick={this.props.code.click}
+                    />
+                    <TopBarIcon
+                      name="examples"
+                      hint="examples"
+                      onClick={this.props.examples.click}
+                    />
+                    <TopBarIcon name="docs" hint="docs" href={'https://docs.graphqleditor.com'} />
                   </div>
                   {currentProject && (
                     <div className={styles.Center}>{currentProject.endpoint.uri}</div>
@@ -96,87 +82,40 @@ export class UI extends React.Component<UIProps> {
                   <div className={styles.Right}>
                     {cloud.state.token ? (
                       <>
-                        <TopButton variant={'Grey'} onClick={cloud.logout}>
-                          Logout
-                        </TopButton>
-                        <HorizontalSpacer />
+                        <TopBarIcon name="logout" hint="logout" onClick={cloud.logout} />
+                        <TopBarIcon
+                          name="user"
+                          hint="soon"
+                          onClick={() => {
+                            'A';
+                          }}
+                        />
                       </>
                     ) : (
                       <>
-                        <TopButton variant={'Grey'} onClick={cloud.login}>
+                        <TopButton top variant={'Pink'} onClick={cloud.login}>
                           Login
                         </TopButton>
-                        <HorizontalSpacer />
                       </>
                     )}
-                    {
+                    {currentProject && cloud.findInAllFakerProjects(currentProject) && (
                       <>
-                        <TopButton
-                          variant={'Pink'}
+                        <TopBarIcon
+                          name="cloud"
+                          hint="GraphiQL Faker"
                           onClick={() => {
-                            if (!cloud.state.token) {
-                              cloud.setState({
-                                popup: 'loginToContinue'
-                              });
-                              return;
-                            }
-                            cloud.setState({
-                              popup: 'createProject'
+                            Analytics.events.faker({
+                              action: 'openMyProjectURL'
                             });
                           }}
-                        >
-                          New
-                        </TopButton>
-                        <HorizontalSpacer />
+                          href={cloud.getFakerURL()}
+                        />
                       </>
-                    }
-                    {currentProject &&
-                      cloud.findInAllFakerProjects(currentProject) && (
-                        <>
-                          <TopButton
-                            variant={'Green'}
-                            onClick={() => {
-                              Analytics.events.faker({
-                                action: 'openMyProjectURL'
-                              });
-                            }}
-                            href={cloud.getFakerURL()}
-                            target="_blank"
-                          >
-                            Faker Cloud
-                          </TopButton>
-                          <HorizontalSpacer />
-                        </>
-                      )}
-                    <TopButton
-                      variant={'Yellow'}
-                      onClick={() => {
-                        if (!cloud.state.token) {
-                          cloud.setState({
-                            popup: 'loginToContinue'
-                          });
-                          return;
-                        }
-                        if (!currentProject) {
-                          cloud.setState({
-                            popup: 'notYetProject'
-                          });
-                          return;
-                        }
-                        if (cloud.state.cloud.projects.find((p) => p.id === currentProject.id)) {
-                          cloud.saveProject();
-                          return;
-                        }
-                        cloud.setState({
-                          popup: 'notYourProject'
-                        });
-                      }}
-                    >
-                      Save
-                    </TopButton>
-                    <HorizontalSpacer />
-                    <TopButton
-                      variant={'Deploy'}
+                    )}
+
+                    <TopBarIcon
+                      name="thunder"
+                      hint="mock backend"
                       onClick={() => {
                         if (!cloud.state.token) {
                           cloud.setState({
@@ -202,20 +141,38 @@ export class UI extends React.Component<UIProps> {
                           popup: 'notYourProject'
                         });
                       }}
+                    />
+                    {/* <TopButton
+                      variant={'Yellow'}
+                      onClick={() => {
+                        if (!cloud.state.token) {
+                          cloud.setState({
+                            popup: 'loginToContinue'
+                          });
+                          return;
+                        }
+                        if (!currentProject) {
+                          cloud.setState({
+                            popup: 'notYetProject'
+                          });
+                          return;
+                        }
+                        if (cloud.state.cloud.projects.find((p) => p.id === currentProject.id)) {
+                          cloud.saveProject();
+                          return;
+                        }
+                        cloud.setState({
+                          popup: 'notYourProject'
+                        });
+                      }}
                     >
-                      Mock Backend
-                      <img
-                        style={{
-                          height: 16,
-                          marginLeft: 6
-                        }}
-                        src={require('../../assets/export/rocketIcon.png')}
-                      />
-                    </TopButton>
+                      Save
+                    </TopButton> */}
+                    <HorizontalSpacer />
                   </div>
                 </div>
-                
-                  {this.props.children}
+
+                {this.props.children}
               </div>
             </React.Fragment>
           );

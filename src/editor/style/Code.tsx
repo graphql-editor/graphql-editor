@@ -20,3 +20,19 @@ export const CodeContainer = style({
   display: 'flex',
   flexFlow: 'column'
 });
+export const Marker = style({
+  background:'red'
+})
+export const ErrorLonger = style({
+  position:'absolute',
+  background:Colors.red[0],
+  color:Colors.grey[0],
+  padding:10,
+  fontSize:10,
+  maxWidth:200,
+  margin:5,
+  borderRadius:5,
+  right:0,
+  letterSpacing:1,
+  zIndex:3
+})

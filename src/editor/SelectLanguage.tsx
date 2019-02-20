@@ -9,6 +9,7 @@ export type SelectLanguageProps = {
   onGenerate: () => void;
   loadFile: (e: React.ChangeEvent<HTMLInputElement>) => void;
   generateVisible?: boolean;
+  loadVisible?: boolean;
 };
 type SelectLanguageState = {
   copied: boolean;
@@ -19,7 +20,15 @@ export class SelectLanguage extends React.Component<SelectLanguageProps, SelectL
     copied: false
   };
   render() {
-    const { tabs, onSelect, onCopy, onGenerate, generateVisible, loadFile } = this.props;
+    const {
+      tabs,
+      onSelect,
+      onCopy,
+      onGenerate,
+      generateVisible,
+      loadFile,
+      loadVisible
+    } = this.props;
     const { copied } = this.state;
     return (
       <div className={styles.Bar}>
@@ -51,15 +60,15 @@ export class SelectLanguage extends React.Component<SelectLanguageProps, SelectL
           }}
           src={require('./assets/copyIcon.png')}
         />
+        {loadVisible && (
+          <FileButton type="YellowButton" onClick={loadFile}>
+            Load
+          </FileButton>
+        )}
         {generateVisible && (
-          <>
-            <FileButton type="YellowButton" onClick={loadFile}>
-              Load
-            </FileButton>
-            <Button type="GreenButton" onClick={onGenerate}>
-              Generate
-            </Button>
-          </>
+          <Button type="GreenButton" onClick={onGenerate}>
+            Generate
+          </Button>
         )}
       </div>
     );

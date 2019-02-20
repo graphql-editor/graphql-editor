@@ -29,11 +29,11 @@ export const ProjectTile = ({
       <div className={styles.Updated}>{project.public ? 'public' : 'private'}</div>
     </div>
     <div className={styles.Slug}>{project.endpoint.uri}</div>
-    <VerticalSpacer height={20} />
+    <VerticalSpacer height={30} />
     <div className={styles.Actions}>
       {onDelete && (
         <>
-          <TopButton variant={'RedFull'} small onClick={onDelete}>
+          <TopButton variant={'RedFull'}  onClick={onDelete}>
             Delete Project
           </TopButton>
           <HorizontalSpacer />
@@ -41,8 +41,7 @@ export const ProjectTile = ({
       )}
       <TopButton
         disabled={fakerProject ? undefined : 'This project is not deployed to faker'}
-        small
-        variant={'Deploy'}
+        variant={'DeployNeon'}
         href={
           fakerProject && `https://faker.graphqleditor.com/${fakerProject.endpoint.uri}/graphql`
         }
@@ -53,10 +52,10 @@ export const ProjectTile = ({
           });
         }}
       >
-        Mock Backend
+        GraphiQL Faker
       </TopButton>
       <HorizontalSpacer />
-      <TopButton small variant={'GreenMidFull'} onClick={onLoad}>
+      <TopButton  variant={'GreenMidFull'} onClick={onLoad}>
         Open
       </TopButton>
     </div>

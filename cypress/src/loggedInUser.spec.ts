@@ -15,7 +15,11 @@ describe('I can login', function() {
         }
 
         cy.contains('Create new project' as string).click();
-        cy.get('input').type('test-project-1');
+        cy.contains('Create project' as string)
+          .parent()
+          .parent()
+          .get('input[type=text]')
+          .type('test-project-1');
         cy.contains('Create new project' as string).click();
         cy.wait(3000);
         cy.contains('projects').click();
@@ -30,10 +34,7 @@ describe('I can login', function() {
         cy.contains('Are you want to delete')
           .parent()
           .within(($popup) => {
-            cy.contains('Are you want to delete')
-              .parent()
-              .get('input')
-              .type('test-project-1');
+            cy.get('input').type('test-project-1');
             cy.get('a')
               .contains('Delete project')
               .click();

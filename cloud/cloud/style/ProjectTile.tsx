@@ -2,10 +2,11 @@ import { style } from 'typestyle';
 import { Colors } from '../../../src';
 
 export const Tile = style({
-  padding: 10,
-  background: Colors.grey[0],
+  height:180,
+  padding:20,
+  background: Colors.main[6],
   display: 'flex',
-  color: Colors.grey[7],
+  color: Colors.grey[0],
   flexFlow: 'column nowrap'
 });
 
@@ -34,5 +35,6 @@ export const Actions = style({
   alignSelf: 'stretch',
   display: 'flex',
   flexFlow: 'row nowrap',
-  justifyContent: 'flex-end'
+  justifyContent: 'flex-end',
+  marginTop:'auto'
 });
