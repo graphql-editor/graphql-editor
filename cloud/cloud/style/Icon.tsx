@@ -15,7 +15,7 @@ export const Hint = style({
   position: 'absolute',
   alignSelf: 'flex-start',
   justifyContent:'space-between',
-  marginTop: ICON_SIZE * 2,
+  top: ICON_SIZE+15,
   textAlign: 'left'
 });
 

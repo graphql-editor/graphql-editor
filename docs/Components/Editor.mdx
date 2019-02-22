@@ -6,76 +6,44 @@ route: /editor
 
 # Editor component
 
-| Property          | required |                                                                        type |
-| ----------------- | :------: | --------------------------------------------------------------------------: |
-| nodes             | **true** |                                                                  NodeType[] |
-| links             | **true** |                                                                  LinkType[] |
-| loaded            | **true** |                                        {nodes:NodeType[],links:LinkType[] } |
-| code              | **true** |                                                                      string |
-| editorVisible     |  false   |                                                                     boolean |
-| result            |  false   | (props:{code: string;nodes: GraphQLNodeType[];links: LinkType[];}) => void; |
-| languageChanged   |  false   |                                                                    ()=>void |
-| schemaChanged     |  false   |                                                       (schema:string)=>void |
-| copiedToClipboard |  false   |                                                                    ()=>void |
-| remakeNodes       |  false   | (props:{code: string;nodes: GraphQLNodeType[];links: LinkType[];}) => void; |
+| Property        | required |                                   type |
+| --------------- | :------: | -------------------------------------: |
+| graphController |  false   | (controller: GraphController) => void; |
+| editorVisible   |   true   |                                boolean |
+| schemaChanged   |  false   |                  (schema:string)=>void |
 
 How to insert Editor Component to a project
 
 ```tsx
 import * as React from 'react';
-import { Editor } from 'graphql-editor';
-import { LoadedFile, NodeType, LinkType } from '@slothking-online/diagram';
-export type HomeState = {
-  code: string;
-  codeVisible: boolean;
-  loaded: LoadedFile;
-  nodes: Array<NodeType>;
-  links: Array<LinkType>;
-  tabs?: Array<string>;
-};
+import { render } from 'react-dom';
+import { Editor } from '../src/index';
 
-export class Home extends React.Component<{}, HomeState> {
-  state: HomeState = {
-    code: '',
-    nodes: [],
-    links: [],
-    loaded: {
-      nodes: [],
-      links: []
-    },
-    codeVisible: true
+class App extends React.Component<
+  {},
+  {
+    editorVisible: boolean;
+  }
+> {
+  state = {
+    editorVisible: true
   };
-  componentDidMount() {}
   render() {
     return (
       <div
         style={{
-          backgroundColor: '#444444',
-          position: 'relative',
           width: '100%',
           height: '100%',
+          display: 'grid',
+          gridTemplateColumns: this.state.editorVisible ? `auto 1fr` : '1fr',
+          gridTemplateRows: '1fr'
         }}
       >
-        <Editor
-          code={this.state.code}
-          editorVisible={this.state.codeVisible}
-          nodes={this.state.nodes}
-          links={this.state.links}
-          loaded={this.state.loaded}
-          tabs={this.state.tabs}
-          result={(props) => {
-            this.setState({
-              ...props
-            });
-          }}
-          remakeNodes={(nodes, links, code) => {
-            this.setState({ nodes, links, code });
-          }}
-        />
+        <Editor editorVisible={this.state.editorVisible} />
       </div>
     );
   }
 }
-```
 
-You can use the editor compoennt to modify runtime nodes or pass schema at once. This is your choice, you can even host it as is.
+render(<App />, document.getElementById('root'));
+```

@@ -38,18 +38,18 @@ export const deployFaker = (instance: typeof Cloud) => ({ project, schemas }: de
     source: NewSource;
   }[] = [
     {
-      file: files[1],
+      file: files[0],
       source: {
         filename: 'schema.graphql',
-        contentLength: files[1].size,
+        contentLength: files[0].size,
         contentType: 'application/graphql'
       }
     },
     {
-      file: files[2],
+      file: files[1],
       source: {
         filename: 'faker.json',
-        contentLength: files[2].size,
+        contentLength: files[1].size,
         contentType: 'application/json'
       }
     }
