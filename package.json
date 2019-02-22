@@ -69,7 +69,7 @@
     "faker": "^4.1.0",
     "file-saver": "^2.0.0",
     "graphql": "^14.0.2",
-    "graphsource": "1.00.0",
+    "graphsource": "1.0.0",
     "moment": "^2.21.0",
     "query-string": "^6.2.0",
     "react": "^16.5.2",
