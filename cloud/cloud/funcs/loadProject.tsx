@@ -15,13 +15,11 @@ export const loadProject = (instance: typeof Cloud) => (project: State<Project>)
       const projectURL = sources.find((s) => s.filename === 'schema.graphql').getUrl;
       const project = await (await fetch(projectURL)).text();
       instance.controller.loadGraphQL(project);
-    } else {
-      await instance.resetWorkspace();
     }
     await instance.setState((state) => ({
+      currentProject: project,
       cloud: {
-        ...instance.state.cloud,
-        currentProject: project
+        ...instance.state.cloud
       }
     }));
     return instance.deStack(sm);

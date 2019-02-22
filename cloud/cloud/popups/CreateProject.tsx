@@ -43,14 +43,13 @@ export class CreateProject extends React.Component<{}, CreateProjectState> {
               <VerticalSpacer height={50} />
               <Actions>
                 <TopButton
-                  variant={'GreenMidFull'}
+                  variant={'PinkFull'}
                   big
                   disabled={this.state.name ? undefined : 'Please type any name'}
                   onClick={() => {
                     cloud.closePopup();
                     cloud
                       .createProject(this.state.name, this.state.public)
-                      .then(cloud.resetWorkspace);
                   }}
                 >
                   Create new project +

@@ -43,7 +43,7 @@ export class CreateNamespace extends React.Component<{}, CreateNamespaceState> {
               <VerticalSpacer height={50} />
               <Actions>
                 <TopButton
-                  variant={'GreenMidFull'}
+                  variant={'PinkFull'}
                   big
                   disabled={this.state.name ? undefined : 'Please type any name'}
                   onClick={() => {

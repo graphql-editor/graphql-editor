@@ -1,24 +1,15 @@
 import { userApi, Cloud } from '../Container';
 import { Project, State } from '../types/project';
 import { NewSource } from '../types';
-import { Analytics } from '../analytics';
 import { Schemas } from '../models';
 
-export const saveProjectTemplate = (instance: typeof Cloud) => (
-  apiFunc: typeof userApi,
-  {
-    project,
-    schemas
-  }: {
-    project: State<Project>;
-    schemas: Schemas;
-  }
-) => {
-  const sm = 'Saving...';
-  instance.upStack(sm);
-  Analytics.events.project({
-    action: 'save'
-  });
+export const autoSaveProject = (instance: typeof Cloud) => ({
+  project,
+  schemas
+}: {
+  project: State<Project>;
+  schemas: Pick<Schemas, 'graphql'>;
+}) => {
   const files = [
     new File(
       [
@@ -42,7 +33,7 @@ export const saveProjectTemplate = (instance: typeof Cloud) => (
       }
     }
   ];
-  return apiFunc(instance.state.token)
+  return userApi(instance.state.token)
     .Mutation.updateSources({
       project: project.id,
       sources: sources.map((s) => s.source)
@@ -54,8 +45,8 @@ export const saveProjectTemplate = (instance: typeof Cloud) => (
       },
       putUrl: true
     })
-    .then(async (response) => {
-      await Promise.all(
+    .then(async (response) =>
+      Promise.all(
         response.map(({ putUrl, headers, filename }) =>
           fetch(putUrl, {
             method: 'PUT',
@@ -67,7 +58,6 @@ export const saveProjectTemplate = (instance: typeof Cloud) => (
             body: sources.find((s) => s.source.filename === filename).file
           })
         )
-      );
-      return instance.deStack(sm);
-    });
+      )
+    );
 };

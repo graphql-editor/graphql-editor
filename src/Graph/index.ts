@@ -42,8 +42,24 @@ export class GraphController {
       links
     });
   };
+  resetGraph = () => {
+    const nodes: Node[] = [];
+    const links: Link[] = [];
+    this.diagram.setNodes(nodes);
+    this.diagram!.setLinks(links);
+    this.diagram!.zeroDiagram();
+    this.serialise({
+      nodes,
+      links
+    });
+    this.passSchema && this.passSchema('');
+  };
   loadGraphQL = (schema: string) => {
     this.loadDefinitions();
+    if (schema.length === 0) {
+      this.resetGraph();
+      return;
+    }
     const result = TreeToNodes.resolveTree(this.parser.parse(schema), this.definitions!);
     this.load(result.nodes, result.links);
   };

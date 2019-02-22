@@ -17,7 +17,7 @@ export const findProjectByEndpoint = (instance: typeof Cloud) => async (endpoint
     }
     await instance.upStack(`Check if you provided URL correctly`);
     await instance.errStack(`No such project: ${endpoint}`);
-    if (instance.state.cloud.currentProject) {
+    if (instance.state.currentProject) {
       instance.moveToCurrentProject();
     } else {
       instance.state.pushHistory('/');

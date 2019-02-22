@@ -16,12 +16,11 @@ export const createProject = (instance: typeof Cloud) => (
     ...state,
     [fakerCloud]: {
       ...state[fakerCloud],
-      currentProject: project,
       projects: [...state[fakerCloud].projects, project]
     }
   }));
   await instance.setCloud();
   await instance.deStack(sm);
-  instance.controller.loadGraphQL('');
+  instance.controller.resetGraph();
   return project;
 };

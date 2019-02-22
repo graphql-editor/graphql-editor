@@ -1,5 +1,6 @@
 import { userApi, Cloud } from '../Container';
 import { Analytics } from '../analytics';
+import { Calls } from './calls';
 
 export const afterLogin = (instance: typeof Cloud) => async (
   apiFunction: typeof userApi,
@@ -11,35 +12,12 @@ export const afterLogin = (instance: typeof Cloud) => async (
   Analytics.events.user({
     action: 'login'
   });
-  if (instance.state.popup === 'onBoarding' && instance.state.cloud.currentProject) {
+  if (instance.state.popup === 'onBoarding' && instance.state.currentProject) {
     await instance.closePopup();
   }
   const sm = `Logging ${fakerCloud}  in...`;
   await instance.upStack(sm);
-  return apiFunction(instance.state.token)
-    .Query.getUser({
-      username: instance.state.user.id
-    })({
-      id: true,
-      namespace: {
-        slug: true,
-        public: true,
-        projects: [
-          {},
-          {
-            projects: {
-              id: true,
-              public: true,
-              name: true,
-              slug: true,
-              endpoint: {
-                uri: true
-              }
-            }
-          }
-        ]
-      }
-    })
+  return Calls.getUser(instance)(apiFunction)
     .then(async (res) => {
       if (res === null) {
         await instance.setState({
@@ -61,6 +39,10 @@ export const afterLogin = (instance: typeof Cloud) => async (
             user: {
               id
             }
+          },
+          user: instance.state.user || {
+            id,
+            username: res.username
           }
         })
         .then(() => {

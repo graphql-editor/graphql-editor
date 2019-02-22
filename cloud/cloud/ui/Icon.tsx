@@ -27,15 +27,27 @@ export interface IconProps {
 export interface TopBarIconProps extends IconProps {
   onClick?: (e: React.MouseEvent) => void;
   href?: string;
+  blank?: boolean;
   active?: boolean;
   hint?: string;
+  right?: boolean;
 }
 export const IconImage = ({ name }: IconProps) => <img src={Icons[name]} />;
-export const TopBarIcon = ({ name, onClick, active, hint, href }: TopBarIconProps) => (
+export const TopBarIcon = ({
+  name,
+  onClick,
+  active,
+  hint,
+  href,
+  right,
+  blank
+}: TopBarIconProps) => (
   <a
     className={cx(styles.TopBarIcon, {
-      active
+      active,
+      right
     })}
+    target={blank ? 'blank' : undefined}
     href={href}
     onClick={onClick}
   >

@@ -104,9 +104,33 @@ export class Calls {
     await Promise.all(actions);
     return [project, fakerProject];
   };
-  static createUser =  (instance: typeof Cloud) => (
-    apiFunction: typeof userApi,
-  ) => async (namespace: string) => {
+  static getUser = (instance: typeof Cloud) => (apiFunction: typeof userApi) =>
+    apiFunction(instance.state.token).Query.getUser({
+      username: instance.state.user.id
+    })({
+      id: true,
+      namespace: {
+        slug: true,
+        public: true,
+        projects: [
+          {},
+          {
+            projects: {
+              id: true,
+              public: true,
+              name: true,
+              slug: true,
+              endpoint: {
+                uri: true
+              }
+            }
+          }
+        ]
+      }
+    });
+  static createUser = (instance: typeof Cloud) => (apiFunction: typeof userApi) => async (
+    namespace: string
+  ) => {
     return apiFunction(instance.state.token).Mutation.createUser({
       namespace
     })({
@@ -130,5 +154,5 @@ export class Calls {
         ]
       }
     });
-  }
+  };
 }

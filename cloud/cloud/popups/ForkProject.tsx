@@ -9,18 +9,18 @@ type CreateProjectState = {
   name: string;
   public: boolean;
 };
-export type SaveNotYourProjectProps = {
+export type ForkProjectProps = {
   name: string;
 };
-export class SaveNotYourProject extends React.Component<
-  SaveNotYourProjectProps,
+export class ForkProject extends React.Component<
+  ForkProjectProps,
   CreateProjectState
 > {
   state: CreateProjectState = {
     name: null,
     public: true
   };
-  static getDerivedStateFromProps(props: SaveNotYourProjectProps, state: CreateProjectState) {
+  static getDerivedStateFromProps(props: ForkProjectProps, state: CreateProjectState) {
     if (props.name && state.name === null) {
       return { name: props.name };
     }
@@ -29,7 +29,7 @@ export class SaveNotYourProject extends React.Component<
   componentDidMount(){
     Analytics.events.ui({
       action:'open',
-      label:'saveNotYourProject'
+      label:'ForkProject'
     })
   }
   render() {
@@ -58,7 +58,7 @@ export class SaveNotYourProject extends React.Component<
               <VerticalSpacer height={50} />
               <Actions>
                 <TopButton
-                  variant={'GreenMidFull'}
+                  variant={'PinkFull'}
                   big
                   disabled={this.state.name ? undefined : 'Please type any name'}
                   onClick={() => {

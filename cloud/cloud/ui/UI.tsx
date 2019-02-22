@@ -6,7 +6,7 @@ import { Subscribe } from 'unstated';
 import { Cloud } from '../Container';
 import { Loading } from './Loading';
 import { CreateProject } from '../popups/CreateProject';
-import { SaveNotYourProject } from '../popups/SaveNotYourProject';
+import { ForkProject } from '../popups/ForkProject';
 import { DeleteProject } from '../popups/DeleteProject';
 import { SaveNotExistingProject } from '../popups/SaveNotExisitingProject';
 import { FakerDeployed } from '../popups/FakerDeployed';
@@ -32,7 +32,7 @@ export class UI extends React.Component<UIProps> {
     return (
       <Subscribe to={[Cloud]}>
         {(cloud: typeof Cloud) => {
-          const { currentProject } = cloud.state.cloud;
+          const { currentProject } = cloud.state;
           return (
             <React.Fragment>
               {cloud.state.loadingStack.length > 0 && (
@@ -46,9 +46,7 @@ export class UI extends React.Component<UIProps> {
               {cloud.state.popup === 'createUser' && <CreateNamespace />}
               {cloud.state.popup === 'createProject' && <CreateProject />}
               {cloud.state.popup === 'deleteProject' && <DeleteProject />}
-              {cloud.state.popup === 'notYourProject' && (
-                <SaveNotYourProject name={currentProject.name} />
-              )}
+              {cloud.state.popup === 'notYourProject' && <ForkProject name={currentProject.name} />}
               {cloud.state.popup === 'notYetProject' && <SaveNotExistingProject />}
               {cloud.state.popup === 'notYetDeploy' && <DeployNotExistingProject />}
               {cloud.state.popup === 'fakerDeployed' && <FakerDeployed />}
@@ -74,17 +72,21 @@ export class UI extends React.Component<UIProps> {
                       hint="examples"
                       onClick={this.props.examples.click}
                     />
-                    <TopBarIcon name="docs" hint="docs" href={'https://docs.graphqleditor.com'} />
+                    <TopBarIcon
+                      blank
+                      name="docs"
+                      hint="docs"
+                      href={'https://docs.graphqleditor.com'}
+                    />
                   </div>
-                  {currentProject && (
-                    <div className={styles.Center}>{currentProject.endpoint.uri}</div>
-                  )}
+                  <div className={styles.Center}>{cloud.getCurrentProjectName()}</div>
                   <div className={styles.Right}>
                     {cloud.state.token ? (
                       <>
-                        <TopBarIcon name="logout" hint="logout" onClick={cloud.logout} />
+                        <TopBarIcon name="logout" hint="logout" right onClick={cloud.logout} />
                         <TopBarIcon
                           name="user"
+                          right
                           hint="soon"
                           onClick={() => {
                             'A';
@@ -101,8 +103,10 @@ export class UI extends React.Component<UIProps> {
                     {currentProject && cloud.findInAllFakerProjects(currentProject) && (
                       <>
                         <TopBarIcon
+                          right
                           name="cloud"
                           hint="GraphiQL Faker"
+                          blank
                           onClick={() => {
                             Analytics.events.faker({
                               action: 'openMyProjectURL'
@@ -115,7 +119,8 @@ export class UI extends React.Component<UIProps> {
 
                     <TopBarIcon
                       name="thunder"
-                      hint="mock backend"
+                      hint="deploy"
+                      right
                       onClick={() => {
                         if (!cloud.state.token) {
                           cloud.setState({

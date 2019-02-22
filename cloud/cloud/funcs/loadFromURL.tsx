@@ -13,10 +13,8 @@ export const loadFromURL = (instance: typeof Cloud) => async (url: string) => {
     await instance.controller!.getSchemaFromURL(url);
     return instance
       .setState((state) => ({
-        cloud: {
-          ...state.cloud,
-          currentProject: null
-        }
+        currentProject: null,
+        visibleMenu: 'code'
       }))
       .then(instance.setCloud)
       .then(() => instance.deStack(sm));

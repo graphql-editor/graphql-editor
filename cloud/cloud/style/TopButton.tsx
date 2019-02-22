@@ -75,7 +75,13 @@ export const PinkFull = classes(
     background: Colors.main[6],
     border: `1px solid`,
     borderColor: Colors.main[0],
-    color: Colors.grey[0]
+    color: Colors.grey[0],
+    $nest: {
+      '&:hover': {
+        background: Colors.grey[8],
+        color: Colors.main[0]
+      }
+    }
   })
 );
 export const RedFull = classes(

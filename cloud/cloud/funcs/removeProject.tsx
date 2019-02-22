@@ -10,14 +10,11 @@ export const removeProject = (instance: typeof Cloud) => async (project: State<P
   });
 
   await instance.upStack(sm);
-  if (
-    instance.state.cloud.currentProject &&
-    project.id === instance.state.cloud.currentProject.id
-  ) {
+  if (instance.state.currentProject && project.id === instance.state.currentProject.id) {
     instance.setState((state) => ({
+      currentProject: null,
       cloud: {
-        ...state.cloud,
-        currentProject: null
+        ...state.cloud
       }
     }));
   }
