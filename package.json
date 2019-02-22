@@ -7,7 +7,7 @@
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server --config ./sandbox/webpack.config.js --content-base ./sandbox/ --port 1569 --hot --inline --open",
-    "build": "grunt",
+    "build": "grunt --force",
     "prettier": "prettier --write \"src/**/*.{ts,tsx,css}\"",
     "cloud": "webpack-dev-server --config ./cloud/webpack.config.dev.js --content-base ./cloud/ --port 1569 --hot --inline --open",
     "build:cloud": "webpack --config ./cloud/webpack.config.production.js --context ./cloud/ -p --progress",
