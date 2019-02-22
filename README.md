@@ -1,14 +1,14 @@
-![GraphQLEditor Editor](assets/graphql-header.jpg)
+# GraphQL Editor
+[![npm](https://img.shields.io/npm/v/graphql-editor.svg)](https://www.npmjs.com/package/graphql-editor)
+![GraphQLEditor Editor](assets/design_schema.gif)
 
 GraphQLEditor makes it easier to understand GrapHQL schemas. Create a schema by joining visual blocks. GraphQLEditor will transform them into code.
 
 With GraphQLEditor you can create visual diagrams without writing any code.
 
-![GraphQLEditor Features: GraphQL Super Easy, Think Visually, No Code Solution, Tool For Business Managers, Complex GraphQL Code, Merge All Query and Mutations](assets/graphql-features.jpg)
-
 ## Live Demo [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=First%20visual%20GraphQL%20Editor&url=https://github.com/slothking-online/graphql-editor)
 
-Here is a [live demo](https://app.graphqleditor.com) example of GraphQLEditor.
+Here is a [live demo](https://graphqleditor.com) example of GraphQLEditor.
 
 ## Docs
 
@@ -16,23 +16,71 @@ Full docs are available here. How to use in your project, develop etc.
 
 https://docs.graphqleditor.com
 
-## Cloud Backend
-
-[GraphQL Editor Website](https://graphqleditor.com)
-
-As cloud backend is coming soon, please do subscribe on our website to stay tuned.
-
 ## License
 
 MIT
 
 ## How It Works
 
-Create GraphQL nodes and connect them to generate a database schema.
+Create GraphQL nodes and connect them to generate a database schema. You can also use builtin text IDE with GraphQL syntax validation
 
-![GraphQLEditor GIF showing how to connect nodes](assets/graphl-features-gif.gif)
+## GraphiQL in Cloud
+[live demo](https://app.graphqleditor.com) also provides [GraphiQL](https://faker.graphqleditor.com/showcase/fake-twitter/graphql) in cloud and faker based GraphQL mock backend
 
-To create nodes press and hold *spacebar*, then hover mouse button on chosen category. Click the mouse button on node to create it. Connect nodes with each other.
+## Develop or use standalone
+
+```
+npm i graphql-editor
+```
+
+```tsx
+import * as React from 'react';
+import { render } from 'react-dom';
+import { Editor } from '../src/index';
+
+class App extends React.Component<
+  {},
+  {
+    editorVisible: boolean;
+  }
+> {
+  state = {
+    editorVisible: true
+  };
+  render() {
+    return (
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'grid',
+          gridTemplateColumns: this.state.editorVisible ? `auto 1fr` : '1fr',
+          gridTemplateRows: '1fr'
+        }}
+      >
+        <Editor editorVisible={this.state.editorVisible} />
+      </div>
+    );
+  }
+}
+
+render(<App />, document.getElementById('root'));
+```
+
+## Basic Operations
+
+### Create Type
+![GraphQLEditor Editor](assets/add_node_type.gif)
+
+### Tag root query, mutation, operation
+![Operations](assets/setting_query.gif)
+
+### List and non-null types
+![List and non-null](assets/edit_array_required.gif)
+
+### Connecting nodes
+![Connecting nodes](assets/add_node_input.gif)
+
 
 ## Support 
 
@@ -52,3 +100,14 @@ For a complete guide to contributing to GraphQL Editor, see the [Contribution Gu
 
 ![GraphQLEditor Roadmap](assets/roadmap-graphql-header.jpg)
 ![GraphQLEditor Roadmap Features: Generate Queries For Frontend, GraphQL To Backend, Ready To Use Fake Backend, Backend In One place](assets/roadmap-graphql-features.jpg)
+
+
+## Cloud Backend
+
+[GraphQL Editor Website](https://graphqleditor.com)
+
+As cloud backend is coming soon, please do subscribe on our website to stay tuned.
+
+## Underlying Diagram technology
+
+Whole graphql-editor is based on underlying [diagram](https://github.com/slothking-online/diagram) technology. We need much more help there feel free to contribute!

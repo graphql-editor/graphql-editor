@@ -1,5 +1,2 @@
 export * from './Editor'
 export * from './Code'
-export * from './nodeTypes'
-export * from './categories'
-export * from './livegen'

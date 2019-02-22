@@ -2,102 +2,102 @@ import * as React from 'react';
 import * as styles from './style/Code';
 import cx from 'classnames';
 
-import { importSchema, makeNodes } from './livegen/load';
 import { SelectLanguage } from './SelectLanguage';
 import AceEditor from 'react-ace';
-import { GraphQLNodeType } from './livegen/code-generators';
-import { LinkType } from '@slothking-online/diagram';
+import { GraphController } from '../Graph';
+import { ParsingFunction } from '../Models';
+import { parse, buildASTSchema } from 'graphql';
 require(`brace/theme/twilight`);
 require(`brace/mode/typescript`);
 require(`brace/mode/graphqlschema`);
 require(`brace/mode/json`);
 require(`brace/ext/searchbox`);
-export const TABS = {
-  graphql: {},
-  typescript: {},
-  json: {}
-};
-
 export type CodeEditorOuterProps = {
-  languageChanged?: (language: string) => void;
   schemaChanged?: (schema: string) => void;
-  copiedToClipboard?: () => void;
-  remakeNodes?: (nodes: GraphQLNodeType[], links: LinkType[], code: string) => void;
 };
 
 export type CodeEditorProps = {
   schema: string;
-  onTabChange: (name: keyof typeof TABS) => void;
-  language: string;
+  controller: GraphController;
 } & CodeEditorOuterProps;
 export type CodeEditorState = {
   loadingUrl: boolean;
-  currentTab: keyof typeof TABS;
+  currentTab: ParsingFunction;
   canMountAce: boolean;
+  errors?: {
+    row: number;
+    column: number;
+    type: 'error';
+    text: string;
+    position: number;
+  }[];
+  error?: string;
 };
 
 export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState> {
   state: CodeEditorState = {
     loadingUrl: false,
     canMountAce: false,
-    currentTab: 'graphql'
+    currentTab: ParsingFunction.graphql
   };
-  taskRunner: number;
-  lastSchema: string;
-  lastEdit = 0;
-  lastGeneration = 0;
-  holder: HTMLDivElement;
-  editor: AceEditor;
-  componentDidMount() {
-    this.taskRunner = setInterval(() => {
-      if (this.lastSchema && this.lastEdit > this.lastGeneration) {
-        try {
-          const { nodes, links } = makeNodes(importSchema(this.lastSchema));
-          this.props.remakeNodes && this.props.remakeNodes(nodes, links, this.lastSchema);
-          this.lastGeneration = Date.now();
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    }, 300) as any;
+  taskRunner?: number;
+  lastSchema?: string;
+  holder?: HTMLDivElement;
+  editor?: AceEditor;
+  componentWillMount() {
+    this.lastSchema = this.props.schema;
   }
-  componentWillUnmount() {
-    clearInterval(this.taskRunner);
+  componentWillReceiveProps(nextProps: CodeEditorProps) {
+    if (nextProps.schema !== this.lastSchema) {
+      this.lastSchema = nextProps.schema;
+      this.forceUpdate();
+    }
   }
-  // loadFromFile = (e) => {
-  //   const file = e.target.files[0];
-  //   // if (file.type.match('application/json')) {
-  //   console.log(file.type);
-  //   const reader = new FileReader();
-  //   reader.onload = (f) => {
-  //     const result = makeNodes(importSchema((f.target as any).result));
-  //     this.props.loadNodes(result);
-  //   };
-  //   reader.readAsText(file);
-  //   // }
-  // };
+  loadFromFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target!.files![0];
+    const reader = new FileReader();
+    reader.onload = (f) => {
+      this.props.controller.loadGraphQL((f.target! as any).result);
+    };
+    reader.readAsText(file);
+  };
 
-  // saveToFile = () => {
-  //   var file = new File([this.props.schema], `graphql-editor-schema.gql`, {
-  //     type: 'application/json'
-  //   });
-  //   FileSaver.saveAs(file, `graphql-editor-schema.gql`);
-  // };
+  saveToFile = () => {
+    // var file = new File([this.props.schema], `graphql-editor-schema.gql`, {
+    //   type: 'application/json'
+    // });
+    // FileSaver.saveAs(file, `graphql-editor-schema.gql`);
+  };
   render() {
+    const aceChoices: Record<ParsingFunction, string> = {
+      [ParsingFunction.graphql]: 'graphqlschema',
+      [ParsingFunction.typescript]: 'typescript',
+      [ParsingFunction.faker]: 'json'
+    };
+    const aceMode = aceChoices[this.state.currentTab];
     return (
       <div className={cx(styles.Sidebar)}>
         <SelectLanguage
-          tabs={Object.keys(TABS)}
+          tabs={Object.keys(ParsingFunction)}
           onSelect={(currentTab) => {
-            this.props.languageChanged && this.props.languageChanged(currentTab);
             this.setState({ currentTab });
-            this.props.onTabChange(currentTab);
+            this.props.controller.setParsingFunction(currentTab);
           }}
           onCopy={() => {
             const { clipboard } = window.navigator as any;
-            this.props.copiedToClipboard && this.props.copiedToClipboard();
             clipboard.writeText(this.props.schema);
           }}
+          onGenerate={() => {
+            this.lastSchema && this.props.controller.loadGraphQL(this.lastSchema);
+          }}
+          loadFile={this.loadFromFile}
+          loadVisible={this.state.currentTab === ParsingFunction.graphql}
+          generateVisible={
+            this.state.currentTab === ParsingFunction.graphql &&
+            !!this.lastSchema &&
+            !this.state.error &&
+            !this.state.errors
+          }
         />
         <div
           className={cx(styles.CodeContainer)}
@@ -110,32 +110,12 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
             }
           }}
         >
+          {this.state.error && <div className={styles.ErrorLonger}>{this.state.error}</div>}
           <AceEditor
             ref={'editor'}
-            mode={
-              {
-                graphql: 'graphqlschema',
-                typescript: 'typescript',
-                json: 'json'
-              }[this.props.language]
-            }
-            onBlur={(e) => {
-              this.lastEdit = Date.now();
-            }}
-            onChange={(
-              e,
-              v: {
-                action: 'insert' | 'remove';
-                lines: string[];
-                end: { row: number; column: number };
-                start: { row: number; column: number };
-              }
-            ) => {
-              if (!this.lastSchema) {
-                this.props.schemaChanged && this.props.schemaChanged(e);
-              }
-              this.lastSchema = e;
-            }}
+            mode={aceMode}
+            annotations={this.state.errors}
+            onChange={this.codeChange}
             style={{
               flex: 1,
               height: 'auto'
@@ -144,18 +124,72 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
               $blockScrolling: Infinity
             }}
             setOptions={{
-              readOnly: {
-                graphql: false,
-                typescript: true,
-                json: true
-              }[this.props.language],
-              showLineNumbers: true
+              readOnly: aceMode !== 'graphqlschema',
+              showLineNumbers: true,
+              tabSize: 2
             }}
             theme={'twilight'}
-            value={this.props.schema}
+            value={this.lastSchema}
           />
         </div>
       </div>
     );
   }
+
+  private codeChange = (
+    e: string,
+    v: {
+      action: 'insert' | 'remove';
+      lines: string[];
+      end: {
+        row: number;
+        column: number;
+      };
+      start: {
+        row: number;
+        column: number;
+      };
+    }
+  ) => {
+    if (!this.lastSchema) {
+      this.props.schemaChanged && this.props.schemaChanged(e);
+    }
+    this.lastSchema = e;
+    try {
+      const parsed = parse(e);
+      try {
+        buildASTSchema(parsed);
+        if (this.state.errors || this.state.error) {
+          this.setState({
+            errors: undefined,
+            error: undefined
+          });
+        }
+      } catch (error) {
+        this.setState({
+          error: error.message
+        });
+      }
+    } catch (error) {
+      let er = error as {
+        locations: {
+          line: number;
+          column: number;
+        }[];
+        message: string;
+        positions: number[];
+      };
+      this.setState({
+        errors: [
+          {
+            column: er.locations[0]!.column - 1,
+            row: er.locations[0]!.line - 1,
+            text: er.message,
+            type: 'error',
+            position: er.positions[0]
+          }
+        ]
+      });
+    }
+  };
 }

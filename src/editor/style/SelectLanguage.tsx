@@ -51,12 +51,12 @@ export const Select = style({
   }
 });
 export const Bar = style({
-  background: Colors.grey[7],
+  background: Colors.grey[8],
   display: 'flex',
   flexFlow: 'row nowrap',
   alignItems: 'center',
   justifyItems: 'flex-end',
-  padding: 5
+  padding: 10
 });
 export const CopyIcon = style({
   height: 24,
