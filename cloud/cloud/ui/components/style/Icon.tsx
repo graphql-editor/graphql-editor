@@ -1,7 +1,7 @@
 import { style } from 'typestyle';
-import { Colors } from '../../../src';
+import { Colors } from '../../../../../src';
+import { TOP_BAR_HEIGHT } from '../../../style/UI';
 
-const ICON_SIZE = 60;
 
 export const Hint = style({
   fontSize: 12,
@@ -15,13 +15,14 @@ export const Hint = style({
   position: 'absolute',
   alignSelf: 'flex-start',
   justifyContent:'space-between',
-  top: ICON_SIZE+15,
+  top: TOP_BAR_HEIGHT+15,
+  zIndex:4,
   textAlign: 'left'
 });
 
 export const TopBarIcon = style({
-  width: ICON_SIZE,
-  height: ICON_SIZE,
+  width: TOP_BAR_HEIGHT,
+  height: TOP_BAR_HEIGHT,
   background: 'transparent',
   display: 'flex',
   alignItems: 'center',

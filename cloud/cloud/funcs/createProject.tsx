@@ -1,22 +1,29 @@
-import { Cloud, userApi } from '../Container';
+import { Cloud } from '../Container';
 import { Analytics } from '../analytics';
 import { Calls } from './calls';
 
-export const createProject = (instance: typeof Cloud) => (
-  apiFunction: typeof userApi,
-  fakerCloud: 'faker' | 'cloud'
-) => async (name: string, is_public: boolean) => {
+export const createProject = (instance: typeof Cloud) => async (
+  name: string,
+  is_public: boolean
+) => {
   const sm = 'Creating project...';
   Analytics.events.project({
     action: 'create'
   });
   await instance.upStack(sm);
-  const project = await Calls.createProject(instance)(apiFunction)(name, is_public);
+  const [project, fakerProject] = await Calls.createProject(instance)(name, is_public);
   await instance.setState((state) => ({
     ...state,
-    [fakerCloud]: {
-      ...state[fakerCloud],
-      projects: [...state[fakerCloud].projects, project]
+    cloud: {
+      ...state.cloud,
+      projects: [...state.cloud.projects, project]
+    },
+    faker: {
+      ...state.faker
+    },
+    currentProject: {
+      cloud: project,
+      faker: fakerProject
     }
   }));
   await instance.setCloud();

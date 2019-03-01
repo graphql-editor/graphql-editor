@@ -27,7 +27,7 @@ export class FakerDeployed extends React.Component {
                   }}
                   target="_blank"
                   href={`https://faker.graphqleditor.com/${
-                    cloud.state.currentProject.endpoint.uri
+                    cloud.state.currentProject.faker.endpoint.uri
                   }/graphql`}
                 >
                   Open URL

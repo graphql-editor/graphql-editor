@@ -1,35 +1,48 @@
-import { Cloud, userApi } from '../Container';
+import { Cloud } from '../Container';
 import { Analytics } from '../analytics';
-import { Calls } from './calls';
+import { ProjectCalls } from './project/calls';
+import { FakerCalls } from './faker/calls';
 
-export const createUser = (instance: typeof Cloud) => (
-  apiFunction: typeof userApi,
-  fakerCloud: 'faker' | 'cloud'
-) => async (namespace: string) => {
+export const createUser = (instance: typeof Cloud) => async (namespace: string) => {
   Analytics.events.user({
     action: 'create'
   });
-  const sm = `Creating ${fakerCloud} user...`;
+  const sm = `Creating user...`;
   await instance.upStack(sm);
   await instance.closePopup();
   try {
-    const res = await Calls.createUser(instance)(apiFunction)(namespace);
-    const { namespace: userNamespace, id } = res;
+    const projectResponse = await ProjectCalls.createUser(instance)(namespace);
+    const fakerResponse = await FakerCalls.createUser(instance)(namespace);
+    const { namespace: userNamespace, id } = projectResponse;
     const {
       projects: { projects },
       ...restNamespace
     } = userNamespace;
-    await instance.setState({
-      [fakerCloud]: {
-        ...instance.state[fakerCloud],
+    const { namespace: fakerUserNamespace, id: fakerId } = fakerResponse;
+    const {
+      projects: { projects: fakerProjects },
+      ...fakerRestNamespace
+    } = fakerUserNamespace;
+    await instance.setState((state) => ({
+      cloud: {
+        ...state.cloud,
         namespace: restNamespace,
         projects,
         user: {
           id
         }
-      }
-    });
-    return res;
+      },
+      faker: {
+        ...state.faker,
+        namespace: fakerRestNamespace,
+        projects: fakerProjects,
+        user: {
+          id: fakerId
+        }
+      },
+      currentProject: null
+    }));
+    return [projectResponse, fakerResponse];
   } catch (error) {
     if (error === null) {
       await instance.deStack(sm);

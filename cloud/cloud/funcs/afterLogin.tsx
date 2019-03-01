@@ -1,11 +1,8 @@
-import { userApi, Cloud } from '../Container';
+import { Cloud } from '../Container';
 import { Analytics } from '../analytics';
 import { Calls } from './calls';
 
-export const afterLogin = (instance: typeof Cloud) => async (
-  apiFunction: typeof userApi,
-  fakerCloud: 'faker' | 'cloud'
-) => {
+export const afterLogin = async (instance: typeof Cloud) => {
   if (!instance.state.token) {
     return;
   }
@@ -15,23 +12,26 @@ export const afterLogin = (instance: typeof Cloud) => async (
   if (instance.state.popup === 'onBoarding' && instance.state.currentProject) {
     await instance.closePopup();
   }
-  const sm = `Logging ${fakerCloud}  in...`;
+  const sm = `Logging in...`;
   await instance.upStack(sm);
-  return Calls.getUser(instance)(apiFunction)
-    .then(async (res) => {
-      if (res === null) {
+  return Calls.getUser(instance)
+    .then(async (r) => {
+      const fakerOrCloud = ['cloud', 'faker'];
+      let c = 0;
+      for (const res of r) {
+        if (res === null) {
+          await instance.setState({
+            popup: 'createUser'
+          });
+          return instance.deStack(sm);
+        }
+        const fakerCloud = fakerOrCloud[c];
+        const { namespace, id } = res;
+        const {
+          projects: { projects },
+          ...restNamespace
+        } = namespace;
         await instance.setState({
-          popup: 'createUser'
-        });
-        return instance.deStack(sm);
-      }
-      const { namespace, id } = res;
-      const {
-        projects: { projects },
-        ...restNamespace
-      } = namespace;
-      instance
-        .setState({
           [fakerCloud]: {
             ...instance.state[fakerCloud],
             namespace: restNamespace,
@@ -44,10 +44,10 @@ export const afterLogin = (instance: typeof Cloud) => async (
             id,
             username: res.username
           }
-        })
-        .then(() => {
-          return instance.deStack(sm);
         });
+        c++;
+      }
+      return instance.deStack(sm);
     })
     .catch((res) => {
       if (res === null) {

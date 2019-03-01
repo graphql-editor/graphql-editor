@@ -6,8 +6,7 @@ import { saveProjectTemplate } from './funcs/saveProject';
 import { loadProject } from './funcs/loadProject';
 import { fakerDeployProject } from './funcs/fakerDeploy';
 import { loadExamples } from './funcs/loadExamples';
-import { listPublicProjects } from './funcs/listPublicProjects';
-import { createProjectProject } from './funcs/project/createProject';
+import { searchPublicProjects } from './funcs/searchPublicProjects';
 import { removeProject } from './funcs/removeProject';
 import { loadFromURL } from './funcs/loadFromURL';
 import { createUser } from './funcs/createUser';
@@ -15,9 +14,10 @@ import { afterLogin } from './funcs/afterLogin';
 import { findProjectByEndpoint } from './funcs/findProjectByEndpoint';
 import { History, Location } from 'history';
 import { GraphController } from '../../src/Graph';
-import { Calls } from './funcs/calls';
 import { autoSaveProject } from './funcs/autoSaveProject';
 import * as moment from 'moment';
+import { ProjectCalls } from './funcs/project/calls';
+import { createProject } from './funcs/createProject';
 const DEV_HOSTNAME = 'http://localhost:1569/';
 const PRODUCTION_HOSTNAME = 'https://nightly.graphqleditor.com/';
 
@@ -42,16 +42,16 @@ const ls = {
   set: (key: string, value: string) => window.localStorage.setItem(prefix(key), value)
 };
 
-type CloudFakerMirror = {
+type FakerMirror = {
+  user?: State<User>;
+  namespace?: State<Namespace>;
+};
+type CloudMirror = {
   projects?: State<Project>[];
   searchProjects?: State<Project>[];
   exampleProjects?: State<Project>[];
   user?: State<User>;
   namespace?: State<Namespace>;
-};
-type AutoSave = {
-  uri?: string;
-  schema: string;
 };
 export type CloudState = {
   visibleMenu: null | 'code' | 'projects';
@@ -74,18 +74,22 @@ export type CloudState = {
     | 'deleteProject';
   code: string;
   category: 'my' | 'public' | 'examples' | 'new' | 'edit';
-  autosavedSchema?: AutoSave;
   removedProject?: State<Project>;
+  editedProject?: State<Project>;
   pushHistory?: History['push'];
   location?: Location;
-  currentProject?: State<Project>;
-  cloud: CloudFakerMirror;
-  faker: CloudFakerMirror;
+  currentProject?: {
+    cloud: State<Project>;
+    faker?: State<Project>;
+  };
+  cloud: CloudMirror;
+  faker: FakerMirror;
   user?: State<User>;
 };
+let autosave: string = '';
 export type SerializedCloudState = Pick<
   CloudState,
-  'cloud' | 'faker' | 'user' | 'token' | 'autosavedSchema' | 'currentProject' | 'expire'
+  'cloud' | 'faker' | 'user' | 'token' | 'currentProject' | 'expire'
 >;
 export const api = Api(projectApiURL, {});
 export const fakerApi = Api(fakerApiURL, {});
@@ -122,55 +126,52 @@ export class CloudContainer extends Container<CloudState> {
   };
   constructor() {
     super();
-    this.onMount().then(() => {
-      const { projectEndpoint } = this.state;
-      if (projectEndpoint) {
-        if (this.state.autosavedSchema && this.state.autosavedSchema.uri === projectEndpoint) {
-          this.controller!.loadGraphQL(this.state.autosavedSchema.schema);
-          return;
-        }
-        this.findProjectByEndpoint(projectEndpoint);
-      } else {
-        if (this.state.user) {
-          if (this.state.autosavedSchema) {
-            return Calls.findProjectByEndpoint(this)(this.state.autosavedSchema.uri).then(
-              (project) => {
-                this.moveToCurrentProject();
-              }
-            );
-          }
-          if (this.state.currentProject) {
-            this.findProjectByEndpoint(this.state.currentProject.endpoint.uri);
-          }
-        }
+    this.onMount().then(this.resolveProjectPath);
+  }
+  resolveProjectPath = () => {
+    const { projectEndpoint } = this.state;
+    if (projectEndpoint) {
+      this.findProjectByEndpoint(projectEndpoint);
+    } else {
+      if (this.state.currentProject && this.state.currentProject.cloud) {
+        this.findProjectByEndpoint(this.state.currentProject.cloud.endpoint.uri);
       }
-    });
-  }
-  get allProjects() {
-    return [
-      ...(this.state.faker.exampleProjects || []),
-      ...(this.state.faker.searchProjects || []),
-      ...(this.state.faker.projects || [])
-    ];
-  }
+    }
+  };
   clearAutoSaveTrigger = () => {
     this.plannedAutoSave && clearTimeout(this.plannedAutoSave);
   };
+  canIEditCurrentProject = () => {
+    if (this.state.currentProject && this.state.currentProject.cloud) {
+      return this.canIEditProject(this.state.currentProject.cloud);
+    }
+    return false;
+  };
+  canIEditProject = (project: State<Project>) => {
+    if (this.state.cloud && this.state.cloud.projects) {
+      return !!this.state.cloud.projects.find((pr) => pr.id === project.id);
+    }
+    return false;
+  };
+  forceAutoSaveFunction = async (project?: State<Project>, autoSaveString?: string) => {
+    if (this.canIEditCurrentProject() && project && autoSaveString) {
+      this.clearAutoSaveTrigger();
+      return autoSaveProject(this)({
+        project,
+        schemas: {
+          graphql: autoSaveString
+        }
+      });
+    }
+  };
   autoSaveFunction = async () => {
-    if (
-      this.state.user &&
-      this.state.cloud.namespace &&
-      this.state.currentProject &&
-      this.state.autosavedSchema &&
-      this.state.autosavedSchema.uri === this.state.currentProject.endpoint.uri &&
-      this.state.cloud.projects.find((p) => this.state.currentProject.id === p.id)
-    ) {
+    if (this.canIEditCurrentProject() && autosave) {
       this.plannedAutoSave = null;
       this.lastAutoSave = moment.now();
       return autoSaveProject(this)({
-        project: this.state.currentProject,
+        project: this.state.currentProject.cloud,
         schemas: {
-          graphql: this.state.autosavedSchema.schema
+          graphql: autosave
         }
       });
     }
@@ -179,21 +180,21 @@ export class CloudContainer extends Container<CloudState> {
     const DELTA_MAX = 30000;
     const now = moment.now();
     const delta = now - this.lastAutoSave;
+    console.log('AutosaveTrigger fired', delta);
     if (delta < DELTA_MAX) {
       if (!this.plannedAutoSave) {
         this.plannedAutoSave = setTimeout(this.autoSaveTrigger, DELTA_MAX - delta + 100) as any;
       }
       return;
     }
+    console.log('AutosaveTrigger Saving');
     return this.autoSaveFunction();
   };
   autoSaveOnController = async (graphql: string) => {
-    console.log('AUTOSAVING');
-    await this.autosave({
-      schema: graphql,
-      uri: this.getCurrentProjectName()
-    });
-    this.autoSaveTrigger();
+    if (this.canIEditCurrentProject()) {
+      autosave = graphql;
+      this.autoSaveTrigger();
+    }
   };
 
   setController = (controller: GraphController) => {
@@ -202,28 +203,9 @@ export class CloudContainer extends Container<CloudState> {
   };
   getCurrentProjectName = (): string => {
     const { currentProject, cloud } = this.state;
-    if (currentProject) return currentProject.endpoint.uri;
+    if (currentProject && currentProject.cloud) return currentProject.cloud.endpoint.uri;
     if (cloud.namespace) return `${cloud.namespace.slug}/NewProject`;
     return 'Untitled';
-  };
-  findInAllFakerProjects = (p: State<Project>) =>
-    this.allProjects.find((pr) => pr.endpoint.uri === p.endpoint.uri);
-  autosave = (autosavedSchema: AutoSave) => {
-    return this.setState({ autosavedSchema }).then(() => {
-      ls.set('autosave', JSON.stringify(autosavedSchema));
-    });
-  };
-  loadAutosave = () => {
-    try {
-      const autosavedSchema = JSON.parse(ls.get('autosave')) as AutoSave;
-      if (autosavedSchema && autosavedSchema.schema) {
-        return this.setState({
-          autosavedSchema
-        });
-      }
-    } catch (error) {
-      console.warn(error);
-    }
   };
   setCloud = () => {
     ls.set(
@@ -233,7 +215,6 @@ export class CloudContainer extends Container<CloudState> {
         faker: this.state.faker,
         user: this.state.user,
         token: this.state.token,
-        autosavedSchema: this.state.autosavedSchema,
         currentProject: this.state.currentProject,
         expire: this.state.expire
       } as SerializedCloudState)
@@ -248,7 +229,7 @@ export class CloudContainer extends Container<CloudState> {
         user: null,
         token: null,
         autosavedSchema: null,
-        currentProject: null,
+        currentProject: this.canIEditCurrentProject() ? null : this.state.currentProject,
         expire: null
       } as SerializedCloudState)
     );
@@ -275,7 +256,6 @@ export class CloudContainer extends Container<CloudState> {
   };
   onMount = async () => {
     await this.cloudToState();
-    await this.loadAutosave();
     if (!this.state.expire) {
       return this.setState({
         token: null
@@ -287,69 +267,83 @@ export class CloudContainer extends Container<CloudState> {
         token: null
       });
     }
-    await this.afterLogin();
+    return this.afterLogin();
   };
   closePopup = () =>
     this.setState({
       popup: null
     });
-  createUser = async (name: string) => {
-    await createUser(this)(userApi, 'cloud')(name);
-    return createUser(this)(fakerUserApi, 'faker')(name);
-  };
+  createUser = async (name: string) => createUser(this)(name);
   moveToCurrentProject = () =>
     this.state.pushHistory &&
     this.state.currentProject &&
-    this.state.pushHistory(`/${this.state.currentProject.endpoint.uri}`);
-  removeProject = (project: State<Project>) => {
+    this.state.pushHistory(`/${this.state.currentProject.cloud.endpoint.uri}`);
+  removeProject = () => {
     this.clearAutoSaveTrigger();
-    return removeProject(this)(project).then(this.setCloud);
+    return removeProject(this).then(this.setCloud);
   };
   canCreateProject = (name: string) =>
-    !this.allProjects.find((p) => p.name.toLowerCase() === name.toLowerCase());
-  loadProject = (project: State<Project>) => {
-    return this.autoSaveFunction().then(() => {
-      loadProject(this)(project)
-        .then(this.setCloud)
-        .then(this.moveToCurrentProject)
-        .then(() => {
-          this.setState({
-            visibleMenu: 'code'
-          });
+    !this.state.cloud.projects.find((p) => p.name.toLowerCase() === name.toLowerCase());
+  _loadProject = (project: State<Project>) => {
+    return loadProject(this)(project)
+      .then(this.setCloud)
+      .then(this.moveToCurrentProject)
+      .then(() => {
+        this.setState({
+          visibleMenu: 'code'
         });
-    });
+      });
+  };
+  loadProject = async (project: State<Project>) => {
+    return Promise.all([
+      this.forceAutoSaveFunction(this.state.currentProject.cloud, autosave),
+      this._loadProject(project)
+    ]);
   };
   loadExamples = loadExamples(this);
   loadFromURL = loadFromURL(this);
   saveProject = () =>
     saveProjectTemplate(this)(userApi, {
-      project: this.state.currentProject,
+      project: this.state.currentProject.cloud,
       schemas: this.controller!.generateFromAllParsingFunctions()
     });
   fakerDeployProject = async () =>
     fakerDeployProject(this)({
-      project: this.state.currentProject,
+      project: this.state.currentProject.cloud,
       schemas: this.controller!.generateFromAllParsingFunctions()
     });
-  createProject = (name: string, is_public: boolean) => {
-    return this.autoSaveFunction().then(() =>
-      createProjectProject(this)(name, is_public)
-        .then((currentProject) => this.setState({ currentProject }))
-        .then(this.setCloud)
-        .then(this.moveToCurrentProject)
-    );
-  };
-  listPublicProjects = listPublicProjects(this);
-  getFakerURL = () =>
-    this.state.currentProject
-      ? `https://faker.graphqleditor.com/${this.state.currentProject.endpoint.uri}/graphql`
-      : null;
-  afterLoginTemplate = afterLogin(this);
-  afterLogin = () =>
-    Promise.all([
-      this.afterLoginTemplate(userApi, 'cloud'),
-      this.afterLoginTemplate(fakerUserApi, 'faker')
+  createProject = async (project: State<Project>) => {
+    const [p] = await Promise.all([
+      createProject(this)(project.name, project.public),
+      this.forceAutoSaveFunction(this.state.currentProject.cloud, autosave)
     ]);
+    const newProject = {
+      ...project,
+      ...p
+    };
+    await this.editProject(newProject);
+    return this.moveToCurrentProject();
+  };
+  editProject = (project: State<Project>) => {
+    return ProjectCalls.updateProject(this)(project)
+      .then(() =>
+        this.setState((state) => ({
+          cloud: {
+            ...state.cloud,
+            projects: state.cloud.projects.map((p) =>
+              p.id === project.id ? { ...p, ...project } : p
+            )
+          }
+        }))
+      )
+      .then(this.setCloud);
+  };
+  searchPublicProjects = searchPublicProjects(this);
+  getFakerURL = () =>
+    this.state.currentProject && this.state.currentProject.faker
+      ? `https://faker.graphqleditor.com/${this.state.currentProject.faker.endpoint.uri}/graphql`
+      : null;
+  afterLogin = () => afterLogin(this);
   findProjectByEndpoint = (endpoint: string) =>
     findProjectByEndpoint(this)(endpoint)
       .then(this.setCloud)
@@ -375,7 +369,7 @@ export class CloudContainer extends Container<CloudState> {
           })
             .then(this.setCloud)
             .then(async () => {
-              await this.afterLogin();
+              this.onMount();
               resolve();
             });
         }

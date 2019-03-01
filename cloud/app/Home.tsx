@@ -100,13 +100,13 @@ export class Home extends React.Component<{}, HomeState> {
                   }
                 }}
               >
+                {cloud.state.visibleMenu === 'projects' && <Projects />}
                 <div
                   className={cx({
                     [styles.UiDiagram]: true,
-                    [styles.UIDiagramFull]: !cloud.state.visibleMenu
+                    [styles.UIDiagramFull]: cloud.state.visibleMenu === 'projects'
                   })}
                 >
-                  {cloud.state.visibleMenu === 'projects' && <Projects />}
                   <Editor
                     graphController={(controller) => {
                       this.graphController = controller;

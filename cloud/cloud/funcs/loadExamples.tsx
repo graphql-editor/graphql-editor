@@ -15,19 +15,11 @@ export const loadExamples = (instance: typeof Cloud) => async () => {
   });
   await instance.upStack(sm);
   examplesLoadedOnce = true;
-  const [projectProjects, fakerProjects] = await Calls.searchProjects('showcase');
+  const projectProjects= await Calls.searchProjects('showcase');
   await instance.setState((state) => ({
     cloud: {
       ...state.cloud,
       exampleProjects: projectProjects.projects.filter(
-        (p) => p.endpoint.uri.split('/')[0] === 'showcase'
-      )
-    }
-  }));
-  await instance.setState((state) => ({
-    faker: {
-      ...state.faker,
-      exampleProjects: fakerProjects.projects.filter(
         (p) => p.endpoint.uri.split('/')[0] === 'showcase'
       )
     }

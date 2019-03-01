@@ -1,6 +1,5 @@
 import { userApi, Cloud } from '../Container';
-import { Project, State } from '../types/project';
-import { NewSource } from '../types';
+import { Project, State, NewSource } from '../types/project';
 import { Schemas } from '../models';
 
 export const autoSaveProject = (instance: typeof Cloud) => ({
@@ -33,6 +32,7 @@ export const autoSaveProject = (instance: typeof Cloud) => ({
       }
     }
   ];
+  console.log(`Autosaving: ${project.endpoint.uri}`, schemas.graphql);
   return userApi(instance.state.token)
     .Mutation.updateSources({
       project: project.id,

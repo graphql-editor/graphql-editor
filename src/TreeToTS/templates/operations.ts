@@ -90,90 +90,93 @@ type GraphQLDictReturnType<T> = T extends Func<any, any>
   ? State<ReturnType<T>>
   : T;
 
-type ResolveArgs<T> = {
-  [P in keyof T]?: T[P] extends (infer R)[]
-    ? ResolveArgs<R>
-    : T[P] extends {
-        [x: string]: infer R;
-      }
-    ? ResolveArgs<T[P]>
-    : T[P] extends Func<any, any>
-    ? ReturnType<T[P]> extends Record<any, any>
-      ? [ArgsType<T[P]>[0], ResolveArgs<ReturnType<T[P]>>]
-      : [ArgsType<T[P]>[0]]
-    : true
-};
+type ResolveArgs<T> = T extends Record<any, any>
+  ? {
+      [P in keyof T]?: T[P] extends (infer R)[]
+        ? ResolveArgs<R>
+        : T[P] extends {
+            [x: string]: infer R;
+          }
+        ? ResolveArgs<T[P]>
+        : T[P] extends Func<any, any>
+        ? ReturnType<T[P]> extends Record<any, any>
+          ? [ArgsType<T[P]>[0], ResolveArgs<ReturnType<T[P]>>]
+          : [ArgsType<T[P]>[0]]
+        : true
+    }
+  : true;
+
 type GraphQLReturner<T> = T extends (infer R)[]
   ? ResolveArgs<R>
   : ResolveArgs<T>;
 
+type EmptyOrGraphQLReturner<T> = T extends Func<any, any>
+? ReturnType<T> extends Record<any, any>
+  ? (o: GraphQLReturner<ReturnType<T>>) => Promise<GraphQLDictReturnType<T>>
+  : () => Promise<GraphQLDictReturnType<T>>
+: T extends Record<any, any>
+? (o: GraphQLReturner<T>) => Promise<GraphQLDictReturnType<T>>
+: () => Promise<GraphQLDictReturnType<T>>;
+
 type FunctionToGraphQL<T> = T extends Func<any, any>
   ? AfterFunctionToGraphQL<T>
-  : () => (o: GraphQLReturner<T>) => Promise<GraphQLDictReturnType<T>>;
+  : () => EmptyOrGraphQLReturner<T>;
 
 type AfterFunctionToGraphQL<T extends Func<any, any>> = (
   props?: ArgsType<T>[0]
-) => (o: GraphQLReturner<ReturnType<T>>) => Promise<GraphQLDictReturnType<T>>;
+) => EmptyOrGraphQLReturner<T>;
 
 type fetchOptions = ArgsType<typeof fetch>;
 
 const joinArgs = (q: Dict) =>
   Array.isArray(q)
-    ? \`[\${q.map(joinArgs).join(",")}]\`
-    : typeof q === "object"
+    ? \`[\${q.map(joinArgs).join(',')}]\`
+    : typeof q === 'object'
     ? \`{\${Object.keys(q)
-        .map(k => \`\${k}:\${joinArgs(q[k])}\`)
-        .join(",")}}\`
-    : typeof q === "string"
+        .map((k) => \`\${k}:\${joinArgs(q[k])}\`)
+        .join(',')}}\`
+    : typeof q === 'string'
     ? \`"\${q}"\`
     : q;
 const resolveArgs = (q: Dict): string =>
   Object.keys(q).length > 0
     ? \`(\${Object.keys(q)
-        .map(k => \`\${k}:\${joinArgs(q[k])}\`)
-        .join(",")})\`
+        .map((k) => \`\${k}:\${joinArgs(q[k])}\`)
+        .join(',')})\`
     : \`\`;
 
-const isArrayFunction = a => {
+const isArrayFunction = <T extends [Record<any, any>, Record<any, any>]>(a: T) => {
   const [values, r] = a;
   const keyValues = Object.keys(values);
   const argumentString =
     keyValues.length > 0
       ? \`(\${keyValues
           .map(
-            v =>
-              \`\${v}:\${
-                typeof values[v] === "string"
-                  ? \`"\${values[v]}"\`
-                  : JSON.stringify(values[v])
-              }\`
+            (v) =>
+              \`\${v}:\${typeof values[v] === 'string' ? \`"\${values[v]}"\` : JSON.stringify(values[v])}\`
           )
-          .join(",")})\${r ? traverseToSeekArrays(r) : ""}\`
+          .join(',')})\${r ? traverseToSeekArrays(r) : ''}\`
       : traverseToSeekArrays(r);
   return argumentString;
 };
 
-const resolveKV = (
-  k: string,
-  v: boolean | string | { [x: string]: boolean | string }
-) =>
-  typeof v === "boolean"
-    ? k
-    : typeof v === "object"
-    ? \`\${k}{\${objectToTree(v)}}\`
-    : \`\${k}\${v}\`;
+const resolveKV = (k: string, v: boolean | string | { [x: string]: boolean | string }) =>
+  typeof v === 'boolean' ? k : typeof v === 'object' ? \`\${k}{\${objectToTree(v)}}\` : \`\${k}\${v}\`;
+
 const objectToTree = (o: { [x: string]: boolean | string }) =>
-  \`{\${Object.keys(o).map(k => \`\${resolveKV(k, o[k])}\`)}}\`;
-const traverseToSeekArrays = a => {
+  \`{\${Object.keys(o).map((k) => \`\${resolveKV(k, o[k])}\`)}}\`;
+
+const traverseToSeekArrays = <T extends Record<any, any>>(a?: T) => {
+  if (!a) return '';
   if (Object.keys(a).length === 0) {
-    return "";
+    return '';
   }
   let b = {};
-  Object.keys(a).map(k => {
+  Object.keys(a).map((k) => {
     if (Array.isArray(a[k])) {
       b[k] = isArrayFunction(a[k]);
     } else {
-      if (typeof a[k] === "object") {
+      if (typeof a[k] === 'object') {
         b[k] = traverseToSeekArrays(a[k]);
       } else {
         b[k] = a[k];
@@ -183,26 +186,21 @@ const traverseToSeekArrays = a => {
   return objectToTree(b);
 };
 
-const buildQuery = a =>
-  traverseToSeekArrays(a).replace(
-    /\\"([^{^,^\\n^\\"]*)\\":([^{^,^\\n^\\"]*)/g,
-    "\$1:\$2"
-  );
+const buildQuery = <T extends Record<any, any>>(a?: T) =>
+  traverseToSeekArrays(a).replace(/\"([^{^,^\n^\"]*)\":([^{^,^\n^\"]*)/g, '$1:$2');
 
-const construct = (
-  t: "query" | "mutation" | "subscription",
-  name: string,
-  args: Dict = {}
-) => (returnedQuery?: string) => \`
-        \${t === "query" ? "" : t}{
+const construct = (t: 'query' | 'mutation' | 'subscription', name: string, args: Dict = {}) => (
+  returnedQuery?: string
+) => \`
+        \${t === 'query' ? '' : t}{
           \${name}\${resolveArgs(args)}\${returnedQuery}
         }
   \`;
 
 const fullConstruct = (options: fetchOptions) => (
-  t: "query" | "mutation" | "subscription",
+  t: 'query' | 'mutation' | 'subscription',
   name: string
-) => props => o =>
+) => (props?: Dict) => (o?: Record<any, any>) =>
   apiFetch(options, construct(t, name, props)(buildQuery(o)), name);
 
 const apiFetch = (options: fetchOptions, query: string, name: string) =>
@@ -214,6 +212,7 @@ const apiFetch = (options: fetchOptions, query: string, name: string) =>
       }
       return response.data[name];
     });
+
   
 export const Api = (...options: fetchOptions) => ({
     ${generateOperations({ queries, mutations, subscriptions }).join(',\n')}

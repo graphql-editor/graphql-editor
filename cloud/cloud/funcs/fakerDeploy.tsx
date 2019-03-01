@@ -2,9 +2,8 @@ import { Cloud } from '../Container';
 import { State, Project } from '../types/project';
 import { Analytics } from '../analytics';
 import { Schemas } from '../models';
-import { createFakerUser } from './faker/createUser';
-import { createFakerProject } from './faker/createProject';
 import { deployFaker } from './faker/deploy';
+import { FakerCalls } from './faker/calls';
 
 export const fakerDeployProject = (instance: typeof Cloud) => async ({
   schemas,
@@ -18,15 +17,41 @@ export const fakerDeployProject = (instance: typeof Cloud) => async ({
     action: 'deploy'
   });
   await instance.upStack(sm);
-  const fakerNamespace = instance.state.faker.namespace;
+  let fakerNamespace = instance.state.faker.namespace;
   if (!(fakerNamespace && fakerNamespace.slug)) {
-    await createFakerUser(instance)(instance.state.cloud.namespace.slug!);
+    const fakerResponse = await FakerCalls.createUser(instance)(
+      instance.state.cloud.namespace.slug!
+    );
+    const { namespace, id } = fakerResponse;
+    const {
+      projects: { projects },
+      ...fakerRestNamespace
+    } = namespace;
+    await instance.setState({
+      faker: {
+        projects: projects,
+        namespace: fakerRestNamespace,
+        user: {
+          id
+        }
+      }
+    });
+    await instance.setCloud();
   }
-  let correspondingFakerProject = instance.state.faker.projects.find(
-    (fp) => fp.name === project.name
-  );
+  let correspondingFakerProject = instance.state.currentProject.faker;
   if (!correspondingFakerProject) {
-    correspondingFakerProject = await createFakerProject(instance)(project.name, true);
+    correspondingFakerProject = await FakerCalls.createProject(instance)(project.name, true);
+    await instance.setState((state) => ({
+      ...state,
+      faker: {
+        ...state.faker
+      },
+      currentProject: {
+        ...state.currentProject,
+        faker: correspondingFakerProject
+      }
+    }));
+    await instance.setCloud();
   }
   await instance.deStack(sm);
   return deployFaker(instance)({ project: correspondingFakerProject, schemas });

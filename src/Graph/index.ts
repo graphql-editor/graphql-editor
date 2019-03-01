@@ -6,7 +6,7 @@ import { EditorNodeDefinition, ParsingFunction, ParserTree } from '../Models';
 import { TreeToTS } from '../TreeToTS';
 import { Definitions } from './definitions';
 import { TreeToFaker } from '../TreeToFaker';
-import { introspectionQuery, buildClientSchema, printSchema } from 'graphql';
+import { introspectionQuery, buildClientSchema, printSchema, parse } from 'graphql';
 export class GraphController {
   private nodes: Node[] = [];
   private links: Link[] = [];
@@ -84,12 +84,20 @@ export class GraphController {
     const tree = this.parser.parse(graphql);
     return JSON.stringify(tree);
   };
-  getSchemaFromURL = async (url: string): Promise<void> => {
+  getSchemaFromURL = async (url: string, header?: string): Promise<void> => {
+    let headers = {
+      'Content-Type': 'application/json'
+    };
+    if (header) {
+      const [key, val] = header.split(':').map((k) => k.trim());
+      if (!val) {
+        throw new Error('Incorrect Header');
+      }
+      headers[key] = val;
+    }
     const response = await fetch(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers,
       body: JSON.stringify({ query: introspectionQuery })
     });
     const { data, errors } = await response.json();
@@ -115,6 +123,12 @@ export class GraphController {
     this.nodes = nodes;
     this.links = links;
     const graphQLSchema = NodesToTree.parse(nodes, links);
+    try {
+      parse(graphQLSchema);
+    } catch (error) {
+      console.warn(`Schema incorrect:${error}`);
+      return;
+    }
     this.onSerialize && this.onSerialize(graphQLSchema);
     this.passSchema &&
       this.passSchema(

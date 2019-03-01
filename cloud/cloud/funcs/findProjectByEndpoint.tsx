@@ -4,7 +4,7 @@ import { Analytics } from '../analytics';
 import { Calls } from './calls';
 
 export const findProjectByEndpoint = (instance: typeof Cloud) => async (endpoint: string) => {
-  const sm = `loading project...`;
+  const sm = `finding project...`;
   Analytics.events.project({
     action: 'loadByEndpoint',
     label: endpoint
@@ -13,7 +13,7 @@ export const findProjectByEndpoint = (instance: typeof Cloud) => async (endpoint
   return Calls.findProjectByEndpoint(instance)(endpoint).then(async (project) => {
     await instance.deStack(sm);
     if (project) {
-      return loadProject(instance)(project);
+      return loadProject(instance)(project[0]);
     }
     await instance.upStack(`Check if you provided URL correctly`);
     await instance.errStack(`No such project: ${endpoint}`);

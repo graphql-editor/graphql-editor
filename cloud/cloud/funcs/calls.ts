@@ -1,158 +1,96 @@
-import { Cloud, userApi, fakerApi, api, fakerUserApi } from '../Container';
+import { Cloud, userApi, api, fakerUserApi } from '../Container';
 import { State, Project } from '../types/project';
+import { ProjectCalls } from './project/calls';
+import { FakerCalls } from './faker/calls';
 
 export class Calls {
+  static getUser = (instance: typeof Cloud) =>
+    Promise.all([ProjectCalls.getUser(instance), FakerCalls.getUser(instance)]);
+  static createUser = (instance: typeof Cloud) => async (namespace: string) =>
+    Promise.all([
+      ProjectCalls.createUser(instance)(namespace),
+      FakerCalls.createUser(instance)(namespace)
+    ]);
   static findProjectByEndpoint = (instance: typeof Cloud) => async (endpoint: string) => {
-    const result = await userApi(instance.state.token).Query.findProjects({
-      query: endpoint,
-      limit: 1
+    return Promise.all([
+      ProjectCalls.findProjectByEndpoint(instance)(endpoint),
+      FakerCalls.findProjectByEndpoint(instance)(endpoint)
+    ]);
+  };
+  static searchProjects = async (query: string) =>
+    api.Query.findProjects({ query, limit: 30 })({
+      projects: {
+        id: true,
+        name: true,
+        public: true,
+        slug: true,
+        description: true,
+        tags: true,
+        endpoint: {
+          uri: true
+        },
+        sources: [
+          {},
+          {
+            sources: {
+              getUrl: true
+            }
+          }
+        ]
+      }
+    });
+  static searchProjectsByTag = async (tag: string) =>
+    api.Query.findProjectsByTag({
+      tag,
+      limit: 20
     })({
       projects: {
         id: true,
+        name: true,
+        public: true,
+        slug: true,
+        description: true,
+        tags: true,
         endpoint: {
           uri: true
-        }
+        },
+        sources: [
+          {},
+          {
+            sources: {
+              getUrl: true
+            }
+          }
+        ]
       }
     });
-    return result.projects.length === 1 ? result.projects[0] : undefined;
-  };
-  static searchProjects = async (query: string) =>
+
+  static createProject = (instance: typeof Cloud) => async (name: string, is_public: boolean) =>
     Promise.all([
-      api.Query.findProjects({ query, limit: 30 })({
-        projects: {
-          id: true,
-          name: true,
-          public: true,
-          slug: true,
-          endpoint: {
-            uri: true
-          },
-          sources: [
-            {},
-            {
-              sources: {
-                getUrl: true
-              }
-            }
-          ]
-        }
-      }),
-      fakerApi.Query.listProjects()({
-        projects: {
-          id: true,
-          name: true,
-          public: true,
-          slug: true,
-          endpoint: {
-            uri: true
-          }
-        }
-      })
+      ProjectCalls.createProject(instance)(name, is_public),
+      FakerCalls.createProject(instance)(name, is_public)
     ]);
-  static createProject = (instance: typeof Cloud) => (apiFunction: typeof userApi) => async (
-    name: string,
-    is_public: boolean
-  ) =>
-    apiFunction(instance.state.token).Mutation.createProject({
-      name,
-      public: is_public
-    })({
-      id: true,
-      name: true,
-      public: true,
-      slug: true,
-      endpoint: { uri: true }
-    });
-  static getProject = (instance: typeof Cloud) => (project: State<Project>) => {
-    return userApi(instance.state.token).Query.getProject({
-      project: project.id
-    })({
-      id: true,
-      name: true,
-      slug: true,
-      public: true,
-      endpoint: {
-        uri: true
-      },
-      sources: [
-        {},
-        {
-          sources: {
-            getUrl: true,
-            filename: true
-          }
-        }
-      ]
-    });
-  };
+
+  static getProject = (instance: typeof Cloud) => (project: State<Project>) =>
+    Promise.all([
+      ProjectCalls.getProject(instance)(project),
+      FakerCalls.findProjectByEndpoint(instance)(project.endpoint.uri)
+    ]);
   static removeProject = (instance: typeof Cloud) => async (project: State<Project>) => {
-    const fakerProject =
-      instance.state.faker.projects &&
-      instance.state.faker.projects.find((p) => p.slug === project.slug);
     const actions = [
       userApi(instance.state.token).Mutation.removeProject({
         project: project.id
-      })({})
+      })()
     ];
+
+    const fakerProject = await FakerCalls.findProjectByEndpoint(instance)(project.endpoint.uri);
     if (fakerProject) {
       actions.push(
         fakerUserApi(instance.state.token).Mutation.removeProject({
           project: fakerProject.id
-        })({})
+        })()
       );
     }
-    await Promise.all(actions);
-    return [project, fakerProject];
-  };
-  static getUser = (instance: typeof Cloud) => (apiFunction: typeof userApi) =>
-    apiFunction(instance.state.token).Query.getUser({
-      username: instance.state.user.id
-    })({
-      id: true,
-      namespace: {
-        slug: true,
-        public: true,
-        projects: [
-          {},
-          {
-            projects: {
-              id: true,
-              public: true,
-              name: true,
-              slug: true,
-              endpoint: {
-                uri: true
-              }
-            }
-          }
-        ]
-      }
-    });
-  static createUser = (instance: typeof Cloud) => (apiFunction: typeof userApi) => async (
-    namespace: string
-  ) => {
-    return apiFunction(instance.state.token).Mutation.createUser({
-      namespace
-    })({
-      id: true,
-      namespace: {
-        slug: true,
-        public: true,
-        projects: [
-          {},
-          {
-            projects: {
-              id: true,
-              public: true,
-              name: true,
-              slug: true,
-              endpoint: {
-                uri: true
-              }
-            }
-          }
-        ]
-      }
-    });
+    return Promise.all(actions);
   };
 }

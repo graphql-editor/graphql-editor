@@ -1,6 +1,5 @@
 import { Cloud, fakerUserApi } from '../../Container';
-import { Project, State } from '../../types/project';
-import { NewSource } from '../../types';
+import { NewSource, Project, State } from '../../types/faker';
 import { Analytics } from '../../analytics';
 import { Schemas } from '../../models';
 

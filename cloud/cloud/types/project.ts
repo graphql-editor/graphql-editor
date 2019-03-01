@@ -1,12 +1,55 @@
-export type Header = {
-  key: string;
-  value?: string;
+export type Query = {
+  findProjects: (props: { query: string; last?: string; limit?: number }) => ProjectConnection;
+  findProjectsByTag: (props: { tag: string; last?: string; limit?: number }) => ProjectConnection;
+  getNamespace: (props: { slug: string }) => Namespace;
+  getProject: (props: { project: string }) => Project;
+  getUser: (props: { username: string }) => User;
+  listProjects: (props: { owned?: boolean; last?: string; limit?: number }) => ProjectConnection;
 };
 
-export type SourceUploadInfo = {
-  filename?: string;
-  headers?: Header[];
-  putUrl: string;
+export type ProjectConnection = {
+  pageInfo: PageInfo;
+  projects?: Project[];
+};
+
+export type PageInfo = {
+  last?: string;
+  limit?: number;
+  next?: boolean;
+};
+
+export type Project = {
+  description?: string;
+  endpoint?: Endpoint;
+  id: string;
+  name: string;
+  owner?: User;
+  public?: boolean;
+  slug?: string;
+  sources: (props: { limit?: number; last?: string }) => FakerSourceConnection;
+  tags?: string[];
+};
+
+export type Endpoint = {
+  uri?: string;
+};
+
+export type User = {
+  id?: string;
+  namespace?: Namespace;
+  username?: string;
+};
+
+export type Namespace = {
+  project: (props: { name: string }) => Project;
+  projects: (props: { last?: string; limit?: number }) => ProjectConnection;
+  public?: boolean;
+  slug?: string;
+};
+
+export type FakerSourceConnection = {
+  pageInfo: PageInfo;
+  sources?: FakerSource[];
 };
 
 export type FakerSource = {
@@ -16,116 +59,40 @@ export type FakerSource = {
   getUrl?: string;
 };
 
-export type FakerSourceConnection = {
-  pageInfo: PageInfo;
-  sources?: FakerSource[];
+export type Mutation = {
+  createProject: (props: { public?: boolean; name: string }) => Project;
+  createUser: (props: { namespace: string; public?: boolean }) => User;
+  removeProject: (props: { project: string }) => boolean;
+  updateProject: (props: { in?: UpdateProject }) => boolean;
+  updateSources: (props: {
+    project: string;
+    sources?: NewSource[];
+  }) => (SourceUploadInfo | undefined)[];
 };
 
-export type Namespace = {
-  projects?: (
-    props: {
-      last?: string;
-      limit?: number;
-    }
-  ) => ProjectConnection;
+export type UpdateProject = {
   public?: boolean;
-  slug?: string;
-};
-
-export type User = {
-  id?: string;
-  namespace?: Namespace;
-  username?: string;
-};
-
-export type Endpoint = {
-  uri?: string;
-};
-
-export type Project = {
-  endpoint?: Endpoint;
-  id: string;
-  name: string;
-  owner?: User;
-  public?: boolean;
-  slug?: string;
-  sources?: (
-    props: {
-      limit?: number;
-      last?: string;
-    }
-  ) => FakerSourceConnection;
-};
-
-export type PageInfo = {
-  last?: string;
-  limit?: number;
-  next?: boolean;
-};
-
-export type ProjectConnection = {
-  pageInfo: PageInfo;
-  projects?: Project[];
+  project: string;
+  description?: string;
+  tags?: (string | undefined)[];
 };
 
 export type NewSource = {
-  filename?: string;
-  contentLength?: number;
   contentType?: string;
   checksum?: string;
+  filename?: string;
+  contentLength?: number;
 };
 
-export type Query = {
-  findProjects: (
-    props: {
-      query: string;
-      last?: string;
-      limit?: number;
-    }
-  ) => ProjectConnection;
-  getProject: (
-    props: {
-      project: string;
-    }
-  ) => Project;
-  getUser: (
-    props: {
-      username: string;
-    }
-  ) => User;
-  listProjects: (
-    props: {
-      owned?: boolean;
-      last?: string;
-      limit?: number;
-    }
-  ) => ProjectConnection;
+export type SourceUploadInfo = {
+  filename?: string;
+  headers?: (Header | undefined)[];
+  putUrl: string;
 };
 
-export type Mutation = {
-  createProject: (
-    props: {
-      name: string;
-      public?: boolean;
-    }
-  ) => Project;
-  createUser: (
-    props: {
-      namespace: string;
-      public?: boolean;
-    }
-  ) => User;
-  removeProject: (
-    props: {
-      project: string;
-    }
-  ) => Boolean;
-  updateSources: (
-    props: {
-      project: string;
-      sources?: NewSource[];
-    }
-  ) => SourceUploadInfo[];
+export type Header = {
+  key: string;
+  value?: string;
 };
 type Func<P extends any[], R> = (...args: P) => R;
 type ArgsType<F extends Func<any, any>> = F extends Func<infer P, any> ? P : never;
@@ -158,40 +125,63 @@ type ResolveReturned<T> = {
     : T[P] extends {
         [x: string]: infer R;
       }
-      ? ResolveReturned<T[P]>
-      : T[P] extends Func<any, any> ? ResolveReturned<ReturnType<T[P]>> : T[P]
+    ? ResolveReturned<T[P]>
+    : T[P] extends Func<any, any>
+    ? ResolveReturned<ReturnType<T[P]>>
+    : T[P]
 };
 
 export type State<T> = T extends (infer R)[] ? ResolveReturned<R>[] : ResolveReturned<T>;
 
 type GraphQLDictReturnType<T> = T extends Func<any, any> ? State<ReturnType<T>> : T;
 
-type ResolveArgs<T> = {
-  [P in keyof T]?: T[P] extends (infer R)[]
-    ? ResolveArgs<R>
-    : T[P] extends {
-        [x: string]: infer R;
-      }
-      ? ResolveArgs<T[P]>
-      : T[P] extends Func<any, any> ? [ArgsType<T[P]>[0], ResolveArgs<ReturnType<T[P]>>] : true
-};
+type ResolveArgs<T> = T extends Record<any, any>
+  ? {
+      [P in keyof T]?: T[P] extends (infer R)[]
+        ? ResolveArgs<R>
+        : T[P] extends {
+            [x: string]: infer R;
+          }
+        ? ResolveArgs<T[P]>
+        : T[P] extends Func<any, any>
+        ? ReturnType<T[P]> extends Record<any, any>
+          ? [ArgsType<T[P]>[0], ResolveArgs<ReturnType<T[P]>>]
+          : [ArgsType<T[P]>[0]]
+        : true
+    }
+  : true;
+
 type GraphQLReturner<T> = T extends (infer R)[] ? ResolveArgs<R> : ResolveArgs<T>;
 
-type FunctionToGraphQL<T extends Func<any, any>> = (
+type EmptyOrGraphQLReturner<T> = T extends Func<any, any>
+  ? ReturnType<T> extends Record<any, any>
+    ? (o: GraphQLReturner<ReturnType<T>>) => Promise<GraphQLDictReturnType<T>>
+    : () => Promise<GraphQLDictReturnType<T>>
+  : T extends Record<any, any>
+  ? (o: GraphQLReturner<T>) => Promise<GraphQLDictReturnType<T>>
+  : () => Promise<GraphQLDictReturnType<T>>;
+
+type FunctionToGraphQL<T> = T extends Func<any, any>
+  ? AfterFunctionToGraphQL<T>
+  : () => EmptyOrGraphQLReturner<T>;
+
+type AfterFunctionToGraphQL<T extends Func<any, any>> = (
   props?: ArgsType<T>[0]
-) => (o: GraphQLReturner<ReturnType<T>>) => Promise<GraphQLDictReturnType<T>>;
+) => EmptyOrGraphQLReturner<T>;
+
 type fetchOptions = ArgsType<typeof fetch>;
+
 
 const joinArgs = (q: Dict) =>
   Array.isArray(q)
     ? `[${q.map(joinArgs).join(',')}]`
     : typeof q === 'object'
-      ? `{${Object.keys(q)
-          .map((k) => `${k}:${joinArgs(q[k])}`)
-          .join(',')}}`
-      : typeof q === 'string'
-        ? `"${q}"`
-        : q;
+    ? `{${Object.keys(q)
+        .map((k) => `${k}:${joinArgs(q[k])}`)
+        .join(',')}}`
+    : typeof q === 'string'
+    ? `"${q}"`
+    : q;
 const resolveArgs = (q: Dict): string =>
   Object.keys(q).length > 0
     ? `(${Object.keys(q)
@@ -199,7 +189,7 @@ const resolveArgs = (q: Dict): string =>
         .join(',')})`
     : ``;
 
-const isArrayFunction = (a) => {
+const isArrayFunction = <T extends [Record<any, any>, Record<any, any>]>(a: T) => {
   const [values, r] = a;
   const keyValues = Object.keys(values);
   const argumentString =
@@ -209,16 +199,19 @@ const isArrayFunction = (a) => {
             (v) =>
               `${v}:${typeof values[v] === 'string' ? `"${values[v]}"` : JSON.stringify(values[v])}`
           )
-          .join(',')})${traverseToSeekArrays(r)}`
+          .join(',')})${r ? traverseToSeekArrays(r) : ''}`
       : traverseToSeekArrays(r);
   return argumentString;
 };
 
 const resolveKV = (k: string, v: boolean | string | { [x: string]: boolean | string }) =>
   typeof v === 'boolean' ? k : typeof v === 'object' ? `${k}{${objectToTree(v)}}` : `${k}${v}`;
+
 const objectToTree = (o: { [x: string]: boolean | string }) =>
   `{${Object.keys(o).map((k) => `${resolveKV(k, o[k])}`)}}`;
-const traverseToSeekArrays = (a) => {
+
+const traverseToSeekArrays = <T extends Record<any, any>>(a?: T) => {
+  if (!a) return '';
   if (Object.keys(a).length === 0) {
     return '';
   }
@@ -237,16 +230,22 @@ const traverseToSeekArrays = (a) => {
   return objectToTree(b);
 };
 
-const buildQuery = (a) =>
-  traverseToSeekArrays(a).replace(/\"([^{^,^\n^\"]*)\":([^{^,^\n^\"]*)/g, '$1:$2');
+const buildQuery = <T extends Record<any, any>>(a?: T) =>
+  traverseToSeekArrays(a).replace(/"([^{^,^^"]*)":([^{^,^^"]*)/g, '$1:$2');
 
 const construct = (t: 'query' | 'mutation' | 'subscription', name: string, args: Dict = {}) => (
   returnedQuery?: string
 ) => `
-      ${t === 'query' ? '' : t}{
-        ${name}${resolveArgs(args)}${returnedQuery}
-      }
-`;
+        ${t === 'query' ? '' : t}{
+          ${name}${resolveArgs(args)}${returnedQuery}
+        }
+  `;
+
+const fullConstruct = (options: fetchOptions) => (
+  t: 'query' | 'mutation' | 'subscription',
+  name: string
+) => (props?: Dict) => (o?: Record<any, any>) =>
+  apiFetch(options, construct(t, name, props)(buildQuery(o)), name);
 
 const apiFetch = (options: fetchOptions, query: string, name: string) =>
   fetch(`${options[0]}?query=${encodeURIComponent(query)}`, options[1] || {})
@@ -258,17 +257,20 @@ const apiFetch = (options: fetchOptions, query: string, name: string) =>
       return response.data[name];
     });
 
-const fullConstruct = (options: fetchOptions) => (
-  t: 'query' | 'mutation' | 'subscription',
-  name: string
-) => (props) => (o) => apiFetch(options, construct(t, name, props)(buildQuery(o)), name);
-
 export const Api = (...options: fetchOptions) => ({
   Query: {
     findProjects: ((props) => (o) =>
       fullConstruct(options)('query', 'findProjects')(props)(o).then(
         (response) => response as GraphQLDictReturnType<Query['findProjects']>
       )) as FunctionToGraphQL<Query['findProjects']>,
+    findProjectsByTag: ((props) => (o) =>
+      fullConstruct(options)('query', 'findProjectsByTag')(props)(o).then(
+        (response) => response as GraphQLDictReturnType<Query['findProjectsByTag']>
+      )) as FunctionToGraphQL<Query['findProjectsByTag']>,
+    getNamespace: ((props) => (o) =>
+      fullConstruct(options)('query', 'getNamespace')(props)(o).then(
+        (response) => response as GraphQLDictReturnType<Query['getNamespace']>
+      )) as FunctionToGraphQL<Query['getNamespace']>,
     getProject: ((props) => (o) =>
       fullConstruct(options)('query', 'getProject')(props)(o).then(
         (response) => response as GraphQLDictReturnType<Query['getProject']>
@@ -295,6 +297,10 @@ export const Api = (...options: fetchOptions) => ({
       fullConstruct(options)('mutation', 'removeProject')(props)(o).then(
         (response) => response as GraphQLDictReturnType<Mutation['removeProject']>
       )) as FunctionToGraphQL<Mutation['removeProject']>,
+    updateProject: ((props) => (o) =>
+      fullConstruct(options)('mutation', 'updateProject')(props)(o).then(
+        (response) => response as GraphQLDictReturnType<Mutation['updateProject']>
+      )) as FunctionToGraphQL<Mutation['updateProject']>,
     updateSources: ((props) => (o) =>
       fullConstruct(options)('mutation', 'updateSources')(props)(o).then(
         (response) => response as GraphQLDictReturnType<Mutation['updateSources']>

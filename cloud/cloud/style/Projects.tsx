@@ -1,42 +1,89 @@
 import { style, media } from 'typestyle';
 import { vars, Colors } from '../../../src';
+import { TOP_BAR_HEIGHT } from './UI';
 
 export const Container = style({
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  flex: 1,
   width: '100vw',
   zIndex: 2,
   overflowY: 'auto',
-  position: 'absolute',
-  maxHeight: '100%',
-  height: '100%'
+  position: 'relative',
+  height:`calc(100% - ${TOP_BAR_HEIGHT}px)`,
 });
 
-export const Left = style({
-  width: 180,
-  background: Colors.main[6],
-  color: Colors.grey[0],
-  alignSelf: 'stretch',
-  padding: 10
-});
+export const Right = style(
+  {
+    flex: 1,
+    background: Colors.main[7],
+    padding: `50px 100px`,
+    overflowY: 'auto',
+    minHeight:'100%'
+  },
+  media({ maxWidth: 900 }, { padding: `25px 50px` })
+);
 
-export const Right = style({
-  flex: 1,
-  background: Colors.main[5],
-  padding: 30,
-  alignSelf: 'stretch',
-  display: 'flex',
-  flexFlow: 'column nowrap',
-  overflowY: 'auto'
-});
+export const SearchGrid = style(
+  {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr 1fr',
+    gridGap: 40,
+    gridTemplateRows: 'auto',
+    marginBottom: 40
+  },
+  media({ maxWidth: 1300 }, { gridTemplateColumns: '1fr 1fr' }),
+  media({ maxWidth: 900 }, { gridTemplateColumns: '1fr' }),
+  media({ maxWidth: 700 }, { gridTemplateColumns: '1fr' })
+);
+
+export const TabsGrid = style(
+  {
+    display: 'flex',
+    flexFlow: 'row nowrap',
+    justifyContent: 'stretch',
+    $nest: {
+      a: {
+        color: Colors.main[0],
+        padding: 15,
+        fontSize: 12,
+        cursor:'pointer',
+        flex: 1,
+        textAlign: 'center',
+        $nest: {
+          '&.active': {
+            color: Colors.grey[0],
+            background: `${Colors.main[2]} !important`,
+            fontWeight: 'bold'
+          },
+          '&:hover':{
+            color: Colors.grey[0],
+          }
+        }
+      },
+      'a:nth-of-type(3n+0)': {
+        background: Colors.main[5]
+      },
+      'a:nth-of-type(3n+1)': {
+        background: Colors.main[6]
+      },
+      'a:nth-of-type(3n+2)': {
+        background: Colors.main[4]
+      }
+    }
+  },
+  media(
+    { minWidth: 1300 },
+    {
+      gridColumnStart: '2',
+      gridColumnEnd: '4'
+    }
+  )
+);
 
 export const ProjectsGrid = style(
   {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr 1fr',
     gridTemplateRows: 'auto',
-    gridGap: 10
+    gridGap: 40
   },
   media({ maxWidth: 1300 }, { gridTemplateColumns: '1fr 1fr' }),
   media({ maxWidth: 900 }, { gridTemplateColumns: '1fr' }),

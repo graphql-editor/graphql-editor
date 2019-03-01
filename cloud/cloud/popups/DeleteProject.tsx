@@ -11,11 +11,11 @@ export type DeleteProjectState = {
 export class DeleteProject extends React.Component<{}, DeleteProjectState> {
   state: DeleteProjectState = { name: '' };
 
-  componentDidMount(){
+  componentDidMount() {
     Analytics.events.ui({
-      action:'open',
-      label:'deleteProject'
-    })
+      action: 'open',
+      label: 'deleteProject'
+    });
   }
   render() {
     return (
@@ -49,9 +49,9 @@ export class DeleteProject extends React.Component<{}, DeleteProjectState> {
                       ? undefined
                       : 'Please type any name'
                   }
-                  onClick={() => {
-                    cloud.closePopup();
-                    cloud.removeProject(cloud.state.removedProject);
+                  onClick={async () => {
+                    await cloud.closePopup();
+                    await cloud.removeProject();
                   }}
                 >
                   Delete project

@@ -1,6 +1,6 @@
 import { userApi, Cloud } from '../Container';
 import { Project, State } from '../types/project';
-import { NewSource } from '../types';
+import { NewSource } from '../types/project';
 import { Analytics } from '../analytics';
 import { Schemas } from '../models';
 

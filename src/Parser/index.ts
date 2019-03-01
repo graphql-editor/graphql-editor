@@ -18,7 +18,11 @@ export class Parser {
     };
   };
   parse = (schema: string) => {
-    this.schema = Parser.importSchema(schema);
+    try {
+      this.schema = Parser.importSchema(schema);
+    } catch (error) {
+      console.log(schema)
+    }
     const typeMap = this.schema!.getTypeMap();
     const operations = {
       Query: this.schema.getQueryType(),

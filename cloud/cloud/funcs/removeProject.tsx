@@ -1,38 +1,30 @@
 import { Cloud } from '../Container';
-import { State, Project } from '../types/project';
 import { Analytics } from '../analytics';
 import { Calls } from './calls';
 
-export const removeProject = (instance: typeof Cloud) => async (project: State<Project>) => {
+export const removeProject = async (instance: typeof Cloud) => {
+  const project = instance.state.removedProject
   const sm = `Removing project...`;
+  await instance.upStack(sm);
+  if (!instance.canIEditProject(project)) {
+    throw new Error(`You can't remove this project`);
+  }
   Analytics.events.project({
     action: 'remove'
   });
-
-  await instance.upStack(sm);
-  if (instance.state.currentProject && project.id === instance.state.currentProject.id) {
-    instance.setState((state) => ({
-      currentProject: null,
-      cloud: {
-        ...state.cloud
-      }
-    }));
-  }
-  const [projectProject, fakerProject] = await Calls.removeProject(instance)(project);
-  if (fakerProject) {
+  if (instance.state.currentProject && project.id === instance.state.currentProject.cloud.id) {
     await instance.setState((state) => ({
-      faker: {
-        ...state.faker,
-        projects: state.faker.projects.filter((p) => p.id !== fakerProject.id)
-      }
+      currentProject: null
     }));
+    instance.controller.resetGraph();
   }
+  await Calls.removeProject(instance)(project);
   await instance.setState((state) => ({
     cloud: {
       ...state.cloud,
-      projects: state.cloud.projects.filter((p) => p.id !== projectProject.id)
+      projects: state.cloud.projects.filter((p) => p.id !== project.id)
     }
   }));
   await instance.deStack(sm);
-  return [projectProject, fakerProject];
+  return;
 };

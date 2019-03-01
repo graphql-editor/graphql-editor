@@ -1,6 +1,8 @@
 import { style, keyframes } from 'typestyle';
 import { Colors } from '../../../src';
 
+export const TOP_BAR_HEIGHT = 50
+
 const blink = keyframes({
   '0%': {
     color: Colors.grey[3]
@@ -27,16 +29,15 @@ const blink = keyframes({
 
 export const UI = style({
   height: '100vh',
-  display: 'flex',
-  flexFlow:'column nowrap'
 });
 export const TopBar = style({
-  background: Colors.main[7],
+  background: Colors.main[9],
   display: 'flex',
   flexFlow: 'row nowrap',
   zIndex: 3,
   justifyContent: 'space-between',
   width: '100%',
+  height:TOP_BAR_HEIGHT,
   flex:'none'
 });
 export const Center = style({

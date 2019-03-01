@@ -2,7 +2,7 @@ import { Cloud } from '../Container';
 import { Analytics } from '../analytics';
 // import { GraphController } from '../../../src/Graph';
 
-export const loadFromURL = (instance: typeof Cloud) => async (url: string) => {
+export const loadFromURL = (instance: typeof Cloud) => async (url: string, header?: string) => {
   const sm = `loading schema from url...`;
   Analytics.events.project({
     action: 'loadFromURL',
@@ -10,7 +10,7 @@ export const loadFromURL = (instance: typeof Cloud) => async (url: string) => {
   });
   await instance.upStack(sm);
   try {
-    await instance.controller!.getSchemaFromURL(url);
+    await instance.controller!.getSchemaFromURL(url, header);
     return instance
       .setState((state) => ({
         currentProject: null,
