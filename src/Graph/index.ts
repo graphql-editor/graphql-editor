@@ -24,7 +24,7 @@ export class GraphController {
     return this.nodes.length === 0;
   };
   resizeDiagram = () => {
-    this.diagram!.resize();
+    this.diagram!.autoResize()
   };
   setParsingFunction = (f: ParsingFunction) => {
     this.currentParsingFunction = f;
@@ -45,7 +45,7 @@ export class GraphController {
   resetGraph = () => {
     const nodes: Node[] = [];
     const links: Link[] = [];
-    this.diagram.setNodes(nodes);
+    this.diagram!.setNodes(nodes);
     this.diagram!.setLinks(links);
     this.diagram!.zeroDiagram();
     this.serialise({
@@ -85,7 +85,7 @@ export class GraphController {
     return JSON.stringify(tree);
   };
   getSchemaFromURL = async (url: string, header?: string): Promise<void> => {
-    let headers = {
+    const headers:Record<string,string> = {
       'Content-Type': 'application/json'
     };
     if (header) {
