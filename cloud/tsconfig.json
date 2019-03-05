@@ -12,6 +12,7 @@
     "lib": ["es6", "es7", "esnext", "dom"],
     "outDir": "../dist",
     "baseUrl": "./",
+    "skipLibCheck": true,
     "rootDir": "../"
   },
   "exclude": ["dist", "build", "node_modules"]

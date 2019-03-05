@@ -1,5 +1,5 @@
 # GraphQL Editor
-[![npm](https://img.shields.io/npm/v/graphql-editor.svg)](https://www.npmjs.com/package/graphql-editor)
+[![npm](https://img.shields.io/npm/v/graphql-editor.svg)](https://www.npmjs.com/package/graphql-editor) [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 ![GraphQLEditor Editor](assets/design_schema.gif)
 
 GraphQLEditor makes it easier to understand GrapHQL schemas. Create a schema by joining visual blocks. GraphQLEditor will transform them into code.

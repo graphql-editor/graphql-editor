@@ -27,7 +27,7 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: ['babel-loader', 'ts-loader']
+        use: 'awesome-typescript-loader?configFileName=./cloud/tsconfig.json'
       },
       { test: /\.(png|svg)$/, use: 'url-loader?limit=10000' },
       { test: /\.(jpg|gif)$/, use: 'file-loader' }

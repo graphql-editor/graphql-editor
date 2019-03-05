@@ -72,7 +72,6 @@ export type CloudState = {
     | 'loadURL'
     | 'fakerDeployed'
     | 'deleteProject';
-  code: string;
   category: 'my' | 'public' | 'examples' | 'new' | 'edit';
   removedProject?: State<Project>;
   editedProject?: State<Project>;
@@ -86,7 +85,10 @@ export type CloudState = {
   faker: FakerMirror;
   user?: State<User>;
 };
-let autosave: string = '';
+let autosave: {
+  schema: string;
+  projectId: string;
+};
 export type SerializedCloudState = Pick<
   CloudState,
   'cloud' | 'faker' | 'user' | 'token' | 'currentProject' | 'expire'
@@ -121,7 +123,6 @@ export class CloudContainer extends Container<CloudState> {
     loadingStack: [],
     errorStack: [],
     category: 'my',
-    code: '',
     popup: 'onBoarding'
   };
   constructor() {
@@ -139,7 +140,8 @@ export class CloudContainer extends Container<CloudState> {
     }
   };
   clearAutoSaveTrigger = () => {
-    this.plannedAutoSave && clearTimeout(this.plannedAutoSave);
+    this.lastAutoSave = moment.now();
+    if (this.plannedAutoSave) clearTimeout(this.plannedAutoSave);
   };
   canIEditCurrentProject = () => {
     if (this.state.currentProject && this.state.currentProject.cloud) {
@@ -165,19 +167,23 @@ export class CloudContainer extends Container<CloudState> {
     }
   };
   autoSaveFunction = async () => {
-    if (this.canIEditCurrentProject() && autosave) {
+    if (
+      this.canIEditCurrentProject() &&
+      autosave &&
+      autosave.projectId === this.state.currentProject.cloud.id
+    ) {
       this.plannedAutoSave = null;
       this.lastAutoSave = moment.now();
       return autoSaveProject(this)({
         project: this.state.currentProject.cloud,
         schemas: {
-          graphql: autosave
+          graphql: autosave.schema
         }
       });
     }
   };
   autoSaveTrigger = () => {
-    const DELTA_MAX = 30000;
+    const DELTA_MAX = 20000;
     const now = moment.now();
     const delta = now - this.lastAutoSave;
     console.log('AutosaveTrigger fired', delta);
@@ -192,7 +198,10 @@ export class CloudContainer extends Container<CloudState> {
   };
   autoSaveOnController = async (graphql: string) => {
     if (this.canIEditCurrentProject()) {
-      autosave = graphql;
+      autosave = {
+        schema: graphql,
+        projectId: this.state.currentProject.cloud.id
+      };
       this.autoSaveTrigger();
     }
   };
@@ -295,10 +304,16 @@ export class CloudContainer extends Container<CloudState> {
       });
   };
   loadProject = async (project: State<Project>) => {
-    return Promise.all([
-      this.forceAutoSaveFunction(this.state.currentProject.cloud, autosave),
-      this._loadProject(project)
-    ]);
+    if (this.state.currentProject) {
+      return Promise.all([
+        this.forceAutoSaveFunction(
+          this.state.currentProject.cloud,
+          this.controller!.generateFromAllParsingFunctions().graphql
+        ),
+        this._loadProject(project)
+      ]);
+    }
+    return this._loadProject(project);
   };
   loadExamples = loadExamples(this);
   loadFromURL = loadFromURL(this);
@@ -315,7 +330,7 @@ export class CloudContainer extends Container<CloudState> {
   createProject = async (project: State<Project>) => {
     const [p] = await Promise.all([
       createProject(this)(project.name, project.public),
-      this.forceAutoSaveFunction(this.state.currentProject.cloud, autosave)
+      this.forceAutoSaveFunction(this.state.currentProject.cloud)
     ]);
     const newProject = {
       ...project,
