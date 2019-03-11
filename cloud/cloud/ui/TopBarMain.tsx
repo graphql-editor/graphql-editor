@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { TopButton } from './TopButton';
 import { Subscribe } from 'unstated';
 import { Cloud } from '../Container';
 import { Analytics } from '../analytics';
 import { TopBarIcon } from './components/Icon';
 import { TopBarCustom } from './TopBarCustom';
+import { TopMenu } from './TopMenu';
 type MenuCategory = {
   active: boolean;
   click: () => void;
@@ -32,7 +32,7 @@ export class TopBarMain extends React.Component<TopBarMainProps> {
                     onClick={this.props.projects.click}
                   />
                   <TopBarIcon
-                    name="terminal"
+                    name="lC"
                     hint="code"
                     active={this.props.code.active}
                     onClick={this.props.code.click}
@@ -46,27 +46,18 @@ export class TopBarMain extends React.Component<TopBarMainProps> {
                   />
                 </>
               }
-              center={cloud.getCurrentProjectName()}
+              center={
+                <>
+                  <span>{cloud.getCurrentProjectName()}</span>
+                  <TopMenu />
+                </>
+              }
               right={
                 <>
                   {cloud.state.token ? (
-                    <>
-                      <TopBarIcon name="logout" hint="logout" right onClick={cloud.logout} />
-                      <TopBarIcon
-                        name="user"
-                        right
-                        hint="soon"
-                        onClick={() => {
-                          'A';
-                        }}
-                      />
-                    </>
+                    <TopBarIcon name="logout" hint="logout" right onClick={cloud.logout} />
                   ) : (
-                    <>
-                      <TopButton top variant={'Pink'} onClick={cloud.login}>
-                        Login
-                      </TopButton>
-                    </>
+                    <TopBarIcon right name="login" hint="Login" onClick={cloud.login} />
                   )}
                   {currentProject && currentProject.faker && (
                     <>

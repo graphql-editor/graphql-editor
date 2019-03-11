@@ -4,7 +4,8 @@ import { Calls } from './calls';
 
 export const createProject = (instance: typeof Cloud) => async (
   name: string,
-  is_public: boolean
+  is_public: boolean,
+  no_reset?: boolean
 ) => {
   const sm = 'Creating project...';
   Analytics.events.project({
@@ -28,6 +29,6 @@ export const createProject = (instance: typeof Cloud) => async (
   }));
   await instance.setCloud();
   await instance.deStack(sm);
-  instance.controller.resetGraph();
+  if (!no_reset) instance.controller.resetGraph();
   return project;
 };

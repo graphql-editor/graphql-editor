@@ -1,0 +1,20 @@
+\.icon-(.*):before {\n  content: "(.*)";\n}
+const defaulIcon = style({
+  fontFamily: "untitled-font-1",
+  fontStyle: "normal",
+  fontWeight: "normal",
+  fontVariant: "normal",
+  textTransform: "none",
+  lineHeight: 1,
+  "-webkit-font-smoothing": "antialiased",
+  "-moz-osx-font-smoothing": "grayscale"
+})
+
+
+export const $1 = classes(defaultIcon,style({
+    $nest:{
+        "&:before":{
+            content:`"\\$2"`
+        }
+    }
+}))

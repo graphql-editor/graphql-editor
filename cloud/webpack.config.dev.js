@@ -29,8 +29,8 @@ module.exports = {
         test: /\.tsx?$/,
         use: 'awesome-typescript-loader?configFileName=./cloud/tsconfig.json'
       },
-      { test: /\.(png|svg)$/, use: 'url-loader?limit=10000' },
-      { test: /\.(jpg|gif)$/, use: 'file-loader' }
+      { test: /\.(png|jpg)$/, use: 'url-loader?limit=10000' },
+      { test: /\.(jpg|gif|svg|ttf|woff|eot)$/, use: 'file-loader' }
     ]
   },
   plugins: [

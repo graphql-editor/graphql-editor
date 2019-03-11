@@ -101,12 +101,6 @@ export class ProjectsList extends React.Component {
                           category: 'edit'
                         });
                       }}
-                      onDelete={() =>
-                        cloud.setState({
-                          popup: 'deleteProject',
-                          removedProject: p
-                        })
-                      }
                       fakerProject={findFakerProject('projects', p.endpoint.uri)}
                     />
                   ))}

@@ -25,9 +25,9 @@ export const SearchGrid = style(
   {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr 1fr',
-    gridGap: 40,
+    gridGap: 20,
     gridTemplateRows: 'auto',
-    marginBottom: 40
+    marginBottom: 20
   },
   media({ maxWidth: 1300 }, { gridTemplateColumns: '1fr 1fr' }),
   media({ maxWidth: 900 }, { gridTemplateColumns: '1fr' }),
@@ -83,7 +83,7 @@ export const ProjectsGrid = style(
     display: 'grid',
     gridTemplateColumns: '1fr 1fr 1fr',
     gridTemplateRows: 'auto',
-    gridGap: 40
+    gridGap: 20
   },
   media({ maxWidth: 1300 }, { gridTemplateColumns: '1fr 1fr' }),
   media({ maxWidth: 900 }, { gridTemplateColumns: '1fr' }),

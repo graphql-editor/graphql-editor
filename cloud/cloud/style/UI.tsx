@@ -31,7 +31,7 @@ export const UI = style({
   height: '100vh',
 });
 export const TopBar = style({
-  background: Colors.main[9],
+  background: Colors.grey[9],
   display: 'flex',
   flexFlow: 'row nowrap',
   zIndex: 3,

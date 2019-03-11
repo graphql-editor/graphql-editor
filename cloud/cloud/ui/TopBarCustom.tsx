@@ -4,7 +4,7 @@ import * as styles from '../style/UI';
 export type TopBarCustomProps = {
   left?: React.ReactNode;
   right?: React.ReactNode;
-  center?: string;
+  center?: React.ReactNode;
 };
 export class TopBarCustom extends React.Component<TopBarCustomProps> {
   render() {

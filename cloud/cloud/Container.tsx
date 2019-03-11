@@ -18,6 +18,7 @@ import { autoSaveProject } from './funcs/autoSaveProject';
 import * as moment from 'moment';
 import { ProjectCalls } from './funcs/project/calls';
 import { createProject } from './funcs/createProject';
+import * as FileSaver from 'file-saver';
 const DEV_HOSTNAME = 'http://localhost:1569/';
 const PRODUCTION_HOSTNAME = 'https://nightly.graphqleditor.com/';
 
@@ -84,6 +85,7 @@ export type CloudState = {
   cloud: CloudMirror;
   faker: FakerMirror;
   user?: State<User>;
+  topMenuOpen?: 'open' | 'url';
 };
 let autosave: {
   schema: string;
@@ -165,6 +167,7 @@ export class CloudContainer extends Container<CloudState> {
         }
       });
     }
+    return;
   };
   autoSaveFunction = async () => {
     if (
@@ -265,6 +268,9 @@ export class CloudContainer extends Container<CloudState> {
   };
   onMount = async () => {
     await this.cloudToState();
+    if(!this.state.cloud.searchProjects){
+      await searchPublicProjects(this)('')
+    }
     if (!this.state.expire) {
       return this.setState({
         token: null
@@ -314,6 +320,17 @@ export class CloudContainer extends Container<CloudState> {
       ]);
     }
     return this._loadProject(project);
+  };
+  forkProject = async (project: State<Project>) => {
+    await this.loadProject(project);
+    const p = await createProject(this)(project.name, project.public, true);
+    const newProject = {
+      ...project,
+      ...p
+    };
+    await this.editProject(newProject);
+    this.moveToCurrentProject();
+    return this.saveProject();
   };
   loadExamples = loadExamples(this);
   loadFromURL = loadFromURL(this);
@@ -398,6 +415,32 @@ export class CloudContainer extends Container<CloudState> {
   };
   userApi = () => userApi(this.state.token);
   login = () => auth.authorize();
+  loadFromFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target!.files![0];
+    const reader = new FileReader();
+    console.log(file);
+    reader.onload = (f) => {
+      console.log((f.target! as any).result);
+      this.controller!.loadGraphQL((f.target! as any).result);
+    };
+    reader.readAsText(file);
+  };
+  saveToFile = () => {
+    const filename = `${this.getCurrentProjectName()!.replace('/', '--')}.gql`;
+    const schema = this.controller.generateFromAllParsingFunctions().graphql;
+    var file = new File([schema], filename, {
+      type: 'application/json'
+    });
+    FileSaver.saveAs(file, filename);
+  };
+  saveAutocompleteTypeScript = () => {
+    const filename = `${this.getCurrentProjectName()!.replace('/', '-')}.ts`;
+    const content = this.controller.getAutocompletelibrary();
+    var file = new File([content], filename, {
+      type: 'text/x.typescript'
+    });
+    FileSaver.saveAs(file, filename);
+  };
 }
 
 export const Cloud = new CloudContainer();

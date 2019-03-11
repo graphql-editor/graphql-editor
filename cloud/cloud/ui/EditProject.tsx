@@ -11,9 +11,6 @@ import { Label } from './components/Label';
 import { CreateButton } from './components/CreateButton';
 interface EditProjectState {
   project: State<Project>;
-  type: 'new' | 'url' | 'diagram';
-  url: string;
-  header: string;
 }
 interface EditProjectProps {
   project?: State<Project>;
@@ -34,9 +31,6 @@ export class EditProject extends React.Component<EditProjectProps, EditProjectSt
   constructor(props: EditProjectProps) {
     super(props);
     this.state = {
-      type: 'new',
-      url: '',
-      header: '',
       project: {
         id: null,
         public: true,
@@ -48,7 +42,7 @@ export class EditProject extends React.Component<EditProjectProps, EditProjectSt
     };
   }
   render() {
-    const { type, project } = this.state;
+    const {  project } = this.state;
     const editsProject = !!project.id;
     return (
       <Subscribe to={[Cloud]}>
@@ -82,51 +76,6 @@ export class EditProject extends React.Component<EditProjectProps, EditProjectSt
                   value={project.description}
                 />
               </div>
-              {!editsProject && (
-                <>
-                  <div className={styles.TypeLabel}>
-                    <Label name="Creation method" />
-                  </div>
-                  <div className={styles.Type}>
-                    <div className={pstyles.TabsGrid}>
-                      <a
-                        onClick={() => this.setState({ type: 'new' })}
-                        className={cx({ active: type === 'new' })}
-                      >
-                        new
-                      </a>
-                      <a
-                        onClick={() => this.setState({ type: 'url' })}
-                        className={cx({ active: type === 'url' })}
-                      >
-                        from URL
-                      </a>
-                      <a
-                        onClick={() => this.setState({ type: 'diagram' })}
-                        className={cx({ active: type === 'diagram' })}
-                      >
-                        current diagram
-                      </a>
-                    </div>
-                  </div>
-                </>
-              )}
-              {this.state.type === 'url' && (
-                <>
-                  <div className={styles.Url}>
-                    <Input
-                      placeholder="GraphQL endpoint URL"
-                      onChange={(url) => this.setState({ url })}
-                    />
-                  </div>
-                  <div className={styles.Header}>
-                    <Input
-                      placeholder="Additonal header"
-                      onChange={(header) => this.setState({ header })}
-                    />
-                  </div>
-                </>
-              )}
               <div className={styles.PublicLabel}>
                 <Label name="Project privacy settings" />
               </div>
@@ -154,7 +103,7 @@ export class EditProject extends React.Component<EditProjectProps, EditProjectSt
                       type="Delete"
                       name="delete"
                       icon={{
-                        name: 'delete'
+                        name: 'remove'
                       }}
                       onClick={() => {
                         cloud.setState({
@@ -165,9 +114,9 @@ export class EditProject extends React.Component<EditProjectProps, EditProjectSt
                     />
                     <ProjectTileButton
                       type="Edit"
-                      name="edit"
+                      name="save"
                       icon={{
-                        name: 'edit'
+                        name: 'save'
                       }}
                       onClick={() => {
                         return cloud.editProject(this.state.project).then(() =>
@@ -185,10 +134,6 @@ export class EditProject extends React.Component<EditProjectProps, EditProjectSt
                     <CreateButton
                       name="create +"
                       onClick={() => {
-                        if (this.state.type === 'url') {
-                          if (!this.state.url) return;
-                          cloud.loadFromURL(this.state.url, this.state.header);
-                        }
                         return cloud.createProject(this.state.project).then(() =>
                           cloud.setState({
                             visibleMenu: 'code'

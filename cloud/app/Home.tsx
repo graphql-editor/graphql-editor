@@ -114,7 +114,6 @@ export class Home extends React.Component<{}, HomeState> {
                     }}
                     editorVisible={cloud.state.visibleMenu === 'code'}
                   />
-                  )
                 </div>
               </UI>
               <Intercom appID="k0lckhv8" user_id={cloud.state.user && cloud.state.user.id} />

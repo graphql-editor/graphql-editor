@@ -10,10 +10,10 @@ export const findProjectByEndpoint = (instance: typeof Cloud) => async (endpoint
     label: endpoint
   });
   await instance.upStack(sm);
-  return Calls.findProjectByEndpoint(instance)(endpoint).then(async (project) => {
+  return Calls.findProjectByEndpoint(instance)(endpoint).then(async ([project]) => {
     await instance.deStack(sm);
     if (project) {
-      return loadProject(instance)(project[0]);
+      return loadProject(instance)(project);
     }
     await instance.upStack(`Check if you provided URL correctly`);
     await instance.errStack(`No such project: ${endpoint}`);

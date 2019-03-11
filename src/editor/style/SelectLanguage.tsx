@@ -51,7 +51,8 @@ export const Select = style({
   }
 });
 export const Bar = style({
-  background: Colors.grey[8],
+  background:'transparent',
+  position:'absolute',
   display: 'flex',
   flexFlow: 'row nowrap',
   alignItems: 'center',

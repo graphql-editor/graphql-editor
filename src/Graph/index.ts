@@ -24,7 +24,7 @@ export class GraphController {
     return this.nodes.length === 0;
   };
   resizeDiagram = () => {
-    this.diagram!.autoResize()
+    this.diagram!.autoResize();
   };
   setParsingFunction = (f: ParsingFunction) => {
     this.currentParsingFunction = f;
@@ -85,7 +85,7 @@ export class GraphController {
     return JSON.stringify(tree);
   };
   getSchemaFromURL = async (url: string, header?: string): Promise<void> => {
-    const headers:Record<string,string> = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json'
     };
     if (header) {
@@ -140,6 +140,8 @@ export class GraphController {
         }[this.currentParsingFunction]()
       );
   };
+  getAutocompletelibrary = () =>
+    TreeToTS.resolveTree(this.parser.parse(NodesToTree.parse(this.nodes, this.links)));
   loadDefinitions = () => {
     this.definitions = Definitions.generate();
     this.diagram!.setDefinitions(this.definitions);

@@ -51,19 +51,3 @@ export const YellowButton = classes(
     }
   })
 );
-export const FileButton = style({
-  position: 'relative',
-  overflow: 'hidden',
-  margin: 10,
-  cursor: 'pointer'
-});
-export const FileButtonLayer = style({
-  position: 'absolute',
-  top: 0,
-  right: 0,
-  margin: 0,
-  padding: 0,
-  fontSize: 20,
-  cursor: 'pointer',
-  opacity: 0
-});

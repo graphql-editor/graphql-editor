@@ -2,11 +2,10 @@ import { style, classes } from 'typestyle';
 import { Colors } from '../../../src';
 
 export const Tile = style({
-  height: 180,
   background: Colors.main[6],
   display: 'flex',
   color: Colors.grey[0],
-  flexFlow: 'column nowrap'
+  flexFlow: 'column nowrap',
 });
 
 export const Top = style({
@@ -15,7 +14,7 @@ export const Top = style({
   justifyContent: 'flex-start',
   alignItems: 'baseline',
   alignSelf: 'stretch',
-  padding: `10px 20px`
+  padding: `20px 40px`
 });
 export const Name = style({
   fontSize: 14,
@@ -29,7 +28,7 @@ export const Updated = style({
 export const Tags = style({
   display: 'flex',
   flexFlow: 'row wrap',
-  padding:`0 20px`,
+  padding:`0 40px`,
   $nest: {
     a: {
       padding: `5px 12px`,
@@ -58,14 +57,15 @@ export const Tags = style({
 });
 export const Description = style({
   fontSize:12,
-  padding:`10px 20px`,
+  maxHeight:70,
+  padding:`10px 40px`,
 }) 
 export const Actions = style({
   alignSelf: 'stretch',
   display: 'flex',
   flexFlow: 'row nowrap',
   justifyContent: 'flex-end',
-  marginTop: 'auto'
+  marginTop: 'auto',
 });
 export const NewTile = classes(
   Tile,

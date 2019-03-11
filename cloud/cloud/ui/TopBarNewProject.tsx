@@ -19,7 +19,7 @@ export class TopBarNewProject extends React.Component<TopBarNewProjectProps> {
                       category: 'my'
                     })
                   }
-                  name="back"
+                  name="arrowLeft"
                 />
               }
               center="Create new project +"

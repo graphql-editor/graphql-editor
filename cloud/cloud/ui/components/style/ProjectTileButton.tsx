@@ -15,6 +15,7 @@ export const Main = style({
   alignItems: 'center',
   flexFlow: 'row nowrap',
   cursor: 'pointer',
+  color:Colors.grey[0],
   $nest: {
     '&:hover': {
       background:Colors.main[8]
@@ -22,14 +23,10 @@ export const Main = style({
   }
 });
 export const Open = style({
-  background: Colors.main[5]
 });
 export const Fork = style({
-  background: Colors.main[7]
 });
 export const Delete = style({
-  background: Colors.main[3]
 });
 export const Edit = style({
-  background: Colors.main[4]
 });
