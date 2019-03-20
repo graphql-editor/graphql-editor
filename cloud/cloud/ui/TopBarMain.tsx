@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Subscribe } from 'unstated';
 import { Cloud } from '../Container';
 import { Analytics } from '../analytics';
-import { TopBarIcon } from './components/Icon';
+import { TopBarIcon } from './components';
 import { TopBarCustom } from './TopBarCustom';
 import { TopMenu } from './TopMenu';
 type MenuCategory = {
@@ -26,7 +26,7 @@ export class TopBarMain extends React.Component<TopBarMainProps> {
               left={
                 <>
                   <TopBarIcon
-                    name="burger"
+                    name="examples"
                     hint="projects"
                     active={this.props.projects.active}
                     onClick={this.props.projects.click}
@@ -37,7 +37,6 @@ export class TopBarMain extends React.Component<TopBarMainProps> {
                     active={this.props.code.active}
                     onClick={this.props.code.click}
                   />
-                  <TopBarIcon name="examples" hint="examples" onClick={this.props.examples.click} />
                   <TopBarIcon
                     blank
                     name="docs"

@@ -1,14 +1,11 @@
 import * as React from 'react';
 import { State, Project } from '../types/project';
-import * as styles from '../style/EditProject';
-import * as pstyles from '../style/Projects';
-import { Input } from './components/Input';
+import * as styles from './style/EditProject';
+import * as pstyles from './style/Projects';
 import * as cx from 'classnames';
-import { ProjectTileButton } from './components/ProjectTileButton';
 import { Subscribe } from 'unstated';
 import { Cloud } from '../Container';
-import { Label } from './components/Label';
-import { CreateButton } from './components/CreateButton';
+import { CreateButton, IconButton, Label, Input, HorizontalSpacer } from './components';
 interface EditProjectState {
   project: State<Project>;
 }
@@ -42,7 +39,7 @@ export class EditProject extends React.Component<EditProjectProps, EditProjectSt
     };
   }
   render() {
-    const {  project } = this.state;
+    const { project } = this.state;
     const editsProject = !!project.id;
     return (
       <Subscribe to={[Cloud]}>
@@ -99,25 +96,24 @@ export class EditProject extends React.Component<EditProjectProps, EditProjectSt
               <div className={styles.Actions}>
                 {editsProject && (
                   <>
-                    <ProjectTileButton
-                      type="Delete"
-                      name="delete"
-                      icon={{
-                        name: 'remove'
-                      }}
+                    <IconButton
+                      name="remove"
+                      type="Red"
+                      animation="Expand"
                       onClick={() => {
                         cloud.setState({
                           popup: 'deleteProject',
                           removedProject: this.state.project
                         });
                       }}
-                    />
-                    <ProjectTileButton
-                      type="Edit"
+                    >
+                      Delete
+                    </IconButton>
+                    <HorizontalSpacer width={10} />
+                    <IconButton
                       name="save"
-                      icon={{
-                        name: 'save'
-                      }}
+                      animation="Shrink"
+                      type="Green"
                       onClick={() => {
                         return cloud.editProject(this.state.project).then(() =>
                           cloud.setState({
@@ -126,7 +122,9 @@ export class EditProject extends React.Component<EditProjectProps, EditProjectSt
                           })
                         );
                       }}
-                    />
+                    >
+                      Save
+                    </IconButton>
                   </>
                 )}
                 {!editsProject && (

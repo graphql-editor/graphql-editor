@@ -2,8 +2,8 @@ import { style } from 'typestyle';
 import { Colors } from '../../../../../src';
 
 export const Input = style({
-  background: Colors.main[8],
-  color: Colors.main[0],
+  background: Colors.grey[8],
+  color: Colors.grey[0],
   padding: 15,
   fontSize:12,
   width:"100%",

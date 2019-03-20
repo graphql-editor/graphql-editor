@@ -1,6 +1,6 @@
 import * as React from 'react';
-import * as styles from '../style/Loading';
-import { TopButton } from './TopButton';
+import * as styles from './style/Loading';
+import { TopButton } from './components';
 export const Loading = ({
   text,
   errors,

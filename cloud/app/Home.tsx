@@ -2,7 +2,7 @@ import cx from 'classnames';
 import * as React from 'react';
 import { Subscribe } from 'unstated';
 import { Cloud } from '../cloud/Container';
-import * as styles from '../cloud/style/Home';
+import * as styles from './style/Home';
 import { UI } from '../cloud/ui/UI';
 import { Editor } from '../../src';
 import { Projects } from '../cloud/ui/Projects';

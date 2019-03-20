@@ -18,7 +18,7 @@ export const Main = style({
   color:Colors.grey[0],
   $nest: {
     '&:hover': {
-      background:Colors.main[8]
+      color:Colors.yellow[0]
     }
   }
 });

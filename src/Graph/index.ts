@@ -12,6 +12,7 @@ export class GraphController {
   private links: Link[] = [];
   private diagram?: Diagram;
   public definitions?: EditorNodeDefinition[];
+  public schema = '';
   private passSchema?: (schema: string) => void;
   private onSerialize?: (schema: string) => void;
   private parser = new Parser();
@@ -81,6 +82,7 @@ export class GraphController {
   };
   saveSerialized = () => {
     const graphql = NodesToTree.parse(this.nodes, this.links);
+    this.schema = graphql
     const tree = this.parser.parse(graphql);
     return JSON.stringify(tree);
   };
@@ -110,6 +112,7 @@ export class GraphController {
   setPassSchema = (fn: (schema: string) => void) => (this.passSchema = fn);
   generateFromAllParsingFunctions = () => {
     const graphql = NodesToTree.parse(this.nodes, this.links);
+    this.schema = graphql
     const tree = this.parser.parse(graphql);
     const faker = TreeToFaker.resolveTree(tree);
     const project = this.saveSerialized();
@@ -123,6 +126,7 @@ export class GraphController {
     this.nodes = nodes;
     this.links = links;
     const graphQLSchema = NodesToTree.parse(nodes, links);
+    this.schema = graphQLSchema
     try {
       parse(graphQLSchema);
     } catch (error) {

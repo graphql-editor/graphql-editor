@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as styles from '../style/UI';
+import * as styles from './style/UI';
 
 export type TopBarCustomProps = {
   left?: React.ReactNode;

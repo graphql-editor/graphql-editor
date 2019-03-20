@@ -34,8 +34,14 @@ const auth = new WebAuth({
   scope: 'openid profile'
 });
 
-const projectApiURL = `https://project-api.graphqleditor.com/graphql`;
-const fakerApiURL = `https://faker-api.graphqleditor.com/graphql`;
+const projectApiURL =
+  process.env.NODE_ENV === 'development'
+    ? `https://project-api-dev.graphqleditor.com/graphql`
+    : `https://project-api.graphqleditor.com/graphql`;
+const fakerApiURL =
+  process.env.NODE_ENV === 'development'
+    ? `https://faker-api-dev.graphqleditor.com/graphql`
+    : `https://faker-api.graphqleditor.com/graphql`;
 
 const prefix = (k: string) => `GraphQLEditor-${k}`;
 const ls = {
@@ -63,17 +69,14 @@ export type CloudState = {
   expire?: number;
   popup:
     | null
-    | 'createProject'
     | 'createUser'
-    | 'notYourProject'
-    | 'notYetProject'
-    | 'notYetDeploy'
     | 'loginToContinue'
     | 'onBoarding'
-    | 'loadURL'
     | 'fakerDeployed'
-    | 'deleteProject';
-  category: 'my' | 'public' | 'examples' | 'new' | 'edit';
+    | 'deleteProject'
+    | 'tutorial';
+  category: 'my' | 'public' | 'examples' | 'new' | 'edit' | 'newTeam' | 'editTeam';
+  code: string;
   removedProject?: State<Project>;
   editedProject?: State<Project>;
   pushHistory?: History['push'];
@@ -120,6 +123,7 @@ export class CloudContainer extends Container<CloudState> {
   plannedAutoSave?: number;
   state: CloudState = {
     visibleMenu: null,
+    code: '',
     cloud: {},
     faker: {},
     loadingStack: [],
@@ -200,6 +204,9 @@ export class CloudContainer extends Container<CloudState> {
     return this.autoSaveFunction();
   };
   autoSaveOnController = async (graphql: string) => {
+    await this.setState({
+      code: graphql
+    });
     if (this.canIEditCurrentProject()) {
       autosave = {
         schema: graphql,
@@ -268,8 +275,8 @@ export class CloudContainer extends Container<CloudState> {
   };
   onMount = async () => {
     await this.cloudToState();
-    if(!this.state.cloud.searchProjects){
-      await searchPublicProjects(this)('')
+    if (!this.state.cloud.searchProjects) {
+      await searchPublicProjects(this)('');
     }
     if (!this.state.expire) {
       return this.setState({
@@ -311,11 +318,10 @@ export class CloudContainer extends Container<CloudState> {
   };
   loadProject = async (project: State<Project>) => {
     if (this.state.currentProject) {
+      console.log('22ER TE FE');
+
       return Promise.all([
-        this.forceAutoSaveFunction(
-          this.state.currentProject.cloud,
-          this.controller!.generateFromAllParsingFunctions().graphql
-        ),
+        this.forceAutoSaveFunction(this.state.currentProject.cloud, this.controller!.schema),
         this._loadProject(project)
       ]);
     }

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as styles from '../style/TopMenu';
+import * as styles from './style/TopMenu';
 import { Subscribe } from 'unstated';
 import { Cloud } from '../Container';
 export interface TopMenuState {

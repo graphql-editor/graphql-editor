@@ -11,6 +11,12 @@ const defaulIcon = style({
 })
 
 
+regex search:
+
+\.icon-(.*):before {\n  content: "(.*)";\n}
+
+regex replace:
+
 export const $1 = classes(defaultIcon,style({
     $nest:{
         "&:before":{

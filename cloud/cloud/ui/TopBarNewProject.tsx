@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Subscribe } from 'unstated';
 import { Cloud } from '../Container';
-import { TopBarIcon } from './components/Icon';
+import { TopBarIcon } from './components';
 import { TopBarCustom } from './TopBarCustom';
 export type TopBarNewProjectProps = {
 };

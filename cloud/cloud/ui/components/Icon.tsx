@@ -6,6 +6,12 @@ export interface IconProps {
   name: keyof typeof Icons;
   style?: React.CSSProperties;
 }
+export interface IconButtonProps extends IconProps {
+  children: React.ReactNode;
+  type: keyof typeof styles.IconButtonVariants;
+  animation: keyof typeof styles.IconButtonHoverAnimations;
+  onClick?: (e: React.MouseEvent) => void;
+}
 export interface TopBarIconProps extends IconProps {
   onClick?: (e: React.MouseEvent) => void;
   href?: string;
@@ -16,6 +22,27 @@ export interface TopBarIconProps extends IconProps {
 }
 export const IconImage = ({ name, style = {} }: IconProps) => (
   <i style={style} className={Icons[name]} />
+);
+export const IconButton = ({
+  name,
+  children,
+  onClick,
+  type,
+  animation,
+  style = {}
+}: IconButtonProps) => (
+  <a
+    style={style}
+    onClick={onClick}
+    className={cx(
+      styles.IconButton,
+      styles.IconButtonVariants[type],
+      styles.IconButtonHoverAnimations[animation]
+    )}
+  >
+    <span>{children}</span>
+    <IconImage name={name} />
+  </a>
 );
 export const TopBarIcon = ({
   name,

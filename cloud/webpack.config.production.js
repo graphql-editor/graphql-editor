@@ -52,7 +52,11 @@ module.exports = {
       },
       { test: /\.html$/, use: 'html-loader' },
       { test: /\.(png|jpg)$/, use: 'url-loader?limit=10000' },
-      { test: /\.(jpg|gif|svg|ttf|woff|eot)$/, use: 'file-loader' }
+      { test: /\.(jpg|gif|svg|ttf|woff|eot)$/, use: 'file-loader' },
+      {
+        test: /\.gql$/i,
+        use: 'raw-loader',
+      }
     ]
   },
   optimization: {

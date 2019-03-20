@@ -51,3 +51,19 @@ export const YellowButton = classes(
     }
   })
 );
+export const GenerateButton = classes(
+  Button,
+  style({
+    color: Colors.grey[0],
+    border:0,
+    fontWeight: 'bold',
+    background: Colors.green[2],
+    $nest: {
+      '&:hover': {
+        background: Colors.green[0],
+        border:0,
+        color: Colors.grey[7]
+      }
+    }
+  })
+);

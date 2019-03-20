@@ -187,7 +187,7 @@ const traverseToSeekArrays = <T extends Record<any, any>>(a?: T) => {
 };
 
 const buildQuery = <T extends Record<any, any>>(a?: T) =>
-  traverseToSeekArrays(a).replace(/\"([^{^,^\n^\"]*)\":([^{^,^\n^\"]*)/g, '$1:$2');
+  traverseToSeekArrays(a).replace(/\\"([^{^,^\\n^\\"]*)\\":([^{^,^\\n^\\"]*)/g, '$1:$2');
 
 const construct = (t: 'query' | 'mutation' | 'subscription', name: string, args: Dict = {}) => (
   returnedQuery?: string

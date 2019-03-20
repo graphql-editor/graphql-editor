@@ -60,6 +60,7 @@
     "mini-css-extract-plugin": "^0.5.0",
     "mocha": "^6.0.2",
     "prettier": "^1.14.3",
+    "raw-loader": "^2.0.0",
     "react-hot-loader": "^4.3.11",
     "style-loader": "^0.23.1",
     "ts-jest": "^23.10.5",
