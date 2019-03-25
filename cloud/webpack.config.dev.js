@@ -13,10 +13,12 @@ module.exports = {
   output: {
     path: outPath,
     filename: 'bundle.js',
-    publicPath: '/'
+    publicPath: '/',
+    sourceMapFilename:'bundle.js.map'
   },
   target: 'web',
   mode: 'development',
+  devtool: 'cheap-module-inline-sourcemap',
   resolve: {
     extensions: ['.mjs', '.js', '.jsx', '.ts', '.tsx'],
     mainFields: ['module', 'browser', 'main'],
@@ -51,8 +53,8 @@ module.exports = {
       { test: /\.(jpg|gif|svg|ttf|woff|eot)$/, use: 'file-loader' },
       {
         test: /\.gql$/i,
-        use: 'raw-loader',
-      },
+        use: 'raw-loader'
+      }
     ]
   },
   plugins: [

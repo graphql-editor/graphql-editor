@@ -25,9 +25,9 @@ export class Parser {
     }
     const typeMap = this.schema!.getTypeMap();
     const operations = {
-      Query: this.schema.getQueryType(),
-      Mutation: this.schema.getMutationType(),
-      Subscription: this.schema.getSubscriptionType()
+      Query: this.schema!.getQueryType(),
+      Mutation: this.schema!.getMutationType(),
+      Subscription: this.schema!.getSubscriptionType()
     };
     if (!operations.Query) {
       console.warn('Query is required for schema to work. INVALID SCHEMA');

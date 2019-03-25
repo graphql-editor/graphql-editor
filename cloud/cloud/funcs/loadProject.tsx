@@ -10,14 +10,18 @@ export const loadProject = (instance: typeof Cloud) => async (p: State<Project>)
     action: 'load'
   });
   const [project, fakerProject] = await Calls.getProject(instance)(p);
-  if(!project){
-    instance.errStack(`Project does'nt exist or you don't have proper rights to view it`)
+  if (!project) {
+    instance.errStack(`Project does'nt exist or you don't have proper rights to view it`);
   }
   const { sources } = project.sources;
   if (sources.length > 0) {
     const projectURL = sources.find((s) => s.filename === 'schema.graphql').getUrl;
-    const project = await (await fetch(projectURL)).text();
-    instance.controller.loadGraphQL(project);
+    try {
+      const project = await (await fetch(projectURL)).text();
+      instance.controller.loadGraphQL(project);
+    } catch (error) {
+      instance.controller.resetGraph();
+    }
   } else {
     instance.controller.resetGraph();
   }
