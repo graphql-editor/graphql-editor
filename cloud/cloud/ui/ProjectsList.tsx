@@ -35,7 +35,7 @@ export class ProjectsList extends React.Component {
                       await cloud.setState({
                         category: 'public'
                       });
-                      cloud.searchPublicProjects(e);
+                      cloud.projects.searchPublicProjects(e);
                     }}
                     placeholder="Search projects..."
                   />

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Subscribe } from 'unstated';
 import { Cloud } from '../Container';
-import { ExampleOnPopup,Actions } from '../ui/components';
+import {  Actions, PopupButton } from '../ui/components';
 import { Lesson } from './Models';
 import { TutorialWidget } from './TutorialWidget';
 import { findBreakingChanges, buildASTSchema, parse, BreakingChange } from 'graphql';
@@ -22,7 +22,7 @@ export class TutorialsWidget extends React.Component<TutorialsProps, TutorialsSt
   componentDidMount() {}
   render() {
     const { lessons } = this.props;
-    const currentLesson = lessons[this.state.currentLesson]
+    const currentLesson = lessons[this.state.currentLesson];
     return (
       <Subscribe to={[Cloud]}>
         {(cloud: typeof Cloud) => {
@@ -34,15 +34,18 @@ export class TutorialsWidget extends React.Component<TutorialsProps, TutorialsSt
                 max={lessons.length}
               />
               <Actions>
-                <ExampleOnPopup
+                <PopupButton
                   name={`check`}
+                  type="Green"
+                  icon={{
+                    name: 'arrowRight'
+                  }}
                   onClick={() => {
                     const changes = findBreakingChanges(
                       buildASTSchema(parse(currentLesson.schema)),
                       buildASTSchema(parse(cloud.state.code))
                     );
                     if (changes.length > 0) {
-                      console.log(changes)
                       this.setState({
                         errors: changes
                       });
@@ -50,8 +53,12 @@ export class TutorialsWidget extends React.Component<TutorialsProps, TutorialsSt
                     }
                   }}
                 />
-                <ExampleOnPopup
+                <PopupButton
                   name={`skip`}
+                  type="Yellow"
+                  icon={{
+                    name: 'drink'
+                  }}
                   onClick={() => {
                     this.setState({
                       currentLesson: (this.state.currentLesson + 1) % lessons.length

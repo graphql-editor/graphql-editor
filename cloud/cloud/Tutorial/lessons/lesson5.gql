@@ -1,20 +1,12 @@
-enum AvatarColor {
-    red
-    blue
-    green
-    yellow
-}
-
 input CreatePerson {
-    firstName: String
-    lastName:String
+  firstName: String
+  lastName:String!
 }
 
 type Person {
-    id: ID!
-    firstName: String
-    lastName:String
-    avatarColor: AvatarColor!
+  id: ID!
+  firstName: String
+  lastName:String
 }
 
 type Query{
@@ -22,9 +14,16 @@ type Query{
 }
 
 type Mutation {
-    createPerson(person:CreatePerson!):Person!
-    updatePerson(id:String!, person:CreatePerson!):Person!
-    removePerson(id:String!):String
+  createPerson(
+    person:CreatePerson!
+  ):Person!
+  updatePerson(
+    id:String!,
+    person:CreatePerson!
+  ):Person!
+  removePerson(
+    id:String!
+  ):String
 }
 
 schema {

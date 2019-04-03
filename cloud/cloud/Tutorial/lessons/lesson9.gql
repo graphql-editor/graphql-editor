@@ -1,4 +1,52 @@
-type Person {
-    firstName: String
-    lastName:String
+enum AvatarColor {
+  red
+  blue
+  green
+  yellow
+}
+
+interface IntelligentForm {
+  friends: [UniverseCitizen!]
+}
+
+type Alien implements IntelligentForm {
+  id: ID!
+  planet: String!
+  exists: Boolean
+  eyes: Int
+  ears: Int
+  weight: Float
+  friends: [UniverseCitizen!]
+}
+
+input CreatePerson {
+  firstName: String
+  lastName: String!
+}
+
+type Person implements IntelligentForm {
+  id: ID!
+  firstName: String
+  lastName: String!
+  avatarColor: AvatarColor!
+  friends: [UniverseCitizen!]
+}
+
+union UniverseCitizen = Person | Alien
+
+type Query {
+  people: [Person!]
+  aliens: [Alien!]
+  citizens: [UniverseCitizen!]
+}
+
+type Mutation {
+  createPerson(person: CreatePerson!): Person!
+  updatePerson(id: String!, person: CreatePerson!): Person!
+  removePerson(id: String!): String
+}
+
+schema {
+  query: Query
+  mutation: Mutation
 }

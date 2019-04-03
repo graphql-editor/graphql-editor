@@ -107,7 +107,7 @@ export class TopMenu extends React.Component<{}, TopMenuState> {
                         className={styles.TopMenuItem}
                         onClick={async () => {
                           await cloud.setState({ topMenuOpen: null });
-                          cloud.loadFromURL(this.state.url, this.state.header);
+                          cloud.projects.loadFromURL(this.state.url, this.state.header);
                         }}
                       >
                         Load

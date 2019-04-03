@@ -62,7 +62,7 @@ export class Home extends React.Component<{}, HomeState> {
                           category: 'examples',
                           visibleMenu: cloud.state.visibleMenu === 'projects' ? null : 'projects'
                         }))
-                        .then(cloud.loadExamples)
+                        .then(cloud.projects.loadExamples)
                         .then(() => {
                           this.setState({
                             activeCategory: cloud.state.visibleMenu
@@ -75,7 +75,7 @@ export class Home extends React.Component<{}, HomeState> {
                         category: 'my',
                         visibleMenu: cloud.state.visibleMenu === 'projects' ? null : 'projects'
                       }))
-                      .then(cloud.loadExamples)
+                      .then(cloud.projects.loadExamples)
                       .then(() => {
                         this.setState({
                           activeCategory: cloud.state.visibleMenu
@@ -91,7 +91,7 @@ export class Home extends React.Component<{}, HomeState> {
                         visibleMenu: 'projects',
                         category: 'examples'
                       })
-                      .then(cloud.loadExamples)
+                      .then(cloud.projects.loadExamples)
                       .then(() => {
                         this.setState({
                           activeCategory: cloud.state.visibleMenu

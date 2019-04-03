@@ -1,7 +1,6 @@
 import { Cloud } from '../Container';
 import { Analytics } from '../analytics';
 import { Calls } from './calls';
-import { myTeams } from './myTeams';
 
 export const afterLogin = async (instance: typeof Cloud) => {
   if (!instance.state.token) {
@@ -57,5 +56,5 @@ export const afterLogin = async (instance: typeof Cloud) => {
         return instance.errStack(res.errors[0].message);
       }
     });
-  return myTeams(instance)();
+  return instance.teams.myTeams();
 };

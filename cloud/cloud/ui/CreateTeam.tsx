@@ -44,7 +44,7 @@ export class CreateTeam extends React.Component<CreateTeamProps, CreateTeamState
                   name="create +"
                   onClick={() => {
                     if (this.state.name) {
-                      cloud.createTeam(this.state.name, this.state.slug);
+                      cloud.teams.createTeam(this.state.name, this.state.slug);
                     }
                   }}
                 />

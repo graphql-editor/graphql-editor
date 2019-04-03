@@ -1,14 +1,7 @@
 export { afterLogin } from './afterLogin';
 export { autoSaveProject } from './autoSaveProject';
-export { createProject } from './createProject';
-export { createTeam } from './createTeam';
+export { Teams } from './Teams';
+export { Projects } from './Projects';
 export { createUser } from './createUser';
 export { fakerDeployProject } from './fakerDeploy';
-export { findProjectByEndpoint } from './findProjectByEndpoint';
-export { loadExamples } from './loadExamples';
-export { loadFromURL } from './loadFromURL';
-export { loadProject } from './loadProject';
-export { removeProject } from './removeProject';
 export { saveProjectTemplate } from './saveProject';
-export { searchPublicProjects } from './searchPublicProjects';
-export { searchPublicProjectsByTag } from './searchPublicProjectsByTag';

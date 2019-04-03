@@ -16,6 +16,7 @@ export class TutorialWidget extends React.Component<TutorialProps, TutorialState
   render() {
     const { name, description, schema, task } = this.props.lesson;
     const { number, max } = this.props;
+    const maxLines = Math.min(20, schema.split(/\r\n|\r|\n/).length);
     return (
       <>
         <h3> {`Lesson ${number + 1}/${max} - ${name}`}</h3>
@@ -25,11 +26,11 @@ export class TutorialWidget extends React.Component<TutorialProps, TutorialState
             ref={(ref) => {}}
             style={{
               background: 'transparent',
-              width: 300,
+              width: 500,
               overflowX: 'visible'
             }}
             mode={'graphqlschema'}
-            maxLines={schema.split(/\r\n|\r|\n/).length}
+            maxLines={maxLines}
             editorProps={{
               $blockScrolling: Infinity
             }}

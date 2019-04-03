@@ -1,12 +1,6 @@
-input CreatePerson {
-    firstName: String
-    lastName:String
-}
-
 type Person {
-    id: ID!
-    firstName: String
-    lastName:String
+  firstName: String
+  lastName:String!
 }
 
 type Query{
@@ -14,12 +8,12 @@ type Query{
 }
 
 type Mutation {
-    createPerson(person:CreatePerson!):Person!
-    updatePerson(id:String!, person:CreatePerson!):Person!
-    removePerson(id:String!):String
+  createPerson: (
+    firstName: String, 
+    lastName:String
+  ): Person!
 }
 
 schema {
   query: Query
-  mutation: Mutation
 }

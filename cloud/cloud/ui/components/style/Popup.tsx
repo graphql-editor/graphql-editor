@@ -1,5 +1,5 @@
 import { style, keyframes } from 'typestyle';
-import { vars, Colors } from '../../../../../src';
+import { vars, Colors, mix } from '../../../../../src';
 import { TOP_BAR_HEIGHT } from '../../../../constants';
 
 const fadeIn = keyframes({
@@ -10,7 +10,7 @@ const fadeIn = keyframes({
     opacity: 1.0
   }
 });
-
+export const DIALOG_WIDTH = 400;
 export const Dialog = style({
   position: 'fixed',
   top: TOP_BAR_HEIGHT,
@@ -18,14 +18,14 @@ export const Dialog = style({
   animationName: fadeIn,
   animationDuration: '0.5s',
   zIndex: 3,
-  background: Colors.main[8],
+  background: mix(Colors.grey[9],Colors.main[9]),
   color: Colors.grey[0],
   display: 'flex',
   flexFlow: 'column',
   justifyContent: 'flex-start',
   alignItems: 'flex-start',
   height: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
-  width: 400,
+  width: DIALOG_WIDTH,
   padding: `10px 20px`
 });
 
@@ -33,11 +33,11 @@ export const Close = style({
   alignSelf: 'flex-end',
   fontSize: 24,
   cursor: 'pointer',
-  color: Colors.main[2],
+  color: Colors.grey[0],
   transition: vars.transition,
   $nest: {
     '&:hover': {
-      color: Colors.main[0]
+      color: Colors.red[0]
     }
   }
 });
@@ -52,8 +52,8 @@ export const DialogContent = style({
   $nest: {
     p: {
       lineHeight: 1.5,
-      fontWeight: 300,
-      fontSize: 14,
+      fontWeight: 400,
+      fontSize: 12,
       margin: 0,
       marginBottom: 15
     },
@@ -105,10 +105,12 @@ export const DialogProjects = style({
   alignSelf: 'stretch'
 });
 export const DialogCode = style({
-  background:Colors.grey[9],
-  borderRadius:4,
-  boxShadow:`${Colors.grey[9]} 0 2px 4px`,
-  padding:20,
-  alignSelf:"stretch",
-  marginBottom:25
-})
+  background: Colors.grey[10],
+  borderRadius: 4,
+  boxShadow: `${Colors.grey[9]} 0 2px 4px`,
+  padding: 20,
+  alignSelf: 'stretch',
+  overflowX: 'hidden',
+  maxWidth: DIALOG_WIDTH-40,
+  marginBottom: 25
+});

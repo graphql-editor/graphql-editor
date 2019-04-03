@@ -6,7 +6,7 @@ export const Main = style({
     fontSize:12,
     fontWeight:600,
     color:Colors.grey[2],
-    background:Colors.main[6],
+    background:Colors.grey[8],
     cursor:'pointer',
     $nest:{
         "&:hover":{

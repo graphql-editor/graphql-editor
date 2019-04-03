@@ -1,14 +1,10 @@
 type Person {
-    firstName: String
-    lastName:String
+  firstName: String
+  lastName:String!
 }
 
 type Query{
   people: [Person!]
-}
-
-type Mutation {
-    createPerson: (firstName: String, lastName:String) => Person!
 }
 
 schema {

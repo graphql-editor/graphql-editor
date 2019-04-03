@@ -1,12 +1,4 @@
 type Person {
-    firstName: String
-    lastName:String
-}
-
-type Query{
-  people: [Person!]
-}
-
-schema {
-  query: Query
+  firstName: String
+  lastName:String!
 }

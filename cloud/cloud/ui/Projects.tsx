@@ -42,8 +42,8 @@ export const Projects = () => (
               All projects
             </a>
             <a
-              onClick={() => {
-                cloud.loadExamples();
+              onClick={async () => {
+                await cloud.projects.loadExamples();
                 cloud.setState((state) => ({
                   category: 'examples'
                 }));
@@ -54,8 +54,8 @@ export const Projects = () => (
             </a>
             <label className={styles.TeamLabel}>Teams</label>
             <a
-              onClick={() => {
-                cloud.loadExamples();
+              onClick={async () => {
+                await cloud.projects.loadExamples();
                 cloud.setState((state) => ({
                   category: 'newTeam'
                 }));
@@ -64,7 +64,7 @@ export const Projects = () => (
             >
               Create Team
             </a>
-            {cloud.state.teams.map((t) => (
+            {cloud.state.teams && cloud.state.teams.map((t) => (
               <label
                 onClick={() => {
                   cloud.setState({

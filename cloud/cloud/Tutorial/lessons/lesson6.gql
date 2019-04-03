@@ -1,43 +1,37 @@
 enum AvatarColor {
-    red
-    blue
-    green
-    yellow
-}
-
-type Alien {
-    id: ID!
-    planet: String!
-    exists: Boolean
-    eyes: Int
-    ears: Int
-    weight: Float
+  red
+  blue
+  green
+  yellow
 }
 
 input CreatePerson {
-    firstName: String
-    lastName: String
+  firstName: String
+  lastName:String!
 }
 
 type Person {
-    id: ID!
-    firstName: String
-    lastName: String
-    avatarColor: AvatarColor!
+  id: ID!
+  firstName: String
+  lastName:String!
+  avatarColor: AvatarColor!
 }
-
-union UniverseCitizen = Person | Alien
 
 type Query{
   people: [Person!]
-  aliens: [Alien!]
-  citizens: [UniverseCitizen!]
 }
 
 type Mutation {
-    createPerson(person:CreatePerson!):Person!
-    updatePerson(id:String!, person:CreatePerson!):Person!
-    removePerson(id:String!):String
+  createPerson(
+    person:CreatePerson!
+  ):Person!
+  updatePerson(
+    id:String!,
+    person:CreatePerson!
+  ):Person!
+  removePerson(
+    id:String!
+  ):String
 }
 
 schema {

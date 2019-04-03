@@ -5,17 +5,11 @@ import { WebAuth } from 'auth0-js';
 import {
   afterLogin,
   autoSaveProject,
-  createProject,
-  createTeam,
   createUser,
   fakerDeployProject,
-  findProjectByEndpoint,
-  loadExamples,
-  loadFromURL,
-  loadProject,
-  removeProject,
   saveProjectTemplate,
-  searchPublicProjects
+  Teams,
+  Projects
 } from './funcs';
 import { History, Location } from 'history';
 import { GraphController } from '../../src/Graph';
@@ -137,8 +131,12 @@ export class CloudContainer extends Container<CloudState> {
     category: 'my',
     popup: 'onBoarding'
   };
+  public teams: Teams;
+  public projects: Projects;
   constructor() {
     super();
+    this.teams = new Teams(this);
+    this.projects = new Projects(this);
     this.onMount().then(this.resolveProjectPath);
   }
   resolveProjectPath = () => {
@@ -284,7 +282,7 @@ export class CloudContainer extends Container<CloudState> {
   onMount = async () => {
     await this.cloudToState();
     if (!this.state.cloud.searchProjects) {
-      await searchPublicProjects(this)('');
+      await this.projects.searchPublicProjects('');
     }
     if (!this.state.expire) {
       return this.setState({
@@ -308,18 +306,19 @@ export class CloudContainer extends Container<CloudState> {
     this.state.pushHistory &&
     this.state.currentProject &&
     this.state.pushHistory(`/${this.state.currentProject.cloud.endpoint.uri}`);
-  removeProject = () => {
+  removeProject = async () => {
     this.clearAutoSaveTrigger();
-    return removeProject(this)
-      .then(this.setCloud)
-      .then(() => {
-        this.setState({ category: 'my' });
-      });
+    await this.projects.removeProject();
+    await this.setCloud();
+    return this.setState({
+      category: 'my'
+    });
   };
   canCreateProject = (name: string) =>
     !this.state.cloud.projects.find((p) => p.name.toLowerCase() === name.toLowerCase());
   _loadProject = (project: State<Project>) => {
-    return loadProject(this)(project)
+    return this.projects
+      .loadProject(project)
       .then(this.setCloud)
       .then(this.moveToCurrentProject)
       .then(() => {
@@ -341,7 +340,7 @@ export class CloudContainer extends Container<CloudState> {
   };
   forkProject = async (project: State<Project>) => {
     await this.loadProject(project);
-    const p = await createProject(this)(project.name, project.public, true);
+    const p = await this.projects.createProject(project.name, project.public, true);
     const newProject = {
       ...project,
       ...p
@@ -350,8 +349,6 @@ export class CloudContainer extends Container<CloudState> {
     this.moveToCurrentProject();
     return this.saveProject();
   };
-  loadExamples = loadExamples(this);
-  loadFromURL = loadFromURL(this);
   saveProject = () =>
     saveProjectTemplate(this)(userApi, {
       project: this.state.currentProject.cloud,
@@ -364,7 +361,7 @@ export class CloudContainer extends Container<CloudState> {
     });
   createTeamProject = async (project: State<Project>, team: State<Team>) => {
     const [p] = await Promise.all([
-      createProject(this)(project.name, project.public),
+      this.projects.createProject(project.name, project.public),
       this.forceAutoSaveFunction(this.state.currentProject.cloud)
     ]);
     const newProject = {
@@ -376,7 +373,7 @@ export class CloudContainer extends Container<CloudState> {
   };
   createProject = async (project: State<Project>) => {
     const [p] = await Promise.all([
-      createProject(this)(project.name, project.public),
+      this.projects.createProject(project.name, project.public),
       this.forceAutoSaveFunction(this.state.currentProject.cloud)
     ]);
     const newProject = {
@@ -400,14 +397,13 @@ export class CloudContainer extends Container<CloudState> {
       )
       .then(this.setCloud);
   };
-  searchPublicProjects = searchPublicProjects(this);
   getFakerURL = () =>
     this.state.currentProject && this.state.currentProject.faker
       ? `https://faker.graphqleditor.com/${this.state.currentProject.faker.endpoint.uri}/graphql`
       : null;
   afterLogin = () => afterLogin(this);
   findProjectByEndpoint = (endpoint: string) =>
-    findProjectByEndpoint(this)(endpoint)
+    this.projects.findProjectByEndpoint(endpoint)
       .then(this.setCloud)
       .then(this.moveToCurrentProject);
   setToken = () =>
@@ -470,15 +466,6 @@ export class CloudContainer extends Container<CloudState> {
       type: 'text/x.typescript'
     });
     FileSaver.saveAs(file, filename);
-  };
-  myTeams = () => {
-
-  }
-  createTeam = async (name: string, namespace: string) => {
-    await createTeam(this)(name, namespace);
-    await this.setState({
-      category: 'editTeam'
-    });
   };
 }
 
