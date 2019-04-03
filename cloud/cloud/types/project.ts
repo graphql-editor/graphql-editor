@@ -5,7 +5,8 @@ export type Query = {
 	getProject:(props:{	project:string}) => Project,
 	getTeam:(props:{	name:string}) => Team,
 	getUser:(props:{	username:string}) => User,
-	listProjects:(props:{	owned?:boolean,	last?:string,	limit?:number}) => ProjectConnection
+	listProjects:(props:{	last?:string,	limit?:number,	owned?:boolean}) => ProjectConnection,
+	myTeams:(props:{	last?:string,	limit?:number}) => TeamConnection
 }
 
 export type ProjectConnection = {
@@ -65,8 +66,8 @@ export type Team = {
 	id?:string,
 	member:(props:{	username:string}) => Member,
 	members:(props:{	last?:string,	limit?:number}) => MemberConnection,
-	name?:string,
-	namespace?:Namespace
+	name:string,
+	namespace:Namespace
 }
 
 export type Member = {
@@ -75,16 +76,21 @@ export type Member = {
 }
 
 export enum Role {
+	CONTRIBUTOR = "CONTRIBUTOR",
+	OWNER = "OWNER",
 	ADMIN = "ADMIN",
 	EDITOR = "EDITOR",
-	VIEWER = "VIEWER",
-	CONTRIBUTOR = "CONTRIBUTOR",
-	OWNER = "OWNER"
+	VIEWER = "VIEWER"
 }
 
 export type MemberConnection = {
 	members?:Member[],
 	pageInfo:PageInfo
+}
+
+export type TeamConnection = {
+	pageInfo:PageInfo,
+	teams?:Team[]
 }
 
 export type Mutation = {
@@ -120,17 +126,17 @@ export type ProjectOps = {
 }
 
 export type UpdateProject = {
-	public?:boolean,
 	project?:string,
 	description?:string,
-	tags?:string[]
+	tags?:string[],
+	public?:boolean
 }
 
 export type NewSource = {
+	contentLength?:number,
 	contentType?:string,
 	checksum?:string,
-	filename?:string,
-	contentLength?:number
+	filename?:string
 }
 
 export type SourceUploadInfo = {
@@ -342,7 +348,11 @@ export const Api = (...options: fetchOptions) => ({
 	listProjects: ((props) => (o) =>
   		fullConstruct(options)('query', 'listProjects')(props)(o).then(
   			(response) => response as GraphQLDictReturnType<Query['listProjects']>
-  		)) as FunctionToGraphQL<Query['listProjects']>},
+  		)) as FunctionToGraphQL<Query['listProjects']>,
+	myTeams: ((props) => (o) =>
+  		fullConstruct(options)('query', 'myTeams')(props)(o).then(
+  			(response) => response as GraphQLDictReturnType<Query['myTeams']>
+  		)) as FunctionToGraphQL<Query['myTeams']>},
 Mutation: {	createProject: ((props) => (o) =>
   		fullConstruct(options)('mutation', 'createProject')(props)(o).then(
   			(response) => response as GraphQLDictReturnType<Mutation['createProject']>

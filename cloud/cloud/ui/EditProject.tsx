@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { State, Project } from '../types/project';
+import { State, Project, Team } from '../types/project';
 import * as styles from './style/EditProject';
 import * as pstyles from './style/Projects';
 import * as cx from 'classnames';
@@ -11,6 +11,7 @@ interface EditProjectState {
 }
 interface EditProjectProps {
   project?: State<Project>;
+  team?: State<Team>
 }
 export class EditProject extends React.Component<EditProjectProps, EditProjectState> {
   state: EditProjectState;

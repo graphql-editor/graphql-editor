@@ -72,6 +72,7 @@
     "webpack-merge": "^4.1.5"
   },
   "dependencies": {
+    "@sindresorhus/slugify": "^0.9.0",
     "auth0-js": "^9.8.2",
     "auth0-lock": "^11.12.1",
     "classnames": "^2.2.5",

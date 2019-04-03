@@ -6,6 +6,7 @@ import { ProjectsList } from './ProjectsList';
 import { EditProject } from './EditProject';
 import * as cx from 'classnames';
 import { EditTeam } from './EditTeam';
+import { CreateTeam } from './CreateTeam';
 export const Projects = () => (
   <Subscribe to={[Cloud]}>
     {(cloud: typeof Cloud) => {
@@ -63,6 +64,20 @@ export const Projects = () => (
             >
               Create Team
             </a>
+            {cloud.state.teams.map((t) => (
+              <label
+                onClick={() => {
+                  cloud.setState({
+                    team: t,
+                    category: 'editTeam'
+                  });
+                }}
+                key={t.id}
+                className={styles.TeamLabel}
+              >
+                {t.name}
+              </label>
+            ))}
           </div>
           <div className={styles.Right}>
             <div className={styles.RightContainer}>
@@ -71,7 +86,8 @@ export const Projects = () => (
               )}
               {category === 'new' && <EditProject />}
               {category === 'edit' && <EditProject project={editedProject} />}
-              {category === 'newTeam' && <EditTeam />}
+              {category === 'newTeam' && <CreateTeam />}
+              {category === 'editTeam' && <EditTeam team={cloud.state.team} />}
             </div>
           </div>
         </div>

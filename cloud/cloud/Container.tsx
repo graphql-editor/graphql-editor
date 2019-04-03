@@ -1,23 +1,26 @@
 // faker.com
 import { Container } from 'unstated';
-import { User, Project, Api, Namespace, State } from './types/project';
+import { User, Project, Api, Namespace, State, Team } from './types/project';
 import { WebAuth } from 'auth0-js';
-import { saveProjectTemplate } from './funcs/saveProject';
-import { loadProject } from './funcs/loadProject';
-import { fakerDeployProject } from './funcs/fakerDeploy';
-import { loadExamples } from './funcs/loadExamples';
-import { searchPublicProjects } from './funcs/searchPublicProjects';
-import { removeProject } from './funcs/removeProject';
-import { loadFromURL } from './funcs/loadFromURL';
-import { createUser } from './funcs/createUser';
-import { afterLogin } from './funcs/afterLogin';
-import { findProjectByEndpoint } from './funcs/findProjectByEndpoint';
+import {
+  afterLogin,
+  autoSaveProject,
+  createProject,
+  createTeam,
+  createUser,
+  fakerDeployProject,
+  findProjectByEndpoint,
+  loadExamples,
+  loadFromURL,
+  loadProject,
+  removeProject,
+  saveProjectTemplate,
+  searchPublicProjects
+} from './funcs';
 import { History, Location } from 'history';
 import { GraphController } from '../../src/Graph';
-import { autoSaveProject } from './funcs/autoSaveProject';
 import * as moment from 'moment';
 import { ProjectCalls } from './funcs/project/calls';
-import { createProject } from './funcs/createProject';
 import * as FileSaver from 'file-saver';
 const DEV_HOSTNAME = 'http://localhost:1569/';
 const PRODUCTION_HOSTNAME = 'https://nightly.graphqleditor.com/';
@@ -57,6 +60,7 @@ type CloudMirror = {
   projects?: State<Project>[];
   searchProjects?: State<Project>[];
   exampleProjects?: State<Project>[];
+  teamProjects?: State<Project>[];
   user?: State<User>;
   namespace?: State<Namespace>;
 };
@@ -87,6 +91,8 @@ export type CloudState = {
   };
   cloud: CloudMirror;
   faker: FakerMirror;
+  teams?: State<Team>[];
+  team?: State<Team>;
   user?: State<User>;
   topMenuOpen?: 'open' | 'url';
 };
@@ -235,7 +241,8 @@ export class CloudContainer extends Container<CloudState> {
         user: this.state.user,
         token: this.state.token,
         currentProject: this.state.currentProject,
-        expire: this.state.expire
+        expire: this.state.expire,
+        teams: this.state.teams
       } as SerializedCloudState)
     );
   };
@@ -246,6 +253,7 @@ export class CloudContainer extends Container<CloudState> {
         cloud: {},
         faker: {},
         user: null,
+        team: null,
         token: null,
         autosavedSchema: null,
         currentProject: this.canIEditCurrentProject() ? null : this.state.currentProject,
@@ -302,7 +310,11 @@ export class CloudContainer extends Container<CloudState> {
     this.state.pushHistory(`/${this.state.currentProject.cloud.endpoint.uri}`);
   removeProject = () => {
     this.clearAutoSaveTrigger();
-    return removeProject(this).then(this.setCloud);
+    return removeProject(this)
+      .then(this.setCloud)
+      .then(() => {
+        this.setState({ category: 'my' });
+      });
   };
   canCreateProject = (name: string) =>
     !this.state.cloud.projects.find((p) => p.name.toLowerCase() === name.toLowerCase());
@@ -350,6 +362,18 @@ export class CloudContainer extends Container<CloudState> {
       project: this.state.currentProject.cloud,
       schemas: this.controller!.generateFromAllParsingFunctions()
     });
+  createTeamProject = async (project: State<Project>, team: State<Team>) => {
+    const [p] = await Promise.all([
+      createProject(this)(project.name, project.public),
+      this.forceAutoSaveFunction(this.state.currentProject.cloud)
+    ]);
+    const newProject = {
+      ...project,
+      ...p
+    };
+    await this.editProject(newProject);
+    return this.moveToCurrentProject();
+  };
   createProject = async (project: State<Project>) => {
     const [p] = await Promise.all([
       createProject(this)(project.name, project.public),
@@ -446,6 +470,15 @@ export class CloudContainer extends Container<CloudState> {
       type: 'text/x.typescript'
     });
     FileSaver.saveAs(file, filename);
+  };
+  myTeams = () => {
+
+  }
+  createTeam = async (name: string, namespace: string) => {
+    await createTeam(this)(name, namespace);
+    await this.setState({
+      category: 'editTeam'
+    });
   };
 }
 

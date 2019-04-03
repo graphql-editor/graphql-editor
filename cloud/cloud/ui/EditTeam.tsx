@@ -8,7 +8,7 @@ interface EditTeamState {
   team: State<Team>;
 }
 interface EditTeamProps {
-  team?: State<Team>;
+  team: State<Team>;
 }
 export class EditTeam extends React.Component<EditTeamProps, EditTeamState> {
   state: EditTeamState;
@@ -32,19 +32,13 @@ export class EditTeam extends React.Component<EditTeamProps, EditTeamState> {
   }
   render() {
     const { team } = this.state;
-    const editsTeam = !!team.id;
     return (
       <Subscribe to={[Cloud]}>
         {(cloud: typeof Cloud) => {
           return (
             <div className={styles.EditTeam}>
               <div className={styles.Name}>
-                <Label name="Team name" />
-                <Input
-                  value={team.name}
-                  placeholder="Name..."
-                  onChange={(e) => this.setTeam('name', e)}
-                />
+                <Label name={team.name!} />
               </div>
               <div className={styles.AddMembers}>
                 <Label name="Members" />
@@ -54,11 +48,9 @@ export class EditTeam extends React.Component<EditTeamProps, EditTeamState> {
                   onChange={(e) => this.setTeam('name', e)}
                 />
               </div>
-              {!editsTeam && (
-                <div className={styles.Actions}>
-                  <CreateButton name="create +" onClick={() => {}} />
-                </div>
-              )}
+              <div className={styles.Actions}>
+                <CreateButton name="Edit" onClick={() => {}} />
+              </div>
             </div>
           );
         }}

@@ -70,6 +70,15 @@ export class Calls {
       ProjectCalls.createProject(instance)(name, is_public),
       FakerCalls.createProject(instance)(name, is_public)
     ]);
+  static createTeamProject = (instance: typeof Cloud) => async (
+    id: string,
+    name: string,
+    is_public: boolean
+  ) =>
+    Promise.all([
+      ProjectCalls.createTeamProject(instance)(id, name, is_public),
+      FakerCalls.createProject(instance)(name, is_public)
+    ]);
 
   static getProject = (instance: typeof Cloud) => (project: State<Project>) =>
     Promise.all([

@@ -1,5 +1,5 @@
 import { Cloud, userApi } from '../../Container';
-import { State, Project } from '../../types/project';
+import { State, Project, Role } from '../../types/project';
 
 export class ProjectCalls {
   static findProjectByEndpoint = (instance: typeof Cloud) => async (endpoint: string) => {
@@ -115,5 +115,198 @@ export class ProjectCalls {
         ]
       }
     });
+  };
+  private static _teamOps = (instance: typeof Cloud) => async (id: string) => {
+    return userApi(instance.state.token).Mutation.team({
+      id
+    });
+  };
+  static myTeams = (instance: typeof Cloud) => async () => {
+    return userApi(instance.state.token).Query.myTeams()({
+      teams: {
+        name: true,
+        id: true,
+        namespace: {
+          slug: true
+        },
+        members: [
+          {},
+          {
+            members: {
+              role: true,
+              username: true
+            }
+          }
+        ]
+      }
+    });
+  };
+  static getTeam = (instance: typeof Cloud) => async (id: string) => {
+    const ops = await ProjectCalls._teamOps(instance)(id);
+    const response = await ops({
+      namespace: {
+        slug: true,
+        public: true,
+        projects: [
+          {},
+          {
+            projects: {
+              id: true,
+              public: true,
+              name: true,
+              description: true,
+              tags: true,
+              slug: true,
+              endpoint: {
+                uri: true
+              }
+            }
+          }
+        ]
+      }
+    });
+    return response.namespace;
+  };
+  static createTeamProject = (instance: typeof Cloud) => async (
+    id: string,
+    name: string,
+    is_public: boolean
+  ) => {
+    const ops = await ProjectCalls._teamOps(instance)(id);
+    const response = await ops({
+      createProject: [
+        { name, public: is_public },
+        {
+          id: true,
+          name: true,
+          public: true,
+          slug: true,
+          endpoint: { uri: true }
+        }
+      ]
+    });
+    return response.createProject;
+  };
+  static createTeam = (instance: typeof Cloud) => async (name: string, namespace: string) => {
+    return userApi(instance.state.token).Mutation.createTeam({
+      name,
+      namespace
+    })({
+      name: true,
+      namespace: {
+        slug: true
+      }
+    });
+  };
+  static addMember = (instance: typeof Cloud) => async (
+    id: string,
+    role: Role,
+    username: string
+  ) => {
+    const ops = await ProjectCalls._teamOps(instance)(id);
+    const response = await ops({
+      addMember: [
+        { role, username },
+        {
+          role: true,
+          username: true
+        }
+      ]
+    });
+    return response.addMember;
+  };
+  static members = (instance: typeof Cloud) => async (id: string) => {
+    const ops = await ProjectCalls._teamOps(instance)(id);
+    const response = await ops({
+      members: [
+        {},
+        {
+          members: {
+            username: true,
+            role: true
+          }
+        }
+      ]
+    });
+    return response.members;
+  };
+  static updateMember = (instance: typeof Cloud) => async (
+    id: string,
+    username: string,
+    role: Role
+  ) => {
+    const ops = await ProjectCalls._teamOps(instance)(id);
+    const response = await ops({
+      member: [
+        {
+          username
+        },
+        {
+          update: [
+            {
+              role
+            }
+          ]
+        }
+      ]
+    });
+    return response.member.update;
+  };
+  static deleteMember = (instance: typeof Cloud) => async (id: string, username: string) => {
+    const ops = await ProjectCalls._teamOps(instance)(id);
+    const response = await ops({
+      member: [
+        {
+          username
+        },
+        {
+          delete: true
+        }
+      ]
+    });
+    return response.member.delete;
+  };
+  static updateTeamProject = (instance: typeof Cloud) => async (
+    id: string,
+    project: State<Project>
+  ) => {
+    const ops = await ProjectCalls._teamOps(instance)(id);
+    const response = await ops({
+      project: [
+        {
+          id: project.id
+        },
+        {
+          update: [
+            {
+              in: {
+                description: project.description,
+                project: project.id,
+                public: project.public,
+                tags: project.tags
+              }
+            }
+          ]
+        }
+      ]
+    });
+    return response.project.update;
+  };
+  static deleteTeamProject = (instance: typeof Cloud) => async (
+    id: string,
+    project: State<Project>
+  ) => {
+    const ops = await ProjectCalls._teamOps(instance)(id);
+    const response = await ops({
+      project: [
+        {
+          id: project.id
+        },
+        {
+          delete: true
+        }
+      ]
+    });
+    return response.project.delete;
   };
 }
