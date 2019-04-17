@@ -38,6 +38,7 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
   public dragging = false;
   public startX?: number;
   public refSidebar?: HTMLDivElement;
+  public aceEditorRef?: AceEditor;
   public state: CodeEditorState = {
     loadingUrl: false,
     canMountAce: false
@@ -78,14 +79,18 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
               if (ref && !this.holder) {
                 this.holder = ref;
                 setTimeout(() => {
-                  (this.refs.editor as any).editor.resize();
+                  (this.aceEditorRef as any).editor.resize();
                 }, 1);
               }
             }}
           >
             {this.state.error && <div className={styles.ErrorLonger}>{this.state.error}</div>}
             <AceEditor
-              ref={'editor'}
+              ref={(ref) => {
+                if (ref) {
+                  this.aceEditorRef = ref;
+                }
+              }}
               mode={'graphqlschema'}
               annotations={this.state.errors}
               onChange={this.codeChange}
@@ -121,7 +126,7 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
             const deltaX = e.clientX - this.startX;
             this.width = this.startWidth + deltaX;
             this.refSidebar!.style.width = `${this.width}px`;
-            (this.refs.editor as any).editor.container.style.width = `${this.width}px`;
+            (this.aceEditorRef as any).editor.container.style.width = `${this.width}px`;
           }}
           onDragEnd={(e) => {
             this.dragging = false;
