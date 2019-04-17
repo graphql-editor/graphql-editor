@@ -1,7 +1,7 @@
 import { style } from 'typestyle';
 
-import { sizeSidebar } from '../../vars';
 import { Colors } from '../../Colors';
+import { sizeSidebar } from '../../vars';
 
 export const Sidebar = style({
   width: sizeSidebar,
@@ -21,18 +21,27 @@ export const CodeContainer = style({
   flexFlow: 'column'
 });
 export const Marker = style({
-  background:'red'
-})
+  background: 'red'
+});
 export const ErrorLonger = style({
-  position:'absolute',
-  background:Colors.red[0],
-  color:Colors.grey[0],
-  padding:10,
-  fontSize:10,
-  maxWidth:200,
-  margin:5,
-  borderRadius:5,
-  right:0,
-  letterSpacing:1,
-  zIndex:3
-})
+  position: 'absolute',
+  background: Colors.red[0],
+  color: Colors.grey[0],
+  padding: 10,
+  fontSize: 10,
+  maxWidth: 200,
+  margin: 5,
+  borderRadius: 5,
+  right: 0,
+  letterSpacing: 1,
+  zIndex: 3
+});
+
+export const Resizer = style({
+  width: 20,
+  marginLeft: -10,
+  alignSelf: 'stretch',
+  justifySelf: 'flex-end',
+  zIndex: 6,
+  cursor: 'ew-resize'
+});

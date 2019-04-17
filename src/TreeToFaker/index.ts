@@ -1,4 +1,4 @@
-import { ScalarTypes, ParserRoot, Options, ParserTree, ObjectTypes } from '../Models';
+import { ObjectTypes, Options, ParserRoot, ParserTree, ScalarTypes } from '../Models';
 
 export const fakerMap: Record<string, string> = {
   [ScalarTypes.String]: 'String',
@@ -15,7 +15,7 @@ export const arrayToDict = (a: any[]) =>
     };
     return a;
   }, {});
-export type FakerResolverReturn = {
+export interface FakerResolverReturn {
   type?: string;
   ref?: string;
   enum?: string[];
@@ -27,10 +27,10 @@ export type FakerResolverReturn = {
   array: boolean;
   required: boolean;
   arrayRequired: boolean;
-};
-export type FakerDict = {
+}
+export interface FakerDict {
   [x: string]: FakerResolverReturn;
-};
+}
 export const generateFakerResolverBase = (
   root: ParserRoot
 ): Record<string, FakerDict> | undefined => {
@@ -118,19 +118,6 @@ export class TreeToFaker {
       };
       return a;
     }, {});
-    //   const fakeOperationResolvers = [
-    //     nodeTypes.Query,
-    //     nodeTypes.Mutation,
-    //     nodeTypes.Subscription
-    //   ].reduce((a, b) => {
-    //     a[b] = {
-    //       type: 'type',
-    //       object: arrayToDict(
-    //         nodeInputs.filter((n) => n.node.type === b).map(generateFakerResolverOperation)
-    //       )
-    //     };
-    //     return a;
-    //   }, {});
     const fakeSchema = {
       ...fakeResolvers,
       ...fakeEnumResolvers,

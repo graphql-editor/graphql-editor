@@ -1,4 +1,4 @@
-import { NodeDefinition, AcceptedNodeDefinition } from 'graphsource';
+import { AcceptedNodeDefinition, NodeDefinition } from 'graphsource';
 
 export enum ScalarTypes {
   String = 'String',
@@ -25,17 +25,17 @@ export enum Operations {
 }
 
 export enum NodeData {
-  argument="argument",
-  field="field",
-  unionType="unionType",
-  implements="implements",
-  enumValue="enumValue",
-  defaultValue="defaultValue",
-  defaultEnumValue="defaultEnumValue"
+  argument= "argument",
+  field= "field",
+  unionType= "unionType",
+  implements= "implements",
+  enumValue= "enumValue",
+  defaultValue= "defaultValue",
+  defaultEnumValue= "defaultEnumValue"
 }
 
 export interface GraphQLNodeParams {
-  type?:NodeData
+  type?: NodeData;
 }
 
 export type EditorNodeDefinition = NodeDefinition<GraphQLNodeParams>;

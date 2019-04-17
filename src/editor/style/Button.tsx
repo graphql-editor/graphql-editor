@@ -1,4 +1,4 @@
-import { style, classes } from 'typestyle';
+import { classes, style } from 'typestyle';
 import { Colors } from '../../Colors';
 export const Button = style({
   fontSize: 12,
@@ -51,19 +51,19 @@ export const YellowButton = classes(
     }
   })
 );
-export const FileButton = style({
-  position: 'relative',
-  overflow: 'hidden',
-  margin: 10,
-  cursor: 'pointer'
-});
-export const FileButtonLayer = style({
-  position: 'absolute',
-  top: 0,
-  right: 0,
-  margin: 0,
-  padding: 0,
-  fontSize: 20,
-  cursor: 'pointer',
-  opacity: 0
-});
+export const GenerateButton = classes(
+  Button,
+  style({
+    color: Colors.grey[0],
+    border: 0,
+    fontWeight: 'bold',
+    background: Colors.green[2],
+    $nest: {
+      '&:hover': {
+        background: Colors.green[0],
+        border: 0,
+        color: Colors.grey[7]
+      }
+    }
+  })
+);

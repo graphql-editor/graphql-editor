@@ -1,4 +1,4 @@
-import { ParserRoot, ParserField, Options } from '../../Models';
+import { Options, ParserField, ParserRoot } from '../../Models';
 
 const isArray = (f: ParserField, type: string) =>
   f.type.options && f.type.options.find((o) => o === Options.array) ? `[${type}]` : type;
@@ -38,15 +38,22 @@ export const inputNodeTemplate = ({ name, description, type, args }: ParserField
 export const unionNodeTemplate = (
   { name, description }: Pick<ParserRoot, 'description' | 'name'>,
   types: string[]
-) => `${rootFieldTemplate({ name, description, type: { name: 'union' } })} = ${types.join(' | ')}`;
+) =>
+  `${rootFieldTemplate({ name, description, type: { name: 'union' } })}${
+    types && types.length ? `= ${types.join(' | ')}` : ``
+  }`;
 
 export const enumNodeTemplate = (
   { name, description }: Pick<ParserRoot, 'description' | 'name'>,
-  values: Pick<ParserRoot, 'description' | 'name'>[]
+  values: Array<Pick<ParserRoot, 'description' | 'name'>>
 ) =>
-  `${rootFieldTemplate({ name, description, type: { name: 'enum' } })} {\n${values
-    .map((v) => `${descriptionResolver(v.description, '\t')}\t${v.name}`)
-    .join(',\n')}\n}`;
+  `${rootFieldTemplate({ name, description, type: { name: 'enum' } })}${
+    values && values.length
+      ? `{\n${values
+          .map((v) => `${descriptionResolver(v.description, '\t')}\t${v.name}`)
+          .join(',\n')}\n}`
+      : ''
+  }`;
 export const scalarNodeTemplate = ({
   name,
   description
