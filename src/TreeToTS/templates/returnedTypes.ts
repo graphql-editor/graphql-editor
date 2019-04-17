@@ -1,4 +1,4 @@
-import { ParserField, Options, ParserRoot, ObjectTypes } from '../../Models';
+import { ObjectTypes, Options, ParserField, ParserRoot } from '../../Models';
 
 const typeScriptMap: Record<string, string> = {
   Int: 'number',

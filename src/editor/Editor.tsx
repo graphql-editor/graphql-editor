@@ -1,11 +1,13 @@
 import * as React from 'react';
-import { CodeEditor, CodeEditorOuterProps } from './Code';
-import { GraphController } from '../Graph';
 import { Colors } from '../Colors';
-export type EditorState = {
+import { GraphController } from '../Graph';
+import { CodeEditor, CodeEditorOuterProps } from './Code';
+import * as styles from './style/Editor';
+export interface EditorState {
   projectId?: string;
   code: string;
-};
+  errors: string;
+}
 export type EditorProps = {
   editorVisible: boolean;
   graphController?: (controller: GraphController) => void;
@@ -14,12 +16,16 @@ export type EditorProps = {
 export class Editor extends React.Component<EditorProps, EditorState> {
   state: EditorState = {
     projectId: undefined,
-    code: ''
+    code: '',
+    errors: ""
   };
-  private containerRef = React.createRef<HTMLDivElement>();
   controller: GraphController = new GraphController();
-  receiveSchema = (code:string) => {
-    this.setState({ code });
+  private containerRef = React.createRef<HTMLDivElement>();
+  receiveSchema = (code: string) => {
+    this.setState({ code, errors: "" });
+  }
+  receiveErrors = (errors: string) => {
+    this.setState({ errors });
   }
   componentDidMount() {
     if (!this.containerRef.current) {
@@ -27,7 +33,8 @@ export class Editor extends React.Component<EditorProps, EditorState> {
     }
     this.controller.setDOMElement(this.containerRef.current);
     this.controller.setPassSchema(this.receiveSchema);
-    this.props.graphController && this.props.graphController(this.controller);
+    this.controller.setPassDiagramErrors(this.receiveErrors);
+    if (this.props.graphController) { this.props.graphController(this.controller); }
   }
   componentDidUpdate(prevProps: EditorProps) {
     if (this.props.editorVisible !== prevProps.editorVisible) {
@@ -41,11 +48,11 @@ export class Editor extends React.Component<EditorProps, EditorState> {
           <CodeEditor
             controller={this.controller}
             schema={this.state.code}
-            schemaChanged={(e)=>{
+            schemaChanged={(e) => {
               this.setState({
-                code:e
-              })
-              this.props.schemaChanged && this.props.schemaChanged(e)
+                code: e
+              });
+              if (this.props.schemaChanged) { this.props.schemaChanged(e); }
             }}
           />
         )}
@@ -56,6 +63,7 @@ export class Editor extends React.Component<EditorProps, EditorState> {
           }}
           ref={this.containerRef}
         />
+        {this.state.errors && <div className={styles.ErrorContainer}>{this.state.errors}</div>}
         {this.controller &&
           this.controller.isEmpty() && (
             <div

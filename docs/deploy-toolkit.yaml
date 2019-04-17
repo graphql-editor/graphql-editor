@@ -1,5 +1,0 @@
-static:
-  path: ../docs-dist
-  host: docs.graphqleditor.com
-  cloudflare:
-    zone: graphqleditor.com

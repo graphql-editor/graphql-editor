@@ -7,7 +7,7 @@ export const Bar = style({
   flexFlow: 'row nowrap',
   alignItems: 'center',
   justifyContent: 'flex-end',
+  alignSelf: 'flex-end',
   zIndex: 4,
   padding: 10,
-  width: '100%'
 });

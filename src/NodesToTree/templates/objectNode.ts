@@ -1,4 +1,4 @@
-import { ParserRoot, ParserField, Options } from '../../Models';
+import { Options, ParserField, ParserRoot } from '../../Models';
 
 const isArray = (f: ParserField, type: string) =>
   f.type.options && f.type.options.find((o) => o === Options.array) ? `[${type}]` : type;
@@ -45,7 +45,7 @@ export const unionNodeTemplate = (
 
 export const enumNodeTemplate = (
   { name, description }: Pick<ParserRoot, 'description' | 'name'>,
-  values: Pick<ParserRoot, 'description' | 'name'>[]
+  values: Array<Pick<ParserRoot, 'description' | 'name'>>
 ) =>
   `${rootFieldTemplate({ name, description, type: { name: 'enum' } })}${
     values && values.length

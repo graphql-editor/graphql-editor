@@ -6,13 +6,13 @@ export const testSchema = `type Author{
 
 """Book the book """
 type Book{
-    
+
     """Identifies the book """
     id: ID
-    
+
     """Name of the book."""
     name: String!
-    
+
 	author: Author!
 }
 
@@ -43,15 +43,15 @@ type Query{
 
     """Identifies the description of the deployment."""
     listBooks:[Book!]!
-    
+
     """Identifies the description of the deployment."""
     listAuthors:[Author!]!
-    
+
     """Identifies the description of the deployment."""
 	getBook(
 		id: String
     ):Book!
-    
+
 	getAuthor(
 		id: String
 	):Author!

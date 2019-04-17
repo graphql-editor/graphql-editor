@@ -7,14 +7,14 @@ export const Button = ({
 }: {
   type: Exclude<keyof typeof styles, 'FileButton' | 'FileButtonLayer'>;
   children: React.ReactNode;
-  onClick: Function;
+  onClick: () => void;
 }) => (
-  <button
-    className={styles[type]}
-    onClick={() => {
-      onClick();
-    }}
-  >
-    {children}
-  </button>
-);
+    <button
+      className={styles[type]}
+      onClick={() => {
+        onClick();
+      }}
+    >
+      {children}
+    </button>
+  );

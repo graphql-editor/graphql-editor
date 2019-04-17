@@ -1,11 +1,11 @@
 import {
-  TypeDefinitionNode,
   FieldDefinitionNode,
   InputValueDefinitionNode,
+  TypeDefinitionNode,
   TypeNode,
   ValueNode
 } from 'graphql';
-import { ParserField, ScalarTypes, Options, ObjectTypes, NodeData } from '../Models';
+import { NodeData, ObjectTypes, Options, ParserField, ScalarTypes } from '../Models';
 
 export class TypeResolver {
   static resolveRootNode(n: TypeDefinitionNode['kind']): string {
@@ -21,7 +21,7 @@ export class TypeResolver {
   }
   static resolveSingleField(n: TypeNode, options: Options[] = []): ParserField['type'] {
     if (n.kind === 'ListType') {
-      let opts = [...options, Options.array];
+      const opts = [...options, Options.array];
       return {
         options: opts,
         ...TypeResolver.resolveSingleField(n.type, opts)
@@ -105,12 +105,12 @@ export class TypeResolver {
     );
   }
   static resolveInterfaces(n: TypeDefinitionNode) {
-    if (n.kind !== 'ObjectTypeDefinition' || !n.interfaces) return;
+    if (n.kind !== 'ObjectTypeDefinition' || !n.interfaces) { return; }
     return n.interfaces.map((i) => i.name.value);
   }
   static resolveFields(n: TypeDefinitionNode): ParserField[] | undefined {
     if (n.kind === 'EnumTypeDefinition') {
-      if (!n.values) return;
+      if (!n.values) { return; }
       return n.values.map(
         (v) =>
           ({
@@ -127,7 +127,7 @@ export class TypeResolver {
       return;
     }
     if (n.kind === 'UnionTypeDefinition') {
-      if (!n.types) return;
+      if (!n.types) { return; }
       return n.types.map(
         (t) =>
           ({
@@ -140,11 +140,11 @@ export class TypeResolver {
       );
     }
     if (n.kind === 'InputObjectTypeDefinition') {
-      if (!n.fields) return;
+      if (!n.fields) { return; }
       const fields = TypeResolver.iterateInputValueFields(n.fields);
       return fields;
     }
-    if (!n.fields) return;
+    if (!n.fields) { return; }
     const fields = TypeResolver.iterateObjectTypeFields(n.fields);
     return fields;
   }

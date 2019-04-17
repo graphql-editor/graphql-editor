@@ -1,7 +1,7 @@
 import { style } from 'typestyle';
 
-import { sizeSidebar } from '../../vars';
 import { Colors } from '../../Colors';
+import { sizeSidebar } from '../../vars';
 
 export const Sidebar = style({
   width: sizeSidebar,

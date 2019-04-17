@@ -1,12 +1,12 @@
-import { Node, Link } from 'graphsource';
+import { Link, Node } from 'graphsource';
+import { ObjectTypes, Operations, ParserField, ParserRoot } from '../Models';
 import {
-  scalarNodeTemplate,
   enumNodeTemplate,
-  unionNodeTemplate,
+  inputNodeTemplate,
+  scalarNodeTemplate,
   typeNodeTemplate,
-  inputNodeTemplate
+  unionNodeTemplate
 } from './templates/objectNode';
-import { ObjectTypes, ParserRoot, ParserField, Operations } from '../Models';
 
 export class NodesToTree {
   static resolveFieldNode = (i: Node): ParserField =>
@@ -18,9 +18,9 @@ export class NodesToTree {
       },
       description: i.description,
       args: i.inputs ? i.inputs.map(NodesToTree.resolveFieldNode) : undefined
-    } as ParserField);
+    } as ParserField)
   static resolveInputObjectNode = (n: Node) => {
-    let templateField: ParserField = {
+    const templateField: ParserField = {
       name: n.name,
       description: n.description,
       type: {
@@ -31,9 +31,9 @@ export class NodesToTree {
     return inputNodeTemplate({
       ...templateField
     });
-  };
+  }
   static resolveObjectNode = (n: Node) => {
-    let templateField: ParserRoot = {
+    const templateField: ParserRoot = {
       name: n.name,
       description: n.description,
       type: {
@@ -55,14 +55,14 @@ export class NodesToTree {
       return typeNodeTemplate(templateField);
     }
     return typeNodeTemplate(templateField);
-  };
+  }
   static parse(nodes: Node[], links: Link[]) {
     if (!nodes.length) {
       return '';
     }
     const objectNodes = nodes.filter((n) => n.definition.root);
     const joinDefinitions = (...defintions: string[]) => defintions.join('\n\n');
-    let operations: Record<Operations, string | null> = {
+    const operations: Record<Operations, string | null> = {
       [Operations.query]: null,
       [Operations.mutation]: null,
       [Operations.subscription]: null
@@ -73,12 +73,13 @@ export class NodesToTree {
         description,
         definition: { type }
       } = n;
-      if (type === ObjectTypes.scalar)
+      if (type === ObjectTypes.scalar) {
         return scalarNodeTemplate({
           name,
           description
         });
-      if (type === ObjectTypes.enum)
+      }
+      if (type === ObjectTypes.enum) {
         return enumNodeTemplate(
           {
             name,
@@ -94,7 +95,8 @@ export class NodesToTree {
               )
             : []
         );
-      if (type === ObjectTypes.union)
+      }
+      if (type === ObjectTypes.union) {
         return unionNodeTemplate(
           {
             name,
@@ -102,8 +104,9 @@ export class NodesToTree {
           },
           n.inputs ? n.inputs.map((i) => i.definition.type) : []
         );
-      if (type === ObjectTypes.input) return NodesToTree.resolveInputObjectNode(n);
-      if (type === ObjectTypes.interface) return NodesToTree.resolveObjectNode(n);
+      }
+      if (type === ObjectTypes.input) { return NodesToTree.resolveInputObjectNode(n); }
+      if (type === ObjectTypes.interface) { return NodesToTree.resolveObjectNode(n); }
       if (type === ObjectTypes.type) {
         if (n.options) {
           if (n.options.find((o) => o === Operations.query)) {

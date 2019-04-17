@@ -1,74 +1,75 @@
+import * as cx from 'classnames';
 import * as React from 'react';
 import * as styles from './style/Code';
-import cx from 'classnames';
 
-import { SelectLanguage } from './SelectLanguage';
+import { buildASTSchema, parse } from 'graphql';
 import AceEditor from 'react-ace';
 import { GraphController } from '../Graph';
-import { parse, buildASTSchema } from 'graphql';
 import { sizeSidebar } from '../vars';
+import { SelectLanguage } from './SelectLanguage';
 require(`brace/theme/twilight`);
 require(`brace/mode/typescript`);
 require(`brace/mode/graphqlschema`);
 require(`brace/mode/json`);
 require(`brace/ext/searchbox`);
-export type CodeEditorOuterProps = {
+export interface CodeEditorOuterProps {
   schemaChanged?: (schema: string) => void;
-};
+  readonly?: boolean;
+}
 
 export type CodeEditorProps = {
   schema: string;
   controller: GraphController;
 } & CodeEditorOuterProps;
-export type CodeEditorState = {
+export interface CodeEditorState {
   loadingUrl: boolean;
   canMountAce: boolean;
-  errors?: {
+  errors?: Array<{
     row: number;
     column: number;
     type: 'error';
     text: string;
     position: number;
-  }[];
+  }>;
   error?: string;
-};
+}
 
 export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState> {
-  dragging = false;
-  startX?: number;
-  refSidebar?: HTMLDivElement;
-  state: CodeEditorState = {
+  public dragging = false;
+  public startX?: number;
+  public refSidebar?: HTMLDivElement;
+  public state: CodeEditorState = {
     loadingUrl: false,
     canMountAce: false
   };
-  taskRunner?: number;
-  startWidth = sizeSidebar;
-  width = sizeSidebar;
-  lastSchema?: string;
-  holder?: HTMLDivElement;
-  editor?: AceEditor;
-  componentWillMount() {
+  public taskRunner?: number;
+  public startWidth = sizeSidebar;
+  public width = sizeSidebar;
+  public lastSchema?: string;
+  public holder?: HTMLDivElement;
+  public editor?: AceEditor;
+  public componentWillMount() {
     this.lastSchema = this.props.schema;
   }
-  componentWillReceiveProps(nextProps: CodeEditorProps) {
+  public componentWillReceiveProps(nextProps: CodeEditorProps) {
     if (nextProps.schema !== this.lastSchema) {
       this.lastSchema = nextProps.schema;
       this.forceUpdate();
     }
   }
-  render() {
+  public render() {
     return (
       <>
         <div
           className={cx(styles.Sidebar)}
           ref={(ref) => {
-            if (ref) this.refSidebar = ref;
+            if (ref) { this.refSidebar = ref; }
           }}
         >
           <SelectLanguage
-            onGenerate={() => {
-              this.lastSchema && this.props.controller.loadGraphQL(this.lastSchema);
-            }}
+            onGenerate={() =>
+              this.lastSchema && this.props.controller.loadGraphQL(this.lastSchema)
+            }
             generateVisible={!!this.lastSchema && !this.state.error && !this.state.errors}
           />
           <div
@@ -88,6 +89,7 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
               mode={'graphqlschema'}
               annotations={this.state.errors}
               onChange={this.codeChange}
+              readOnly={this.props.readonly}
               style={{
                 flex: 1,
                 height: 'auto'
@@ -146,8 +148,8 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
       };
     }
   ) => {
-    if (!this.lastSchema) {
-      this.props.schemaChanged && this.props.schemaChanged(e);
+    if (!this.lastSchema && this.props.schemaChanged) {
+      this.props.schemaChanged(e);
     }
     this.lastSchema = e;
     try {
@@ -166,11 +168,11 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
         });
       }
     } catch (error) {
-      let er = error as {
-        locations: {
+      const er = error as {
+        locations: Array<{
           line: number;
           column: number;
-        }[];
+        }>;
         message: string;
         positions: number[];
       };
@@ -186,5 +188,5 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
         ]
       });
     }
-  };
+  }
 }

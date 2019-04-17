@@ -1,6 +1,6 @@
-import { ParserRoot, ParserTree, ParserField, EditorNodeDefinition, NodeData } from '../Models';
-import { NodeUtils, Node, Link } from 'graphsource';
+import { Link, Node, NodeUtils } from 'graphsource';
 import { ScreenPosition } from 'graphsource/lib/IO/ScreenPosition';
+import { EditorNodeDefinition, NodeData, ParserField, ParserRoot, ParserTree } from '../Models';
 
 export class TreeToNodes {
   static resolveRootNodeDefintion(root: ParserRoot, nodeDefinitions: EditorNodeDefinition[]): void {

@@ -1,18 +1,12 @@
-import * as styles from './style/SelectLanguage';
 import * as React from 'react';
 import { Button } from './Button';
+import * as styles from './style/SelectLanguage';
 
-export type SelectLanguageProps = {
+export interface SelectLanguageProps {
   onGenerate: () => void;
   generateVisible?: boolean;
-};
-type SelectLanguageState = {
-};
-
-export class SelectLanguage extends React.Component<SelectLanguageProps, SelectLanguageState> {
-  state: SelectLanguageState = {
-    copied: false
-  };
+}
+export class SelectLanguage extends React.Component<SelectLanguageProps> {
   render() {
     const {
       onGenerate,

@@ -1,10 +1,10 @@
 import {
-  EditorNodeDefinition,
   AcceptedEditorNodeDefinition,
+  EditorNodeDefinition,
   GraphQLNodeParams,
+  NodeData,
   ObjectTypes,
-  Operations,
-  NodeData
+  Operations
 } from '../Models';
 
 import { NodeOption } from 'graphsource';
@@ -12,6 +12,7 @@ import { NodeOption } from 'graphsource';
 import { help } from './help';
 
 export class Definitions {
+  static counter = 0;
   static generate() {
     const createOND = (name: string): EditorNodeDefinition['node'] => ({
       name: `${name}Node`,
@@ -23,12 +24,14 @@ export class Definitions {
       definition: EditorNodeDefinition
     ): AcceptedEditorNodeDefinition => ({ definition });
     const getParents = (definitions: EditorNodeDefinition[][]): AcceptedEditorNodeDefinition[] =>
-      definitions.filter((a) => a.length).map((definitions) => ({
-        category: {
-          name: `${definitions[0].parent!.type} →`,
-          definitions: definitions.map(nodeDefinitionToAcceptedEditorNodeDefinition)
-        }
-      }));
+      definitions
+        .filter((a) => a.length)
+        .map((definitions) => ({
+          category: {
+            name: `${definitions[0].parent!.type} →`,
+            definitions: definitions.map(nodeDefinitionToAcceptedEditorNodeDefinition)
+          }
+        }));
     const DefinitionsByParent = (
       types: string[],
       dataFunction: (data?: GraphQLNodeParams) => boolean
@@ -120,7 +123,7 @@ export class Definitions {
       'Int',
       'Float',
       'Boolean'
-    ] as (keyof typeof help)[]).map(
+    ] as Array<keyof typeof help>).map(
       (name) =>
         ({
           node: { ...createOND(name), outputs: [] },
@@ -144,7 +147,7 @@ export class Definitions {
         ({
           ...sf,
           data: {
-            type:NodeData.argument
+            type: NodeData.argument
           },
           acceptsInputs: argumentInstance.acceptsInputs
         } as EditorNodeDefinition)
@@ -194,7 +197,7 @@ export class Definitions {
           )
         ),
       instances: [
-        //Field instance
+        // Field instance
         fieldInstance,
         // Union type instance
         {

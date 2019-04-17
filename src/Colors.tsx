@@ -30,32 +30,32 @@ export const Colors = {
   blue: ['#30C1FF', '#2BAEE5', '#269ACC', '#2287B3', '#1D7499', '#186080', '#134D66', '#0E3A4D']
 };
 
-type HexaDecimal = String;
+type HexaDecimal = string;
 
-const isHexa = (s: String): s is HexaDecimal => {
+const isHexa = (s: string): s is HexaDecimal => {
   return s.length === 6 || (s.length === 7 && s.slice(0, 1) === '#');
 };
 
-export const mix = function(c1: HexaDecimal, c2: HexaDecimal, weight: number = 50) {
-  const color_1 = c1.slice(1);
-  const color_2 = c2.slice(1);
-  if (!isHexa(color_1) || !isHexa(color_2)) {
+export const mix = (c1: HexaDecimal, c2: HexaDecimal, weight: number = 50) => {
+  const color1 = c1.slice(1);
+  const color2 = c2.slice(1);
+  if (!isHexa(color1) || !isHexa(color2)) {
     throw new Error('Pass Hexadecimal values only');
   }
-  function d2h(d:number) {
+  function d2h(d: number) {
     return d.toString(16);
   } // convert a decimal value to hex
-  function h2d(h:string) {
+  function h2d(h: string) {
     return parseInt(h, 16);
   } // convert a hex value to decimal
 
-  var color = '#';
-  for (var i = 0; i <= 5; i += 2) {
+  let color = '#';
+  for (let i = 0; i <= 5; i += 2) {
     // loop through each of the 3 hex pairs—red, green, and blue
-    var v1 = h2d(color_1.substr(i, 2)), // extract the current pairs
-      v2 = h2d(color_2.substr(i, 2)),
-      // combine the current pairs from each source color, according to the specified weight
-      val = d2h(Math.floor(v2 + (v1 - v2) * (weight / 100.0)));
+    const v1 = h2d(color1.substr(i, 2)); // extract the current pairs
+    const v2 = h2d(color2.substr(i, 2));
+    // combine the current pairs from each source color, according to the specified weight
+    let val = d2h(Math.floor(v2 + (v1 - v2) * (weight / 100.0)));
 
     while (val.length < 2) {
       val = '0' + val;
