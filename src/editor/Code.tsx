@@ -19,6 +19,7 @@ export interface CodeEditorOuterProps {
 
 export type CodeEditorProps = {
   schema: string;
+  stitches?: string;
   controller: GraphController;
 } & CodeEditorOuterProps;
 export interface CodeEditorState {
@@ -64,13 +65,13 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
         <div
           className={cx(styles.Sidebar)}
           ref={(ref) => {
-            if (ref) { this.refSidebar = ref; }
+            if (ref) {
+              this.refSidebar = ref;
+            }
           }}
         >
           <SelectLanguage
-            onGenerate={() =>
-              this.lastSchema && this.props.controller.loadGraphQL(this.lastSchema)
-            }
+            onGenerate={() => this.lastSchema && this.props.controller.loadGraphQL(this.lastSchema)}
             generateVisible={!!this.lastSchema && !this.state.error && !this.state.errors}
           />
           <div
@@ -157,8 +158,9 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
       this.props.schemaChanged(e);
     }
     this.lastSchema = e;
+    const combinedCode = (this.props.stitches || '') + e;
     try {
-      const parsed = parse(e);
+      const parsed = parse(combinedCode);
       try {
         buildASTSchema(parsed);
         if (this.state.errors || this.state.error) {

@@ -1,5 +1,6 @@
 import { buildASTSchema, buildClientSchema, introspectionQuery, parse, printSchema } from 'graphql';
-import { Diagram, Link, Node, Old, Serializer } from 'graphsource';
+import { Diagram, Link, Node, NodeUtils, Old, Serializer } from 'graphsource';
+import { TempSchema } from '../editor/TempSchema';
 import { EditorNodeDefinition, ParserTree } from '../Models';
 import { NodesToTree } from '../NodesToTree';
 import { Parser } from '../Parser';
@@ -9,11 +10,13 @@ import { TreeToTS } from '../TreeToTS';
 import { Definitions } from './definitions';
 export class GraphController {
   public definitions?: EditorNodeDefinition[];
+  public stitchDefinitions: EditorNodeDefinition[] = [];
   public schema = '';
+  public stichesCode = '';
   private nodes: Node[] = [];
   private links: Link[] = [];
   private diagram?: Diagram;
-  private passSchema?: (schema: string) => void;
+  private passSchema?: (schema: string, stitches?: string) => void;
   private passDiagramErrors?: (errors: string) => void;
   private onSerialize?: (schema: string) => void;
   private parser = new Parser();
@@ -50,7 +53,7 @@ export class GraphController {
       links
     });
     if (this.passSchema) {
-      this.passSchema('');
+      this.passSchema('', this.stichesCode);
     }
   }
   loadGraphQL = (schema: string) => {
@@ -59,7 +62,20 @@ export class GraphController {
       this.resetGraph();
       return;
     }
-    const result = TreeToNodes.resolveTree(this.parser.parse(schema), this.definitions!);
+
+    const stitchNodes = TreeToNodes.resolveTree(
+      this.parser.parse(this.stichesCode),
+      this.definitions!
+    );
+
+    const result = TreeToNodes.resolveTree(
+      this.parser.parse(
+        schema + this.stichesCode,
+        stitchNodes.nodes.filter((n) => n.definition.root).map((n) => n.name)
+      ),
+      this.definitions!
+    );
+
     this.load(result.nodes, result.links);
   }
   loadOldFormat = (serializedDiagram: string) => {
@@ -101,7 +117,7 @@ export class GraphController {
     const c = buildClientSchema(data);
     this.loadGraphQL(printSchema(c));
   }
-  setPassSchema = (fn: (schema: string) => void) => (this.passSchema = fn);
+  setPassSchema = (fn: (schema: string, stitches?: string) => void) => (this.passSchema = fn);
   setPassDiagramErrors = (fn: (errors: string) => void) => (this.passDiagramErrors = fn);
   generateFromAllParsingFunctions = () => {
     const graphql = NodesToTree.parse(this.nodes, this.links);
@@ -120,13 +136,13 @@ export class GraphController {
     this.links = links;
     const graphQLSchema = NodesToTree.parse(nodes, links);
     try {
-      buildASTSchema(parse(graphQLSchema));
+      buildASTSchema(parse(graphQLSchema + this.stichesCode));
       this.schema = graphQLSchema;
       if (this.onSerialize) {
         this.onSerialize(graphQLSchema);
       }
       if (this.passSchema) {
-        this.passSchema(graphQLSchema);
+        this.passSchema(graphQLSchema, this.stichesCode);
       }
     } catch (error) {
       if (this.passDiagramErrors) {
@@ -134,6 +150,19 @@ export class GraphController {
       }
       return;
     }
+  }
+  loadStitches = (schema: string = TempSchema) => {
+    this.stichesCode = schema;
+    const result = TreeToNodes.resolveTree(this.parser.parse(schema), Definitions.generate());
+    this.stitchDefinitions = result.nodes
+      .filter((n) => n.definition.root)
+      .map((n) =>
+        NodeUtils.createObjectDefinition(
+          this.definitions!.find((d) => d.type === n.definition.type)!,
+          n.name
+        )
+      )
+      .reduce((a, b) => [...a!, ...b!]);
   }
   getAutocompletelibrary = () =>
     TreeToTS.resolveTree(this.parser.parse(NodesToTree.parse(this.nodes, this.links)))
