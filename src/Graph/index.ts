@@ -62,11 +62,16 @@ export class GraphController {
       this.resetGraph();
       return;
     }
-
-    const stitchNodes = TreeToNodes.resolveTree(
-      this.parser.parse(this.stichesCode),
-      this.definitions!
-    );
+    let stitchNodes: {
+      nodes: Node[];
+      links: Link[];
+    } = {
+      nodes: [],
+      links: []
+    };
+    if (this.stichesCode) {
+      stitchNodes = TreeToNodes.resolveTree(this.parser.parse(this.stichesCode), this.definitions!);
+    }
 
     const result = TreeToNodes.resolveTree(
       this.parser.parse(
