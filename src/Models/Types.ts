@@ -1,22 +1,12 @@
 import { AcceptedNodeDefinition, NodeDefinition } from 'graphsource';
-
-export enum ScalarTypes {
-  String = 'String',
-  Boolean = 'Boolean',
-  ID = 'ID',
-  Int = 'Int',
-  Float = 'Float',
-  EnumValue = 'EnumValue',
-  DefaultValue = 'DefaultValue'
-}
-export enum ObjectTypes {
-  type = 'type',
-  interface = 'interface',
-  input = 'input',
-  enum = 'enum',
-  union = 'union',
-  scalar = 'scalar'
-}
+import {
+  ScalarTypes,
+  Type,
+  TypeDefinition,
+  TypeSystemDefinition,
+  Value,
+  ValueDefinition
+} from './Spec';
 
 export enum Operations {
   query = 'query',
@@ -25,17 +15,50 @@ export enum Operations {
 }
 
 export enum NodeData {
-  argument= "argument",
-  field= "field",
-  unionType= "unionType",
-  implements= "implements",
-  enumValue= "enumValue",
-  defaultValue= "defaultValue",
-  defaultEnumValue= "defaultEnumValue"
+  argumentForDirective = 'argumentForDirective',
+  directiveInputArgument = 'directiveInputArgument',
+  directiveInputField = 'directiveInputField',
+  directiveScalarArgument = 'directiveScalarArgument',
+  directiveScalarField = 'directiveScalarField',
+  unionType = 'unionType',
+  implements = 'implements',
+  enumValue = 'enumValue',
+  defaultValue = 'defaultValue',
+  defaultEnumValue = 'defaultEnumValue',
+  directives = 'directives'
 }
 
+export enum Directive {
+  SCHEMA = 'SCHEMA',
+  SCALAR = 'SCALAR',
+  OBJECT = 'OBJECT',
+  FIELD_DEFINITION = 'FIELD_DEFINITION',
+  ARGUMENT_DEFINITION = 'ARGUMENT_DEFINITION',
+  INTERFACE = 'INTERFACE',
+  UNION = 'UNION',
+  ENUM = 'ENUM',
+  ENUM_VALUE = 'ENUM_VALUE',
+  INPUT_OBJECT = 'INPUT_OBJECT',
+  INPUT_FIELD_DEFINITION = 'INPUT_FIELD_DEFINITION'
+}
+
+export enum BuiltInDirectives {
+  skip = 'skip',
+  include = 'include',
+  deprecated = 'deprecated'
+}
+export type AllTypes =
+  | ScalarTypes
+  | NodeData
+  | Value
+  | ValueDefinition
+  | TypeDefinition
+  | TypeSystemDefinition
+  | Type;
+
 export interface GraphQLNodeParams {
-  type?: NodeData;
+  type?: AllTypes;
+  for?: AllTypes[];
 }
 
 export type EditorNodeDefinition = NodeDefinition<GraphQLNodeParams>;

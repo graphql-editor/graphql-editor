@@ -1,6 +1,8 @@
 import { Link, Node } from 'graphsource';
-import { ObjectTypes, Operations, ParserField, ParserRoot } from '../Models';
+import { Directive, NodeData, Operations, ParserField, ParserRoot } from '../Models';
+import { TypeDefinition, TypeSystemDefinition } from '../Models/Spec';
 import {
+  directiveNodeTemplate,
   enumNodeTemplate,
   inputNodeTemplate,
   scalarNodeTemplate,
@@ -19,6 +21,20 @@ export class NodesToTree {
       description: i.description,
       args: i.inputs ? i.inputs.map(NodesToTree.resolveFieldNode) : undefined
     } as ParserField)
+  static resolveDirectiveObjectNode = (n: Node) => {
+    const templateField: ParserRoot = {
+      name: n.name,
+      description: n.description,
+      type: {
+        name: n.definition.type,
+        directiveOptions: n.options as Directive[]
+      },
+      fields: n.inputs ? n.inputs.map(NodesToTree.resolveFieldNode) : undefined
+    };
+    return directiveNodeTemplate({
+      ...templateField
+    });
+  }
   static resolveInputObjectNode = (n: Node) => {
     const templateField: ParserField = {
       name: n.name,
@@ -39,18 +55,27 @@ export class NodesToTree {
       type: {
         name: n.definition.type
       },
+      directives: n.inputs
+        ? n.inputs
+            .filter((i) => i.definition.type === NodeData.directives)
+            .map((i) => i.inputs || [])
+            .reduce((a, b) => a.concat(b), [])
+            .map(NodesToTree.resolveFieldNode)
+        : undefined,
       interfaces: n.inputs
         ? n.inputs
-            .filter((i) => i.definition.type === 'implements')
+            .filter((i) => i.definition.type === NodeData.implements)
             .map((i) => (i.inputs ? i.inputs.map((n) => n.definition.type) : []))
             .reduce((a, b) => a.concat(b), [])
         : undefined,
       fields: n.inputs
         ? n.inputs
-            .filter((i) => i.definition.type !== 'implements')
+            .filter((i) => i.definition.type !== NodeData.implements)
+            .filter((i) => i.definition.type !== NodeData.directives)
             .map(NodesToTree.resolveFieldNode)
         : undefined
     };
+    console.log(templateField);
     if (!n.inputs) {
       return typeNodeTemplate(templateField);
     }
@@ -73,13 +98,16 @@ export class NodesToTree {
         description,
         definition: { type }
       } = n;
-      if (type === ObjectTypes.scalar) {
+      if (type === TypeSystemDefinition.DirectiveDefinition) {
+        return NodesToTree.resolveDirectiveObjectNode(n);
+      }
+      if (type === TypeDefinition.ScalarTypeDefinition) {
         return scalarNodeTemplate({
           name,
           description
         });
       }
-      if (type === ObjectTypes.enum) {
+      if (type === TypeDefinition.EnumTypeDefinition) {
         return enumNodeTemplate(
           {
             name,
@@ -96,7 +124,7 @@ export class NodesToTree {
             : []
         );
       }
-      if (type === ObjectTypes.union) {
+      if (type === TypeDefinition.UnionTypeDefinition) {
         return unionNodeTemplate(
           {
             name,
@@ -105,9 +133,13 @@ export class NodesToTree {
           n.inputs ? n.inputs.map((i) => i.definition.type) : []
         );
       }
-      if (type === ObjectTypes.input) { return NodesToTree.resolveInputObjectNode(n); }
-      if (type === ObjectTypes.interface) { return NodesToTree.resolveObjectNode(n); }
-      if (type === ObjectTypes.type) {
+      if (type === TypeDefinition.InputObjectTypeDefinition) {
+        return NodesToTree.resolveInputObjectNode(n);
+      }
+      if (type === TypeDefinition.InterfaceTypeDefinition) {
+        return NodesToTree.resolveObjectNode(n);
+      }
+      if (type === TypeDefinition.ObjectTypeDefinition) {
         if (n.options) {
           if (n.options.find((o) => o === Operations.query)) {
             operations[Operations.query] = name;
@@ -127,7 +159,6 @@ export class NodesToTree {
       .filter((k) => operations[k as Operations])
       .map((k) => `\t${k}: ${operations[k as Operations]}`)
       .join(',\n');
-
     return joinDefinitions(...definitions)
       .concat('\n')
       .concat(

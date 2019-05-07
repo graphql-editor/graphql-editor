@@ -1,16 +1,24 @@
 import {
   AcceptedEditorNodeDefinition,
+  AllTypes,
+  Directive,
   EditorNodeDefinition,
   GraphQLNodeParams,
   NodeData,
-  ObjectTypes,
   Operations
 } from '../Models';
 
-import { NodeOption } from 'graphsource';
+import { Node, NodeOption } from 'graphsource';
 
+import {
+  ScalarTypes,
+  Type,
+  TypeDefinition,
+  TypeSystemDefinition,
+  Value,
+  ValueDefinition
+} from '../Models/Spec';
 import { help } from './help';
-
 export class Definitions {
   static counter = 0;
   static generate() {
@@ -23,6 +31,12 @@ export class Definitions {
     const nodeDefinitionToAcceptedEditorNodeDefinition = (
       definition: EditorNodeDefinition
     ): AcceptedEditorNodeDefinition => ({ definition });
+
+    const dataForTypes = (defs: EditorNodeDefinition[], types: AllTypes[]) =>
+      defs
+        .filter((d) => d.data && d.data.for && types.find((t) => d.data!.for!.includes(t)))
+        .map((definition) => ({ definition }));
+
     const getParents = (definitions: EditorNodeDefinition[][]): AcceptedEditorNodeDefinition[] =>
       definitions
         .filter((a) => a.length)
@@ -42,22 +56,41 @@ export class Definitions {
         )
       );
     const fieldDefinitionsByParent = (types: string[]) =>
-      DefinitionsByParent(types, (d) => !!(d && d.type === NodeData.field));
+      DefinitionsByParent(types, (d) => !!(d && d.type === Type.NamedType));
     const argumentDefinitionsByParent = (types: string[]) =>
-      DefinitionsByParent(types, (d) => !!(d && d.type === NodeData.argument));
+      DefinitionsByParent(types, (d) => !!(d && d.type === ValueDefinition.InputValueDefinition));
+    const directiveInputFieldDefinitionsByParent = (types: string[]) =>
+      DefinitionsByParent(types, (d) => !!(d && d.type === NodeData.directiveInputField));
     const interfaceDefinitionsByParent = (types: string[]) =>
       DefinitionsByParent(types, (d) => !!(d && d.type === NodeData.implements));
-    const unionTypeDefinitionsByParent = (types: string[]) =>
-      DefinitionsByParent(types, (d) => !!(d && d.type === NodeData.unionType));
+    const directiveDefinitionsByParent = (types: string[]) =>
+      DefinitionsByParent(types, (d) => !!(d && d.type === NodeData.directives));
 
     const objectDefinitionsByParent = fieldDefinitionsByParent([
-      ObjectTypes.type,
-      ObjectTypes.interface,
-      ObjectTypes.union,
-      ObjectTypes.enum,
-      ObjectTypes.scalar
+      TypeDefinition.ObjectTypeDefinition,
+      TypeDefinition.InterfaceTypeDefinition,
+      TypeDefinition.UnionTypeDefinition,
+      TypeDefinition.EnumTypeDefinition,
+      TypeDefinition.ScalarTypeDefinition
     ]);
 
+    const getPossibleInputArgumentsForDirective = (
+      d: EditorNodeDefinition,
+      nodes: Node[]
+    ): AcceptedEditorNodeDefinition[] => {
+      const possibleNodes = nodes!
+        .find((n) => !!n.editsDefinitions && n.editsDefinitions.includes(d.parent!))!
+        .inputs!.map((i) => i.editsDefinitions || [])
+        .reduce((a, b) => [...a, ...b])
+        .filter(
+          (d) => d.data && (d.data as GraphQLNodeParams).type === NodeData.argumentForDirective
+        );
+      console.log(possibleNodes);
+      // TODO: Jeżelei jest scalar/enum/array to robimy valuenode jeżeli nie to zwracamy opcje będące argumentami inputa
+      return possibleNodes.map((pn) => ({
+        definition: pn
+      }));
+    };
     const options: NodeOption[] = [
       {
         name: 'required',
@@ -72,6 +105,10 @@ export class Definitions {
         help: help.arrayRequired
       }
     ];
+    const directiveOptions: NodeOption[] = Object.keys(Directive).map((d) => ({
+      name: d,
+      help: d
+    }));
     const rootOptions: NodeOption[] = [
       {
         name: Operations.query,
@@ -90,24 +127,84 @@ export class Definitions {
     const fieldInstance: Partial<EditorNodeDefinition> = {
       options: instanceOptions,
       data: {
-        type: NodeData.field
+        type: Type.NamedType,
+        for: [TypeDefinition.InterfaceTypeDefinition, TypeDefinition.ObjectTypeDefinition]
       },
       acceptsInputs: (d, defs) =>
-        argumentDefinitionsByParent([ObjectTypes.scalar, ObjectTypes.enum, ObjectTypes.input])(
-          d,
-          defs
-        ).concat(builtInScalarArguments.map(nodeDefinitionToAcceptedEditorNodeDefinition))
+        argumentDefinitionsByParent([
+          TypeDefinition.ScalarTypeDefinition,
+          TypeDefinition.EnumTypeDefinition,
+          TypeDefinition.InputObjectTypeDefinition
+        ])(d, defs).concat(
+          builtInScalarArguments.map(nodeDefinitionToAcceptedEditorNodeDefinition)
+        ),
+      instances: undefined
     };
+    // TODO: Dodać enumy default value tylko z enuma
+
     const argumentInstance: Partial<EditorNodeDefinition> = {
       options: instanceOptions,
       data: {
-        type: NodeData.argument
+        type: ValueDefinition.InputValueDefinition,
+        for: [
+          Type.NamedType,
+          TypeDefinition.InputObjectTypeDefinition,
+          ValueDefinition.InputValueDefinition
+        ]
       },
       acceptsInputs: (d, defs) => [
         {
           definition: builtInDefaultValue
         }
+      ],
+      instances: [
+        {
+          data: { type: NodeData.argumentForDirective },
+          instances: undefined,
+          options: instanceOptions,
+          acceptsInputs: (d, defs, _, nodes) => {
+            if (Object.keys(ScalarTypes).includes(d.parent!.type)) {
+              return [
+                {
+                  definition: builtInDefaultValue
+                }
+              ];
+            }
+            return getPossibleInputArgumentsForDirective(d, nodes!);
+          }
+        }
       ]
+    };
+    const directiveInputArgumentInstance: Partial<EditorNodeDefinition> = {
+      options: instanceOptions,
+      data: {
+        type: NodeData.directiveInputArgument
+      },
+      acceptsInputs: (d, defs, _, nodes) => getPossibleInputArgumentsForDirective(d, nodes!),
+      instances: undefined
+    };
+    const directiveScalarArgumentInstance: Partial<EditorNodeDefinition> = {
+      options: instanceOptions,
+      data: {
+        type: NodeData.directiveScalarArgument
+      },
+      acceptsInputs: argumentInstance.acceptsInputs,
+      instances: undefined
+    };
+    const directiveScalarFieldInstance: Partial<EditorNodeDefinition> = {
+      options: instanceOptions,
+      data: {
+        type: NodeData.directiveScalarField
+      },
+      acceptsInputs: argumentInstance.acceptsInputs,
+      instances: [directiveScalarArgumentInstance]
+    };
+    const directiveInputFieldInstance: Partial<EditorNodeDefinition> = {
+      options: instanceOptions,
+      data: {
+        type: NodeData.directiveInputField
+      },
+      instances: [directiveInputArgumentInstance]
     };
     const implementsInstance: Partial<EditorNodeDefinition> = {
       data: {
@@ -115,15 +212,35 @@ export class Definitions {
       },
       node: {
         inputs: null
-      }
+      },
+      instances: undefined
     };
-    const builtInScalarFields = ([
-      'String',
-      'ID',
-      'Int',
-      'Float',
-      'Boolean'
-    ] as Array<keyof typeof help>).map(
+    const directivesInstance: Partial<EditorNodeDefinition> = {
+      data: {
+        type: NodeData.directives
+      },
+      acceptsInputs: (d, defs, _, nodes) => {
+        const parentNode = nodes!.find(
+          (n) => !!n.editsDefinitions && !!n.editsDefinitions.find((ed) => ed === d)
+        );
+        if (!parentNode!.inputs) {
+          return [];
+        }
+        const directiveScalarValueDefinitions = defs.filter(
+          (d) =>
+            d.data &&
+            (d.data.type === NodeData.directiveScalarArgument ||
+              d.data.type === NodeData.directiveInputArgument)
+        );
+        return parentNode!.inputs.map((n) => ({
+          definition: directiveScalarValueDefinitions.find((d) => d.type === n.name)
+        }));
+      },
+      instances: undefined
+    };
+    const builtInScalarFields = (['String', 'ID', 'Int', 'Float', 'Boolean'] as Array<
+      keyof typeof help
+    >).map(
       (name) =>
         ({
           node: { ...createOND(name), outputs: [] },
@@ -146,24 +263,36 @@ export class Definitions {
       (sf) =>
         ({
           ...sf,
-          data: {
-            type: NodeData.argument
-          },
-          acceptsInputs: argumentInstance.acceptsInputs
+          ...argumentInstance
+        } as EditorNodeDefinition)
+    );
+    const builtInDirectiveScalarFields = builtInScalarFields.map(
+      (sf) =>
+        ({
+          ...sf,
+          ...directiveScalarFieldInstance
         } as EditorNodeDefinition)
     );
     const implementsObject: EditorNodeDefinition = {
       node: {
         name: 'implementsNode'
       },
-      type: 'implements',
-      acceptsInputs: interfaceDefinitionsByParent([ObjectTypes.interface]),
+      type: NodeData.implements,
+      acceptsInputs: interfaceDefinitionsByParent([TypeDefinition.InterfaceTypeDefinition]),
       help: help.implements
+    };
+    const directivesObject: EditorNodeDefinition = {
+      node: {
+        name: 'directivesNode'
+      },
+      type: NodeData.directives,
+      acceptsInputs: directiveDefinitionsByParent([TypeSystemDefinition.DirectiveDefinition]),
+      help: help.directives
     };
     const builtInEnumValue: EditorNodeDefinition = {
       node: { ...createOND('EnumValue'), outputs: [], inputs: null },
       help: help.EnumValue,
-      type: 'EnumValue',
+      type: Value.EnumValue,
       instances: [
         {
           data: {
@@ -171,11 +300,11 @@ export class Definitions {
           }
         }
       ],
-      options
+      options: undefined
     };
     const builtInInterfaceObject: EditorNodeDefinition = {
-      node: createOND('interface'),
-      type: 'interface',
+      node: createOND(TypeDefinition.InterfaceTypeDefinition),
+      type: TypeDefinition.InterfaceTypeDefinition,
       help: help.interface,
       root: true,
       acceptsInputs: (d, defs) =>
@@ -184,15 +313,28 @@ export class Definitions {
         ),
       instances: [fieldInstance, implementsInstance]
     };
+    const builtInDirectiveObject: EditorNodeDefinition = {
+      node: createOND(TypeSystemDefinition.DirectiveDefinition),
+      type: TypeSystemDefinition.DirectiveDefinition,
+      help: help.directive,
+      options: directiveOptions,
+      root: true,
+      acceptsInputs: (d, defs) =>
+        directiveInputFieldDefinitionsByParent([TypeDefinition.InputObjectTypeDefinition])(
+          d,
+          defs
+        ).concat(builtInDirectiveScalarFields.map(nodeDefinitionToAcceptedEditorNodeDefinition)),
+      instances: [directivesInstance]
+    };
     const builtInTypeObject: EditorNodeDefinition = {
-      node: createOND('type'),
-      type: 'type',
+      node: createOND(TypeDefinition.ObjectTypeDefinition),
+      type: TypeDefinition.ObjectTypeDefinition,
       help: help.type,
       options: rootOptions,
       root: true,
       acceptsInputs: (d, defs) =>
         objectDefinitionsByParent(d, defs).concat(
-          [implementsObject, ...builtInScalarFields].map(
+          [implementsObject, directivesObject, ...builtInScalarFields].map(
             nodeDefinitionToAcceptedEditorNodeDefinition
           )
         ),
@@ -202,7 +344,8 @@ export class Definitions {
         // Union type instance
         {
           data: {
-            type: NodeData.unionType
+            type: Type.NamedType,
+            for: [TypeDefinition.UnionTypeDefinition]
           },
           node: {
             name: 'typeNode',
@@ -213,13 +356,16 @@ export class Definitions {
       ]
     };
     const builtInInputObject: EditorNodeDefinition = {
-      node: createOND('input'),
-      type: 'input',
+      node: createOND(TypeDefinition.InputObjectTypeDefinition),
+      type: TypeDefinition.InputObjectTypeDefinition,
       help: help.input,
       root: true,
       acceptsInputs: (d, defs) =>
-        fieldDefinitionsByParent([ObjectTypes.enum, ObjectTypes.scalar])(d, defs)
-          .concat(argumentDefinitionsByParent([ObjectTypes.input])(d, defs))
+        fieldDefinitionsByParent([
+          TypeDefinition.EnumTypeDefinition,
+          TypeDefinition.ScalarTypeDefinition
+        ])(d, defs)
+          .concat(argumentDefinitionsByParent([TypeDefinition.InputObjectTypeDefinition])(d, defs))
           .concat(builtInScalarArguments.map(nodeDefinitionToAcceptedEditorNodeDefinition)),
       instances: [
         {
@@ -228,35 +374,43 @@ export class Definitions {
             name: 'inputNode',
             inputs: null
           }
+        },
+        {
+          ...directiveInputFieldInstance,
+          node: {
+            name: 'directiveInput',
+            inputs: null
+          }
         }
       ]
     };
     const builtInScalarObject: EditorNodeDefinition = {
-      node: { ...createOND('scalar'), inputs: null, outputs: null },
-      type: 'scalar',
+      node: { ...createOND(TypeDefinition.ScalarTypeDefinition), inputs: null, outputs: null },
+      type: TypeDefinition.ScalarTypeDefinition,
       help: help.scalar,
       root: true,
-      instances: [fieldInstance, argumentInstance]
+      instances: [fieldInstance, argumentInstance, directiveScalarFieldInstance]
     };
     const builtInUnionObject: EditorNodeDefinition = {
-      node: createOND('union'),
-      type: 'union',
+      node: createOND(TypeDefinition.UnionTypeDefinition),
+      type: TypeDefinition.UnionTypeDefinition,
       help: help.union,
-      acceptsInputs: unionTypeDefinitionsByParent([ObjectTypes.type]),
       instances: [fieldInstance],
-      root: true
+      root: true,
+      acceptsInputs: (d, defs) => dataForTypes(defs, [TypeDefinition.UnionTypeDefinition])
     };
     const builtInEnumObject: EditorNodeDefinition = {
-      node: createOND('enum'),
-      type: 'enum',
+      node: createOND(TypeDefinition.EnumTypeDefinition),
+      type: TypeDefinition.EnumTypeDefinition,
       help: help.enum,
-      instances: [fieldInstance, argumentInstance],
+      instances: [fieldInstance, argumentInstance, directiveScalarFieldInstance],
       root: true,
       acceptsInputs: (d, defs) => [{ definition: builtInEnumValue }]
     };
     const nodeDefinitions: EditorNodeDefinition[] = [
       ...builtInScalarFields,
       ...builtInScalarArguments,
+      ...builtInDirectiveScalarFields,
       builtInDefaultValue,
       builtInEnumObject,
       builtInEnumValue,
@@ -265,7 +419,9 @@ export class Definitions {
       builtInScalarObject,
       builtInTypeObject,
       builtInUnionObject,
-      implementsObject
+      builtInDirectiveObject,
+      implementsObject,
+      directivesObject
     ];
     return nodeDefinitions;
   }

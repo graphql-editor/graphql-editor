@@ -24,6 +24,13 @@ export class TreeToNodes {
       description: node.description,
       options: node.type.options || []
     });
+
+    const newDefinitions = NodeUtils.createObjectDefinition(def, node.name);
+    newDefinitions.forEach((newDefinition) => {
+      newDefinition.help = node.description || newDefinition.help;
+      nodeDefinitions.push(newDefinition);
+    });
+    nodeCreated.editsDefinitions = newDefinitions;
     return nodeCreated;
   }
   static resolveFields(
@@ -56,7 +63,7 @@ export class TreeToNodes {
     const createdRootNode = NodeUtils.createBasicNode(e, definingObjectDefinition, {
       name: root.name,
       description: root.description,
-      options: root.type.options,
+      options: root.type.options || root.type.directiveOptions,
       editsDefinitions: nodeDefinitions.filter((nd) => nd.type === root.name)
     });
     nodes.push(createdRootNode);

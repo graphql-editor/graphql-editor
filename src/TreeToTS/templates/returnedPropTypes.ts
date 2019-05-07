@@ -1,4 +1,5 @@
-import { ObjectTypes, Options, ParserField, ParserRoot } from '../../Models';
+import { Options, ParserField, ParserRoot } from '../../Models';
+import { TypeDefinition } from '../../Models/Spec';
 const resolveArg = (f: ParserField, tabs = '\t\t\t') => {
   const {
     type: { options }
@@ -26,16 +27,16 @@ export const guessTheScalar = (scalar: string) => {
 };
 
 export const resolvePropTypeFromRoot = (i: ParserRoot) => {
-  if (i.type.name === ObjectTypes.enum) {
+  if (i.type.name === TypeDefinition.EnumTypeDefinition) {
     return `\t${i.name}: "enum"`;
   }
-  if (i.type.name === ObjectTypes.scalar) {
+  if (i.type.name === TypeDefinition.ScalarTypeDefinition) {
     return `\t${i.name}: "String"`;
   }
-  if (i.type.name === ObjectTypes.input) {
+  if (i.type.name === TypeDefinition.InputObjectTypeDefinition) {
     return `\t${i.name}:{\n${i.fields!.map((f) => resolveArg(f, '\t\t')).join(',\n')}\n\t}`;
   }
-  if (i.type.name !== ObjectTypes.type) {
+  if (i.type.name !== TypeDefinition.ScalarTypeDefinition) {
     return;
   }
   if (!i.fields) {

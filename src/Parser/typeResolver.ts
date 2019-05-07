@@ -1,24 +1,15 @@
 import {
+  DirectiveNode,
   FieldDefinitionNode,
   InputValueDefinitionNode,
   TypeDefinitionNode,
   TypeNode,
   ValueNode
 } from 'graphql';
-import { NodeData, ObjectTypes, Options, ParserField, ScalarTypes } from '../Models';
+import { NodeData, Options, ParserField, ScalarTypes } from '../Models';
+import { Type, ValueDefinition } from '../Models/Spec';
 
 export class TypeResolver {
-  static resolveRootNode(n: TypeDefinitionNode['kind']): string {
-    const map: Record<TypeDefinitionNode['kind'], string> = {
-      EnumTypeDefinition: ObjectTypes.enum,
-      InputObjectTypeDefinition: ObjectTypes.input,
-      InterfaceTypeDefinition: ObjectTypes.interface,
-      ObjectTypeDefinition: ObjectTypes.type,
-      ScalarTypeDefinition: ObjectTypes.scalar,
-      UnionTypeDefinition: ObjectTypes.union
-    };
-    return map[n];
-  }
   static resolveSingleField(n: TypeNode, options: Options[] = []): ParserField['type'] {
     if (n.kind === 'ListType') {
       const opts = [...options, Options.array];
@@ -52,7 +43,7 @@ export class TypeResolver {
           args: n.arguments && TypeResolver.iterateInputValueFields(n.arguments),
           type: TypeResolver.resolveSingleField(n.type),
           nodeParams: {
-            type: NodeData.field
+            type: Type.NamedType
           }
         } as ParserField)
     );
@@ -60,6 +51,35 @@ export class TypeResolver {
   static resolveDefaultValues(value: ValueNode): string[] {
     if (value.kind === 'ListValue') {
       return value.values.map(TypeResolver.resolveDefaultValues).reduce((a, b) => a.concat(b), []);
+    }
+    if (
+      value.kind === 'EnumValue' ||
+      value.kind === 'FloatValue' ||
+      value.kind === 'IntValue' ||
+      value.kind === 'BooleanValue'
+    ) {
+      return [`${value.value}`];
+    }
+    if (value.kind === 'Variable') {
+      return [value.name.value];
+    }
+    if (value.kind === 'StringValue') {
+      return [`"${value.value}"`];
+    }
+    return [];
+  }
+  static resolveDirectiveArgumentValue(value: ValueNode): string[] {
+    if (value.kind === 'ListValue') {
+      return value.values
+        .map(TypeResolver.resolveDirectiveArgumentValue)
+        .reduce((a, b) => a.concat(b), []);
+    }
+    if (value.kind === 'ObjectValue') {
+      return [
+        `{${value.fields.map(
+          (f) => `${f.name.value}:${TypeResolver.resolveDirectiveArgumentValue(f.value).join('')}`
+        )}}`
+      ];
     }
     if (
       value.kind === 'EnumValue' ||
@@ -85,7 +105,37 @@ export class TypeResolver {
           description: n.description && n.description.value,
           type: TypeResolver.resolveSingleField(n.type),
           nodeParams: {
-            type: NodeData.argument
+            type: ValueDefinition.InputValueDefinition
+          },
+          args: n.defaultValue
+            ? TypeResolver.resolveDefaultValues(n.defaultValue).map(
+                (d) =>
+                  ({
+                    name: d,
+                    type: {
+                      name: ScalarTypes.DefaultValue
+                    },
+                    nodeParams: {
+                      type: NodeData.defaultValue
+                    }
+                  } as ParserField)
+              )
+            : undefined
+        } as ParserField)
+    );
+  }
+  static iterateDirectiveArguments(
+    fields: ReadonlyArray<InputValueDefinitionNode>,
+    type: NodeData
+  ): ParserField[] {
+    return fields.map(
+      (n) =>
+        ({
+          name: n.name.value,
+          description: n.description && n.description.value,
+          type: TypeResolver.resolveSingleField(n.type),
+          nodeParams: {
+            type
           },
           args: n.defaultValue
             ? TypeResolver.resolveDefaultValues(n.defaultValue).map(
@@ -105,12 +155,17 @@ export class TypeResolver {
     );
   }
   static resolveInterfaces(n: TypeDefinitionNode) {
-    if (n.kind !== 'ObjectTypeDefinition' || !n.interfaces) { return; }
+    if (n.kind !== 'ObjectTypeDefinition' || !n.interfaces) {
+      return;
+    }
     return n.interfaces.map((i) => i.name.value);
   }
+  static resolveDirectives(directives: readonly DirectiveNode[]) {}
   static resolveFields(n: TypeDefinitionNode): ParserField[] | undefined {
     if (n.kind === 'EnumTypeDefinition') {
-      if (!n.values) { return; }
+      if (!n.values) {
+        return;
+      }
       return n.values.map(
         (v) =>
           ({
@@ -127,7 +182,9 @@ export class TypeResolver {
       return;
     }
     if (n.kind === 'UnionTypeDefinition') {
-      if (!n.types) { return; }
+      if (!n.types) {
+        return;
+      }
       return n.types.map(
         (t) =>
           ({
@@ -140,11 +197,15 @@ export class TypeResolver {
       );
     }
     if (n.kind === 'InputObjectTypeDefinition') {
-      if (!n.fields) { return; }
+      if (!n.fields) {
+        return;
+      }
       const fields = TypeResolver.iterateInputValueFields(n.fields);
       return fields;
     }
-    if (!n.fields) { return; }
+    if (!n.fields) {
+      return;
+    }
     const fields = TypeResolver.iterateObjectTypeFields(n.fields);
     return fields;
   }

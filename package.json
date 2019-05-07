@@ -65,7 +65,7 @@
     "classnames": "^2.2.5",
     "faker": "^4.1.0",
     "graphql": "^14.0.2",
-    "graphsource": "^1.0.9",
+    "graphsource": "file:../diagram",
     "moment": "^2.21.0",
     "query-string": "^6.2.0",
     "react": "^16.5.2",

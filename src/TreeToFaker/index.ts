@@ -1,4 +1,5 @@
-import { ObjectTypes, Options, ParserRoot, ParserTree, ScalarTypes } from '../Models';
+import { Options, ParserRoot, ParserTree, ScalarTypes } from '../Models';
+import { TypeDefinition } from '../Models/Spec';
 
 export const fakerMap: Record<string, string> = {
   [ScalarTypes.String]: 'String',
@@ -84,18 +85,19 @@ export const generateFakerResolverUnion = (root: ParserRoot) => {
 export class TreeToFaker {
   static resolveTree(tree: ParserTree) {
     const { nodes } = tree;
-    const fakeResolvers = [ObjectTypes.type, ObjectTypes.interface, ObjectTypes.input].reduce(
-      (a, b) => {
-        a = {
-          ...a,
-          ...arrayToDict(nodes.filter((n) => n.type.name === b).map(generateFakerResolverType))
-        };
-        return a;
-      },
-      {}
-    );
+    const fakeResolvers = [
+      TypeDefinition.ObjectTypeDefinition,
+      TypeDefinition.InterfaceTypeDefinition,
+      TypeDefinition.InputObjectTypeDefinition
+    ].reduce((a, b) => {
+      a = {
+        ...a,
+        ...arrayToDict(nodes.filter((n) => n.type.name === b).map(generateFakerResolverType))
+      };
+      return a;
+    }, {});
 
-    const fakeEnumResolvers = [ObjectTypes.enum].reduce((a, b) => {
+    const fakeEnumResolvers = [TypeDefinition.EnumTypeDefinition].reduce((a, b) => {
       a = {
         ...a,
         ...arrayToDict(nodes.filter((n) => n.type.name === b).map(generateFakerResolverEnum))
@@ -103,7 +105,7 @@ export class TreeToFaker {
       return a;
     }, {});
 
-    const fakeScalarResolvers = [ObjectTypes.scalar].reduce((a, b) => {
+    const fakeScalarResolvers = [TypeDefinition.ScalarTypeDefinition].reduce((a, b) => {
       a = {
         ...a,
         ...arrayToDict(nodes.filter((n) => n.type.name === b).map(generateFakerResolverScalar))
@@ -111,7 +113,7 @@ export class TreeToFaker {
       return a;
     }, {});
 
-    const fakeUnionResolvers = [ObjectTypes.union].reduce((a, b) => {
+    const fakeUnionResolvers = [TypeDefinition.UnionTypeDefinition].reduce((a, b) => {
       a = {
         ...a,
         ...arrayToDict(nodes.filter((n) => n.type.name === b).map(generateFakerResolverUnion))

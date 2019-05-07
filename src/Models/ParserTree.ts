@@ -1,5 +1,5 @@
 import { Options } from './Options';
-import { GraphQLNodeParams, Operations } from './Types';
+import { Directive, GraphQLNodeParams, Operations } from './Types';
 
 export interface ParserField {
   name: string;
@@ -9,6 +9,7 @@ export interface ParserField {
   };
   nodeParams?: GraphQLNodeParams;
   args?: ParserField[];
+  directives?: ParserField[];
   description?: string;
 }
 
@@ -17,9 +18,11 @@ export interface ParserRoot {
   type: {
     name: string;
     options?: Operations[];
+    directiveOptions?: Directive[];
   };
   fields?: ParserField[];
   interfaces?: string[];
+  directives?: ParserField[];
   description?: string;
 }
 
