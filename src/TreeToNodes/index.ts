@@ -1,108 +1,158 @@
 import { Link, Node, NodeUtils } from 'graphsource';
-import { ScreenPosition } from 'graphsource/lib/IO/ScreenPosition';
-import { EditorNodeDefinition, NodeData, ParserField, ParserRoot, ParserTree } from '../Models';
+import { EditorNodeDefinition, GraphQLNodeParams, ParserField, ParserTree } from '../Models';
+import { Helpers } from '../Models/Spec';
 
 export class TreeToNodes {
-  static resolveRootNodeDefintion(root: ParserRoot, nodeDefinitions: EditorNodeDefinition[]): void {
-    const definingObjectDefinition = nodeDefinitions.find(
-      (nd) => !!nd.root && nd.type === root.type.name
-    )!;
-    const newDefinitions = NodeUtils.createObjectDefinition(definingObjectDefinition, root.name);
+  static compareData(d1: GraphQLNodeParams | undefined, d2: GraphQLNodeParams | undefined) {
+    if (!d1 && d2) {
+      return false;
+    }
+    if (d1 && !d2) {
+      return false;
+    }
+    if (!d1 && !d2) {
+      return true;
+    }
+    return d1!.type === d2!.type;
+  }
+  static connectAndCreate = (
+    n: ParserField,
+    rootNode: Node,
+    links: Link[],
+    nodeDefinitions: EditorNodeDefinition[],
+    nodes: Array<Node<GraphQLNodeParams>>
+  ) => {
+    const createdNode = TreeToNodes.resolveField(n, nodeDefinitions, nodes, links);
+    links.push({
+      centerPoint: 0.5,
+      o: createdNode,
+      i: rootNode
+    });
+    rootNode.inputs!.push(createdNode);
+    createdNode.outputs!.push(rootNode);
+    nodes.push(createdNode);
+    return createdNode;
+  }
+  static createInterfaces = (
+    interfaces: string[],
+    rootNode: Node,
+    nodeDefinitions: EditorNodeDefinition[],
+    links: Link[],
+    nodes: Array<Node<GraphQLNodeParams>>
+  ) => {
+    const createdNode = TreeToNodes.connectAndCreate(
+      {
+        name: Helpers.Implements,
+        type: {
+          name: Helpers.Implements
+        }
+      },
+      rootNode,
+      links,
+      nodeDefinitions,
+      nodes
+    );
+    interfaces.forEach((i) => {
+      TreeToNodes.connectAndCreate(
+        {
+          type: {
+            name: i
+          },
+          name: i,
+          data: {
+            type: Helpers.Implements
+          }
+        },
+        createdNode,
+        links,
+        nodeDefinitions,
+        nodes
+      );
+    });
+  }
+  static resolveField(
+    root: ParserField,
+    nodeDefinitions: EditorNodeDefinition[],
+    nodes: Array<Node<GraphQLNodeParams>>,
+    links: Link[],
+    rootNode?: Node
+  ): Node<GraphQLNodeParams> {
+    const defs = nodeDefinitions.filter((nd) => nd.type === root.type.name)!;
+    let def = defs[0];
+    if (defs.length > 1) {
+      def = defs.find((d) => TreeToNodes.compareData(d.data, root.data))!;
+    }
+    if (!def) {
+      console.log(def, root, [...nodeDefinitions]);
+    }
+    const nodeCreated = NodeUtils.createBasicNode({ x: 0, y: 0 }, def, {
+      name: root.name,
+      description: root.description,
+      options: root.type.options || root.type.directiveOptions || root.type.operations || []
+    });
+    const newDefinitions = NodeUtils.createObjectDefinition(def, root.name);
     newDefinitions.forEach((newDefinition) => {
       newDefinition.help = root.description || newDefinition.help;
       nodeDefinitions.push(newDefinition);
     });
-  }
-  static resolveField(node: ParserField, nodeDefinitions: EditorNodeDefinition[]): Node {
-    const defs = nodeDefinitions.filter((nd) => nd.type === node.type.name)!;
-    let def = defs[0];
-    if (defs.length > 1) {
-      def = defs.filter((d) => JSON.stringify(d.data) === JSON.stringify(node.nodeParams))[0];
-    }
-    const nodeCreated = NodeUtils.createBasicNode({ x: 0, y: 0 }, def, {
-      name: node.name,
-      description: node.description,
-      options: node.type.options || []
-    });
-
-    const newDefinitions = NodeUtils.createObjectDefinition(def, node.name);
-    newDefinitions.forEach((newDefinition) => {
-      newDefinition.help = node.description || newDefinition.help;
-      nodeDefinitions.push(newDefinition);
-    });
     nodeCreated.editsDefinitions = newDefinitions;
-    return nodeCreated;
-  }
-  static resolveFields(
-    root: ParserRoot,
-    nodeDefinitions: EditorNodeDefinition[],
-    nodes: Node[],
-    links: Link[]
-  ) {
-    const connectAndCreate = (n: ParserField, rootNode: Node) => {
-      const createdNode = TreeToNodes.resolveField(n, nodeDefinitions);
+    nodes.push(nodeCreated);
+    if (rootNode) {
       links.push({
         centerPoint: 0.5,
-        o: createdNode,
+        o: nodeCreated,
         i: rootNode
       });
-      rootNode.inputs!.push(createdNode);
-      createdNode.outputs!.push(rootNode);
-      nodes.push(createdNode);
-      if (n.args) {
-        n.args.forEach((a) => {
-          connectAndCreate(a, createdNode);
-        });
-      }
-      return createdNode;
-    };
-    const e: ScreenPosition = { x: 0, y: 0 };
-    const definingObjectDefinition = nodeDefinitions.find(
-      (nd) => !!nd.root && nd.type === root.type.name
-    )!;
-    const createdRootNode = NodeUtils.createBasicNode(e, definingObjectDefinition, {
-      name: root.name,
-      description: root.description,
-      options: root.type.options || root.type.directiveOptions,
-      editsDefinitions: nodeDefinitions.filter((nd) => nd.type === root.name)
-    });
-    nodes.push(createdRootNode);
-    if (root.interfaces && root.interfaces.length) {
-      const createdNode = connectAndCreate(
-        {
-          name: 'implements',
-          type: {
-            name: 'implements'
-          }
-        },
-        createdRootNode
-      );
-      root.interfaces.forEach((i) => {
-        connectAndCreate(
-          {
-            type: {
-              name: i
-            },
-            name: i,
-            nodeParams: {
-              type: NodeData.implements
-            }
-          },
-          createdNode
-        );
-      });
+      rootNode.inputs!.push(nodeCreated);
+      nodeCreated.outputs!.push(rootNode);
     }
-    if (root.fields) {
-      root.fields.forEach((n) => {
-        connectAndCreate(n, createdRootNode);
-      });
-    }
+    return nodeCreated;
   }
   static resolveTree(tree: ParserTree, nodeDefinitions: EditorNodeDefinition[]) {
-    const nodes: Node[] = [];
+    const nodes: Array<Node<GraphQLNodeParams>> = [];
     const links: Link[] = [];
-    tree.nodes.forEach((n) => TreeToNodes.resolveRootNodeDefintion(n, nodeDefinitions));
-    tree.nodes.forEach((n) => TreeToNodes.resolveFields(n, nodeDefinitions, nodes, links));
+    const resolveAllFields = (
+      parserFields: Array<{
+        parserField: ParserField;
+        node?: Node<GraphQLNodeParams>;
+      }>
+    ) => {
+      const rootNodes = parserFields.map(({ parserField, node }) => {
+        return {
+          parserField,
+          node: TreeToNodes.resolveField(parserField, nodeDefinitions, nodes, links, node)
+        };
+      });
+      rootNodes
+        .filter((pf) => pf.parserField.interfaces)
+        .forEach((f) => {
+          TreeToNodes.createInterfaces(
+            f.parserField.interfaces!,
+            f.node,
+            nodeDefinitions,
+            links,
+            nodes
+          );
+        });
+      const returnRootNodes = rootNodes
+        .filter((rn) => rn.parserField.args)
+        .map((rn) =>
+          rn.parserField.args!.map((a) => ({
+            parserField: a,
+            node: rn.node
+          }))
+        )
+        .reduce((a, b) => [...a, ...b], []);
+      if (returnRootNodes.length > 0) {
+        resolveAllFields(returnRootNodes);
+      }
+      return;
+    };
+    resolveAllFields(
+      tree.nodes.map((parserField) => ({
+        parserField
+      }))
+    );
     return { nodes, links };
   }
 }

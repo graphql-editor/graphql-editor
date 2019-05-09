@@ -1,4 +1,4 @@
-import { Options, ParserField, ParserRoot } from '../../Models';
+import { Options, ParserField } from '../../Models';
 import { TypeDefinition } from '../../Models/Spec';
 
 const typeScriptMap: Record<string, string> = {
@@ -62,25 +62,25 @@ const guessTheScalar = (scalar: string) => {
   return scalar in possibleScalars ? possibleScalars[scalar] : undefined;
 };
 
-export const resolveTypeFromRoot = (i: ParserRoot) => {
+export const resolveTypeFromRoot = (i: ParserField) => {
   if (i.type.name === TypeDefinition.ScalarTypeDefinition) {
     const exisitingInTS = guessTheScalar(i.name);
     return exisitingInTS ? '' : `${plusDescription(i.description)}export type ${i.name} = any`;
   }
-  if (!i.fields || !i.fields.length) {
+  if (!i.args || !i.args.length) {
     return;
   }
   if (i.type.name === TypeDefinition.UnionTypeDefinition) {
-    return `${plusDescription(i.description)}export type ${i.name} = ${i.fields
+    return `${plusDescription(i.description)}export type ${i.name} = ${i.args
       .map((f) => f.type.name)
       .join(' | ')}`;
   }
   if (i.type.name === TypeDefinition.EnumTypeDefinition) {
-    return `${plusDescription(i.description)}export enum ${i.name} {\n${i.fields
+    return `${plusDescription(i.description)}export enum ${i.name} {\n${i.args
       .map((f) => `\t${f.name} = "${f.name}"`)
       .join(',\n')}\n}`;
   }
-  return `${plusDescription(i.description)}export type ${i.name} = {\n${i.fields
+  return `${plusDescription(i.description)}export type ${i.name} = {\n${i.args
     .map((f) => resolveField(f))
     .join(',\n')}\n}`;
 };

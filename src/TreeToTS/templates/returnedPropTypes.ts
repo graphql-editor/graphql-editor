@@ -1,4 +1,4 @@
-import { Options, ParserField, ParserRoot } from '../../Models';
+import { Options, ParserField } from '../../Models';
 import { TypeDefinition } from '../../Models/Spec';
 const resolveArg = (f: ParserField, tabs = '\t\t\t') => {
   const {
@@ -26,7 +26,7 @@ export const guessTheScalar = (scalar: string) => {
   return scalar in possibleScalars ? possibleScalars[scalar] : undefined;
 };
 
-export const resolvePropTypeFromRoot = (i: ParserRoot) => {
+export const resolvePropTypeFromRoot = (i: ParserField) => {
   if (i.type.name === TypeDefinition.EnumTypeDefinition) {
     return `\t${i.name}: "enum"`;
   }
@@ -34,18 +34,18 @@ export const resolvePropTypeFromRoot = (i: ParserRoot) => {
     return `\t${i.name}: "String"`;
   }
   if (i.type.name === TypeDefinition.InputObjectTypeDefinition) {
-    return `\t${i.name}:{\n${i.fields!.map((f) => resolveArg(f, '\t\t')).join(',\n')}\n\t}`;
+    return `\t${i.name}:{\n${i.args!.map((f) => resolveArg(f, '\t\t')).join(',\n')}\n\t}`;
   }
   if (i.type.name !== TypeDefinition.ScalarTypeDefinition) {
     return;
   }
-  if (!i.fields) {
+  if (!i.args) {
     return;
   }
-  if (i.fields.filter((f) => f.args && f.args.length > 0).length === 0) {
+  if (i.args.filter((f) => f.args && f.args.length > 0).length === 0) {
     return;
   }
-  return `\t${i.name}:{\n${i.fields
+  return `\t${i.name}:{\n${i.args
     .filter((f) => f.args && f.args.length)
     .map((f) => resolveField(f))
     .join(',\n')}\n\t}`;

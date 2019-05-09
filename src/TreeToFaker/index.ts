@@ -1,5 +1,5 @@
-import { Options, ParserRoot, ParserTree, ScalarTypes } from '../Models';
-import { TypeDefinition } from '../Models/Spec';
+import { Options, ParserField, ParserTree } from '../Models';
+import { ScalarTypes, TypeDefinition } from '../Models/Spec';
 
 export const fakerMap: Record<string, string> = {
   [ScalarTypes.String]: 'String',
@@ -33,12 +33,12 @@ export interface FakerDict {
   [x: string]: FakerResolverReturn;
 }
 export const generateFakerResolverBase = (
-  root: ParserRoot
+  root: ParserField
 ): Record<string, FakerDict> | undefined => {
-  if (!root.fields) {
+  if (!root.args) {
     return;
   }
-  const rf = root.fields.map((f) => ({
+  const rf = root.args.map((f) => ({
     [f.name]: {
       type: f.type.name in ScalarTypes ? fakerMap[f.type.name] || f.type.name : undefined,
       ref: f.type.name in ScalarTypes ? undefined : f.type.name,
@@ -49,7 +49,7 @@ export const generateFakerResolverBase = (
   }));
   return arrayToDict(rf);
 };
-export const generateFakerResolverType = (root: ParserRoot) => {
+export const generateFakerResolverType = (root: ParserField) => {
   return {
     [root.name]: {
       type: 'type',
@@ -58,15 +58,15 @@ export const generateFakerResolverType = (root: ParserRoot) => {
   };
 };
 
-export const generateFakerResolverEnum = (root: ParserRoot) => {
+export const generateFakerResolverEnum = (root: ParserField) => {
   return {
     [root.name]: {
       type: 'enum',
-      enum: root.fields && root.fields.map((i) => i.name)
+      enum: root.args && root.args.map((i) => i.name)
     } as FakerResolverReturn
   };
 };
-export const generateFakerResolverScalar = (root: ParserRoot) => {
+export const generateFakerResolverScalar = (root: ParserField) => {
   return {
     [root.name]: {
       type: 'scalar',
@@ -74,11 +74,11 @@ export const generateFakerResolverScalar = (root: ParserRoot) => {
     }
   };
 };
-export const generateFakerResolverUnion = (root: ParserRoot) => {
+export const generateFakerResolverUnion = (root: ParserField) => {
   return {
     [root.name]: {
       type: 'union',
-      union: root.fields && root.fields.map((i) => i.type.name)
+      union: root.args && root.args.map((i) => i.type.name)
     }
   };
 };

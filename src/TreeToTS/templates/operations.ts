@@ -16,7 +16,7 @@ const generateOperations = ({
   mutations?: string[];
   subscriptions?: string[];
 }): string[] => {
-  let allOps = [];
+  const allOps = [];
   allOps.push(`Query: {${queries.map((q) => generateOperation('Query', 'Query', q)).join(',\n')}}`);
   if (mutations) {
     allOps.push(
@@ -307,7 +307,7 @@ const apiFetch = (options: fetchOptions, query: string, name: string) => {
       return response.data[name];
     });
 };
-  
+
 export const Api = (...options: fetchOptions) => ({
     ${generateOperations({ queries, mutations, subscriptions }).join(',\n')}
 });

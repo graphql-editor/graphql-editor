@@ -5,6 +5,7 @@ import {
   EditorNodeDefinition,
   GraphQLNodeParams
 } from '../../Models';
+import { OperationType, ValueDefinition } from '../../Models/Spec';
 import { help } from '../help';
 /**
  * Class responsible for Connection Utils
@@ -35,16 +36,41 @@ export class Utils {
     }
   ];
   /**
+   * Options for root type node
+   *
+   * @static
+   * @type {NodeOption[]}
+   * @memberof Utils
+   */
+  static rootOptions: NodeOption[] = [
+    {
+      name: OperationType.query,
+      help: help.query
+    },
+    {
+      name: OperationType.mutation,
+      help: help.mutation
+    },
+    {
+      name: OperationType.subscription,
+      help: help.subscription
+    }
+  ];
+  /**
    * create basic node to use with definitions
    *
    * @static
    * @memberof Utils
    */
-  static createOND = (name: string): EditorNodeDefinition['node'] => ({
-    name: `${name}Node`,
-    description: `${name} object node`,
+  static createOND = (
+    name: string = '',
+    notEditable: boolean = false
+  ): EditorNodeDefinition['node'] => ({
+    name,
+    description: ``,
     inputs: [],
-    outputs: null
+    outputs: null,
+    notEditable
   })
   /**
    * Map definitions to format accepted by graphsource menu
@@ -76,12 +102,31 @@ export class Utils {
       .filter((a) => a.length)
       .map((definitions) => ({
         category: {
-          name: `${definitions[0].parent!.type} →`,
+          name: definitions[0].parent ? `${definitions[0].parent!.type} →` : 'scalars →',
           definitions: definitions.map(Utils.nodeDefinitionToAcceptedEditorNodeDefinition)
         }
       }))
+
   /**
-   * Get Definitions of nodes connected to parent node
+   * Sort defintions by type of parent
+   *
+   * @static
+   * @memberof Utils
+   */
+  static sortByParentType = (definitions: EditorNodeDefinition[]): EditorNodeDefinition[][] => {
+    const mapDefintions = definitions.reduce(
+      (a, b) => {
+        const index = b.parent ? b.parent.type : 'scalars';
+        a[index] = a[index] || [];
+        a[index].push(b);
+        return a;
+      },
+      {} as Record<string, EditorNodeDefinition[]>
+    );
+    return Object.values(mapDefintions);
+  }
+  /**
+   * Get Definitions of nodes instantiated by nodes connected to parent node
    *
    * @static
    * @memberof Utils
@@ -90,12 +135,50 @@ export class Utils {
     d: EditorNodeDefinition,
     nodes: Array<Node<GraphQLNodeParams>>
   ): EditorNodeDefinition[] => {
+    const parentNode = nodes!.find((n) => !!n.editsDefinitions && n.editsDefinitions.includes(d))!;
+    const possibleNodes = parentNode
+      .inputs!.map((i) => i.editsDefinitions || [])
+      .reduce((a, b) => [...a, ...b]);
+    return possibleNodes;
+  }
+  /**
+   * Get Definitions of nodes instantiated by nodes connected to parent node
+   *
+   * @static
+   * @memberof Utils
+   */
+  static getDefinitionsFromParentInput = (
+    d: EditorNodeDefinition,
+    nodes: Array<Node<GraphQLNodeParams>>
+  ): EditorNodeDefinition[] => {
+    const goToInput = (def: EditorNodeDefinition): EditorNodeDefinition => {
+      if (def.data && def.data.type !== ValueDefinition.InputValueDefinition && def.parent) {
+        return goToInput(def.parent);
+      }
+      return def;
+    };
+    const parentInputNode = goToInput(d);
     const parentNode = nodes!.find(
-      (n) => !!n.editsDefinitions && n.editsDefinitions.includes(d.parent!)
+      (n) => !!n.editsDefinitions && n.editsDefinitions.includes(parentInputNode)
     )!;
     const possibleNodes = parentNode
       .inputs!.map((i) => i.editsDefinitions || [])
       .reduce((a, b) => [...a, ...b]);
+    return possibleNodes;
+  }
+
+  /**
+   * Get Definitions of nodes connected to parent node
+   *
+   * @static
+   * @memberof Utils
+   */
+  static getSameDefinitionsAsParent = (
+    d: EditorNodeDefinition,
+    nodes: Array<Node<GraphQLNodeParams>>
+  ): EditorNodeDefinition[] => {
+    const parentNode = nodes!.find((n) => !!n.editsDefinitions && n.editsDefinitions.includes(d))!;
+    const possibleNodes = parentNode.inputs!.map((i) => i.definition);
     return possibleNodes;
   }
 }

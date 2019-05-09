@@ -1,14 +1,7 @@
 import { Link, Node } from 'graphsource';
-import { Directive, NodeData, Operations, ParserField, ParserRoot } from '../Models';
-import { TypeDefinition, TypeSystemDefinition } from '../Models/Spec';
-import {
-  directiveNodeTemplate,
-  enumNodeTemplate,
-  inputNodeTemplate,
-  scalarNodeTemplate,
-  typeNodeTemplate,
-  unionNodeTemplate
-} from './templates/objectNode';
+import { Directive, GraphQLNodeParams, Options, ParserField } from '../Models';
+import { Helpers, OperationType, TypeDefinition, TypeSystemDefinition } from '../Models/Spec';
+import { TemplateUtils } from './templates/TemplateUtils';
 
 export class NodesToTree {
   static resolveFieldNode = (i: Node): ParserField =>
@@ -18,151 +11,82 @@ export class NodesToTree {
         name: i.definition.type,
         options: i.options
       },
+      data: i.definition.data,
       description: i.description,
       args: i.inputs ? i.inputs.map(NodesToTree.resolveFieldNode) : undefined
     } as ParserField)
-  static resolveDirectiveObjectNode = (n: Node) => {
-    const templateField: ParserRoot = {
-      name: n.name,
-      description: n.description,
-      type: {
-        name: n.definition.type,
-        directiveOptions: n.options as Directive[]
-      },
-      fields: n.inputs ? n.inputs.map(NodesToTree.resolveFieldNode) : undefined
-    };
-    return directiveNodeTemplate({
-      ...templateField
-    });
-  }
-  static resolveInputObjectNode = (n: Node) => {
+  static resolveObjectNode = (n: Node) => {
     const templateField: ParserField = {
       name: n.name,
       description: n.description,
       type: {
-        name: n.definition.type
+        name: n.definition.type,
+        options: n.options && (n.options.filter((o) => o in Options) as Options[]),
+        operations: n.options && (n.options.filter((o) => o in OperationType) as OperationType[]),
+        directiveOptions:
+          n.definition.type === TypeSystemDefinition.DirectiveDefinition
+            ? (n.options as Directive[])
+            : undefined
       },
-      args: n.inputs ? n.inputs.map(NodesToTree.resolveFieldNode) : undefined
-    };
-    return inputNodeTemplate({
-      ...templateField
-    });
-  }
-  static resolveObjectNode = (n: Node) => {
-    const templateField: ParserRoot = {
-      name: n.name,
-      description: n.description,
-      type: {
-        name: n.definition.type
-      },
+      data: n.definition.data,
       directives: n.inputs
         ? n.inputs
-            .filter((i) => i.definition.type === NodeData.directives)
+            .filter((i) => i.definition.type === Helpers.Directives)
             .map((i) => i.inputs || [])
             .reduce((a, b) => a.concat(b), [])
             .map(NodesToTree.resolveFieldNode)
         : undefined,
       interfaces: n.inputs
         ? n.inputs
-            .filter((i) => i.definition.type === NodeData.implements)
+            .filter((i) => i.definition.type === Helpers.Implements)
             .map((i) => (i.inputs ? i.inputs.map((n) => n.definition.type) : []))
             .reduce((a, b) => a.concat(b), [])
         : undefined,
-      fields: n.inputs
+      args: n.inputs
         ? n.inputs
-            .filter((i) => i.definition.type !== NodeData.implements)
-            .filter((i) => i.definition.type !== NodeData.directives)
+            .filter((i) => i.definition.type !== Helpers.Implements)
+            .filter((i) => i.definition.type !== Helpers.Directives)
             .map(NodesToTree.resolveFieldNode)
         : undefined
     };
-    console.log(templateField);
-    if (!n.inputs) {
-      return typeNodeTemplate(templateField);
-    }
-    return typeNodeTemplate(templateField);
+    return templateField;
   }
-  static parse(nodes: Node[], links: Link[]) {
+  static parse(nodes: Array<Node<GraphQLNodeParams>>, links: Link[]) {
     if (!nodes.length) {
       return '';
     }
     const objectNodes = nodes.filter((n) => n.definition.root);
     const joinDefinitions = (...defintions: string[]) => defintions.join('\n\n');
-    const operations: Record<Operations, string | null> = {
-      [Operations.query]: null,
-      [Operations.mutation]: null,
-      [Operations.subscription]: null
+    const operations: Record<OperationType, string | null> = {
+      [OperationType.query]: null,
+      [OperationType.mutation]: null,
+      [OperationType.subscription]: null
     };
     const definitions = objectNodes.map((n) => {
-      const {
-        name,
-        description,
-        definition: { type }
-      } = n;
-      if (type === TypeSystemDefinition.DirectiveDefinition) {
-        return NodesToTree.resolveDirectiveObjectNode(n);
-      }
-      if (type === TypeDefinition.ScalarTypeDefinition) {
-        return scalarNodeTemplate({
-          name,
-          description
-        });
-      }
-      if (type === TypeDefinition.EnumTypeDefinition) {
-        return enumNodeTemplate(
-          {
-            name,
-            description
-          },
-          n.inputs
-            ? n.inputs.map(
-                (i) =>
-                  ({
-                    name: i.name,
-                    description: i.description
-                  } as Pick<ParserField, 'description' | 'name'>)
-              )
-            : []
-        );
-      }
-      if (type === TypeDefinition.UnionTypeDefinition) {
-        return unionNodeTemplate(
-          {
-            name,
-            description
-          },
-          n.inputs ? n.inputs.map((i) => i.definition.type) : []
-        );
-      }
-      if (type === TypeDefinition.InputObjectTypeDefinition) {
-        return NodesToTree.resolveInputObjectNode(n);
-      }
-      if (type === TypeDefinition.InterfaceTypeDefinition) {
-        return NodesToTree.resolveObjectNode(n);
-      }
-      if (type === TypeDefinition.ObjectTypeDefinition) {
+      if (n.definition.type === TypeDefinition.ObjectTypeDefinition) {
         if (n.options) {
-          if (n.options.find((o) => o === Operations.query)) {
-            operations[Operations.query] = name;
+          if (n.options.find((o) => o === OperationType.query)) {
+            operations[OperationType.query] = n.name;
           }
-          if (n.options.find((o) => o === Operations.mutation)) {
-            operations[Operations.mutation] = name;
+          if (n.options.find((o) => o === OperationType.mutation)) {
+            operations[OperationType.mutation] = n.name;
           }
-          if (n.options.find((o) => o === Operations.subscription)) {
-            operations[Operations.subscription] = name;
+          if (n.options.find((o) => o === OperationType.subscription)) {
+            operations[OperationType.subscription] = n.name;
           }
         }
-        return NodesToTree.resolveObjectNode(n);
       }
-      return '';
+      return NodesToTree.resolveObjectNode(n);
     });
     const resolvedOperations = Object.keys(operations)
-      .filter((k) => operations[k as Operations])
-      .map((k) => `\t${k}: ${operations[k as Operations]}`)
+      .filter((k) => operations[k as OperationType])
+      .map((k) => `\t${k}: ${operations[k as OperationType]}`)
       .join(',\n');
-    return joinDefinitions(...definitions)
+    const alldefs = definitions.map(TemplateUtils.resolverForConnection);
+    return joinDefinitions(...alldefs)
       .concat('\n')
       .concat(
-        operations[Operations.query]
+        operations[OperationType.query]
           ? `schema{\n${resolvedOperations}\n}`
           : `
       `

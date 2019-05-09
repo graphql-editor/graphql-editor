@@ -1,4 +1,4 @@
-import { ParserField, ParserRoot } from '../../Models';
+import { ParserField } from '../../Models';
 import { TypeDefinition } from '../../Models/Spec';
 
 const resolveField = (f: ParserField, resolveArgs = true) => {
@@ -6,7 +6,7 @@ const resolveField = (f: ParserField, resolveArgs = true) => {
   return `\t\t${name}:"${type.name}"`;
 };
 
-export const resolveReturnFromRoot = (i: ParserRoot) => {
+export const resolveReturnFromRoot = (i: ParserField) => {
   if (i.type.name === TypeDefinition.UnionTypeDefinition) {
     return;
   }
@@ -16,8 +16,8 @@ export const resolveReturnFromRoot = (i: ParserRoot) => {
   ) {
     return;
   }
-  if (!i.fields) {
+  if (!i.args) {
     return;
   }
-  return `\t${i.name}:{\n${i.fields.map((f) => resolveField(f)).join(',\n')}\n\t}`;
+  return `\t${i.name}:{\n${i.args.map((f) => resolveField(f)).join(',\n')}\n\t}`;
 };

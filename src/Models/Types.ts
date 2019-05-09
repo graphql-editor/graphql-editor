@@ -1,5 +1,7 @@
 import { AcceptedNodeDefinition, NodeDefinition } from 'graphsource';
 import {
+  Helpers,
+  Instances,
   ScalarTypes,
   Type,
   TypeDefinition,
@@ -7,26 +9,6 @@ import {
   Value,
   ValueDefinition
 } from './Spec';
-
-export enum Operations {
-  query = 'query',
-  mutation = 'mutation',
-  subscription = 'subscription'
-}
-
-export enum NodeData {
-  argumentForDirective = 'argumentForDirective',
-  directiveInputArgument = 'directiveInputArgument',
-  directiveInputField = 'directiveInputField',
-  directiveScalarArgument = 'directiveScalarArgument',
-  directiveScalarField = 'directiveScalarField',
-  unionType = 'unionType',
-  implements = 'implements',
-  enumValue = 'enumValue',
-  defaultValue = 'defaultValue',
-  defaultEnumValue = 'defaultEnumValue',
-  directives = 'directives'
-}
 
 export enum Directive {
   SCHEMA = 'SCHEMA',
@@ -49,11 +31,12 @@ export enum BuiltInDirectives {
 }
 export type AllTypes =
   | ScalarTypes
-  | NodeData
   | Value
   | ValueDefinition
   | TypeDefinition
   | TypeSystemDefinition
+  | Instances
+  | Helpers
   | Type;
 
 export interface GraphQLNodeParams {

@@ -1,4 +1,5 @@
-import { Operations, ParserTree } from '../Models';
+import { ParserTree } from '../Models';
+import { OperationType } from '../Models/Spec';
 import { body } from './templates/operations';
 import { resolvePropTypeFromRoot } from './templates/returnedPropTypes';
 import { resolveReturnFromRoot } from './templates/returnedReturns';
@@ -17,16 +18,23 @@ export class TreeToTS {
       .join(',\n')}\n}`;
     const operations = body({
       queries: tree.nodes
-        .filter((n) => n.type.options && n.type.options.find((o) => o === Operations.query))
-        .map((n) => (n.fields ? n.fields.map((f) => f.name) : []))
+        .filter(
+          (n) => n.type.operations && n.type.operations.find((o) => o === OperationType.query)
+        )
+        .map((n) => (n.args ? n.args.map((f) => f.name) : []))
         .reduce((a, b) => a.concat(b), []),
       mutations: tree.nodes
-        .filter((n) => n.type.options && n.type.options.find((o) => o === Operations.mutation))
-        .map((n) => (n.fields ? n.fields.map((f) => f.name) : []))
+        .filter(
+          (n) => n.type.operations && n.type.operations.find((o) => o === OperationType.mutation)
+        )
+        .map((n) => (n.args ? n.args.map((f) => f.name) : []))
         .reduce((a, b) => a.concat(b), []),
       subscriptions: tree.nodes
-        .filter((n) => n.type.options && n.type.options.find((o) => o === Operations.subscription))
-        .map((n) => (n.fields ? n.fields.map((f) => f.name) : []))
+        .filter(
+          (n) =>
+            n.type.operations && n.type.operations.find((o) => o === OperationType.subscription)
+        )
+        .map((n) => (n.args ? n.args.map((f) => f.name) : []))
         .reduce((a, b) => a.concat(b), [])
     });
     return propTypes

@@ -1,15 +1,21 @@
 import { EditorNodeDefinition } from '../../Models';
-import { Type, TypeDefinition, TypeSystemDefinition, ValueDefinition } from '../../Models/Spec';
+import { TypeDefinition, TypeSystemDefinition, Value, ValueDefinition } from '../../Models/Spec';
 import { Utils } from './Utils';
 
-export const InputValueInstance: Partial<EditorNodeDefinition> = {
+export const InputValueInstance: Partial<EditorNodeDefinition> &
+  Pick<EditorNodeDefinition, 'node'> = {
   options: Utils.ArrayNonNullOptions,
   data: {
     type: ValueDefinition.InputValueDefinition,
     for: [
       TypeDefinition.InputObjectTypeDefinition,
-      Type.NamedType,
-      TypeSystemDefinition.DirectiveDefinition
+      TypeSystemDefinition.FieldDefinition,
+      TypeSystemDefinition.DirectiveDefinition,
+      Value.ObjectValue
     ]
+  },
+  node: {
+    ...Utils.createOND(),
+    outputs: []
   }
 };

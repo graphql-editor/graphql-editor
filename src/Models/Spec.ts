@@ -39,7 +39,9 @@ export enum Type {
 export enum TypeSystemDefinition {
   SchemaDefinition = 'SchemaDefinition',
   TypeDefinition = 'TypeDefinition',
-  DirectiveDefinition = 'DirectiveDefinition'
+  DirectiveDefinition = 'DirectiveDefinition',
+  FieldDefinition = 'FieldDefinition',
+  UnionMemberDefinition = 'UnionMemberDefinition' // NOT IN SPEC
 }
 
 export enum TypeSystemExtension {
@@ -71,8 +73,19 @@ export enum TypeExtension {
   InputObjectTypeExtension = 'InputObjectTypeExtension'
 }
 
-export type OperationType = 'query' | 'mutation' | 'subscription';
+export enum OperationType {
+  query = 'query',
+  mutation = 'mutation',
+  subscription = 'subscription'
+}
+
+// below this line this is out of spec
 
 export enum Instances {
-  InputValueDefinitionInstance = 'InputValueDefinitionInstance'
+  Argument = 'Argument',
+  Directive = 'Directive'
+}
+export enum Helpers {
+  Directives = 'Directives',
+  Implements = 'Implements'
 }
