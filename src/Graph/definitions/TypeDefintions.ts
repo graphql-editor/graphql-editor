@@ -112,8 +112,26 @@ export class TypeDefinitions {
         },
         {
           ...InputValueInstance,
+          help: help.EnumValue,
+          instances: [
+            {
+              data: {
+                type: Instances.Argument
+              },
+              options: [
+                {
+                  name: Options.array,
+                  help: help.array
+                }
+              ],
+              acceptsInputs: (d, defs, _, nodes) =>
+                defs
+                  .filter((d) => d.data && d.data.type === Value.EnumValue)
+                  .map(Utils.nodeDefinitionToAcceptedEditorNodeDefinition)
+            }
+          ],
           acceptsInputs: (d, defs, _, nodes) =>
-            Utils.getDefinitionsFromParent(d, nodes!)
+            defs
               .filter((d) => d.data && d.data.type === Value.EnumValue)
               .map(Utils.nodeDefinitionToAcceptedEditorNodeDefinition)
         }
