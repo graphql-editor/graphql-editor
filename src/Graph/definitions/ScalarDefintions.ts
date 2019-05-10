@@ -1,7 +1,8 @@
-import { EditorNodeDefinition, Options } from '../../Models';
+import { EditorNodeDefinition } from '../../Models';
 
-import { Instances, ScalarTypes, Value } from '../../Models/Spec';
+import { ScalarTypes, Value, ValueDefinition } from '../../Models/Spec';
 import { help } from '../help';
+import { ArgumentInstance } from './Argument';
 import { FieldInstance } from './Field';
 import { InputValueInstance } from './InputValue';
 import { Utils } from './Utils';
@@ -33,15 +34,7 @@ export class ScalarDefinitions {
           help: helpText,
           instances: [
             {
-              data: {
-                type: Instances.Argument
-              },
-              options: [
-                {
-                  name: Options.array,
-                  help: help.array
-                }
-              ],
+              ...ArgumentInstance,
               acceptsInputs: (d, defs, _, nodes) =>
                 defs
                   .filter((d) => d.data && d.data.type === valueType)
@@ -51,6 +44,11 @@ export class ScalarDefinitions {
           acceptsInputs: (d, defs, _, nodes) =>
             defs
               .filter((d) => d.data && d.data.type === valueType)
+              .concat(
+                Utils.dataForTypes(defs, [ValueDefinition.InputValueDefinition]).filter(
+                  (d) => d.data && d.data.type !== Value.ObjectValue
+                )
+              )
               .map(Utils.nodeDefinitionToAcceptedEditorNodeDefinition)
         }
       ];
@@ -76,7 +74,7 @@ export class ScalarDefinitions {
     return [
       ...BooleanDefintions,
       ...FloatDefintions,
-      ...IDDefintions,
+      ...[IDDefintions[0], IDDefintions[2]],
       ...IntDefinitions,
       ...StringDefinitions
     ];

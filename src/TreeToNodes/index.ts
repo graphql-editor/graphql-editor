@@ -70,6 +70,25 @@ export class TreeToNodes {
       );
     });
   }
+  static createDirectivesHelper = (
+    rootNode: Node,
+    nodeDefinitions: EditorNodeDefinition[],
+    links: Link[],
+    nodes: Array<Node<GraphQLNodeParams>>
+  ) => {
+    return TreeToNodes.connectAndCreate(
+      {
+        name: Helpers.Directives,
+        type: {
+          name: Helpers.Directives
+        }
+      },
+      rootNode,
+      links,
+      nodeDefinitions,
+      nodes
+    );
+  }
   static resolveField(
     root: ParserField,
     nodeDefinitions: EditorNodeDefinition[],
@@ -124,7 +143,7 @@ export class TreeToNodes {
         };
       });
       rootNodes
-        .filter((pf) => pf.parserField.interfaces)
+        .filter((pf) => pf.parserField.interfaces && pf.parserField.interfaces.length)
         .forEach((f) => {
           TreeToNodes.createInterfaces(
             f.parserField.interfaces!,
@@ -135,7 +154,7 @@ export class TreeToNodes {
           );
         });
       const returnRootNodes = rootNodes
-        .filter((rn) => rn.parserField.args)
+        .filter((rn) => rn.parserField.args && rn.parserField.args.length)
         .map((rn) =>
           rn.parserField.args!.map((a) => ({
             parserField: a,
@@ -145,6 +164,24 @@ export class TreeToNodes {
         .reduce((a, b) => [...a, ...b], []);
       if (returnRootNodes.length > 0) {
         resolveAllFields(returnRootNodes);
+      }
+      const returnDirectives = rootNodes
+        .filter((rn) => rn.parserField.directives && rn.parserField.directives.length)
+        .map((rn) => {
+          const directiveHelper = TreeToNodes.createDirectivesHelper(
+            rn.node,
+            nodeDefinitions,
+            links,
+            nodes
+          );
+          return rn.parserField.directives!.map((a) => ({
+            parserField: a,
+            node: directiveHelper
+          }));
+        })
+        .reduce((a, b) => [...a, ...b], []);
+      if (returnDirectives.length > 0) {
+        resolveAllFields(returnDirectives);
       }
       return;
     };

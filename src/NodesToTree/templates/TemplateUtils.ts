@@ -7,6 +7,7 @@ import {
   ValueDefinition
 } from '../../Models/Spec';
 import { ArgumentTemplate } from './ArgumentTemplate';
+import { DirectiveTemplate } from './DirectiveTemplate';
 import { EnumValueDefinitionTemplate } from './EnumValueDefinitionTemplate';
 import { FieldTemplate } from './FieldTemplate';
 import { InputValueTemplate } from './InputValueTemplate';
@@ -36,12 +37,7 @@ export class TemplateUtils {
     interfaces && interfaces.length ? ` implements ${interfaces.join(' & ')}` : ''
   static resolveDirectives = (directives?: ParserField[]) =>
     directives && directives.length
-      ? ` ${directives.map(
-          (d) =>
-            `@${d.name}${
-              d.args && d.args.length ? `(${d.args.map(TemplateUtils.resolverForConnection)})` : ``
-            }`
-        )}`
+      ? ` ${directives.map((d) => TemplateUtils.resolverForConnection(d)).join(' ')}`
       : ''
   static resolverForConnection = (f: ParserField): string => {
     if (f.data) {
@@ -69,7 +65,7 @@ export class TemplateUtils {
         case Instances.Argument:
           return ArgumentTemplate.resolve(f);
         case Instances.Directive:
-          return FieldTemplate.resolve(f);
+          return DirectiveTemplate.resolve(f);
         default:
           return '';
       }

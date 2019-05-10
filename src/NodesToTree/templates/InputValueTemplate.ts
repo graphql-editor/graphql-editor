@@ -13,6 +13,8 @@ export class InputValueTemplate {
     }
     return `${TemplateUtils.descriptionResolver(f.description)}${
       f.name
-    } : ${TemplateUtils.resolveType(f)}${argsString}`;
+    } : ${TemplateUtils.resolveType(f)}${argsString}${TemplateUtils.resolveDirectives(
+      f.directives
+    )}`;
   }
 }

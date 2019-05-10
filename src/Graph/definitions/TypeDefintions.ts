@@ -1,5 +1,5 @@
 import { NodeOption } from 'graphsource';
-import { EditorNodeDefinition, Options } from '../../Models';
+import { EditorNodeDefinition } from '../../Models';
 import {
   Directive,
   Helpers,
@@ -9,6 +9,7 @@ import {
   Value,
   ValueDefinition
 } from '../../Models/Spec';
+import { ArgumentInstance } from './Argument';
 import { FieldInstance } from './Field';
 import { help } from './help';
 import { InputValueInstance } from './InputValue';
@@ -115,15 +116,11 @@ export class TypeDefinitions {
           help: help.EnumValue,
           instances: [
             {
-              data: {
-                type: Instances.Argument
+              ...ArgumentInstance,
+              node: {
+                notEditable: true,
+                name: undefined
               },
-              options: [
-                {
-                  name: Options.array,
-                  help: help.array
-                }
-              ],
               acceptsInputs: (d, defs, _, nodes) =>
                 defs
                   .filter((d) => d.data && d.data.type === Value.EnumValue)
@@ -181,18 +178,7 @@ export class TypeDefinitions {
           },
           instances: [
             {
-              node: {
-                notEditable: true
-              },
-              data: {
-                type: Instances.Argument
-              },
-              options: [
-                {
-                  name: Options.array,
-                  help: help.array
-                }
-              ],
+              ...ArgumentInstance,
               acceptsInputs: (d, defs, _, nodes) =>
                 Utils.dataForTypes(defs, [ValueDefinition.InputValueDefinition]).map(
                   Utils.nodeDefinitionToAcceptedEditorNodeDefinition
@@ -218,6 +204,10 @@ export class TypeDefinitions {
           data: {
             type: Instances.Directive,
             for: [Helpers.Directives]
+          },
+          node: {
+            notEditable: true,
+            name: undefined
           },
           acceptsInputs: (d, defs, _, nodes) =>
             Utils.displayAsCategories(

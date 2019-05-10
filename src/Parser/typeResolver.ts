@@ -1,4 +1,6 @@
 import {
+  ArgumentNode,
+  DirectiveNode,
   FieldDefinitionNode,
   InputValueDefinitionNode,
   ObjectFieldNode,
@@ -42,6 +44,7 @@ export class TypeResolver {
           description: n.description && n.description.value,
           args: n.arguments && TypeResolver.iterateInputValueFields(n.arguments),
           type: TypeResolver.resolveSingleField(n.type),
+          directives: n.directives && TypeResolver.iterateDirectives(n.directives),
           data: {
             type: TypeSystemDefinition.FieldDefinition
           }
@@ -118,14 +121,46 @@ export class TypeResolver {
     }
     return [];
   }
+  static iterateDirectives(directives: ReadonlyArray<DirectiveNode>): ParserField[] {
+    return directives.map(
+      (n) =>
+        ({
+          name: n.name.value,
+          type: {
+            name: n.name.value,
+            options: []
+          },
+          data: {
+            type: Instances.Directive
+          },
+          args: n.arguments ? TypeResolver.iterateArgumentFields(n.arguments) : []
+        } as ParserField)
+    );
+  }
+  static iterateArgumentFields(fields: ReadonlyArray<ArgumentNode>): ParserField[] {
+    return fields.map(
+      (n) =>
+        ({
+          name: n.name.value,
+          type: {
+            name: n.name.value,
+            options: TypeResolver.resolveInputValueOptions(n.value)
+          },
+          data: {
+            type: Instances.Argument
+          },
+          args: TypeResolver.resolveValue(n.value)
+        } as ParserField)
+    );
+  }
   static iterateInputValueFields(fields: ReadonlyArray<InputValueDefinitionNode>): ParserField[] {
     return fields.map(
       (n) =>
         ({
           name: n.name.value,
           description: n.description && n.description.value,
+          directives: n.directives && TypeResolver.iterateDirectives(n.directives),
           type: TypeResolver.resolveSingleField(n.type),
-          options: n.defaultValue && TypeResolver.resolveInputValueOptions(n.defaultValue),
           data: {
             type: ValueDefinition.InputValueDefinition
           },
@@ -149,6 +184,7 @@ export class TypeResolver {
           ({
             name: v.name.value,
             description: v.description && v.description.value,
+            directives: v.directives && TypeResolver.iterateDirectives(v.directives),
             type: { name: ValueDefinition.EnumValueDefinition },
             data: {
               type: ValueDefinition.EnumValueDefinition

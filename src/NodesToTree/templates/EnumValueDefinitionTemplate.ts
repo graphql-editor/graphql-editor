@@ -3,6 +3,8 @@ import { TemplateUtils } from './TemplateUtils';
 
 export class EnumValueDefinitionTemplate {
   static resolve(f: ParserField) {
-    return `${TemplateUtils.descriptionResolver(f.description)}${f.name}`;
+    return `${TemplateUtils.descriptionResolver(f.description)}${
+      f.name
+    }${TemplateUtils.resolveDirectives(f.directives)}`;
   }
 }

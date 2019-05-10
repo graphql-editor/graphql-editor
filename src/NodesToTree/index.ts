@@ -4,16 +4,27 @@ import { Helpers, OperationType, TypeDefinition, TypeSystemDefinition } from '..
 import { TemplateUtils } from './templates/TemplateUtils';
 
 export class NodesToTree {
-  static resolveFieldNode = (i: Node): ParserField =>
+  static resolveFieldNode = (n: Node): ParserField =>
     ({
-      name: i.name,
+      name: n.name,
       type: {
-        name: i.definition.type,
-        options: i.options
+        name: n.definition.type,
+        options: n.options
       },
-      data: i.definition.data,
-      description: i.description,
-      args: i.inputs ? i.inputs.map(NodesToTree.resolveFieldNode) : undefined
+      data: n.definition.data,
+      description: n.description,
+      directives: n.inputs
+        ? n.inputs
+            .filter((i) => i.definition.type === Helpers.Directives)
+            .map((i) => i.inputs || [])
+            .reduce((a, b) => a.concat(b), [])
+            .map(NodesToTree.resolveFieldNode)
+        : undefined,
+      args: n.inputs
+        ? n.inputs
+            .filter((i) => i.definition.type !== Helpers.Directives)
+            .map(NodesToTree.resolveFieldNode)
+        : undefined
     } as ParserField)
   static resolveObjectNode = (n: Node) => {
     const templateField: ParserField = {
@@ -83,6 +94,7 @@ export class NodesToTree {
       .map((k) => `\t${k}: ${operations[k as OperationType]}`)
       .join(',\n');
     const alldefs = definitions.map(TemplateUtils.resolverForConnection);
+    console.log(alldefs);
     return joinDefinitions(...alldefs)
       .concat('\n')
       .concat(

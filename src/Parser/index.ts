@@ -17,7 +17,7 @@ export class Parser {
       },
       description: n.description ? n.description : undefined,
       interfaces: TypeResolver.resolveInterfaces(n.astNode!),
-      directives: [],
+      directives: n.astNode!.directives && TypeResolver.iterateDirectives(n.astNode!.directives),
       args: TypeResolver.resolveFields(n.astNode!)
     };
   }
@@ -49,7 +49,7 @@ export class Parser {
       Mutation: this.schema!.getMutationType(),
       Subscription: this.schema!.getSubscriptionType()
     };
-
+    console.log(typeMap);
     if (!operations.Query) {
       console.warn('Query is required for schema to work. INVALID SCHEMA');
     }
@@ -62,6 +62,7 @@ export class Parser {
       .filter((t) => t.value.astNode)
       .filter((t) => !excludeRoots.includes(t.value.name))
       .map((t) => t.value);
+    console.log(rootNodes);
     const nodeTree: ParserTree = {
       nodes: rootNodes.map(this.namedTypeToSerializedNodeTree)
     };
@@ -79,7 +80,6 @@ export class Parser {
         }
       }
     });
-    console.log(nodeTree.nodes);
     return nodeTree;
   }
 }

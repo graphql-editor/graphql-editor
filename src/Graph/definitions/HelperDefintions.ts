@@ -1,5 +1,5 @@
 import { EditorNodeDefinition } from '../../Models';
-import { Helpers, TypeDefinition } from '../../Models/Spec';
+import { Helpers, TypeDefinition, TypeSystemDefinition, ValueDefinition } from '../../Models/Spec';
 import { help } from './help';
 import { Utils } from './Utils';
 
@@ -27,7 +27,17 @@ export class HelperDefinitions {
       type: Helpers.Directives,
       data: {
         type: Helpers.Directives,
-        for: [TypeDefinition.ObjectTypeDefinition]
+        for: [
+          TypeSystemDefinition.FieldDefinition,
+          TypeDefinition.ObjectTypeDefinition,
+          TypeDefinition.EnumTypeDefinition,
+          TypeDefinition.InputObjectTypeDefinition,
+          TypeDefinition.InterfaceTypeDefinition,
+          TypeDefinition.UnionTypeDefinition,
+          TypeDefinition.ScalarTypeDefinition,
+          ValueDefinition.EnumValueDefinition,
+          ValueDefinition.InputValueDefinition
+        ]
       },
       acceptsInputs: (d, defs) =>
         Utils.dataForTypes(defs, [Helpers.Directives]).map(

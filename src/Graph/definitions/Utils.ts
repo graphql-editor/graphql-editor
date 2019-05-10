@@ -5,7 +5,7 @@ import {
   EditorNodeDefinition,
   GraphQLNodeParams
 } from '../../Models';
-import { OperationType, ValueDefinition } from '../../Models/Spec';
+import { OperationType, ScalarTypes, ValueDefinition } from '../../Models/Spec';
 import { help } from '../help';
 /**
  * Class responsible for Connection Utils
@@ -63,7 +63,7 @@ export class Utils {
    * @memberof Utils
    */
   static createOND = (
-    name: string = '',
+    name: string | undefined = '',
     notEditable: boolean = false
   ): EditorNodeDefinition['node'] => ({
     name,
@@ -96,14 +96,14 @@ export class Utils {
    * @memberof Utils
    */
   static displayAsCategories = (
-    definitions: EditorNodeDefinition[][]
+    definitions: Record<string, EditorNodeDefinition[]>
   ): AcceptedEditorNodeDefinition[] =>
-    definitions
-      .filter((a) => a.length)
-      .map((definitions) => ({
+    Object.keys(definitions)
+      .filter((a) => definitions[a].length)
+      .map((k) => ({
         category: {
-          name: definitions[0].parent ? `${definitions[0].parent!.type} →` : 'scalars →',
-          definitions: definitions.map(Utils.nodeDefinitionToAcceptedEditorNodeDefinition)
+          name: `${k} →`,
+          definitions: definitions[k].map(Utils.nodeDefinitionToAcceptedEditorNodeDefinition)
         }
       }))
 
@@ -113,17 +113,27 @@ export class Utils {
    * @static
    * @memberof Utils
    */
-  static sortByParentType = (definitions: EditorNodeDefinition[]): EditorNodeDefinition[][] => {
+  static sortByParentType = (
+    definitions: EditorNodeDefinition[]
+  ): Record<string, EditorNodeDefinition[]> => {
     const mapDefintions = definitions.reduce(
       (a, b) => {
-        const index = b.parent ? b.parent.type : 'scalars';
+        let index = b.parent && b.parent.type;
+        if (!index) {
+          if (b.type in ScalarTypes) {
+            index = 'scalars';
+          }
+        }
+        if (!index) {
+          index = 'helpers';
+        }
         a[index] = a[index] || [];
         a[index].push(b);
         return a;
       },
       {} as Record<string, EditorNodeDefinition[]>
     );
-    return Object.values(mapDefintions);
+    return mapDefintions;
   }
   /**
    * Get Definitions of nodes instantiated by nodes connected to parent node
@@ -138,7 +148,7 @@ export class Utils {
     const parentNode = nodes!.find((n) => !!n.editsDefinitions && n.editsDefinitions.includes(d))!;
     const possibleNodes = parentNode
       .inputs!.map((i) => i.editsDefinitions || [])
-      .reduce((a, b) => [...a, ...b]);
+      .reduce((a, b) => [...a, ...b], []);
     return possibleNodes;
   }
   /**
@@ -163,7 +173,7 @@ export class Utils {
     )!;
     const possibleNodes = parentNode
       .inputs!.map((i) => i.editsDefinitions || [])
-      .reduce((a, b) => [...a, ...b]);
+      .reduce((a, b) => [...a, ...b], []);
     return possibleNodes;
   }
 
