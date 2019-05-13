@@ -94,7 +94,6 @@ export class NodesToTree {
       .map((k) => `\t${k}: ${operations[k as OperationType]}`)
       .join(',\n');
     const alldefs = definitions.map(TemplateUtils.resolverForConnection);
-    console.log(alldefs);
     return joinDefinitions(...alldefs)
       .concat('\n')
       .concat(
