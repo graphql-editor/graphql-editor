@@ -1,10 +1,11 @@
-import { EditorNodeDefinition } from '../../Models';
+import { Node } from 'graphsource';
+import { EditorNodeDefinition, GraphQLNodeParams } from '../../Models';
 import { TypeDefinition, Value, ValueDefinition } from '../../Models/Spec';
 import { help } from './help';
 import { Utils } from './Utils';
 
 export class ValueDefinitions {
-  static generate() {
+  static generate(stitchNodes: Array<Node<GraphQLNodeParams>>) {
     const enumValue: EditorNodeDefinition = {
       node: { ...Utils.createOND(), inputs: null, outputs: [] },
       type: ValueDefinition.EnumValueDefinition,
@@ -36,9 +37,10 @@ export class ValueDefinitions {
       help: help.EnumValue,
       acceptsInputs: (d, defs, _, nodes, node) => {
         const [createdFromNode] = node!.outputs!;
-        return Utils.getDefinitionsFromParentInput(createdFromNode.definition, nodes!).map(
-          Utils.nodeDefinitionToAcceptedEditorNodeDefinition
-        );
+        return Utils.getDefinitionsFromParentInput(
+          createdFromNode.definition,
+          nodes!.concat(stitchNodes)
+        ).map(Utils.nodeDefinitionToAcceptedEditorNodeDefinition);
       },
       instances: undefined
     };

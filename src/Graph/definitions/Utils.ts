@@ -145,8 +145,12 @@ export class Utils {
     d: EditorNodeDefinition,
     nodes: Array<Node<GraphQLNodeParams>>
   ): EditorNodeDefinition[] => {
-    const parentNode = nodes!.find((n) => !!n.editsDefinitions && n.editsDefinitions.includes(d))!;
-    const possibleNodes = parentNode
+    const parentNode = nodes!.filter(
+      (n) =>
+        !!n.editsDefinitions &&
+        !!n.editsDefinitions.find((ed) => ed.type === d.type && ed.data!.type === d.data!.type)
+    )!;
+    const possibleNodes = parentNode[0]
       .inputs!.map((i) => i.editsDefinitions || [])
       .reduce((a, b) => [...a, ...b], []);
     return possibleNodes;
@@ -169,7 +173,11 @@ export class Utils {
     };
     const parentInputNode = goToInput(d);
     const parentNode = nodes!.find(
-      (n) => !!n.editsDefinitions && n.editsDefinitions.includes(parentInputNode)
+      (n) =>
+        !!n.editsDefinitions &&
+        !!n.editsDefinitions.find(
+          (ed) => ed.type === parentInputNode.type && ed.data!.type === parentInputNode.data!.type
+        )
     )!;
     const possibleNodes = parentNode
       .inputs!.map((i) => i.editsDefinitions || [])

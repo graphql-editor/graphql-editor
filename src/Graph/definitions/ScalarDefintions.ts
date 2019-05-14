@@ -35,13 +35,13 @@ export class ScalarDefinitions {
           instances: [
             {
               ...ArgumentInstance,
-              acceptsInputs: (d, defs, _, nodes) =>
+              acceptsInputs: (d, defs) =>
                 defs
                   .filter((d) => d.data && d.data.type === valueType)
                   .map(Utils.nodeDefinitionToAcceptedEditorNodeDefinition)
             }
           ],
-          acceptsInputs: (d, defs, _, nodes) =>
+          acceptsInputs: (d, defs) =>
             defs
               .filter((d) => d.data && d.data.type === valueType)
               .concat(

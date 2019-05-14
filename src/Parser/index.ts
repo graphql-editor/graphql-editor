@@ -39,11 +39,10 @@ export class Parser {
     } catch (error) {
       console.log(schema);
     }
-
     const typeMap = this.schema!.getTypeMap();
-    const directives = this.schema!.getDirectives().filter(
-      (d) => !Object.keys(BuiltInDirectives).includes(d.name)
-    );
+    const directives = this.schema!.getDirectives()
+      .filter((d) => !Object.keys(BuiltInDirectives).includes(d.name))
+      .filter((t) => !excludeRoots.includes(t.name));
     const operations = {
       Query: this.schema!.getQueryType(),
       Mutation: this.schema!.getMutationType(),
