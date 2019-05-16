@@ -4,8 +4,7 @@ import { Directive, OperationType, TypeDefinition, TypeSystemDefinition } from '
 import { TypeResolver } from './typeResolver';
 export class Parser {
   static importSchema = (schema: string): GraphQLSchema => buildASTSchema(parse(schema));
-  private schema?: GraphQLSchema;
-  namedTypeToSerializedNodeTree = (n: GraphQLNamedType): ParserField => {
+  static namedTypeToSerializedNodeTree = (n: GraphQLNamedType): ParserField => {
     const { name } = n;
     return {
       name,
@@ -21,7 +20,7 @@ export class Parser {
       args: TypeResolver.resolveFields(n.astNode!)
     };
   }
-  directiveToSerializedNodeTree = (n: GraphQLDirective): ParserField => {
+  static directiveToSerializedNodeTree = (n: GraphQLDirective): ParserField => {
     const { name } = n;
     return {
       name,
@@ -33,20 +32,22 @@ export class Parser {
       args: TypeResolver.iterateInputValueFields(n.args.map((a) => a.astNode!))
     };
   }
-  parse = (schema: string, excludeRoots: string[] = []) => {
+  static parse = (schema: string, excludeRoots: string[] = []) => {
+    let parsedSchema: GraphQLSchema;
     try {
-      this.schema = Parser.importSchema(schema);
+      parsedSchema = Parser.importSchema(schema);
     } catch (error) {
       console.log(schema);
     }
-    const typeMap = this.schema!.getTypeMap();
-    const directives = this.schema!.getDirectives()
+    const typeMap = parsedSchema!.getTypeMap();
+    const directives = parsedSchema!
+      .getDirectives()
       .filter((d) => !Object.keys(BuiltInDirectives).includes(d.name))
       .filter((t) => !excludeRoots.includes(t.name));
     const operations = {
-      Query: this.schema!.getQueryType(),
-      Mutation: this.schema!.getMutationType(),
-      Subscription: this.schema!.getSubscriptionType()
+      Query: parsedSchema!.getQueryType(),
+      Mutation: parsedSchema!.getMutationType(),
+      Subscription: parsedSchema!.getSubscriptionType()
     };
     if (!operations.Query) {
       console.warn('Query is required for schema to work. INVALID SCHEMA');
@@ -61,9 +62,9 @@ export class Parser {
       .filter((t) => !excludeRoots.includes(t.value.name))
       .map((t) => t.value);
     const nodeTree: ParserTree = {
-      nodes: rootNodes.map(this.namedTypeToSerializedNodeTree)
+      nodes: rootNodes.map(Parser.namedTypeToSerializedNodeTree)
     };
-    nodeTree.nodes = nodeTree.nodes.concat(directives.map(this.directiveToSerializedNodeTree));
+    nodeTree.nodes = nodeTree.nodes.concat(directives.map(Parser.directiveToSerializedNodeTree));
     nodeTree.nodes.forEach((n) => {
       if (n.type.name === TypeDefinition.ObjectTypeDefinition) {
         if (operations.Query && operations.Query.name === n.name) {

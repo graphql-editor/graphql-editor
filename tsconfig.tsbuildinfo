@@ -718,8 +718,8 @@
         "signature": "043f9024756c745cfd8e9def513cc0b54c50d214a8d84a31e2c79329f82a46c9"
       },
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/parser/index.ts": {
-        "version": "ef62287e786a12adda9841d2047d47fd269dfea546b8a2f238cc88ebf0db2f1a",
-        "signature": "3b632dab2ab2f8fa1a74232d6d302dce54c4f64055cbcbd91e46aa743e151ce9"
+        "version": "9543f63351a501cbba9524e59115b0a6065ae1ba77ad05a5495cc12e0e3fc1d3",
+        "signature": "dccedb4912393dfd64d24ca7101edd47e3af6451d96f517beebf8b18028e21e1"
       },
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/treetofaker/index.ts": {
         "version": "6ea1c667b90e88cfb26e621cd85fb77f0ddb7fb90afc794b5c9a467dc9ef9fcc",
@@ -730,11 +730,11 @@
         "signature": "cca1206c4a18de6eb4c40414ecf0381c9a6d157aca1d8b007fbf77ad63c3f485"
       },
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/treetots/templates/operations.ts": {
-        "version": "11f872e835da23aa7ed643ef4aecd31a200cf82c3750e96b4a8759ec8023182f",
+        "version": "7645f467945ed90f82f83d0460561ff71ba91e7224073f3f929cff1c483ba3db",
         "signature": "049009a7a3ed7b563c639b44fd79ec6c5edbd4cc8b6679759cd3d5a39c60ee3d"
       },
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/treetots/templates/returnedproptypes.ts": {
-        "version": "9faf33bb9fa2003875024f6ff8d2a0c19a32f424e9b99ed0d0e040ea9aa240a3",
+        "version": "8cd70e7ef0588659cd61d79b09d7e22a136c73d973e9a8302cf38aced37ffc58",
         "signature": "0be724fa93c39ff9d8417c8e16cd027291fbb1eec62d52a1b755e8afc97b3ce0"
       },
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/treetots/templates/returnedreturns.ts": {
@@ -782,7 +782,7 @@
         "signature": "62abeed056fb4dbf416d0d68776350df3fbdea55964d0e8444743b6d525ae0ba"
       },
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/graph/definitions/typedefintions.ts": {
-        "version": "1b840fd4816ce68ce8c87c9c634c565bb596a17b7337b41c78dd79cc8b474ff6",
+        "version": "29836f2f938708c31bee2b7314225ceea242070f40054da7afc372535e88d8e7",
         "signature": "f62598b93b222dac336c22a84e7e8ef1f2e22f46bb1ef4f45130f2905b358144"
       },
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/graph/definitions/valuedefinitions.ts": {
@@ -794,8 +794,8 @@
         "signature": "638ad446d3a7de3e983638bf46b12d712636c9377bf002ecb22f1850ba9a8616"
       },
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/graph/index.ts": {
-        "version": "844132bcac2815812921528880490d2477179b25c5d99815eb5de0f525a0ea2f",
-        "signature": "983b4fff88c02ec8489295b33fcbeb91fe9bf40f8aeeef2333106b153c268de8"
+        "version": "7093befda881b8837f138cbc8e355d27d0b05cf9f0cf74f63e243b5dbd50c20c",
+        "signature": "d44526a553996474643b39a5f92ce988f96488cf7615e4fa079af6e021694be3"
       },
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/node_modules/@types/classnames/index.d.ts": {
         "version": "44a98fe2984bb0940a8c1414b1e48bddca58aa2c52e8995c061b06bb0cc6f2de",
@@ -862,8 +862,8 @@
         "signature": "bf9349118b4fe965b1e7e4831ebdc1c41d6b0a63754f1afc67be212f61b26d6c"
       },
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/index.tsx": {
-        "version": "904bd1affbc31c611c73676dda1a7a9f1ebef71114e144048c752b6537a5a0fd",
-        "signature": "904bd1affbc31c611c73676dda1a7a9f1ebef71114e144048c752b6537a5a0fd"
+        "version": "24321707ce3c72e06089f80d05d07c6084ca0c0ee074d5a8748440e9f6575a45",
+        "signature": "24321707ce3c72e06089f80d05d07c6084ca0c0ee074d5a8748440e9f6575a45"
       },
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/parser/testschema.ts": {
         "version": "5f8f8689fbe65a047e3d9af03387623f323ca79c3a1720f5417f0df337944270",
@@ -2488,6 +2488,7 @@
         "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/node_modules/@types/graphql/index.d.ts",
         "/users/arturczemiel/.projects/graphqleditor.com/diagram/lib/index.d.ts",
         "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/models/index.ts",
+        "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/models/spec.ts",
         "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/nodestotree/index.ts",
         "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/parser/index.ts",
         "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/treetofaker/index.ts",
@@ -2598,6 +2599,7 @@
       ],
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/index.tsx": [
         "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/editor/index.tsx",
+        "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/graph/index.ts",
         "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/colors.tsx",
         "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/vars.tsx",
         "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/node_modules/@types/node/util.d.ts",
@@ -4229,6 +4231,7 @@
       ],
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/index.tsx": [
         "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/editor/index.tsx",
+        "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/graph/index.ts",
         "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/colors.tsx",
         "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/vars.tsx"
       ],
@@ -4832,6 +4835,7 @@
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/models/graph.ts",
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/models/index.ts",
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/nodestotree/templates/argumenttemplate.ts",
+      "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/nodestotree/templates/directivetemplate.ts",
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/nodestotree/templates/enumvaluedefinitiontemplate.ts",
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/nodestotree/templates/fieldtemplate.ts",
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/nodestotree/templates/inputvaluetemplate.ts",
@@ -4845,7 +4849,6 @@
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/parser/index.ts",
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/treetofaker/index.ts",
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/treetonodes/index.ts",
-      "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/treetots/templates/operations.ts",
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/treetots/templates/returnedproptypes.ts",
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/treetots/templates/returnedreturns.ts",
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/treetots/templates/returnedtypes.ts",
@@ -4957,7 +4960,7 @@
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/node_modules/@types/webpack/index.d.ts",
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/node_modules/@types/webpack-env/index.d.ts",
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/node_modules/@types/yargs/index.d.ts",
-      "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/nodestotree/templates/directivetemplate.ts"
+      "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/treetots/templates/operations.ts"
     ]
   },
   "version": "3.4.5"

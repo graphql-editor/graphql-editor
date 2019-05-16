@@ -1,29 +1,55 @@
 import { buildASTSchema, buildClientSchema, introspectionQuery, parse, printSchema } from 'graphql';
 import { Diagram, Link, Node, Old, Serializer } from 'graphsource';
 import { EditorNodeDefinition, ParserTree } from '../Models';
+import { OperationType } from '../Models/Spec';
 import { NodesToTree } from '../NodesToTree';
 import { Parser } from '../Parser';
 import { TreeToFaker } from '../TreeToFaker';
 import { TreeToNodes } from '../TreeToNodes';
 import { TreeToTS } from '../TreeToTS';
 import { Definitions } from './definitions';
+/**
+ * Class for controlling the state of diagram and exposing schema functions
+ *
+ * @export
+ * @class GraphController
+ */
 export class GraphController {
+  /**
+   * Strip schema keyword from schema - useful in schema stitch
+   *
+   * @static
+   * @memberof GraphController
+   * @param {string} schema
+   * @returns {string}
+   */
+  static getGraphqlWithoutRootSchema = (schema: string): string => {
+    const basicDefinitions = Definitions.generate([]);
+    const tree = TreeToNodes.resolveTree(Parser.parse(schema), basicDefinitions);
+    const nodes = tree.nodes.map((n) => ({
+      ...n,
+      options: n.options.filter((no) => !(no in OperationType))
+    }));
+    return NodesToTree.parse(nodes, tree.links);
+  }
   public definitions?: EditorNodeDefinition[];
   public stitchDefinitions: EditorNodeDefinition[] = [];
   public schema = '';
   public stichesCode = '';
   private nodes: Node[] = [];
   private stitchNodes: { nodes: Node[]; links: Link[] } = { nodes: [], links: [] };
-  private links: Link[] = [];
   private diagram?: Diagram;
   private passSchema?: (schema: string, stitches?: string) => void;
   private passDiagramErrors?: (errors: string) => void;
   private onSerialize?: (schema: string) => void;
-  private parser = new Parser();
   setDOMElement = (element: HTMLElement) => {
     this.diagram = new Diagram(element);
     this.diagram.setSerialisationFunction(this.serialise);
     this.generateBasicDefinitions();
+  }
+  generateBasicDefinitions = () => {
+    this.definitions = Definitions.generate([]);
+    this.diagram!.setDefinitions(this.definitions);
   }
   isEmpty = () => {
     return this.nodes.length === 0;
@@ -64,7 +90,7 @@ export class GraphController {
     }
     this.definitions = Definitions.generate(this.stitchNodes.nodes).concat(this.stitchDefinitions!);
     const result = TreeToNodes.resolveTree(
-      this.parser.parse(
+      Parser.parse(
         schema + this.stichesCode,
         this.stitchNodes.nodes.filter((n) => n.definition.root).map((n) => n.name)
       ),
@@ -114,21 +140,8 @@ export class GraphController {
   }
   setPassSchema = (fn: (schema: string, stitches?: string) => void) => (this.passSchema = fn);
   setPassDiagramErrors = (fn: (errors: string) => void) => (this.passDiagramErrors = fn);
-  generateFromAllParsingFunctions = () => {
-    const graphql = NodesToTree.parse(this.nodes, this.links);
-    this.schema = graphql;
-    const tree = this.parser.parse(graphql);
-    const faker = TreeToFaker.resolveTree(tree);
-    const project = this.saveSerialized();
-    return {
-      graphql,
-      faker,
-      project
-    };
-  }
   serialise = ({ nodes, links }: { nodes: Node[]; links: Link[] }) => {
     this.nodes = nodes;
-    this.links = links;
     const graphQLSchema = NodesToTree.parse(nodes, links);
     try {
       buildASTSchema(parse(graphQLSchema + this.stichesCode));
@@ -152,30 +165,14 @@ export class GraphController {
     }
     let basicDefinitions = Definitions.generate([]);
     this.stichesCode = schema;
-    this.stitchNodes = TreeToNodes.resolveTree(
-      this.parser.parse(this.stichesCode),
-      basicDefinitions
-    );
+    this.stitchNodes = TreeToNodes.resolveTree(Parser.parse(this.stichesCode), basicDefinitions);
     basicDefinitions = Definitions.generate(this.stitchNodes.nodes);
     const rememberBasicDefinitions = [...basicDefinitions];
-    this.stitchNodes = TreeToNodes.resolveTree(
-      this.parser.parse(this.stichesCode),
-      basicDefinitions
-    );
+    this.stitchNodes = TreeToNodes.resolveTree(Parser.parse(this.stichesCode), basicDefinitions);
     this.stitchDefinitions = basicDefinitions.filter(
       (bd) => !rememberBasicDefinitions.find((rbd) => rbd.id === bd.id)
     );
   }
-  getAutocompletelibrary = () =>
-    TreeToTS.resolveTree(this.parser.parse(NodesToTree.parse(this.nodes, this.links)))
-  generateBasicDefinitions = () => {
-    this.definitions = Definitions.generate([]);
-    this.diagram!.setDefinitions(this.definitions);
-  }
-  private saveSerialized = () => {
-    const graphql = NodesToTree.parse(this.nodes, this.links);
-    this.schema = graphql;
-    const tree = this.parser.parse(graphql);
-    return JSON.stringify(tree);
-  }
+  getAutocompletelibrary = () => TreeToTS.resolveTree(Parser.parse(this.stichesCode + this.schema));
+  getFakerLibrary = () => TreeToFaker.resolveTree(Parser.parse(this.stichesCode + this.schema));
 }

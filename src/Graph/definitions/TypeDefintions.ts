@@ -141,6 +141,27 @@ export class TypeDefinitions {
       instances: [
         {
           ...FieldInstance
+        },
+        {
+          ...InputValueInstance,
+          help: help.scalar,
+          instances: [
+            {
+              ...ArgumentInstance,
+              node: {
+                notEditable: true,
+                name: undefined
+              },
+              acceptsInputs: (d, defs, _) =>
+                defs
+                  .filter((d) => d.data && d.data.type === Value.StringValue)
+                  .map(Utils.nodeDefinitionToAcceptedEditorNodeDefinition)
+            }
+          ],
+          acceptsInputs: (d, defs, _) =>
+            defs
+              .filter((d) => d.data && d.data.type === Value.StringValue)
+              .map(Utils.nodeDefinitionToAcceptedEditorNodeDefinition)
         }
       ]
     });

@@ -57,7 +57,7 @@ type GraphQLResponse = {
   }[];
 };
 
-class GraphQLError extends Error {
+export class GraphQLError extends Error {
   constructor(public response: GraphQLResponse) {
     super("");
     console.error(response);
@@ -70,7 +70,7 @@ type Dict = {
   [x: string]: Dict | any | Dict[] | any[];
 };
 
-type ResolveReturned<T> = {
+export type ResolveReturned<T> = {
   [P in keyof T]?: T[P] extends (infer R)[]
     ? ResolveReturned<R>[]
     : T[P] extends {

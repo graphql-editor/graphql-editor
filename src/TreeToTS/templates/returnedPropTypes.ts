@@ -36,7 +36,7 @@ export const resolvePropTypeFromRoot = (i: ParserField) => {
   if (i.type.name === TypeDefinition.InputObjectTypeDefinition) {
     return `\t${i.name}:{\n${i.args!.map((f) => resolveArg(f, '\t\t')).join(',\n')}\n\t}`;
   }
-  if (i.type.name !== TypeDefinition.ScalarTypeDefinition) {
+  if (i.type.name === TypeDefinition.ScalarTypeDefinition) {
     return;
   }
   if (!i.args) {
