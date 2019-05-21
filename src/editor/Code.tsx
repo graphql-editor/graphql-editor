@@ -70,10 +70,14 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
             }
           }}
         >
-          <SelectLanguage
-            onGenerate={() => this.lastSchema && this.props.controller.loadGraphQL(this.lastSchema)}
-            generateVisible={!!this.lastSchema && !this.state.error && !this.state.errors}
-          />
+          {!this.props.readonly && (
+            <SelectLanguage
+              onGenerate={() =>
+                this.lastSchema && this.props.controller.loadGraphQL(this.lastSchema)
+              }
+              generateVisible={!!this.lastSchema && !this.state.error && !this.state.errors}
+            />
+          )}
           <div
             className={cx(styles.CodeContainer)}
             ref={(ref) => {

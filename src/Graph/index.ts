@@ -60,6 +60,9 @@ export class GraphController {
   setOnSerialise = (f: (schema: string) => void) => {
     this.onSerialize = f;
   }
+  setReadOnly = (isReadOnly: boolean) => {
+    this.diagram!.setReadOnly(isReadOnly);
+  }
   load = (nodes: Node[], links: Link[]) => {
     this.diagram!.setNodes(nodes, true);
     this.diagram!.setLinks(links);

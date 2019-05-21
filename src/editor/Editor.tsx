@@ -36,6 +36,7 @@ export class Editor extends React.Component<EditorProps, EditorState> {
     this.controller.setDOMElement(this.containerRef.current);
     this.controller.setPassSchema(this.receiveSchema);
     this.controller.setPassDiagramErrors(this.receiveErrors);
+    this.controller.setReadOnly(!!this.props.readonly);
     if (this.props.graphController) {
       this.props.graphController(this.controller);
     }
@@ -43,6 +44,9 @@ export class Editor extends React.Component<EditorProps, EditorState> {
   componentDidUpdate(prevProps: EditorProps) {
     if (this.props.editorVisible !== prevProps.editorVisible) {
       this.controller.resizeDiagram();
+    }
+    if (this.props.readonly !== prevProps.readonly) {
+      this.controller.setReadOnly(!!this.props.readonly);
     }
   }
   render() {
@@ -53,6 +57,7 @@ export class Editor extends React.Component<EditorProps, EditorState> {
             controller={this.controller}
             schema={this.state.code}
             stitches={this.state.stitches}
+            readonly={this.props.readonly}
             schemaChanged={(e) => {
               this.setState({
                 code: e
