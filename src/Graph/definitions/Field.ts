@@ -9,8 +9,8 @@ export const FieldInstance: Partial<EditorNodeDefinition> & Pick<EditorNodeDefin
     for: [TypeDefinition.InterfaceTypeDefinition, TypeDefinition.ObjectTypeDefinition]
   },
   acceptsInputs: (d, defs) =>
-    Utils.dataForTypes(defs, [TypeSystemDefinition.FieldDefinition]).map(
-      Utils.nodeDefinitionToAcceptedEditorNodeDefinition
+    Utils.displayAsCategories(
+      Utils.sortByParentType(Utils.dataForTypes(defs, [TypeSystemDefinition.FieldDefinition]))
     ),
   node: {
     ...Utils.createOND(),

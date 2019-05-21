@@ -133,6 +133,9 @@ export class Utils {
       },
       {} as Record<string, EditorNodeDefinition[]>
     );
+    Object.keys(mapDefintions).forEach((k) => {
+      mapDefintions[k].sort((a, b) => (a.type > b.type ? 1 : -1));
+    });
     return mapDefintions;
   }
   /**
