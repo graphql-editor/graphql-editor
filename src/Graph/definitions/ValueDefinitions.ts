@@ -7,14 +7,17 @@ import { Utils } from './Utils';
 export class ValueDefinitions {
   static generate(stitchNodes: Array<Node<GraphQLNodeParams>>) {
     const enumValue: EditorNodeDefinition = {
-      node: { ...Utils.createOND(), inputs: null, outputs: [] },
+      node: { ...Utils.createOND(), inputs: [], outputs: [] },
       type: ValueDefinition.EnumValueDefinition,
       data: {
         type: ValueDefinition.EnumValueDefinition,
         for: [TypeDefinition.EnumTypeDefinition]
       },
       help: help.EnumValue,
-      acceptsInputs: () => [],
+      acceptsInputs: (d, defs) =>
+        Utils.dataForTypes(defs, [ValueDefinition.EnumValueDefinition]).map(
+          Utils.nodeDefinitionToAcceptedEditorNodeDefinition
+        ),
       instances: [
         {
           data: {
@@ -22,7 +25,9 @@ export class ValueDefinitions {
           },
           node: {
             inputs: null,
-            outputs: []
+            outputs: [],
+            notEditable: true,
+            name: undefined
           }
         }
       ]

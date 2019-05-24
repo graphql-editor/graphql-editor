@@ -10,20 +10,6 @@ import {
   ValueDefinition
 } from './Spec';
 
-export enum Directive {
-  SCHEMA = 'SCHEMA',
-  SCALAR = 'SCALAR',
-  OBJECT = 'OBJECT',
-  FIELD_DEFINITION = 'FIELD_DEFINITION',
-  ARGUMENT_DEFINITION = 'ARGUMENT_DEFINITION',
-  INTERFACE = 'INTERFACE',
-  UNION = 'UNION',
-  ENUM = 'ENUM',
-  ENUM_VALUE = 'ENUM_VALUE',
-  INPUT_OBJECT = 'INPUT_OBJECT',
-  INPUT_FIELD_DEFINITION = 'INPUT_FIELD_DEFINITION'
-}
-
 export enum BuiltInDirectives {
   skip = 'skip',
   include = 'include',

@@ -7,7 +7,8 @@ export class HelperDefinitions {
   static generate() {
     const implementsObject: EditorNodeDefinition = {
       node: {
-        name: 'implementsNode'
+        notEditable: true,
+        name: undefined
       },
       type: Helpers.Implements,
       data: {
@@ -22,7 +23,8 @@ export class HelperDefinitions {
     };
     const directivesObject: EditorNodeDefinition = {
       node: {
-        name: 'directives'
+        notEditable: true,
+        name: undefined
       },
       type: Helpers.Directives,
       data: {

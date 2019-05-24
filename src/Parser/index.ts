@@ -28,6 +28,9 @@ export class Parser {
         name: TypeSystemDefinition.DirectiveDefinition,
         directiveOptions: n.locations as Directive[]
       },
+      data: {
+        type: TypeSystemDefinition.DirectiveDefinition
+      },
       description: n.description ? n.description : undefined,
       args: TypeResolver.iterateInputValueFields(n.args.map((a) => a.astNode!))
     };
@@ -49,9 +52,6 @@ export class Parser {
       Mutation: parsedSchema!.getMutationType(),
       Subscription: parsedSchema!.getSubscriptionType()
     };
-    if (!operations.Query) {
-      console.warn('Query is required for schema to work. INVALID SCHEMA');
-    }
 
     const rootNodes = Object.keys(typeMap)
       .map((t) => ({
@@ -81,3 +81,4 @@ export class Parser {
     return nodeTree;
   }
 }
+export * from './ParserUtils';

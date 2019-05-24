@@ -127,8 +127,7 @@ export class TypeResolver {
         ({
           name: n.name.value,
           type: {
-            name: n.name.value,
-            options: []
+            name: n.name.value
           },
           data: {
             type: Instances.Directive
@@ -164,7 +163,7 @@ export class TypeResolver {
           data: {
             type: ValueDefinition.InputValueDefinition
           },
-          args: n.defaultValue ? TypeResolver.resolveValue(n.defaultValue) : undefined
+          args: n.defaultValue ? TypeResolver.resolveValue(n.defaultValue) : []
         } as ParserField)
     );
   }

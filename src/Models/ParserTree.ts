@@ -1,6 +1,6 @@
 import { Options } from './Options';
-import { OperationType } from './Spec';
-import { Directive, GraphQLNodeParams } from './Types';
+import { Directive, OperationType } from './Spec';
+import { GraphQLNodeParams } from './Types';
 
 export interface ParserField {
   name: string;

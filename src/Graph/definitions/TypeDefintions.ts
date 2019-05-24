@@ -137,7 +137,11 @@ export class TypeDefinitions {
     const ScalarTypeDefintion = generateTypeDefinition({
       help: help.scalar,
       type: TypeDefinition.ScalarTypeDefinition,
-      acceptsInputs: () => [],
+      acceptsInputs: (d, defs, _) => {
+        return Utils.dataForTypes(defs, [TypeDefinition.ScalarTypeDefinition]).map(
+          Utils.nodeDefinitionToAcceptedEditorNodeDefinition
+        );
+      },
       instances: [
         {
           ...FieldInstance
@@ -229,6 +233,7 @@ export class TypeDefinitions {
             notEditable: true,
             name: undefined
           },
+          options: undefined,
           instances: undefined,
           acceptsInputs: (d, defs, _, nodes) => {
             return Utils.displayAsCategories(
