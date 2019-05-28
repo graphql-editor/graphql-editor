@@ -1,5 +1,7 @@
 .vscode
 .DS_STORE
+.docz
+.tscache
 node_modules
 .module-cache
 *.log*

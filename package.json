@@ -4,21 +4,24 @@
   "private": false,
   "license": "MIT",
   "description": "Visual node editor for GraphQL",
+  "homepage": "https://graphqleditor.com",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
     "start": "webpack-dev-server --config ./sandbox/webpack.config.js --content-base ./sandbox/ --port 1569 --hot --inline --open",
     "build": "grunt",
     "watch": "tsc",
-    "test": "grunt test && jest"
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
+    "test": "jest"
   },
   "resolutions": {
     "@types/react": "^16.4.14"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/slothking-online/graphql-editor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/slothking-online/graphql-editor.git"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
