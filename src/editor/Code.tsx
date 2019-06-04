@@ -25,6 +25,7 @@ export type CodeEditorProps = {
 export interface CodeEditorState {
   loadingUrl: boolean;
   canMountAce: boolean;
+  isResizing?: boolean;
   errors?: Array<{
     row: number;
     column: number;
@@ -118,10 +119,16 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
         </div>
         <div
           draggable={true}
-          className={styles.Resizer}
+          className={cx(styles.Resizer, {
+            drag: this.state.isResizing
+          })}
           onDragStart={(e) => {
+            console.log('START DRAG');
             e.dataTransfer.setData('id', 'draging');
             this.dragging = true;
+            this.setState({
+              isResizing: true
+            });
           }}
           onDrag={(e) => {
             this.dragging = true;
@@ -137,6 +144,19 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
             this.dragging = false;
             this.startX = undefined;
             this.startWidth = this.width;
+            this.setState({
+              isResizing: false
+            });
+          }}
+          onDragExit={() => {
+            this.setState({
+              isResizing: false
+            });
+          }}
+          onDragLeave={() => {
+            this.setState({
+              isResizing: false
+            });
           }}
         />
       </>

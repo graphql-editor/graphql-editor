@@ -43,5 +43,12 @@ export const Resizer = style({
   alignSelf: 'stretch',
   justifySelf: 'flex-end',
   zIndex: 6,
-  cursor: 'ew-resize'
+  cursor: 'ew-resize',
+  $nest: {
+    [`&.drag`]: {
+      position: 'fixed',
+      width: '100vw',
+      height: '100vh'
+    }
+  }
 });
