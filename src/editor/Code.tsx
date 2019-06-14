@@ -6,11 +6,9 @@ import { buildASTSchema, parse } from 'graphql';
 import AceEditor from 'react-ace';
 import { GraphController } from '../Graph';
 import { sizeSidebar } from '../vars';
+import './ace/graphqleditor';
+import './ace/graphqlschema';
 import { SelectLanguage } from './SelectLanguage';
-require(`brace/theme/twilight`);
-require(`brace/mode/typescript`);
-require(`brace/mode/graphqlschema`);
-require(`brace/mode/json`);
 require(`brace/ext/searchbox`);
 export interface CodeEditorOuterProps {
   schemaChanged?: (schema: string) => void;
@@ -112,7 +110,7 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
                 showLineNumbers: true,
                 tabSize: 2
               }}
-              theme={'twilight'}
+              theme={'graphqleditor'}
               value={this.lastSchema}
             />
           </div>
@@ -123,8 +121,7 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
             drag: this.state.isResizing
           })}
           onDragStart={(e) => {
-            console.log('START DRAG');
-            e.dataTransfer.setData('id', 'draging');
+            e.dataTransfer.setData('id', 'dragging');
             this.dragging = true;
             this.setState({
               isResizing: true

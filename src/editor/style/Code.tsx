@@ -15,7 +15,7 @@ export const Sidebar = style({
 
 export const CodeContainer = style({
   flex: 1,
-  overflowY: 'auto',
+  overflowY: 'hidden',
   overflowX: 'hidden',
   display: 'flex',
   flexFlow: 'column'
