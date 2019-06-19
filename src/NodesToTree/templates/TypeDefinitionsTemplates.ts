@@ -1,6 +1,9 @@
-import { ParserField } from '../../Models';
+import {
+  ParserField,
+  TypeDefinitionDisplayMap,
+  TypeSystemDefinitionDisplayStrings
+} from '../../Models';
 import { TypeDefinition } from '../../Models/Spec';
-import { TypeDefinitionMirror } from '../mirror';
 import { TemplateUtils } from './TemplateUtils';
 
 export class TypeDefinitionsTemplates {
@@ -9,8 +12,9 @@ export class TypeDefinitionsTemplates {
     name,
     type
   }: Pick<ParserField, 'description' | 'name' | 'type'>) =>
-    `${TemplateUtils.descriptionResolver(description)}${type.name in TypeDefinitionMirror &&
-      TypeDefinitionMirror[type.name as TypeDefinition]} ${name}`
+    `${TemplateUtils.descriptionResolver(description)}${
+      TypeDefinitionDisplayMap[type.name as TypeDefinition]
+    } ${name}`
   static resolve = ({
     name,
     description,
@@ -24,7 +28,9 @@ export class TypeDefinitionsTemplates {
       args && args.length ? `{\n${args.map(TemplateUtils.resolverForConnection).join('\n')}\n}` : ''
     }`
   static resolveDirective = ({ name, description, type, args }: ParserField): string =>
-    `${TypeDefinitionsTemplates.definitionTemplate({ name: `@${name}`, description, type })}${
+    `${TemplateUtils.descriptionResolver(description)}${
+      TypeSystemDefinitionDisplayStrings.directive
+    } @${name}${
       args && args.length ? `(\n${args.map(TemplateUtils.resolverForConnection).join('\n')}\n)` : ''
     } on ${(type.directiveOptions || []).join(' | ')}`
   static resolveUnion = ({ name, description, type, args, directives }: ParserField): string =>

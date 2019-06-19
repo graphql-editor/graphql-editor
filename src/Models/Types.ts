@@ -1,4 +1,5 @@
 import { AcceptedNodeDefinition, NodeDefinition } from 'graphsource';
+import { TypeDefinitionDisplayStrings, TypeSystemDefinitionDisplayStrings } from './DisplayMap';
 import {
   Helpers,
   Instances,
@@ -20,7 +21,9 @@ export type AllTypes =
   | Value
   | ValueDefinition
   | TypeDefinition
+  | TypeDefinitionDisplayStrings
   | TypeSystemDefinition
+  | TypeSystemDefinitionDisplayStrings
   | Instances
   | Helpers
   | Type;

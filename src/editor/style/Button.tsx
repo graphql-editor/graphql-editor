@@ -1,69 +1,20 @@
-import { classes, style } from 'typestyle';
+import { style } from 'typestyle';
 import { Colors } from '../../Colors';
-export const Button = style({
+import * as vars from '../../vars';
+export const GenerateButton = style({
   fontSize: 12,
-  border: `1px solid`,
-  borderRadius: 5,
   padding: `5px 12px`,
-  background: 'transparent',
   cursor: 'pointer',
-  boxShadow: 'none',
+  borderColor: `${Colors.blue[0]}66`,
+  border: `1px solid`,
+  color: `${Colors.blue[0]}88`,
+  transition: vars.transition,
+  background: `${Colors.grey[9]}88`,
   $nest: {
     '&:hover': {
-      border: `1px solid transparent`,
-      boxShadow: 'none'
+      color: `${Colors.blue[0]}ff`,
+      borderColor: `${Colors.blue[0]}ff`,
+      background: `${Colors.grey[9]}ff`
     }
   }
 });
-export const PinkButton = classes(
-  Button,
-  style({
-    color: Colors.main[0],
-    $nest: {
-      '&:hover': {
-        background: Colors.main[0],
-        color: Colors.grey[7]
-      }
-    }
-  })
-);
-export const GreenButton = classes(
-  Button,
-  style({
-    color: Colors.green[0],
-    $nest: {
-      '&:hover': {
-        background: Colors.green[0],
-        color: Colors.grey[7]
-      }
-    }
-  })
-);
-export const YellowButton = classes(
-  Button,
-  style({
-    color: Colors.yellow[0],
-    $nest: {
-      '&:hover': {
-        background: Colors.yellow[0],
-        color: Colors.grey[7]
-      }
-    }
-  })
-);
-export const GenerateButton = classes(
-  Button,
-  style({
-    color: Colors.grey[0],
-    border: 0,
-    fontWeight: 'bold',
-    background: Colors.green[2],
-    $nest: {
-      '&:hover': {
-        background: Colors.green[0],
-        border: 0,
-        color: Colors.grey[7]
-      }
-    }
-  })
-);

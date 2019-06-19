@@ -3,6 +3,7 @@ import {
   ParserTree,
   ScalarTypes,
   TypeDefinition,
+  TypeDefinitionDisplayStrings,
   TypeSystemDefinition
 } from '../../Models';
 import { Parser, ParserUtils } from '../../Parser';
@@ -22,7 +23,7 @@ describe('Fields tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.ObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.type
           },
           data: {
             type: TypeDefinition.ObjectTypeDefinition
@@ -103,7 +104,7 @@ describe('Fields tests on parser', () => {
         {
           name: 'Car',
           type: {
-            name: TypeDefinition.ObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.type
           },
           data: {
             type: TypeDefinition.ObjectTypeDefinition
@@ -115,7 +116,7 @@ describe('Fields tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.ObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.type
           },
           data: {
             type: TypeDefinition.ObjectTypeDefinition
@@ -152,7 +153,7 @@ describe('Fields tests on parser', () => {
         {
           name: 'Car',
           type: {
-            name: TypeDefinition.InterfaceTypeDefinition
+            name: TypeDefinitionDisplayStrings.interface
           },
           data: {
             type: TypeDefinition.InterfaceTypeDefinition
@@ -163,7 +164,7 @@ describe('Fields tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.ObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.type
           },
           data: {
             type: TypeDefinition.ObjectTypeDefinition
@@ -200,7 +201,7 @@ describe('Fields tests on parser', () => {
         {
           name: 'Car',
           type: {
-            name: TypeDefinition.EnumTypeDefinition
+            name: TypeDefinitionDisplayStrings.enum
           },
           data: {
             type: TypeDefinition.EnumTypeDefinition
@@ -211,7 +212,7 @@ describe('Fields tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.ObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.type
           },
           data: {
             type: TypeDefinition.ObjectTypeDefinition
@@ -248,7 +249,7 @@ describe('Fields tests on parser', () => {
         {
           name: 'Car',
           type: {
-            name: TypeDefinition.ScalarTypeDefinition
+            name: TypeDefinitionDisplayStrings.scalar
           },
           data: {
             type: TypeDefinition.ScalarTypeDefinition
@@ -258,7 +259,7 @@ describe('Fields tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.ObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.type
           },
           data: {
             type: TypeDefinition.ObjectTypeDefinition
@@ -297,7 +298,7 @@ describe('Fields tests on parser', () => {
         {
           name: 'Car',
           type: {
-            name: TypeDefinition.ObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.type
           },
           data: {
             type: TypeDefinition.ObjectTypeDefinition
@@ -309,7 +310,7 @@ describe('Fields tests on parser', () => {
         {
           name: 'Plane',
           type: {
-            name: TypeDefinition.ObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.type
           },
           data: {
             type: TypeDefinition.ObjectTypeDefinition
@@ -321,7 +322,7 @@ describe('Fields tests on parser', () => {
         {
           name: 'Machine',
           type: {
-            name: TypeDefinition.UnionTypeDefinition
+            name: TypeDefinitionDisplayStrings.union
           },
           data: {
             type: TypeDefinition.UnionTypeDefinition
@@ -351,7 +352,7 @@ describe('Fields tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.ObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.type
           },
           data: {
             type: TypeDefinition.ObjectTypeDefinition
@@ -387,7 +388,7 @@ describe('Fields tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.ObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.type
           },
           data: {
             type: TypeDefinition.ObjectTypeDefinition
@@ -436,7 +437,7 @@ describe('Fields tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.ObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.type
           },
           data: {
             type: TypeDefinition.ObjectTypeDefinition

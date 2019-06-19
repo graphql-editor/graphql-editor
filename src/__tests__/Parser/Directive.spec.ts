@@ -4,7 +4,9 @@ import {
   ParserTree,
   ScalarTypes,
   TypeDefinition,
+  TypeDefinitionDisplayStrings,
   TypeSystemDefinition,
+  TypeSystemDefinitionDisplayStrings,
   ValueDefinition
 } from '../../Models';
 import { Parser, ParserUtils } from '../../Parser';
@@ -26,7 +28,7 @@ describe('Directive tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.ObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.type
           },
           data: {
             type: TypeDefinition.ObjectTypeDefinition
@@ -49,7 +51,7 @@ describe('Directive tests on parser', () => {
         {
           name: 'model',
           type: {
-            name: TypeSystemDefinition.DirectiveDefinition,
+            name: TypeSystemDefinitionDisplayStrings.directive,
             directiveOptions: [Directive.OBJECT]
           },
           data: {
@@ -76,7 +78,7 @@ describe('Directive tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.ObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.type
           },
           data: {
             type: TypeDefinition.ObjectTypeDefinition
@@ -111,7 +113,7 @@ describe('Directive tests on parser', () => {
         {
           name: 'model',
           type: {
-            name: TypeSystemDefinition.DirectiveDefinition,
+            name: TypeSystemDefinitionDisplayStrings.directive,
             directiveOptions: [Directive.FIELD_DEFINITION]
           },
           data: {
@@ -138,7 +140,7 @@ describe('Directive tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.ObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.type
           },
           data: {
             type: TypeDefinition.ObjectTypeDefinition
@@ -185,7 +187,7 @@ describe('Directive tests on parser', () => {
         {
           name: 'model',
           type: {
-            name: TypeSystemDefinition.DirectiveDefinition,
+            name: TypeSystemDefinitionDisplayStrings.directive,
             directiveOptions: [Directive.ARGUMENT_DEFINITION]
           },
           data: {
@@ -210,7 +212,7 @@ describe('Directive tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.InterfaceTypeDefinition
+            name: TypeDefinitionDisplayStrings.interface
           },
           data: {
             type: TypeDefinition.InterfaceTypeDefinition
@@ -233,7 +235,7 @@ describe('Directive tests on parser', () => {
         {
           name: 'model',
           type: {
-            name: TypeSystemDefinition.DirectiveDefinition,
+            name: TypeSystemDefinitionDisplayStrings.directive,
             directiveOptions: [Directive.INTERFACE]
           },
           data: {
@@ -260,7 +262,7 @@ describe('Directive tests on parser', () => {
         {
           name: 'model',
           type: {
-            name: TypeSystemDefinition.DirectiveDefinition,
+            name: TypeSystemDefinitionDisplayStrings.directive,
             directiveOptions: [Directive.UNION]
           },
           data: {
@@ -271,7 +273,7 @@ describe('Directive tests on parser', () => {
         {
           name: 'Car',
           type: {
-            name: TypeDefinition.ObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.type
           },
           data: {
             type: TypeDefinition.ObjectTypeDefinition
@@ -283,7 +285,7 @@ describe('Directive tests on parser', () => {
         {
           name: 'Plane',
           type: {
-            name: TypeDefinition.ObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.type
           },
           data: {
             type: TypeDefinition.ObjectTypeDefinition
@@ -295,7 +297,7 @@ describe('Directive tests on parser', () => {
         {
           name: 'Machine',
           type: {
-            name: TypeDefinition.UnionTypeDefinition
+            name: TypeDefinitionDisplayStrings.union
           },
           data: {
             type: TypeDefinition.UnionTypeDefinition
@@ -350,7 +352,7 @@ describe('Directive tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.EnumTypeDefinition
+            name: TypeDefinitionDisplayStrings.enum
           },
           data: {
             type: TypeDefinition.EnumTypeDefinition
@@ -372,7 +374,7 @@ describe('Directive tests on parser', () => {
         {
           name: 'model',
           type: {
-            name: TypeSystemDefinition.DirectiveDefinition,
+            name: TypeSystemDefinitionDisplayStrings.directive,
             directiveOptions: [Directive.ENUM]
           },
           data: {
@@ -400,7 +402,7 @@ describe('Directive tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.EnumTypeDefinition
+            name: TypeDefinitionDisplayStrings.enum
           },
           data: {
             type: TypeDefinition.EnumTypeDefinition
@@ -443,7 +445,7 @@ describe('Directive tests on parser', () => {
         {
           name: 'model',
           type: {
-            name: TypeSystemDefinition.DirectiveDefinition,
+            name: TypeSystemDefinitionDisplayStrings.directive,
             directiveOptions: [Directive.ENUM_VALUE]
           },
           data: {
@@ -468,7 +470,7 @@ describe('Directive tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.InputObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.input
           },
           data: {
             type: TypeDefinition.InputObjectTypeDefinition
@@ -490,7 +492,7 @@ describe('Directive tests on parser', () => {
         {
           name: 'model',
           type: {
-            name: TypeSystemDefinition.DirectiveDefinition,
+            name: TypeSystemDefinitionDisplayStrings.directive,
             directiveOptions: [Directive.INPUT_OBJECT]
           },
           data: {
@@ -517,7 +519,7 @@ describe('Directive tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.InputObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.input
           },
           data: {
             type: TypeDefinition.InputObjectTypeDefinition
@@ -551,7 +553,7 @@ describe('Directive tests on parser', () => {
         {
           name: 'model',
           type: {
-            name: TypeSystemDefinition.DirectiveDefinition,
+            name: TypeSystemDefinitionDisplayStrings.directive,
             directiveOptions: [Directive.INPUT_FIELD_DEFINITION]
           },
           data: {
@@ -576,7 +578,7 @@ describe('Directive tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.ScalarTypeDefinition
+            name: TypeDefinitionDisplayStrings.scalar
           },
           data: {
             type: TypeDefinition.ScalarTypeDefinition
@@ -597,7 +599,7 @@ describe('Directive tests on parser', () => {
         {
           name: 'model',
           type: {
-            name: TypeSystemDefinition.DirectiveDefinition,
+            name: TypeSystemDefinitionDisplayStrings.directive,
             directiveOptions: [Directive.SCALAR]
           },
           data: {

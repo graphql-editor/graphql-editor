@@ -27,6 +27,10 @@
       this.$rules = {
         start: [
           {
+            token: 'comment',
+            regex: '#.*$'
+          },
+          {
             token: 'string',
             regex: strPre + '"{3}',
             next: 'commentContent'

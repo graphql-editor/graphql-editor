@@ -22,7 +22,7 @@ import { Colors } from '../../Colors';
     color: ${Colors.grey[0]}
     }
     .ace-graphqleditor .ace_cursor {
-    color: ${Colors.green[0]}
+    color: ${Colors.yellow[0]}
     }
     .ace-graphqleditor .ace_marker-layer .ace_selection {
     background: rgba(221, 240, 255, 0.20)
@@ -84,7 +84,7 @@ import { Colors } from '../../Colors';
     .ace-graphqleditor .ace_list,
     .ace-graphqleditor .ace_markup.ace_list,
     .ace-graphqleditor .ace_storage {
-    color: ${Colors.red[0]}
+    color: ${Colors.green[1]}
     }
     .ace-graphqleditor .ace_entity.ace_name.ace_function,
     .ace-graphqleditor .ace_meta.ace_tag,

@@ -1,5 +1,12 @@
 import { Node, NodeOption } from 'graphsource';
-import { EditorNodeDefinition, GraphQLNodeParams } from '../../Models';
+import {
+  EditorNodeDefinition,
+  GraphQLNodeParams,
+  TypeDefinitionDisplayMap,
+  TypeDefinitionDisplayStrings,
+  TypeSystemDefinitionDisplayMap,
+  TypeSystemDefinitionDisplayStrings
+} from '../../Models';
 import {
   Directive,
   Helpers,
@@ -35,10 +42,15 @@ export class TypeDefinitions {
       node = Utils.createOND(),
       options,
       type,
+      dataType,
       help,
       instances = []
     }: {
-      type: TypeDefinition | TypeSystemDefinition;
+      type:
+        | TypeDefinitionDisplayStrings
+        | TypeSystemDefinitionDisplayStrings
+        | TypeSystemDefinition;
+      dataType: TypeDefinition | TypeSystemDefinition;
       acceptsInputs: EditorNodeDefinition['acceptsInputs'];
       node?: EditorNodeDefinition['node'];
       options?: NodeOption[];
@@ -49,7 +61,7 @@ export class TypeDefinitions {
         node,
         type,
         data: {
-          type
+          type: dataType
         },
         help,
         options,
@@ -62,7 +74,8 @@ export class TypeDefinitions {
 
     const ObjectTypeDefinition = generateTypeDefinition({
       help: help.type,
-      type: TypeDefinition.ObjectTypeDefinition,
+      type: TypeDefinitionDisplayMap[TypeDefinition.ObjectTypeDefinition],
+      dataType: TypeDefinition.ObjectTypeDefinition,
       options: Utils.rootOptions,
       acceptsInputs: (d, defs, _) =>
         Utils.displayAsCategories(
@@ -84,7 +97,8 @@ export class TypeDefinitions {
 
     const InterfaceTypeDefinition = generateTypeDefinition({
       help: help.interface,
-      type: TypeDefinition.InterfaceTypeDefinition,
+      type: TypeDefinitionDisplayMap[TypeDefinition.InterfaceTypeDefinition],
+      dataType: TypeDefinition.InterfaceTypeDefinition,
       acceptsInputs: (d, defs, _) =>
         Utils.displayAsCategories(
           Utils.sortByParentType(Utils.dataForTypes(defs, [TypeDefinition.InterfaceTypeDefinition]))
@@ -102,7 +116,8 @@ export class TypeDefinitions {
 
     const EnumTypeDefinition = generateTypeDefinition({
       help: help.enum,
-      type: TypeDefinition.EnumTypeDefinition,
+      type: TypeDefinitionDisplayMap[TypeDefinition.EnumTypeDefinition],
+      dataType: TypeDefinition.EnumTypeDefinition,
       acceptsInputs: (d, defs, _) =>
         Utils.dataForTypes(defs, [TypeDefinition.EnumTypeDefinition]).map(
           Utils.nodeDefinitionToAcceptedEditorNodeDefinition
@@ -136,7 +151,8 @@ export class TypeDefinitions {
     });
     const ScalarTypeDefintion = generateTypeDefinition({
       help: help.scalar,
-      type: TypeDefinition.ScalarTypeDefinition,
+      type: TypeDefinitionDisplayMap[TypeDefinition.ScalarTypeDefinition],
+      dataType: TypeDefinition.ScalarTypeDefinition,
       acceptsInputs: (d, defs, _) => {
         return Utils.dataForTypes(defs, [TypeDefinition.ScalarTypeDefinition]).map(
           Utils.nodeDefinitionToAcceptedEditorNodeDefinition
@@ -172,7 +188,8 @@ export class TypeDefinitions {
 
     const UnionTypeDefinition = generateTypeDefinition({
       help: help.union,
-      type: TypeDefinition.UnionTypeDefinition,
+      type: TypeDefinitionDisplayMap[TypeDefinition.UnionTypeDefinition],
+      dataType: TypeDefinition.UnionTypeDefinition,
       acceptsInputs: (d, defs, _) =>
         Utils.dataForTypes(defs, [TypeDefinition.UnionTypeDefinition]).map(
           Utils.nodeDefinitionToAcceptedEditorNodeDefinition
@@ -186,7 +203,8 @@ export class TypeDefinitions {
 
     const InputObjectTypeDefinition = generateTypeDefinition({
       help: help.input,
-      type: TypeDefinition.InputObjectTypeDefinition,
+      type: TypeDefinitionDisplayMap[TypeDefinition.InputObjectTypeDefinition],
+      dataType: TypeDefinition.InputObjectTypeDefinition,
       acceptsInputs: (d, defs, _) =>
         Utils.displayAsCategories(
           Utils.sortByParentType(
@@ -215,7 +233,8 @@ export class TypeDefinitions {
     });
     const DirectiveDefinition = generateTypeDefinition({
       help: help.directive,
-      type: TypeSystemDefinition.DirectiveDefinition,
+      type: TypeSystemDefinitionDisplayMap[TypeSystemDefinition.DirectiveDefinition],
+      dataType: TypeSystemDefinition.DirectiveDefinition,
       options: Object.keys(Directive).map((d) => ({ name: d, help: d })),
       acceptsInputs: (d, defs, _) =>
         Utils.displayAsCategories(

@@ -3,6 +3,7 @@ import {
   ParserTree,
   ScalarTypes,
   TypeDefinition,
+  TypeDefinitionDisplayStrings,
   Value,
   ValueDefinition
 } from '../../Models';
@@ -23,7 +24,7 @@ describe('Input Values tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.InputObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.input
           },
           data: {
             type: TypeDefinition.InputObjectTypeDefinition
@@ -103,7 +104,7 @@ describe('Input Values tests on parser', () => {
         {
           name: 'Car',
           type: {
-            name: TypeDefinition.EnumTypeDefinition
+            name: TypeDefinitionDisplayStrings.enum
           },
           data: {
             type: TypeDefinition.EnumTypeDefinition
@@ -114,7 +115,7 @@ describe('Input Values tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.InputObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.input
           },
           data: {
             type: TypeDefinition.InputObjectTypeDefinition
@@ -152,7 +153,7 @@ describe('Input Values tests on parser', () => {
         {
           name: 'Car',
           type: {
-            name: TypeDefinition.InputObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.input
           },
           data: {
             type: TypeDefinition.InputObjectTypeDefinition
@@ -175,7 +176,7 @@ describe('Input Values tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.InputObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.input
           },
           data: {
             type: TypeDefinition.InputObjectTypeDefinition
@@ -211,7 +212,7 @@ describe('Input Values tests on parser', () => {
         {
           name: 'Car',
           type: {
-            name: TypeDefinition.ScalarTypeDefinition
+            name: TypeDefinitionDisplayStrings.scalar
           },
           data: {
             type: TypeDefinition.ScalarTypeDefinition
@@ -221,7 +222,7 @@ describe('Input Values tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.InputObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.input
           },
           data: {
             type: TypeDefinition.InputObjectTypeDefinition
@@ -259,7 +260,7 @@ describe('Input Values tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.InputObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.input
           },
           data: {
             type: TypeDefinition.InputObjectTypeDefinition
@@ -394,7 +395,7 @@ describe('Input Values tests on parser', () => {
         {
           name: 'Car',
           type: {
-            name: TypeDefinition.InputObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.input
           },
           data: {
             type: TypeDefinition.InputObjectTypeDefinition
@@ -417,7 +418,7 @@ describe('Input Values tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.InputObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.input
           },
           data: {
             type: TypeDefinition.InputObjectTypeDefinition
@@ -489,7 +490,7 @@ describe('Input Values tests on parser', () => {
         {
           name: 'Car',
           type: {
-            name: TypeDefinition.EnumTypeDefinition
+            name: TypeDefinitionDisplayStrings.enum
           },
           data: {
             type: TypeDefinition.EnumTypeDefinition
@@ -521,7 +522,7 @@ describe('Input Values tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.InputObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.input
           },
           data: {
             type: TypeDefinition.InputObjectTypeDefinition

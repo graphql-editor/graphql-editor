@@ -1,4 +1,4 @@
-import { ParserTree, TypeDefinition } from '../../Models';
+import { ParserTree, TypeDefinition, TypeDefinitionDisplayStrings } from '../../Models';
 import { Parser, ParserUtils } from '../../Parser';
 
 describe('TypeDefintion declarations tests on parser', () => {
@@ -10,7 +10,7 @@ describe('TypeDefintion declarations tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.ObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.type
           },
           data: {
             type: TypeDefinition.ObjectTypeDefinition
@@ -31,7 +31,7 @@ describe('TypeDefintion declarations tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.InterfaceTypeDefinition
+            name: TypeDefinitionDisplayStrings.interface
           },
           data: {
             type: TypeDefinition.InterfaceTypeDefinition
@@ -51,7 +51,7 @@ describe('TypeDefintion declarations tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.InputObjectTypeDefinition
+            name: TypeDefinitionDisplayStrings.input
           },
           data: {
             type: TypeDefinition.InputObjectTypeDefinition
@@ -71,7 +71,7 @@ describe('TypeDefintion declarations tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.EnumTypeDefinition
+            name: TypeDefinitionDisplayStrings.enum
           },
           data: {
             type: TypeDefinition.EnumTypeDefinition
@@ -91,7 +91,7 @@ describe('TypeDefintion declarations tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.UnionTypeDefinition
+            name: TypeDefinitionDisplayStrings.union
           },
           data: {
             type: TypeDefinition.UnionTypeDefinition
@@ -111,7 +111,7 @@ describe('TypeDefintion declarations tests on parser', () => {
         {
           name: 'Person',
           type: {
-            name: TypeDefinition.ScalarTypeDefinition
+            name: TypeDefinitionDisplayStrings.scalar
           },
           data: {
             type: TypeDefinition.ScalarTypeDefinition

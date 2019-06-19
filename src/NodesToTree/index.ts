@@ -26,16 +26,16 @@ export class NodesToTree {
             .map(NodesToTree.resolveFieldNode)
         : undefined
     } as ParserField)
-  static resolveObjectNode = (n: Node) => {
+  static resolveObjectNode = (n: Node<GraphQLNodeParams>) => {
     const templateField: ParserField = {
       name: n.name,
       description: n.description,
       type: {
-        name: n.definition.type,
+        name: n.definition.data!.type!,
         options: n.options && (n.options.filter((o) => o in Options) as Options[]),
         operations: n.options && (n.options.filter((o) => o in OperationType) as OperationType[]),
         directiveOptions:
-          n.definition.type === TypeSystemDefinition.DirectiveDefinition
+          n.definition.data!.type! === TypeSystemDefinition.DirectiveDefinition
             ? (n.options as Directive[])
             : undefined
       },
@@ -74,7 +74,7 @@ export class NodesToTree {
       [OperationType.subscription]: null
     };
     const definitions = objectNodes.map((n) => {
-      if (n.definition.type === TypeDefinition.ObjectTypeDefinition) {
+      if (n.definition.data && n.definition.data.type === TypeDefinition.ObjectTypeDefinition) {
         if (n.options) {
           if (n.options.find((o) => o === OperationType.query)) {
             operations[OperationType.query] = n.name;
@@ -94,13 +94,17 @@ export class NodesToTree {
       .map((k) => `\t${k}: ${operations[k as OperationType]}`)
       .join(',\n');
     const alldefs = definitions.map(TemplateUtils.resolverForConnection);
-    return joinDefinitions(...alldefs)
-      .concat('\n')
-      .concat(
-        operations[OperationType.query]
-          ? `schema{\n${resolvedOperations}\n}`
-          : `
+    const theBeginning = `# GraphQL from graph at:\n# graphqleditor.com\n\n`;
+    return (
+      theBeginning +
+      joinDefinitions(...alldefs)
+        .concat('\n')
+        .concat(
+          operations[OperationType.query]
+            ? `schema{\n${resolvedOperations}\n}`
+            : `
       `
-      );
+        )
+    );
   }
 }

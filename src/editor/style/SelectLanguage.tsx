@@ -9,5 +9,5 @@ export const Bar = style({
   justifyContent: 'flex-end',
   alignSelf: 'flex-end',
   zIndex: 4,
-  padding: 10,
+  padding: `12px 20px`
 });

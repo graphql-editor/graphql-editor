@@ -7,7 +7,7 @@ export const colorHighlight = '#75aaff';
 export const colorDisabled = '#888';
 export const colorDisabledHighlight = '#39598c';
 
-export const sizeSidebar = 500;
+export const sizeSidebar = 350;
 
 export const overlayBackground = '#000000ee';
 export const overlayText = '#fff';

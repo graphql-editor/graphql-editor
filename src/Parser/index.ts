@@ -1,5 +1,12 @@
 import { buildASTSchema, GraphQLDirective, GraphQLNamedType, GraphQLSchema, parse } from 'graphql';
-import { AllTypes, BuiltInDirectives, ParserField, ParserTree } from '../Models';
+import {
+  AllTypes,
+  BuiltInDirectives,
+  ParserField,
+  ParserTree,
+  TypeDefinitionDisplayMap,
+  TypeSystemDefinitionDisplayStrings
+} from '../Models';
 import { Directive, OperationType, TypeDefinition, TypeSystemDefinition } from '../Models/Spec';
 import { TypeResolver } from './typeResolver';
 export class Parser {
@@ -9,7 +16,7 @@ export class Parser {
     return {
       name,
       type: {
-        name: n.astNode!.kind
+        name: TypeDefinitionDisplayMap[n.astNode!.kind]
       },
       data: {
         type: n.astNode!.kind as AllTypes
@@ -25,7 +32,7 @@ export class Parser {
     return {
       name,
       type: {
-        name: TypeSystemDefinition.DirectiveDefinition,
+        name: TypeSystemDefinitionDisplayStrings.directive,
         directiveOptions: n.locations as Directive[]
       },
       data: {
@@ -40,7 +47,7 @@ export class Parser {
     try {
       parsedSchema = Parser.importSchema(schema);
     } catch (error) {
-      console.log(schema);
+      /* tslint:disable */ console.log(schema); /* tslint:disable */
     }
     const typeMap = parsedSchema!.getTypeMap();
     const directives = parsedSchema!
@@ -79,6 +86,6 @@ export class Parser {
       }
     });
     return nodeTree;
-  }
+  };
 }
 export * from './ParserUtils';

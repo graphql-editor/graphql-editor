@@ -3,3 +3,4 @@ export * from './Options';
 export * from './Types';
 export * from './Graph';
 export * from './Spec';
+export * from './DisplayMap';
