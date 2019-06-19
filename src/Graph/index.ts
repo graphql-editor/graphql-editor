@@ -146,7 +146,6 @@ export class GraphController {
   serialise = ({ nodes, links }: { nodes: Node[]; links: Link[] }) => {
     this.nodes = nodes;
     const graphQLSchema = NodesToTree.parse(nodes, links);
-    console.log(graphQLSchema);
     try {
       buildASTSchema(parse(graphQLSchema + this.stichesCode));
       this.schema = graphQLSchema;

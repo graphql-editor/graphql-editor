@@ -73,7 +73,7 @@ export class Parser {
     };
     nodeTree.nodes = nodeTree.nodes.concat(directives.map(Parser.directiveToSerializedNodeTree));
     nodeTree.nodes.forEach((n) => {
-      if (n.type.name === TypeDefinition.ObjectTypeDefinition) {
+      if (n.data!.type! === TypeDefinition.ObjectTypeDefinition) {
         if (operations.Query && operations.Query.name === n.name) {
           n.type.operations = [OperationType.query];
         }
