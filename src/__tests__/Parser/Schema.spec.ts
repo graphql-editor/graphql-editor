@@ -49,4 +49,31 @@ describe('Schema base operations', () => {
     };
     expect(ParserUtils.compareParserTreesNodes(tree.nodes, treeMock.nodes)).toBe(true);
   });
+  test(`empty query`, () => {
+    const schema = `
+      type Query
+      schema{
+          query: Query
+      }
+      `;
+    const tree = Parser.parse(schema);
+    const treeMock: ParserTree = {
+      nodes: [
+        {
+          name: 'Query',
+          type: {
+            name: TypeDefinitionDisplayStrings.type,
+            operations: [OperationType.query]
+          },
+          data: {
+            type: TypeDefinition.ObjectTypeDefinition
+          },
+          interfaces: [],
+          directives: [],
+          args: []
+        }
+      ]
+    };
+    expect(ParserUtils.compareParserTreesNodes(tree.nodes, treeMock.nodes)).toBe(true);
+  });
 });

@@ -70,12 +70,12 @@ export const resolveTypeFromRoot = (i: ParserField) => {
   if (!i.args || !i.args.length) {
     return;
   }
-  if (i.type.name === TypeDefinition.UnionTypeDefinition) {
+  if (i.data!.type === TypeDefinition.UnionTypeDefinition) {
     return `${plusDescription(i.description)}export type ${i.name} = ${i.args
       .map((f) => f.type.name)
       .join(' | ')}`;
   }
-  if (i.type.name === TypeDefinition.EnumTypeDefinition) {
+  if (i.data!.type === TypeDefinition.EnumTypeDefinition) {
     return `${plusDescription(i.description)}export enum ${i.name} {\n${i.args
       .map((f) => `\t${f.name} = "${f.name}"`)
       .join(',\n')}\n}`;

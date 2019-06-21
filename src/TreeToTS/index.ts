@@ -8,6 +8,7 @@ import { resolveTypeFromRoot } from './templates/returnedTypes';
 export class TreeToTS {
   static resolveTree(tree: ParserTree) {
     const rootTypes = tree.nodes.map(resolveTypeFromRoot);
+    const ignoreTSLINT = `/* tslint:disable */\n\n`;
     const propTypes = `export const AllTypesProps = {\n${tree.nodes
       .map(resolvePropTypeFromRoot)
       .filter((pt) => pt)
@@ -37,7 +38,8 @@ export class TreeToTS {
         .map((n) => (n.args ? n.args.map((f) => f.name) : []))
         .reduce((a, b) => a.concat(b), [])
     });
-    return propTypes
+    return ignoreTSLINT
+      .concat(propTypes)
       .concat('\n\n')
       .concat(returnTypes)
       .concat('\n\n')

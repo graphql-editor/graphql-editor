@@ -27,17 +27,14 @@ export const guessTheScalar = (scalar: string) => {
 };
 
 export const resolvePropTypeFromRoot = (i: ParserField) => {
-  if (i.type.name === TypeDefinition.EnumTypeDefinition) {
+  if (i.data!.type === TypeDefinition.EnumTypeDefinition) {
     return `\t${i.name}: "enum"`;
   }
-  if (i.type.name === TypeDefinition.ScalarTypeDefinition) {
+  if (i.data!.type === TypeDefinition.ScalarTypeDefinition) {
     return `\t${i.name}: "String"`;
   }
-  if (i.type.name === TypeDefinition.InputObjectTypeDefinition) {
+  if (i.data!.type === TypeDefinition.InputObjectTypeDefinition) {
     return `\t${i.name}:{\n${i.args!.map((f) => resolveArg(f, '\t\t')).join(',\n')}\n\t}`;
-  }
-  if (i.type.name === TypeDefinition.ScalarTypeDefinition) {
-    return;
   }
   if (!i.args) {
     return;

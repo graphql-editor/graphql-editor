@@ -7,12 +7,12 @@ const resolveField = (f: ParserField, resolveArgs = true) => {
 };
 
 export const resolveReturnFromRoot = (i: ParserField) => {
-  if (i.type.name === TypeDefinition.UnionTypeDefinition) {
+  if (i.data!.type === TypeDefinition.UnionTypeDefinition) {
     return;
   }
   if (
-    i.type.name !== TypeDefinition.ObjectTypeDefinition &&
-    i.type.name !== TypeDefinition.InterfaceTypeDefinition
+    i.data!.type !== TypeDefinition.ObjectTypeDefinition &&
+    i.data!.type !== TypeDefinition.InterfaceTypeDefinition
   ) {
     return;
   }
