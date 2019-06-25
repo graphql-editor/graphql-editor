@@ -5,8 +5,8 @@ import {
   TypeDefinition,
   TypeDefinitionDisplayStrings,
   TypeSystemDefinition
-} from '../../Models';
-import { Parser, ParserUtils } from '../../Parser';
+} from '../../src/Models';
+import { Parser, ParserUtils } from '../../src/Parser';
 
 describe('Schema base operations', () => {
   test(`query`, () => {

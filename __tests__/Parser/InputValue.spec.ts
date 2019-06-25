@@ -6,8 +6,8 @@ import {
   TypeDefinitionDisplayStrings,
   Value,
   ValueDefinition
-} from '../../Models';
-import { Parser, ParserUtils } from '../../Parser';
+} from '../../src/Models';
+import { Parser, ParserUtils } from '../../src/Parser';
 
 describe('Input Values tests on parser', () => {
   test(`Built in ScalarTypes - ${Object.keys(ScalarTypes).join(', ')}`, () => {

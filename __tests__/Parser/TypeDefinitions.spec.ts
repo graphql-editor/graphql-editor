@@ -1,5 +1,5 @@
-import { ParserTree, TypeDefinition, TypeDefinitionDisplayStrings } from '../../Models';
-import { Parser, ParserUtils } from '../../Parser';
+import { ParserTree, TypeDefinition, TypeDefinitionDisplayStrings } from '../../src/Models';
+import { Parser, ParserUtils } from '../../src/Parser';
 
 describe('TypeDefintion declarations tests on parser', () => {
   test('ObjectTypeDefinition - type keyword', () => {

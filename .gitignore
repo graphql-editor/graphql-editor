@@ -10,3 +10,4 @@ lib
 .idea
 .docz
 .tscache
+*.tsbuildinfo*

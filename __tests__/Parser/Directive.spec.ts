@@ -8,8 +8,8 @@ import {
   TypeSystemDefinition,
   TypeSystemDefinitionDisplayStrings,
   ValueDefinition
-} from '../../Models';
-import { Parser, ParserUtils } from '../../Parser';
+} from '../../src/Models';
+import { Parser, ParserUtils } from '../../src/Parser';
 
 // TODO: Add schema directive test
 // TODO: Add directive with arguments test
