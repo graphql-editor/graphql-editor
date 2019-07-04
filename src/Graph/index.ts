@@ -43,7 +43,9 @@ export class GraphController {
   private passDiagramErrors?: (errors: string) => void;
   private onSerialize?: (schema: string) => void;
   setDOMElement = (element: HTMLElement) => {
-    this.diagram = new Diagram(element);
+    this.diagram = new Diagram(element, {
+      disableLinkOperations: true
+    });
     this.diagram.setSerialisationFunction(this.serialise);
     this.generateBasicDefinitions();
   }
