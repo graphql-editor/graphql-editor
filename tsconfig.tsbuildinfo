@@ -506,20 +506,20 @@
         "signature": "a4a89f2b39e54fadd00ece1b4bb785c5b1d72ab193c2714a1e54936cf072ec24"
       },
       "/users/arturczemiel/.projects/graphqleditor.com/diagram/lib/events/ioevents.d.ts": {
-        "version": "f659593c0b9302826d9bb5c36b9249e5756ed81c111234e255070e4e541f5aea",
-        "signature": "f659593c0b9302826d9bb5c36b9249e5756ed81c111234e255070e4e541f5aea"
+        "version": "e3a41fb7ab153cbc43d54ccd98b4d4ccebad65d757038207460d51da8999611c",
+        "signature": "e3a41fb7ab153cbc43d54ccd98b4d4ccebad65d757038207460d51da8999611c"
       },
       "/users/arturczemiel/.projects/graphqleditor.com/diagram/lib/events/diagramevents.d.ts": {
-        "version": "b8ac5c1fdbcd4a7cff3873a629338aad8c6e35e3f8e80cf0a5f95d08f0f0680d",
-        "signature": "b8ac5c1fdbcd4a7cff3873a629338aad8c6e35e3f8e80cf0a5f95d08f0f0680d"
+        "version": "d9a23e34312f591f68715cc3a1f40a7bc0a36829aca2469f734242e974f7adb9",
+        "signature": "d9a23e34312f591f68715cc3a1f40a7bc0a36829aca2469f734242e974f7adb9"
       },
       "/users/arturczemiel/.projects/graphqleditor.com/diagram/lib/events/index.d.ts": {
         "version": "1c0dded66771bd00ea218fefbde28166384302e5cff90493e80d61162a26efa1",
         "signature": "1c0dded66771bd00ea218fefbde28166384302e5cff90493e80d61162a26efa1"
       },
       "/users/arturczemiel/.projects/graphqleditor.com/diagram/lib/eventbus/index.d.ts": {
-        "version": "d32d59b565a3aa4d3a87e2612d794927407c5c9c5513f573457abfb19af11687",
-        "signature": "d32d59b565a3aa4d3a87e2612d794927407c5c9c5513f573457abfb19af11687"
+        "version": "36544b9ac6e54736aa30a3b75be25fbd90815825d80030002c43859849e590a2",
+        "signature": "36544b9ac6e54736aa30a3b75be25fbd90815825d80030002c43859849e590a2"
       },
       "/users/arturczemiel/.projects/graphqleditor.com/diagram/lib/models/category.d.ts": {
         "version": "9ba535c5b05b03114d530aa0101bc048dbe827478aafda1bee0ce194614a5caf",
@@ -570,8 +570,8 @@
         "signature": "cbc4c615078cb94f1ec1dced68846b0e6ebbdacf26ce84426d138528dff1eca9"
       },
       "/users/arturczemiel/.projects/graphqleditor.com/diagram/lib/models/diagramstate.d.ts": {
-        "version": "db40fa1c17ff43df77d367cbe764e7307f33de335b753bed3bbb7967808f656a",
-        "signature": "db40fa1c17ff43df77d367cbe764e7307f33de335b753bed3bbb7967808f656a"
+        "version": "1edde6a87b1a5dddce95b218754cc1a41b7e5e967f828e2587ab61d9c493b831",
+        "signature": "1edde6a87b1a5dddce95b218754cc1a41b7e5e967f828e2587ab61d9c493b831"
       },
       "/users/arturczemiel/.projects/graphqleditor.com/diagram/lib/models/diagramtheme.d.ts": {
         "version": "ff2ecec995e18d0663bcbe59933fe062aca9af1cbbfc93f0e649974c88950c52",
@@ -594,8 +594,8 @@
         "signature": "c408897edec7a7770cbcc7350e3b379bec5302ff24f380712a55a9aa890210a5"
       },
       "/users/arturczemiel/.projects/graphqleditor.com/diagram/lib/configuration/index.d.ts": {
-        "version": "476d6e7bc7f8efe71964750fa4080ffe22c35cef268a4fb45b1c7df024976ef8",
-        "signature": "476d6e7bc7f8efe71964750fa4080ffe22c35cef268a4fb45b1c7df024976ef8"
+        "version": "78146831eceba82a8bf4734d3f23853a80d92baf908cdc2607e22c3358d7d51a",
+        "signature": "78146831eceba82a8bf4734d3f23853a80d92baf908cdc2607e22c3358d7d51a"
       },
       "/users/arturczemiel/.projects/graphqleditor.com/diagram/lib/diagram/index.d.ts": {
         "version": "87fb1ebde6c677d6336313b140631b1d6ebcad9c26ed0511f98b0693e3b0139f",
@@ -638,8 +638,8 @@
         "signature": "c31669a6c893e81bf81ffd75de584081ad3460e52ee1345ed7b33ff653b6ffcc"
       },
       "/users/arturczemiel/.projects/graphqleditor.com/diagram/lib/rectanglepacker/index.d.ts": {
-        "version": "ed5e0f3c5da066c81a0d76d35bd7fbc35f4ad9f7d2082027201b4dfb8c5abfff",
-        "signature": "ed5e0f3c5da066c81a0d76d35bd7fbc35f4ad9f7d2082027201b4dfb8c5abfff"
+        "version": "38e88a96ce0632ba58e92aca1814e937a48978335b3fe5ca9f1255d8285addaf",
+        "signature": "38e88a96ce0632ba58e92aca1814e937a48978335b3fe5ca9f1255d8285addaf"
       },
       "/users/arturczemiel/.projects/graphqleditor.com/diagram/lib/index.d.ts": {
         "version": "ffb89032ca4f60c5b99276017311bc63049930684ad12a22ec3369fd7b55d2eb",
@@ -798,7 +798,7 @@
         "signature": "5b116faacdf20df91f84da95a8addfefb9b50ccdb8d31ee348b2b2fd07b5f10b"
       },
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/src/graph/index.ts": {
-        "version": "245dd85e50f24a508f774ba055c1429b784bfaa00b36a4ec2fa5c09cfcc277d4",
+        "version": "e4c3f413f5ed951ed483a9e2924b4e14ec5c6f1bcc3ef07062224a474556f3c8",
         "signature": "776e0f7f582a8083f499101b107090c591cd196f8e8c72026babe90a4db7a4be"
       },
       "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/node_modules/@types/classnames/index.d.ts": {
@@ -2219,7 +2219,6 @@
       ],
       "/users/arturczemiel/.projects/graphqleditor.com/diagram/lib/rectanglepacker/index.d.ts": [
         "/users/arturczemiel/.projects/graphqleditor.com/diagram/lib/models/index.d.ts",
-        "/users/arturczemiel/.projects/graphqleditor.com/diagram/lib/io/screenposition.d.ts",
         "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/node_modules/@types/node/util.d.ts",
         "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/node_modules/@types/node/ts3.2/util.d.ts"
       ],
@@ -4072,7 +4071,6 @@
       ],
       "/users/arturczemiel/.projects/graphqleditor.com/diagram/lib/rectanglepacker/index.d.ts": [
         "/users/arturczemiel/.projects/graphqleditor.com/diagram/lib/models/index.d.ts",
-        "/users/arturczemiel/.projects/graphqleditor.com/diagram/lib/io/screenposition.d.ts",
         "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/node_modules/@types/node/util.d.ts",
         "/users/arturczemiel/.projects/graphqleditor.com/graphql-editor/node_modules/@types/node/ts3.2/util.d.ts"
       ],
