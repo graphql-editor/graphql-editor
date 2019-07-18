@@ -1,11 +1,13 @@
-import { Options, ParserField } from '../../Models';
 import {
   Instances,
+  Options,
+  ParserField,
   TypeDefinition,
   TypeSystemDefinition,
   Value,
   ValueDefinition
-} from '../../Models/Spec';
+} from 'graphql-zeus';
+import {} from '../../Models';
 import { ArgumentTemplate } from './ArgumentTemplate';
 import { DirectiveTemplate } from './DirectiveTemplate';
 import { EnumValueDefinitionTemplate } from './EnumValueDefinitionTemplate';

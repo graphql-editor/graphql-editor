@@ -1,5 +1,4 @@
-import { Options, ParserField, ParserTree } from '../Models';
-import { ScalarTypes, TypeDefinition } from '../Models/Spec';
+import { Options, ParserField, ParserTree, ScalarTypes, TypeDefinition } from 'graphql-zeus';
 
 export const fakerMap: Record<string, string> = {
   [ScalarTypes.String]: 'String',

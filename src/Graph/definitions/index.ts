@@ -1,5 +1,5 @@
+import { GraphQLNodeParams } from 'graphql-zeus';
 import { Node } from 'graphsource';
-import { GraphQLNodeParams } from '../../Models';
 import { HelperDefinitions } from './HelperDefintions';
 import { ScalarDefinitions } from './ScalarDefintions';
 import { TypeDefinitions } from './TypeDefintions';

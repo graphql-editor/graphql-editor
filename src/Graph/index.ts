@@ -1,12 +1,10 @@
 import { buildASTSchema, buildClientSchema, introspectionQuery, parse, printSchema } from 'graphql';
+import { OperationType, Parser, ParserTree, TreeToTS } from 'graphql-zeus';
 import { Diagram, Link, Node, Old, Serializer } from 'graphsource';
-import { EditorNodeDefinition, ParserTree } from '../Models';
-import { OperationType } from '../Models/Spec';
+import { EditorNodeDefinition } from '../Models';
 import { NodesToTree } from '../NodesToTree';
-import { Parser } from '../Parser';
 import { TreeToFaker } from '../TreeToFaker';
 import { TreeToNodes } from '../TreeToNodes';
-import { TreeToTS } from '../TreeToTS';
 import { Definitions } from './definitions';
 /**
  * Class for controlling the state of diagram and exposing schema functions
@@ -159,7 +157,9 @@ export class GraphController {
       }
     } catch (error) {
       if (this.passDiagramErrors) {
+        // tslint:disable
         console.log(error);
+        // tslint:enable
         this.passDiagramErrors(error.message);
       }
       return;

@@ -1,5 +1,5 @@
+import { TypeDefinition, TypeSystemDefinition } from 'graphql-zeus';
 import { EditorNodeDefinition } from '../../Models';
-import { TypeDefinition, TypeSystemDefinition } from '../../Models/Spec';
 import { Utils } from './Utils';
 
 export const FieldInstance: Partial<EditorNodeDefinition> & Pick<EditorNodeDefinition, 'node'> = {

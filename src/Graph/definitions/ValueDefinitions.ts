@@ -1,6 +1,6 @@
+import { GraphQLNodeParams, TypeDefinition, Value, ValueDefinition } from 'graphql-zeus';
 import { Node } from 'graphsource';
-import { EditorNodeDefinition, GraphQLNodeParams } from '../../Models';
-import { TypeDefinition, Value, ValueDefinition } from '../../Models/Spec';
+import { EditorNodeDefinition } from '../../Models';
 import { help } from './help';
 import { Utils } from './Utils';
 

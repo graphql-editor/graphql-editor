@@ -1,5 +1,5 @@
+import { Helpers, TypeDefinition, TypeSystemDefinition, ValueDefinition } from 'graphql-zeus';
 import { EditorNodeDefinition } from '../../Models';
-import { Helpers, TypeDefinition, TypeSystemDefinition, ValueDefinition } from '../../Models/Spec';
 import { help } from './help';
 import { Utils } from './Utils';
 

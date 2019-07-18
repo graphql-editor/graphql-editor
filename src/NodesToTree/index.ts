@@ -1,6 +1,14 @@
+import {
+  Directive,
+  GraphQLNodeParams,
+  Helpers,
+  OperationType,
+  Options,
+  ParserField,
+  TypeDefinition,
+  TypeSystemDefinition
+} from 'graphql-zeus';
 import { Link, Node } from 'graphsource';
-import { Directive, GraphQLNodeParams, Options, ParserField } from '../Models';
-import { Helpers, OperationType, TypeDefinition, TypeSystemDefinition } from '../Models/Spec';
 import { TemplateUtils } from './templates/TemplateUtils';
 
 export class NodesToTree {

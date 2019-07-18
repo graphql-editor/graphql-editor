@@ -1,6 +1,6 @@
-import { EditorNodeDefinition, Options } from '../../Models';
-import { Instances } from '../../Models/Spec';
-import { help } from '../help';
+import { Instances, Options } from 'graphql-zeus';
+import { EditorNodeDefinition } from '../../Models';
+import { help } from './help';
 
 export const ArgumentInstance: Partial<EditorNodeDefinition> &
   Pick<EditorNodeDefinition, 'node'> = {

@@ -1,9 +1,9 @@
 import {
   ParserField,
+  TypeDefinition,
   TypeDefinitionDisplayMap,
   TypeSystemDefinitionDisplayStrings
-} from '../../Models';
-import { TypeDefinition } from '../../Models/Spec';
+} from 'graphql-zeus';
 import { TemplateUtils } from './TemplateUtils';
 
 export class TypeDefinitionsTemplates {

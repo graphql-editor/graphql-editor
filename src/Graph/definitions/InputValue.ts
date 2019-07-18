@@ -1,5 +1,5 @@
+import { TypeDefinition, TypeSystemDefinition, Value, ValueDefinition } from 'graphql-zeus';
 import { EditorNodeDefinition } from '../../Models';
-import { TypeDefinition, TypeSystemDefinition, Value, ValueDefinition } from '../../Models/Spec';
 import { Utils } from './Utils';
 
 export const InputValueInstance: Partial<EditorNodeDefinition> &

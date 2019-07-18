@@ -1,5 +1,4 @@
-import { ParserField } from '../../Models';
-import { Value } from '../../Models/Spec';
+import { ParserField, Value } from 'graphql-zeus';
 import { TemplateUtils } from './TemplateUtils';
 
 export class ValueTemplate {

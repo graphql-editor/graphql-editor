@@ -1,4 +1,4 @@
-import { Options, ParserField } from '../../Models';
+import { Options, ParserField } from 'graphql-zeus';
 import { TemplateUtils } from './TemplateUtils';
 
 export class InputValueTemplate {

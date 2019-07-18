@@ -1,4 +1,4 @@
-import { ParserField } from '../../Models';
+import { ParserField } from 'graphql-zeus';
 import { TemplateUtils } from './TemplateUtils';
 
 export class DirectiveTemplate {

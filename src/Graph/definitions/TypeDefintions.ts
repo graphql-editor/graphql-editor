@@ -1,21 +1,19 @@
-import { Node, NodeOption } from 'graphsource';
-import {
-  EditorNodeDefinition,
-  GraphQLNodeParams,
-  TypeDefinitionDisplayMap,
-  TypeDefinitionDisplayStrings,
-  TypeSystemDefinitionDisplayMap,
-  TypeSystemDefinitionDisplayStrings
-} from '../../Models';
 import {
   Directive,
+  GraphQLNodeParams,
   Helpers,
   Instances,
   TypeDefinition,
+  TypeDefinitionDisplayMap,
+  TypeDefinitionDisplayStrings,
   TypeSystemDefinition,
+  TypeSystemDefinitionDisplayMap,
+  TypeSystemDefinitionDisplayStrings,
   Value,
   ValueDefinition
-} from '../../Models/Spec';
+} from 'graphql-zeus';
+import { Node, NodeOption } from 'graphsource';
+import { EditorNodeDefinition } from '../../Models';
 import { ArgumentInstance } from './Argument';
 import { FieldInstance } from './Field';
 import { help } from './help';

@@ -1,9 +1,9 @@
 import { EditorNodeDefinition } from '../../Models';
 
-import { ScalarTypes, Value, ValueDefinition } from '../../Models/Spec';
-import { help } from '../help';
+import { ScalarTypes, Value, ValueDefinition } from 'graphql-zeus';
 import { ArgumentInstance } from './Argument';
 import { FieldInstance } from './Field';
+import { help } from './help';
 import { InputValueInstance } from './InputValue';
 import { Utils } from './Utils';
 export class ScalarDefinitions {

@@ -1,12 +1,13 @@
-import { Node, NodeOption } from 'graphsource';
 import {
-  AcceptedEditorNodeDefinition,
   AllTypes,
-  EditorNodeDefinition,
-  GraphQLNodeParams
-} from '../../Models';
-import { OperationType, ScalarTypes, ValueDefinition } from '../../Models/Spec';
-import { help } from '../help';
+  GraphQLNodeParams,
+  OperationType,
+  ScalarTypes,
+  ValueDefinition
+} from 'graphql-zeus';
+import { Node, NodeOption } from 'graphsource';
+import { AcceptedEditorNodeDefinition, EditorNodeDefinition } from '../../Models';
+import { help } from './help';
 /**
  * Class responsible for Connection Utils
  *

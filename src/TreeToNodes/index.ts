@@ -1,6 +1,6 @@
+import { GraphQLNodeParams, Helpers, ParserField, ParserTree } from 'graphql-zeus';
 import { Link, Node, NodeUtils } from 'graphsource';
-import { EditorNodeDefinition, GraphQLNodeParams, ParserField, ParserTree } from '../Models';
-import { Helpers } from '../Models/Spec';
+import { EditorNodeDefinition } from '../Models';
 
 export class TreeToNodes {
   static compareData(d1: GraphQLNodeParams | undefined, d2: GraphQLNodeParams | undefined) {
@@ -100,9 +100,6 @@ export class TreeToNodes {
     let def = defs[0];
     if (defs.length > 1) {
       def = defs.find((d) => TreeToNodes.compareData(d.data, root.data))!;
-    }
-    if (!def) {
-      console.log(def, root, [...nodeDefinitions]);
     }
     const nodeCreated = NodeUtils.createBasicNode({ x: 0, y: 0 }, def, {
       name: root.name,
