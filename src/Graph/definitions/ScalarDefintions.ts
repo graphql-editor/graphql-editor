@@ -6,6 +6,12 @@ import { FieldInstance } from './Field';
 import { help } from './help';
 import { InputValueInstance } from './InputValue';
 import { Utils } from './Utils';
+/**
+ * Class responsible for built in scalaras definitions
+ *
+ * @export
+ * @class ScalarDefinitions
+ */
 export class ScalarDefinitions {
   static counter = 0;
   static generate() {

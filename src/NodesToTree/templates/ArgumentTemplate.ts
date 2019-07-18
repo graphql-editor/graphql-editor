@@ -1,6 +1,12 @@
 import { Options, ParserField } from 'graphql-zeus';
 import { TemplateUtils } from './TemplateUtils';
 
+/**
+ * resolve function argument
+ *
+ * @export
+ * @class ArgumentTemplate
+ */
 export class ArgumentTemplate {
   static resolve(f: ParserField) {
     let argsString = '';

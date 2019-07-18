@@ -1,6 +1,12 @@
 import { ParserField, Value } from 'graphql-zeus';
 import { TemplateUtils } from './TemplateUtils';
 
+/**
+ * Template responsible for default values in GraphQL
+ *
+ * @export
+ * @class ValueTemplate
+ */
 export class ValueTemplate {
   static resolve(f: ParserField) {
     let returnedValue = `${f.name}`;

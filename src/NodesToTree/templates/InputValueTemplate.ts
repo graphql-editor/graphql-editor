@@ -1,6 +1,12 @@
 import { Options, ParserField } from 'graphql-zeus';
 import { TemplateUtils } from './TemplateUtils';
 
+/**
+ * template for input value and function arguments
+ *
+ * @export
+ * @class InputValueTemplate
+ */
 export class InputValueTemplate {
   static resolve(f: ParserField) {
     let argsString = '';

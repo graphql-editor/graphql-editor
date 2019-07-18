@@ -1,6 +1,12 @@
 import { ParserField } from 'graphql-zeus';
 import { TemplateUtils } from './TemplateUtils';
 
+/**
+ * Template for GraphQL Field
+ *
+ * @export
+ * @class FieldTemplate
+ */
 export class FieldTemplate {
   static resolve(f: ParserField) {
     let argsString = '';

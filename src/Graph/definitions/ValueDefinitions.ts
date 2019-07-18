@@ -4,6 +4,12 @@ import { EditorNodeDefinition } from '../../Models';
 import { help } from './help';
 import { Utils } from './Utils';
 
+/**
+ * Class responsible for enum Value definition and object value definition
+ *
+ * @export
+ * @class ValueDefinitions
+ */
 export class ValueDefinitions {
   static generate(stitchNodes: Array<Node<GraphQLNodeParams>>) {
     const enumValue: EditorNodeDefinition = {

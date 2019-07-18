@@ -17,30 +17,101 @@ import { TypeDefinitionsTemplates } from './TypeDefinitionsTemplates';
 import { UnionMemberTemplate } from './UnionMemberTemplate';
 import { ValueTemplate } from './ValueTemplate';
 
+/**
+ * Class for solving GraphQL Types and directing them to a right resolver
+ *
+ * @export
+ * @class TemplateUtils
+ */
 export class TemplateUtils {
-  static isArray = (f: ParserField, type: string) =>
+  /**
+   * Check if type is ListType from graphql and array in zeus
+   *
+   * @static
+   * @param {ParserField} f field to check
+   * @param {string} type type of field to resolve
+   * @returns {string} the real type
+   * @memberof TemplateUtils
+   */
+  static isArray = (f: ParserField, type: string): string =>
     f.type.options && f.type.options.find((o) => o === Options.array) ? `[${type}]` : type
-  static isRequired = (f: ParserField, type: string) =>
+  /**
+   * Check if type is NonNullType from graphql and required in zeus
+   *
+   * @static
+   * @param {ParserField} f field to check
+   * @param {string} type type of field to resolve
+   * @returns {string} the real type
+   * @memberof TemplateUtils
+   */
+  static isRequired = (f: ParserField, type: string): string =>
     f.type.options && f.type.options.find((o) => o === Options.required) ? `${type}!` : type
-  static isArrayRequired = (f: ParserField, type: string) =>
+  /**
+   * Check if type is NonNullType and ListType from graphql and required and arrayRequired in zeus
+   *
+   * @static
+   * @param {ParserField} f field to check
+   * @param {string} type type of field to resolve
+   * @returns {string} the real type
+   * @memberof TemplateUtils
+   */
+  static isArrayRequired = (f: ParserField, type: string): string =>
     f.type.options &&
     f.type.options.find((o) => o === Options.arrayRequired) &&
     f.type.options.find((o) => o === Options.array)
       ? `${type}!`
       : type
+  /**
+   *
+   *
+   * @param {ParserField} f field to be resolved
+   * @static
+   * @memberof TemplateUtils
+   */
   static resolveType = (f: ParserField) =>
     TemplateUtils.isArrayRequired(
       f,
       TemplateUtils.isArray(f, TemplateUtils.isRequired(f, f.type.name))
     )
-  static descriptionResolver = (description?: string, prefix = '') =>
+  /**
+   * Return description in GraphQL format
+   *
+   * @static
+   * @param {string} [description]
+   * @param {string} [prefix='']
+   * @returns {string}
+   * @memberof TemplateUtils
+   */
+  static descriptionResolver = (description?: string, prefix = ''): string =>
     description ? `${prefix}"""\n${prefix}${description}\n${prefix}"""\n` : ''
+  /**
+   * Creates implements for GraphQL types
+   *
+   * @param {string[]} [interfaces] names of interfaces
+   * @static
+   * @memberof TemplateUtils
+   */
   static resolveImplements = (interfaces?: string[]) =>
     interfaces && interfaces.length ? ` implements ${interfaces.join(' & ')}` : ''
+  /**
+   * Create directives for graphql fields
+   *
+   * @static
+   * @memberof TemplateUtils
+   * @param {ParserField[]} [directives] directives parser fields
+   */
   static resolveDirectives = (directives?: ParserField[]) =>
     directives && directives.length
       ? ` ${directives.map((d) => TemplateUtils.resolverForConnection(d)).join(' ')}`
       : ''
+  /**
+   * Detect the Zeus graphql type and cast it to proper function in type resolver
+   *
+   * @static
+   * @memberof TemplateUtils
+   * @param {ParserField} f
+   * @returns {string}
+   */
   static resolverForConnection = (f: ParserField): string => {
     if (f.data) {
       const { type = '' } = f.data;

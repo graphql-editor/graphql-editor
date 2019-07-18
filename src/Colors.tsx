@@ -28,7 +28,7 @@ export const Colors = {
   yellow: ['#FED531', '#E6C02C', '#CCAB27', '#B39622', '#806B18', '#4D400F', '#332B0A'],
   red: ['#FF306B', '#E62C60', '#CC2756', '#B3224B', '#801835', '#4D0F20', '#330A15'],
   blue: ['#30C1FF', '#2BAEE5', '#269ACC', '#2287B3', '#1D7499', '#186080', '#134D66', '#0E3A4D']
-};
+} as const;
 
 type HexaDecimal = string;
 
