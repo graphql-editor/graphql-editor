@@ -12,7 +12,7 @@ Here is a [live demo](https://graphqleditor.com) example of GraphQLEditor.
 
 ## Developer Docs
 
-If you wish to contribute docs from `typedoc` are availble on [https://graphql-editor.github.io](https://graphql-editor.github.io)
+If you wish to contribute docs from `typedoc` are availble on [https://graphql-editor.github.io/graphql-editor/](https://graphql-editor.github.io/graphql-editor/)
 
 ## License
 
