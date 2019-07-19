@@ -12,7 +12,7 @@ export class EnumValueDefinitionTemplate {
    * Resolve field to enum value definiton
    *
    * @static
-   * @param {ParserField} f
+   * @param f
    * @returns
    * @memberof EnumValueDefinitionTemplate
    */

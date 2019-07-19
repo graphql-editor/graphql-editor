@@ -16,11 +16,11 @@ export class TypeDefinitionsTemplates {
   /**
    * Basic TypeDefinition template with mapping to display `type` instead of `ObjectTypeDefinition`
    *
-   * @param {(Pick<ParserField, 'description' | 'name' | 'type'>)} {
+   * @param {
    *     description,
    *     name,
    *     type
-   *   }
+   *   } props
    *
    * @static
    * @memberof TypeDefinitionsTemplates
@@ -36,7 +36,7 @@ export class TypeDefinitionsTemplates {
   /**
    * Resolve type
    *
-   * @param {ParserField} {
+   * @param {
    *     name,
    *     description,
    *     type,
@@ -65,7 +65,7 @@ export class TypeDefinitionsTemplates {
    *
    * @static
    * @memberof TypeDefinitionsTemplates
-   * @param {ParserField} { name, description, type, args } field to be resolved
+   * @param { name, description, type, args } field to be resolved
    * @returns {string}
    */
   static resolveDirective = ({ name, description, type, args }: ParserField): string =>
@@ -77,7 +77,7 @@ export class TypeDefinitionsTemplates {
   /**
    * Resolve union
    *
-   * @param {ParserField} { name, description, type, args, directives } field to be resolved
+   * @param { name, description, type, args, directives } field to be resolved
    * @returns {string}
    * @static
    * @memberof TypeDefinitionsTemplates

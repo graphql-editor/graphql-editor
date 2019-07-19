@@ -12,7 +12,7 @@ export class DirectiveTemplate {
    * Resolve directive field
    *
    * @static
-   * @param {ParserField} f parser field
+   * @param f parser field
    * @returns
    * @memberof DirectiveTemplate
    */

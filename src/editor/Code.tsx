@@ -34,6 +34,13 @@ export interface CodeEditorState {
   error?: string;
 }
 
+/**
+ * React compontent holding GraphQL IDE
+ *
+ * @export
+ * @class CodeEditor
+ * @extends {React.Component<CodeEditorProps, CodeEditorState>}
+ */
 export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState> {
   public dragging = false;
   public startX?: number;

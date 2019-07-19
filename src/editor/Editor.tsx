@@ -14,6 +14,12 @@ export type EditorProps = {
   graphController?: (controller: GraphController) => void;
 } & CodeEditorOuterProps;
 
+/**
+ * Main Editor component
+ *
+ * @export
+ * @class Editor
+ */
 export class Editor extends React.Component<EditorProps, EditorState> {
   state: EditorState = {
     projectId: undefined,

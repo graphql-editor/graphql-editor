@@ -18,7 +18,7 @@ export class GraphController {
    *
    * @static
    * @memberof GraphController
-   * @param {string} schema
+   * @param schema
    * @returns {string}
    */
   static getGraphqlWithoutRootSchema = (schema: string): string => {
@@ -40,38 +40,68 @@ export class GraphController {
   private passSchema?: (schema: string, stitches?: string) => void;
   private passDiagramErrors?: (errors: string) => void;
   private onSerialize?: (schema: string) => void;
-  setDOMElement = (element: HTMLElement) => {
+  /**
+   * Set DOM element which holds diagram
+   *
+   * @memberof GraphController
+   * @param element DOM element
+   */
+  setDOMElement = (element: HTMLElement): void => {
     this.diagram = new Diagram(element, {
       disableLinkOperations: true
     });
     this.diagram.setSerialisationFunction(this.serialise);
     this.generateBasicDefinitions();
   }
+  /**
+   * Generate basic defintions for GraphQL like type,input,directive etc..
+   *
+   * @memberof GraphController
+   */
   generateBasicDefinitions = () => {
     this.definitions = Definitions.generate([]);
     this.diagram!.setDefinitions(this.definitions);
   }
-  isEmpty = () => {
+  /**
+   * Checks if graph is empty
+   *
+   * @returns {boolean}
+   * @memberof GraphController
+   */
+  isEmpty = (): boolean => {
     return this.nodes.length === 0;
   }
-  resizeDiagram = () => {
+  /**
+   * Call diagram resize
+   *
+   * @memberof GraphController
+   */
+  resizeDiagram = (): void => {
     this.diagram!.autoResize();
   }
+  /**
+   * Set function to be called on serialise
+   *
+   * @param f function to be called
+   * @memberof GraphController
+   */
   setOnSerialise = (f: (schema: string) => void) => {
     this.onSerialize = f;
   }
+  /**
+   * Function to control editable state of diagram
+   *
+   * @memberof GraphController
+   * @param isReadOnly pass if diagram is readonly
+   */
   setReadOnly = (isReadOnly: boolean) => {
     this.diagram!.setReadOnly(isReadOnly);
   }
-  load = (nodes: Node[], links: Link[]) => {
-    this.diagram!.setNodes(nodes, true);
-    this.diagram!.setLinks(links);
-    this.diagram!.zeroDiagram();
-    this.serialise({
-      nodes,
-      links
-    });
-  }
+  /**
+   * Reset Graph clearing all the nodes and links from it
+   *
+   * @memberof GraphController
+   */
   resetGraph = () => {
     const nodes: Node[] = [];
     const links: Link[] = [];
@@ -86,6 +116,13 @@ export class GraphController {
       this.passSchema('', this.stichesCode);
     }
   }
+  /**
+   * Load GraphQL code and convert it to diagram nodes
+   *
+   * @param schema
+   * @returns
+   * @memberof GraphController
+   */
   loadGraphQL = (schema: string) => {
     if (schema.length === 0) {
       this.resetGraph();
@@ -114,10 +151,24 @@ export class GraphController {
     this.load(deserialized.nodes, deserialized.links);
     return deserialized;
   }
+  /**
+   * Load from serialized ParserTree
+   *
+   * @param serializedDiagram
+   * @memberof GraphController
+   */
   loadSerialized = (serializedDiagram: ParserTree) => {
     const deserialized = TreeToNodes.resolveTree(serializedDiagram, this.definitions!);
     this.load(deserialized.nodes, deserialized.links);
   }
+  /**
+   * Get schema from URL and load it to graph
+   *
+   * @memberof GraphController
+   * @param url GraphQL schema url
+   * @param [header] additional header
+   * @returns {Promise<void>}
+   */
   getSchemaFromURL = async (url: string, header?: string): Promise<void> => {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json'
@@ -143,7 +194,67 @@ export class GraphController {
   }
   setPassSchema = (fn: (schema: string, stitches?: string) => void) => (this.passSchema = fn);
   setPassDiagramErrors = (fn: (errors: string) => void) => (this.passDiagramErrors = fn);
-  serialise = ({ nodes, links }: { nodes: Node[]; links: Link[] }) => {
+  /**
+   * Load stitches code to Graph controller
+   *
+   * @param schema stitches code in GraphQL
+   * @returns {void}
+   */
+  loadStitches = (schema: string): void => {
+    if (!schema) {
+      return;
+    }
+    let basicDefinitions = Definitions.generate([]);
+    this.stichesCode = schema;
+    this.stitchNodes = TreeToNodes.resolveTree(Parser.parse(this.stichesCode), basicDefinitions);
+    basicDefinitions = Definitions.generate(this.stitchNodes.nodes);
+    const rememberBasicDefinitions = [...basicDefinitions];
+    this.stitchNodes = TreeToNodes.resolveTree(Parser.parse(this.stichesCode), basicDefinitions);
+    this.stitchDefinitions = basicDefinitions.filter(
+      (bd) => !rememberBasicDefinitions.find((rbd) => rbd.id === bd.id)
+    );
+  }
+  /**
+   * Returns generated string for typescript library
+   *
+   * @returns {string}
+   * @memberof GraphController
+   */
+  getAutocompletelibrary = (): string =>
+    TreeToTS.resolveTree(Parser.parse(this.stichesCode + this.schema))
+  /**
+   * Returns generated string for faker library
+   *
+   * @returns {string}
+   * @memberof GraphController
+   */
+  getFakerLibrary = (): string =>
+    TreeToFaker.resolveTree(Parser.parse(this.stichesCode + this.schema))
+  /**
+   * Load nodes and links into diagram
+   *
+   * @param nodes
+   * @param links
+   * @memberof GraphController
+   */
+  private load = (nodes: Node[], links: Link[]) => {
+    this.diagram!.setNodes(nodes, true);
+    this.diagram!.setLinks(links);
+    this.diagram!.zeroDiagram();
+    this.serialise({
+      nodes,
+      links
+    });
+  }
+  /**
+   * Serialise nodes to GraphQL
+   *
+   * @private
+   * @memberof GraphController
+   * @param} { nodes, links }
+   * @returns
+   */
+  private serialise = ({ nodes, links }: { nodes: Node[]; links: Link[] }): void => {
     this.nodes = nodes;
     const graphQLSchema = NodesToTree.parse(nodes, links);
     try {
@@ -165,20 +276,4 @@ export class GraphController {
       return;
     }
   }
-  loadStitches = (schema: string) => {
-    if (!schema) {
-      return;
-    }
-    let basicDefinitions = Definitions.generate([]);
-    this.stichesCode = schema;
-    this.stitchNodes = TreeToNodes.resolveTree(Parser.parse(this.stichesCode), basicDefinitions);
-    basicDefinitions = Definitions.generate(this.stitchNodes.nodes);
-    const rememberBasicDefinitions = [...basicDefinitions];
-    this.stitchNodes = TreeToNodes.resolveTree(Parser.parse(this.stichesCode), basicDefinitions);
-    this.stitchDefinitions = basicDefinitions.filter(
-      (bd) => !rememberBasicDefinitions.find((rbd) => rbd.id === bd.id)
-    );
-  }
-  getAutocompletelibrary = () => TreeToTS.resolveTree(Parser.parse(this.stichesCode + this.schema));
-  getFakerLibrary = () => TreeToFaker.resolveTree(Parser.parse(this.stichesCode + this.schema));
 }

@@ -1,5 +1,0 @@
-static:
-  path: ./dist
-  host: nightly.graphqleditor.com
-  cloudflare:
-    zone: graphqleditor.com

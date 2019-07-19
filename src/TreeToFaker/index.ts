@@ -81,6 +81,12 @@ export const generateFakerResolverUnion = (root: ParserField) => {
     }
   };
 };
+/**
+ * Class responsible for faker.json generation
+ *
+ * @export
+ * @class TreeToFaker
+ */
 export class TreeToFaker {
   static resolveTree(tree: ParserTree) {
     const { nodes } = tree;

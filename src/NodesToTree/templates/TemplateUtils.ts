@@ -28,8 +28,8 @@ export class TemplateUtils {
    * Check if type is ListType from graphql and array in zeus
    *
    * @static
-   * @param {ParserField} f field to check
-   * @param {string} type type of field to resolve
+   * @param f field to check
+   * @param type type of field to resolve
    * @returns {string} the real type
    * @memberof TemplateUtils
    */
@@ -39,8 +39,8 @@ export class TemplateUtils {
    * Check if type is NonNullType from graphql and required in zeus
    *
    * @static
-   * @param {ParserField} f field to check
-   * @param {string} type type of field to resolve
+   * @param f field to check
+   * @param type type of field to resolve
    * @returns {string} the real type
    * @memberof TemplateUtils
    */
@@ -50,8 +50,8 @@ export class TemplateUtils {
    * Check if type is NonNullType and ListType from graphql and required and arrayRequired in zeus
    *
    * @static
-   * @param {ParserField} f field to check
-   * @param {string} type type of field to resolve
+   * @param f field to check
+   * @param type type of field to resolve
    * @returns {string} the real type
    * @memberof TemplateUtils
    */
@@ -64,7 +64,7 @@ export class TemplateUtils {
   /**
    *
    *
-   * @param {ParserField} f field to be resolved
+   * @param f field to be resolved
    * @static
    * @memberof TemplateUtils
    */
@@ -77,8 +77,8 @@ export class TemplateUtils {
    * Return description in GraphQL format
    *
    * @static
-   * @param {string} [description]
-   * @param {string} [prefix='']
+   * @param [description]
+   * @param [prefix='']
    * @returns {string}
    * @memberof TemplateUtils
    */
@@ -87,7 +87,7 @@ export class TemplateUtils {
   /**
    * Creates implements for GraphQL types
    *
-   * @param {string[]} [interfaces] names of interfaces
+   * @param [interfaces] names of interfaces
    * @static
    * @memberof TemplateUtils
    */
@@ -98,7 +98,7 @@ export class TemplateUtils {
    *
    * @static
    * @memberof TemplateUtils
-   * @param {ParserField[]} [directives] directives parser fields
+   * @param [directives] directives parser fields
    */
   static resolveDirectives = (directives?: ParserField[]) =>
     directives && directives.length
@@ -109,7 +109,7 @@ export class TemplateUtils {
    *
    * @static
    * @memberof TemplateUtils
-   * @param {ParserField} f
+   * @param f
    * @returns {string}
    */
   static resolverForConnection = (f: ParserField): string => {

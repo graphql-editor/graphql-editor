@@ -11,7 +11,8 @@
     "start": "webpack-dev-server --config ./sandbox/webpack.config.js --content-base ./sandbox/ --port 1569 --hot --inline --open",
     "build": "grunt",
     "watch": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "docs": "typedoc --mode file --out docs  --theme minimal --ignoreCompilerErrors --target ES6 "
   },
   "resolutions": {
     "@types/react": "^16.4.14"
@@ -59,6 +60,7 @@
     "raw-loader": "^2.0.0",
     "react-hot-loader": "^4.3.11",
     "ts-jest": "^23.10.5",
+    "typedoc": "^0.14.2",
     "typescript": "^3.4.5",
     "url-loader": "^1.1.1",
     "webpack": "^4.28.4",
