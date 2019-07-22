@@ -1,6 +1,6 @@
 import { buildASTSchema, buildClientSchema, introspectionQuery, parse, printSchema } from 'graphql';
 import { OperationType, Parser, ParserTree, TreeToTS } from 'graphql-zeus';
-import { Diagram, Link, Node, Old, Serializer } from 'graphsource';
+import { Diagram, DiagramEvents, Link, Node, Old, Serializer } from 'graphsource';
 import { EditorNodeDefinition } from '../Models';
 import { NodesToTree } from '../NodesToTree';
 import { TreeToFaker } from '../TreeToFaker';
@@ -35,6 +35,7 @@ export class GraphController {
   public schema = '';
   public stichesCode = '';
   private nodes: Node[] = [];
+  private links: Link[] = [];
   private stitchNodes: { nodes: Node[]; links: Link[] } = { nodes: [], links: [] };
   private diagram?: Diagram;
   private passSchema?: (schema: string, stitches?: string) => void;
@@ -50,6 +51,7 @@ export class GraphController {
     this.diagram = new Diagram(element, {
       disableLinkOperations: true
     });
+    this.diagram.on(DiagramEvents.LinkCreated, this.reserialise);
     this.diagram.setSerialisationFunction(this.serialise);
     this.generateBasicDefinitions();
   }
@@ -256,6 +258,7 @@ export class GraphController {
    */
   private serialise = ({ nodes, links }: { nodes: Node[]; links: Link[] }): void => {
     this.nodes = nodes;
+    this.links = links;
     const graphQLSchema = NodesToTree.parse(nodes, links);
     try {
       buildASTSchema(parse(graphQLSchema + this.stichesCode));
@@ -266,6 +269,25 @@ export class GraphController {
       if (this.passSchema) {
         this.passSchema(graphQLSchema, this.stichesCode);
       }
+    } catch (error) {
+      if (this.passDiagramErrors) {
+        // tslint:disable
+        console.log(error);
+        // tslint:enable
+        this.passDiagramErrors(error.message);
+      }
+      return;
+    }
+  }
+  /**
+   * Reserialise current nodes and links, usedd to duplicate nodes on connection
+   */
+  private reserialise = () => {
+    const graphQLSchema = NodesToTree.parse(this.nodes, this.links);
+    try {
+      buildASTSchema(parse(graphQLSchema + this.stichesCode));
+      this.schema = graphQLSchema;
+      this.loadGraphQL(this.schema);
     } catch (error) {
       if (this.passDiagramErrors) {
         // tslint:disable
