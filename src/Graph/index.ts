@@ -1,5 +1,5 @@
-import { buildASTSchema, buildClientSchema, introspectionQuery, parse, printSchema } from 'graphql';
-import { OperationType, Parser, ParserTree, TreeToTS } from 'graphql-zeus';
+import { buildASTSchema, parse } from 'graphql';
+import { OperationType, Parser, ParserTree, TreeToTS, Utils } from 'graphql-zeus';
 import { Diagram, DiagramEvents, Link, Node, Old, Serializer } from 'graphsource';
 import { EditorNodeDefinition } from '../Models';
 import { NodesToTree } from '../NodesToTree';
@@ -17,9 +17,7 @@ export class GraphController {
    * Strip schema keyword from schema - useful in schema stitch
    *
    * @static
-   * @memberof GraphController
    * @param schema
-   * @returns {string}
    */
   static getGraphqlWithoutRootSchema = (schema: string): string => {
     const basicDefinitions = Definitions.generate([]);
@@ -44,7 +42,6 @@ export class GraphController {
   /**
    * Set DOM element which holds diagram
    *
-   * @memberof GraphController
    * @param element DOM element
    */
   setDOMElement = (element: HTMLElement): void => {
@@ -166,33 +163,12 @@ export class GraphController {
   /**
    * Get schema from URL and load it to graph
    *
-   * @memberof GraphController
    * @param url GraphQL schema url
    * @param [header] additional header
-   * @returns {Promise<void>}
    */
   getSchemaFromURL = async (url: string, header?: string): Promise<void> => {
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json'
-    };
-    if (header) {
-      const [key, val] = header.split(':').map((k) => k.trim());
-      if (!val) {
-        throw new Error('Incorrect Header');
-      }
-      headers[key] = val;
-    }
-    const response = await fetch(url, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({ query: introspectionQuery })
-    });
-    const { data, errors } = await response.json();
-    if (errors) {
-      throw new Error(JSON.stringify(errors, null, 2));
-    }
-    const c = buildClientSchema(data);
-    this.loadGraphQL(printSchema(c));
+    const schema = await Utils.getFromUrl(url, header);
+    this.loadGraphQL(schema);
   }
   setPassSchema = (fn: (schema: string, stitches?: string) => void) => (this.passSchema = fn);
   setPassDiagramErrors = (fn: (errors: string) => void) => (this.passDiagramErrors = fn);
@@ -200,7 +176,6 @@ export class GraphController {
    * Load stitches code to Graph controller
    *
    * @param schema stitches code in GraphQL
-   * @returns {void}
    */
   loadStitches = (schema: string): void => {
     if (!schema) {
@@ -220,7 +195,6 @@ export class GraphController {
    * Returns generated string for typescript library
    *
    * @returns {string}
-   * @memberof GraphController
    */
   getAutocompletelibrary = (): string =>
     TreeToTS.resolveTree(Parser.parse(this.stichesCode + this.schema))
@@ -228,7 +202,6 @@ export class GraphController {
    * Returns generated string for faker library
    *
    * @returns {string}
-   * @memberof GraphController
    */
   getFakerLibrary = (): string =>
     TreeToFaker.resolveTree(Parser.parse(this.stichesCode + this.schema))
@@ -237,7 +210,6 @@ export class GraphController {
    *
    * @param nodes
    * @param links
-   * @memberof GraphController
    */
   private load = (nodes: Node[], links: Link[]) => {
     this.diagram!.setNodes(nodes, true);
@@ -252,7 +224,6 @@ export class GraphController {
    * Serialise nodes to GraphQL
    *
    * @private
-   * @memberof GraphController
    * @param} { nodes, links }
    * @returns
    */
