@@ -10,4 +10,5 @@ lib
 .idea
 .docz
 .tscache
+tsconfig.tsbuildinfo
 *.tsbuildinfo*
