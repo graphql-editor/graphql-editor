@@ -17,7 +17,7 @@ export const UiDiagram = style({
   width: '100%',
   height: '100%',
   alignSelf: 'stretch',
-  display: 'flex',
+  display: 'flex'
 });
 export const UIDiagramFull = style({
   marginLeft: '-100vh'
@@ -28,16 +28,27 @@ class App extends React.Component<
   {
     editorVisible: boolean;
   }
-  > {
+> {
   state = {
     editorVisible: true
   };
   render() {
     return (
-      <div
-        className={UiDiagram}
-      >
-        <Editor editorVisible={this.state.editorVisible} />
+      <div className={UiDiagram}>
+        <Editor
+          schema={`
+
+        type Query{
+          hello: String!
+        }
+
+        schema{
+          query: Query
+        }
+
+        `}
+          editorVisible={this.state.editorVisible}
+        />
       </div>
     );
   }

@@ -11,6 +11,7 @@ export interface EditorState {
 }
 export type EditorProps = {
   editorVisible: boolean;
+  schema?: string;
   graphController?: (controller: GraphController) => void;
 } & CodeEditorOuterProps;
 
@@ -45,6 +46,9 @@ export class Editor extends React.Component<EditorProps, EditorState> {
     this.controller.setReadOnly(!!this.props.readonly);
     if (this.props.graphController) {
       this.props.graphController(this.controller);
+    }
+    if (this.props.schema) {
+      this.controller.loadGraphQL(this.props.schema);
     }
   }
   componentDidUpdate(prevProps: EditorProps) {
