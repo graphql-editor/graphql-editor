@@ -33,12 +33,13 @@ export class GraphController {
   public schema = '';
   public stichesCode = '';
   private nodes: Node[] = [];
-  private links: Link[] = [];
   private stitchNodes: { nodes: Node[]; links: Link[] } = { nodes: [], links: [] };
   private diagram?: Diagram;
   private passSchema?: (schema: string, stitches?: string) => void;
   private passDiagramErrors?: (errors: string) => void;
   private onSerialize?: (schema: string) => void;
+  private reloadSchema?: boolean;
+  private nodeCreated?: boolean;
   /**
    * Set DOM element which holds diagram
    *
@@ -48,8 +49,9 @@ export class GraphController {
     this.diagram = new Diagram(element, {
       disableLinkOperations: true
     });
-    this.diagram.on(DiagramEvents.LinkCreated, this.reserialise);
-    this.diagram.setSerialisationFunction(this.serialise);
+    this.diagram.on(DiagramEvents.LinkCreated, this.onCreateLink);
+    this.diagram.on(DiagramEvents.NodeCreated, this.onCreateNode);
+    this.diagram.on(DiagramEvents.DataModelChanged, this.serialise);
     this.generateBasicDefinitions();
   }
   /**
@@ -229,7 +231,6 @@ export class GraphController {
    */
   private serialise = ({ nodes, links }: { nodes: Node[]; links: Link[] }): void => {
     this.nodes = nodes;
-    this.links = links;
     const graphQLSchema = NodesToTree.parse(nodes, links);
     try {
       buildASTSchema(parse(graphQLSchema + this.stichesCode));
@@ -239,6 +240,14 @@ export class GraphController {
       }
       if (this.passSchema) {
         this.passSchema(graphQLSchema, this.stichesCode);
+      }
+      if (this.nodeCreated) {
+        this.nodeCreated = false;
+        this.reloadSchema = false;
+      }
+      if (this.reloadSchema) {
+        this.reloadSchema = false;
+        this.loadGraphQL(graphQLSchema);
       }
     } catch (error) {
       if (this.passDiagramErrors) {
@@ -251,22 +260,15 @@ export class GraphController {
     }
   }
   /**
-   * Reserialise current nodes and links, usedd to duplicate nodes on connection
+   * Fired on new link creation
    */
-  private reserialise = () => {
-    const graphQLSchema = NodesToTree.parse(this.nodes, this.links);
-    try {
-      buildASTSchema(parse(graphQLSchema + this.stichesCode));
-      this.schema = graphQLSchema;
-      this.loadGraphQL(this.schema);
-    } catch (error) {
-      if (this.passDiagramErrors) {
-        // tslint:disable
-        console.log(error);
-        // tslint:enable
-        this.passDiagramErrors(error.message);
-      }
-      return;
-    }
+  private onCreateLink = () => {
+    this.reloadSchema = true;
+  }
+  /**
+   * Fired on new node creation
+   */
+  private onCreateNode = () => {
+    this.nodeCreated = true;
   }
 }
