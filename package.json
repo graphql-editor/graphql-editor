@@ -73,7 +73,7 @@
     "classnames": "^2.2.5",
     "faker": "^4.1.0",
     "graphql": "^14.0.2",
-    "graphql-zeus": "^1.0.10",
+    "graphql-zeus": "^1.0.14",
     "graphsource": "^1.1.3",
     "moment": "^2.21.0",
     "query-string": "^6.2.0",
