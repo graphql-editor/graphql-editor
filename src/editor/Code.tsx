@@ -19,6 +19,7 @@ export type CodeEditorProps = {
   schema: string;
   stitches?: string;
   controller: GraphController;
+  onResized: () => void;
 } & CodeEditorOuterProps;
 export interface CodeEditorState {
   loadingUrl: boolean;
@@ -45,6 +46,7 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
   public dragging = false;
   public startX?: number;
   public refSidebar?: HTMLDivElement;
+  public refHandle?: HTMLDivElement;
   public aceEditorRef?: AceEditor;
   public state: CodeEditorState = {
     loadingUrl: false,
@@ -123,13 +125,22 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
           </div>
         </div>
         <div
+          ref={(ref) => {
+            if (ref) {
+              this.refHandle = ref;
+            }
+          }}
           draggable={true}
           className={cx(styles.Resizer, {
             drag: this.state.isResizing
           })}
+          style={{
+            left: this.startWidth,
+          }}
           onDragStart={(e) => {
             e.dataTransfer.setData('id', 'dragging');
             this.dragging = true;
+            this.refHandle!.style.left = '0px';
             this.setState({
               isResizing: true
             });
@@ -141,13 +152,21 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
             this.startX = this.startX || e.clientX;
             const deltaX = e.clientX - this.startX;
             this.width = this.startWidth + deltaX;
-            this.refSidebar!.style.width = `${this.width}px`;
+            if (this.width < this.minimumDrag) {
+              this.width = this.minimumDrag;
+            }
+            if (this.width > this.maximumDrag) {
+              this.width = this.maximumDrag;
+            }
+            this.refSidebar!.style.width = this.refSidebar!.style.flexBasis = `${this.width}px`;
             (this.aceEditorRef as any).editor.container.style.width = `${this.width}px`;
+            this.props.onResized();
           }}
           onDragEnd={(e) => {
             this.dragging = false;
             this.startX = undefined;
             this.startWidth = this.width;
+            this.refHandle!.style.left = `${this.width}px`;
             this.setState({
               isResizing: false
             });
@@ -166,6 +185,9 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
       </>
     );
   }
+
+  private get minimumDrag() { return window.innerWidth * 0.15; }
+  private get maximumDrag() { return window.innerWidth * 0.85; }
 
   private codeChange = (
     e: string,

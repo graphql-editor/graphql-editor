@@ -37,19 +37,25 @@ export class Editor extends React.Component<EditorProps, EditorState> {
     this.setState({ errors });
   }
   componentDidMount() {
-    if (!this.containerRef.current) {
-      return;
-    }
-    this.controller.setDOMElement(this.containerRef.current);
-    this.controller.setPassSchema(this.receiveSchema);
-    this.controller.setPassDiagramErrors(this.receiveErrors);
-    this.controller.setReadOnly(!!this.props.readonly);
-    if (this.props.graphController) {
-      this.props.graphController(this.controller);
-    }
-    if (this.props.schema) {
-      this.controller.loadGraphQL(this.props.schema);
-    }
+    window.requestAnimationFrame(() => {
+      // We should wait for next animation frame so TypeStyle
+      // had its time to refresh all the classes - this way
+      // our sizes won't break
+      if (!this.containerRef.current) {
+        return;
+      }
+
+      this.controller.setDOMElement(this.containerRef.current);
+      this.controller.setPassSchema(this.receiveSchema);
+      this.controller.setPassDiagramErrors(this.receiveErrors);
+      this.controller.setReadOnly(!!this.props.readonly);
+      if (this.props.graphController) {
+        this.props.graphController(this.controller);
+      }
+      if (this.props.schema) {
+        this.controller.loadGraphQL(this.props.schema);
+      }
+    });
   }
   componentDidUpdate(prevProps: EditorProps) {
     if (this.props.editorVisible !== prevProps.editorVisible) {
@@ -68,6 +74,7 @@ export class Editor extends React.Component<EditorProps, EditorState> {
             schema={this.state.code}
             stitches={this.state.stitches}
             readonly={this.props.readonly}
+            onResized={this.controller.resizeDiagram}
             schemaChanged={(e) => {
               this.setState({
                 code: e
@@ -81,7 +88,9 @@ export class Editor extends React.Component<EditorProps, EditorState> {
         <div
           style={{
             maxHeight: '100%',
-            maxWidth: '100%'
+            maxWidth: '100%',
+            height: '100vh',
+            flex: '1',
           }}
           ref={this.containerRef}
         />

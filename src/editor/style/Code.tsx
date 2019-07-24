@@ -4,6 +4,7 @@ import { Colors } from '../../Colors';
 import { sizeSidebar } from '../../vars';
 
 export const Sidebar = style({
+  flexBasis: sizeSidebar,
   width: sizeSidebar,
   alignSelf: 'stretch',
   zIndex: 2,
@@ -39,11 +40,13 @@ export const ErrorLonger = style({
 
 export const Resizer = style({
   width: 20,
+  height: '100%',
   marginLeft: -10,
   alignSelf: 'stretch',
   justifySelf: 'flex-end',
   zIndex: 6,
   cursor: 'ew-resize',
+  position: 'absolute',
   $nest: {
     [`&.drag`]: {
       position: 'fixed',
