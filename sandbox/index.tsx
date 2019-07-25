@@ -36,17 +36,17 @@ class App extends React.Component<
     return (
       <div className={UiDiagram}>
         <Editor
-        //   schema={`
+          schema={`
 
-        // type Query{
-        //   hello: String!
-        // }
+        type Query{
+          hello: String!
+        }
 
-        // schema{
-        //   query: Query
-        // }
+        schema{
+          query: Query
+        }
 
-        // `}
+        `}
           editorVisible={this.state.editorVisible}
         />
       </div>
