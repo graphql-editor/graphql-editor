@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Colors } from '../Colors';
 import { GraphController } from '../Graph';
 import { CodeEditor, CodeEditorOuterProps } from './Code';
 import * as styles from './style/Editor';
@@ -86,33 +85,6 @@ export class Editor extends React.Component<EditorProps, EditorState> {
           ref={this.containerRef}
         />
         {this.state.errors && <div className={styles.ErrorContainer}>{this.state.errors}</div>}
-        {this.controller && this.controller.isEmpty() && (
-          <div
-            style={{
-              position: 'fixed',
-              width: '100%',
-              bottom: 180,
-              display: 'flex',
-              pointerEvents: 'none',
-              justifyContent: 'center'
-            }}
-          >
-            <div
-              style={{
-                padding: 30,
-                width: 400,
-                background: Colors.yellow[0],
-                color: Colors.grey[7],
-                fontWeight: 'bold',
-                textAlign: 'justify',
-                borderRadius: 5
-              }}
-            >
-              Press right mouse button anywhere to open menu. You can also write GraphQL code or
-              load a project.
-            </div>
-          </div>
-        )}
       </>
     );
   }
