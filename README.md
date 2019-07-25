@@ -62,6 +62,54 @@ class App extends React.Component<
 render(<App />, document.getElementById('root'));
 ```
 
+### Use with schema and make readonly display of graph
+```tsx
+import * as React from 'react';
+import { render } from 'react-dom';
+import { Editor } from '../src/index';
+
+const schema = `
+type Query{
+  hello: String!
+}
+schema{
+  query: Query
+}
+`
+
+class App extends React.Component<
+  {},
+  {
+    editorVisible: boolean;
+  }
+> {
+  state = {
+    editorVisible: true
+  };
+  render() {
+    return (
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'grid',
+          gridTemplateColumns: this.state.editorVisible ? `auto 1fr` : '1fr',
+          gridTemplateRows: '1fr'
+        }}
+      >
+      <Editor editorVisible={false} readonly={true} schema={schema} />
+      </div>
+    );
+  }
+}
+```
+### Use with schema and make readonly display of graph with code
+
+Same as in preceeding example but `editorVisible` is true
+
+```tsx
+<Editor editorVisible={true} readonly={true} schema={schema} />
+```
 ## Support 
 
 [Join our Slack Channel](https://join.slack.com/t/graphqleditor/shared_invite/enQtNDkwOTgyOTM5OTc1LWI4YjU3N2U5NGVkNzQ2NzY5MGUxMTJiNjFlZDM1Zjc2OWRmNTI0NDM3OWUxYTk4Yjk3MzZlY2QwOWUzZmM2NDI)
