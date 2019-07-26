@@ -41,17 +41,21 @@ export const ErrorLonger = style({
 export const Resizer = style({
   width: 20,
   height: '100%',
-  marginLeft: -10,
   alignSelf: 'stretch',
   justifySelf: 'flex-end',
   zIndex: 6,
   cursor: 'ew-resize',
   position: 'absolute',
+  right: -10,
+  top: 0,
+  bottom: 0,
   $nest: {
     [`&.drag`]: {
       position: 'fixed',
       width: '100vw',
-      height: '100vh'
+      height: '100vh',
+      left: 0,
+      top: 0,
     }
   }
 });

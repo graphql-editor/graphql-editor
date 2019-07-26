@@ -123,65 +123,62 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
               value={this.lastSchema}
             />
           </div>
+          <div
+            ref={(ref) => {
+              if (ref) {
+                this.refHandle = ref;
+              }
+            }}
+            draggable={true}
+            className={cx(styles.Resizer, {
+              drag: this.state.isResizing
+            })}
+            onDragStart={(e) => {
+              e.dataTransfer.setData('id', 'dragging');
+              this.dragging = true;
+              // this.refHandle!.style.left = '0px';
+              this.setState({
+                isResizing: true
+              });
+            }}
+            onDrag={(e) => {
+              this.dragging = true;
+            }}
+            onDragOver={(e) => {
+              this.startX = this.startX || e.clientX;
+              const deltaX = e.clientX - this.startX;
+              this.width = this.startWidth + deltaX;
+              if (this.width < this.minimumDrag) {
+                this.width = this.minimumDrag;
+              }
+              if (this.width > this.maximumDrag) {
+                this.width = this.maximumDrag;
+              }
+              this.refSidebar!.style.width = this.refSidebar!.style.flexBasis = `${this.width}px`;
+              (this.aceEditorRef as any).editor.container.style.width = `${this.width}px`;
+              this.props.onResized();
+            }}
+            onDragEnd={(e) => {
+              this.dragging = false;
+              this.startX = undefined;
+              this.startWidth = this.width;
+              // this.refHandle!.style.left = `${this.width}px`;
+              this.setState({
+                isResizing: false
+              });
+            }}
+            onDragExit={() => {
+              this.setState({
+                isResizing: false
+              });
+            }}
+            onDragLeave={() => {
+              this.setState({
+                isResizing: false
+              });
+            }}
+          />
         </div>
-        <div
-          ref={(ref) => {
-            if (ref) {
-              this.refHandle = ref;
-            }
-          }}
-          draggable={true}
-          className={cx(styles.Resizer, {
-            drag: this.state.isResizing
-          })}
-          style={{
-            left: this.startWidth,
-          }}
-          onDragStart={(e) => {
-            e.dataTransfer.setData('id', 'dragging');
-            this.dragging = true;
-            this.refHandle!.style.left = '0px';
-            this.setState({
-              isResizing: true
-            });
-          }}
-          onDrag={(e) => {
-            this.dragging = true;
-          }}
-          onDragOver={(e) => {
-            this.startX = this.startX || e.clientX;
-            const deltaX = e.clientX - this.startX;
-            this.width = this.startWidth + deltaX;
-            if (this.width < this.minimumDrag) {
-              this.width = this.minimumDrag;
-            }
-            if (this.width > this.maximumDrag) {
-              this.width = this.maximumDrag;
-            }
-            this.refSidebar!.style.width = this.refSidebar!.style.flexBasis = `${this.width}px`;
-            (this.aceEditorRef as any).editor.container.style.width = `${this.width}px`;
-            this.props.onResized();
-          }}
-          onDragEnd={(e) => {
-            this.dragging = false;
-            this.startX = undefined;
-            this.startWidth = this.width;
-            this.refHandle!.style.left = `${this.width}px`;
-            this.setState({
-              isResizing: false
-            });
-          }}
-          onDragExit={() => {
-            this.setState({
-              isResizing: false
-            });
-          }}
-          onDragLeave={() => {
-            this.setState({
-              isResizing: false
-            });
-          }}
-        />
       </>
     );
   }
