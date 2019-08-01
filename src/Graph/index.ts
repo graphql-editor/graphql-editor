@@ -1,6 +1,15 @@
 import { buildASTSchema, parse } from 'graphql';
 import { OperationType, Parser, ParserTree, TreeToTS, Utils } from 'graphql-zeus';
-import { Diagram, DiagramEvents, Link, Node, Old, Serializer } from 'graphsource';
+import {
+  DefaultDiagramTheme,
+  Diagram,
+  DiagramEvents,
+  Link,
+  Node,
+  Old,
+  Serializer
+} from 'graphsource';
+import { Colors } from '../Colors';
 import { EditorNodeDefinition } from '../Models';
 import { NodesToTree } from '../NodesToTree';
 import { TreeToFaker } from '../TreeToFaker';
@@ -54,6 +63,70 @@ export class GraphController {
         nodeTitle: 0.5,
         nodeType: 0.5,
         detailedLinks: 0.9
+      },
+      theme: {
+        ...DefaultDiagramTheme,
+        node: {
+          ...DefaultDiagramTheme.node,
+          spacing: {
+            ...DefaultDiagramTheme.node.spacing
+          }
+        },
+        description: {
+          ...DefaultDiagramTheme.description
+        },
+        menu: {
+          ...DefaultDiagramTheme.menu,
+          category: {
+            ...DefaultDiagramTheme.menu.category,
+            fontSize: '12px'
+          }
+        },
+        help: {
+          ...DefaultDiagramTheme.help
+        },
+        colors: {
+          ...DefaultDiagramTheme.colors,
+          background: Colors.grey[8],
+          help: {
+            ...DefaultDiagramTheme.colors.help,
+            title: Colors.yellow[0]
+          },
+          port: {
+            ...DefaultDiagramTheme.colors.port,
+            background: Colors.grey[6]
+          },
+          link: {
+            ...DefaultDiagramTheme.colors.link,
+            main: Colors.grey[2]
+          },
+          node: {
+            ...DefaultDiagramTheme.colors.node,
+            background: Colors.grey[7],
+            type: Colors.grey[0],
+            hover: {
+              type: Colors.main[0]
+            },
+            types: {
+              type: Colors.main[0],
+              union: Colors.main[0],
+              input: Colors.main[0],
+              scalar: Colors.main[0],
+              interface: Colors.main[0],
+              enum: Colors.main[0],
+              directive: Colors.main[0],
+              String: Colors.green[0],
+              Int: Colors.green[0],
+              Boolean: Colors.green[0],
+              ID: Colors.green[0],
+              Float: Colors.green[0]
+            },
+            options: {
+              required: Colors.red[0],
+              array: Colors.yellow[0]
+            }
+          }
+        }
       }
     });
     this.diagram.on(DiagramEvents.LinkCreated, this.onCreateLink);

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { render } from 'react-dom';
 import { style } from 'typestyle';
 import { Editor } from '../src/index';
+import { muskSchema } from './schema';
 
 export const Full = style({
   backgroundColor: '#444444',
@@ -18,7 +19,7 @@ export const UiDiagram = style({
   height: '100%',
   alignSelf: 'stretch',
   display: 'flex',
-  position: 'relative',
+  position: 'relative'
 });
 export const UIDiagramFull = style({
   marginLeft: '-100vh'
@@ -36,20 +37,7 @@ class App extends React.Component<
   render() {
     return (
       <div className={UiDiagram}>
-        <Editor
-          schema={`
-
-        type Query{
-          hello: String!
-        }
-
-        schema{
-          query: Query
-        }
-
-        `}
-          editorVisible={this.state.editorVisible}
-        />
+        <Editor schema={muskSchema} editorVisible={this.state.editorVisible} />
       </div>
     );
   }
