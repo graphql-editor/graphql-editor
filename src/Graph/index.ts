@@ -47,7 +47,14 @@ export class GraphController {
    */
   setDOMElement = (element: HTMLElement): void => {
     this.diagram = new Diagram(element, {
-      disableLinkOperations: true
+      disableLinkOperations: true,
+      drawingDistance: {
+        nodeArrows: 0.5,
+        nodeOptions: 0.5,
+        nodeTitle: 0.5,
+        nodeType: 0.5,
+        detailedLinks: 0.9
+      }
     });
     this.diagram.on(DiagramEvents.LinkCreated, this.onCreateLink);
     this.diagram.on(DiagramEvents.NodeCreated, this.onCreateNode);
