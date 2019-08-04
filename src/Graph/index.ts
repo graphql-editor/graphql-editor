@@ -1,5 +1,5 @@
 import { buildASTSchema, parse } from 'graphql';
-import { OperationType, Parser, ParserTree, TreeToTS, Utils } from 'graphql-zeus';
+import { OperationType, Parser, ParserTree, Utils } from 'graphql-zeus';
 import {
   DefaultDiagramTheme,
   Diagram,
@@ -12,7 +12,6 @@ import {
 import { Colors } from '../Colors';
 import { EditorNodeDefinition } from '../Models';
 import { NodesToTree } from '../NodesToTree';
-import { TreeToFaker } from '../TreeToFaker';
 import { TreeToNodes } from '../TreeToNodes';
 import { Definitions } from './definitions';
 /**
@@ -273,20 +272,6 @@ export class GraphController {
       (bd) => !rememberBasicDefinitions.find((rbd) => rbd.id === bd.id)
     );
   }
-  /**
-   * Returns generated string for typescript library
-   *
-   * @returns {string}
-   */
-  getAutocompletelibrary = (): string =>
-    TreeToTS.resolveTree(Parser.parse(this.stichesCode + this.schema))
-  /**
-   * Returns generated string for faker library
-   *
-   * @returns {string}
-   */
-  getFakerLibrary = (): string =>
-    TreeToFaker.resolveTree(Parser.parse(this.stichesCode + this.schema))
   /**
    * Load nodes and links into diagram
    *
