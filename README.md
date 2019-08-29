@@ -138,4 +138,4 @@ Whole graphql-editor parsing stuff is based on underlying [zeus](https://github.
 
 ## GraphQL Tutorials
 
-Best GraphQL tutorials [here[(blog.graphqleditor.com/top-graphql-tutorials-reviewed-2019)
+Best GraphQL tutorials [here](blog.graphqleditor.com/top-graphql-tutorials-reviewed-2019)
