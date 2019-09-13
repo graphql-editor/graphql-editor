@@ -135,3 +135,7 @@ Whole graphql-editor is based on underlying [diagram](https://github.com/graphql
 ## Underlying Parsing technology
 
 Whole graphql-editor parsing stuff is based on underlying [zeus](https://github.com/graphql-editor/graphql-zeus) technology. We need much more help there feel free to contribute!
+
+## GraphQL Tutorials
+
+Best GraphQL tutorials [here](https://blog.graphqleditor.com/top-graphql-tutorials-reviewed-2019)
