@@ -298,6 +298,12 @@ export class GraphController {
     this.nodes = nodes;
     const graphQLSchema = NodesToTree.parse(nodes, links);
     try {
+      const unNamedNode = this.nodes.find((n) => n.name.length === 0);
+      if (unNamedNode) {
+        throw new Error(
+          `Every node should have a name. Please fill in a name and click enter or defocus`
+        );
+      }
       buildASTSchema(parse(graphQLSchema + this.stichesCode));
       this.schema = graphQLSchema;
       if (this.onSerialize) {
