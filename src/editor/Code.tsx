@@ -3,11 +3,12 @@ import * as React from 'react';
 import * as styles from './style/Code';
 
 import { buildASTSchema, parse } from 'graphql';
-import AceEditor from 'react-ace';
+import AceEditor, { AceEditorProps, Selection } from 'react-ace';
 import { GraphController } from '../Graph';
 import { sizeSidebar } from '../vars';
 import './ace/graphqleditor';
 import './ace/graphqlschema';
+import { CodeSearchQuery, findSelectionQuery } from './CodeSearch';
 import { SelectLanguage } from './SelectLanguage';
 require(`brace/ext/searchbox`);
 export interface CodeEditorOuterProps {
@@ -15,11 +16,16 @@ export interface CodeEditorOuterProps {
   readonly?: boolean;
 }
 
+export type AceEditorInstance = React.Component<AceEditorProps, {}> & {
+  editor?: { execCommand: (cmd: string) => {}; searchBox: { active: boolean } };
+};
+
 export type CodeEditorProps = {
   schema: string;
   stitches?: string;
   controller: GraphController;
   onResized: () => void;
+  onQueryChanged: (query: CodeSearchQuery) => void;
 } & CodeEditorOuterProps;
 export interface CodeEditorState {
   loadingUrl: boolean;
@@ -47,7 +53,7 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
   public startX?: number;
   public refSidebar?: HTMLDivElement;
   public refHandle?: HTMLDivElement;
-  public aceEditorRef?: AceEditor;
+  public aceEditorRef?: AceEditorInstance;
   public state: CodeEditorState = {
     loadingUrl: false,
     canMountAce: false
@@ -67,6 +73,37 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
       this.forceUpdate();
     }
   }
+  public componentDidMount() {
+    document.addEventListener('keydown', this.invokeFindListener);
+  }
+  public componentWillUnmount() {
+    document.removeEventListener('keydown', this.invokeFindListener);
+  }
+  invokeFindListener = (e: any) => {
+    if (e.key.toLowerCase() === 'f' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      if (this.aceEditorRef && this.aceEditorRef.editor) {
+        this.aceEditorRef.editor.execCommand('find');
+      }
+    }
+  }
+  checkSelection = (selection: Selection) => {
+
+    if (this.aceEditorRef && !this.aceEditorRef.editor!.searchBox) {
+      return;
+    }
+
+    if (this.aceEditorRef && !this.aceEditorRef.editor!.searchBox.active) {
+      return;
+    }
+
+    const searchQuery = findSelectionQuery(selection);
+
+    if (searchQuery) {
+      this.props.onQueryChanged(searchQuery);
+    }
+  }
+
   public render() {
     return (
       <>
@@ -86,6 +123,7 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
               generateVisible={!!this.lastSchema && !this.state.error && !this.state.errors}
             />
           )}
+
           <div
             className={cx(styles.CodeContainer)}
             ref={(ref) => {
@@ -108,6 +146,7 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
               annotations={this.state.errors}
               onChange={this.codeChange}
               readOnly={this.props.readonly}
+              onCursorChange={this.checkSelection}
               style={{
                 flex: 1,
                 height: 'auto'
@@ -183,8 +222,12 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
     );
   }
 
-  private get minimumDrag() { return window.innerWidth * 0.15; }
-  private get maximumDrag() { return window.innerWidth * 0.85; }
+  private get minimumDrag() {
+    return window.innerWidth * 0.15;
+  }
+  private get maximumDrag() {
+    return window.innerWidth * 0.85;
+  }
 
   private codeChange = (
     e: string,
