@@ -183,8 +183,12 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
     );
   }
 
-  private get minimumDrag() { return window.innerWidth * 0.15; }
-  private get maximumDrag() { return window.innerWidth * 0.85; }
+  private get minimumDrag() {
+    return window.innerWidth * 0.15;
+  }
+  private get maximumDrag() {
+    return window.innerWidth * 0.85;
+  }
 
   private codeChange = (
     e: string,

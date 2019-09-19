@@ -185,6 +185,7 @@ export class GraphController {
   resetGraph = () => {
     const nodes: Node[] = [];
     const links: Link[] = [];
+    this.definitions = Definitions.generate(this.stitchNodes.nodes).concat(this.stitchDefinitions!);
     this.diagram!.setNodes(nodes);
     this.diagram!.setLinks(links);
     this.diagram!.zeroDiagram();
