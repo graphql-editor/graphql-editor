@@ -10,6 +10,7 @@ import {
   Serializer
 } from 'graphsource';
 import { Colors } from '../Colors';
+import { CodeSearchQuery } from '../editor/CodeSearch';
 import { EditorNodeDefinition } from '../Models';
 import { NodesToTree } from '../NodesToTree';
 import { TreeToNodes } from '../TreeToNodes';
@@ -41,6 +42,7 @@ export class GraphController {
   public schema = '';
   public stichesCode = '';
   private nodes: Node[] = [];
+  private links: Link[] = [];
   private stitchNodes: { nodes: Node[]; links: Link[] } = { nodes: [], links: [] };
   private diagram?: Diagram;
   private passSchema?: (schema: string, stitches?: string) => void;
@@ -229,6 +231,33 @@ export class GraphController {
     this.diagram!.setDefinitions(this.definitions);
     this.load(result.nodes, result.links);
   }
+  searchAndCenterNode(query: CodeSearchQuery) {
+    if (query.subject && query.parent) {
+      const subjects = this.nodes.filter((node) => node.name.toLowerCase() === query.subject!.toLowerCase());
+      const parentNodes = this.nodes.filter((node) => node.name.toLowerCase() === query.parent!.toLowerCase());
+      const matchingPairs = parentNodes.reduce<Node[]>((acc, currentParentNode) => {
+        const matchingSubject = subjects.find((subject) => this.links.find((link) => link.o.id === subject.id && link.i.id === currentParentNode.id));
+        if (matchingSubject) {
+          acc.push(matchingSubject);
+        }
+        return acc;
+      }, []);
+
+      if (matchingPairs.length) {
+        const [subject] = matchingPairs;
+        this.diagram!.centerOnNode(subject);
+      }
+      return;
+    }
+
+    if (query.subject) {
+      const foundNodes = this.nodes.filter((node) => node.name.toLowerCase() === query.subject!.toLowerCase());
+      if (this.diagram && foundNodes.length) {
+        this.diagram!.centerOnNode(foundNodes[0]);
+      }
+    }
+  }
+
   loadOldFormat = (serializedDiagram: string) => {
     const deserializedOldVersion = Old.deserialize(JSON.parse(serializedDiagram));
     const deserialized = Serializer.deserialize(
@@ -306,6 +335,7 @@ export class GraphController {
    */
   private serialise = ({ nodes, links }: { nodes: Node[]; links: Link[] }): void => {
     this.nodes = nodes;
+    this.links = links;
     const graphQLSchema = NodesToTree.parse(nodes, links);
     try {
       const unNamedNode = this.nodes.find((n) => n.name.length === 0);

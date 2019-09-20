@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { GraphController } from '../Graph';
 import { CodeEditor, CodeEditorOuterProps } from './Code';
+import { CodeSearchQuery } from './CodeSearch';
 import * as styles from './style/Editor';
 export interface EditorState {
   projectId?: string;
@@ -64,11 +65,15 @@ export class Editor extends React.Component<EditorProps, EditorState> {
       this.controller.setReadOnly(!!this.props.readonly);
     }
   }
+  codeSearchQueryChanged = (query: CodeSearchQuery) => {
+    this.controller.searchAndCenterNode(query);
+  }
   render() {
     return (
       <>
         {this.props.editorVisible === true && (
           <CodeEditor
+            onQueryChanged={this.codeSearchQueryChanged}
             controller={this.controller}
             schema={this.state.code}
             stitches={this.state.stitches}
