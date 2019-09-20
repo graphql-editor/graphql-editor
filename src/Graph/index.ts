@@ -349,7 +349,18 @@ export class GraphController {
   private serialise = ({ nodes, links }: { nodes: Node[]; links: Link[] }): void => {
     this.nodes = nodes;
     this.links = links;
-    const graphQLSchema = NodesToTree.parse(nodes, links);
+    let graphQLSchema = '';
+    if (nodes.length !== 0) {
+      graphQLSchema = NodesToTree.parse(nodes, links);
+      this.schema = graphQLSchema;
+      if (this.onSerialize) {
+        this.onSerialize(graphQLSchema);
+      }
+      if (this.passSchema) {
+        this.passSchema(graphQLSchema, this.stichesCode);
+      }
+      return;
+    }
     try {
       const unNamedNode = this.nodes.find((n) => n.name.length === 0);
       if (unNamedNode) {
