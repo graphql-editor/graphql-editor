@@ -351,7 +351,6 @@ export class GraphController {
     this.links = links;
     let graphQLSchema = '';
     if (nodes.length !== 0) {
-      graphQLSchema = NodesToTree.parse(nodes, links);
       this.schema = graphQLSchema;
       if (this.onSerialize) {
         this.onSerialize(graphQLSchema);
@@ -361,6 +360,7 @@ export class GraphController {
       }
       return;
     }
+    graphQLSchema = NodesToTree.parse(nodes, links);
     try {
       const unNamedNode = this.nodes.find((n) => n.name.length === 0);
       if (unNamedNode) {
