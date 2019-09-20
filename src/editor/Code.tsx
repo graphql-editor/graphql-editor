@@ -2,8 +2,9 @@ import * as cx from 'classnames';
 import * as React from 'react';
 import * as styles from './style/Code';
 
+import { Selection } from 'brace';
 import { buildASTSchema, parse } from 'graphql';
-import AceEditor, { AceEditorProps, Selection } from 'react-ace';
+import AceEditor, { IAceEditorProps } from 'react-ace';
 import { GraphController } from '../Graph';
 import { sizeSidebar } from '../vars';
 import './ace/graphqleditor';
@@ -16,7 +17,7 @@ export interface CodeEditorOuterProps {
   readonly?: boolean;
 }
 
-export type AceEditorInstance = React.Component<AceEditorProps, {}> & {
+export type AceEditorInstance = React.Component<IAceEditorProps, {}> & {
   editor?: { execCommand: (cmd: string) => {}; searchBox: { active: boolean } };
 };
 
@@ -53,7 +54,7 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
   public startX?: number;
   public refSidebar?: HTMLDivElement;
   public refHandle?: HTMLDivElement;
-  public aceEditorRef?: AceEditorInstance;
+  public aceEditorRef?: AceEditor;
   public state: CodeEditorState = {
     loadingUrl: false,
     canMountAce: false
@@ -88,7 +89,6 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
     }
   }
   checkSelection = (selection: Selection) => {
-
     if (this.aceEditorRef && !this.aceEditorRef.editor!.searchBox) {
       return;
     }
@@ -146,11 +146,11 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
               annotations={this.state.errors}
               onChange={this.codeChange}
               readOnly={this.props.readonly}
-              onCursorChange={this.checkSelection}
               style={{
                 flex: 1,
                 height: 'auto'
               }}
+              onCursorChange={this.checkSelection}
               editorProps={{
                 $blockScrolling: Infinity
               }}

@@ -233,10 +233,19 @@ export class GraphController {
   }
   searchAndCenterNode(query: CodeSearchQuery) {
     if (query.subject && query.parent) {
-      const subjects = this.nodes.filter((node) => node.name.toLowerCase() === query.subject!.toLowerCase());
-      const parentNodes = this.nodes.filter((node) => node.name.toLowerCase() === query.parent!.toLowerCase());
+      const subjects = this.nodes.filter(
+        (node) => node.name.toLowerCase() === query.subject!.toLowerCase()
+      );
+      const parentNodes = this.nodes.filter(
+        (node) => node.name.toLowerCase() === query.parent!.toLowerCase()
+      );
       const matchingPairs = parentNodes.reduce<Node[]>((acc, currentParentNode) => {
-        const matchingSubject = subjects.find((subject) => this.links.find((link) => link.o.id === subject.id && link.i.id === currentParentNode.id));
+        const matchingSubject = subjects.find(
+          (subject) =>
+            !!this.links.find(
+              (link) => link.o.id === subject.id && link.i.id === currentParentNode.id
+            )
+        );
         if (matchingSubject) {
           acc.push(matchingSubject);
         }
@@ -245,14 +254,18 @@ export class GraphController {
 
       if (matchingPairs.length) {
         const [subject] = matchingPairs;
+        this.diagram!.selectNode(subject);
         this.diagram!.centerOnNode(subject);
       }
       return;
     }
 
     if (query.subject) {
-      const foundNodes = this.nodes.filter((node) => node.name.toLowerCase() === query.subject!.toLowerCase());
+      const foundNodes = this.nodes.filter(
+        (node) => node.name.toLowerCase() === query.subject!.toLowerCase()
+      );
       if (this.diagram && foundNodes.length) {
+        this.diagram!.selectNode(foundNodes[0]);
         this.diagram!.centerOnNode(foundNodes[0]);
       }
     }

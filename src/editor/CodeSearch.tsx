@@ -1,4 +1,4 @@
-import { Selection } from "react-ace";
+import { Selection } from 'brace';
 
 export interface CodeSearchQuery {
   subject?: string;
@@ -12,7 +12,6 @@ interface AceSelection {
 }
 
 export function findSelectionQuery(selection: Selection): CodeSearchQuery | undefined {
-
   const aceSelection = (selection as unknown) as AceSelection;
   if (!aceSelection.selectionAnchor || !aceSelection.selectionLead || !aceSelection.doc) {
     return;
@@ -22,10 +21,7 @@ export function findSelectionQuery(selection: Selection): CodeSearchQuery | unde
   }
 
   const line = aceSelection.doc.$lines[aceSelection.selectionAnchor.row] as string;
-  const selStart = Math.min(
-    aceSelection.selectionAnchor.column,
-    aceSelection.selectionLead.column
-  );
+  const selStart = Math.min(aceSelection.selectionAnchor.column, aceSelection.selectionLead.column);
   const selEnd = Math.max(aceSelection.selectionAnchor.column, aceSelection.selectionLead.column);
 
   const attributeLineMatch = line.match(/^\s*(\w+)\s*\:\s*\[?\s*(\w+)\s*\]?\s*$/);
