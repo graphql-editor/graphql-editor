@@ -350,7 +350,7 @@ export class GraphController {
     this.nodes = nodes;
     this.links = links;
     let graphQLSchema = '';
-    if (nodes.length !== 0) {
+    if (nodes.length === 0) {
       this.schema = graphQLSchema;
       if (this.onSerialize) {
         this.onSerialize(graphQLSchema);
