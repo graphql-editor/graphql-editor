@@ -75,4 +75,12 @@ export function findSelectionQuery(selection: Selection): CodeSearchQuery | unde
       subject: name
     };
   }
+
+  const returnTypeMatch = line.match(/^\s*[^\w]*\s*\:\s*\[?\s*(\w+)\s*\]?\s*$/);
+  if (returnTypeMatch) {
+    const [, name] = returnTypeMatch;
+    return {
+      subject: name
+    };
+  }
 }
