@@ -190,6 +190,7 @@ export class GraphController {
     this.definitions = Definitions.generate(this.stitchNodes.nodes).concat(this.stitchDefinitions!);
     this.diagram!.setNodes(nodes);
     this.diagram!.setLinks(links);
+    this.diagram!.setDefinitions(this.definitions);
     this.diagram!.zeroDiagram();
     this.serialise({
       nodes,
@@ -216,11 +217,12 @@ export class GraphController {
    * @memberof GraphController
    */
   loadGraphQL = (schema: string) => {
+    this.definitions = Definitions.generate(this.stitchNodes.nodes).concat(this.stitchDefinitions!);
+    this.diagram!.setDefinitions(this.definitions);
     if (schema.length === 0) {
       this.resetGraph();
       return;
     }
-    this.definitions = Definitions.generate(this.stitchNodes.nodes).concat(this.stitchDefinitions!);
     const result = TreeToNodes.resolveTree(
       Parser.parse(
         schema + this.stichesCode,
