@@ -198,6 +198,15 @@ export class GraphController {
     }
   }
   /**
+   * Reset stitches code
+   *
+   */
+  resetStitches = () => {
+    this.stitchNodes.nodes = [];
+    this.stitchNodes.links = [];
+    this.stitchDefinitions = [];
+  }
+  /**
    * Load GraphQL code and convert it to diagram nodes
    *
    * @param schema
