@@ -78,6 +78,7 @@ export class Editor extends React.Component<EditorProps, EditorState> {
             schema={this.state.code}
             stitches={this.state.stitches}
             readonly={this.props.readonly}
+            placeholder={this.props.placeholder}
             onResized={this.controller.resizeDiagram}
             schemaChanged={(e) => {
               this.setState({
@@ -94,7 +95,7 @@ export class Editor extends React.Component<EditorProps, EditorState> {
             maxHeight: '100%',
             maxWidth: '100%',
             height: '100vh',
-            flex: '1',
+            flex: '1'
           }}
           ref={this.containerRef}
         />
