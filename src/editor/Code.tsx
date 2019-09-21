@@ -15,6 +15,7 @@ require(`brace/ext/searchbox`);
 export interface CodeEditorOuterProps {
   schemaChanged?: (schema: string) => void;
   readonly?: boolean;
+  placeholder?: string;
 }
 
 export type AceEditorInstance = React.Component<IAceEditorProps, {}> & {
@@ -142,6 +143,7 @@ export class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState
                   this.aceEditorRef = ref;
                 }
               }}
+              placeholder={this.props.placeholder}
               mode={'graphqlschema'}
               annotations={this.state.errors}
               onChange={this.codeChange}
