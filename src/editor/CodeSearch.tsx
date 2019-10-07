@@ -24,7 +24,11 @@ export function findSelectionQuery(selection: Selection): CodeSearchQuery | unde
   const selStart = Math.min(aceSelection.selectionAnchor.column, aceSelection.selectionLead.column);
   const selEnd = Math.max(aceSelection.selectionAnchor.column, aceSelection.selectionLead.column);
 
-  const attributeLineMatch = line.match(/^\s*(\w+)\s*\:\s*\[?\s*(\w+)\s*\]?\s*$/);
+  const attributeLineMatch = line.match(/^\s*(\w+)\s*\:\s*\[?\s*(\w+)\s*\!?\]?\!?\s*$/);
+  const fieldLineMatch = line.match(/^\s*(\w+)\s*\(\s*$$/);
+  const definitionMatch = line.match(/^\s*(?:scalar|type|interface|union|enum|input)\s*(\w+)(?:\{|\(){0,1}\s*$/);
+  const returnTypeMatch = line.match(/^\s*[^\w]*\s*\:\s*\[?\s*(\w+)\s*\!?\]?\!?\s*$/);
+
   if (attributeLineMatch) {
     const selectedText = line.substr(selStart, selEnd - selStart);
     if (selectedText.indexOf(':') > -1) {
@@ -37,7 +41,7 @@ export function findSelectionQuery(selection: Selection): CodeSearchQuery | unde
       while (lineNumber >= 0) {
         const analyzedLine = aceSelection.doc.$lines[lineNumber] as string;
         const parentLineMatch = analyzedLine.match(
-          /^\s*(?:type|input|scalar){0,1}\s*(\w+)(?:\{|\()\s*$/
+          /^\s*(?:scalar|type|interface|union|enum|input){0,1}\s*(\w+)(?:\{|\()\s*$/
         );
         if (parentLineMatch) {
           const [, parentName] = parentLineMatch;
@@ -56,7 +60,6 @@ export function findSelectionQuery(selection: Selection): CodeSearchQuery | unde
     }
   }
 
-  const fieldLineMatch = line.match(/^\s*(\w+)\s*\(\s*$$/);
   if (fieldLineMatch) {
     const [, name] = fieldLineMatch;
     return {
@@ -64,7 +67,6 @@ export function findSelectionQuery(selection: Selection): CodeSearchQuery | unde
     };
   }
 
-  const definitionMatch = line.match(/^\s*(?:type|input|scalar)\s*(\w+)(?:\{|\(){0,1}\s*$/);
   if (definitionMatch) {
     const [, name] = definitionMatch;
     return {
@@ -72,7 +74,6 @@ export function findSelectionQuery(selection: Selection): CodeSearchQuery | unde
     };
   }
 
-  const returnTypeMatch = line.match(/^\s*[^\w]*\s*\:\s*\[?\s*(\w+)\s*\]?\s*$/);
   if (returnTypeMatch) {
     const [, name] = returnTypeMatch;
     return {
