@@ -5,11 +5,10 @@ import {
   OperationType,
   Options,
   ParserField,
-  TypeDefinition,
+  TreeToGraphQL,
   TypeSystemDefinition
 } from 'graphql-zeus';
 import { Link, Node } from 'graphsource';
-import { TemplateUtils } from './templates/TemplateUtils';
 
 export class NodesToTree {
   static resolveFieldNode = (n: Node): ParserField =>
@@ -39,7 +38,7 @@ export class NodesToTree {
       name: n.name,
       description: n.description,
       type: {
-        name: n.definition.data!.type!,
+        name: n.definition.type,
         options: n.options && (n.options.filter((o) => o in Options) as Options[]),
         operations: n.options && (n.options.filter((o) => o in OperationType) as OperationType[]),
         directiveOptions:
@@ -74,45 +73,11 @@ export class NodesToTree {
     if (!nodes.length) {
       return '';
     }
-    const objectNodes = nodes.filter((n) => n.definition.root);
-    const joinDefinitions = (...defintions: string[]) => defintions.join('\n\n');
-    const operations: Record<OperationType, string | null> = {
-      [OperationType.query]: null,
-      [OperationType.mutation]: null,
-      [OperationType.subscription]: null
-    };
-    const definitions = objectNodes.map((n) => {
-      if (n.definition.data && n.definition.data.type === TypeDefinition.ObjectTypeDefinition) {
-        if (n.options) {
-          if (n.options.find((o) => o === OperationType.query)) {
-            operations[OperationType.query] = n.name;
-          }
-          if (n.options.find((o) => o === OperationType.mutation)) {
-            operations[OperationType.mutation] = n.name;
-          }
-          if (n.options.find((o) => o === OperationType.subscription)) {
-            operations[OperationType.subscription] = n.name;
-          }
-        }
-      }
-      return NodesToTree.resolveObjectNode(n);
+    const roots = nodes.filter((n) => n.definition.root).map(NodesToTree.resolveObjectNode);
+    const graphql = TreeToGraphQL.parse({
+      nodes: roots
     });
-    const resolvedOperations = Object.keys(operations)
-      .filter((k) => operations[k as OperationType])
-      .map((k) => `\t${k}: ${operations[k as OperationType]}`)
-      .join(',\n');
-    const alldefs = definitions.map(TemplateUtils.resolverForConnection);
     const theBeginning = `# GraphQL from graph at:\n# graphqleditor.com\n\n`;
-    return (
-      theBeginning +
-      joinDefinitions(...alldefs)
-        .concat('\n')
-        .concat(
-          operations[OperationType.query]
-            ? `schema{\n${resolvedOperations}\n}`
-            : `
-      `
-        )
-    );
+    return theBeginning.concat(graphql);
   }
 }

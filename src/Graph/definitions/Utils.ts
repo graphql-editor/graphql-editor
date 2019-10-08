@@ -3,6 +3,7 @@ import {
   GraphQLNodeParams,
   OperationType,
   ScalarTypes,
+  TypeExtension,
   ValueDefinition
 } from 'graphql-zeus';
 import { Node, NodeOption } from 'graphsource';
@@ -176,6 +177,18 @@ export class Utils {
       return def;
     };
     const parentInputNode = goToInput(d);
+
+    // Find if node was ever extended
+    const parentInputNodeExtensionNodes = nodes!
+      .filter(
+        (n) =>
+          n.definition.data &&
+          n.definition.data.type! in TypeExtension &&
+          n.definition.type === parentInputNode.type
+      )
+      .map((pn) => pn.inputs)
+      .reduce((a, b) => [...(a || []), ...(b || [])], []);
+
     const parentNode = nodes!.find(
       (n) =>
         !!n.editsDefinitions &&
@@ -183,8 +196,13 @@ export class Utils {
           (ed) => ed.type === parentInputNode.type && ed.data!.type === parentInputNode.data!.type
         )
     )!;
-    const possibleNodes = parentNode
-      .inputs!.map((i) => i.editsDefinitions || [])
+    const baseAndExtensionInputs = [
+      ...(parentNode.inputs || []),
+      ...(parentInputNodeExtensionNodes || [])
+    ];
+
+    const possibleNodes = baseAndExtensionInputs
+      .map((i) => i.editsDefinitions || [])
       .reduce((a, b) => [...a, ...b], []);
     return possibleNodes;
   }

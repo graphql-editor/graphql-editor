@@ -1,4 +1,11 @@
-import { GraphQLNodeParams, Helpers, ParserField, ParserTree } from 'graphql-zeus';
+import {
+  GraphQLNodeParams,
+  Helpers,
+  ParserField,
+  ParserTree,
+  TypeExtension,
+  TypeSystemDefinition
+} from 'graphql-zeus';
 import { Link, Node, NodeUtils } from 'graphsource';
 import { EditorNodeDefinition } from '../Models';
 
@@ -97,7 +104,7 @@ export class TreeToNodes {
           },
           name: i,
           data: {
-            type: Helpers.Implements
+            type: TypeSystemDefinition.FieldDefinition
           }
         },
         createdNode,
@@ -136,6 +143,18 @@ export class TreeToNodes {
       nodes
     );
   }
+  static createExtendHelper(f: ParserField): ParserField {
+    return {
+      args: [f],
+      data: {
+        type: Helpers.Extend
+      },
+      name: Helpers.Extend,
+      type: {
+        name: Helpers.Extend
+      }
+    } as ParserField;
+  }
   /**
    * Return node given ParserField
    *
@@ -145,7 +164,6 @@ export class TreeToNodes {
    * @param nodes already existing nodes
    * @param links already existing links
    * @param [rootNode] node to be connected with
-   * @returns {Node<GraphQLNodeParams>} 'graphsource' ready Node
    * @memberof TreeToNodes
    */
   static resolveField(
@@ -155,7 +173,12 @@ export class TreeToNodes {
     links: Link[],
     rootNode?: Node
   ): Node<GraphQLNodeParams> {
-    const defs = nodeDefinitions.filter((nd) => nd.type === root.type.name)!;
+    let defs: EditorNodeDefinition[];
+    if (root.data && root.data!.type! in TypeExtension) {
+      defs = nodeDefinitions.filter((nd) => nd.type === root.name)!;
+    } else {
+      defs = nodeDefinitions.filter((nd) => nd.type === root.type.name)!;
+    }
     let def = defs[0];
     if (defs.length > 1) {
       def = defs.find((d) => TreeToNodes.compareData(d.data, root.data))!;
@@ -227,6 +250,7 @@ export class TreeToNodes {
             nodes
           );
         });
+
       const returnRootNodes = rootNodes
         .filter((rn) => rn.parserField.args && rn.parserField.args.length)
         .map((rn) =>
@@ -254,15 +278,22 @@ export class TreeToNodes {
           }));
         })
         .reduce((a, b) => [...a, ...b], []);
+
       if (returnDirectives.length > 0) {
         resolveAllFields(returnDirectives);
       }
       return;
     };
     resolveAllFields(
-      tree.nodes.map((parserField) => ({
-        parserField
-      }))
+      tree.nodes
+        .map((parserField) =>
+          parserField.data!.type! in TypeExtension
+            ? TreeToNodes.createExtendHelper(parserField)
+            : parserField
+        )
+        .map((parserField) => ({
+          parserField
+        }))
     );
     return { nodes, links };
   }

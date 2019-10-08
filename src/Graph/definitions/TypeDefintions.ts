@@ -6,6 +6,7 @@ import {
   TypeDefinition,
   TypeDefinitionDisplayMap,
   TypeDefinitionDisplayStrings,
+  TypeExtension,
   TypeSystemDefinition,
   TypeSystemDefinitionDisplayMap,
   TypeSystemDefinitionDisplayStrings,
@@ -15,6 +16,7 @@ import {
 import { Node, NodeOption } from 'graphsource';
 import { EditorNodeDefinition } from '../../Models';
 import { ArgumentInstance } from './Argument';
+import { ExtensionInstance } from './Extension';
 import { FieldInstance } from './Field';
 import { help } from './help';
 import { InputValueInstance } from './InputValue';
@@ -92,6 +94,9 @@ export class TypeDefinitions {
         }
       ]
     });
+    ObjectTypeDefinition.instances!.push(
+      ExtensionInstance(ObjectTypeDefinition, TypeExtension.ObjectTypeExtension)
+    );
 
     const InterfaceTypeDefinition = generateTypeDefinition({
       help: help.interface,
@@ -111,6 +116,9 @@ export class TypeDefinitions {
         }
       ]
     });
+    InterfaceTypeDefinition.instances!.push(
+      ExtensionInstance(InterfaceTypeDefinition, TypeExtension.InterfaceTypeExtension)
+    );
 
     const EnumTypeDefinition = generateTypeDefinition({
       help: help.enum,
@@ -147,6 +155,9 @@ export class TypeDefinitions {
         }
       ]
     });
+    EnumTypeDefinition.instances!.push(
+      ExtensionInstance(EnumTypeDefinition, TypeExtension.EnumTypeExtension)
+    );
     const ScalarTypeDefintion = generateTypeDefinition({
       help: help.scalar,
       type: TypeDefinitionDisplayMap[TypeDefinition.ScalarTypeDefinition],
@@ -183,6 +194,9 @@ export class TypeDefinitions {
         }
       ]
     });
+    ScalarTypeDefintion.instances!.push(
+      ExtensionInstance(ScalarTypeDefintion, TypeExtension.ScalarTypeExtension)
+    );
 
     const UnionTypeDefinition = generateTypeDefinition({
       help: help.union,
@@ -198,6 +212,9 @@ export class TypeDefinitions {
         }
       ]
     });
+    UnionTypeDefinition.instances!.push(
+      ExtensionInstance(UnionTypeDefinition, TypeExtension.UnionTypeExtension)
+    );
 
     const InputObjectTypeDefinition = generateTypeDefinition({
       help: help.input,
@@ -229,6 +246,9 @@ export class TypeDefinitions {
         }
       ]
     });
+    InputObjectTypeDefinition.instances!.push(
+      ExtensionInstance(InputObjectTypeDefinition, TypeExtension.InputObjectTypeExtension)
+    );
     const DirectiveDefinition = generateTypeDefinition({
       help: help.directive,
       type: TypeSystemDefinitionDisplayMap[TypeSystemDefinition.DirectiveDefinition],

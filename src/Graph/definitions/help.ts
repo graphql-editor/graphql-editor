@@ -1,26 +1,4 @@
-export const help: {
-  directive: string;
-  directives: string;
-  type: string;
-  interface: string;
-  input: string;
-  union: string;
-  scalar: string;
-  enum: string;
-  EnumValue: string;
-  String: string;
-  Int: string;
-  Float: string;
-  Boolean: string;
-  ID: string;
-  implements: string;
-  required: string;
-  array: string;
-  arrayRequired: string;
-  query: string;
-  mutation: string;
-  subscription: string;
-} = {
+export const help = {
   directives: 'Connect directives to use them',
   directive:
     'A GraphQL schema describes directives which are used to annotate various parts of a GraphQL document as an indicator that they should be evaluated differently by a validator, executor, or client tool such as a code generator.',
@@ -43,6 +21,7 @@ export const help: {
   ID:
     'The ID scalar type represents a unique identifier, often used to refetch an object or as the key for a cache. The ID type is serialized in the same way as a String; however, defining it as an ID signifies that it is not intended to be human‐readable',
   implements: 'Connect interface nodes to make type implements them',
+  extend: 'Extend type,input,union,interface,enum with this node',
   required:
     'Check this if this node is required for creation of the type or is required in input | interface',
   array:

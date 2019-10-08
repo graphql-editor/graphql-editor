@@ -2,7 +2,7 @@ import * as React from 'react';
 import { render } from 'react-dom';
 import { style } from 'typestyle';
 import { Editor } from '../src/index';
-import { muskSchema } from './schema';
+import * as schemas from './schema';
 
 export const Full = style({
   backgroundColor: '#444444',
@@ -37,7 +37,7 @@ class App extends React.Component<
   render() {
     return (
       <div className={UiDiagram}>
-        <Editor schema={muskSchema} editorVisible={this.state.editorVisible} />
+        <Editor schema={schemas.failingSchema} editorVisible={this.state.editorVisible} />
       </div>
     );
   }

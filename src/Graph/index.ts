@@ -17,16 +17,10 @@ import { TreeToNodes } from '../TreeToNodes';
 import { Definitions } from './definitions';
 /**
  * Class for controlling the state of diagram and exposing schema functions
- *
- * @export
- * @class GraphController
  */
 export class GraphController {
   /**
    * Strip schema keyword from schema - useful in schema stitch
-   *
-   * @static
-   * @param schema
    */
   static getGraphqlWithoutRootSchema = (schema: string): string => {
     const basicDefinitions = Definitions.generate([]);
@@ -52,8 +46,6 @@ export class GraphController {
   private nodeCreated?: boolean;
   /**
    * Set DOM element which holds diagram
-   *
-   * @param element DOM element
    */
   setDOMElement = (element: HTMLElement): void => {
     this.diagram = new Diagram(element, {
@@ -137,8 +129,6 @@ export class GraphController {
   }
   /**
    * Generate basic defintions for GraphQL like type,input,directive etc..
-   *
-   * @memberof GraphController
    */
   generateBasicDefinitions = () => {
     this.definitions = Definitions.generate([]);
@@ -146,43 +136,30 @@ export class GraphController {
   }
   /**
    * Checks if graph is empty
-   *
-   * @returns {boolean}
-   * @memberof GraphController
    */
   isEmpty = (): boolean => {
     return this.nodes.length === 0;
   }
   /**
    * Call diagram resize
-   *
-   * @memberof GraphController
    */
   resizeDiagram = (): void => {
     this.diagram!.autoResize();
   }
   /**
    * Set function to be called on serialise
-   *
-   * @param f function to be called
-   * @memberof GraphController
    */
   setOnSerialise = (f: (schema: string) => void) => {
     this.onSerialize = f;
   }
   /**
    * Function to control editable state of diagram
-   *
-   * @memberof GraphController
-   * @param isReadOnly pass if diagram is readonly
    */
   setReadOnly = (isReadOnly: boolean) => {
     this.diagram!.setReadOnly(isReadOnly);
   }
   /**
    * Reset Graph clearing all the nodes and links from it
-   *
-   * @memberof GraphController
    */
   resetGraph = () => {
     const nodes: Node[] = [];
@@ -202,7 +179,6 @@ export class GraphController {
   }
   /**
    * Reset stitches code
-   *
    */
   resetStitches = () => {
     this.stitchNodes.nodes = [];
@@ -211,10 +187,6 @@ export class GraphController {
   }
   /**
    * Load GraphQL code and convert it to diagram nodes
-   *
-   * @param schema
-   * @returns
-   * @memberof GraphController
    */
   loadGraphQL = (schema: string) => {
     this.definitions = Definitions.generate(this.stitchNodes.nodes).concat(this.stitchDefinitions!);
@@ -297,9 +269,6 @@ export class GraphController {
   }
   /**
    * Get schema from URL and load it to graph
-   *
-   * @param url GraphQL schema url
-   * @param [header] additional header
    */
   getSchemaFromURL = async (url: string, header?: string): Promise<void> => {
     const schema = await Utils.getFromUrl(url, header);
@@ -309,8 +278,6 @@ export class GraphController {
   setPassDiagramErrors = (fn: (errors: string) => void) => (this.passDiagramErrors = fn);
   /**
    * Load stitches code to Graph controller
-   *
-   * @param schema stitches code in GraphQL
    */
   loadStitches = (schema: string): void => {
     if (!schema) {
@@ -343,10 +310,6 @@ export class GraphController {
   }
   /**
    * Serialise nodes to GraphQL
-   *
-   * @private
-   * @param} { nodes, links }
-   * @returns
    */
   private serialise = ({ nodes, links }: { nodes: Node[]; links: Link[] }): void => {
     this.nodes = nodes;

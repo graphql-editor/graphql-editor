@@ -828,3 +828,419 @@ schema{
 	query: Query
 }
 `;
+export const testSchema1 = `
+
+# GraphQL from graph at:
+# graphqleditor.com
+
+type Person{
+	name : String!
+}
+
+type Car{
+	passenger : Person
+}
+
+extend type Person{
+	age : Int
+}
+
+scalar ObjectID
+
+directive @rateLimit on FIELD_DEFINITION
+
+directive @ddd(
+	ddd : Address
+) on SCALAR
+
+extend scalar ObjectID @ddd(
+	ddd : {street : "Naftowa",city : "Bia"}
+) @sss
+
+directive @sss on SCALAR
+
+input Address{
+	street : String!
+}
+
+extend input Address{
+	city : String
+}
+
+input PersonInput{
+	address : Address
+}
+
+
+`;
+export const failingSchema = `
+# GraphQL from graph at:
+# graphqleditor.com
+
+"""
+Put your description here
+"""
+type Query{
+	"""
+	<div>Generuje specyfikacje maszyny</div><div>w zadanym przez nas języku<br></div>
+	"""
+	GenerateMachineDocument(
+		machine : String!
+		version : String
+		language : String!
+	) : MachineDocument
+	"""
+	Po podaniu frazy zwraca autocomplete pasujących do niej fraz<br>
+	"""
+	autocomplete(
+		query : String!
+		tags : [String!]
+	) : [String!]!
+	"""
+	Pobierz wszystkie dostępne języki<br>
+	"""
+	languages : [Language!]!
+	generatePDF(
+		machine : String!
+		version : String
+		language : String!
+	) : String
+	translations(
+		phrase : String
+	) : [Translation!]!
+	findTemplates(
+		filter : FindTemplatesInput
+	) : [MachineTemplate!]
+	getBuiltInStyles : [BuiltInStyles!]
+	untranslated(
+		languageCode : String!
+	) : [String!]
+}
+
+type MachineDocument implements Margin{
+	documents : [Document!]!
+	header : Feature
+	footer : Feature
+	margin : [Float!]
+	styles : [NamedStyle!]
+}
+
+interface Margin{
+	margin : [Float!]
+}
+
+type Document{
+	features : Features
+}
+
+type Features implements Styled & Margin & Position{
+	items : [Feature!]
+	style : String
+	absolutePosition : Position2D
+	margin : [Float!]
+}
+
+interface Styled{
+	style : String
+}
+
+interface Position{
+	absolutePosition : Position2D
+}
+
+type Position2D{
+	x : Float!
+	y : Float!
+}
+
+union Feature = TextBlock | Image | TableBlock | Columns | Stack | ListBlock
+
+type TextBlock implements Styled & Margin & Position{
+	style : String
+	absolutePosition : Position2D
+	text : String!
+	margin : [Float!]
+}
+
+type Image implements Styled & Margin & Position{
+	url : String
+	style : String
+	absolutePosition : Position2D
+	base64 : String
+	fit : [Float!]
+	width : Float
+	height : Float
+	margin : [Float!]
+}
+
+"""
+Put your description here
+"""
+type TableBlock implements Styled & Margin & Position{
+	style : String
+	absolutePosition : Position2D
+	rows : [Row!]
+	margin : [Float!]
+	widths : [WidthType!]
+}
+
+"""
+Put your description here
+"""
+type Row implements Styled & Margin & Position{
+	style : String
+	absolutePosition : Position2D
+	columns : [Column!]
+	margin : [Float!]
+}
+
+type Column implements Styled & Margin & Position{
+	"""
+	Put your description here
+	"""
+	colspan : Int
+	rowspan : Int
+	content : Feature!
+	width : Float
+	style : String
+	absolutePosition : Position2D
+	margin : [Float!]
+}
+
+type WidthType{
+	N : Float
+	S : String
+}
+
+type Columns implements Styled & Margin & Position{
+	columns : [Column!]
+	style : String
+	margin : [Float!]
+	absolutePosition : Position2D
+}
+
+type Stack implements Styled & Margin & Position{
+	items : [Feature!]
+	style : String
+	absolutePosition : Position2D
+	margin : [Float!]
+}
+
+type ListBlock implements Styled & Margin & Position{
+	style : String
+	items : [Feature!]
+	absolutePosition : Position2D
+	margin : [Float!]
+}
+
+type NamedStyle{
+	name : String!
+	style : Style!
+}
+
+type Style{
+	fontSize : Float
+	bold : Boolean
+	background : String
+	color : String
+	alignment : String
+	borderStyle : String
+	listType : String
+	listStyle : String
+	separator : String
+}
+
+"""
+Język w bazie danych<br>
+"""
+type Language{
+	"""
+	nazwa języka zgodna z ISO czyli np. pl,en,fr<br>
+	"""
+	name : String!
+	"""
+	wyświetlana nazwa języka po polsku: Polski, Angielski, Francuski<br>
+	"""
+	display : String!
+}
+
+type Translation{
+	"""
+	content in foreign language<br>
+	"""
+	template : String!
+	"""
+	translation language<br>
+	"""
+	language : Language!
+	"""
+	base phrase<br>
+	"""
+	phrase : Phrase!
+}
+
+"""
+Fraza po polsku<br>
+"""
+type Phrase{
+	"""
+	treść frazy<br>
+	"""
+	content : String!
+}
+
+input FindTemplatesInput{
+	machine : String
+	version : String
+}
+
+type MachineTemplate{
+	version : String
+	name : String!
+	template : MachineDocument!
+}
+
+enum BuiltInStyles{
+	BLACK_COLUMN
+	NORMAL_COLUMN
+	BIG_HEADER
+	MEDIUM_HEADER
+	SMALL_HEADER
+	NO_BORDERS_TABLE
+	LIGHT_BORDER_TABLE
+	SMALL_TEXT
+	NORMAL_TEXT
+	BLACK_BOX
+}
+
+type Mutation{
+	addLanguage(
+		language : AddLanguageInput!
+	) : Language!
+	"""
+	dodaj fraze do bazy fraz<br>
+	"""
+	addPhrase(
+		content : String!
+		tags : [String!]
+	) : Phrase!
+	"""
+	dodaj tłumaczenie frazy<br>
+	"""
+	addTranslation(
+		translation : createTranslation!
+	) : Translation!
+	editTranslation(
+		translation : createTranslation!
+	) : Translation!
+	addTemplate(
+		template : MachineTemplateInput!
+	) : MachineTemplate!
+}
+
+input AddLanguageInput{
+	name : String!
+	display : String!
+}
+
+input createTranslation{
+	"""
+	przetłumaczona fraza<br>
+	"""
+	template : String!
+	"""
+	kod języka<br>
+	"""
+	languageName : String!
+	"""
+	fraza<br>
+	"""
+	phrase : String!
+}
+
+input MachineTemplateInput{
+	version : String
+	name : String!
+	template : MachineDocumentInput!
+}
+
+input MachineDocumentInput{
+	header : FeatureInput
+	footer : FeatureInput
+	documents : [DocumentInput!]
+}
+
+input FeatureInput{
+	type : FeatureTypes!
+	style : String
+	absolutePosition : Position2DInput
+	margin : [Float]
+	items : [FeatureInput!]
+	content : FeatureInput
+	colspan : Float
+	rowspan : Float
+	width : Float
+	columns : [FeatureInput!]
+	rows : [FeatureInput!]
+	widths : [Width!]
+	text : String
+	url : String
+	base64 : String
+	fit : [Float!]
+	height : Float
+}
+
+enum FeatureTypes{
+	TEXT_BLOCK
+	TABLE_BLOCK
+	LIST_BLOCK
+	COLUMNS
+	IMAGE
+	STACK
+	ROW
+	COLUMN
+}
+
+input Position2DInput{
+	x : Float!
+	y : Float!
+}
+
+input Width{
+	N : Float
+	S : String
+}
+
+input DocumentInput{
+	features : FeaturesInput!
+}
+
+input FeaturesInput{
+	items : [FeatureInput!]
+}
+
+input UntranslatedInput{
+	language : String!
+}
+
+enum Alignment{
+	LEFT
+	CENTER
+	RIGHT
+}
+
+input StyleInput{
+	fontSize : Float
+	bold : Boolean
+	background : String
+	color : String
+	alignment : String
+	borderStyle : String
+	listType : String
+	listStyle : String
+	separator : String
+}
+schema{
+	query: Query,
+	mutation: Mutation
+}`;
