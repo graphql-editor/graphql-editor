@@ -22,57 +22,58 @@ import { help } from './help';
 import { InputValueInstance } from './InputValue';
 import { Utils } from './Utils';
 
+const generateTypeDefinition = ({
+  acceptsInputs,
+  node = Utils.createOND(),
+  options,
+  type,
+  dataType,
+  help,
+  instances = []
+}: {
+  type: TypeDefinitionDisplayStrings | TypeSystemDefinitionDisplayStrings | TypeSystemDefinition;
+  dataType: TypeDefinition | TypeSystemDefinition;
+  acceptsInputs: EditorNodeDefinition['acceptsInputs'];
+  node?: EditorNodeDefinition['node'];
+  options?: NodeOption[];
+  help: string;
+  instances?: Array<Partial<EditorNodeDefinition>>;
+}) => {
+  const builtInTypeObject: EditorNodeDefinition = {
+    node,
+    type,
+    data: {
+      type: dataType
+    },
+    help,
+    options,
+    root: true,
+    acceptsInputs,
+    instances
+  };
+  return builtInTypeObject;
+};
 /**
  * Class generating all TypeDefinitions from GraphQL and DirectiveDefinition
- *
- * @export
- * @class TypeDefinitions
  */
 export class TypeDefinitions {
-  /**
-   * method generating definitions
-   *
-   * @static
-   * @returns {EditorNodeDefinition[]}
-   * @memberof TypeDefinitions
-   */
-  static generate(stitchNodes: Array<Node<GraphQLNodeParams>>): EditorNodeDefinition[] {
-    const generateTypeDefinition = ({
-      acceptsInputs,
-      node = Utils.createOND(),
-      options,
-      type,
-      dataType,
-      help,
-      instances = []
-    }: {
-      type:
-        | TypeDefinitionDisplayStrings
-        | TypeSystemDefinitionDisplayStrings
-        | TypeSystemDefinition;
-      dataType: TypeDefinition | TypeSystemDefinition;
-      acceptsInputs: EditorNodeDefinition['acceptsInputs'];
-      node?: EditorNodeDefinition['node'];
-      options?: NodeOption[];
-      help: string;
-      instances?: Array<Partial<EditorNodeDefinition>>;
-    }) => {
-      const builtInTypeObject: EditorNodeDefinition = {
-        node,
-        type,
-        data: {
-          type: dataType
-        },
-        help,
-        options,
-        root: true,
-        acceptsInputs,
-        instances
-      };
-      return builtInTypeObject;
-    };
-
-    const ObjectTypeDefinition = generateTypeDefinition({
+  static UnionTypeDefinition = () =>
+    generateTypeDefinition({
+      help: help.union,
+      type: TypeDefinitionDisplayMap[TypeDefinition.UnionTypeDefinition],
+      dataType: TypeDefinition.UnionTypeDefinition,
+      acceptsInputs: (d, defs, _) =>
+        Utils.dataForTypes(defs, [TypeDefinition.UnionTypeDefinition]).map(
+          Utils.nodeDefinitionToAcceptedEditorNodeDefinition
+        ),
+      instances: [
+        {
+          ...FieldInstance
+        }
+      ]
+    })
+  static ObjectTypeDefinition = () =>
+    generateTypeDefinition({
       help: help.type,
       type: TypeDefinitionDisplayMap[TypeDefinition.ObjectTypeDefinition],
       dataType: TypeDefinition.ObjectTypeDefinition,
@@ -93,12 +94,9 @@ export class TypeDefinitions {
           }
         }
       ]
-    });
-    ObjectTypeDefinition.instances!.push(
-      ExtensionInstance(ObjectTypeDefinition, TypeExtension.ObjectTypeExtension)
-    );
-
-    const InterfaceTypeDefinition = generateTypeDefinition({
+    })
+  static InterfaceTypeDefinition = () =>
+    generateTypeDefinition({
       help: help.interface,
       type: TypeDefinitionDisplayMap[TypeDefinition.InterfaceTypeDefinition],
       dataType: TypeDefinition.InterfaceTypeDefinition,
@@ -115,12 +113,9 @@ export class TypeDefinitions {
           }
         }
       ]
-    });
-    InterfaceTypeDefinition.instances!.push(
-      ExtensionInstance(InterfaceTypeDefinition, TypeExtension.InterfaceTypeExtension)
-    );
-
-    const EnumTypeDefinition = generateTypeDefinition({
+    })
+  static EnumTypeDefinition = () =>
+    generateTypeDefinition({
       help: help.enum,
       type: TypeDefinitionDisplayMap[TypeDefinition.EnumTypeDefinition],
       dataType: TypeDefinition.EnumTypeDefinition,
@@ -154,11 +149,9 @@ export class TypeDefinitions {
               .map(Utils.nodeDefinitionToAcceptedEditorNodeDefinition)
         }
       ]
-    });
-    EnumTypeDefinition.instances!.push(
-      ExtensionInstance(EnumTypeDefinition, TypeExtension.EnumTypeExtension)
-    );
-    const ScalarTypeDefintion = generateTypeDefinition({
+    })
+  static ScalarTypeDefintion = () =>
+    generateTypeDefinition({
       help: help.scalar,
       type: TypeDefinitionDisplayMap[TypeDefinition.ScalarTypeDefinition],
       dataType: TypeDefinition.ScalarTypeDefinition,
@@ -193,30 +186,9 @@ export class TypeDefinitions {
               .map(Utils.nodeDefinitionToAcceptedEditorNodeDefinition)
         }
       ]
-    });
-    ScalarTypeDefintion.instances!.push(
-      ExtensionInstance(ScalarTypeDefintion, TypeExtension.ScalarTypeExtension)
-    );
-
-    const UnionTypeDefinition = generateTypeDefinition({
-      help: help.union,
-      type: TypeDefinitionDisplayMap[TypeDefinition.UnionTypeDefinition],
-      dataType: TypeDefinition.UnionTypeDefinition,
-      acceptsInputs: (d, defs, _) =>
-        Utils.dataForTypes(defs, [TypeDefinition.UnionTypeDefinition]).map(
-          Utils.nodeDefinitionToAcceptedEditorNodeDefinition
-        ),
-      instances: [
-        {
-          ...FieldInstance
-        }
-      ]
-    });
-    UnionTypeDefinition.instances!.push(
-      ExtensionInstance(UnionTypeDefinition, TypeExtension.UnionTypeExtension)
-    );
-
-    const InputObjectTypeDefinition = generateTypeDefinition({
+    })
+  static InputObjectTypeDefinition = () =>
+    generateTypeDefinition({
       help: help.input,
       type: TypeDefinitionDisplayMap[TypeDefinition.InputObjectTypeDefinition],
       dataType: TypeDefinition.InputObjectTypeDefinition,
@@ -245,11 +217,9 @@ export class TypeDefinitions {
           ]
         }
       ]
-    });
-    InputObjectTypeDefinition.instances!.push(
-      ExtensionInstance(InputObjectTypeDefinition, TypeExtension.InputObjectTypeExtension)
-    );
-    const DirectiveDefinition = generateTypeDefinition({
+    })
+  static DirectiveDefinition = (stitchNodes: Array<Node<GraphQLNodeParams>>) =>
+    generateTypeDefinition({
       help: help.directive,
       type: TypeSystemDefinitionDisplayMap[TypeSystemDefinition.DirectiveDefinition],
       dataType: TypeSystemDefinition.DirectiveDefinition,
@@ -279,7 +249,40 @@ export class TypeDefinitions {
           }
         }
       ]
-    });
+    })
+  /**
+   * method generating definitions
+   */
+  static generate(stitchNodes: Array<Node<GraphQLNodeParams>>): EditorNodeDefinition[] {
+    const ObjectTypeDefinition = TypeDefinitions.ObjectTypeDefinition();
+    ObjectTypeDefinition.instances!.push(
+      ExtensionInstance(ObjectTypeDefinition, TypeExtension.ObjectTypeExtension)
+    );
+
+    const InterfaceTypeDefinition = TypeDefinitions.InterfaceTypeDefinition();
+    InterfaceTypeDefinition.instances!.push(
+      ExtensionInstance(InterfaceTypeDefinition, TypeExtension.InterfaceTypeExtension)
+    );
+
+    const EnumTypeDefinition = TypeDefinitions.EnumTypeDefinition();
+    EnumTypeDefinition.instances!.push(
+      ExtensionInstance(EnumTypeDefinition, TypeExtension.EnumTypeExtension)
+    );
+    const ScalarTypeDefintion = TypeDefinitions.ScalarTypeDefintion();
+    ScalarTypeDefintion.instances!.push(
+      ExtensionInstance(ScalarTypeDefintion, TypeExtension.ScalarTypeExtension)
+    );
+
+    const UnionTypeDefinition = TypeDefinitions.UnionTypeDefinition();
+    UnionTypeDefinition.instances!.push(
+      ExtensionInstance(UnionTypeDefinition, TypeExtension.UnionTypeExtension)
+    );
+
+    const InputObjectTypeDefinition = TypeDefinitions.InputObjectTypeDefinition();
+    InputObjectTypeDefinition.instances!.push(
+      ExtensionInstance(InputObjectTypeDefinition, TypeExtension.InputObjectTypeExtension)
+    );
+    const DirectiveDefinition = TypeDefinitions.DirectiveDefinition(stitchNodes);
 
     return [
       ObjectTypeDefinition,

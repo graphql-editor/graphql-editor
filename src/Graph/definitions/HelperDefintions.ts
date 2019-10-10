@@ -5,9 +5,6 @@ import { Utils } from './Utils';
 
 /**
  * Definitions for graph helpers that make it more clear to connect directives and implement interfaces
- *
- * @export
- * @class HelperDefinitions
  */
 export class HelperDefinitions {
   static generate() {

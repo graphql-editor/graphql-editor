@@ -37,7 +37,7 @@ class App extends React.Component<
   render() {
     return (
       <div className={UiDiagram}>
-        <Editor schema={schemas.failingSchema} editorVisible={this.state.editorVisible} />
+        <Editor schema={schemas.muskSchema} editorVisible={this.state.editorVisible} />
       </div>
     );
   }

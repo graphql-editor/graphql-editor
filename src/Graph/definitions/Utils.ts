@@ -11,17 +11,10 @@ import { AcceptedEditorNodeDefinition, EditorNodeDefinition } from '../../Models
 import { help } from './help';
 /**
  * Class responsible for Connection Utils
- *
- * @export
- * @class Utils
  */
 export class Utils {
   /**
    * Options for nodes
-   *
-   * @static
-   * @type {NodeOption[]}
-   * @memberof Utils
    */
   static ArrayNonNullOptions: NodeOption[] = [
     {
@@ -39,10 +32,6 @@ export class Utils {
   ];
   /**
    * Options for root type node
-   *
-   * @static
-   * @type {NodeOption[]}
-   * @memberof Utils
    */
   static rootOptions: NodeOption[] = [
     {
@@ -60,9 +49,6 @@ export class Utils {
   ];
   /**
    * create basic node to use with definitions
-   *
-   * @static
-   * @memberof Utils
    */
   static createOND = (
     name: string | undefined = '',
@@ -76,26 +62,17 @@ export class Utils {
   })
   /**
    * Map definitions to format accepted by graphsource menu
-   *
-   * @static
-   * @memberof Utils
    */
   static nodeDefinitionToAcceptedEditorNodeDefinition = (
     definition: EditorNodeDefinition
   ): AcceptedEditorNodeDefinition => ({ definition })
   /**
    * Get Node definitions accepting this definition
-   *
-   * @static
-   * @memberof Utils
    */
   static dataForTypes = (defs: EditorNodeDefinition[], types: AllTypes[]) =>
     defs.filter((d) => d.data && d.data.for && types.find((t) => d.data!.for!.includes(t)))
   /**
    * Map definition sets as Categories
-   *
-   * @static
-   * @memberof Utils
    */
   static displayAsCategories = (
     definitions: Record<string, EditorNodeDefinition[]>
@@ -111,9 +88,6 @@ export class Utils {
 
   /**
    * Sort defintions by type of parent
-   *
-   * @static
-   * @memberof Utils
    */
   static sortByParentType = (
     definitions: EditorNodeDefinition[]
@@ -142,9 +116,6 @@ export class Utils {
   }
   /**
    * Get Definitions of nodes instantiated by nodes connected to parent node
-   *
-   * @static
-   * @memberof Utils
    */
   static getDefinitionsFromParent = (
     d: EditorNodeDefinition,
@@ -162,9 +133,6 @@ export class Utils {
   }
   /**
    * Get Definitions of nodes instantiated by nodes connected to parent node
-   *
-   * @static
-   * @memberof Utils
    */
   static getDefinitionsFromParentInput = (
     d: EditorNodeDefinition,
@@ -209,9 +177,6 @@ export class Utils {
 
   /**
    * Get Definitions of nodes connected to parent node
-   *
-   * @static
-   * @memberof Utils
    */
   static getSameDefinitionsAsParent = (
     d: EditorNodeDefinition,

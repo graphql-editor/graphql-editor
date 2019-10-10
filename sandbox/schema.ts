@@ -1244,3 +1244,9 @@ schema{
 	query: Query,
 	mutation: Mutation
 }`;
+export const testBuiltInDirectives = `
+	type Person{
+		name: String!
+		age: Int @deprecated
+	}
+`;

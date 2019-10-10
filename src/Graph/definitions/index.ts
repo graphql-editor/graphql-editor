@@ -1,5 +1,6 @@
 import { GraphQLNodeParams } from 'graphql-zeus';
 import { Node } from 'graphsource';
+import { deprecated, reason } from './BuiltIn';
 import { ExtensionDefinition } from './Extension';
 import { HelperDefinitions } from './HelperDefintions';
 import { ScalarDefinitions } from './ScalarDefintions';
@@ -19,6 +20,8 @@ export class Definitions {
     definitions.push(...TypeDefinitions.generate(stitchNodes));
     definitions.push(...ScalarDefinitions.generate());
     definitions.push(...ValueDefinitions.generate(stitchNodes));
+    definitions.push(deprecated(stitchNodes));
+    definitions.push(reason());
     definitions.push(ExtensionDefinition);
     return definitions;
   }

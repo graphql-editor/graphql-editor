@@ -1,5 +1,5 @@
 import { buildASTSchema, parse } from 'graphql';
-import { OperationType, Parser, ParserTree, Utils } from 'graphql-zeus';
+import { OperationType, Parser, ParserTree, Utils, Value } from 'graphql-zeus';
 import {
   DefaultDiagramTheme,
   Diagram,
@@ -327,7 +327,12 @@ export class GraphController {
     }
     graphQLSchema = NodesToTree.parse(nodes, links);
     try {
-      const unNamedNode = this.nodes.find((n) => n.name.length === 0);
+      const unNamedNode = this.nodes.find(
+        (n) =>
+          n.name.length === 0 &&
+          n.definition.data &&
+          (n.definition.data as any).type !== Value.StringValue
+      );
       if (unNamedNode) {
         throw new Error(
           `Every node should have a name. Please fill in a name and click enter or defocus`
