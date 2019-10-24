@@ -13,7 +13,31 @@ export const Sidebar = style({
   background: Colors.grey[8],
   position: 'relative'
 });
-
+export const HiderPanel = style({
+  width: 30,
+  background: Colors.grey[9],
+  color: Colors.grey[2],
+  fontSize: 12,
+  padding: 3
+});
+export const Hider = style({
+  width: 24,
+  height: 24,
+  marginBottom: 3,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  userSelect: 'none',
+  cursor: 'pointer',
+  $nest: {
+    '&:hover': {
+      background: Colors.grey[10]
+    },
+    '&.active': {
+      color: Colors.green[0]
+    }
+  }
+});
 export const CodeContainer = style({
   flex: 1,
   overflowY: 'hidden',
@@ -55,7 +79,7 @@ export const Resizer = style({
       width: '100vw',
       height: '100vh',
       left: 0,
-      top: 0,
+      top: 0
     }
   }
 });
