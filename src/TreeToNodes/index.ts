@@ -1,19 +1,16 @@
 import {
   GraphQLNodeParams,
   Helpers,
+  Instances,
   ParserField,
   ParserTree,
-  TypeExtension,
-  TypeSystemDefinition
+  TypeExtension
 } from 'graphql-zeus';
 import { Link, Node, NodeUtils } from 'graphsource';
 import { EditorNodeDefinition } from '../Models';
 
 /**
  * Transform Zeus ParserTree to Nodes and Node Definitions, this file should be refactored in future
- *
- * @export
- * @class TreeToNodes
  */
 export class TreeToNodes {
   /**
@@ -104,7 +101,7 @@ export class TreeToNodes {
           },
           name: i,
           data: {
-            type: TypeSystemDefinition.FieldDefinition
+            type: Instances.Implement
           }
         },
         createdNode,

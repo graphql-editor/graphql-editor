@@ -19,6 +19,7 @@ import { ArgumentInstance } from './Argument';
 import { ExtensionInstance } from './Extension';
 import { FieldInstance } from './Field';
 import { help } from './help';
+import { ImplementsInstance } from './Implements';
 import { InputValueInstance } from './InputValue';
 import { Utils } from './Utils';
 
@@ -106,11 +107,10 @@ export class TypeDefinitions {
         ),
       instances: [
         {
-          ...FieldInstance,
-          data: {
-            ...FieldInstance.data,
-            for: [...FieldInstance.data!.for!, Helpers.Implements]
-          }
+          ...FieldInstance
+        },
+        {
+          ...ImplementsInstance
         }
       ]
     })
