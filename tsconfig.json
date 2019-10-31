@@ -10,6 +10,7 @@
     "incremental": true,
     "removeComments": true,
     "noUnusedLocals": true,
+    "esModuleInterop": true,
     "strict": true,
     "outDir": "./lib",
     "lib": ["es6", "es7", "esnext", "dom"],

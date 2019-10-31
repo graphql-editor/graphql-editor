@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { render } from 'react-dom';
 import { style } from 'typestyle';
 import { Editor } from '../src/index';
@@ -37,7 +37,7 @@ class App extends React.Component<
   render() {
     return (
       <div className={UiDiagram}>
-        <Editor schema={schemas.muskSchema} editorVisible={this.state.editorVisible} />
+        <Editor schema={schemas.googleDirections} editorVisible={this.state.editorVisible} />
       </div>
     );
   }

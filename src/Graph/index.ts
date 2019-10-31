@@ -1,20 +1,12 @@
 import { buildASTSchema, parse } from 'graphql';
 import { OperationType, Parser, ParserTree, Utils, Value } from 'graphql-zeus';
-import {
-  DefaultDiagramTheme,
-  Diagram,
-  DiagramEvents,
-  Link,
-  Node,
-  Old,
-  Serializer
-} from 'graphsource';
-import { Colors } from '../Colors';
-import { CodeSearchQuery } from '../editor/CodeSearch';
+import { Diagram, DiagramEvents, Link, Node, Old, Serializer } from 'graphsource';
+import { ScreenPosition } from 'graphsource/lib/IO/ScreenPosition';
 import { EditorNodeDefinition } from '../Models';
 import { NodesToTree } from '../NodesToTree';
 import { TreeToNodes } from '../TreeToNodes';
 import { Definitions } from './definitions';
+import { theme } from './theme';
 /**
  * Class for controlling the state of diagram and exposing schema functions
  */
@@ -31,14 +23,20 @@ export class GraphController {
     }));
     return NodesToTree.parse(nodes, tree.links);
   }
+
+  static flatNodeInputs = (node: Node): Node[] =>
+    node.inputs
+      ? [...node.inputs, node.inputs.map(GraphController.flatNodeInputs)].flat(Infinity)
+      : ([] as Node[])
   public definitions?: EditorNodeDefinition[];
   public stitchDefinitions: EditorNodeDefinition[] = [];
   public schema = '';
   public stichesCode = '';
-  private nodes: Node[] = [];
-  private links: Link[] = [];
+  public nodes: Node[] = [];
+  public selectedNodes: Node[] = [];
   private stitchNodes: { nodes: Node[]; links: Link[] } = { nodes: [], links: [] };
   private diagram?: Diagram;
+  private passSelectedNodes?: (nodes: Node[]) => void;
   private passSchema?: (schema: string, stitches?: string) => void;
   private passDiagramErrors?: (errors: string) => void;
   private onSerialize?: (schema: string) => void;
@@ -57,73 +55,11 @@ export class GraphController {
         nodeType: 0.5,
         detailedLinks: 0.9
       },
-      theme: {
-        ...DefaultDiagramTheme,
-        node: {
-          ...DefaultDiagramTheme.node,
-          spacing: {
-            ...DefaultDiagramTheme.node.spacing
-          }
-        },
-        description: {
-          ...DefaultDiagramTheme.description
-        },
-        menu: {
-          ...DefaultDiagramTheme.menu,
-          category: {
-            ...DefaultDiagramTheme.menu.category,
-            fontSize: '12px'
-          }
-        },
-        help: {
-          ...DefaultDiagramTheme.help
-        },
-        colors: {
-          ...DefaultDiagramTheme.colors,
-          background: Colors.grey[8],
-          help: {
-            ...DefaultDiagramTheme.colors.help,
-            title: Colors.yellow[0]
-          },
-          port: {
-            ...DefaultDiagramTheme.colors.port,
-            background: Colors.grey[6]
-          },
-          link: {
-            ...DefaultDiagramTheme.colors.link,
-            main: Colors.grey[2]
-          },
-          node: {
-            ...DefaultDiagramTheme.colors.node,
-            background: Colors.grey[7],
-            type: Colors.grey[0],
-            hover: {
-              type: Colors.main[0]
-            },
-            types: {
-              type: Colors.main[0],
-              union: Colors.main[0],
-              input: Colors.main[0],
-              scalar: Colors.main[0],
-              interface: Colors.main[0],
-              enum: Colors.main[0],
-              directive: Colors.main[0],
-              String: Colors.green[0],
-              Int: Colors.green[0],
-              Boolean: Colors.green[0],
-              ID: Colors.green[0],
-              Float: Colors.green[0]
-            },
-            options: {
-              required: Colors.red[0],
-              array: Colors.yellow[0]
-            }
-          }
-        }
-      }
+      theme
     });
     this.diagram.on(DiagramEvents.LinkCreated, this.onCreateLink);
     this.diagram.on(DiagramEvents.NodeCreated, this.onCreateNode);
+    this.diagram.on(DiagramEvents.NodeSelected, this.onSelectNode);
     this.diagram.on(DiagramEvents.DataModelChanged, this.serialise);
     this.generateBasicDefinitions();
   }
@@ -151,6 +87,13 @@ export class GraphController {
    */
   setOnSerialise = (f: (schema: string) => void) => {
     this.onSerialize = f;
+  }
+
+  /**
+   * Set function to pass currently selected nodes
+   */
+  setPassSelectedNodes = (f: (nodes: Node[]) => void) => {
+    this.passSelectedNodes = f;
   }
   /**
    * Function to control editable state of diagram
@@ -205,44 +148,11 @@ export class GraphController {
     this.diagram!.setDefinitions(this.definitions);
     this.load(result.nodes, result.links);
   }
-  searchAndCenterNode(query: CodeSearchQuery) {
-    if (query.subject && query.parent) {
-      const subjects = this.nodes.filter(
-        (node) => node.name.toLowerCase() === query.subject!.toLowerCase()
-      );
-      const parentNodes = this.nodes.filter(
-        (node) => node.name.toLowerCase() === query.parent!.toLowerCase()
-      );
-      const matchingPairs = parentNodes.reduce<Node[]>((acc, currentParentNode) => {
-        const matchingSubject = subjects.find(
-          (subject) =>
-            !!this.links.find(
-              (link) => link.o.id === subject.id && link.i.id === currentParentNode.id
-            )
-        );
-        if (matchingSubject) {
-          acc.push(matchingSubject);
-        }
-        return acc;
-      }, []);
-
-      if (matchingPairs.length) {
-        const [subject] = matchingPairs;
-        this.diagram!.selectNode(subject);
-        this.diagram!.centerOnNode(subject);
-      }
-      return;
-    }
-
-    if (query.subject) {
-      const foundNodes = this.nodes.filter(
-        (node) => node.name.toLowerCase() === query.subject!.toLowerCase()
-      );
-      if (this.diagram && foundNodes.length) {
-        this.diagram!.selectNode(foundNodes[0]);
-        this.diagram!.centerOnNode(foundNodes[0]);
-      }
-    }
+  centerOnNodeByID = (id: string) => {
+    const node = this.nodes.find((n) => n.id === id)!;
+    this.diagram!.selectNode(node);
+    this.diagram!.centerOnNode(node);
+    this.selectedNodes = [node];
   }
 
   loadOldFormat = (serializedDiagram: string) => {
@@ -313,7 +223,6 @@ export class GraphController {
    */
   private serialise = ({ nodes, links }: { nodes: Node[]; links: Link[] }): void => {
     this.nodes = nodes;
-    this.links = links;
     let graphQLSchema = '';
     if (nodes.length === 0) {
       this.schema = graphQLSchema;
@@ -375,5 +284,11 @@ export class GraphController {
    */
   private onCreateNode = () => {
     this.nodeCreated = true;
+  }
+  private onSelectNode = ([_, nodes]: [ScreenPosition, Node[]]) => {
+    this.selectedNodes = nodes;
+    if (this.passSelectedNodes) {
+      this.passSelectedNodes(this.selectedNodes);
+    }
   }
 }

@@ -15,7 +15,7 @@
     "docs": "typedoc --mode file --out docs  --theme minimal --ignoreCompilerErrors --target ES6 "
   },
   "resolutions": {
-    "@types/react": "^16.4.14"
+    "@types/react": "^16.9.11"
   },
   "repository": {
     "type": "git",
@@ -35,10 +35,8 @@
     "@types/jest": "^24.0.9",
     "@types/node": "^10.12.18",
     "@types/query-string": "^6.1.1",
-    "@types/react": "^16.4.14",
-    "@types/react-dom": "^16.0.7",
-    "@types/react-router": "4.4.3",
-    "@types/react-router-dom": "^4.3.1",
+    "@types/react": "^16.9.11",
+    "@types/react-dom": "^16.9.3",
     "@types/webpack": "4.4.22",
     "@types/webpack-env": "^1.13.5",
     "awesome-typescript-loader": "^5.2.1",
@@ -66,24 +64,20 @@
     "webpack": "^4.28.4",
     "webpack-cleanup-plugin": "^0.5.1",
     "webpack-cli": "^3.1.2",
-    "webpack-dev-server": "^3.1.14",
-    "webpack-merge": "^4.1.5"
+    "webpack-dev-server": "^3.1.14"
   },
   "dependencies": {
     "classnames": "^2.2.5",
     "faker": "^4.1.0",
     "graphql": "^14.0.2",
-    "graphql-zeus": "^1.6.2",
-    "graphsource": "^1.2.6",
+    "graphql-zeus": "^1.6.6",
+    "graphsource": "^1.3.0",
     "moment": "^2.21.0",
     "query-string": "^6.2.0",
-    "react": "^16.5.2",
+    "react": "^16.11.0",
     "react-ace": "^7.0.4",
-    "react-dom": "^16.5.2",
-    "react-router-dom": "^4.3.1",
-    "typestyle": "^2.0.1",
-    "unstated": "^2.1.1",
-    "utility-types": "^3.2.0"
+    "react-dom": "^16.11.0",
+    "typestyle": "^2.0.1"
   },
   "config": {
     "commitizen": {

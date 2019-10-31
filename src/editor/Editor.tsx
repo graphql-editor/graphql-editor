@@ -1,13 +1,14 @@
-import * as React from 'react';
+import { Node } from 'graphsource';
+import React from 'react';
 import { GraphController } from '../Graph';
-import { CodeEditor, CodeEditorOuterProps } from './Code';
-import { CodeSearchQuery } from './CodeSearch';
+import { CodeEditor, CodeEditorOuterProps } from './code';
 import * as styles from './style/Editor';
 export interface EditorState {
   projectId?: string;
   code: string;
   stitches?: string;
   errors: string;
+  selectedNodes: Node[];
 }
 export type EditorProps = {
   editorVisible: boolean;
@@ -26,7 +27,8 @@ export class Editor extends React.Component<EditorProps, EditorState> {
     projectId: undefined,
     code: '',
     stitches: '',
-    errors: ''
+    errors: '',
+    selectedNodes: []
   };
   controller: GraphController = new GraphController();
   private containerRef = React.createRef<HTMLDivElement>();
@@ -49,6 +51,7 @@ export class Editor extends React.Component<EditorProps, EditorState> {
       this.controller.setPassSchema(this.receiveSchema);
       this.controller.setPassDiagramErrors(this.receiveErrors);
       this.controller.setReadOnly(!!this.props.readonly);
+      this.controller.setPassSelectedNodes((selectedNodes) => this.setState({ selectedNodes }));
       if (this.props.graphController) {
         this.props.graphController(this.controller);
       }
@@ -65,21 +68,18 @@ export class Editor extends React.Component<EditorProps, EditorState> {
       this.controller.setReadOnly(!!this.props.readonly);
     }
   }
-  codeSearchQueryChanged = (query: CodeSearchQuery) => {
-    this.controller.searchAndCenterNode(query);
-  }
   render() {
     return (
       <>
         {this.props.editorVisible === true && (
           <CodeEditor
-            onQueryChanged={this.codeSearchQueryChanged}
             controller={this.controller}
             schema={this.state.code}
             stitches={this.state.stitches}
             readonly={this.props.readonly}
             placeholder={this.props.placeholder}
             onResized={this.controller.resizeDiagram}
+            selectedNodes={this.state.selectedNodes}
             schemaChanged={(e) => {
               this.setState({
                 code: e

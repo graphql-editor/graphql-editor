@@ -1,4 +1,4 @@
-import { Colors } from '../../Colors';
+import { Colors } from '../../../Colors';
 
 (window as any).ace.define(
   'ace/theme/graphqleditor',
