@@ -31,7 +31,8 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: 'awesome-typescript-loader?configFileName=./sandbox/tsconfig.json'
+        loader: 'ts-loader',
+        options: { configFile: './sandbox/tsconfig.json' }
       },
       {
         test: /\.css$/,

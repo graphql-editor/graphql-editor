@@ -6,6 +6,7 @@ import { theme } from '../../Graph/theme';
 import * as Icon from '../icons';
 import { TitleOfPane } from './Components';
 import * as styles from './style/Explorer';
+
 export interface ExplorerProps {
   controller: GraphController;
   selectedNodes: Node[];

@@ -1,5 +1,4 @@
 import { style } from 'typestyle';
-
 import { Colors, mix } from '../../../Colors';
 import { fontFamily } from '../../../vars';
 

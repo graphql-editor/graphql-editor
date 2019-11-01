@@ -24,6 +24,12 @@ Create GraphQL nodes and connect them to generate a database schema. You can als
 
 ## Develop or use standalone
 
+Install dependencies
+
+```
+npm i react react-dom
+```
+
 ```
 npm i graphql-editor
 ```
