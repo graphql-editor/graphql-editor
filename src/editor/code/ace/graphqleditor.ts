@@ -1,5 +1,12 @@
 import { Colors } from '../../../Colors';
+import { theme } from '../../../Graph/theme';
 
+const mapFromTheme = Object.keys(theme.colors.node.types).reduce<string>((a, b) => {
+  const css = `\n.ace_${b}{
+      color: ${theme.colors.node.types[b]}
+}`;
+  return a + css;
+}, ``);
 (window as any).ace.define(
   'ace/theme/graphqleditor',
   ['require', 'exports', 'module', 'ace/lib/dom'],
@@ -7,8 +14,8 @@ import { Colors } from '../../../Colors';
     exports.isDark = true;
     exports.cssClass = 'ace-graphqleditor';
     exports.cssText = `.ace-graphqleditor .ace_gutter {
-    background: #232323;
-    color: #E2E2E2
+    background: ${Colors.grey[9]};
+    color: ${Colors.grey[5]}
     }
     .ace-graphqleditor .ace_print-margin {
     width: 1px;
@@ -16,7 +23,7 @@ import { Colors } from '../../../Colors';
     }
     .ace-graphqleditor {
     background-color: #141414;
-    color: ${Colors.blue[1]}
+    color: ${Colors.grey[3]}
     }
     .ace-graphqleditor .ace_identifier {
     color: ${Colors.grey[0]}
@@ -109,7 +116,9 @@ import { Colors } from '../../../Colors';
     }
     .ace-graphqleditor .ace_indent-guide {
     background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWMQERFpYLC1tf0PAAgOAnPnhxyiAAAAAElFTkSuQmCC) right repeat-y
-    }`;
+    }
+    ${mapFromTheme}
+    `;
 
     const dom = acequire('../lib/dom');
     dom.importCssString(exports.cssText, exports.cssClass);

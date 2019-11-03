@@ -1,3 +1,5 @@
+import { theme } from '../../../Graph/theme';
+
 /* tslint:disable */
 
 (window as any).ace.define(
@@ -10,14 +12,17 @@
     const TextHighlightRules = acequire('./text_highlight_rules').TextHighlightRules;
 
     const GraphQLSchemaHighlightRules = function(this: any) {
-      const keywords = 'type|interface|union|enum|input|implements|extends|scalar';
-
-      const dataTypes = 'Int|Float|String|ID|Boolean';
+      const mapFromTheme = Object.keys(theme.colors.node.types).reduce<Record<string, string>>(
+        (a, b) => {
+          a[`${b}`] = b;
+          return a;
+        },
+        {}
+      );
       const keywordMapper = this.createKeywordMapper(
         {
-          keyword: keywords,
           schema: 'schema',
-          'storage.type': dataTypes
+          ...mapFromTheme
         },
         'identifier'
       );

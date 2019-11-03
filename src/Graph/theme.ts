@@ -52,6 +52,7 @@ export const theme: DiagramTheme = {
         interface: mix(Colors.blue[0], Colors.grey[0]),
         enum: mix(Colors.blue[0], Colors.main[0]),
         directive: mix(Colors.main[0], Colors.grey[0]),
+        extends: Colors.yellow[0],
         String: Colors.green[0],
         Int: Colors.green[0],
         Boolean: Colors.green[0],

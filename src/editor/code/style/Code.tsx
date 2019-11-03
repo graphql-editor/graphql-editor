@@ -37,3 +37,19 @@ export const FullScreenIcon = style({
     }
   }
 });
+
+export const Generate = style({
+  marginLeft: 'auto',
+  color: Colors.green[3],
+  padding: `2px 6px`,
+  cursor: 'pointer',
+  fontSize: 10,
+  textTransform: 'lowercase',
+  borderRadius: 3,
+  fontWeight: 'bold',
+  $nest: {
+    '&.disabled': {
+      color: Colors.grey[6]
+    }
+  }
+});

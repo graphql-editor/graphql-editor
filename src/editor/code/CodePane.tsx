@@ -5,11 +5,11 @@ import AceEditor, { IAceEditorProps } from 'react-ace';
 import { GraphController } from '../../Graph';
 import { sizeSidebar } from '../../vars';
 import * as Icon from '../icons';
-import { SelectLanguage } from '../SelectLanguage';
 import './ace/graphqleditor';
 import './ace/graphqlschema';
-import { TitleOfPane } from './Components';
+import { StatusDot, TitleOfPane } from './Components';
 import * as styles from './style/Code';
+import { StatusDotProps } from './style/Components';
 require(`brace/ext/searchbox`);
 export interface CodePaneOuterProps {
   schemaChanged?: (schema: string) => void;
@@ -76,6 +76,10 @@ export class CodePane extends React.Component<CodePaneProps, CodePaneState> {
     }
   }
   public render() {
+    const generateEnabled =
+      !this.props.readonly && !!this.lastSchema && !this.state.error && !this.state.errors;
+    const syncStatus =
+      this.lastSchema !== this.props.schema ? StatusDotProps.nosync : StatusDotProps.sync;
     return (
       <>
         <TitleOfPane>
@@ -88,13 +92,20 @@ export class CodePane extends React.Component<CodePaneProps, CodePaneState> {
           >
             <Icon.FullScreen size={14} />
           </span>
+          <div
+            className={cx(styles.Generate, {
+              disabled: !generateEnabled
+            })}
+            onClick={() => generateEnabled && this.props.controller.loadGraphQL(this.lastSchema!)}
+          >
+            {generateEnabled
+              ? syncStatus === StatusDotProps.sync
+                ? 'synchronized'
+                : 'out of sync'
+              : 'errors in code'}
+          </div>
+          <StatusDot status={syncStatus} />
         </TitleOfPane>
-        {!this.props.readonly && (
-          <SelectLanguage
-            onGenerate={() => this.lastSchema && this.props.controller.loadGraphQL(this.lastSchema)}
-            generateVisible={!!this.lastSchema && !this.state.error && !this.state.errors}
-          />
-        )}
         <div
           className={cx(styles.CodeContainer)}
           ref={(ref) => {
