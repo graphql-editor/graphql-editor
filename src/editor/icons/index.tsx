@@ -202,3 +202,38 @@ export const Minus = (props: IconProps) => (
     <path d="M8 12L16 12"></path>
   </svg>
 );
+
+export const Play = (props: IconProps) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size}
+    height={props.size}
+    fill="none"
+    stroke="currentColor"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    strokeWidth="2"
+    className="feather feather-play-circle"
+    viewBox="0 0 24 24"
+  >
+    <circle cx="12" cy="12" r="10"></circle>
+    <path d="M10 8L16 12 10 16 10 8z"></path>
+  </svg>
+);
+
+export const Filter = (props: IconProps) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size}
+    height={props.size}
+    fill="none"
+    stroke="currentColor"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    strokeWidth="2"
+    className="feather feather-filter"
+    viewBox="0 0 24 24"
+  >
+    <path d="M22 3L2 3 10 12.46 10 19 14 21 14 12.46 22 3z"></path>
+  </svg>
+);

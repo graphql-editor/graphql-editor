@@ -1,6 +1,15 @@
-import { style } from 'typestyle';
+import { keyframes, style } from 'typestyle';
 import { Colors } from '../../../Colors';
 import * as vars from '../../../vars';
+
+const animationName = keyframes({
+  ['0%']: {
+    transform: `rotate(0deg)`
+  },
+  ['100%']: {
+    transform: `rotate(360deg)`
+  }
+});
 
 export const CodeContainer = style({
   flex: 1,
@@ -43,13 +52,32 @@ export const Generate = style({
   color: Colors.green[3],
   padding: `2px 6px`,
   cursor: 'pointer',
+  display: 'flex',
+  alignItems: 'center',
   fontSize: 10,
   textTransform: 'lowercase',
   borderRadius: 3,
   fontWeight: 'bold',
+  transition: vars.transition,
   $nest: {
     '&.disabled': {
       color: Colors.grey[6]
+    },
+    '&.ready': {
+      color: Colors.grey[0],
+      $nest: {
+        '&:hover': {
+          color: Colors.green[0],
+          $nest: {
+            svg: {
+              animationName,
+              animationDuration: '1s',
+              animationIterationCount: 'infinite',
+              animationTimingFunction: 'linear'
+            }
+          }
+        }
+      }
     }
   }
 });

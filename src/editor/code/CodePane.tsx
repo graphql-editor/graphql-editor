@@ -1,6 +1,6 @@
 import cx from 'classnames';
 import { buildASTSchema, parse } from 'graphql';
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import AceEditor, { IAceEditorProps } from 'react-ace';
 import { GraphController } from '../../Graph';
 import { sizeSidebar } from '../../vars';
@@ -43,135 +43,48 @@ export interface CodePaneState {
   fullScreen: boolean;
 }
 
+const resizeCodePaneAce = (editor: AceEditor, width: number) => {
+  (editor as any).editor.container.style.width = `${width}px`;
+};
+
 /**
  * React compontent holding GraphQL IDE
  */
-export class CodePane extends React.Component<CodePaneProps, CodePaneState> {
-  public dragging = false;
-  public startX?: number;
-  public refHandle?: HTMLDivElement;
-  public aceEditorRef?: AceEditor;
-  public state: CodePaneState = {
+export const CodePane = (props: CodePaneProps) => {
+  const {
+    codePaneWidth,
+    schema,
+    schemaChanged,
+    stitches,
+    onResized,
+    placeholder,
+    readonly,
+    controller
+  } = props;
+  const [code, setCode] = useState<string>(schema);
+  const [editor, setEditor] = useState<AceEditor>();
+  const [state, setState] = useState<CodePaneState>({
     loadingUrl: false,
     hideEditor: false,
     fullScreen: false
-  };
-  public taskRunner?: number;
-  public startWidth = this.props.codePaneWidth;
-  public width = this.props.codePaneWidth;
-  public lastSchema?: string;
-  public holder?: HTMLDivElement;
-  public editor?: AceEditor;
-  constructor(props: CodePaneProps) {
-    super(props);
-    this.lastSchema = props.schema;
-  }
-  public componentWillReceiveProps(nextProps: CodePaneProps) {
-    if (nextProps.schema !== this.lastSchema) {
-      this.lastSchema = nextProps.schema;
-      this.forceUpdate();
-    }
-    if (nextProps.codePaneWidth !== this.props.codePaneWidth) {
-      this.resizeCodePaneAce(nextProps.codePaneWidth);
-    }
-  }
-  public render() {
-    const generateEnabled =
-      !this.props.readonly && !!this.lastSchema && !this.state.error && !this.state.errors;
-    const syncStatus =
-      this.lastSchema !== this.props.schema ? StatusDotProps.nosync : StatusDotProps.sync;
-    return (
-      <>
-        <TitleOfPane>
-          code editor{' '}
-          <span
-            className={cx(styles.FullScreenIcon, {
-              active: this.state.fullScreen
-            })}
-            onClick={() => this.toggleFullScreen()}
-          >
-            <Icon.FullScreen size={14} />
-          </span>
-          <div
-            className={cx(styles.Generate, {
-              disabled: !generateEnabled
-            })}
-            onClick={() => generateEnabled && this.props.controller.loadGraphQL(this.lastSchema!)}
-          >
-            {generateEnabled
-              ? syncStatus === StatusDotProps.sync
-                ? 'synchronized'
-                : 'out of sync'
-              : 'errors in code'}
-          </div>
-          <StatusDot status={syncStatus} />
-        </TitleOfPane>
-        <div
-          className={cx(styles.CodeContainer)}
-          ref={(ref) => {
-            if (ref && !this.holder) {
-              this.holder = ref;
-              setTimeout(() => {
-                (this.aceEditorRef as any).editor.resize();
-              }, 1);
-            }
-          }}
-        >
-          {this.state.error && <div className={styles.ErrorLonger}>{this.state.error}</div>}
-          <AceEditor
-            ref={(ref) => {
-              if (ref) {
-                this.aceEditorRef = ref;
-              }
-            }}
-            placeholder={this.props.placeholder}
-            mode={'graphqlschema'}
-            annotations={this.state.errors}
-            onChange={this.codeChange}
-            readOnly={this.props.readonly}
-            style={{
-              flex: 1,
-              height: 'auto'
-            }}
-            editorProps={{
-              $blockScrolling: Infinity
-            }}
-            setOptions={{
-              showLineNumbers: true,
-              tabSize: 2
-            }}
-            theme={'graphqleditor'}
-            value={this.lastSchema}
-            width={`${this.props.codePaneWidth}`}
-          />
-        </div>
-      </>
-    );
-  }
-  toggleFullScreen = () => {
-    if (this.state.fullScreen) {
-      this.setState(
-        {
-          fullScreen: false
-        },
-        () => this.props.onResized(sizeSidebar)
-      );
+  });
+  const holder = useRef<HTMLDivElement>(null);
+  const toggleFullScreen = () => {
+    if (state.fullScreen) {
+      setState({
+        ...state,
+        fullScreen: false
+      });
+      onResized(sizeSidebar);
     } else {
-      this.setState(
-        {
-          fullScreen: true
-        },
-        () => this.props.onResized(window.innerWidth - 30)
-      );
+      setState({
+        ...state,
+        fullScreen: true
+      });
+      onResized(window.innerWidth - 30);
     }
-  }
-
-  private resizeCodePaneAce(width: number) {
-    this.width = width;
-    (this.aceEditorRef as any).editor.container.style.width = `${width}px`;
-  }
-
-  private codeChange = (
+  };
+  const codeChange = (
     e: string,
     v: {
       action: 'insert' | 'remove';
@@ -186,23 +99,27 @@ export class CodePane extends React.Component<CodePaneProps, CodePaneState> {
       };
     }
   ) => {
-    if (!this.lastSchema && this.props.schemaChanged) {
-      this.props.schemaChanged(e);
+    if (!code && schemaChanged) {
+      schemaChanged(e);
     }
-    this.lastSchema = e;
-    const combinedCode = (this.props.stitches || '') + e;
+    setCode(e);
+    const combinedCode = (stitches || '') + e;
     try {
       const parsed = parse(combinedCode);
       try {
         buildASTSchema(parsed);
-        if (this.state.errors || this.state.error) {
-          this.setState({
+        if (state.errors || state.error) {
+          setState({
+            ...state,
             errors: undefined,
             error: undefined
           });
+        } else {
+          setState(state);
         }
       } catch (error) {
-        this.setState({
+        setState({
+          ...state,
           error: error.message
         });
       }
@@ -215,7 +132,8 @@ export class CodePane extends React.Component<CodePaneProps, CodePaneState> {
         message: string;
         positions: number[];
       };
-      this.setState({
+      setState({
+        ...state,
         errors: [
           {
             column: er.locations[0]!.column - 1,
@@ -227,5 +145,104 @@ export class CodePane extends React.Component<CodePaneProps, CodePaneState> {
         ]
       });
     }
-  }
-}
+  };
+
+  useEffect(() => {
+    if (code !== schema) {
+      setCode(schema);
+    } else {
+      setCode(code);
+    }
+  }, [schema]);
+
+  useEffect(() => {
+    if (editor) {
+      resizeCodePaneAce(editor, codePaneWidth);
+    }
+  }, [codePaneWidth]);
+
+  const generateEnabled = !readonly && !!code && !state.error && !state.errors;
+  const syncStatus = code !== schema ? StatusDotProps.nosync : StatusDotProps.sync;
+  const reloadGraph = () => {
+    if (generateEnabled) {
+      controller.loadGraphQL(code);
+    }
+  };
+
+  return (
+    <>
+      <TitleOfPane>
+        code editor
+        <span
+          className={cx(styles.FullScreenIcon, {
+            active: state.fullScreen
+          })}
+          onClick={toggleFullScreen}
+        >
+          <Icon.FullScreen size={14} />
+        </span>
+        <div
+          className={cx(styles.Generate, {
+            disabled: !generateEnabled,
+            ready: generateEnabled && syncStatus === StatusDotProps.nosync
+          })}
+          onClick={reloadGraph}
+        >
+          {generateEnabled ? (
+            syncStatus === StatusDotProps.sync ? (
+              'synchronized'
+            ) : (
+              <>
+                <span style={{ marginRight: 5 }}>synchronize</span>
+                <Icon.Settings size={14} />
+              </>
+            )
+          ) : (
+            'errors in code'
+          )}
+        </div>
+        <StatusDot status={syncStatus} />
+      </TitleOfPane>
+      <div className={cx(styles.CodeContainer)} ref={holder}>
+        {state.error && <div className={styles.ErrorLonger}>{state.error}</div>}
+        <AceEditor
+          ref={(ref) => {
+            if (ref) {
+              setEditor(ref);
+              setTimeout(() => {
+                (ref as any).editor.resize();
+              }, 1);
+            }
+          }}
+          placeholder={placeholder}
+          mode={'graphqlschema'}
+          annotations={state.errors}
+          onChange={(value, event) => {
+            codeChange(value, event);
+          }}
+          height="inherit"
+          onBlur={() => {
+            reloadGraph();
+          }}
+          readOnly={readonly}
+          style={{
+            flex: 1,
+            height: 'auto'
+          }}
+          editorProps={{
+            $blockScrolling: Infinity
+          }}
+          setOptions={{
+            showLineNumbers: true,
+            vScrollBarAlwaysVisible: true,
+            tabSize: 2
+          }}
+          theme={'graphqleditor'}
+          value={code}
+          width={`${codePaneWidth}`}
+          onLoad={() => {}}
+        />
+      </div>
+    </>
+  );
+};

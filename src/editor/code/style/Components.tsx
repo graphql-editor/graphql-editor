@@ -1,5 +1,5 @@
 import { style } from 'typestyle';
-import { Colors, mix } from '../../../Colors';
+import { Colors } from '../../../Colors';
 import { fontFamily } from '../../../vars';
 
 export const TitleOfPane = style({
@@ -8,7 +8,7 @@ export const TitleOfPane = style({
   fontSize: 13,
   textTransform: 'uppercase',
   color: Colors.grey[4],
-  background: mix(Colors.grey[8], Colors.grey[9]),
+  background: `${Colors.grey[10]}`,
   letterSpacing: 1,
   display: 'flex',
   alignItems: 'center'

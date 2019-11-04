@@ -1,10 +1,15 @@
 import { DefaultDiagramTheme, DiagramTheme } from 'graphsource';
 import { Colors, mix } from '../Colors';
+import { fontFamily } from '../vars';
 
 export const theme: DiagramTheme = {
   ...DefaultDiagramTheme,
+  fontFamily,
   node: {
     ...DefaultDiagramTheme.node,
+    nameSize: 23,
+    typeSize: 20,
+    width: 210,
     spacing: {
       ...DefaultDiagramTheme.node.spacing
     }
@@ -24,14 +29,14 @@ export const theme: DiagramTheme = {
   },
   colors: {
     ...DefaultDiagramTheme.colors,
-    background: Colors.grey[8],
+    background: mix(Colors.grey[8], Colors.grey[9]),
     help: {
       ...DefaultDiagramTheme.colors.help,
       title: Colors.yellow[0]
     },
     port: {
       ...DefaultDiagramTheme.colors.port,
-      background: Colors.grey[6]
+      background: mix(Colors.grey[6], Colors.grey[7])
     },
     link: {
       ...DefaultDiagramTheme.colors.link,
@@ -39,10 +44,10 @@ export const theme: DiagramTheme = {
     },
     node: {
       ...DefaultDiagramTheme.colors.node,
-      background: Colors.grey[7],
-      type: Colors.grey[0],
+      background: mix(Colors.grey[7], Colors.grey[8]),
+      type: Colors.grey[2],
       hover: {
-        type: Colors.main[0]
+        type: Colors.grey[0]
       },
       types: {
         type: Colors.main[0],
@@ -52,7 +57,7 @@ export const theme: DiagramTheme = {
         interface: mix(Colors.blue[0], Colors.grey[0]),
         enum: mix(Colors.blue[0], Colors.main[0]),
         directive: mix(Colors.main[0], Colors.grey[0]),
-        extends: Colors.yellow[0],
+        extend: Colors.yellow[0],
         String: Colors.green[0],
         Int: Colors.green[0],
         Boolean: Colors.green[0],
