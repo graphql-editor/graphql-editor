@@ -17,7 +17,7 @@ export const SearchInput = style({
   color: Colors.grey[1],
   fontSize: 12,
   flex: 1,
-  background: `#151515`,
+  background: Colors.grey[9],
   border: 0,
   outline: 0,
   fontFamily,
@@ -86,8 +86,8 @@ export const FilterIcon = style({
   display: 'flex',
   alignItems: 'center',
   cursor: 'pointer',
-  color: Colors.grey[1],
   background: Colors.grey[9],
+  color: Colors.grey[1],
   transition,
   $nest: {
     '&:hover': {
@@ -103,7 +103,10 @@ export const FilterIcon = style({
 export const FilterTable = style({
   display: 'flex',
   flexFlow: 'row wrap',
-  padding: 15
+  padding: 15,
+  paddingBottom: 5,
+  paddingRight: 5,
+  background: Colors.grey[10]
 });
 
 export const FilterBlock = style({
@@ -112,9 +115,8 @@ export const FilterBlock = style({
   opacity: 0.4,
   padding: `3px 8px`,
   border: `1px solid`,
-  borderRadius: '10%',
-  marginRight: 5,
-  marginBottom: 5,
+  marginRight: 10,
+  marginBottom: 10,
   userSelect: 'none',
   ['-moz-user-select']: '-moz-none',
   cursor: 'pointer',

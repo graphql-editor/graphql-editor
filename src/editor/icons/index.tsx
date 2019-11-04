@@ -237,3 +237,21 @@ export const Filter = (props: IconProps) => (
     <path d="M22 3L2 3 10 12.46 10 19 14 21 14 12.46 22 3z"></path>
   </svg>
 );
+
+export const X = (props: IconProps) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size}
+    height={props.size}
+    fill="none"
+    stroke="currentColor"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    strokeWidth="2"
+    className="feather feather-x"
+    viewBox="0 0 24 24"
+  >
+    <path d="M18 6L6 18"></path>
+    <path d="M6 6L18 18"></path>
+  </svg>
+);

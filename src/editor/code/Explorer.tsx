@@ -159,12 +159,13 @@ export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
           onClick={() => {
             if (filtersOpen) {
               setFiltersOpen(!filtersOpen);
+              setSelectedFilters([]);
             } else {
               setFiltersOpen(!filtersOpen);
             }
           }}
         >
-          <Icon.Filter size={10} />
+          {filtersOpen ? <Icon.X size={12} /> : <Icon.Filter size={12} />}
         </div>
       </div>
       {filtersOpen && (
