@@ -16,7 +16,8 @@ export const TitleOfPane = style({
 export enum StatusDotProps {
   sync = 'sync',
   nosync = 'nosync',
-  syncing = 'syncing'
+  syncing = 'syncing',
+  readonly = 'readonly'
 }
 
 export const StatusDot = style({
@@ -33,6 +34,9 @@ export const StatusDot = style({
     },
     [`&.${StatusDotProps.syncing}`]: {
       background: Colors.main[0]
+    },
+    [`&.${StatusDotProps.readonly}`]: {
+      background: Colors.blue[0]
     }
   }
 });

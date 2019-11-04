@@ -162,7 +162,11 @@ export const CodePane = (props: CodePaneProps) => {
   }, [codePaneWidth]);
 
   const generateEnabled = !readonly && !!code && !state.error && !state.errors;
-  const syncStatus = code !== schema ? StatusDotProps.nosync : StatusDotProps.sync;
+  const syncStatus = readonly
+    ? StatusDotProps.readonly
+    : code !== schema
+    ? StatusDotProps.nosync
+    : StatusDotProps.sync;
   const reloadGraph = () => {
     if (generateEnabled) {
       controller.loadGraphQL(code);
@@ -197,6 +201,8 @@ export const CodePane = (props: CodePaneProps) => {
                 <Icon.Settings size={14} />
               </>
             )
+          ) : readonly ? (
+            'readonly'
           ) : (
             'errors in code'
           )}
