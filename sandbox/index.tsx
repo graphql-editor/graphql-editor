@@ -37,11 +37,7 @@ class App extends React.Component<
   render() {
     return (
       <div className={UiDiagram}>
-        <Editor
-          schema={schemas.testBuiltInDirectives}
-          readonly
-          editorVisible={this.state.editorVisible}
-        />
+        <Editor schema={schemas.testBuiltInDirectives} editorVisible={this.state.editorVisible} />
       </div>
     );
   }

@@ -8,6 +8,17 @@ import { Utils } from './Utils';
  */
 export class HelperDefinitions {
   static generate() {
+    const commentObject: EditorNodeDefinition = {
+      node: {
+        name: undefined
+      },
+      type: Helpers.Comment,
+      root: true,
+      data: {
+        type: Helpers.Comment
+      },
+      help: help.implements
+    };
     const implementsObject: EditorNodeDefinition = {
       node: {
         notEditable: true,
@@ -50,6 +61,6 @@ export class HelperDefinitions {
         ),
       help: help.directives
     };
-    return [implementsObject, directivesObject];
+    return [implementsObject, directivesObject, commentObject];
   }
 }

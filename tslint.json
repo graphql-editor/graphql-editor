@@ -8,9 +8,8 @@
     "no-var-requires": false,
     "max-line-length": false,
     "object-literal-sort-keys": false,
-    "interface-name":false,
-    "member-access":false,
-    "no-shadowed-variable":false
-  },
-  "rulesDirectory": []
+    "interface-name": false,
+    "member-access": false,
+    "no-shadowed-variable": false
+  }
 }
