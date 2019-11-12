@@ -255,3 +255,38 @@ export const X = (props: IconProps) => (
     <path d="M6 6L18 18"></path>
   </svg>
 );
+export const ToggleOff = (props: IconProps) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size}
+    height={props.size}
+    fill="none"
+    stroke="currentColor"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    strokeWidth="2"
+    className="feather feather-toggle-left"
+    viewBox="0 0 24 24"
+  >
+    <rect width="22" height="14" x="1" y="5" rx="7" ry="7"></rect>
+    <circle cx="8" cy="12" r="3"></circle>
+  </svg>
+);
+
+export const ToggleOn = (props: IconProps) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size}
+    height={props.size}
+    fill="none"
+    stroke="currentColor"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    strokeWidth="2"
+    className="feather feather-toggle-right"
+    viewBox="0 0 24 24"
+  >
+    <rect width="22" height="14" x="1" y="5" rx="7" ry="7"></rect>
+    <circle cx="16" cy="12" r="3"></circle>
+  </svg>
+);

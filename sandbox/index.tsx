@@ -30,14 +30,14 @@ class App extends React.Component<
   {
     editorVisible: boolean;
   }
-> {
+  > {
   state = {
     editorVisible: true
   };
   render() {
     return (
       <div className={UiDiagram}>
-        <Editor schema={schemas.testBuiltInDirectives} editorVisible={this.state.editorVisible} />
+        <Editor schema={schemas.muskSchema} editorVisible={this.state.editorVisible} />
       </div>
     );
   }

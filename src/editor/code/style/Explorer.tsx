@@ -78,6 +78,10 @@ export const NodeTypeHoverable = style({
     }
   }
 });
+export const NodeSpacer = style({
+  borderBottom: `1px solid ${Colors.grey[0]}11`,
+  margin: `10px 20px`
+});
 
 // Filters
 

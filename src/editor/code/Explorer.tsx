@@ -16,6 +16,7 @@ interface NodeComponentProps {
   node: Node;
   centerNode: (id: string) => void;
   centerType: (parentDefition: NodeDefinition) => void;
+  relatives?: Node[];
   indentLevel?: number;
   selectedNodeIds: string[];
   unfoldMaster?: boolean;
@@ -26,42 +27,56 @@ const NodeComponent = ({
   centerNode,
   centerType,
   selectedNodeIds,
+  relatives,
   indentLevel = 0,
   unfoldMaster = false
 }: NodeComponentProps) => {
   const [unfold, setUnfold] = useState<boolean>(false);
+  const [showRelatives, setShowRelatives] = useState<boolean>(false);
   useEffect(() => {
     setUnfold(unfoldMaster);
   }, [unfoldMaster]);
   const nodeInputs = node.inputs ? node.inputs : [];
   const hasInputs = nodeInputs.length > 0;
+  const hasRelatives = relatives && relatives.length > 0;
   return (
     <>
       <div
         className={cx(styles.Node)}
         key={node.id}
         style={{
-          marginLeft: indentLevel * 5
+          marginLeft: indentLevel * 10
         }}
       >
-        <div
+        {hasInputs ? <div
           className={styles.NodeIcon}
+          title={unfold ? "hide fields" : "show fields"}
           onClick={() => {
             if (hasInputs) {
               setUnfold(!unfold);
             }
           }}
         >
-          {hasInputs ? (
+          {
             unfold ? (
               <Icon.Minus size={15} />
             ) : (
-              <Icon.Plus size={15} />
-            )
-          ) : (
-            <div style={{ width: 15, height: 15 }} />
+                <Icon.Plus size={15} />
+              )
+          }
+        </div> : (
+            <div
+              className={styles.NodeIcon}><div style={{ width: 15, height: 15 }} />
+            </div>
+          )
+        }
+        {hasRelatives ? <div title={showRelatives ? "hide usages" : "show usages"} className={styles.NodeIcon} onClick={() => setShowRelatives(!showRelatives)}>
+          {showRelatives ? <Icon.ToggleOn size={15} /> : <Icon.ToggleOff size={15} />}
+        </div> : (
+            <div
+              className={styles.NodeIcon}><div style={{ width: 15, height: 15 }} />
+            </div>
           )}
-        </div>
         <div
           className={cx(styles.NodeTitle, {
             active: selectedNodeIds.includes(node.id)
@@ -86,6 +101,18 @@ const NodeComponent = ({
       </div>
       {unfold &&
         nodeInputs.map((n) => (
+          <NodeComponent
+            key={n.id}
+            node={n}
+            centerNode={centerNode}
+            centerType={centerType}
+            indentLevel={indentLevel + 1}
+            selectedNodeIds={selectedNodeIds}
+          />
+        ))}
+      {unfold && showRelatives && <div className={styles.NodeSpacer} />}
+      {showRelatives && relatives &&
+        relatives.map((n) => (
           <NodeComponent
             key={n.id}
             node={n}
@@ -152,8 +179,8 @@ export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
           style={{
             ...(selectedFilters.length === 1
               ? {
-                  color: theme.colors.node.types[selectedFilters[0]]
-                }
+                color: theme.colors.node.types[selectedFilters[0]]
+              }
               : {})
           }}
           onClick={() => {
@@ -190,6 +217,8 @@ export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
           <NodeComponent
             selectedNodeIds={selectedNodeIds}
             key={n.id}
+            relatives={controller.nodes.filter((cn) => cn.definition.type === n.name)}
+            indentLevel={0}
             centerNode={(id) => {
               setSelectedNodeIds([id]);
               controller.centerOnNodeByID(id);
