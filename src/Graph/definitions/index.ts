@@ -16,13 +16,13 @@ import { ValueDefinitions } from './ValueDefinitions';
 export class Definitions {
   static generate(stitchNodes: Array<Node<GraphQLNodeParams>>) {
     const definitions = [];
-    definitions.push(...HelperDefinitions.generate());
     definitions.push(...TypeDefinitions.generate(stitchNodes));
     definitions.push(...ScalarDefinitions.generate());
     definitions.push(...ValueDefinitions.generate(stitchNodes));
     definitions.push(deprecated(stitchNodes));
     definitions.push(reason());
     definitions.push(ExtensionDefinition);
+    definitions.push(...HelperDefinitions.generate());
     return definitions;
   }
 }
