@@ -216,7 +216,7 @@ export const CodePane = (props: CodePaneProps) => {
             if (ref) {
               setEditor(ref);
               setTimeout(() => {
-                if (ref) {
+                if (ref && ref.editor) {
                   (ref as any).editor.resize();
                 }
               }, 1);
