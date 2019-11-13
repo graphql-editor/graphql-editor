@@ -165,8 +165,8 @@ export const CodePane = (props: CodePaneProps) => {
   const syncStatus = readonly
     ? StatusDotProps.readonly
     : code !== schema
-    ? StatusDotProps.nosync
-    : StatusDotProps.sync;
+      ? StatusDotProps.nosync
+      : StatusDotProps.sync;
   const reloadGraph = () => {
     if (generateEnabled) {
       controller.loadGraphQL(code);
@@ -196,16 +196,16 @@ export const CodePane = (props: CodePaneProps) => {
             syncStatus === StatusDotProps.sync ? (
               'synchronized'
             ) : (
-              <>
-                <span style={{ marginRight: 5 }}>synchronize</span>
-                <Icon.Settings size={14} />
-              </>
-            )
+                <>
+                  <span style={{ marginRight: 5 }}>synchronize</span>
+                  <Icon.Settings size={14} />
+                </>
+              )
           ) : readonly ? (
             'readonly'
           ) : (
-            'errors in code'
-          )}
+                'errors in code'
+              )}
         </div>
         <StatusDot status={syncStatus} />
       </TitleOfPane>
@@ -216,7 +216,9 @@ export const CodePane = (props: CodePaneProps) => {
             if (ref) {
               setEditor(ref);
               setTimeout(() => {
-                (ref as any).editor.resize();
+                if (ref) {
+                  (ref as any).editor.resize();
+                }
               }, 1);
             }
           }}
@@ -246,7 +248,7 @@ export const CodePane = (props: CodePaneProps) => {
           theme={'graphqleditor'}
           value={code}
           width={`${codePaneWidth}`}
-          onLoad={() => {}}
+          onLoad={() => { }}
         />
       </div>
     </>
