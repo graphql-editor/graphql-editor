@@ -6,9 +6,36 @@ GraphQLEditor makes it easier to understand GrapHQL schemas. Create a schema by 
 
 ## How it works
 
-[![GraphQLEditor Editor](assets/readme.gif)](https://app.graphqleditor.com/explore/pokemonschema?visibleMenu=code)
+### Create GraphQL Schemas
+
+[![GraphQLEditor Editor](assets/create.gif)](https://app.graphqleditor.com/?visibleMenu=code)
+
+### Explore Large GraphQL Schemas
+
+[![GraphQLEditor Editor](assets/explore.gif)](https://app.graphqleditor.com/explore/github-schema-visualised?visibleMenu=code)
+
+### Live demo
 
 Here is a [live demo](https://graphqleditor.com) example of GraphQLEditor.
+
+## Table of contents
+- [How it works](#how-it-works)
+  - [Create GraphQL Schemas](#create-graphql-schemas)
+  - [Explore Large GraphQL Schemas](#explore-large-graphql-schemas)
+  - [Live demo](#live-demo)
+- [Table of contents](#table-of-contents)
+- [Developer Docs](#developer-docs)
+- [License](#license)
+- [How It Works](#how-it-works)
+- [Develop or use standalone](#develop-or-use-standalone)
+  - [Use with schema and make readonly display of graph](#use-with-schema-and-make-readonly-display-of-graph)
+  - [Use with schema and make readonly display of graph with code](#use-with-schema-and-make-readonly-display-of-graph-with-code)
+- [Support](#support)
+- [Contribute](#contribute)
+- [Team](#team)
+- [Underlying Diagram technology](#underlying-diagram-technology)
+- [Underlying Parsing technology](#underlying-parsing-technology)
+- [GraphQL Tutorials](#graphql-tutorials)
 
 ## Developer Docs
 
