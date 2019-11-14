@@ -157,7 +157,8 @@ export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
     rootNodes = rootNodes.filter((n) => selectedFilters.includes(n.definition.type));
   }
   if (phrase.length > 0) {
-    rootNodes = rootNodes.filter((n) => n.name.toLowerCase().match(phrase.toLowerCase()));
+    const sanitizedPhrase = phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    rootNodes = rootNodes.filter((n) => n.name.toLowerCase().match(sanitizedPhrase.toLowerCase()));
   }
   rootNodes.sort((a, b) => (a.name > b.name ? 1 : -1));
   return (
