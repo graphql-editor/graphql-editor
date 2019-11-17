@@ -203,6 +203,8 @@ export class GraphController {
       (bd) => !rememberBasicDefinitions.find((rbd) => rbd.id === bd.id)
     );
   }
+  screenShot = async () =>
+    this.diagram!.screenShot()
   /**
    * Load nodes and links into diagram
    *
