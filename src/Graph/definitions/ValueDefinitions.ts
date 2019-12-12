@@ -1,8 +1,13 @@
-import { GraphQLNodeParams, TypeDefinition, Value, ValueDefinition } from 'graphql-zeus';
-import { Node } from 'graphsource';
-import { EditorNodeDefinition } from '../../Models';
-import { help } from './help';
-import { Utils } from './Utils';
+import {
+  GraphQLNodeParams,
+  TypeDefinition,
+  Value,
+  ValueDefinition
+} from "graphql-zeus";
+import { Node } from "graphsource";
+import { EditorNodeDefinition } from "../../Models";
+import { help } from "./help";
+import { Utils } from "./Utils";
 
 /**
  * Class responsible for enum Value definition and object value definition
@@ -39,7 +44,11 @@ export class ValueDefinitions {
       ]
     };
     const objectValue: EditorNodeDefinition = {
-      node: { ...Utils.createOND(Value.ObjectValue, true), inputs: [], outputs: [] },
+      node: {
+        ...Utils.createOND(Value.ObjectValue, true),
+        inputs: [],
+        outputs: []
+      },
       type: Value.ObjectValue,
       data: {
         type: Value.ObjectValue,
@@ -55,6 +64,15 @@ export class ValueDefinitions {
       },
       instances: undefined
     };
-    return [enumValue, objectValue];
+    const nullValue: EditorNodeDefinition = {
+      node: { ...Utils.createOND("null", true), outputs: [], inputs: null },
+      type: Value.NullValue,
+      data: {
+        type: Value.NullValue,
+        for: [ValueDefinition.InputValueDefinition]
+      },
+      help: help.NullValue
+    };
+    return [enumValue, objectValue, nullValue];
   }
 }
