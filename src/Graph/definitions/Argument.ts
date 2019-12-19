@@ -2,19 +2,18 @@ import { Instances, Options } from 'graphql-zeus';
 import { EditorNodeDefinition } from '../../Models';
 import { help } from './help';
 
-export const ArgumentInstance: Partial<EditorNodeDefinition> &
-  Pick<EditorNodeDefinition, 'node'> = {
+export const ArgumentInstance: Partial<EditorNodeDefinition> & Pick<EditorNodeDefinition, 'node'> = {
   node: {
     notEditable: true,
-    name: undefined
+    name: undefined,
   },
   data: {
-    type: Instances.Argument
+    type: Instances.Argument,
   },
   options: [
     {
       name: Options.array,
-      help: help.array
-    }
-  ]
+      help: help.array,
+    },
+  ],
 };

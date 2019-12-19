@@ -5,12 +5,12 @@ export const Editor = style({
   display: 'flex',
   flexFlow: 'row nowrap',
   alignSelf: 'stretch',
-  flex: 1
+  flex: 1,
 });
 
 export const DiagramContainer = style({
   flex: 1,
-  alignSelf: 'stretch'
+  alignSelf: 'stretch',
 });
 export const ErrorContainer = style({
   position: 'absolute',
@@ -21,5 +21,5 @@ export const ErrorContainer = style({
   background: `${Colors.grey[9]}dd`,
   marginTop: 10,
   fontSize: 12,
-  letterSpacing: 1
+  letterSpacing: 1,
 });

@@ -11,43 +11,43 @@ export const theme: DiagramTheme = {
     typeSize: 20,
     width: 210,
     spacing: {
-      ...DefaultDiagramTheme.node.spacing
-    }
+      ...DefaultDiagramTheme.node.spacing,
+    },
   },
   description: {
-    ...DefaultDiagramTheme.description
+    ...DefaultDiagramTheme.description,
   },
   menu: {
     ...DefaultDiagramTheme.menu,
     category: {
       ...DefaultDiagramTheme.menu.category,
-      fontSize: '12px'
-    }
+      fontSize: '12px',
+    },
   },
   help: {
-    ...DefaultDiagramTheme.help
+    ...DefaultDiagramTheme.help,
   },
   colors: {
     ...DefaultDiagramTheme.colors,
     background: mix(Colors.grey[8], Colors.grey[9]),
     help: {
       ...DefaultDiagramTheme.colors.help,
-      title: Colors.yellow[0]
+      title: Colors.yellow[0],
     },
     port: {
       ...DefaultDiagramTheme.colors.port,
-      background: mix(Colors.grey[6], Colors.grey[7])
+      background: mix(Colors.grey[6], Colors.grey[7]),
     },
     link: {
       ...DefaultDiagramTheme.colors.link,
-      main: Colors.grey[2]
+      main: Colors.grey[2],
     },
     node: {
       ...DefaultDiagramTheme.colors.node,
       background: mix(Colors.grey[7], Colors.grey[8]),
       type: Colors.grey[2],
       hover: {
-        type: Colors.grey[0]
+        type: Colors.grey[0],
       },
       types: {
         type: Colors.main[0],
@@ -62,12 +62,12 @@ export const theme: DiagramTheme = {
         Int: Colors.green[0],
         Boolean: Colors.green[0],
         ID: Colors.green[0],
-        Float: Colors.green[0]
+        Float: Colors.green[0],
       },
       options: {
         required: Colors.red[0],
-        array: Colors.yellow[0]
-      }
-    }
-  }
+        array: Colors.yellow[0],
+      },
+    },
+  },
 };

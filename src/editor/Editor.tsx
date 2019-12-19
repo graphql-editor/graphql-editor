@@ -1,10 +1,12 @@
 import { Node } from 'graphsource';
-import React from 'react';
+import { Resizable } from 're-resizable';
+import React, { useEffect, useRef, useState } from 'react';
 import { GraphController } from '../Graph';
 import { CodeEditor, CodeEditorOuterProps } from './code';
+
 import * as styles from './style/Editor';
+import { sizeSidebar } from '../vars';
 export interface EditorState {
-  projectId?: string;
   code: string;
   stitches?: string;
   errors: string;
@@ -16,91 +18,100 @@ export type EditorProps = {
   graphController?: (controller: GraphController) => void;
 } & CodeEditorOuterProps;
 
-/**
- * Main Editor component
- *
- * @export
- * @class Editor
- */
-export class Editor extends React.Component<EditorProps, EditorState> {
-  state: EditorState = {
-    projectId: undefined,
-    code: '',
-    stitches: '',
-    errors: '',
-    selectedNodes: []
-  };
-  controller: GraphController = new GraphController();
-  private containerRef = React.createRef<HTMLDivElement>();
-  receiveSchema = (code: string, stitches?: string) => {
-    this.setState({ code, stitches, errors: '' });
-  }
-  receiveErrors = (errors: string) => {
-    this.setState({ errors });
-  }
-  componentDidMount() {
+const controller = new GraphController();
+export const Editor = ({
+  graphController,
+  schema,
+  readonly,
+  editorVisible,
+  schemaChanged,
+  placeholder,
+}: EditorProps) => {
+  const [controllerMounted, setControllerMounted] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [nodes, setNodes] = useState<Node[]>([]);
+  const [errors, setErrors] = useState('');
+  const [code, setCode] = useState(schema || '');
+  const [sidebarSize, setSidebarSize] = useState(sizeSidebar);
+  const [stitches, setStitches] = useState<string | undefined>();
+
+  useEffect(() => {
     window.requestAnimationFrame(() => {
       // We should wait for next animation frame so TypeStyle
       // had its time to refresh all the classes - this way
       // our sizes won't break
-      if (!this.containerRef.current) {
+      if (!containerRef.current) {
         return;
       }
-
-      this.controller.setDOMElement(this.containerRef.current);
-      this.controller.setPassSchema(this.receiveSchema);
-      this.controller.setPassDiagramErrors(this.receiveErrors);
-      this.controller.setReadOnly(!!this.props.readonly);
-      this.controller.setPassSelectedNodes((selectedNodes) => this.setState({ selectedNodes }));
-      if (this.props.graphController) {
-        this.props.graphController(this.controller);
+      controller.setDOMElement(containerRef.current);
+      controller.setPassSchema((code, stitches) => {
+        setCode(code);
+        setStitches(stitches);
+        setErrors('');
+      });
+      controller.setPassDiagramErrors(setErrors);
+      controller.setReadOnly(!!readonly);
+      controller.setPassSelectedNodes(setNodes);
+      if (graphController) {
+        graphController(controller);
       }
-      if (this.props.schema) {
-        this.controller.loadGraphQL(this.props.schema);
+      if (schema) {
+        controller.loadGraphQL(schema);
       }
+      setControllerMounted(true);
     });
-  }
-  componentDidUpdate(prevProps: EditorProps) {
-    if (this.props.editorVisible !== prevProps.editorVisible) {
-      this.controller.resizeDiagram();
-    }
-    if (this.props.readonly !== prevProps.readonly) {
-      this.controller.setReadOnly(!!this.props.readonly);
-    }
-  }
-  render() {
-    return (
-      <>
-        {this.props.editorVisible === true && (
+  }, []);
+  useEffect(() => {
+    controllerMounted && controller.resizeDiagram();
+  }, [editorVisible]);
+  useEffect(() => {
+    controllerMounted && controller.setReadOnly(!!readonly);
+  }, [readonly]);
+  return (
+    <div style={{ display: 'flex', flexFlow: 'row nowrap', height: '100%', width: '100%' }}>
+      {editorVisible === true && (
+        <Resizable
+          defaultSize={{
+            width: sizeSidebar,
+            height: '100%',
+          }}
+          style={{
+            display: 'flex',
+            flexFlow: 'row nowrap',
+            zIndex: 3,
+          }}
+          onResize={(e, r, c, w) => {
+            controller.resizeDiagram();
+            setSidebarSize(c.getBoundingClientRect().width);
+          }}
+          maxWidth="100%"
+          minWidth="1"
+        >
           <CodeEditor
-            controller={this.controller}
-            schema={this.state.code}
-            stitches={this.state.stitches}
-            readonly={this.props.readonly}
-            placeholder={this.props.placeholder}
-            onResized={this.controller.resizeDiagram}
-            selectedNodes={this.state.selectedNodes}
+            size={sidebarSize}
+            controller={controller}
+            schema={code}
+            stitches={stitches}
+            readonly={readonly}
+            placeholder={placeholder}
+            selectedNodes={nodes}
             schemaChanged={(e) => {
-              this.setState({
-                code: e
-              });
-              if (this.props.schemaChanged) {
-                this.props.schemaChanged(e);
+              setCode(e);
+              if (schemaChanged) {
+                schemaChanged(e);
               }
             }}
           />
-        )}
-        <div
-          style={{
-            maxHeight: '100%',
-            maxWidth: '100%',
-            height: '100vh',
-            flex: '1'
-          }}
-          ref={this.containerRef}
-        />
-        {this.state.errors && <div className={styles.ErrorContainer}>{this.state.errors}</div>}
-      </>
-    );
-  }
-}
+        </Resizable>
+      )}
+      <div
+        style={{
+          height: '100%',
+          flex: 1,
+        }}
+        ref={containerRef}
+      />
+      {errors && <div className={styles.ErrorContainer}>{errors}</div>}
+    </div>
+  );
+};

@@ -5,10 +5,10 @@ import { Utils } from './Utils';
 
 export const ExtensionInstance: (
   baseEditorNodeDefinition: EditorNodeDefinition,
-  extensionType: TypeExtension
+  extensionType: TypeExtension,
 ) => Partial<EditorNodeDefinition> & Pick<EditorNodeDefinition, 'node'> = (
   { acceptsInputs, options },
-  extensionType
+  extensionType,
 ) => ({
   acceptsInputs,
   options,
@@ -18,9 +18,9 @@ export const ExtensionInstance: (
     ...Utils.createOND(),
     notEditable: true,
     name: undefined,
-    outputs: []
+    outputs: [],
   },
-  root: false
+  root: false,
 });
 
 export const ExtensionDefinition: EditorNodeDefinition = {
@@ -29,10 +29,10 @@ export const ExtensionDefinition: EditorNodeDefinition = {
   node: {
     ...Utils.createOND(),
     notEditable: true,
-    name: undefined
+    name: undefined,
   },
   root: true,
   acceptsInputs: (d, defs, _) =>
     Utils.displayAsCategories(Utils.sortByParentType(Utils.dataForTypes(defs, [Helpers.Extend]))),
-  help: help.extend
+  help: help.extend,
 };

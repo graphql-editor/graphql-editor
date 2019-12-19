@@ -6,9 +6,9 @@ import {
   Options,
   ParserField,
   TreeToGraphQL,
-  TypeSystemDefinition
-} from "graphql-zeus";
-import { Link, Node } from "graphsource";
+  TypeSystemDefinition,
+} from 'graphql-zeus';
+import { Link, Node } from 'graphsource';
 
 export class NodesToTree {
   static resolveFieldNode = (n: Node): ParserField =>
@@ -16,22 +16,20 @@ export class NodesToTree {
       name: n.name,
       type: {
         name: n.definition.type,
-        options: n.options
+        options: n.options,
       },
       data: n.definition.data,
       description: n.description,
       directives: n.inputs
         ? n.inputs
-            .filter(i => i.definition.type === Helpers.Directives)
-            .map(i => i.inputs || [])
+            .filter((i) => i.definition.type === Helpers.Directives)
+            .map((i) => i.inputs || [])
             .reduce((a, b) => a.concat(b), [])
             .map(NodesToTree.resolveFieldNode)
         : undefined,
       args: n.inputs
-        ? n.inputs
-            .filter(i => i.definition.type !== Helpers.Directives)
-            .map(NodesToTree.resolveFieldNode)
-        : undefined
+        ? n.inputs.filter((i) => i.definition.type !== Helpers.Directives).map(NodesToTree.resolveFieldNode)
+        : undefined,
     } as ParserField);
   static resolveObjectNode = (n: Node<GraphQLNodeParams>) => {
     const templateField: ParserField = {
@@ -39,48 +37,43 @@ export class NodesToTree {
       description: n.description,
       type: {
         name: n.definition.type,
-        options:
-          n.options && (n.options.filter(o => o in Options) as Options[]),
-        operations:
-          n.options &&
-          (n.options.filter(o => o in OperationType) as OperationType[]),
+        options: n.options && (n.options.filter((o) => o in Options) as Options[]),
+        operations: n.options && (n.options.filter((o) => o in OperationType) as OperationType[]),
         directiveOptions:
           n.definition.data!.type! === TypeSystemDefinition.DirectiveDefinition
             ? (n.options as Directive[])
-            : undefined
+            : undefined,
       },
       data: n.definition.data,
       directives: n.inputs
         ? n.inputs
-            .filter(i => i.definition.type === Helpers.Directives)
-            .map(i => i.inputs || [])
+            .filter((i) => i.definition.type === Helpers.Directives)
+            .map((i) => i.inputs || [])
             .reduce((a, b) => a.concat(b), [])
             .map(NodesToTree.resolveFieldNode)
         : undefined,
       interfaces: n.inputs
         ? n.inputs
-            .filter(i => i.definition.type === Helpers.Implements)
-            .map(i => (i.inputs ? i.inputs.map(n => n.definition.type) : []))
+            .filter((i) => i.definition.type === Helpers.Implements)
+            .map((i) => (i.inputs ? i.inputs.map((n) => n.definition.type) : []))
             .reduce((a, b) => a.concat(b), [])
         : undefined,
       args: n.inputs
         ? n.inputs
-            .filter(i => i.definition.type !== Helpers.Implements)
-            .filter(i => i.definition.type !== Helpers.Directives)
+            .filter((i) => i.definition.type !== Helpers.Implements)
+            .filter((i) => i.definition.type !== Helpers.Directives)
             .map(NodesToTree.resolveFieldNode)
-        : undefined
+        : undefined,
     };
     return templateField;
   };
   static parse(nodes: Array<Node<GraphQLNodeParams>>, links: Link[]) {
     if (!nodes.length) {
-      return "";
+      return '';
     }
-    const roots = nodes
-      .filter(n => n.definition.root)
-      .map(NodesToTree.resolveObjectNode);
+    const roots = nodes.filter((n) => n.definition.root).map(NodesToTree.resolveObjectNode);
     const graphql = TreeToGraphQL.parse({
-      nodes: roots
+      nodes: roots,
     });
     return graphql;
   }

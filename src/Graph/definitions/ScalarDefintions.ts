@@ -15,21 +15,21 @@ export class ScalarDefinitions {
     const generateScalarDefinitions = (
       type: ScalarTypes,
       valueType: Value,
-      helpText: string
+      helpText: string,
     ): EditorNodeDefinition[] => {
       const scalarDefinitions: EditorNodeDefinition[] = [
         {
           ...FieldInstance,
           type,
-          help: helpText
+          help: helpText,
         },
         {
           type: valueType,
           data: {
-            type: valueType
+            type: valueType,
           },
           help: helpText,
-          node: { ...Utils.createOND(), inputs: null, outputs: [] }
+          node: { ...Utils.createOND(), inputs: null, outputs: [] },
         },
         {
           ...InputValueInstance,
@@ -41,45 +41,33 @@ export class ScalarDefinitions {
               acceptsInputs: (d, defs) =>
                 defs
                   .filter((d) => d.data && d.data.type === valueType)
-                  .map(Utils.nodeDefinitionToAcceptedEditorNodeDefinition)
-            }
+                  .map(Utils.nodeDefinitionToAcceptedEditorNodeDefinition),
+            },
           ],
           acceptsInputs: (d, defs) =>
             defs
               .filter((d) => d.data && d.data.type === valueType)
               .concat(
                 Utils.dataForTypes(defs, [ValueDefinition.InputValueDefinition]).filter(
-                  (d) => d.data && d.data.type !== Value.ObjectValue
-                )
+                  (d) => d.data && d.data.type !== Value.ObjectValue,
+                ),
               )
-              .map(Utils.nodeDefinitionToAcceptedEditorNodeDefinition)
-        }
+              .map(Utils.nodeDefinitionToAcceptedEditorNodeDefinition),
+        },
       ];
       return scalarDefinitions;
     };
-    const BooleanDefintions = generateScalarDefinitions(
-      ScalarTypes.Boolean,
-      Value.BooleanValue,
-      help.Boolean
-    );
-    const FloatDefintions = generateScalarDefinitions(
-      ScalarTypes.Float,
-      Value.FloatValue,
-      help.Float
-    );
+    const BooleanDefintions = generateScalarDefinitions(ScalarTypes.Boolean, Value.BooleanValue, help.Boolean);
+    const FloatDefintions = generateScalarDefinitions(ScalarTypes.Float, Value.FloatValue, help.Float);
     const IDDefintions = generateScalarDefinitions(ScalarTypes.ID, Value.StringValue, help.ID);
     const IntDefinitions = generateScalarDefinitions(ScalarTypes.Int, Value.IntValue, help.Int);
-    const StringDefinitions = generateScalarDefinitions(
-      ScalarTypes.String,
-      Value.StringValue,
-      help.String
-    );
+    const StringDefinitions = generateScalarDefinitions(ScalarTypes.String, Value.StringValue, help.String);
     return [
       ...BooleanDefintions,
       ...FloatDefintions,
       ...[IDDefintions[0], IDDefintions[2]],
       ...IntDefinitions,
-      ...StringDefinitions
+      ...StringDefinitions,
     ];
   }
 }

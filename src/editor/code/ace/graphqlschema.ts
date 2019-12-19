@@ -12,62 +12,58 @@ import { theme } from '../../../Graph/theme';
     const TextHighlightRules = acequire('./text_highlight_rules').TextHighlightRules;
 
     const GraphQLSchemaHighlightRules = function(this: any) {
-      const mapFromTheme = Object.keys(theme.colors.node.types).reduce<Record<string, string>>(
-        (a, b) => {
-          a[`${b}`] = b;
-          return a;
-        },
-        {}
-      );
+      const mapFromTheme = Object.keys(theme.colors.node.types).reduce<Record<string, string>>((a, b) => {
+        a[`${b}`] = b;
+        return a;
+      }, {});
       const keywordMapper = this.createKeywordMapper(
         {
           schema: 'schema',
-          ...mapFromTheme
+          ...mapFromTheme,
         },
-        'identifier'
+        'identifier',
       );
       const strPre = '(?:r|u|ur|R|U|UR|Ur|uR)?';
-      const stringEscape =
-        '\\\\(x[0-9A-Fa-f]{2}|[0-7]{3}|[\\\\abfnrtv\'"]|U[0-9A-Fa-f]{8}|u[0-9A-Fa-f]{4})';
+      const stringEscape = '\\\\(x[0-9A-Fa-f]{2}|[0-7]{3}|[\\\\abfnrtv\'"]|U[0-9A-Fa-f]{8}|u[0-9A-Fa-f]{4})';
       this.$rules = {
         start: [
           {
             token: 'comment',
-            regex: '#.*$'
+            regex: '#.*$',
           },
           {
             token: 'string',
             regex: strPre + '"{3}',
-            next: 'commentContent'
+            next: 'commentContent',
           },
           {
             token: 'paren.lparen',
             regex: /[\[({]/,
-            next: 'start'
+            next: 'start',
           },
           {
             token: 'paren.rparen',
-            regex: /[\])}]/
+            regex: /[\])}]/,
           },
           {
             token: keywordMapper,
-            regex: '[a-zA-Z_$][a-zA-Z0-9_$]*\\b'
-          }
+            regex: '[a-zA-Z_$][a-zA-Z0-9_$]*\\b',
+          },
         ],
         commentContent: [
           {
             token: 'constant.language.escape',
-            regex: stringEscape
+            regex: stringEscape,
           },
           {
             token: 'string', // multi line """ string end
             regex: '"{3}',
-            next: 'start'
+            next: 'start',
           },
           {
-            defaultToken: 'string'
-          }
-        ]
+            defaultToken: 'string',
+          },
+        ],
       };
       this.normalizeRules();
     };
@@ -75,7 +71,7 @@ import { theme } from '../../../Graph/theme';
     oop.inherits(GraphQLSchemaHighlightRules, TextHighlightRules);
 
     exports.GraphQLSchemaHighlightRules = GraphQLSchemaHighlightRules;
-  }
+  },
 );
 
 (window as any).ace.define(
@@ -91,11 +87,9 @@ import { theme } from '../../../Graph/theme';
     const FoldMode = (exports.FoldMode = function(commentRegex: any) {
       if (commentRegex) {
         this.foldingStartMarker = new RegExp(
-          this.foldingStartMarker.source.replace(/\|[^|]*?$/, '|' + commentRegex.start)
+          this.foldingStartMarker.source.replace(/\|[^|]*?$/, '|' + commentRegex.start),
         );
-        this.foldingStopMarker = new RegExp(
-          this.foldingStopMarker.source.replace(/\|[^|]*?$/, '|' + commentRegex.end)
-        );
+        this.foldingStopMarker = new RegExp(this.foldingStopMarker.source.replace(/\|[^|]*?$/, '|' + commentRegex.end));
       }
     });
     oop.inherits(FoldMode, BaseFoldMode);
@@ -112,12 +106,7 @@ import { theme } from '../../../Graph/theme';
         return fw;
       };
 
-      this.getFoldWidgetRange = function(
-        session: any,
-        foldStyle: any,
-        row: any,
-        forceMultiline: any
-      ) {
+      this.getFoldWidgetRange = function(session: any, foldStyle: any, row: any, forceMultiline: any) {
         const line = session.getLine(row);
 
         let match = line.match(this.foldingStartMarker);
@@ -191,7 +180,7 @@ import { theme } from '../../../Graph/theme';
         return new Range(startRow, startColumn, endRow, session.getLine(endRow).length);
       };
     }.call(FoldMode.prototype));
-  }
+  },
 );
 
 (window as any).ace.define(
@@ -203,15 +192,14 @@ import { theme } from '../../../Graph/theme';
     'ace/lib/oop',
     'ace/mode/text',
     'ace/mode/graphqlschema_highlight_rules',
-    'ace/mode/folding/cstyle'
+    'ace/mode/folding/cstyle',
   ],
   function(acequire: any, exports: any, module: any) {
     'use strict';
 
     const oop = acequire('../lib/oop');
     const TextMode = acequire('./text').Mode;
-    const GraphQLSchemaHighlightRules = acequire('./graphqlschema_highlight_rules')
-      .GraphQLSchemaHighlightRules;
+    const GraphQLSchemaHighlightRules = acequire('./graphqlschema_highlight_rules').GraphQLSchemaHighlightRules;
     const FoldMode = acequire('./folding/cstyle').FoldMode;
 
     const Mode = function(this: any) {
@@ -226,5 +214,5 @@ import { theme } from '../../../Graph/theme';
     }.call(Mode.prototype));
 
     exports.Mode = Mode;
-  }
+  },
 );

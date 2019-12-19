@@ -2,7 +2,6 @@ import cx from 'classnames';
 import { Node } from 'graphsource';
 import React, { useEffect, useRef, useState } from 'react';
 import { GraphController } from '../../Graph';
-import { sizeSidebar } from '../../vars';
 import * as Icons from '../icons';
 import { CodePane } from './CodePane';
 import { Explorer } from './Explorer';
@@ -18,7 +17,7 @@ export type CodeEditorProps = {
   stitches?: string;
   controller: GraphController;
   selectedNodes: Node[];
-  onResized: () => void;
+  size: number;
 } & CodeEditorOuterProps;
 export interface CodeEditorState {
   loadingUrl: boolean;
@@ -32,7 +31,6 @@ export interface CodeEditorState {
   error?: string;
   hideEditor: boolean;
   activePane: 'code' | 'explorer';
-  codePaneWidth: number;
 }
 
 /**
@@ -43,18 +41,8 @@ export const CodeEditor = (props: CodeEditorProps) => {
     loadingUrl: false,
     hideEditor: false,
     activePane: 'code',
-    codePaneWidth: sizeSidebar
   });
-  const {
-    controller,
-    onResized,
-    placeholder,
-    readonly,
-    schema,
-    schemaChanged,
-    selectedNodes,
-    stitches
-  } = props;
+  const { controller, placeholder, readonly, schema, schemaChanged, selectedNodes, stitches, size } = props;
   const refSidebar = useRef<HTMLDivElement>(null);
   const invokeFindListener = (e: any) => {
     if (e.key.toLowerCase() === 'f' && (e.metaKey || e.ctrlKey)) {
@@ -63,18 +51,7 @@ export const CodeEditor = (props: CodeEditorProps) => {
         ...state,
         activePane: 'explorer',
         hideEditor: false,
-        codePaneWidth: sizeSidebar
       });
-    }
-  };
-  const resize = (width: number) => {
-    setState({
-      ...state,
-      codePaneWidth: width
-    });
-    if (refSidebar.current) {
-      refSidebar.current.style.width = refSidebar.current.style.flexBasis = `${width}px`;
-      onResized();
     }
   };
   useEffect(() => {
@@ -91,23 +68,21 @@ export const CodeEditor = (props: CodeEditorProps) => {
           onClick={() => {
             setState({
               ...state,
-              hideEditor: !state.hideEditor
+              hideEditor: !state.hideEditor,
             });
-            onResized();
           }}
         >
           {state.hideEditor ? <Icons.Show size={16} /> : <Icons.Hide size={16} />}
         </div>
         <div
           className={cx(styles.Hider, {
-            active: state.activePane === 'code' && !state.hideEditor
+            active: state.activePane === 'code' && !state.hideEditor,
           })}
           onClick={() =>
             setState({
               ...state,
               activePane: 'code',
               hideEditor: false,
-              codePaneWidth: sizeSidebar
             })
           }
         >
@@ -115,13 +90,13 @@ export const CodeEditor = (props: CodeEditorProps) => {
         </div>
         <div
           className={cx(styles.Hider, {
-            active: state.activePane === 'explorer' && !state.hideEditor
+            active: state.activePane === 'explorer' && !state.hideEditor,
           })}
           onClick={() =>
             setState({
               ...state,
               activePane: 'explorer',
-              hideEditor: false
+              hideEditor: false,
             })
           }
         >
@@ -133,19 +108,16 @@ export const CodeEditor = (props: CodeEditorProps) => {
         <div className={cx(styles.Sidebar)} ref={refSidebar}>
           {state.activePane === 'code' && (
             <CodePane
-              codePaneWidth={state.codePaneWidth}
+              size={size}
               controller={controller}
               schema={schema}
               stitches={stitches}
               schemaChanged={schemaChanged}
               placeholder={placeholder}
               readonly={readonly}
-              onResized={resize}
             />
           )}
-          {state.activePane === 'explorer' && (
-            <Explorer selectedNodes={selectedNodes} controller={controller} />
-          )}
+          {state.activePane === 'explorer' && <Explorer selectedNodes={selectedNodes} controller={controller} />}
         </div>
       )}
     </>

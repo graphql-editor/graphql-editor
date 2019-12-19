@@ -6,7 +6,7 @@ import { Utils } from './Utils';
 export const deprecated = (stitchNodes: Array<Node<GraphQLNodeParams>>): EditorNodeDefinition => ({
   data: {
     for: [Helpers.Directives],
-    type: Instances.Directive
+    type: Instances.Directive,
   },
   instances: undefined,
   main: undefined,
@@ -14,26 +14,26 @@ export const deprecated = (stitchNodes: Array<Node<GraphQLNodeParams>>): EditorN
   node: {
     name: undefined,
     notEditable: true,
-    description: ''
+    description: '',
   },
   type: 'deprecated',
   options: [
     {
       name: Directive.FIELD_DEFINITION,
-      help: 'fff'
-    }
+      help: 'fff',
+    },
   ],
   acceptsInputs: (d, defs, _, nodes) => {
     return [
       {
-        definition: reason()
-      }
+        definition: reason(),
+      },
     ];
-  }
+  },
 });
 export const reason = (): EditorNodeDefinition => ({
   data: {
-    type: Instances.Argument
+    type: Instances.Argument,
   },
   type: 'reason',
   acceptsInputs: (d, defs, _, nodes) => {
@@ -43,6 +43,6 @@ export const reason = (): EditorNodeDefinition => ({
   },
   node: {
     name: undefined,
-    notEditable: true
-  }
+    notEditable: true,
+  },
 });

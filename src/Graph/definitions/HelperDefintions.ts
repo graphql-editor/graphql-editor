@@ -10,35 +10,33 @@ export class HelperDefinitions {
   static generate() {
     const commentObject: EditorNodeDefinition = {
       node: {
-        name: undefined
+        name: undefined,
       },
       type: Helpers.Comment,
       root: true,
       data: {
-        type: Helpers.Comment
+        type: Helpers.Comment,
       },
-      help: help.implements
+      help: help.implements,
     };
     const implementsObject: EditorNodeDefinition = {
       node: {
         notEditable: true,
-        name: undefined
+        name: undefined,
       },
       type: Helpers.Implements,
       data: {
         type: Helpers.Implements,
-        for: [TypeDefinition.ObjectTypeDefinition]
+        for: [TypeDefinition.ObjectTypeDefinition],
       },
       acceptsInputs: (d, defs) =>
-        Utils.dataForTypes(defs, [Helpers.Implements]).map(
-          Utils.nodeDefinitionToAcceptedEditorNodeDefinition
-        ),
-      help: help.implements
+        Utils.dataForTypes(defs, [Helpers.Implements]).map(Utils.nodeDefinitionToAcceptedEditorNodeDefinition),
+      help: help.implements,
     };
     const directivesObject: EditorNodeDefinition = {
       node: {
         notEditable: true,
-        name: undefined
+        name: undefined,
       },
       type: Helpers.Directives,
       data: {
@@ -52,14 +50,12 @@ export class HelperDefinitions {
           TypeDefinition.UnionTypeDefinition,
           TypeDefinition.ScalarTypeDefinition,
           ValueDefinition.EnumValueDefinition,
-          ValueDefinition.InputValueDefinition
-        ]
+          ValueDefinition.InputValueDefinition,
+        ],
       },
       acceptsInputs: (d, defs) =>
-        Utils.dataForTypes(defs, [Helpers.Directives]).map(
-          Utils.nodeDefinitionToAcceptedEditorNodeDefinition
-        ),
-      help: help.directives
+        Utils.dataForTypes(defs, [Helpers.Directives]).map(Utils.nodeDefinitionToAcceptedEditorNodeDefinition),
+      help: help.directives,
     };
     return [implementsObject, directivesObject, commentObject];
   }

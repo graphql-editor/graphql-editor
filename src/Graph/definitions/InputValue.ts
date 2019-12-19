@@ -2,8 +2,7 @@ import { TypeDefinition, TypeSystemDefinition, Value, ValueDefinition } from 'gr
 import { EditorNodeDefinition } from '../../Models';
 import { Utils } from './Utils';
 
-export const InputValueInstance: Partial<EditorNodeDefinition> &
-  Pick<EditorNodeDefinition, 'node'> = {
+export const InputValueInstance: Partial<EditorNodeDefinition> & Pick<EditorNodeDefinition, 'node'> = {
   options: Utils.ArrayNonNullOptions,
   data: {
     type: ValueDefinition.InputValueDefinition,
@@ -11,11 +10,11 @@ export const InputValueInstance: Partial<EditorNodeDefinition> &
       TypeDefinition.InputObjectTypeDefinition,
       TypeSystemDefinition.FieldDefinition,
       TypeSystemDefinition.DirectiveDefinition,
-      Value.ObjectValue
-    ]
+      Value.ObjectValue,
+    ],
   },
   node: {
     ...Utils.createOND(),
-    outputs: []
-  }
+    outputs: [],
+  },
 };

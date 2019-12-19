@@ -122,5 +122,5 @@ const mapFromTheme = Object.keys(theme.colors.node.types).reduce<string>((a, b) 
 
     const dom = acequire('../lib/dom');
     dom.importCssString(exports.cssText, exports.cssClass);
-  }
+  },
 );

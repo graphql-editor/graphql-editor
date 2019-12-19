@@ -1,24 +1,23 @@
 import { style } from 'typestyle';
 
 import { Colors } from '../../../Colors';
-import { sizeSidebar } from '../../../vars';
 
 export const Sidebar = style({
-  flexBasis: sizeSidebar,
-  width: sizeSidebar,
   alignSelf: 'stretch',
   zIndex: 2,
   display: 'flex',
+  flex: 1,
   flexDirection: 'column',
+  overflow: 'hidden',
   background: Colors.grey[8],
-  position: 'relative'
+  position: 'relative',
 });
 export const HiderPanel = style({
   width: 30,
   background: Colors.grey[9],
   color: Colors.grey[2],
   fontSize: 12,
-  padding: 3
+  padding: 3,
 });
 export const Hider = style({
   width: 24,
@@ -31,12 +30,12 @@ export const Hider = style({
   cursor: 'pointer',
   $nest: {
     '&:hover': {
-      background: Colors.grey[10]
+      background: Colors.grey[10],
     },
     '&.active': {
-      color: Colors.green[0]
-    }
-  }
+      color: Colors.green[0],
+    },
+  },
 });
 
 export const Resizer = style({
@@ -56,7 +55,7 @@ export const Resizer = style({
       width: '100vw',
       height: '100vh',
       left: 0,
-      top: 0
-    }
-  }
+      top: 0,
+    },
+  },
 });

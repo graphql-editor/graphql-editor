@@ -29,7 +29,7 @@ const NodeComponent = ({
   selectedNodeIds,
   relatives,
   indentLevel = 0,
-  unfoldMaster = false
+  unfoldMaster = false,
 }: NodeComponentProps) => {
   const [unfold, setUnfold] = useState<boolean>(false);
   const [showRelatives, setShowRelatives] = useState<boolean>(false);
@@ -45,41 +45,42 @@ const NodeComponent = ({
         className={cx(styles.Node)}
         key={node.id}
         style={{
-          marginLeft: indentLevel * 10
+          marginLeft: indentLevel * 10,
         }}
       >
-        {hasInputs ? <div
-          className={styles.NodeIcon}
-          title={unfold ? "hide fields" : "show fields"}
-          onClick={() => {
-            if (hasInputs) {
-              setUnfold(!unfold);
-            }
-          }}
-        >
-          {
-            unfold ? (
-              <Icon.Minus size={15} />
-            ) : (
-                <Icon.Plus size={15} />
-              )
-          }
-        </div> : (
-            <div
-              className={styles.NodeIcon}><div style={{ width: 15, height: 15 }} />
-            </div>
-          )
-        }
-        {hasRelatives ? <div title={showRelatives ? "hide usages" : "show usages"} className={styles.NodeIcon} onClick={() => setShowRelatives(!showRelatives)}>
-          {showRelatives ? <Icon.ToggleOn size={15} /> : <Icon.ToggleOff size={15} />}
-        </div> : (
-            <div
-              className={styles.NodeIcon}><div style={{ width: 15, height: 15 }} />
-            </div>
-          )}
+        {hasInputs ? (
+          <div
+            className={styles.NodeIcon}
+            title={unfold ? 'hide fields' : 'show fields'}
+            onClick={() => {
+              if (hasInputs) {
+                setUnfold(!unfold);
+              }
+            }}
+          >
+            {unfold ? <Icon.Minus size={15} /> : <Icon.Plus size={15} />}
+          </div>
+        ) : (
+          <div className={styles.NodeIcon}>
+            <div style={{ width: 15, height: 15 }} />
+          </div>
+        )}
+        {hasRelatives ? (
+          <div
+            title={showRelatives ? 'hide usages' : 'show usages'}
+            className={styles.NodeIcon}
+            onClick={() => setShowRelatives(!showRelatives)}
+          >
+            {showRelatives ? <Icon.ToggleOn size={15} /> : <Icon.ToggleOff size={15} />}
+          </div>
+        ) : (
+          <div className={styles.NodeIcon}>
+            <div style={{ width: 15, height: 15 }} />
+          </div>
+        )}
         <div
           className={cx(styles.NodeTitle, {
-            active: selectedNodeIds.includes(node.id)
+            active: selectedNodeIds.includes(node.id),
           })}
           onClick={() => centerNode(node.id)}
         >
@@ -87,10 +88,10 @@ const NodeComponent = ({
         </div>
         <div
           className={cx(styles.NodeType, {
-            [styles.NodeTypeHoverable]: !!node.definition.parent
+            [styles.NodeTypeHoverable]: !!node.definition.parent,
           })}
           style={{
-            color: theme.colors.node.types[node.definition.type]
+            color: theme.colors.node.types[node.definition.type],
           }}
           onClick={() => {
             centerType(node.definition);
@@ -111,7 +112,8 @@ const NodeComponent = ({
           />
         ))}
       {unfold && showRelatives && <div className={styles.NodeSpacer} />}
-      {showRelatives && relatives &&
+      {showRelatives &&
+        relatives &&
         relatives.map((n) => (
           <NodeComponent
             key={n.id}
@@ -175,14 +177,14 @@ export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
         />
         <div
           className={cx(styles.FilterIcon, {
-            active: filtersOpen
+            active: filtersOpen,
           })}
           style={{
             ...(selectedFilters.length === 1
               ? {
-                color: theme.colors.node.types[selectedFilters[0]]
-              }
-              : {})
+                  color: theme.colors.node.types[selectedFilters[0]],
+                }
+              : {}),
           }}
           onClick={() => {
             if (filtersOpen) {
@@ -227,7 +229,7 @@ export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
             centerType={(definition) => {
               if (definition.parent) {
                 const parentNode = controller.nodes.find(
-                  (node) => node.definition === definition.parent && node.name === definition.type!
+                  (node) => node.definition === definition.parent && node.name === definition.type!,
                 );
                 if (parentNode) {
                   const { id } = parentNode;

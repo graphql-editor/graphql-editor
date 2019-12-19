@@ -6,15 +6,13 @@ export const FieldInstance: Partial<EditorNodeDefinition> & Pick<EditorNodeDefin
   options: Utils.ArrayNonNullOptions,
   data: {
     type: TypeSystemDefinition.FieldDefinition,
-    for: [TypeDefinition.InterfaceTypeDefinition, TypeDefinition.ObjectTypeDefinition]
+    for: [TypeDefinition.InterfaceTypeDefinition, TypeDefinition.ObjectTypeDefinition],
   },
   acceptsInputs: (d, defs) =>
-    Utils.displayAsCategories(
-      Utils.sortByParentType(Utils.dataForTypes(defs, [TypeSystemDefinition.FieldDefinition]))
-    ),
+    Utils.displayAsCategories(Utils.sortByParentType(Utils.dataForTypes(defs, [TypeSystemDefinition.FieldDefinition]))),
   node: {
     ...Utils.createOND(),
-    outputs: []
+    outputs: [],
   },
-  instances: undefined
+  instances: undefined,
 };
