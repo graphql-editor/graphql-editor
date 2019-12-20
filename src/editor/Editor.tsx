@@ -68,7 +68,7 @@ export const Editor = ({
     controllerMounted && controller.setReadOnly(!!readonly);
   }, [readonly]);
   return (
-    <div style={{ display: 'flex', flexFlow: 'row nowrap', height: '100%', width: '100%' }}>
+    <div style={{ display: 'flex', flexFlow: 'row nowrap', height: '100%', width: '100%', alignItems: 'stretch' }}>
       {editorVisible === true && (
         <Resizable
           defaultSize={{
@@ -81,8 +81,8 @@ export const Editor = ({
             zIndex: 3,
           }}
           onResize={(e, r, c, w) => {
-            controller.resizeDiagram();
             setSidebarSize(c.getBoundingClientRect().width);
+            controller.resizeDiagram();
           }}
           maxWidth="100%"
           minWidth="1"
@@ -106,8 +106,8 @@ export const Editor = ({
       )}
       <div
         style={{
-          height: '100%',
           flex: 1,
+          overflow: 'hidden',
         }}
         ref={containerRef}
       />

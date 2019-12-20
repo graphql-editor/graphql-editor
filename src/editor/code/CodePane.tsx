@@ -7,6 +7,8 @@ import * as Icon from '../icons';
 import { StatusDot, TitleOfPane } from './Components';
 import * as styles from './style/Code';
 import { StatusDotProps } from './style/Components';
+import { theme } from './monaco/theme';
+import { language, conf } from './monaco/language';
 
 export interface CodePaneOuterProps {
   schemaChanged?: (schema: string) => void;
@@ -21,7 +23,7 @@ export type CodePaneProps = {
   controller: GraphController;
 } & CodePaneOuterProps;
 export interface CodePaneState {
-  errors?: Array<{
+  errors: Array<{
     row: number;
     column: number;
     type: 'error';
@@ -31,6 +33,9 @@ export interface CodePaneState {
   error?: string;
   hideEditor: boolean;
 }
+monaco.languages.register({ id: 'graphqle' });
+monaco.languages.setLanguageConfiguration('graphqle', conf);
+monaco.languages.setMonarchTokensProvider('graphqle', language);
 
 /**
  * React compontent holding GraphQL IDE
@@ -42,13 +47,16 @@ export const CodePane = (props: CodePaneProps) => {
   const [monacoGql, setMonacoGql] = useState<monaco.editor.IStandaloneCodeEditor>();
   const [state, setState] = useState<CodePaneState>({
     hideEditor: false,
+    errors: [],
   });
   useEffect(() => {
     if (editor.current) {
+      monaco.editor.defineTheme('graphql-editor', theme);
       const m = monaco.editor.create(editor.current, {
-        language: 'graphql',
+        language: 'graphqle',
         value: schema,
-        theme: 'vs-dark',
+        glyphMargin: true,
+        theme: 'graphql-editor',
       });
       m.onDidChangeModelContent(() => {
         codeChange(m!.getModel()!.getValue());
@@ -63,6 +71,31 @@ export const CodePane = (props: CodePaneProps) => {
     }
     return () => monacoGql?.dispose();
   }, []);
+  useEffect(() => {
+    if (state.errors) {
+      console.log(state.errors);
+      monacoGql?.deltaDecorations(
+        [],
+        state.errors.map(
+          (e) =>
+            ({
+              range: new monaco.Range(e.row + 1, 1, e.row + 1, 1),
+              options: {
+                className: 'monacoError',
+                isWholeLine: true,
+                hoverMessage: {
+                  value: e.text,
+                },
+                glyphMarginHoverMessage: {
+                  value: e.text,
+                },
+                glyphMarginClassName: 'monacoMarginError',
+              },
+            } as monaco.editor.IModelDeltaDecoration),
+        ),
+      );
+    }
+  }, [JSON.stringify(state.errors)]);
   useEffect(() => {
     monacoGql?.layout();
   }, [size]);
@@ -86,7 +119,7 @@ export const CodePane = (props: CodePaneProps) => {
         if (state.errors || state.error) {
           setState({
             ...state,
-            errors: undefined,
+            errors: [],
             error: undefined,
           });
         } else {

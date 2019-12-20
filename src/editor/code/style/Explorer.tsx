@@ -5,12 +5,12 @@ import { fontFamily, transition } from '../../../vars';
 export const Background = style({
   background: mix(Colors.grey[9], Colors.grey[10]),
   height: '100%',
-  font: `12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace`
+  font: `12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace`,
 });
 export const Title = style({
   display: 'flex',
   flexFlow: 'row nowrap',
-  width: '100%'
+  width: '100%',
 });
 export const SearchInput = style({
   padding: 15,
@@ -23,14 +23,14 @@ export const SearchInput = style({
   fontFamily,
   $nest: {
     '&::placeholder': {
-      color: Colors.grey[5]
-    }
-  }
+      color: Colors.grey[5],
+    },
+  },
 });
 export const NodeList = style({
   padding: 10,
   overflowY: 'auto',
-  height: '100%'
+  height: '100%',
 });
 
 export const NodeTitle = style({
@@ -42,16 +42,16 @@ export const NodeTitle = style({
   transition,
   $nest: {
     '&:hover, &.active': {
-      color: Colors.green[0]
-    }
-  }
+      color: Colors.green[0],
+    },
+  },
 });
 
 export const Node = style({
   display: 'flex',
   flexFlow: 'nowrap',
   alignItems: 'center',
-  color: Colors.grey[3]
+  color: Colors.grey[3],
 });
 
 export const NodeIcon = style({
@@ -62,25 +62,25 @@ export const NodeIcon = style({
   transition,
   $nest: {
     '&:hover': {
-      color: Colors.grey[0]
-    }
-  }
+      color: Colors.grey[0],
+    },
+  },
 });
 export const NodeType = style({
-  fontSize: 8
+  fontSize: 8,
 });
 export const NodeTypeHoverable = style({
   cursor: 'pointer',
   transition,
   $nest: {
     '&:hover': {
-      color: Colors.grey[0]
-    }
-  }
+      color: Colors.grey[0],
+    },
+  },
 });
 export const NodeSpacer = style({
   borderBottom: `1px solid ${Colors.grey[0]}11`,
-  margin: `10px 20px`
+  margin: `10px 20px`,
 });
 
 // Filters
@@ -96,12 +96,12 @@ export const FilterIcon = style({
   $nest: {
     '&:hover': {
       color: Colors.grey[0],
-      background: Colors.grey[10]
+      background: Colors.grey[10],
     },
     '&.active': {
-      color: Colors.green[0]
-    }
-  }
+      color: Colors.green[0],
+    },
+  },
 });
 
 export const FilterTable = style({
@@ -110,7 +110,7 @@ export const FilterTable = style({
   padding: 15,
   paddingBottom: 5,
   paddingRight: 5,
-  background: Colors.grey[10]
+  background: Colors.grey[10],
 });
 
 export const FilterBlock = style({
@@ -127,10 +127,10 @@ export const FilterBlock = style({
   transition,
   $nest: {
     '&.active': {
-      opacity: 1.0
+      opacity: 1.0,
     },
     '&:hover': {
-      opacity: 0.8
-    }
-  }
+      opacity: 0.8,
+    },
+  },
 });

@@ -100,6 +100,12 @@ export class GraphController {
     this.diagram!.setReadOnly(isReadOnly);
   };
   /**
+   * Move grpah to 0,0
+   */
+  zeroGraph = () => {
+    this.diagram!.zeroDiagram();
+  };
+  /**
    * Reset Graph clearing all the nodes and links from it
    */
   resetGraph = () => {
@@ -109,7 +115,6 @@ export class GraphController {
     this.diagram!.setNodes(nodes);
     this.diagram!.setLinks(links);
     this.diagram!.setDefinitions(this.definitions);
-    this.diagram!.zeroDiagram();
     this.serialise({
       nodes,
       links,
@@ -129,7 +134,8 @@ export class GraphController {
   /**
    * Load GraphQL code and convert it to diagram nodes
    */
-  loadGraphQL = (schema: string) => {
+  loadGraphQL = (schema: string, forceZero?: boolean) => {
+    const zeroGraph = !this.schema && !!schema;
     this.definitions = Definitions.generate(this.stitchNodes.nodes).concat(this.stitchDefinitions!);
     this.diagram!.setDefinitions(this.definitions);
     if (schema.length === 0) {
@@ -145,6 +151,9 @@ export class GraphController {
     );
     this.diagram!.setDefinitions(this.definitions);
     this.load(result.nodes, result.links);
+    if (zeroGraph || forceZero) {
+      this.zeroGraph();
+    }
   };
   centerOnNodeByID = (id: string) => {
     const node = this.nodes.find((n) => n.id === id)!;
@@ -209,7 +218,6 @@ export class GraphController {
   private load = (nodes: Node[], links: Link[]) => {
     this.diagram!.setNodes(nodes, true);
     this.diagram!.setLinks(links);
-    this.diagram!.zeroDiagram();
     this.serialise({
       nodes,
       links,

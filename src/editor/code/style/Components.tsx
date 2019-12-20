@@ -8,16 +8,16 @@ export const TitleOfPane = style({
   fontSize: 13,
   textTransform: 'uppercase',
   color: Colors.grey[4],
-  background: `${Colors.grey[10]}`,
+  background: `${Colors.grey[8]}`,
   letterSpacing: 1,
   display: 'flex',
-  alignItems: 'center'
+  alignItems: 'center',
 });
 export enum StatusDotProps {
   sync = 'sync',
   nosync = 'nosync',
   syncing = 'syncing',
-  readonly = 'readonly'
+  readonly = 'readonly',
 }
 
 export const StatusDot = style({
@@ -27,16 +27,16 @@ export const StatusDot = style({
   background: Colors.grey[9],
   $nest: {
     [`&.${StatusDotProps.nosync}`]: {
-      background: Colors.red[0]
+      background: Colors.red[0],
     },
     [`&.${StatusDotProps.sync}`]: {
-      background: Colors.green[0]
+      background: Colors.green[0],
     },
     [`&.${StatusDotProps.syncing}`]: {
-      background: Colors.main[0]
+      background: Colors.main[0],
     },
     [`&.${StatusDotProps.readonly}`]: {
-      background: Colors.blue[0]
-    }
-  }
+      background: Colors.blue[0],
+    },
+  },
 });
