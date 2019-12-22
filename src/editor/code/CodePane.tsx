@@ -1,5 +1,4 @@
 import cx from 'classnames';
-import { buildASTSchema, parse } from 'graphql';
 import * as monaco from 'monaco-editor';
 import React, { useEffect, useRef, useState } from 'react';
 import { GraphController } from '../../Graph';
@@ -9,6 +8,9 @@ import * as styles from './style/Code';
 import { StatusDotProps } from './style/Components';
 import { theme } from './monaco/theme';
 import { language, conf } from './monaco/language';
+import { mapEditorErrorToMonacoDecoration } from './monaco/errors';
+import { EditorError } from '../../validation';
+import { Workers } from '../../worker';
 
 export interface CodePaneOuterProps {
   schemaChanged?: (schema: string) => void;
@@ -23,14 +25,7 @@ export type CodePaneProps = {
   controller: GraphController;
 } & CodePaneOuterProps;
 export interface CodePaneState {
-  errors: Array<{
-    row: number;
-    column: number;
-    type: 'error';
-    text: string;
-    position: number;
-  }>;
-  error?: string;
+  errors: EditorError[];
   hideEditor: boolean;
 }
 monaco.languages.register({ id: 'graphqle' });
@@ -45,6 +40,7 @@ export const CodePane = (props: CodePaneProps) => {
   const [code, setCode] = useState<string>(schema);
   const editor = useRef<HTMLDivElement>(null);
   const [monacoGql, setMonacoGql] = useState<monaco.editor.IStandaloneCodeEditor>();
+  const [decorationIds, setDecorationIds] = useState<string[]>([]);
   const [state, setState] = useState<CodePaneState>({
     hideEditor: false,
     errors: [],
@@ -72,28 +68,10 @@ export const CodePane = (props: CodePaneProps) => {
     return () => monacoGql?.dispose();
   }, []);
   useEffect(() => {
-    if (state.errors) {
-      console.log(state.errors);
-      monacoGql?.deltaDecorations(
-        [],
-        state.errors.map(
-          (e) =>
-            ({
-              range: new monaco.Range(e.row + 1, 1, e.row + 1, 1),
-              options: {
-                className: 'monacoError',
-                isWholeLine: true,
-                hoverMessage: {
-                  value: e.text,
-                },
-                glyphMarginHoverMessage: {
-                  value: e.text,
-                },
-                glyphMarginClassName: 'monacoMarginError',
-              },
-            } as monaco.editor.IModelDeltaDecoration),
-        ),
-      );
+    if (monacoGql) {
+      const monacoDecorations = state.errors.map(mapEditorErrorToMonacoDecoration);
+      const newDecorationIds = monacoGql.deltaDecorations(decorationIds, monacoDecorations);
+      setDecorationIds(newDecorationIds);
     }
   }, [JSON.stringify(state.errors)]);
   useEffect(() => {
@@ -106,56 +84,20 @@ export const CodePane = (props: CodePaneProps) => {
     }
   }, [schema]);
   const holder = useRef<HTMLDivElement>(null);
-  const codeChange = (e: string) => {
+  const codeChange = (changedCode: string) => {
     if (!code && schemaChanged) {
-      schemaChanged(e);
+      schemaChanged(changedCode);
     }
-    setCode(e);
-    const combinedCode = (stitches || '') + e;
-    try {
-      const parsed = parse(combinedCode);
-      try {
-        buildASTSchema(parsed);
-        if (state.errors || state.error) {
-          setState({
-            ...state,
-            errors: [],
-            error: undefined,
-          });
-        } else {
-          setState(state);
-        }
-      } catch (error) {
-        setState({
-          ...state,
-          error: error.message,
-        });
-      }
-    } catch (error) {
-      const er = error as {
-        locations: Array<{
-          line: number;
-          column: number;
-        }>;
-        message: string;
-        positions: number[];
-      };
+    setCode(changedCode);
+    Workers.validate(changedCode, stitches).then((errors) => {
       setState({
         ...state,
-        errors: [
-          {
-            column: er.locations[0]!.column - 1,
-            row: er.locations[0]!.line - 1,
-            text: er.message,
-            type: 'error',
-            position: er.positions[0],
-          },
-        ],
+        errors,
       });
-    }
+    });
   };
 
-  const generateEnabled = !readonly && !!code && !state.error && !state.errors;
+  const generateEnabled = !readonly && !!code && state.errors.length === 0;
   const syncStatus = readonly ? StatusDotProps.readonly : code !== schema ? StatusDotProps.nosync : StatusDotProps.sync;
   return (
     <>
@@ -167,6 +109,7 @@ export const CodePane = (props: CodePaneProps) => {
             ready: generateEnabled && syncStatus === StatusDotProps.nosync,
           })}
           onClick={() => {
+            console.log(generateEnabled, 'Gen');
             if (generateEnabled) {
               controller.loadGraphQL(code);
             }
@@ -190,7 +133,6 @@ export const CodePane = (props: CodePaneProps) => {
         <StatusDot status={syncStatus} />
       </TitleOfPane>
       <div className={cx(styles.CodeContainer)} ref={holder}>
-        {state.error && <div className={styles.ErrorLonger}>{state.error}</div>}
         <div ref={editor} className={styles.Editor} />
       </div>
     </>

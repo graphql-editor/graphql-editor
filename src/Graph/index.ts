@@ -1,4 +1,3 @@
-import { buildASTSchema, parse } from 'graphql';
 import { OperationType, Parser, ParserTree, Utils, Value } from 'graphql-zeus';
 import { Diagram, DiagramEvents, Link, Node, Old, Serializer } from 'graphsource';
 import { ScreenPosition } from 'graphsource/lib/IO/ScreenPosition';
@@ -7,6 +6,7 @@ import { NodesToTree } from '../NodesToTree';
 import { TreeToNodes } from '../TreeToNodes';
 import { Definitions } from './definitions';
 import { theme } from './theme';
+import { Workers } from '../worker';
 /**
  * Class for controlling the state of diagram and exposing schema functions
  */
@@ -226,7 +226,7 @@ export class GraphController {
   /**
    * Serialise nodes to GraphQL
    */
-  private serialise = ({ nodes, links }: { nodes: Node[]; links: Link[] }): void => {
+  private serialise = ({ nodes, links }: { nodes: Node[]; links: Link[] }) => {
     this.nodes = nodes;
     let graphQLSchema = '';
     if (nodes.length === 0) {
@@ -247,27 +247,31 @@ export class GraphController {
       if (unNamedNode) {
         throw new Error(`Every node should have a name. Please fill in a name and click enter or defocus`);
       }
-      buildASTSchema(parse(graphQLSchema + this.stichesCode));
-      this.schema = graphQLSchema;
-      if (this.onSerialize) {
-        this.onSerialize(graphQLSchema);
-      }
-      if (this.passSchema) {
-        this.passSchema(graphQLSchema, this.stichesCode);
-      }
-      if (this.nodeCreated) {
-        this.nodeCreated = false;
-        this.reloadSchema = false;
-      }
-      if (this.reloadSchema) {
-        this.reloadSchema = false;
-        this.loadGraphQL(graphQLSchema);
-      }
+      Workers.validate(graphQLSchema, this.stichesCode).then((errors) => {
+        if (errors.length > 0) {
+          if (this.passDiagramErrors) {
+            this.passDiagramErrors(errors.map((e) => e.text).join('\n\n'));
+          }
+          return;
+        }
+        this.schema = graphQLSchema;
+        if (this.onSerialize) {
+          this.onSerialize(graphQLSchema);
+        }
+        if (this.passSchema) {
+          this.passSchema(graphQLSchema, this.stichesCode);
+        }
+        if (this.nodeCreated) {
+          this.nodeCreated = false;
+          this.reloadSchema = false;
+        }
+        if (this.reloadSchema) {
+          this.reloadSchema = false;
+          this.loadGraphQL(graphQLSchema);
+        }
+      });
     } catch (error) {
       if (this.passDiagramErrors) {
-        // tslint:disable
-        console.log(error);
-        // tslint:enable
         this.passDiagramErrors(error.message);
       }
       return;

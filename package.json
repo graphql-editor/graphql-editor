@@ -13,7 +13,7 @@
     "watch": "tsc --watch",
     "test": "jest",
     "docs": "typedoc --mode file --out docs  --theme minimal --ignoreCompilerErrors --target ES6 ",
-    "lint":"eslint \"./src/**/*.{ts,js}\" --quiet --fix && prettier --write \"./src/**/*.{ts,js}\" "
+    "lint": "eslint \"./src/**/*.{ts,js}\" --quiet --fix && prettier --write \"./src/**/*.{ts,js}\" "
   },
   "resolutions": {
     "@types/react": "^16.9.11"
@@ -70,7 +70,8 @@
     "webpack": "^4.28.4",
     "webpack-cleanup-plugin": "^0.5.1",
     "webpack-cli": "^3.1.2",
-    "webpack-dev-server": "^3.1.14"
+    "webpack-dev-server": "^3.1.14",
+    "worker-loader": "^2.0.0"
   },
   "peerDependencies": {
     "react": ">=16.11.0",

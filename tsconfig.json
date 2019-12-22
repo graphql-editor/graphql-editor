@@ -13,7 +13,7 @@
     "esModuleInterop": true,
     "strict": true,
     "outDir": "./lib",
-    "lib": ["es6", "es7", "esnext", "dom"],
+    "lib": ["es6", "es7", "esnext", "dom", "WebWorker","ScriptHost"],
     "rootDir": "./src",
     "baseUrl": "./src/",
     "watch": true
