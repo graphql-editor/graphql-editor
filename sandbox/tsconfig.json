@@ -15,5 +15,5 @@
     "baseUrl": "./",
     "rootDir": "../"
   },
-  "exclude": ["dist", "build", "node_modules"]
+  "exclude": ["../dist", "../build", "../node_modules"]
 }

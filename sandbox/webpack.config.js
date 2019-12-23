@@ -4,6 +4,7 @@ var sourcePath = path.join(__dirname, './');
 var outPath = path.join(__dirname, './');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
+const baseRules = require('./weback.rules');
 module.exports = {
   context: sourcePath,
   entry: {
@@ -12,6 +13,7 @@ module.exports = {
   output: {
     path: outPath,
     filename: 'bundle.js',
+    chunkFilename: '[chunkhash].js',
     publicPath: '/',
   },
   target: 'web',
@@ -25,20 +27,10 @@ module.exports = {
   },
   module: {
     rules: [
-      {
-        test: /\.tsx?$/,
-        loader: 'ts-loader',
-        options: { configFile: 'sandbox/tsconfig.json' },
-      },
-      { test: /\.(png|svg)$/, use: 'url-loader?limit=10000' },
-      { test: /\.(jpg|gif)$/, use: 'file-loader' },
+      ...baseRules,
       {
         test: /\.css$/i,
         use: ['style-loader', 'css-loader'],
-      },
-      {
-        test: /\.worker\.js$/,
-        use: { loader: 'worker-loader', options: { inline: true } },
       },
     ],
   },

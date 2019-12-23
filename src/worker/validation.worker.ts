@@ -5,5 +5,6 @@ ctx.addEventListener('message', (message) => {
     code: string;
     stitches?: string;
   };
+  //@ts-ignore
   postMessage(catchSchemaErrors(data.code, data.stitches));
 });

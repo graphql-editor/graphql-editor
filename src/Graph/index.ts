@@ -135,6 +135,7 @@ export class GraphController {
    * Load GraphQL code and convert it to diagram nodes
    */
   loadGraphQL = (schema: string, forceZero?: boolean) => {
+    console.time('loadGraphql');
     const zeroGraph = !this.schema && !!schema;
     this.definitions = Definitions.generate(this.stitchNodes.nodes).concat(this.stitchDefinitions!);
     this.diagram!.setDefinitions(this.definitions);
@@ -154,6 +155,7 @@ export class GraphController {
     if (zeroGraph || forceZero) {
       this.zeroGraph();
     }
+    console.timeEnd('loadGraphql');
   };
   centerOnNodeByID = (id: string) => {
     const node = this.nodes.find((n) => n.id === id)!;

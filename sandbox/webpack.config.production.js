@@ -1,39 +1,17 @@
 var webpack = require('webpack');
-var path = require('path');
-var sourcePath = path.join(__dirname, './');
-var outPath = path.join(__dirname, './');
-
-var HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 var WebpackCleanupPlugin = require('webpack-cleanup-plugin');
 
+const baseWebpack = require('./webpack.config');
+const baseRules = require('./weback.rules');
+
 module.exports = {
-  context: sourcePath,
-  entry: {
-    app: './index.tsx',
-  },
-  output: {
-    path: outPath,
-    filename: 'bundle.js',
-    chunkFilename: '[chunkhash].js',
-    publicPath: '/',
-  },
-  target: 'web',
+  ...baseWebpack,
   mode: 'production',
-  resolve: {
-    extensions: ['.mjs', '.js', '.jsx', '.ts', '.tsx'],
-    mainFields: ['module', 'browser', 'main'],
-    alias: {
-      app: path.resolve(__dirname, '../src'),
-    },
-  },
   module: {
     rules: [
-      {
-        test: /\.tsx?$/,
-        loader: 'ts-loader',
-        options: { configFile: './sandbox/tsconfig.json' },
-      },
+      ...baseRules,
+      { test: /\.html$/, use: 'html-loader' },
       {
         test: /\.css$/,
         use: [
@@ -51,9 +29,6 @@ module.exports = {
           },
         ],
       },
-      { test: /\.html$/, use: 'html-loader' },
-      { test: /\.(png|svg)$/, use: 'url-loader?limit=10000' },
-      { test: /\.(jpg|gif)$/, use: 'file-loader' },
     ],
   },
   optimization: {
@@ -74,6 +49,7 @@ module.exports = {
     runtimeChunk: true,
   },
   plugins: [
+    ...baseWebpack.plugins,
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'production', // use 'development' unless process.env.NODE_ENV is defined
       DEBUG: false,
@@ -82,9 +58,6 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: '[name].css',
       chunkFilename: '[id].css',
-    }),
-    new HtmlWebpackPlugin({
-      template: 'assets/index.html',
     }),
   ],
 };

@@ -9,7 +9,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "start": "webpack-dev-server --config ./sandbox/webpack.config.js --content-base ./sandbox/ --port 1568 --hot --inline --open",
-    "build": "tsc",
+    "build": "tsc --build",
     "watch": "tsc --watch",
     "test": "jest",
     "docs": "typedoc --mode file --out docs  --theme minimal --ignoreCompilerErrors --target ES6 ",
@@ -88,7 +88,6 @@
     "monaco-editor": "^0.18.1",
     "query-string": "^6.2.0",
     "re-resizable": "^6.1.1",
-    "react-ace": "^7.0.4",
     "typestyle": "^2.0.1"
   },
   "config": {

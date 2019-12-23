@@ -1,22 +1,34 @@
+import cx from 'classnames';
 import { Node } from 'graphsource';
 import { Resizable } from 're-resizable';
 import React, { useEffect, useRef, useState } from 'react';
 import { GraphController } from '../Graph';
-import { CodeEditor, CodeEditorOuterProps } from './code';
-
 import * as styles from './style/Editor';
 import { sizeSidebar } from '../vars';
+import { Menu } from './Menu';
+import { CodePane, Explorer } from './code';
+
 export interface EditorState {
   code: string;
   stitches?: string;
   errors: string;
   selectedNodes: Node[];
 }
+export interface CodeEditorOuterProps {
+  schemaChanged?: (schema: string) => void;
+  readonly?: boolean;
+  placeholder?: string;
+}
 export type EditorProps = {
   editorVisible: boolean;
   schema?: string;
   graphController?: (controller: GraphController) => void;
 } & CodeEditorOuterProps;
+
+export interface MenuState {
+  leftPaneHidden?: boolean;
+  activePane: 'code' | 'explorer';
+}
 
 const controller = new GraphController();
 export const Editor = ({
@@ -28,18 +40,20 @@ export const Editor = ({
   placeholder,
 }: EditorProps) => {
   const [controllerMounted, setControllerMounted] = useState(false);
+  const [diagramFocus, setDiagramFocus] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [nodes, setNodes] = useState<Node[]>([]);
   const [errors, setErrors] = useState('');
   const [code, setCode] = useState(schema || '');
   const [sidebarSize, setSidebarSize] = useState(sizeSidebar);
   const [stitches, setStitches] = useState<string | undefined>();
+  const [menuState, setMenuState] = useState<MenuState>({
+    activePane: 'code',
+    leftPaneHidden: false,
+  });
 
   useEffect(() => {
     window.requestAnimationFrame(() => {
-      // We should wait for next animation frame so TypeStyle
-      // had its time to refresh all the classes - this way
-      // our sizes won't break
       if (!containerRef.current) {
         return;
       }
@@ -67,9 +81,47 @@ export const Editor = ({
   useEffect(() => {
     controllerMounted && controller.setReadOnly(!!readonly);
   }, [readonly]);
+
   return (
-    <div style={{ display: 'flex', flexFlow: 'row nowrap', height: '100%', width: '100%', alignItems: 'stretch' }}>
-      {editorVisible === true && (
+    <div
+      style={{ display: 'flex', flexFlow: 'row nowrap', height: '100%', width: '100%', alignItems: 'stretch' }}
+      onKeyDown={(e) => {
+        if (!diagramFocus) {
+          return;
+        }
+        e.preventDefault();
+        if (e.key.toLowerCase() === 'f' && (e.metaKey || e.ctrlKey)) {
+          setMenuState({
+            ...menuState,
+            activePane: 'explorer',
+            leftPaneHidden: false,
+          });
+        }
+      }}
+    >
+      <Menu
+        {...menuState}
+        toggleCode={() =>
+          setMenuState({
+            ...menuState,
+            activePane: 'code',
+          })
+        }
+        toggleExplorer={() =>
+          setMenuState({
+            ...menuState,
+            activePane: 'explorer',
+          })
+        }
+        toggleShow={() => {
+          setMenuState({
+            ...menuState,
+            leftPaneHidden: !menuState.leftPaneHidden,
+          });
+          controller!.resizeDiagram();
+        }}
+      />
+      {editorVisible === true && !menuState.leftPaneHidden && (
         <Resizable
           defaultSize={{
             width: sizeSidebar,
@@ -87,21 +139,20 @@ export const Editor = ({
           maxWidth="100%"
           minWidth="1"
         >
-          <CodeEditor
-            size={sidebarSize}
-            controller={controller}
-            schema={code}
-            stitches={stitches}
-            readonly={readonly}
-            placeholder={placeholder}
-            selectedNodes={nodes}
-            schemaChanged={(e) => {
-              setCode(e);
-              if (schemaChanged) {
-                schemaChanged(e);
-              }
-            }}
-          />
+          <div className={cx(styles.Sidebar)}>
+            {menuState.activePane === 'code' && (
+              <CodePane
+                size={sidebarSize}
+                controller={controller}
+                schema={code}
+                stitches={stitches}
+                schemaChanged={schemaChanged}
+                placeholder={placeholder}
+                readonly={readonly}
+              />
+            )}
+            {menuState.activePane === 'explorer' && <Explorer selectedNodes={nodes} controller={controller} />}
+          </div>
         </Resizable>
       )}
       <div
@@ -109,6 +160,8 @@ export const Editor = ({
           flex: 1,
           overflow: 'hidden',
         }}
+        onFocus={() => setDiagramFocus(true)}
+        onBlur={() => setDiagramFocus(false)}
         ref={containerRef}
       />
       {errors && <div className={styles.ErrorContainer}>{errors}</div>}

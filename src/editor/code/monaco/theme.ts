@@ -2,10 +2,14 @@ import * as monaco from 'monaco-editor';
 import { Colors, mix } from '../../../Colors';
 import { GraphQLColors } from '../../../Graph/theme';
 
+const docsColor = Colors.blue[2];
+
 export const theme: monaco.editor.IStandaloneThemeData = {
   base: 'vs-dark',
   inherit: true,
   rules: [
+    { token: '', foreground: docsColor },
+    { token: 'identifier.gql', foreground: Colors.grey[0] },
     { token: 'type', foreground: GraphQLColors.type },
     { token: 'keyword', foreground: Colors.green[0] },
     { token: 'input', foreground: GraphQLColors.input },
@@ -17,7 +21,15 @@ export const theme: monaco.editor.IStandaloneThemeData = {
     { token: 'scalar', foreground: GraphQLColors.scalar },
     { token: 'union', foreground: GraphQLColors.union },
     { token: 'annotation', foreground: Colors.grey[1] },
+    { token: 'md', foreground: Colors.blue[3] },
+    { token: 'string.md', foreground: docsColor },
+    { token: 'string.doc', foreground: docsColor },
+    { token: 'string.gql', foreground: Colors.red[3] },
+    { token: 'string.quote.gql', foreground: Colors.red[3] },
+    { token: 'comment.gql', foreground: Colors.blue[3] },
     { token: 'exclamation', fontStyle: 'bold', foreground: mix(Colors.yellow[0], Colors.grey[0], 90.0) },
   ],
-  colors: {},
+  colors: {
+    'editor.foreground': Colors.grey[0],
+  },
 };

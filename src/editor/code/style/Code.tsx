@@ -86,12 +86,23 @@ export const Generate = style({
 });
 
 cssRaw(`
-
 .monacoError{
-  height:2px;
-  width:100%;
+  background:${Colors.red[0]}33
 }
 .monacoMarginError{
-  background:${Colors.red[0]}
+  background:${Colors.red[0]};
+  border-radius:50%;
+  margin-left:5px;
+  width:12px !important;
+  height:12px !important;
+}
+.monaco-editor .monaco-editor-hover {
+  border: 1px solid 
+  #454545;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+.monaco-editor-hover .hover-contents {
+  padding: 0px;
 }
 `);

@@ -23,3 +23,14 @@ export const ErrorContainer = style({
   fontSize: 12,
   letterSpacing: 1,
 });
+
+export const Sidebar = style({
+  alignSelf: 'stretch',
+  zIndex: 2,
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  overflow: 'hidden',
+  background: Colors.grey[8],
+  position: 'relative',
+});

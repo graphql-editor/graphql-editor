@@ -6,9 +6,7 @@ import * as Icon from '../icons';
 import { StatusDot, TitleOfPane } from './Components';
 import * as styles from './style/Code';
 import { StatusDotProps } from './style/Components';
-import { theme } from './monaco/theme';
-import { language, conf } from './monaco/language';
-import { mapEditorErrorToMonacoDecoration } from './monaco/errors';
+import { theme, language, conf, settings, mapEditorErrorToMonacoDecoration } from './monaco';
 import { EditorError } from '../../validation';
 import { Workers } from '../../worker';
 
@@ -48,17 +46,13 @@ export const CodePane = (props: CodePaneProps) => {
   useEffect(() => {
     if (editor.current) {
       monaco.editor.defineTheme('graphql-editor', theme);
-      const m = monaco.editor.create(editor.current, {
-        language: 'graphqle',
-        value: schema,
-        glyphMargin: true,
-        theme: 'graphql-editor',
-      });
+      const m = monaco.editor.create(editor.current, settings());
+      m.setValue(schema);
       m.onDidChangeModelContent(() => {
         codeChange(m!.getModel()!.getValue());
       });
       m.onDidBlurEditorText(() => {
-        if (generateEnabled) {
+        if (generateEnabled && code !== schema) {
           controller.loadGraphQL(code);
         }
       });
