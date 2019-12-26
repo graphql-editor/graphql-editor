@@ -81,7 +81,11 @@ export const Editor = ({
   useEffect(() => {
     controllerMounted && controller.setReadOnly(!!readonly);
   }, [readonly]);
-
+  useEffect(() => {
+    if (typeof schema !== 'undefined' && schema !== code && controller) {
+      controller.loadGraphQL(schema);
+    }
+  }, [schema]);
   return (
     <div
       style={{ display: 'flex', flexFlow: 'row nowrap', height: '100%', width: '100%', alignItems: 'stretch' }}

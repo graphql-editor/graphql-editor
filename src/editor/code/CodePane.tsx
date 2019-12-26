@@ -103,7 +103,6 @@ export const CodePane = (props: CodePaneProps) => {
             ready: generateEnabled && syncStatus === StatusDotProps.nosync,
           })}
           onClick={() => {
-            console.log(generateEnabled, 'Gen');
             if (generateEnabled) {
               controller.loadGraphQL(code);
             }

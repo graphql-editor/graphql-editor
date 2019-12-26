@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { render } from 'react-dom';
 import { style } from 'typestyle';
 import { Editor } from '../src/index';
@@ -25,22 +25,19 @@ export const UIDiagramFull = style({
   marginLeft: '-100vh',
 });
 
-class App extends React.Component<
-  {},
-  {
-    editorVisible: boolean;
-  }
-> {
-  state = {
-    editorVisible: true,
-  };
-  render() {
-    return (
-      <div className={UiDiagram}>
-        <Editor schema={schemas.googleDirections} editorVisible={this.state.editorVisible} />
-      </div>
-    );
-  }
-}
+export const App = () => {
+  const [editorVisible] = useState(true);
+  const [schema, setSchema] = useState('');
+  useEffect(() => {
+    setTimeout(() => {
+      setSchema(schemas.googleDirections);
+    }, 1000);
+  });
+  return (
+    <div className={UiDiagram}>
+      <Editor schema={schema} editorVisible={editorVisible} />
+    </div>
+  );
+};
 
 render(<App />, document.getElementById('root'));
