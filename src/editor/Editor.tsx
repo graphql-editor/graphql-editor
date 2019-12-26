@@ -89,7 +89,7 @@ export const Editor = ({
       controller.loadLibraries(schemaLibraries);
       setSchemaLibraries(schemaLibraries);
     }
-  }, [schema]);
+  }, [schemaLibraries]);
   return (
     <div
       style={{ display: 'flex', flexFlow: 'row nowrap', height: '100%', width: '100%', alignItems: 'stretch' }}
