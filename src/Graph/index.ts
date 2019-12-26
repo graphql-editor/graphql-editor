@@ -196,7 +196,7 @@ export class GraphController {
   /**
    * Load stitches code to Graph controller
    */
-  loadStitches = (schema: string): void => {
+  loadLibraries = (schema?: string): void => {
     if (!schema) {
       return;
     }

@@ -8,12 +8,6 @@ import { sizeSidebar } from '../vars';
 import { Menu } from './Menu';
 import { CodePane, Explorer } from './code';
 
-export interface EditorState {
-  code: string;
-  stitches?: string;
-  errors: string;
-  selectedNodes: Node[];
-}
 export interface CodeEditorOuterProps {
   schemaChanged?: (schema: string) => void;
   readonly?: boolean;
@@ -22,6 +16,7 @@ export interface CodeEditorOuterProps {
 export type EditorProps = {
   editorVisible: boolean;
   schema?: string;
+  schemaLibraries?: string;
   graphController?: (controller: GraphController) => void;
 } & CodeEditorOuterProps;
 
@@ -34,6 +29,7 @@ const controller = new GraphController();
 export const Editor = ({
   graphController,
   schema,
+  schemaLibraries,
   readonly,
   editorVisible,
   schemaChanged,
@@ -45,6 +41,7 @@ export const Editor = ({
   const [nodes, setNodes] = useState<Node[]>([]);
   const [errors, setErrors] = useState('');
   const [code, setCode] = useState(schema || '');
+  const [libraries, setSchemaLibraries] = useState(schemaLibraries);
   const [sidebarSize, setSidebarSize] = useState(sizeSidebar);
   const [stitches, setStitches] = useState<string | undefined>();
   const [menuState, setMenuState] = useState<MenuState>({
@@ -84,6 +81,13 @@ export const Editor = ({
   useEffect(() => {
     if (typeof schema !== 'undefined' && schema !== code && controller) {
       controller.loadGraphQL(schema);
+      setCode(schema);
+    }
+  }, [schema]);
+  useEffect(() => {
+    if (schemaLibraries !== libraries) {
+      controller.loadLibraries(schemaLibraries);
+      setSchemaLibraries(schemaLibraries);
     }
   }, [schema]);
   return (
