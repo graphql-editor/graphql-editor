@@ -89,8 +89,8 @@ export const Editor = ({
         if (!diagramFocus) {
           return;
         }
-        e.preventDefault();
         if (e.key.toLowerCase() === 'f' && (e.metaKey || e.ctrlKey)) {
+          e.preventDefault();
           setMenuState({
             ...menuState,
             activePane: 'explorer',

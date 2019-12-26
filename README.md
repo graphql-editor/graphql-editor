@@ -54,7 +54,13 @@ Create GraphQL nodes and connect them to generate a database schema. You can als
 Install dependencies
 
 ```
-npm i react react-dom
+npm i react react-dom monaco-editor
+```
+
+and if you are using webpack
+
+```
+npm i -D monaco-editor-webpack-plugin worker-loader css-loader file-loader
 ```
 
 ```
