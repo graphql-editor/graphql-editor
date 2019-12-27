@@ -7,6 +7,7 @@ import { theme } from '../../Graph/theme';
 import * as Icon from '../icons';
 import { TitleOfPane } from './Components';
 import * as styles from './style/Explorer';
+import { cypressGet, c } from '../../cypress_constants';
 export interface ExplorerProps {
   controller: GraphController;
   selectedNodes: Node[];
@@ -164,7 +165,7 @@ export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
   }
   rootNodes.sort((a, b) => (a.name > b.name ? 1 : -1));
   return (
-    <div className={styles.Background}>
+    <div className={styles.Background} data-cy={cypressGet(c, 'sidebar', 'explorer', 'name')}>
       <TitleOfPane>Explorer</TitleOfPane>
       <div className={styles.Title}>
         <input

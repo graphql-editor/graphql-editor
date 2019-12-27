@@ -8,8 +8,9 @@ import { sizeSidebar } from '../vars';
 import { Menu } from './Menu';
 import { CodePane, Explorer } from './code';
 
+import { c, cypressGet } from '../cypress_constants';
+
 export interface CodeEditorOuterProps {
-  schemaChanged?: (schema: string) => void;
   readonly?: boolean;
   placeholder?: string;
 }
@@ -32,7 +33,6 @@ export const Editor = ({
   schemaLibraries,
   readonly,
   editorVisible,
-  schemaChanged,
   placeholder,
 }: EditorProps) => {
   const [controllerMounted, setControllerMounted] = useState(false);
@@ -43,7 +43,6 @@ export const Editor = ({
   const [code, setCode] = useState(schema || '');
   const [libraries, setSchemaLibraries] = useState(schemaLibraries);
   const [sidebarSize, setSidebarSize] = useState(sizeSidebar);
-  const [stitches, setStitches] = useState<string | undefined>();
   const [menuState, setMenuState] = useState<MenuState>({
     activePane: 'code',
     leftPaneHidden: false,
@@ -57,7 +56,7 @@ export const Editor = ({
       controller.setDOMElement(containerRef.current);
       controller.setPassSchema((code, stitches) => {
         setCode(code);
-        setStitches(stitches);
+        setSchemaLibraries(stitches);
         setErrors('');
       });
       controller.setPassDiagramErrors(setErrors);
@@ -92,6 +91,7 @@ export const Editor = ({
   }, [schemaLibraries]);
   return (
     <div
+      data-cy={cypressGet(c, 'name')}
       style={{ display: 'flex', flexFlow: 'row nowrap', height: '100%', width: '100%', alignItems: 'stretch' }}
       onKeyDown={(e) => {
         if (!diagramFocus) {
@@ -147,14 +147,13 @@ export const Editor = ({
           maxWidth="100%"
           minWidth="1"
         >
-          <div className={cx(styles.Sidebar)}>
+          <div className={cx(styles.Sidebar)} data-cy={cypressGet(c, 'sidebar', 'name')}>
             {menuState.activePane === 'code' && (
               <CodePane
                 size={sidebarSize}
                 controller={controller}
                 schema={code}
-                stitches={stitches}
-                schemaChanged={schemaChanged}
+                libraries={libraries}
                 placeholder={placeholder}
                 readonly={readonly}
               />
@@ -168,6 +167,7 @@ export const Editor = ({
           flex: 1,
           overflow: 'hidden',
         }}
+        data-cy={cypressGet(c, 'diagram', 'name')}
         onFocus={() => setDiagramFocus(true)}
         onBlur={() => setDiagramFocus(false)}
         ref={containerRef}

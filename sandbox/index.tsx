@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { render } from 'react-dom';
 import { style } from 'typestyle';
 import { Editor } from '../src/index';
-import * as schemas from './schema';
 
 export const Full = style({
   backgroundColor: '#444444',
@@ -27,15 +26,9 @@ export const UIDiagramFull = style({
 
 export const App = () => {
   const [editorVisible] = useState(true);
-  const [schema, setSchema] = useState('');
-  useEffect(() => {
-    setTimeout(() => {
-      setSchema(schemas.googleDirections);
-    }, 1000);
-  });
   return (
     <div className={UiDiagram}>
-      <Editor schema={schema} editorVisible={editorVisible} />
+      <Editor editorVisible={editorVisible} />
     </div>
   );
 };

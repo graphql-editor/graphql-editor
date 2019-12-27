@@ -135,7 +135,7 @@ export class GraphController {
    * Load GraphQL code and convert it to diagram nodes
    */
   loadGraphQL = (schema: string, forceZero?: boolean) => {
-    const zeroGraph = !this.schema && !!schema;
+    const zeroGraph = this.schema.length === 0 && !!schema;
     this.definitions = Definitions.generate(this.stitchNodes.nodes).concat(this.stitchDefinitions!);
     this.diagram!.setDefinitions(this.definitions);
     if (schema.length === 0) {
