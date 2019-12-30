@@ -17,5 +17,5 @@
     "rootDir": "./src",
     "baseUrl": "./src/",
   },
-  "exclude": ["lib", "node_modules", "sandbox", "cloud", "docs", "cypress", "__tests__"]
+  "exclude": ["lib", "node_modules", "sandbox", "cloud", "docs", "cypress", "__test__","__mocks__"]
 }

@@ -31,7 +31,7 @@ monaco.languages.setMonarchTokensProvider('graphqle', language);
  * React compontent holding GraphQL IDE
  */
 export const CodePane = (props: CodePaneProps) => {
-  const { schema, libraries, readonly, controller, size } = props;
+  const { schema, libraries = '', readonly, controller, size } = props;
   const editor = useRef<HTMLDivElement>(null);
   const [monacoGql, setMonacoGql] = useState<monaco.editor.IStandaloneCodeEditor>();
   const [decorationIds, setDecorationIds] = useState<string[]>([]);
@@ -47,7 +47,7 @@ export const CodePane = (props: CodePaneProps) => {
       m.setValue(schema);
       m.onDidChangeModelContent((e) => {
         const value = m!.getModel()!.getValue();
-        Workers.validate(value, libraries).then((errors) => {
+        Workers.validate(libraries + value).then((errors) => {
           setErrors(errors);
         });
       });
@@ -57,7 +57,7 @@ export const CodePane = (props: CodePaneProps) => {
           controller.loadGraphQL(value);
           return;
         }
-        Workers.validate(value, libraries).then((errors) => {
+        Workers.validate(libraries + value).then((errors) => {
           if (errors.length === 0) {
             controller.loadGraphQL(value);
           }

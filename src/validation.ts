@@ -22,7 +22,7 @@ const GraphQLErrorToEditorErrors = (e: GraphQLError): EditorError[] => [
   ),
 ];
 
-const validateSDLErrors = (s: string, stitches?: string): EditorError[] => {
+const validateSDLErrors = (s: string): EditorError[] => {
   const schema = parse(s);
   const errors = validateSDL(schema);
   return errors.map(GraphQLErrorToEditorErrors).flat(1);
@@ -34,7 +34,7 @@ const validateTypes = (s: string): EditorError[] => {
   return errors.map(GraphQLErrorToEditorErrors).flat(1);
 };
 
-export const catchSchemaErrors = (s: string, stiches?: string): EditorError[] => {
+export const catchSchemaErrors = (s: string): EditorError[] => {
   try {
     const errors = validateSDLErrors(s);
     if (errors.length > 0) {
