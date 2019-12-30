@@ -29,19 +29,19 @@ export interface MenuState {
 const controller = new GraphController();
 export const Editor = ({
   graphController,
-  schema,
-  schemaLibraries,
   readonly,
   editorVisible,
   placeholder,
+  schema = '',
+  schemaLibraries = '',
 }: EditorProps) => {
   const [controllerMounted, setControllerMounted] = useState(false);
   const [diagramFocus, setDiagramFocus] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [nodes, setNodes] = useState<Node[]>([]);
   const [errors, setErrors] = useState('');
-  const [code, setCode] = useState(schema || '');
-  const [libraries, setSchemaLibraries] = useState(schemaLibraries);
+  const [code, setCode] = useState('');
+  const [libraries, setSchemaLibraries] = useState('');
   const [sidebarSize, setSidebarSize] = useState(sizeSidebar);
   const [menuState, setMenuState] = useState<MenuState>({
     activePane: 'code',
@@ -78,17 +78,32 @@ export const Editor = ({
     controllerMounted && controller.setReadOnly(!!readonly);
   }, [readonly]);
   useEffect(() => {
-    if (typeof schema !== 'undefined' && schema !== code && controller) {
+    if (schemaLibraries !== libraries && controllerMounted) {
+      controller.loadLibraries(schemaLibraries);
+      setSchemaLibraries(schemaLibraries);
+    }
+  }, [schemaLibraries]);
+  useEffect(() => {
+    if (controllerMounted) {
       controller.loadGraphQL(schema);
       setCode(schema);
     }
   }, [schema]);
   useEffect(() => {
-    if (schemaLibraries !== libraries) {
+    if (schemaLibraries !== libraries && controllerMounted) {
       controller.loadLibraries(schemaLibraries);
       setSchemaLibraries(schemaLibraries);
     }
-  }, [schemaLibraries]);
+    if (typeof schema !== 'undefined' && schema !== code && controllerMounted) {
+      controller.loadGraphQL(schema);
+      setCode(schema);
+    }
+  }, [controllerMounted.toString()]);
+  useEffect(() => {
+    if (controller && controllerMounted) {
+      controller.resizeDiagram();
+    }
+  }, [menuState.leftPaneHidden]);
   return (
     <div
       data-cy={cypressGet(c, 'name')}
@@ -126,7 +141,6 @@ export const Editor = ({
             ...menuState,
             leftPaneHidden: !menuState.leftPaneHidden,
           });
-          controller!.resizeDiagram();
         }}
       />
       {editorVisible === true && !menuState.leftPaneHidden && (
@@ -142,7 +156,9 @@ export const Editor = ({
           }}
           onResize={(e, r, c, w) => {
             setSidebarSize(c.getBoundingClientRect().width);
-            controller.resizeDiagram();
+            if (controller && controllerMounted) {
+              controller.resizeDiagram();
+            }
           }}
           maxWidth="100%"
           minWidth="1"

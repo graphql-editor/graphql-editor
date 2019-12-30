@@ -29,13 +29,13 @@ export class GraphController {
   public definitions?: EditorNodeDefinition[];
   public stitchDefinitions: EditorNodeDefinition[] = [];
   public schema = '';
-  public stichesCode = '';
+  public librariesCode = '';
   public nodes: Node[] = [];
   public selectedNodes: Node[] = [];
   private stitchNodes: { nodes: Node[]; links: Link[] } = { nodes: [], links: [] };
   private diagram?: Diagram;
   private passSelectedNodes?: (nodes: Node[]) => void;
-  private passSchema?: (schema: string, stitches?: string) => void;
+  private passSchema?: (schema: string, stitches: string) => void;
   private passDiagramErrors?: (errors: string) => void;
   private onSerialize?: (schema: string) => void;
   private reloadSchema?: boolean;
@@ -120,7 +120,7 @@ export class GraphController {
       links,
     });
     if (this.passSchema) {
-      this.passSchema('', this.stichesCode);
+      this.passSchema('', this.librariesCode);
     }
   };
   /**
@@ -144,7 +144,7 @@ export class GraphController {
     }
     const result = TreeToNodes.resolveTree(
       Parser.parse(
-        schema + this.stichesCode,
+        schema + this.librariesCode,
         this.stitchNodes.nodes.filter((n) => n.definition.root).map((n) => n.name),
       ),
       this.definitions,
@@ -191,22 +191,23 @@ export class GraphController {
     const schema = await Utils.getFromUrl(url, header);
     this.loadGraphQL(schema);
   };
-  setPassSchema = (fn: (schema: string, stitches?: string) => void) => (this.passSchema = fn);
+  setPassSchema = (fn: (schema: string, stitches: string) => void) => (this.passSchema = fn);
   setPassDiagramErrors = (fn: (errors: string) => void) => (this.passDiagramErrors = fn);
   /**
    * Load stitches code to Graph controller
    */
-  loadLibraries = (schema?: string): void => {
-    if (!schema) {
+  loadLibraries = (schema: string): void => {
+    if (schema.length === 0) {
       return;
     }
     let basicDefinitions = Definitions.generate([]);
-    this.stichesCode = schema;
-    this.stitchNodes = TreeToNodes.resolveTree(Parser.parse(this.stichesCode), basicDefinitions);
+    this.librariesCode = schema;
+    this.stitchNodes = TreeToNodes.resolveTree(Parser.parse(this.librariesCode), basicDefinitions);
     basicDefinitions = Definitions.generate(this.stitchNodes.nodes);
     const rememberBasicDefinitions = [...basicDefinitions];
-    this.stitchNodes = TreeToNodes.resolveTree(Parser.parse(this.stichesCode), basicDefinitions);
+    this.stitchNodes = TreeToNodes.resolveTree(Parser.parse(this.librariesCode), basicDefinitions);
     this.stitchDefinitions = basicDefinitions.filter((bd) => !rememberBasicDefinitions.find((rbd) => rbd.id === bd.id));
+    this.loadGraphQL(this.schema);
   };
   screenShot = async () => this.diagram!.screenShot();
   /**
@@ -235,7 +236,7 @@ export class GraphController {
         this.onSerialize(graphQLSchema);
       }
       if (this.passSchema) {
-        this.passSchema(graphQLSchema, this.stichesCode);
+        this.passSchema(graphQLSchema, this.librariesCode);
       }
       return;
     }
@@ -247,7 +248,7 @@ export class GraphController {
       if (unNamedNode) {
         throw new Error(`Every node should have a name. Please fill in a name and click enter or defocus`);
       }
-      Workers.validate(this.stichesCode + graphQLSchema).then((errors) => {
+      Workers.validate(this.librariesCode + graphQLSchema).then((errors) => {
         if (errors.length > 0) {
           if (this.passDiagramErrors) {
             this.passDiagramErrors(errors.map((e) => e.text).join('\n\n'));
@@ -259,7 +260,7 @@ export class GraphController {
           this.onSerialize(graphQLSchema);
         }
         if (this.passSchema) {
-          this.passSchema(graphQLSchema, this.stichesCode);
+          this.passSchema(graphQLSchema, this.librariesCode);
         }
         if (this.nodeCreated) {
           this.nodeCreated = false;

@@ -28,7 +28,14 @@ export const App = () => {
   const [editorVisible] = useState(true);
   return (
     <div className={UiDiagram}>
-      <Editor editorVisible={editorVisible} />
+      <Editor
+        schemaLibraries={`
+      type Person{
+        name:String
+      }
+      `}
+        editorVisible={editorVisible}
+      />
     </div>
   );
 };

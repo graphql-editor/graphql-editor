@@ -3,6 +3,7 @@ import { GraphController } from '../../../src/Graph';
 import { TreeToNodes } from '../../../src/TreeToNodes';
 import { Definitions } from '../../../src/Graph/definitions';
 import { Parser } from 'graphql-zeus';
+
 jest.mock('graphsource');
 jest.mock('../../../src/TreeToNodes');
 jest.mock('../../../src/Graph/definitions');
@@ -19,7 +20,7 @@ describe('Test Graph methods', () => {
     const graph = new GraphController();
     graph.setDOMElement(document.createElement('div'));
     graph.loadLibraries(schemaLibrary);
-    expect(graph.stichesCode).toBe(schemaLibrary);
+    expect(graph.librariesCode).toBe(schemaLibrary);
     expect(graph.stitchDefinitions).toBeTruthy();
     expect(TreeToNodes.resolveTree).toBeCalledWith(Parser.parse(schemaLibrary), []);
   });
