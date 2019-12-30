@@ -34,20 +34,35 @@ const validateTypes = (s: string): EditorError[] => {
   return errors.map(GraphQLErrorToEditorErrors).flat(1);
 };
 
-export const catchSchemaErrors = (s: string): EditorError[] => {
+/**
+ * Extend code with library and remember library line size to move the error later
+ */
+const moveErrorsByLibraryPadding = (libraries: string) => {
+  const libraryPadding = libraries.split('\n').length;
+  return (error: EditorError): EditorError => {
+    return {
+      ...error,
+      row: error.row - libraryPadding + 1,
+    };
+  };
+};
+
+export const catchSchemaErrors = (schema: string, libraries: string = ''): EditorError[] => {
+  const s = libraries + schema;
+  const paddingFunction = moveErrorsByLibraryPadding(libraries);
   try {
     const errors = validateSDLErrors(s);
     if (errors.length > 0) {
-      return errors;
+      return errors.map(paddingFunction);
     }
     try {
-      return validateTypes(s);
+      return validateTypes(s).map(paddingFunction);
     } catch (error) {
       console.log(error);
     }
   } catch (error) {
     const er = error as GraphQLError;
-    return GraphQLErrorToEditorErrors(er);
+    return GraphQLErrorToEditorErrors(er).map(paddingFunction);
   }
   return [];
 };

@@ -65,30 +65,32 @@ export const Editor = ({
       if (graphController) {
         graphController(controller);
       }
-      if (schema) {
-        controller.loadGraphQL(schema);
-      }
       setControllerMounted(true);
     });
   }, []);
+
   useEffect(() => {
     controllerMounted && controller.resizeDiagram();
   }, [editorVisible]);
+
   useEffect(() => {
     controllerMounted && controller.setReadOnly(!!readonly);
   }, [readonly]);
+
   useEffect(() => {
     if (schemaLibraries !== libraries && controllerMounted) {
       controller.loadLibraries(schemaLibraries);
       setSchemaLibraries(schemaLibraries);
     }
   }, [schemaLibraries]);
+
   useEffect(() => {
     if (controllerMounted) {
       controller.loadGraphQL(schema);
       setCode(schema);
     }
   }, [schema]);
+
   useEffect(() => {
     if (schemaLibraries !== libraries && controllerMounted) {
       controller.loadLibraries(schemaLibraries);
@@ -99,11 +101,13 @@ export const Editor = ({
       setCode(schema);
     }
   }, [controllerMounted.toString()]);
+
   useEffect(() => {
     if (controller && controllerMounted) {
       controller.resizeDiagram();
     }
   }, [menuState.leftPaneHidden]);
+
   return (
     <div
       data-cy={cypressGet(c, 'name')}

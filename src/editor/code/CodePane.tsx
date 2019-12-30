@@ -47,7 +47,7 @@ export const CodePane = (props: CodePaneProps) => {
       m.setValue(schema);
       m.onDidChangeModelContent((e) => {
         const value = m!.getModel()!.getValue();
-        Workers.validate(libraries + value).then((errors) => {
+        Workers.validate(value, libraries).then((errors) => {
           setErrors(errors);
         });
       });
@@ -57,7 +57,7 @@ export const CodePane = (props: CodePaneProps) => {
           controller.loadGraphQL(value);
           return;
         }
-        Workers.validate(libraries + value).then((errors) => {
+        Workers.validate(value, libraries).then((errors) => {
           if (errors.length === 0) {
             controller.loadGraphQL(value);
           }

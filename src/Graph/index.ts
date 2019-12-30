@@ -248,7 +248,7 @@ export class GraphController {
       if (unNamedNode) {
         throw new Error(`Every node should have a name. Please fill in a name and click enter or defocus`);
       }
-      Workers.validate(this.librariesCode + graphQLSchema).then((errors) => {
+      Workers.validate(graphQLSchema, this.librariesCode).then((errors) => {
         if (errors.length > 0) {
           if (this.passDiagramErrors) {
             this.passDiagramErrors(errors.map((e) => e.text).join('\n\n'));
