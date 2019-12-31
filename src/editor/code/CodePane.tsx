@@ -10,6 +10,7 @@ import { theme, language, conf, settings, mapEditorErrorToMonacoDecoration } fro
 import { EditorError } from '../../validation';
 import { Workers } from '../../worker';
 import { cypressGet, c } from '../../cypress_constants';
+import { fontFamily } from '../../vars';
 
 export interface CodePaneOuterProps {
   readonly?: boolean;
@@ -44,6 +45,9 @@ export const CodePane = (props: CodePaneProps) => {
       }
       monaco.editor.defineTheme('graphql-editor', theme);
       const m = monaco.editor.create(editor.current, settings());
+      m.updateOptions({
+        fontFamily,
+      });
       m.setValue(schema);
       m.onDidChangeModelContent((e) => {
         const value = m!.getModel()!.getValue();
@@ -107,7 +111,7 @@ export const CodePane = (props: CodePaneProps) => {
         >
           {generateEnabled ? (
             syncStatus === StatusDotProps.sync ? (
-              'synchronized'
+              ''
             ) : (
               <>
                 <span style={{ marginRight: 5 }}>synchronize</span>

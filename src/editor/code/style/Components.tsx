@@ -1,15 +1,14 @@
 import { style } from 'typestyle';
-import { Colors } from '../../../Colors';
+import { Colors, mix } from '../../../Colors';
 import { fontFamily } from '../../../vars';
 
 export const TitleOfPane = style({
   padding: `10px 15px`,
   fontFamily,
-  fontSize: 13,
+  fontSize: 12,
   textTransform: 'uppercase',
   color: Colors.grey[4],
-  background: `${Colors.grey[8]}`,
-  letterSpacing: 1,
+  background: `${mix(Colors.grey[9], Colors.grey[8])}`,
   display: 'flex',
   alignItems: 'center',
 });

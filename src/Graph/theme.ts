@@ -21,8 +21,8 @@ export const theme: DiagramTheme = {
   fontFamily,
   node: {
     ...DefaultDiagramTheme.node,
-    nameSize: 23,
-    typeSize: 20,
+    nameSize: 25,
+    typeSize: 21,
     width: 210,
     spacing: {
       ...DefaultDiagramTheme.node.spacing,
@@ -43,7 +43,7 @@ export const theme: DiagramTheme = {
   },
   colors: {
     ...DefaultDiagramTheme.colors,
-    background: mix(Colors.grey[8], Colors.grey[9]),
+    background: mix(Colors.grey[8], Colors.grey[9], 30.0),
     help: {
       ...DefaultDiagramTheme.colors.help,
       title: Colors.yellow[0],
