@@ -91,10 +91,10 @@
     "faker": "^4.1.0",
     "graphql": "^14.0.2",
     "graphql-zeus": "^2.4.6",
-    "graphsource": "^1.4.0",
+    "graphsource": "^1.4.2",
     "moment": "^2.21.0",
-    "re-resizable": "^6.1.1",
     "query-string": "^6.2.0",
+    "re-resizable": "^6.1.1",
     "typestyle": "^2.0.1"
   },
   "config": {

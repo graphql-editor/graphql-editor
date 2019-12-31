@@ -153,6 +153,8 @@ export class GraphController {
     this.load(result.nodes, result.links);
     if (zeroGraph || forceZero) {
       this.zeroGraph();
+    } else {
+      this.diagram!.forceRender();
     }
   };
   centerOnNodeByID = (id: string) => {

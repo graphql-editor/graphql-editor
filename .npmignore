@@ -11,4 +11,5 @@ src
 deploy.sh
 deploy-toolkit.yaml
 .idea
-__tests__
+__test__
+__mock__
