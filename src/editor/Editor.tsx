@@ -79,8 +79,12 @@ export const Editor = ({
 
   useEffect(() => {
     if (controllerMounted) {
-      controller.loadLibraries(schema.libraries || '');
-      controller.loadGraphQL(schema.code);
+      if (schema.libraries !== libraries) {
+        controller.loadLibraries(schema.libraries || '');
+        controller.loadGraphQL(schema.code);
+      } else if (schema.code !== code) {
+        controller.loadGraphQL(schema.code);
+      }
     }
   }, [schema.libraries, schema.code, controllerMounted.toString()]);
 
