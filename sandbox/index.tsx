@@ -29,19 +29,10 @@ export const App = () => {
   return (
     <div className={UiDiagram}>
       <Editor
-        schema={`type Costam{
-        name:String
-    }
-    
-    type QQ{
-        name:String
-        person: Person
-    }`}
-        schemaLibraries={`
-      type Person{
-        name:String
-      }
-      `}
+        schema={{
+          code: '',
+          libraries: '',
+        }}
         editorVisible={editorVisible}
       />
     </div>

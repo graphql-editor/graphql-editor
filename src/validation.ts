@@ -42,13 +42,13 @@ const moveErrorsByLibraryPadding = (libraries: string) => {
   return (error: EditorError): EditorError => {
     return {
       ...error,
-      row: error.row - libraryPadding + 1,
+      row: error.row - libraryPadding,
     };
   };
 };
 
 export const catchSchemaErrors = (schema: string, libraries: string = ''): EditorError[] => {
-  const s = libraries + schema;
+  const s = libraries + '\n' + schema;
   const paddingFunction = moveErrorsByLibraryPadding(libraries);
   try {
     const errors = validateSDLErrors(s);

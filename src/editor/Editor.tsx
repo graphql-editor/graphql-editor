@@ -16,8 +16,10 @@ export interface CodeEditorOuterProps {
 }
 export type EditorProps = {
   editorVisible: boolean;
-  schema?: string;
-  schemaLibraries?: string;
+  schema?: {
+    code: string;
+    libraries?: string;
+  };
   graphController?: (controller: GraphController) => void;
 } & CodeEditorOuterProps;
 
@@ -32,8 +34,10 @@ export const Editor = ({
   readonly,
   editorVisible,
   placeholder,
-  schema = '',
-  schemaLibraries = '',
+  schema = {
+    code: '',
+    libraries: '',
+  },
 }: EditorProps) => {
   const [controllerMounted, setControllerMounted] = useState(false);
   const [diagramFocus, setDiagramFocus] = useState(false);
@@ -55,8 +59,8 @@ export const Editor = ({
       }
       controller.setDOMElement(containerRef.current);
       controller.setPassSchema((code, stitches) => {
-        setCode(code);
         setSchemaLibraries(stitches);
+        setCode(code);
         setErrors('');
       });
       controller.setPassDiagramErrors(setErrors);
@@ -70,46 +74,21 @@ export const Editor = ({
   }, []);
 
   useEffect(() => {
-    controllerMounted && controller.resizeDiagram();
-  }, [editorVisible]);
-
-  useEffect(() => {
     controllerMounted && controller.setReadOnly(!!readonly);
   }, [readonly]);
 
   useEffect(() => {
     if (controllerMounted) {
-      if (schemaLibraries !== libraries) {
-        controller.loadLibraries(schemaLibraries);
-        setSchemaLibraries(schemaLibraries);
-      }
-      if (schema !== code) {
-        controller.loadGraphQL(schema);
-        setCode(schema);
-      } else {
-        controller.loadGraphQL(code);
-      }
+      controller.loadLibraries(schema.libraries || '');
+      controller.loadGraphQL(schema.code);
     }
-  }, [schemaLibraries, schema]);
-
-  useEffect(() => {}, [schema]);
-
-  useEffect(() => {
-    if (schemaLibraries !== libraries && controllerMounted) {
-      controller.loadLibraries(schemaLibraries);
-      setSchemaLibraries(schemaLibraries);
-    }
-    if (typeof schema !== 'undefined' && schema !== code && controllerMounted) {
-      controller.loadGraphQL(schema);
-      setCode(schema);
-    }
-  }, [controllerMounted.toString()]);
+  }, [schema.libraries, schema.code, controllerMounted.toString()]);
 
   useEffect(() => {
     if (controller && controllerMounted) {
       controller.resizeDiagram();
     }
-  }, [menuState.leftPaneHidden]);
+  }, [menuState.leftPaneHidden, editorVisible]);
 
   return (
     <div
@@ -174,7 +153,9 @@ export const Editor = ({
             {menuState.activePane === 'code' && (
               <CodePane
                 size={sidebarSize}
-                controller={controller}
+                onChange={(v) => {
+                  controller.loadGraphQL(v);
+                }}
                 schema={code}
                 libraries={libraries}
                 placeholder={placeholder}

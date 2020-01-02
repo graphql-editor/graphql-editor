@@ -1,7 +1,6 @@
 import cx from 'classnames';
 import * as monaco from 'monaco-editor';
 import React, { useEffect, useRef, useState } from 'react';
-import { GraphController } from '../../Graph';
 import * as Icon from '../icons';
 import { StatusDot, TitleOfPane } from './Components';
 import * as styles from './style/Code';
@@ -20,8 +19,8 @@ export interface CodePaneOuterProps {
 export type CodePaneProps = {
   size: number;
   schema: string;
+  onChange: (v: string) => void;
   libraries?: string;
-  controller: GraphController;
 } & CodePaneOuterProps;
 
 monaco.languages.register({ id: 'graphqle' });
@@ -32,7 +31,7 @@ monaco.languages.setMonarchTokensProvider('graphqle', language);
  * React compontent holding GraphQL IDE
  */
 export const CodePane = (props: CodePaneProps) => {
-  const { schema, libraries = '', readonly, controller, size } = props;
+  const { schema, libraries = '', onChange, readonly, size } = props;
   const editor = useRef<HTMLDivElement>(null);
   const [monacoGql, setMonacoGql] = useState<monaco.editor.IStandaloneCodeEditor>();
   const [decorationIds, setDecorationIds] = useState<string[]>([]);
@@ -58,12 +57,12 @@ export const CodePane = (props: CodePaneProps) => {
       m.onDidBlurEditorText(() => {
         const value = m!.getModel()!.getValue();
         if (value.length === 0) {
-          controller.loadGraphQL(value);
+          onChange(value);
           return;
         }
         Workers.validate(value, libraries).then((errors) => {
           if (errors.length === 0) {
-            controller.loadGraphQL(value);
+            onChange(value);
           }
         });
       });
@@ -105,7 +104,7 @@ export const CodePane = (props: CodePaneProps) => {
           })}
           onClick={() => {
             if (generateEnabled && monacoEditorValue) {
-              controller.loadGraphQL(monacoEditorValue);
+              onChange(monacoEditorValue);
             }
           }}
         >
