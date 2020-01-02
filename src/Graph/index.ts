@@ -209,7 +209,6 @@ export class GraphController {
     const rememberBasicDefinitions = [...basicDefinitions];
     this.stitchNodes = TreeToNodes.resolveTree(Parser.parse(this.librariesCode), basicDefinitions);
     this.stitchDefinitions = basicDefinitions.filter((bd) => !rememberBasicDefinitions.find((rbd) => rbd.id === bd.id));
-    this.loadGraphQL(this.schema);
   };
   screenShot = async () => this.diagram!.screenShot();
   /**

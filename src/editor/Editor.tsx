@@ -78,18 +78,21 @@ export const Editor = ({
   }, [readonly]);
 
   useEffect(() => {
-    if (schemaLibraries !== libraries && controllerMounted) {
-      controller.loadLibraries(schemaLibraries);
-      setSchemaLibraries(schemaLibraries);
-    }
-  }, [schemaLibraries]);
-
-  useEffect(() => {
     if (controllerMounted) {
-      controller.loadGraphQL(schema);
-      setCode(schema);
+      if (schemaLibraries !== libraries) {
+        controller.loadLibraries(schemaLibraries);
+        setSchemaLibraries(schemaLibraries);
+      }
+      if (schema !== code) {
+        controller.loadGraphQL(schema);
+        setCode(schema);
+      } else {
+        controller.loadGraphQL(code);
+      }
     }
-  }, [schema]);
+  }, [schemaLibraries, schema]);
+
+  useEffect(() => {}, [schema]);
 
   useEffect(() => {
     if (schemaLibraries !== libraries && controllerMounted) {
