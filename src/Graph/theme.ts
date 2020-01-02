@@ -69,5 +69,9 @@ export const theme: DiagramTheme = {
         array: Colors.yellow[0],
       },
     },
+    menu: {
+      ...DefaultDiagramTheme.colors.menu,
+      background: mix(DefaultDiagramTheme.colors.menu.background, Colors.grey[0], 95.0),
+    },
   },
 };

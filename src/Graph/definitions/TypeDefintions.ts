@@ -89,6 +89,10 @@ export class TypeDefinitions {
         },
         {
           ...FieldInstance,
+          node: {
+            notEditable: true,
+            name: undefined,
+          },
           data: {
             type: TypeSystemDefinition.UnionMemberDefinition,
             for: [TypeDefinition.UnionTypeDefinition],
@@ -226,6 +230,10 @@ export class TypeDefinitions {
         Utils.displayAsCategories(
           Utils.sortByParentType(Utils.dataForTypes(defs, [TypeSystemDefinition.DirectiveDefinition])),
         ),
+      node: {
+        options: [Directive.OBJECT],
+        name: '',
+      },
       instances: [
         {
           data: {
