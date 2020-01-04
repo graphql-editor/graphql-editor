@@ -182,18 +182,56 @@ const getMatchingTree = (node: Node<{}>, phrase: string): Boolean => {
   );
 };
 
-const getExpandTree = <T extends any>(node: Node<T>, phrase: string): Node<T> | null => {
+const getSearchExpandTree = <T extends any>(node: Node<T>, phrase: string): Node<T> | null => {
   const currentNodeMatches = Boolean(node.name.toLowerCase().match(phrase.toLowerCase()));
   const matchingInputs = node.inputs
-    ?.map((nodeInput) => getExpandTree(nodeInput, phrase))
+    ?.map((nodeInput) => getSearchExpandTree(nodeInput, phrase))
     .filter((n) => n !== null) as Node<T>[];
 
   return currentNodeMatches || matchingInputs.length ? { ...node, inputs: matchingInputs || [] } : null;
 };
 
+const getSelectedExpandTree = <T extends any>(node: Node<T>, selectedNodes: Node<T>[]): Node<T> | null => {
+  const currentNodeMatches = selectedNodes.map((sn) => sn.id).includes(node.id);
+  const matchingInputs = node.inputs
+    ?.map((nodeInput) => getSelectedExpandTree(nodeInput, selectedNodes))
+    .filter((n) => n !== null) as Node<T>[];
+
+  return currentNodeMatches || matchingInputs.length ? { ...node, inputs: matchingInputs || [] } : null;
+};
+
+type KeyboardDirection = 'ArrowDown' | 'ArrowUp' | 'ArrowRight' | 'ArrowLeft';
+
+const getNextSelectedNode = (nodes: Node<{}>[], selectedNode: Node, direction: KeyboardDirection): Node<{}> | null => {
+  if (direction === 'ArrowRight') {
+    if (selectedNode.inputs && selectedNode.inputs.length > 0) {
+      return selectedNode.inputs[0];
+    }
+    return null;
+  }
+  if (direction === 'ArrowLeft') {
+    if (selectedNode.outputs && selectedNode.outputs.length > 0) {
+      return selectedNode.outputs[0];
+    }
+    return null;
+  }
+
+  const fallbackSelectedNode = nodes[direction === 'ArrowDown' ? 0 : nodes.length - 1];
+
+  if (!selectedNode) {
+    return fallbackSelectedNode;
+  }
+
+  const currentLevelNodeIndex = nodes.findIndex((n) => n.id === selectedNode.id);
+  if (currentLevelNodeIndex > -1) {
+    return nodes[currentLevelNodeIndex + (direction === 'ArrowDown' ? 1 : -1)] || fallbackSelectedNode;
+  }
+
+  return fallbackSelectedNode;
+};
+
 export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
   const [phrase, setPhrase] = useState<string>('');
-  const [selectedNodeIds, setSelectedNodeIds] = useState<string[]>([]);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const inputEl = useRef<HTMLInputElement>(null);
@@ -209,7 +247,7 @@ export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
 
     if (phrase.length > 0) {
       const sanitizedPhrase = phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      setExpandTree(currentRootNodes.map((n) => getExpandTree(n, sanitizedPhrase)));
+      setExpandTree(currentRootNodes.map((n) => getSearchExpandTree(n, sanitizedPhrase)));
       currentRootNodes = currentRootNodes.filter((n) => getMatchingTree(n, sanitizedPhrase));
     } else {
       setExpandTree([]);
@@ -220,12 +258,28 @@ export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
     setResultNodes(currentRootNodes);
   }, [phrase, selectedFilters]);
 
+  const onInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (['ArrowRight', 'ArrowUp', 'ArrowLeft', 'ArrowDown'].includes(e.key)) {
+      e.preventDefault();
+
+      const nextSelectedNode = getNextSelectedNode(
+        resultNodes,
+        selectedNodes[selectedNodes.length - 1],
+        e.key as KeyboardDirection,
+      );
+      if (nextSelectedNode) {
+        controller.centerOnNodeByID(nextSelectedNode.id);
+      }
+    }
+  };
+
   useEffect(() => {
     inputEl.current!.focus();
   }, []);
   useEffect(() => {
-    setSelectedNodeIds(selectedNodes.map((sn) => sn.id));
-  }, [selectedNodes.map((sn) => sn.id).join(',')]);
+    const currentExpandTree = resultNodes.map((rn) => getSelectedExpandTree(rn, selectedNodes));
+    setExpandTree(currentExpandTree);
+  }, [selectedNodes]);
 
   return (
     <div className={styles.Background} data-cy={cypressGet(c, 'sidebar', 'explorer', 'name')}>
@@ -235,6 +289,7 @@ export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
           ref={inputEl}
           value={phrase}
           onChange={(e) => setPhrase(e.target.value)}
+          onKeyDown={onInputKeyDown}
           type="text"
           className={styles.SearchInput}
           placeholder="Search nodes..."
@@ -282,14 +337,13 @@ export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
       <div className={styles.NodeList}>
         {resultNodes.map((n, index) => (
           <NodeComponent
-            selectedNodeIds={selectedNodeIds}
+            selectedNodeIds={selectedNodes.map((sn) => sn.id)}
             searchPhrase={phrase || ''}
             expandTree={expandTree[index]}
             key={n.id}
             relatives={controller.nodes.filter((cn) => cn.definition.type === n.name)}
             indentLevel={0}
             centerNode={(id) => {
-              setSelectedNodeIds([id]);
               controller.centerOnNodeByID(id);
             }}
             centerType={(definition) => {
@@ -299,7 +353,6 @@ export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
                 );
                 if (parentNode) {
                   const { id } = parentNode;
-                  setSelectedNodeIds([id]);
                   controller.centerOnNodeByID(id);
                 }
               }
