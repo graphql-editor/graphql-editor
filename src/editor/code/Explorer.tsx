@@ -20,8 +20,31 @@ interface NodeComponentProps {
   relatives?: Node[];
   indentLevel?: number;
   selectedNodeIds: string[];
-  unfoldMaster?: boolean;
+  searchPhrase?: string;
+  expandTree?: Node | null;
 }
+
+interface NodeNameHighlightedProps {
+  name: string;
+  searchPhrase: string;
+}
+
+const NodeNameHighlighted: React.FC<NodeNameHighlightedProps> = ({ name = '', searchPhrase = '' }) => {
+  if (!searchPhrase || name.toLowerCase().indexOf(searchPhrase.toLowerCase()) < 0) {
+    return <>{name}</>;
+  }
+
+  const searchStartIndex = name.toLowerCase().indexOf(searchPhrase.toLowerCase());
+  const searchEndIndex = searchStartIndex + searchPhrase.length;
+
+  return (
+    <>
+      {name.substring(0, searchStartIndex)}
+      <span className={cx(styles.Highlight)}>{name.substring(searchStartIndex, searchEndIndex)}</span>
+      {name.substr(searchEndIndex)}
+    </>
+  );
+};
 
 const NodeComponent = ({
   node,
@@ -30,16 +53,23 @@ const NodeComponent = ({
   selectedNodeIds,
   relatives,
   indentLevel = 0,
-  unfoldMaster = false,
+  searchPhrase = '',
+  expandTree,
 }: NodeComponentProps) => {
   const [unfold, setUnfold] = useState<boolean>(false);
   const [showRelatives, setShowRelatives] = useState<boolean>(false);
-  useEffect(() => {
-    setUnfold(unfoldMaster);
-  }, [unfoldMaster]);
+
   const nodeInputs = node.inputs ? node.inputs : [];
   const hasInputs = nodeInputs.length > 0;
   const hasRelatives = relatives && relatives.length > 0;
+  const hasMatchingChildren = expandTree && expandTree.inputs && expandTree.inputs.length > 0;
+
+  useEffect(() => {
+    if (hasMatchingChildren) {
+      setUnfold(true);
+    }
+  }, [expandTree]);
+
   return (
     <>
       <div
@@ -85,7 +115,7 @@ const NodeComponent = ({
           })}
           onClick={() => centerNode(node.id)}
         >
-          {node.name}
+          <NodeNameHighlighted name={node.name} searchPhrase={searchPhrase} />
         </div>
         <div
           className={cx(styles.NodeType, {
@@ -102,7 +132,7 @@ const NodeComponent = ({
         </div>
       </div>
       {unfold &&
-        nodeInputs.map((n) => (
+        nodeInputs.map((n, index) => (
           <NodeComponent
             key={n.id}
             node={n}
@@ -110,6 +140,8 @@ const NodeComponent = ({
             centerType={centerType}
             indentLevel={indentLevel + 1}
             selectedNodeIds={selectedNodeIds}
+            searchPhrase={searchPhrase}
+            expandTree={expandTree?.inputs?.[index]}
           />
         ))}
       {unfold && showRelatives && <div className={styles.NodeSpacer} />}
@@ -123,6 +155,7 @@ const NodeComponent = ({
             centerType={centerType}
             indentLevel={indentLevel + 1}
             selectedNodeIds={selectedNodeIds}
+            searchPhrase={searchPhrase}
           />
         ))}
     </>
@@ -142,12 +175,51 @@ const FilterBlock = ({ name, onClick, active, color }: FilterBlockProps) => (
   </div>
 );
 
+const getMatchingTree = (node: Node<{}>, phrase: string): Boolean => {
+  return (
+    Boolean(node.name.toLowerCase().match(phrase.toLowerCase())) ||
+    Boolean(node.inputs?.some((nodeInput) => getMatchingTree(nodeInput, phrase)))
+  );
+};
+
+const getExpandTree = <T extends any>(node: Node<T>, phrase: string): Node<T> | null => {
+  const currentNodeMatches = Boolean(node.name.toLowerCase().match(phrase.toLowerCase()));
+  const matchingInputs = node.inputs
+    ?.map((nodeInput) => getExpandTree(nodeInput, phrase))
+    .filter((n) => n !== null) as Node<T>[];
+
+  return currentNodeMatches || matchingInputs.length ? { ...node, inputs: matchingInputs || [] } : null;
+};
+
 export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
   const [phrase, setPhrase] = useState<string>('');
   const [selectedNodeIds, setSelectedNodeIds] = useState<string[]>([]);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const inputEl = useRef<HTMLInputElement>(null);
+  const [resultNodes, setResultNodes] = useState<Node<{}>[]>([]);
+  const [expandTree, setExpandTree] = useState<(Node<{}> | null)[]>([]);
+
+  useEffect(() => {
+    let currentRootNodes = controller.nodes.filter((n) => n.definition.root);
+
+    if (selectedFilters.length > 0) {
+      currentRootNodes = currentRootNodes.filter((n) => selectedFilters.includes(n.definition.type));
+    }
+
+    if (phrase.length > 0) {
+      const sanitizedPhrase = phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      setExpandTree(currentRootNodes.map((n) => getExpandTree(n, sanitizedPhrase)));
+      currentRootNodes = currentRootNodes.filter((n) => getMatchingTree(n, sanitizedPhrase));
+    } else {
+      setExpandTree([]);
+    }
+
+    currentRootNodes.sort((a, b) => (a.name > b.name ? 1 : -1));
+
+    setResultNodes(currentRootNodes);
+  }, [phrase, selectedFilters]);
+
   useEffect(() => {
     inputEl.current!.focus();
   }, []);
@@ -155,15 +227,6 @@ export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
     setSelectedNodeIds(selectedNodes.map((sn) => sn.id));
   }, [selectedNodes.map((sn) => sn.id).join(',')]);
 
-  let rootNodes = controller.nodes.filter((n) => n.definition.root);
-  if (selectedFilters.length > 0) {
-    rootNodes = rootNodes.filter((n) => selectedFilters.includes(n.definition.type));
-  }
-  if (phrase.length > 0) {
-    const sanitizedPhrase = phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    rootNodes = rootNodes.filter((n) => n.name.toLowerCase().match(sanitizedPhrase.toLowerCase()));
-  }
-  rootNodes.sort((a, b) => (a.name > b.name ? 1 : -1));
   return (
     <div className={styles.Background} data-cy={cypressGet(c, 'sidebar', 'explorer', 'name')}>
       <TitleOfPane>Explorer</TitleOfPane>
@@ -217,9 +280,11 @@ export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
         </div>
       )}
       <div className={styles.NodeList}>
-        {rootNodes.map((n) => (
+        {resultNodes.map((n, index) => (
           <NodeComponent
             selectedNodeIds={selectedNodeIds}
+            searchPhrase={phrase || ''}
+            expandTree={expandTree[index]}
             key={n.id}
             relatives={controller.nodes.filter((cn) => cn.definition.type === n.name)}
             indentLevel={0}

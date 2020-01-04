@@ -54,6 +54,10 @@ export const Node = style({
   color: Colors.grey[3],
 });
 
+export const Highlight = style({
+  color: Colors.grey[0],
+});
+
 export const NodeIcon = style({
   cursor: 'pointer',
   padding: 5,
