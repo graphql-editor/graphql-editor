@@ -8,6 +8,14 @@ import * as Icon from '../icons';
 import { TitleOfPane } from './Components';
 import * as styles from './style/Explorer';
 import { cypressGet, c } from '../../cypress_constants';
+import {
+  getSearchExpandTree,
+  getSelectedExpandTree,
+  getQueryMatchingNodeTree,
+  getNextSelectedNode,
+  flattenNodeTree,
+  KeyboardNavDirection,
+} from './utils';
 export interface ExplorerProps {
   controller: GraphController;
   selectedNodes: Node[];
@@ -21,7 +29,8 @@ interface NodeComponentProps {
   indentLevel?: number;
   selectedNodeIds: string[];
   searchPhrase?: string;
-  expandTree?: Node | null;
+  unfoldBySearch?: Node | null;
+  onChangeUnfolded: (node: Node, unfold: boolean) => void;
 }
 
 interface NodeNameHighlightedProps {
@@ -54,7 +63,8 @@ const NodeComponent = ({
   relatives,
   indentLevel = 0,
   searchPhrase = '',
-  expandTree,
+  unfoldBySearch,
+  onChangeUnfolded,
 }: NodeComponentProps) => {
   const [unfold, setUnfold] = useState<boolean>(false);
   const [showRelatives, setShowRelatives] = useState<boolean>(false);
@@ -62,13 +72,17 @@ const NodeComponent = ({
   const nodeInputs = node.inputs ? node.inputs : [];
   const hasInputs = nodeInputs.length > 0;
   const hasRelatives = relatives && relatives.length > 0;
-  const hasMatchingChildren = expandTree && expandTree.inputs && expandTree.inputs.length > 0;
+  const hasMatchingChildren = unfoldBySearch && unfoldBySearch.inputs && unfoldBySearch.inputs.length > 0;
 
   useEffect(() => {
     if (hasMatchingChildren) {
       setUnfold(true);
     }
-  }, [expandTree]);
+  }, [unfoldBySearch]);
+
+  useEffect(() => {
+    onChangeUnfolded(node, unfold);
+  }, [unfold]);
 
   return (
     <>
@@ -141,7 +155,8 @@ const NodeComponent = ({
             indentLevel={indentLevel + 1}
             selectedNodeIds={selectedNodeIds}
             searchPhrase={searchPhrase}
-            expandTree={expandTree?.inputs?.[index]}
+            unfoldBySearch={unfoldBySearch?.inputs?.[index]}
+            onChangeUnfolded={onChangeUnfolded}
           />
         ))}
       {unfold && showRelatives && <div className={styles.NodeSpacer} />}
@@ -156,6 +171,7 @@ const NodeComponent = ({
             indentLevel={indentLevel + 1}
             selectedNodeIds={selectedNodeIds}
             searchPhrase={searchPhrase}
+            onChangeUnfolded={() => {}}
           />
         ))}
     </>
@@ -175,61 +191,6 @@ const FilterBlock = ({ name, onClick, active, color }: FilterBlockProps) => (
   </div>
 );
 
-const getMatchingTree = (node: Node<{}>, phrase: string): Boolean => {
-  return (
-    Boolean(node.name.toLowerCase().match(phrase.toLowerCase())) ||
-    Boolean(node.inputs?.some((nodeInput) => getMatchingTree(nodeInput, phrase)))
-  );
-};
-
-const getSearchExpandTree = <T extends any>(node: Node<T>, phrase: string): Node<T> | null => {
-  const currentNodeMatches = Boolean(node.name.toLowerCase().match(phrase.toLowerCase()));
-  const matchingInputs = node.inputs
-    ?.map((nodeInput) => getSearchExpandTree(nodeInput, phrase))
-    .filter((n) => n !== null) as Node<T>[];
-
-  return currentNodeMatches || matchingInputs.length ? { ...node, inputs: matchingInputs || [] } : null;
-};
-
-const getSelectedExpandTree = <T extends any>(node: Node<T>, selectedNodes: Node<T>[]): Node<T> | null => {
-  const currentNodeMatches = selectedNodes.map((sn) => sn.id).includes(node.id);
-  const matchingInputs = node.inputs
-    ?.map((nodeInput) => getSelectedExpandTree(nodeInput, selectedNodes))
-    .filter((n) => n !== null) as Node<T>[];
-
-  return currentNodeMatches || matchingInputs.length ? { ...node, inputs: matchingInputs || [] } : null;
-};
-
-type KeyboardDirection = 'ArrowDown' | 'ArrowUp' | 'ArrowRight' | 'ArrowLeft';
-
-const getNextSelectedNode = (nodes: Node<{}>[], selectedNode: Node, direction: KeyboardDirection): Node<{}> | null => {
-  if (direction === 'ArrowRight') {
-    if (selectedNode.inputs && selectedNode.inputs.length > 0) {
-      return selectedNode.inputs[0];
-    }
-    return null;
-  }
-  if (direction === 'ArrowLeft') {
-    if (selectedNode.outputs && selectedNode.outputs.length > 0) {
-      return selectedNode.outputs[0];
-    }
-    return null;
-  }
-
-  const fallbackSelectedNode = nodes[direction === 'ArrowDown' ? 0 : nodes.length - 1];
-
-  if (!selectedNode) {
-    return fallbackSelectedNode;
-  }
-
-  const currentLevelNodeIndex = nodes.findIndex((n) => n.id === selectedNode.id);
-  if (currentLevelNodeIndex > -1) {
-    return nodes[currentLevelNodeIndex + (direction === 'ArrowDown' ? 1 : -1)] || fallbackSelectedNode;
-  }
-
-  return fallbackSelectedNode;
-};
-
 export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
   const [phrase, setPhrase] = useState<string>('');
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -237,6 +198,7 @@ export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
   const inputEl = useRef<HTMLInputElement>(null);
   const [resultNodes, setResultNodes] = useState<Node<{}>[]>([]);
   const [expandTree, setExpandTree] = useState<(Node<{}> | null)[]>([]);
+  const [unfoldedNodeIdList, setUnfoldedNodeIdList] = useState<string[]>([]);
 
   useEffect(() => {
     let currentRootNodes = controller.nodes.filter((n) => n.definition.root);
@@ -248,7 +210,7 @@ export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
     if (phrase.length > 0) {
       const sanitizedPhrase = phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       setExpandTree(currentRootNodes.map((n) => getSearchExpandTree(n, sanitizedPhrase)));
-      currentRootNodes = currentRootNodes.filter((n) => getMatchingTree(n, sanitizedPhrase));
+      currentRootNodes = currentRootNodes.filter((n) => getQueryMatchingNodeTree(n, sanitizedPhrase));
     } else {
       setExpandTree([]);
     }
@@ -263,9 +225,9 @@ export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
       e.preventDefault();
 
       const nextSelectedNode = getNextSelectedNode(
-        resultNodes,
+        flattenNodeTree(resultNodes, unfoldedNodeIdList),
+        e.key as KeyboardNavDirection,
         selectedNodes[selectedNodes.length - 1],
-        e.key as KeyboardDirection,
       );
       if (nextSelectedNode) {
         controller.centerOnNodeByID(nextSelectedNode.id);
@@ -274,22 +236,27 @@ export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
   };
 
   useEffect(() => {
-    inputEl.current!.focus();
-  }, []);
+    inputEl.current?.focus();
+  }, [unfoldedNodeIdList]);
+
   useEffect(() => {
     const currentExpandTree = resultNodes.map((rn) => getSelectedExpandTree(rn, selectedNodes));
     setExpandTree(currentExpandTree);
   }, [selectedNodes]);
 
   return (
-    <div className={styles.Background} data-cy={cypressGet(c, 'sidebar', 'explorer', 'name')}>
+    <div
+      className={styles.Background}
+      data-cy={cypressGet(c, 'sidebar', 'explorer', 'name')}
+      onKeyDown={onInputKeyDown}
+      tabIndex={0}
+    >
       <TitleOfPane>Explorer</TitleOfPane>
       <div className={styles.Title}>
         <input
           ref={inputEl}
           value={phrase}
           onChange={(e) => setPhrase(e.target.value)}
-          onKeyDown={onInputKeyDown}
           type="text"
           className={styles.SearchInput}
           placeholder="Search nodes..."
@@ -337,9 +304,16 @@ export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
       <div className={styles.NodeList}>
         {resultNodes.map((n, index) => (
           <NodeComponent
+            onChangeUnfolded={(n, x) => {
+              if (x) {
+                setUnfoldedNodeIdList([...unfoldedNodeIdList, n.id]);
+              } else {
+                setUnfoldedNodeIdList(unfoldedNodeIdList.filter((z) => z !== n.id));
+              }
+            }}
             selectedNodeIds={selectedNodes.map((sn) => sn.id)}
             searchPhrase={phrase || ''}
-            expandTree={expandTree[index]}
+            unfoldBySearch={expandTree[index]}
             key={n.id}
             relatives={controller.nodes.filter((cn) => cn.definition.type === n.name)}
             indentLevel={0}
