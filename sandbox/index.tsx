@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { render } from 'react-dom';
 import { style } from 'typestyle';
 import { Editor } from '../src/index';
-
+import * as schemas from './schema';
 export const Full = style({
   backgroundColor: '#444444',
   position: 'relative',
@@ -30,7 +30,7 @@ export const App = () => {
     <div className={UiDiagram}>
       <Editor
         schema={{
-          code: '',
+          code: schemas.googleDirections,
           libraries: '',
         }}
         editorVisible={editorVisible}
