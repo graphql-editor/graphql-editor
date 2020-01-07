@@ -1,6 +1,5 @@
 import { OperationType, Parser, ParserTree, Utils, Value } from 'graphql-zeus';
 import { Diagram, DiagramEvents, Link, Node, Old, Serializer } from 'graphsource';
-import { ScreenPosition } from 'graphsource/lib/IO/ScreenPosition';
 import { EditorNodeDefinition } from '../Models';
 import { NodesToTree } from '../NodesToTree';
 import { TreeToNodes } from '../TreeToNodes';
@@ -58,6 +57,10 @@ export class GraphController {
     this.diagram.on(DiagramEvents.LinkCreated, this.onCreateLink);
     this.diagram.on(DiagramEvents.NodeCreated, this.onCreateNode);
     this.diagram.on(DiagramEvents.NodeSelected, this.onSelectNode);
+
+    // TODO: fix selectSingleNode() to publish proper events in Diagram
+    // code so this line might be omitted
+    this.diagram.on(DiagramEvents.CenterOnNode, (node: Node) => this.onSelectNode([{}, [node]]));
     this.diagram.on(DiagramEvents.DataModelChanged, this.serialise);
     this.generateBasicDefinitions();
   };
@@ -291,7 +294,7 @@ export class GraphController {
   private onCreateNode = () => {
     this.nodeCreated = true;
   };
-  private onSelectNode = ([_, nodes]: [ScreenPosition, Node[]]) => {
+  private onSelectNode = ([_, nodes]: [any, Node[]]) => {
     this.selectedNodes = nodes;
     if (this.passSelectedNodes) {
       this.passSelectedNodes(this.selectedNodes);

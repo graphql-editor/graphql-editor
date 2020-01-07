@@ -8,6 +8,15 @@ import * as Icon from '../icons';
 import { TitleOfPane } from './Components';
 import * as styles from './style/Explorer';
 import { cypressGet, c } from '../../cypress_constants';
+import {
+  getSearchExpandTree,
+  getSelectedExpandTree,
+  getQueryMatchingNodeTree,
+  getNextSelectedNode,
+  flattenNodeTree,
+  KeyboardNavDirection,
+  scrollToSelectedNode,
+} from './utils';
 export interface ExplorerProps {
   controller: GraphController;
   selectedNodes: Node[];
@@ -20,8 +29,32 @@ interface NodeComponentProps {
   relatives?: Node[];
   indentLevel?: number;
   selectedNodeIds: string[];
-  unfoldMaster?: boolean;
+  searchPhrase?: string;
+  unfoldBySearch?: Node | null;
+  onChangeUnfolded: (node: Node, unfold: boolean) => void;
 }
+
+interface NodeNameHighlightedProps {
+  name: string;
+  searchPhrase: string;
+}
+
+const NodeNameHighlighted: React.FC<NodeNameHighlightedProps> = ({ name = '', searchPhrase = '' }) => {
+  if (!searchPhrase || name.toLowerCase().indexOf(searchPhrase.toLowerCase()) < 0) {
+    return <>{name}</>;
+  }
+
+  const searchStartIndex = name.toLowerCase().indexOf(searchPhrase.toLowerCase());
+  const searchEndIndex = searchStartIndex + searchPhrase.length;
+
+  return (
+    <>
+      {name.substring(0, searchStartIndex)}
+      <span className={cx(styles.Highlight)}>{name.substring(searchStartIndex, searchEndIndex)}</span>
+      {name.substr(searchEndIndex)}
+    </>
+  );
+};
 
 const NodeComponent = ({
   node,
@@ -30,30 +63,56 @@ const NodeComponent = ({
   selectedNodeIds,
   relatives,
   indentLevel = 0,
-  unfoldMaster = false,
+  searchPhrase = '',
+  unfoldBySearch,
+  onChangeUnfolded,
 }: NodeComponentProps) => {
   const [unfold, setUnfold] = useState<boolean>(false);
   const [showRelatives, setShowRelatives] = useState<boolean>(false);
-  useEffect(() => {
-    setUnfold(unfoldMaster);
-  }, [unfoldMaster]);
+
   const nodeInputs = node.inputs ? node.inputs : [];
   const hasInputs = nodeInputs.length > 0;
   const hasRelatives = relatives && relatives.length > 0;
+
+  const hasMatchingChildren = unfoldBySearch && unfoldBySearch.inputs && unfoldBySearch.inputs.length > 0;
+
+  useEffect(() => {
+    onChangeUnfolded(node, unfold);
+  }, [unfold]);
+
+  useEffect(() => {
+    if (hasMatchingChildren) {
+      setUnfold(true);
+    }
+  }, [unfoldBySearch]);
+
+  useEffect(() => {
+    if (selectedNodeIds.includes(node.id)) {
+      scrollToSelectedNode(elementRef.current || undefined);
+    }
+  }, [selectedNodeIds.includes(node.id)]);
+
+  const elementRef = React.createRef<HTMLDivElement>();
+
   return (
     <>
       <div
-        className={cx(styles.Node)}
+        onClick={() => centerNode(node.id)}
+        className={cx(styles.Node, {
+          active: selectedNodeIds.includes(node.id),
+        })}
         key={node.id}
         style={{
           marginLeft: indentLevel * 10,
         }}
+        ref={elementRef}
       >
         {hasInputs ? (
           <div
             className={styles.NodeIcon}
             title={unfold ? 'hide fields' : 'show fields'}
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               if (hasInputs) {
                 setUnfold(!unfold);
               }
@@ -70,7 +129,10 @@ const NodeComponent = ({
           <div
             title={showRelatives ? 'hide usages' : 'show usages'}
             className={styles.NodeIcon}
-            onClick={() => setShowRelatives(!showRelatives)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowRelatives(!showRelatives);
+            }}
           >
             {showRelatives ? <Icon.ToggleOn size={15} /> : <Icon.ToggleOff size={15} />}
           </div>
@@ -79,13 +141,8 @@ const NodeComponent = ({
             <div style={{ width: 15, height: 15 }} />
           </div>
         )}
-        <div
-          className={cx(styles.NodeTitle, {
-            active: selectedNodeIds.includes(node.id),
-          })}
-          onClick={() => centerNode(node.id)}
-        >
-          {node.name}
+        <div className={styles.NodeTitle}>
+          <NodeNameHighlighted name={node.name} searchPhrase={searchPhrase} />
         </div>
         <div
           className={cx(styles.NodeType, {
@@ -102,7 +159,7 @@ const NodeComponent = ({
         </div>
       </div>
       {unfold &&
-        nodeInputs.map((n) => (
+        nodeInputs.map((n, index) => (
           <NodeComponent
             key={n.id}
             node={n}
@@ -110,6 +167,9 @@ const NodeComponent = ({
             centerType={centerType}
             indentLevel={indentLevel + 1}
             selectedNodeIds={selectedNodeIds}
+            searchPhrase={searchPhrase}
+            unfoldBySearch={unfoldBySearch?.inputs?.find((input) => input.id === n.id)}
+            onChangeUnfolded={onChangeUnfolded}
           />
         ))}
       {unfold && showRelatives && <div className={styles.NodeSpacer} />}
@@ -123,6 +183,8 @@ const NodeComponent = ({
             centerType={centerType}
             indentLevel={indentLevel + 1}
             selectedNodeIds={selectedNodeIds}
+            searchPhrase={searchPhrase}
+            onChangeUnfolded={() => {}}
           />
         ))}
     </>
@@ -144,28 +206,64 @@ const FilterBlock = ({ name, onClick, active, color }: FilterBlockProps) => (
 
 export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
   const [phrase, setPhrase] = useState<string>('');
-  const [selectedNodeIds, setSelectedNodeIds] = useState<string[]>([]);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const inputEl = useRef<HTMLInputElement>(null);
-  useEffect(() => {
-    inputEl.current!.focus();
-  }, []);
-  useEffect(() => {
-    setSelectedNodeIds(selectedNodes.map((sn) => sn.id));
-  }, [selectedNodes.map((sn) => sn.id).join(',')]);
+  const [resultNodes, setResultNodes] = useState<Node<{}>[]>([]);
+  const [expandTree, setExpandTree] = useState<(Node<{}> | null)[]>([]);
+  const [unfoldedNodeIdList, setUnfoldedNodeIdList] = useState<string[]>([]);
 
-  let rootNodes = controller.nodes.filter((n) => n.definition.root);
-  if (selectedFilters.length > 0) {
-    rootNodes = rootNodes.filter((n) => selectedFilters.includes(n.definition.type));
-  }
-  if (phrase.length > 0) {
-    const sanitizedPhrase = phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    rootNodes = rootNodes.filter((n) => n.name.toLowerCase().match(sanitizedPhrase.toLowerCase()));
-  }
-  rootNodes.sort((a, b) => (a.name > b.name ? 1 : -1));
+  useEffect(() => {
+    let currentRootNodes = controller.nodes.filter((n) => n.definition.root);
+    currentRootNodes.sort((a, b) => (a.name > b.name ? 1 : -1));
+
+    if (selectedFilters.length > 0) {
+      currentRootNodes = currentRootNodes.filter((n) => selectedFilters.includes(n.definition.type));
+    }
+
+    if (phrase.length > 0) {
+      const sanitizedPhrase = phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      currentRootNodes = currentRootNodes.filter((n) => getQueryMatchingNodeTree(n, sanitizedPhrase));
+      const searchExpandTree = currentRootNodes.map((n) => getSearchExpandTree(n, sanitizedPhrase));
+      setExpandTree(searchExpandTree);
+    } else {
+      setExpandTree([]);
+    }
+
+    setResultNodes(currentRootNodes);
+  }, [phrase, selectedFilters]);
+
+  const onInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (['ArrowRight', 'ArrowUp', 'ArrowLeft', 'ArrowDown'].includes(e.key)) {
+      e.preventDefault();
+
+      const nextSelectedNode = getNextSelectedNode(
+        flattenNodeTree(resultNodes, unfoldedNodeIdList),
+        e.key as KeyboardNavDirection,
+        selectedNodes[selectedNodes.length - 1],
+      );
+      if (nextSelectedNode) {
+        controller.centerOnNodeByID(nextSelectedNode.id);
+      }
+    }
+  };
+
+  useEffect(() => {
+    inputEl.current?.focus();
+  }, [unfoldedNodeIdList]);
+
+  useEffect(() => {
+    const currentExpandTree = resultNodes.map((rn) => getSelectedExpandTree(rn, selectedNodes));
+    setExpandTree(currentExpandTree);
+  }, [selectedNodes]);
+
   return (
-    <div className={styles.Background} data-cy={cypressGet(c, 'sidebar', 'explorer', 'name')}>
+    <div
+      className={styles.Background}
+      data-cy={cypressGet(c, 'sidebar', 'explorer', 'name')}
+      onKeyDown={onInputKeyDown}
+      tabIndex={0}
+    >
       <TitleOfPane>Explorer</TitleOfPane>
       <div className={styles.Title}>
         <input
@@ -217,14 +315,23 @@ export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
         </div>
       )}
       <div className={styles.NodeList}>
-        {rootNodes.map((n) => (
+        {resultNodes.map((n, index) => (
           <NodeComponent
-            selectedNodeIds={selectedNodeIds}
+            onChangeUnfolded={(node, unfolded) => {
+              if (unfolded && !unfoldedNodeIdList.includes(node.id)) {
+                unfoldedNodeIdList.push(node.id);
+              } else if (unfoldedNodeIdList.includes(node.id)) {
+                unfoldedNodeIdList.splice(unfoldedNodeIdList.indexOf(node.id), 1);
+              }
+              setUnfoldedNodeIdList([...unfoldedNodeIdList]);
+            }}
+            selectedNodeIds={selectedNodes.map((sn) => sn.id)}
+            searchPhrase={phrase || ''}
+            unfoldBySearch={expandTree[index]}
             key={n.id}
             relatives={controller.nodes.filter((cn) => cn.definition.type === n.name)}
             indentLevel={0}
             centerNode={(id) => {
-              setSelectedNodeIds([id]);
               controller.centerOnNodeByID(id);
             }}
             centerType={(definition) => {
@@ -234,7 +341,6 @@ export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
                 );
                 if (parentNode) {
                   const { id } = parentNode;
-                  setSelectedNodeIds([id]);
                   controller.centerOnNodeByID(id);
                 }
               }
