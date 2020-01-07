@@ -15,6 +15,7 @@ import {
   getNextSelectedNode,
   flattenNodeTree,
   KeyboardNavDirection,
+  scrollToSelectedNode,
 } from './utils';
 export interface ExplorerProps {
   controller: GraphController;
@@ -72,7 +73,12 @@ const NodeComponent = ({
   const nodeInputs = node.inputs ? node.inputs : [];
   const hasInputs = nodeInputs.length > 0;
   const hasRelatives = relatives && relatives.length > 0;
+
   const hasMatchingChildren = unfoldBySearch && unfoldBySearch.inputs && unfoldBySearch.inputs.length > 0;
+
+  useEffect(() => {
+    onChangeUnfolded(node, unfold);
+  }, [unfold]);
 
   useEffect(() => {
     if (hasMatchingChildren) {
@@ -81,23 +87,32 @@ const NodeComponent = ({
   }, [unfoldBySearch]);
 
   useEffect(() => {
-    onChangeUnfolded(node, unfold);
-  }, [unfold]);
+    if (selectedNodeIds.includes(node.id)) {
+      scrollToSelectedNode(elementRef.current || undefined);
+    }
+  }, [selectedNodeIds.includes(node.id)]);
+
+  const elementRef = React.createRef<HTMLDivElement>();
 
   return (
     <>
       <div
-        className={cx(styles.Node)}
+        onClick={() => centerNode(node.id)}
+        className={cx(styles.Node, {
+          active: selectedNodeIds.includes(node.id),
+        })}
         key={node.id}
         style={{
           marginLeft: indentLevel * 10,
         }}
+        ref={elementRef}
       >
         {hasInputs ? (
           <div
             className={styles.NodeIcon}
             title={unfold ? 'hide fields' : 'show fields'}
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               if (hasInputs) {
                 setUnfold(!unfold);
               }
@@ -114,7 +129,10 @@ const NodeComponent = ({
           <div
             title={showRelatives ? 'hide usages' : 'show usages'}
             className={styles.NodeIcon}
-            onClick={() => setShowRelatives(!showRelatives)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowRelatives(!showRelatives);
+            }}
           >
             {showRelatives ? <Icon.ToggleOn size={15} /> : <Icon.ToggleOff size={15} />}
           </div>
@@ -123,12 +141,7 @@ const NodeComponent = ({
             <div style={{ width: 15, height: 15 }} />
           </div>
         )}
-        <div
-          className={cx(styles.NodeTitle, {
-            active: selectedNodeIds.includes(node.id),
-          })}
-          onClick={() => centerNode(node.id)}
-        >
+        <div className={styles.NodeTitle}>
           <NodeNameHighlighted name={node.name} searchPhrase={searchPhrase} />
         </div>
         <div
@@ -155,7 +168,7 @@ const NodeComponent = ({
             indentLevel={indentLevel + 1}
             selectedNodeIds={selectedNodeIds}
             searchPhrase={searchPhrase}
-            unfoldBySearch={unfoldBySearch?.inputs?.[index]}
+            unfoldBySearch={unfoldBySearch?.inputs?.find((input) => input.id === n.id)}
             onChangeUnfolded={onChangeUnfolded}
           />
         ))}
@@ -202,6 +215,7 @@ export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
 
   useEffect(() => {
     let currentRootNodes = controller.nodes.filter((n) => n.definition.root);
+    currentRootNodes.sort((a, b) => (a.name > b.name ? 1 : -1));
 
     if (selectedFilters.length > 0) {
       currentRootNodes = currentRootNodes.filter((n) => selectedFilters.includes(n.definition.type));
@@ -209,13 +223,12 @@ export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
 
     if (phrase.length > 0) {
       const sanitizedPhrase = phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      setExpandTree(currentRootNodes.map((n) => getSearchExpandTree(n, sanitizedPhrase)));
       currentRootNodes = currentRootNodes.filter((n) => getQueryMatchingNodeTree(n, sanitizedPhrase));
+      const searchExpandTree = currentRootNodes.map((n) => getSearchExpandTree(n, sanitizedPhrase));
+      setExpandTree(searchExpandTree);
     } else {
       setExpandTree([]);
     }
-
-    currentRootNodes.sort((a, b) => (a.name > b.name ? 1 : -1));
 
     setResultNodes(currentRootNodes);
   }, [phrase, selectedFilters]);
@@ -304,12 +317,13 @@ export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
       <div className={styles.NodeList}>
         {resultNodes.map((n, index) => (
           <NodeComponent
-            onChangeUnfolded={(n, x) => {
-              if (x) {
-                setUnfoldedNodeIdList([...unfoldedNodeIdList, n.id]);
-              } else {
-                setUnfoldedNodeIdList(unfoldedNodeIdList.filter((z) => z !== n.id));
+            onChangeUnfolded={(node, unfolded) => {
+              if (unfolded && !unfoldedNodeIdList.includes(node.id)) {
+                unfoldedNodeIdList.push(node.id);
+              } else if (unfoldedNodeIdList.includes(node.id)) {
+                unfoldedNodeIdList.splice(unfoldedNodeIdList.indexOf(node.id), 1);
               }
+              setUnfoldedNodeIdList([...unfoldedNodeIdList]);
             }}
             selectedNodeIds={selectedNodes.map((sn) => sn.id)}
             searchPhrase={phrase || ''}

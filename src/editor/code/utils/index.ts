@@ -57,14 +57,47 @@ export const getSearchExpandTree = <T extends any>(node: Node<T>, phrase: string
     ?.map((nodeInput) => getSearchExpandTree(nodeInput, phrase))
     .filter((n) => n !== null) as Node<T>[];
 
-  return currentNodeMatches || matchingInputs.length ? { ...node, inputs: matchingInputs || [] } : null;
+  if (matchingInputs) {
+    return currentNodeMatches || matchingInputs.length ? { ...node, inputs: matchingInputs || [] } : null;
+  } else {
+    return currentNodeMatches ? node : null;
+  }
 };
 
 export const getSelectedExpandTree = <T extends any>(node: Node<T>, selectedNodes: Node<T>[]): Node<T> | null => {
   const currentNodeMatches = selectedNodes.map((sn) => sn.id).includes(node.id);
+
   const matchingInputs = node.inputs
     ?.map((nodeInput) => getSelectedExpandTree(nodeInput, selectedNodes))
     .filter((n) => n !== null) as Node<T>[];
 
-  return currentNodeMatches || matchingInputs.length ? { ...node, inputs: matchingInputs || [] } : null;
+  if (matchingInputs) {
+    return currentNodeMatches || matchingInputs.length ? { ...node, inputs: matchingInputs || [] } : null;
+  } else {
+    return currentNodeMatches ? node : null;
+  }
+};
+
+export const scrollToSelectedNode = (selectedElement?: HTMLDivElement) => {
+  if (!selectedElement) {
+    return;
+  }
+
+  const containerElement = selectedElement.parentNode as HTMLDivElement;
+
+  if (!selectedElement) {
+    return;
+  }
+
+  if (
+    selectedElement.offsetTop >=
+    containerElement.offsetHeight + containerElement.scrollTop - selectedElement.offsetHeight
+  ) {
+    containerElement.scrollTop =
+      selectedElement.offsetTop - containerElement.offsetHeight + 2 * selectedElement.offsetHeight;
+  }
+
+  if (containerElement.scrollTop >= selectedElement.offsetTop - containerElement.offsetTop) {
+    containerElement.scrollTop = selectedElement.offsetTop - containerElement.offsetTop - selectedElement.offsetHeight;
+  }
 };

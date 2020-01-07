@@ -1,5 +1,5 @@
 import { style } from 'typestyle';
-import { Colors, mix } from '../../../Colors';
+import { Colors, mix, fade } from '../../../Colors';
 import { fontFamily, transition } from '../../../vars';
 
 export const Background = style({
@@ -40,22 +40,29 @@ export const NodeTitle = style({
   ['-moz-user-select']: '-moz-none',
   padding: 5,
   transition,
-  $nest: {
-    '&:hover, &.active': {
-      color: Colors.green[0],
-    },
-  },
 });
 
 export const Node = style({
   display: 'flex',
   flexFlow: 'nowrap',
+  cursor: 'pointer',
   alignItems: 'center',
   color: Colors.grey[3],
+  $nest: {
+    '&:hover': {
+      backgroundColor: fade(Colors.grey[0], 0.05),
+    },
+    '&.active': {
+      backgroundColor: fade(Colors.grey[0], 0.1),
+      color: Colors.green[0],
+      fontWeight: 'bold',
+    },
+  },
 });
 
 export const Highlight = style({
   color: Colors.grey[0],
+  fontWeight: 'bold',
 });
 
 export const NodeIcon = style({

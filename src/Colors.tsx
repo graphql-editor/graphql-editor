@@ -25,6 +25,12 @@ const isHexa = (s: string): s is HexaDecimal => {
   return s.length === 6 || (s.length === 7 && s.slice(0, 1) === '#');
 };
 
+export const fade = (c: HexaDecimal, alpha: number) => {
+  return `${c}${Math.round(alpha * 255)
+    .toString(16)
+    .padStart(2, '0')}`;
+};
+
 export const mix = (c1: HexaDecimal, c2: HexaDecimal, weight: number = 50) => {
   const color1 = c1.slice(1);
   const color2 = c2.slice(1);
