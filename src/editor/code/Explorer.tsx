@@ -234,12 +234,14 @@ export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
   }, [phrase, selectedFilters]);
 
   const onInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (['ArrowRight', 'ArrowUp', 'ArrowLeft', 'ArrowDown'].includes(e.key)) {
+    if (['ArrowRight', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'Enter'].includes(e.key)) {
       e.preventDefault();
+
+      const keyAction = e.key === 'Enter' ? 'ArrowDown' : e.key;
 
       const nextSelectedNode = getNextSelectedNode(
         flattenNodeTree(resultNodes, unfoldedNodeIdList),
-        e.key as KeyboardNavDirection,
+        keyAction as KeyboardNavDirection,
         selectedNodes[selectedNodes.length - 1],
       );
       if (nextSelectedNode) {
