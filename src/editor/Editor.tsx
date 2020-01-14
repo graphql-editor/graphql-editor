@@ -86,7 +86,7 @@ export const Editor = ({
         controller.loadGraphQL(schema.code);
       }
     }
-  }, [schema.libraries, schema.code, controllerMounted.toString()]);
+  }, [schema.code, controllerMounted.toString()]);
 
   useEffect(() => {
     if (controller && controllerMounted) {

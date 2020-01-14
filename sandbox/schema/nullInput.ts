@@ -1,8 +1,13 @@
 export const nullInput = `
-scalar URL
+# graphqleditor.com
+# graphqleditor.com:
 
-input Website{
-    name:String
-    url:URL = null
+# graphqleditor.com
+
+# graphqleditor.com
+
+scalar URL
+input Website{ name:String
+    url:URLI = null
 }
 `;
