@@ -136,6 +136,23 @@ export class GraphController {
     this.stitchNodes.links = [];
     this.stitchDefinitions = [];
   };
+  loadGraphQLAndLibraries = ({
+    schema,
+    libraries,
+    forceZero,
+  }: {
+    schema: string;
+    libraries: string;
+    forceZero?: boolean;
+  }) => {
+    if (this.schema === schema) {
+      if (libraries === this.librariesCode) {
+        return;
+      }
+    }
+    this.loadLibraries(libraries);
+    this.loadGraphQL(schema, forceZero);
+  };
   /**
    * Load GraphQL code and convert it to diagram nodes
    */
@@ -162,6 +179,21 @@ export class GraphController {
     } else {
       this.diagram!.forceRender();
     }
+  };
+  /**
+   * Load stitches code to Graph controller
+   */
+  loadLibraries = (schema: string): void => {
+    if (schema.length === 0) {
+      return;
+    }
+    let basicDefinitions = Definitions.generate([]);
+    this.librariesCode = schema;
+    this.stitchNodes = TreeToNodes.resolveTree(Parser.parse(this.librariesCode), basicDefinitions);
+    basicDefinitions = Definitions.generate(this.stitchNodes.nodes);
+    const rememberBasicDefinitions = [...basicDefinitions];
+    this.stitchNodes = TreeToNodes.resolveTree(Parser.parse(this.librariesCode), basicDefinitions);
+    this.stitchDefinitions = basicDefinitions.filter((bd) => !rememberBasicDefinitions.find((rbd) => rbd.id === bd.id));
   };
   centerOnNodeByID = (id: string) => {
     const node = this.nodes.find((n) => n.id === id)!;
@@ -201,21 +233,6 @@ export class GraphController {
   };
   setPassSchema = (fn: (schema: string, stitches: string) => void) => (this.passSchema = fn);
   setPassDiagramErrors = (fn: (errors: string) => void) => (this.passDiagramErrors = fn);
-  /**
-   * Load stitches code to Graph controller
-   */
-  loadLibraries = (schema: string): void => {
-    if (schema.length === 0) {
-      return;
-    }
-    let basicDefinitions = Definitions.generate([]);
-    this.librariesCode = schema;
-    this.stitchNodes = TreeToNodes.resolveTree(Parser.parse(this.librariesCode), basicDefinitions);
-    basicDefinitions = Definitions.generate(this.stitchNodes.nodes);
-    const rememberBasicDefinitions = [...basicDefinitions];
-    this.stitchNodes = TreeToNodes.resolveTree(Parser.parse(this.librariesCode), basicDefinitions);
-    this.stitchDefinitions = basicDefinitions.filter((bd) => !rememberBasicDefinitions.find((rbd) => rbd.id === bd.id));
-  };
   screenShot = async () => this.diagram!.screenShot();
   /**
    * Load nodes and links into diagram

@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { render } from 'react-dom';
 import { style } from 'typestyle';
 import { Editor } from '../src/index';
-import * as schemas from './schema';
 export const Full = style({
   backgroundColor: '#444444',
   position: 'relative',
@@ -26,31 +25,10 @@ export const UIDiagramFull = style({
 
 export const App = () => {
   const [editorVisible] = useState(true);
-  const [mySchema, setMySchema] = useState({
-    code: schemas.googleDirections,
-    libraries: `
-# GraphQL from graph at:
-
-# graphqleditor.com
-# aaa
-# aaa 
-scalar UU
-    `,
+  const [mySchema] = useState({
+    code: '',
+    libraries: '',
   });
-  useEffect(() => {
-    setTimeout(() => {
-      setMySchema({
-        code: schemas.nullInput,
-        libraries: 'scalar URLI',
-      });
-    }, 2000);
-    setTimeout(() => {
-      setMySchema({
-        code: schemas.muskSchema,
-        libraries: 'scalar URLIs',
-      });
-    }, 5000);
-  }, []);
   return (
     <div className={UiDiagram}>
       <Editor schema={mySchema} editorVisible={editorVisible} />

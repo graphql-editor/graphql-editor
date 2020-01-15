@@ -79,12 +79,10 @@ export const Editor = ({
 
   useEffect(() => {
     if (controllerMounted) {
-      if (schema.libraries !== libraries) {
-        controller.loadLibraries(schema.libraries || '');
-        controller.loadGraphQL(schema.code);
-      } else if (schema.code !== code) {
-        controller.loadGraphQL(schema.code);
-      }
+      controller.loadGraphQLAndLibraries({
+        schema: schema.code,
+        libraries: schema.libraries || '',
+      });
     }
   }, [schema.libraries, schema.code, controllerMounted.toString()]);
 
@@ -157,9 +155,12 @@ export const Editor = ({
             {menuState.activePane === 'code' && (
               <CodePane
                 size={sidebarSize}
-                onChange={(v) => {
-                  controller.loadGraphQL(v);
-                }}
+                onChange={(v) =>
+                  controller.loadGraphQLAndLibraries({
+                    schema: v,
+                    libraries: schema.libraries || '',
+                  })
+                }
                 schema={code}
                 libraries={libraries}
                 placeholder={placeholder}
