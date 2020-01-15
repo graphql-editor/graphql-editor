@@ -1,6 +1,6 @@
 import { OperationType, Parser, ParserTree, Utils, Value } from 'graphql-zeus';
-import { Diagram, DiagramEvents, Link, Node, Old, Serializer } from 'graphsource';
-import { EditorNodeDefinition } from '../Models';
+import { Diagram, DiagramEvents, Link, Old, Serializer } from 'graphsource';
+import { EditorNodeDefinition, EditorNode } from '../Models';
 import { NodesToTree } from '../NodesToTree';
 import { TreeToNodes } from '../TreeToNodes';
 import { Definitions } from './definitions';
@@ -23,17 +23,19 @@ export class GraphController {
     return NodesToTree.parse(nodes, tree.links);
   };
 
-  static flatNodeInputs = (node: Node): Node[] =>
-    node.inputs ? [...node.inputs, node.inputs.map(GraphController.flatNodeInputs)].flat(Infinity) : ([] as Node[]);
+  static flatNodeInputs = (node: EditorNode): EditorNode[] =>
+    node.inputs
+      ? [...node.inputs, node.inputs.map(GraphController.flatNodeInputs)].flat(Infinity)
+      : ([] as EditorNode[]);
   public definitions?: EditorNodeDefinition[];
   public stitchDefinitions: EditorNodeDefinition[] = [];
   public schema = '';
   public librariesCode = '';
-  public nodes: Node[] = [];
-  public selectedNodes: Node[] = [];
-  private stitchNodes: { nodes: Node[]; links: Link[] } = { nodes: [], links: [] };
+  public nodes: EditorNode[] = [];
+  public selectedNodes: EditorNode[] = [];
+  private stitchNodes: { nodes: EditorNode[]; links: Link[] } = { nodes: [], links: [] };
   private diagram?: Diagram;
-  private passSelectedNodes?: (nodes: Node[]) => void;
+  private passSelectedNodes?: (nodes: EditorNode[]) => void;
   private passSchema?: (schema: string, stitches: string) => void;
   private passDiagramErrors?: (errors: string) => void;
   private onSerialize?: (schema: string) => void;
@@ -60,7 +62,7 @@ export class GraphController {
 
     // TODO: fix selectSingleNode() to publish proper events in Diagram
     // code so this line might be omitted
-    this.diagram.on(DiagramEvents.CenterOnNode, (node: Node) => this.onSelectNode([{}, [node]]));
+    this.diagram.on(DiagramEvents.CenterOnNode, (node: EditorNode) => this.onSelectNode([{}, [node]]));
     this.diagram.on(DiagramEvents.DataModelChanged, this.serialise);
     this.generateBasicDefinitions();
   };
@@ -93,7 +95,7 @@ export class GraphController {
   /**
    * Set function to pass currently selected nodes
    */
-  setPassSelectedNodes = (f: (nodes: Node[]) => void) => {
+  setPassSelectedNodes = (f: (nodes: EditorNode[]) => void) => {
     this.passSelectedNodes = f;
   };
   /**
@@ -112,7 +114,7 @@ export class GraphController {
    * Reset Graph clearing all the nodes and links from it
    */
   resetGraph = () => {
-    const nodes: Node[] = [];
+    const nodes: EditorNode[] = [];
     const links: Link[] = [];
     this.definitions = Definitions.generate(this.stitchNodes.nodes).concat(this.stitchDefinitions!);
     this.diagram!.setNodes(nodes);
@@ -147,8 +149,9 @@ export class GraphController {
     }
     const result = TreeToNodes.resolveTree(
       Parser.parse(
-        schema + this.librariesCode,
+        schema,
         this.stitchNodes.nodes.filter((n) => n.definition.root).map((n) => n.name),
+        this.librariesCode,
       ),
       this.definitions,
     );
@@ -220,7 +223,7 @@ export class GraphController {
    * @param nodes
    * @param links
    */
-  private load = (nodes: Node[], links: Link[]) => {
+  private load = (nodes: EditorNode[], links: Link[]) => {
     this.diagram!.setNodes(nodes, true);
     this.diagram!.setLinks(links);
     this.serialise({
@@ -231,7 +234,7 @@ export class GraphController {
   /**
    * Serialise nodes to GraphQL
    */
-  private serialise = ({ nodes, links }: { nodes: Node[]; links: Link[] }) => {
+  private serialise = ({ nodes, links }: { nodes: EditorNode[]; links: Link[] }) => {
     this.nodes = nodes;
     let graphQLSchema = '';
     if (nodes.length === 0) {
@@ -294,7 +297,7 @@ export class GraphController {
   private onCreateNode = () => {
     this.nodeCreated = true;
   };
-  private onSelectNode = ([_, nodes]: [any, Node[]]) => {
+  private onSelectNode = ([_, nodes]: [any, EditorNode[]]) => {
     this.selectedNodes = nodes;
     if (this.passSelectedNodes) {
       this.passSelectedNodes(this.selectedNodes);

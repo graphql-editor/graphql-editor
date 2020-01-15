@@ -1,5 +1,4 @@
 import cx from 'classnames';
-import { Node } from 'graphsource';
 import { Resizable } from 're-resizable';
 import React, { useEffect, useRef, useState } from 'react';
 import { GraphController } from '../Graph';
@@ -9,6 +8,7 @@ import { Menu } from './Menu';
 import { CodePane, Explorer } from './code';
 
 import { c, cypressGet } from '../cypress_constants';
+import { EditorNode } from '../Models';
 
 export interface CodeEditorOuterProps {
   readonly?: boolean;
@@ -42,7 +42,7 @@ export const Editor = ({
   const [controllerMounted, setControllerMounted] = useState(false);
   const [diagramFocus, setDiagramFocus] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [nodes, setNodes] = useState<Node[]>([]);
+  const [nodes, setNodes] = useState<EditorNode[]>([]);
   const [errors, setErrors] = useState('');
   const [code, setCode] = useState('');
   const [libraries, setSchemaLibraries] = useState('');

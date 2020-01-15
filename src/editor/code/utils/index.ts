@@ -1,9 +1,9 @@
-import { Node } from 'graphsource';
+import { EditorNode } from '../../../Models';
 
 export type KeyboardNavDirection = 'ArrowDown' | 'ArrowUp' | 'ArrowRight' | 'ArrowLeft';
 
-export const flattenNodeTree = (nodes: Node<{}>[], unfoldedNodeIdList: string[]): Node<{}>[] => {
-  return nodes.reduce((accumulator: Node<{}>[], node: Node<{}>) => {
+export const flattenNodeTree = (nodes: EditorNode[], unfoldedNodeIdList: string[]): EditorNode[] => {
+  return nodes.reduce((accumulator: EditorNode[], node: EditorNode) => {
     if (unfoldedNodeIdList.includes(node.id)) {
       return [...accumulator, node, ...flattenNodeTree(node.inputs || [], unfoldedNodeIdList)];
     } else {
@@ -13,10 +13,10 @@ export const flattenNodeTree = (nodes: Node<{}>[], unfoldedNodeIdList: string[])
 };
 
 export const getNextSelectedNode = (
-  flatNodeList: Node<{}>[],
+  flatNodeList: EditorNode[],
   direction: KeyboardNavDirection,
-  selectedNode?: Node,
-): Node<{}> | null => {
+  selectedNode?: EditorNode,
+): EditorNode | null => {
   if (direction === 'ArrowRight') {
     if (selectedNode && selectedNode.inputs && selectedNode.inputs.length > 0) {
       return selectedNode.inputs[0];
@@ -44,18 +44,18 @@ export const getNextSelectedNode = (
   return fallbackSelectedNode;
 };
 
-export const getQueryMatchingNodeTree = (node: Node<{}>, phrase: string): Boolean => {
+export const getQueryMatchingNodeTree = (node: EditorNode, phrase: string): Boolean => {
   return (
     Boolean(node.name.toLowerCase().match(phrase.toLowerCase())) ||
     Boolean(node.inputs?.some((nodeInput) => getQueryMatchingNodeTree(nodeInput, phrase)))
   );
 };
 
-export const getSearchExpandTree = <T extends any>(node: Node<T>, phrase: string): Node<T> | null => {
+export const getSearchExpandTree = (node: EditorNode, phrase: string): EditorNode | null => {
   const currentNodeMatches = Boolean(node.name.toLowerCase().match(phrase.toLowerCase()));
   const matchingInputs = node.inputs
     ?.map((nodeInput) => getSearchExpandTree(nodeInput, phrase))
-    .filter((n) => n !== null) as Node<T>[];
+    .filter((n) => n !== null) as EditorNode[];
 
   if (matchingInputs) {
     return currentNodeMatches || matchingInputs.length ? { ...node, inputs: matchingInputs || [] } : null;
@@ -64,12 +64,12 @@ export const getSearchExpandTree = <T extends any>(node: Node<T>, phrase: string
   }
 };
 
-export const getSelectedExpandTree = <T extends any>(node: Node<T>, selectedNodes: Node<T>[]): Node<T> | null => {
+export const getSelectedExpandTree = (node: EditorNode, selectedNodes: EditorNode[]): EditorNode | null => {
   const currentNodeMatches = selectedNodes.map((sn) => sn.id).includes(node.id);
 
   const matchingInputs = node.inputs
     ?.map((nodeInput) => getSelectedExpandTree(nodeInput, selectedNodes))
-    .filter((n) => n !== null) as Node<T>[];
+    .filter((n) => n !== null) as EditorNode[];
 
   if (matchingInputs) {
     return currentNodeMatches || matchingInputs.length ? { ...node, inputs: matchingInputs || [] } : null;

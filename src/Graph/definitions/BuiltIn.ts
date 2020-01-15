@@ -1,9 +1,8 @@
-import { Directive, GraphQLNodeParams, Helpers, Instances, Value } from 'graphql-zeus';
-import { Node } from 'graphsource';
-import { EditorNodeDefinition } from '../../Models';
+import { Directive, Helpers, Instances, Value } from 'graphql-zeus';
+import { EditorNodeDefinition, EditorNode } from '../../Models';
 import { Utils } from './Utils';
 
-export const deprecated = (stitchNodes: Array<Node<GraphQLNodeParams>>): EditorNodeDefinition => ({
+export const deprecated = (stitchNodes: Array<EditorNode>): EditorNodeDefinition => ({
   data: {
     for: [Helpers.Directives],
     type: Instances.Directive,

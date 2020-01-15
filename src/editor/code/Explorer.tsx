@@ -1,6 +1,5 @@
 import cx from 'classnames';
 import { TypeDefinitionDisplayStrings } from 'graphql-zeus';
-import { Node, NodeDefinition } from 'graphsource';
 import React, { useEffect, useRef, useState } from 'react';
 import { GraphController } from '../../Graph';
 import { theme } from '../../Graph/theme';
@@ -17,21 +16,23 @@ import {
   KeyboardNavDirection,
   scrollToSelectedNode,
 } from './utils';
+import { EditorNode, EditorNodeDefinition } from '../../Models';
+
 export interface ExplorerProps {
   controller: GraphController;
-  selectedNodes: Node[];
+  selectedNodes: EditorNode[];
 }
 
 interface NodeComponentProps {
-  node: Node;
+  node: EditorNode;
   centerNode: (id: string) => void;
-  centerType: (parentDefition: NodeDefinition) => void;
-  relatives?: Node[];
+  centerType: (parentDefition: EditorNodeDefinition) => void;
+  relatives?: EditorNode[];
   indentLevel?: number;
   selectedNodeIds: string[];
   searchPhrase?: string;
-  unfoldBySearch?: Node | null;
-  onChangeUnfolded: (node: Node, unfold: boolean) => void;
+  unfoldBySearch?: EditorNode | null;
+  onChangeUnfolded: (node: EditorNode, unfold: boolean) => void;
 }
 
 interface NodeNameHighlightedProps {
@@ -209,8 +210,8 @@ export const Explorer = ({ controller, selectedNodes }: ExplorerProps) => {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const inputEl = useRef<HTMLInputElement>(null);
-  const [resultNodes, setResultNodes] = useState<Node<{}>[]>([]);
-  const [expandTree, setExpandTree] = useState<(Node<{}> | null)[]>([]);
+  const [resultNodes, setResultNodes] = useState<EditorNode[]>([]);
+  const [expandTree, setExpandTree] = useState<(EditorNode | null)[]>([]);
   const [unfoldedNodeIdList, setUnfoldedNodeIdList] = useState<string[]>([]);
 
   useEffect(() => {

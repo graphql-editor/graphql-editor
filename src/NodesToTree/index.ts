@@ -1,6 +1,5 @@
 import {
   Directive,
-  GraphQLNodeParams,
   Helpers,
   OperationType,
   Options,
@@ -8,10 +7,11 @@ import {
   TreeToGraphQL,
   TypeSystemDefinition,
 } from 'graphql-zeus';
-import { Link, Node } from 'graphsource';
+import { Link } from 'graphsource';
+import { EditorNode } from '../Models';
 
 export class NodesToTree {
-  static resolveFieldNode = (n: Node): ParserField =>
+  static resolveFieldNode = (n: EditorNode): ParserField =>
     ({
       name: n.name,
       type: {
@@ -31,7 +31,8 @@ export class NodesToTree {
         ? n.inputs.filter((i) => i.definition.type !== Helpers.Directives).map(NodesToTree.resolveFieldNode)
         : undefined,
     } as ParserField);
-  static resolveObjectNode = (n: Node<GraphQLNodeParams>) => {
+
+  static resolveObjectNode = (n: EditorNode) => {
     const templateField: ParserField = {
       name: n.name,
       description: n.description,
@@ -67,7 +68,8 @@ export class NodesToTree {
     };
     return templateField;
   };
-  static parse(nodes: Array<Node<GraphQLNodeParams>>, links: Link[]) {
+
+  static parse(nodes: Array<EditorNode>, links: Link[]) {
     if (!nodes.length) {
       return '';
     }

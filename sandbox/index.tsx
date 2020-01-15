@@ -31,7 +31,14 @@ export const App = () => {
       <Editor
         schema={{
           code: schemas.googleDirections,
-          libraries: '',
+          libraries: `
+# GraphQL from graph at:
+
+# graphqleditor.com
+# aaa
+# aaa 
+scalar UU
+          `,
         }}
         editorVisible={editorVisible}
       />
