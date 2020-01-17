@@ -184,11 +184,15 @@ export class GraphController {
    * Load stitches code to Graph controller
    */
   loadLibraries = (schema: string): void => {
+    this.librariesCode = schema;
     if (schema.length === 0) {
+      this.stitchNodes = {
+        nodes: [],
+        links: [],
+      };
       return;
     }
     let basicDefinitions = Definitions.generate([]);
-    this.librariesCode = schema;
     this.stitchNodes = TreeToNodes.resolveTree(Parser.parse(this.librariesCode), basicDefinitions);
     basicDefinitions = Definitions.generate(this.stitchNodes.nodes);
     const rememberBasicDefinitions = [...basicDefinitions];
