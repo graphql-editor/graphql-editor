@@ -127,6 +127,7 @@ export class GraphController {
     if (this.passSchema) {
       this.passSchema('', this.librariesCode);
     }
+    this.diagram?.forceRender();
   };
   /**
    * Reset stitches code
@@ -177,7 +178,7 @@ export class GraphController {
     if (zeroGraph || forceZero) {
       this.zeroGraph();
     } else {
-      this.diagram!.forceRender();
+      this.diagram?.forceRender();
     }
   };
   /**
@@ -190,6 +191,7 @@ export class GraphController {
         nodes: [],
         links: [],
       };
+      this.stitchDefinitions = [];
       return;
     }
     let basicDefinitions = Definitions.generate([]);
