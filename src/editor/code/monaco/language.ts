@@ -132,14 +132,14 @@ export const language = <monaco.languages.IMonarchLanguage | monaco.Thenable<mon
       // delimiter: after number because of .\d floats
       [/[;,.]/, 'delimiter'],
 
-      [/"""/, { token: 'string.doc', next: '@mlstring', nextEmbedded: 'markdown' }],
+      [`"""`, { token: 'string.doc', next: '@mlstring', nextEmbedded: 'markdown' }],
 
       // strings
       [/"([^"\\]|\\.)*$/, 'string.invalid'], // non-teminated string
       [/"/, { token: 'string.quote', bracket: '@open', next: '@string' }],
     ],
 
-    mlstring: [[/"""/, { token: 'string.doc', next: '@pop', nextEmbedded: '@pop' }]],
+    mlstring: [[`"""`, { token: 'string.doc', next: '@pop', nextEmbedded: '@pop' }]],
 
     string: [
       [/[^\\"]+/, 'string'],
