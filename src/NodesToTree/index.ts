@@ -74,9 +74,11 @@ export class NodesToTree {
       return '';
     }
     const roots = nodes.filter((n) => n.definition.root).map(NodesToTree.resolveObjectNode);
+    console.log(roots);
     const graphql = TreeToGraphQL.parse({
       nodes: roots,
     });
+    console.log(graphql);
     return graphql;
   }
 }

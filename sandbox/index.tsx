@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { render } from 'react-dom';
 import { style } from 'typestyle';
 import { Editor } from '../src/index';
-import { muskSchema } from './schema';
+import { testSchema1 } from './schema';
 export const Full = style({
   backgroundColor: '#444444',
   position: 'relative',
@@ -27,7 +27,7 @@ export const UIDiagramFull = style({
 export const App = () => {
   const [editorVisible] = useState(true);
   const [mySchema] = useState({
-    code: muskSchema,
+    code: testSchema1,
     libraries: '',
   });
   return (
