@@ -25,14 +25,13 @@ export const UIDiagramFull = style({
 });
 
 export const App = () => {
-  const [editorVisible] = useState(true);
   const [mySchema] = useState({
     code: testSchema1,
     libraries: '',
   });
   return (
     <div className={UiDiagram}>
-      <Editor schema={mySchema} editorVisible={editorVisible} />
+      <Editor schema={mySchema} />
     </div>
   );
 };

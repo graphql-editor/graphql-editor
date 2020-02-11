@@ -2,34 +2,38 @@ import React from 'react';
 import * as Icons from './icons';
 import * as styles from './style/Menu';
 import cx from 'classnames';
-
+export type ActivePane = 'code' | 'explorer-diagram' | 'diagram' | 'code-diagram';
 export interface MenuProps {
-  leftPaneHidden?: boolean;
-  activePane: 'code' | 'explorer';
-  toggleExplorer: () => void;
-  toggleCode: () => void;
-  toggleShow: () => void;
+  activePane: ActivePane;
+  setActivePane: (pane: ActivePane) => void;
 }
 
-export const Menu = ({ leftPaneHidden, activePane, toggleCode, toggleExplorer, toggleShow }: MenuProps) => {
+export const Menu = ({ setActivePane, activePane }: MenuProps) => {
   return (
     <div className={styles.HiderPanel}>
-      <div className={styles.Hider} onClick={toggleShow}>
-        {leftPaneHidden ? <Icons.Show size={16} /> : <Icons.Hide size={16} />}
-      </div>
+      {activePane === 'code' && (
+        <div className={styles.Hider} onClick={() => setActivePane('code-diagram')}>
+          <Icons.X size={16} />
+        </div>
+      )}
+      {activePane === 'diagram' && (
+        <div className={styles.Hider} onClick={() => setActivePane('code-diagram')}>
+          <Icons.Show size={16} />
+        </div>
+      )}
+      {(activePane === 'code-diagram' || activePane === 'explorer-diagram') && (
+        <>
+          <div className={styles.Hider} onClick={() => setActivePane('diagram')}>
+            <Icons.Hide size={16} />
+          </div>
+          <div className={cx(styles.Hider)} onClick={() => setActivePane('code')}>
+            <Icons.FullScreen size={16} />
+          </div>
+        </>
+      )}
       <div
-        className={cx(styles.Hider, {
-          active: activePane === 'code' && !leftPaneHidden,
-        })}
-        onClick={toggleCode}
-      >
-        <Icons.Code size={16} />
-      </div>
-      <div
-        className={cx(styles.Hider, {
-          active: activePane === 'explorer' && !leftPaneHidden,
-        })}
-        onClick={toggleExplorer}
+        className={cx(styles.Hider, { active: activePane === 'explorer-diagram' })}
+        onClick={() => setActivePane('explorer-diagram')}
       >
         <Icons.Layers size={16} />
       </div>

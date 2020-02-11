@@ -1,21 +1,20 @@
 import cx from 'classnames';
-import { Resizable } from 're-resizable';
 import React, { useEffect, useRef, useState } from 'react';
 import { GraphController } from '../Graph';
 import * as styles from './style/Editor';
 import { sizeSidebar } from '../vars';
-import { Menu } from './Menu';
+import { Menu, ActivePane } from './Menu';
 import { CodePane, Explorer } from './code';
 
 import { c, cypressGet } from '../cypress_constants';
 import { EditorNode } from '../Models';
+import { DynamicResize } from './code/Components';
 
 export interface CodeEditorOuterProps {
   readonly?: boolean;
   placeholder?: string;
 }
 export type EditorProps = {
-  editorVisible: boolean;
   schema?: {
     code: string;
     libraries?: string;
@@ -25,14 +24,13 @@ export type EditorProps = {
 
 export interface MenuState {
   leftPaneHidden?: boolean;
-  activePane: 'code' | 'explorer';
+  activePane: ActivePane;
 }
 
 const controller = new GraphController();
 export const Editor = ({
   graphController,
   readonly,
-  editorVisible,
   placeholder,
   schema = {
     code: '',
@@ -47,31 +45,40 @@ export const Editor = ({
   const [code, setCode] = useState('');
   const [libraries, setSchemaLibraries] = useState('');
   const [sidebarSize, setSidebarSize] = useState(sizeSidebar);
-  const [menuState, setMenuState] = useState<MenuState>({
-    activePane: 'code',
-    leftPaneHidden: false,
-  });
+  const [menuState, setMenuState] = useState<ActivePane>('code-diagram');
+  const [animationFrame, setAnimationFrame] = useState<number>();
 
   useEffect(() => {
-    window.requestAnimationFrame(() => {
-      if (!containerRef.current) {
-        return;
+    if (menuState === 'code') {
+      if (animationFrame) {
+        window.cancelAnimationFrame(animationFrame);
       }
-      controller.setDOMElement(containerRef.current);
-      controller.setPassSchema((code, stitches) => {
-        setSchemaLibraries(stitches);
-        setCode(code);
-        setErrors('');
-      });
-      controller.setPassDiagramErrors(setErrors);
-      controller.setReadOnly(!!readonly);
-      controller.setPassSelectedNodes(setNodes);
-      if (graphController) {
-        graphController(controller);
+      setControllerMounted(false);
+      return;
+    }
+    if (!controllerMounted) {
+      if (containerRef.current) {
+        console.log(animationFrame);
+        setControllerMounted(true);
+        setAnimationFrame(
+          window.requestAnimationFrame(() => {
+            controller.setDOMElement(containerRef.current!);
+            controller.setPassSchema((code, stitches) => {
+              setSchemaLibraries(stitches);
+              setCode(code);
+              setErrors('');
+            });
+            controller.setPassDiagramErrors(setErrors);
+            controller.setReadOnly(!!readonly);
+            controller.setPassSelectedNodes(setNodes);
+            if (graphController) {
+              graphController(controller);
+            }
+          }),
+        );
       }
-      setControllerMounted(true);
-    });
-  }, []);
+    }
+  }, [containerRef.current, menuState]);
 
   useEffect(() => {
     controllerMounted && controller.setReadOnly(!!readonly);
@@ -84,13 +91,13 @@ export const Editor = ({
         libraries: schema.libraries || '',
       });
     }
-  }, [schema.libraries, schema.code, controllerMounted.toString()]);
+  }, [schema.libraries, schema.code, controllerMounted]);
 
   useEffect(() => {
     if (controller && controllerMounted) {
       controller.resizeDiagram();
     }
-  }, [menuState.leftPaneHidden, editorVisible]);
+  }, [menuState]);
 
   return (
     <div
@@ -102,59 +109,31 @@ export const Editor = ({
         }
         if (e.key.toLowerCase() === 'f' && (e.metaKey || e.ctrlKey)) {
           e.preventDefault();
-          setMenuState({
-            ...menuState,
-            activePane: 'explorer',
-            leftPaneHidden: false,
-          });
+          setMenuState('explorer-diagram');
         }
       }}
     >
-      <Menu
-        {...menuState}
-        toggleCode={() =>
-          setMenuState({
-            ...menuState,
-            activePane: 'code',
-          })
-        }
-        toggleExplorer={() =>
-          setMenuState({
-            ...menuState,
-            activePane: 'explorer',
-          })
-        }
-        toggleShow={() => {
-          setMenuState({
-            ...menuState,
-            leftPaneHidden: !menuState.leftPaneHidden,
-          });
-        }}
-      />
-      {editorVisible === true && !menuState.leftPaneHidden && (
-        <Resizable
-          defaultSize={{
-            width: sizeSidebar,
-            height: '100%',
-          }}
-          style={{
-            display: 'flex',
-            flexFlow: 'row nowrap',
-            zIndex: 3,
-          }}
-          onResize={(e, r, c, w) => {
+      <Menu activePane={menuState} setActivePane={setMenuState} />
+      {menuState !== 'diagram' && (
+        <DynamicResize
+          disabledClass={menuState === 'code' ? styles.FullScreenContainer : undefined}
+          resizeCallback={(e, r, c, w) => {
             setSidebarSize(c.getBoundingClientRect().width);
             if (controller && controllerMounted) {
               controller.resizeDiagram();
             }
           }}
-          maxWidth="100%"
-          minWidth="1"
+          width={menuState === 'code' ? '100%' : sizeSidebar}
         >
-          <div className={cx(styles.Sidebar)} data-cy={cypressGet(c, 'sidebar', 'name')}>
-            {menuState.activePane === 'code' && (
+          <div
+            className={cx(styles.Sidebar, {
+              [styles.FullScreenContainer]: menuState === 'code',
+            })}
+            data-cy={cypressGet(c, 'sidebar', 'name')}
+          >
+            {(menuState === 'code' || menuState === 'code-diagram') && (
               <CodePane
-                size={sidebarSize}
+                size={menuState === 'code' ? 100000 : sidebarSize}
                 onChange={(v) =>
                   controller.loadGraphQLAndLibraries({
                     schema: v,
@@ -167,20 +146,22 @@ export const Editor = ({
                 readonly={readonly}
               />
             )}
-            {menuState.activePane === 'explorer' && <Explorer selectedNodes={nodes} controller={controller} />}
+            {menuState === 'explorer-diagram' && <Explorer selectedNodes={nodes} controller={controller} />}
           </div>
-        </Resizable>
+        </DynamicResize>
       )}
-      <div
-        style={{
-          flex: 1,
-          overflow: 'hidden',
-        }}
-        data-cy={cypressGet(c, 'diagram', 'name')}
-        onFocus={() => setDiagramFocus(true)}
-        onBlur={() => setDiagramFocus(false)}
-        ref={containerRef}
-      />
+      {menuState !== 'code' && (
+        <div
+          style={{
+            flex: 1,
+            overflow: 'hidden',
+          }}
+          data-cy={cypressGet(c, 'diagram', 'name')}
+          onFocus={() => setDiagramFocus(true)}
+          onBlur={() => setDiagramFocus(false)}
+          ref={containerRef}
+        />
+      )}
       {errors && <div className={styles.ErrorContainer}>{errors}</div>}
     </div>
   );
