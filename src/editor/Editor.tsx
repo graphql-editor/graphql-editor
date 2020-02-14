@@ -46,36 +46,28 @@ export const Editor = ({
   const [libraries, setSchemaLibraries] = useState('');
   const [sidebarSize, setSidebarSize] = useState(sizeSidebar);
   const [menuState, setMenuState] = useState<ActivePane>('code-diagram');
-  const [animationFrame, setAnimationFrame] = useState<number>();
 
   useEffect(() => {
     if (menuState === 'code') {
-      if (animationFrame) {
-        window.cancelAnimationFrame(animationFrame);
-      }
-      setControllerMounted(false);
       return;
     }
     if (!controllerMounted) {
       if (containerRef.current) {
-        console.log(animationFrame);
         setControllerMounted(true);
-        setAnimationFrame(
-          window.requestAnimationFrame(() => {
-            controller.setDOMElement(containerRef.current!);
-            controller.setPassSchema((code, stitches) => {
-              setSchemaLibraries(stitches);
-              setCode(code);
-              setErrors('');
-            });
-            controller.setPassDiagramErrors(setErrors);
-            controller.setReadOnly(!!readonly);
-            controller.setPassSelectedNodes(setNodes);
-            if (graphController) {
-              graphController(controller);
-            }
-          }),
-        );
+        window.requestAnimationFrame(() => {
+          controller.setDOMElement(containerRef.current!);
+          controller.setPassSchema((code, stitches) => {
+            setSchemaLibraries(stitches);
+            setCode(code);
+            setErrors('');
+          });
+          controller.setPassDiagramErrors(setErrors);
+          controller.setReadOnly(!!readonly);
+          controller.setPassSelectedNodes(setNodes);
+          if (graphController) {
+            graphController(controller);
+          }
+        });
       }
     }
   }, [containerRef.current, menuState]);
@@ -150,18 +142,17 @@ export const Editor = ({
           </div>
         </DynamicResize>
       )}
-      {menuState !== 'code' && (
-        <div
-          style={{
-            flex: 1,
-            overflow: 'hidden',
-          }}
-          data-cy={cypressGet(c, 'diagram', 'name')}
-          onFocus={() => setDiagramFocus(true)}
-          onBlur={() => setDiagramFocus(false)}
-          ref={containerRef}
-        />
-      )}
+      <div
+        style={{
+          flex: 1,
+          overflow: 'hidden',
+          display: menuState !== 'code' ? 'block' : 'none',
+        }}
+        data-cy={cypressGet(c, 'diagram', 'name')}
+        onFocus={() => setDiagramFocus(true)}
+        onBlur={() => setDiagramFocus(false)}
+        ref={containerRef}
+      />
       {errors && <div className={styles.ErrorContainer}>{errors}</div>}
     </div>
   );

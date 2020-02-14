@@ -110,7 +110,15 @@ export const language = <monaco.languages.IMonarchLanguage | monaco.Thenable<mon
             '@default': 'identifier',
           },
         },
-      ], // to show class names nicely
+      ],
+      [
+        /@[\w\$]*/,
+        {
+          cases: {
+            '@default': 'identifier',
+          },
+        },
+      ],
 
       // whitespace
       { include: '@whitespace' },
