@@ -8,9 +8,10 @@ export const Editor = style({
   flex: 1,
 });
 
-export const DiagramContainer = style({
+export const FullScreenContainer = style({
   flex: 1,
   alignSelf: 'stretch',
+  height: '100%',
 });
 export const ErrorContainer = style({
   position: 'absolute',

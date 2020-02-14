@@ -1,6 +1,5 @@
 import {
   Directive,
-  GraphQLNodeParams,
   Helpers,
   Instances,
   TypeDefinition,
@@ -13,8 +12,8 @@ import {
   Value,
   ValueDefinition,
 } from 'graphql-zeus';
-import { Node, NodeOption } from 'graphsource';
-import { EditorNodeDefinition } from '../../Models';
+import { NodeOption } from 'graphsource';
+import { EditorNodeDefinition, EditorNode } from '../../Models';
 import { ArgumentInstance } from './Argument';
 import { ExtensionInstance } from './Extension';
 import { FieldInstance } from './Field';
@@ -220,7 +219,7 @@ export class TypeDefinitions {
         },
       ],
     });
-  static DirectiveDefinition = (stitchNodes: Array<Node<GraphQLNodeParams>>) =>
+  static DirectiveDefinition = (stitchNodes: Array<EditorNode>) =>
     generateTypeDefinition({
       help: help.directive,
       type: TypeSystemDefinitionDisplayMap[TypeSystemDefinition.DirectiveDefinition],
@@ -257,7 +256,7 @@ export class TypeDefinitions {
   /**
    * method generating definitions
    */
-  static generate(stitchNodes: Array<Node<GraphQLNodeParams>>): EditorNodeDefinition[] {
+  static generate(stitchNodes: Array<EditorNode>): EditorNodeDefinition[] {
     const ObjectTypeDefinition = TypeDefinitions.ObjectTypeDefinition();
     ObjectTypeDefinition.instances!.push(ExtensionInstance(ObjectTypeDefinition, TypeExtension.ObjectTypeExtension));
 

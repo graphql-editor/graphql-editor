@@ -119,11 +119,6 @@ export const language = <monaco.languages.IMonarchLanguage | monaco.Thenable<mon
       [/[{}()\[\]]/, '@brackets'],
       [/@symbols/, { cases: { '@operators': 'operator', '@default': '' } }],
 
-      // @ annotations.
-      // As an example, we emit a debugging log message on these tokens.
-      // Note: message are supressed during the first load -- change some lines to see them.
-      [/@\s*[a-zA-Z_\$][\w\$]*/, { token: 'annotation', log: 'annotation token: $0' }],
-
       // numbers
       [/\d*\.\d+([eE][\-+]?\d+)?/, 'number.float'],
       [/0[xX][0-9a-fA-F]+/, 'number.hex'],
@@ -132,14 +127,14 @@ export const language = <monaco.languages.IMonarchLanguage | monaco.Thenable<mon
       // delimiter: after number because of .\d floats
       [/[;,.]/, 'delimiter'],
 
-      [/"""/, { token: 'string.doc', next: '@mlstring', nextEmbedded: 'markdown' }],
+      [`"""`, { token: 'string.doc', next: '@mlstring', nextEmbedded: 'markdown' }],
 
       // strings
       [/"([^"\\]|\\.)*$/, 'string.invalid'], // non-teminated string
       [/"/, { token: 'string.quote', bracket: '@open', next: '@string' }],
     ],
 
-    mlstring: [[/"""/, { token: 'string.doc', next: '@pop', nextEmbedded: '@pop' }]],
+    mlstring: [[`"""`, { token: 'string.doc', next: '@pop', nextEmbedded: '@pop' }]],
 
     string: [
       [/[^\\"]+/, 'string'],

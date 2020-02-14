@@ -47,6 +47,7 @@ export const CodePane = (props: CodePaneProps) => {
       m.updateOptions({
         fontFamily,
       });
+      monaco.editor.remeasureFonts();
       m.setValue(schema);
       m.onDidChangeModelContent((e) => {
         const value = m!.getModel()!.getValue();
