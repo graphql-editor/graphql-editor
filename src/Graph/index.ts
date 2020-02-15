@@ -45,9 +45,6 @@ export class GraphController {
    * Set DOM element which holds diagram
    */
   setDOMElement = (element: HTMLElement): void => {
-    if (this.diagram) {
-      delete this.diagram;
-    }
     this.diagram = new Diagram(element, {
       disableLinkOperations: true,
       drawingDistance: {
