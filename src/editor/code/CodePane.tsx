@@ -1,6 +1,6 @@
 import cx from 'classnames';
 import * as monaco from 'monaco-editor';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useLayoutEffect } from 'react';
 import * as Icon from '../icons';
 import { StatusDot, TitleOfPane } from './Components';
 import * as styles from './style/Code';
@@ -26,6 +26,7 @@ export type CodePaneProps = {
 monaco.languages.register({ id: 'graphqle' });
 monaco.languages.setLanguageConfiguration('graphqle', conf);
 monaco.languages.setMonarchTokensProvider('graphqle', language);
+monaco.editor.defineTheme('graphql-editor', theme);
 
 /**
  * React compontent holding GraphQL IDE
@@ -42,7 +43,7 @@ export const CodePane = (props: CodePaneProps) => {
       if (monacoGql) {
         monacoGql.dispose();
       }
-      monaco.editor.defineTheme('graphql-editor', theme);
+
       const m = monaco.editor.create(editor.current, settings());
       m.updateOptions({
         fontFamily,
@@ -85,6 +86,10 @@ export const CodePane = (props: CodePaneProps) => {
   useEffect(() => {
     monacoGql?.setValue(schema);
   }, [schema]);
+  useLayoutEffect(() => {
+    monaco.editor.remeasureFonts();
+  }, [schema]);
+
 
   const monacoEditorModel = monacoGql?.getModel();
   const monacoEditorValue = monacoEditorModel && monacoEditorModel.getValue();
