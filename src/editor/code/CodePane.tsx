@@ -90,7 +90,6 @@ export const CodePane = (props: CodePaneProps) => {
     monaco.editor.remeasureFonts();
   }, [schema]);
 
-
   const monacoEditorModel = monacoGql?.getModel();
   const monacoEditorValue = monacoEditorModel && monacoEditorModel.getValue();
   const holder = useRef<HTMLDivElement>(null);
