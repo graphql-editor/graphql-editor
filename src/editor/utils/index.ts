@@ -1,4 +1,4 @@
-import { EditorNode } from '../../../Models';
+import { EditorNode } from '../../Models';
 
 export type KeyboardNavDirection = 'ArrowDown' | 'ArrowUp' | 'ArrowRight' | 'ArrowLeft';
 

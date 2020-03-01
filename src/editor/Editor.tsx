@@ -4,7 +4,8 @@ import { GraphController } from '../Graph';
 import * as styles from './style/Editor';
 import { sizeSidebar } from '../vars';
 import { Menu, ActivePane } from './Menu';
-import { CodePane, Explorer } from './code';
+import { CodePane } from './code';
+import { Explorer } from './explorer';
 
 import { c, cypressGet } from '../cypress_constants';
 import { EditorNode } from '../Models';
@@ -40,6 +41,7 @@ export const Editor = ({
   const [controllerMounted, setControllerMounted] = useState(false);
   const [diagramFocus, setDiagramFocus] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [selectedNodes, setSelectedNodes] = useState<EditorNode[]>([]);
   const [nodes, setNodes] = useState<EditorNode[]>([]);
   const [errors, setErrors] = useState('');
   const [code, setCode] = useState('');
@@ -60,10 +62,11 @@ export const Editor = ({
             setSchemaLibraries(stitches);
             setCode(code);
             setErrors('');
+            setNodes([...controller.nodes]);
           });
           controller.setPassDiagramErrors(setErrors);
           controller.setReadOnly(!!readonly);
-          controller.setPassSelectedNodes(setNodes);
+          controller.setPassSelectedNodes(setSelectedNodes);
           if (graphController) {
             graphController(controller);
           }
@@ -138,7 +141,13 @@ export const Editor = ({
                 readonly={readonly}
               />
             )}
-            {menuState === 'explorer-diagram' && <Explorer selectedNodes={nodes} controller={controller} />}
+            {menuState === 'explorer-diagram' && (
+              <Explorer
+                selectedNodes={selectedNodes}
+                visibleNodes={nodes}
+                centerOnNodeByID={controller.centerOnNodeByID}
+              />
+            )}
           </div>
         </DynamicResize>
       )}

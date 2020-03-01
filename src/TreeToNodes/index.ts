@@ -167,6 +167,7 @@ export class TreeToNodes {
       defs = nodeDefinitions.filter((nd) => nd.type === root.type.name)!;
     }
     let def = defs[0];
+    console.log(root);
     if (defs.length > 1) {
       def = defs.find((d) => TreeToNodes.compareData(d.data, root.data))!;
     }

@@ -829,47 +829,7 @@ schema{
 }
 `;
 export const testSchema1 = `
-
-# GraphQL from graph at:
-# graphqleditor.com
-
-type Person{
-	name : String!
+extend type User{
+	age: Int
 }
-
-type Car{
-	passenger : Person
-}
-
-extend type Person{
-	age : Int
-}
-
-scalar ObjectID
-
-directive @rateLimit on FIELD_DEFINITION
-
-directive @ddd(
-	ddd : Address
-) on SCALAR
-
-extend scalar ObjectID @ddd(
-	ddd : {street : "Naftowa",city : "Bia"}
-) @sss
-
-directive @sss on SCALAR
-
-input Address{
-	street : String!
-}
-
-extend input Address{
-	city : String
-}
-
-input PersonInput{
-	address : Address
-}
-
-
 `;

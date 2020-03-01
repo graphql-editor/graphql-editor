@@ -27,7 +27,11 @@ export const UIDiagramFull = style({
 export const App = () => {
   const [mySchema] = useState({
     code: testSchema1,
-    libraries: '',
+    libraries: `
+    type User{
+      name:String!
+    }
+    `,
   });
   return (
     <div className={UiDiagram}>
