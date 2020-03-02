@@ -54,8 +54,7 @@ export const Editor = ({
       return;
     }
     if (!controllerMounted) {
-      if (containerRef.current) {
-        setControllerMounted(true);
+      if (containerRef.current && containerRef.current !== null) {
         window.requestAnimationFrame(() => {
           controller.setDOMElement(containerRef.current!);
           controller.setPassSchema((code, stitches) => {
@@ -70,6 +69,7 @@ export const Editor = ({
           if (graphController) {
             graphController(controller);
           }
+          setControllerMounted(true);
         });
       }
     }
