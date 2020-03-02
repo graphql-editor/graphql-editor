@@ -27,7 +27,7 @@ export class GraphController {
     node.inputs
       ? [...node.inputs, node.inputs.map(GraphController.flatNodeInputs)].flat(Infinity)
       : ([] as EditorNode[]);
-  public definitions?: EditorNodeDefinition[];
+  public definitions: EditorNodeDefinition[] = [];
   public stitchDefinitions: EditorNodeDefinition[] = [];
   public schema = '';
   public librariesCode = '';
@@ -71,7 +71,10 @@ export class GraphController {
    */
   generateBasicDefinitions = () => {
     this.definitions = Definitions.generate([]);
-    this.diagram!.setDefinitions(this.definitions);
+    if (!this.diagram) {
+      throw new Error(`Cannot run generateBasicDefinitions as diagram is not ready`);
+    }
+    this.diagram.setDefinitions(this.definitions);
   };
   /**
    * Checks if graph is empty
@@ -83,7 +86,10 @@ export class GraphController {
    * Call diagram resize
    */
   resizeDiagram = (): void => {
-    this.diagram!.autoResize();
+    if (!this.diagram) {
+      throw new Error(`Cannot run resizeDiagram as diagram is not ready`);
+    }
+    this.diagram.autoResize();
   };
   /**
    * Set function to be called on serialise
@@ -102,13 +108,19 @@ export class GraphController {
    * Function to control editable state of diagram
    */
   setReadOnly = (isReadOnly: boolean) => {
-    this.diagram!.setReadOnly(isReadOnly);
+    if (!this.diagram) {
+      throw new Error(`Cannot run setReadOnly as diagram is not ready`);
+    }
+    this.diagram.setReadOnly(isReadOnly);
   };
   /**
    * Move grpah to 0,0
    */
   zeroGraph = () => {
-    this.diagram!.zeroDiagram();
+    if (!this.diagram) {
+      throw new Error(`Cannot run zeroGraph as diagram is not ready`);
+    }
+    this.diagram.zeroDiagram();
   };
   /**
    * Reset Graph clearing all the nodes and links from it
@@ -116,10 +128,13 @@ export class GraphController {
   resetGraph = () => {
     const nodes: EditorNode[] = [];
     const links: Link[] = [];
-    this.definitions = Definitions.generate(this.stitchNodes.nodes).concat(this.stitchDefinitions!);
-    this.diagram!.setNodes(nodes);
-    this.diagram!.setLinks(links);
-    this.diagram!.setDefinitions(this.definitions);
+    this.definitions = Definitions.generate(this.stitchNodes.nodes).concat(this.stitchDefinitions);
+    if (!this.diagram) {
+      throw new Error(`Cannot run resetGraph as diagram is not ready`);
+    }
+    this.diagram.setNodes(nodes);
+    this.diagram.setLinks(links);
+    this.diagram.setDefinitions(this.definitions);
     this.serialise({
       nodes,
       links,
@@ -159,8 +174,11 @@ export class GraphController {
    */
   loadGraphQL = (schema: string, forceZero?: boolean) => {
     const zeroGraph = this.schema.length === 0 && !!schema;
-    this.definitions = Definitions.generate(this.stitchNodes.nodes).concat(this.stitchDefinitions!);
-    this.diagram!.setDefinitions(this.definitions);
+    this.definitions = Definitions.generate(this.stitchNodes.nodes).concat(this.stitchDefinitions);
+    if (!this.diagram) {
+      throw new Error(`Cannot run loadGraphQL as diagram is not ready`);
+    }
+    this.diagram.setDefinitions(this.definitions);
     if (schema.length === 0) {
       this.resetGraph();
       return;
@@ -173,7 +191,7 @@ export class GraphController {
       ),
       this.definitions,
     );
-    this.diagram!.setDefinitions(this.definitions);
+    this.diagram.setDefinitions(this.definitions);
     this.load(result.nodes, result.links);
     if (zeroGraph || forceZero) {
       this.zeroGraph();
@@ -202,9 +220,15 @@ export class GraphController {
     this.stitchDefinitions = basicDefinitions.filter((bd) => !rememberBasicDefinitions.find((rbd) => rbd.id === bd.id));
   };
   centerOnNodeByID = (id: string) => {
-    const node = this.nodes.find((n) => n.id === id)!;
-    this.diagram!.selectNode(node);
-    this.diagram!.centerOnNode(node);
+    const node = this.nodes.find((n) => n.id === id);
+    if (!this.diagram) {
+      throw new Error(`Cannot run centerOnNodeByID as diagram is not ready`);
+    }
+    if (!node) {
+      throw new Error('Cannot center on that node as it doesnt exist');
+    }
+    this.diagram.selectNode(node);
+    this.diagram.centerOnNode(node);
     this.selectedNodes = [node];
   };
 
@@ -215,7 +239,7 @@ export class GraphController {
         nodes: deserializedOldVersion.nodes,
         links: deserializedOldVersion.links,
       },
-      this.definitions!,
+      this.definitions,
     );
     this.load(deserialized.nodes, deserialized.links);
     return deserialized;
@@ -227,7 +251,7 @@ export class GraphController {
    * @memberof GraphController
    */
   loadSerialized = (serializedDiagram: ParserTree) => {
-    const deserialized = TreeToNodes.resolveTree(serializedDiagram, this.definitions!);
+    const deserialized = TreeToNodes.resolveTree(serializedDiagram, this.definitions);
     this.load(deserialized.nodes, deserialized.links);
   };
   /**
@@ -239,7 +263,12 @@ export class GraphController {
   };
   setPassSchema = (fn: (schema: string, stitches: string) => void) => (this.passSchema = fn);
   setPassDiagramErrors = (fn: (errors: string) => void) => (this.passDiagramErrors = fn);
-  screenShot = async () => this.diagram!.screenShot();
+  screenShot = async () => {
+    if (!this.diagram) {
+      throw new Error(`Cannot run screenShot as diagram is not ready`);
+    }
+    return this.diagram.screenShot();
+  };
   /**
    * Load nodes and links into diagram
    *
@@ -247,8 +276,11 @@ export class GraphController {
    * @param links
    */
   private load = (nodes: EditorNode[], links: Link[]) => {
-    this.diagram!.setNodes(nodes, true);
-    this.diagram!.setLinks(links);
+    if (!this.diagram) {
+      throw new Error(`Cannot run load as diagram is not ready`);
+    }
+    this.diagram.setNodes(nodes, true);
+    this.diagram.setLinks(links);
     this.serialise({
       nodes,
       links,
