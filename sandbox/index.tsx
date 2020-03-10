@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { render } from 'react-dom';
 import { style } from 'typestyle';
 import { Editor } from '../src/index';
-
 export const Full = style({
   backgroundColor: '#444444',
   position: 'relative',
@@ -26,7 +25,7 @@ export const UIDiagramFull = style({
 
 export const App = () => {
   const [mySchema] = useState({
-    code: ``,
+    code: '',
   });
   return (
     <div className={UiDiagram}>
