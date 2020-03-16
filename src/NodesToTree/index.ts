@@ -45,7 +45,7 @@ export class NodesToTree {
             ? (n.options as Directive[])
             : undefined,
       },
-      data: n.definition.data,
+      data: n.definition.data!,
       directives: n.inputs
         ? n.inputs
             .filter((i) => i.definition.type === Helpers.Directives)

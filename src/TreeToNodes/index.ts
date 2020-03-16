@@ -74,6 +74,9 @@ export class TreeToNodes {
     const createdNode = TreeToNodes.connectAndCreate(
       {
         name: Helpers.Implements,
+        data: {
+          type: Helpers.Implements,
+        },
         type: {
           name: Helpers.Implements,
         },
@@ -120,6 +123,9 @@ export class TreeToNodes {
     return TreeToNodes.connectAndCreate(
       {
         name: Helpers.Directives,
+        data: {
+          type: Helpers.Directives,
+        },
         type: {
           name: Helpers.Directives,
         },
