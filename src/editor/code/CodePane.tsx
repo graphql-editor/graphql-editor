@@ -40,19 +40,8 @@ export const CodePane = (props: CodePaneProps) => {
   const generateEnabled = !readonly && errors.length === 0;
 
   useEffect(() => {
-    return () => {
-      if (monacoGql) {
-        const model = monacoGql.getModel();
-        monacoGql.dispose();
-        if (model) {
-          model.dispose();
-        }
-      }
-    };
-  }, []);
-
-  useEffect(() => {
     if (editor.current) {
+      monacoGql?.dispose();
       const m = monaco.editor.create(editor.current, settings());
       m.updateOptions({
         fontFamily,
