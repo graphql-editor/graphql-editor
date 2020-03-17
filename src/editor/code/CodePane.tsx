@@ -42,6 +42,10 @@ export const CodePane = (props: CodePaneProps) => {
   useEffect(() => {
     if (editor.current) {
       monacoGql?.dispose();
+      const model = monacoGql?.getModel();
+      if (model) {
+        model.dispose();
+      }
       const m = monaco.editor.create(editor.current, settings());
       m.updateOptions({
         fontFamily,
