@@ -18,6 +18,7 @@ export const UiDiagram = style({
   alignSelf: 'stretch',
   display: 'flex',
   position: 'relative',
+  marginLeft: 100,
 });
 export const UIDiagramFull = style({
   marginLeft: '-100vh',

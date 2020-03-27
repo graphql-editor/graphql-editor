@@ -91,7 +91,7 @@
     "faker": "^4.1.0",
     "graphql": "^14.0.2",
     "graphql-zeus": "^2.6.3",
-    "graphsource": "^1.5.1",
+    "graphsource": "^1.5.5",
     "moment": "^2.21.0",
     "query-string": "^6.2.0",
     "re-resizable": "^6.1.1",
