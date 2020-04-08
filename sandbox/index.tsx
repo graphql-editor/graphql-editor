@@ -18,31 +18,24 @@ export const UiDiagram = style({
   alignSelf: 'stretch',
   display: 'flex',
   position: 'relative',
-  marginLeft: 100,
 });
 export const UIDiagramFull = style({
   marginLeft: '-100vh',
 });
 
 export const App = () => {
-  const [mySchema, setMySchema] = useState({
-    code: 'type Person{ name: String }',
+  const [mySchema] = useState({
+    code: `type Person{ 
+      """
+        description of name
+      """
+      name: String
+     }`,
   });
-  const [editorVisible, setEditorVisible] = useState(true);
   return (
-    <>
-      <div
-        onClick={() => {
-          setEditorVisible(!editorVisible);
-          setMySchema({
-            code: 'type Car{ name: String }',
-          });
-        }}
-      >
-        Hide
-      </div>
-      <div className={UiDiagram}>{editorVisible && <Editor schema={mySchema} />}</div>
-    </>
+    <div className={UiDiagram}>
+      <Editor schema={mySchema} />
+    </div>
   );
 };
 
