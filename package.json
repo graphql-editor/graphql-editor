@@ -14,6 +14,7 @@
     "test": "jest",
     "e2e:test": "tsc --watch --project cypress/tsconfig.json | cypress open",
     "docs": "typedoc --mode file --out docs  --theme minimal --ignoreCompilerErrors --target ES6 ",
+    "updatedeps": "npm i graphql-zeus@latest graphsource@latest",
     "lint": "eslint \"./src/**/*.{ts,js}\" --quiet --fix && prettier --write \"./src/**/*.{ts,js}\" "
   },
   "resolutions": {
@@ -90,8 +91,8 @@
     "classnames": "^2.2.5",
     "faker": "^4.1.0",
     "graphql": "^14.0.2",
-    "graphql-zeus": "^2.6.3",
-    "graphsource": "^1.5.6",
+    "graphql-zeus": "^2.6.4",
+    "graphsource": "^1.5.7",
     "moment": "^2.21.0",
     "query-string": "^6.2.0",
     "re-resizable": "^6.1.1",

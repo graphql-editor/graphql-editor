@@ -28,6 +28,10 @@ export const App = () => {
     code: `type Person{ 
       """
         description of name
+          dsdas 
+            sad incorre
+            dsad
+            sad
       """
       name: String
      }`,
