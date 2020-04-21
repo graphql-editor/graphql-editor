@@ -24,7 +24,7 @@ export const UIDiagramFull = style({
 });
 
 export const App = () => {
-  const [mySchema] = useState({
+  const [mySchema, setMySchema] = useState({
     code: `type Person{ 
       """
         description of name
@@ -36,9 +36,23 @@ export const App = () => {
       name: String
      }`,
   });
+  const [hide, setHide] = useState(false);
   return (
     <div className={UiDiagram}>
-      <Editor schema={mySchema} />
+      <button
+        onClick={() => {
+          setHide(!hide);
+          setMySchema({
+            code: `
+            scalar URL
+            scalar Pizza
+            `,
+          });
+        }}
+      >
+        hide
+      </button>
+      {!hide && <Editor schema={mySchema} />}
     </div>
   );
 };

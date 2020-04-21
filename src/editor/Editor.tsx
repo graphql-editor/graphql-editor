@@ -1,5 +1,5 @@
 import cx from 'classnames';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useLayoutEffect } from 'react';
 import { GraphController } from '../Graph';
 import * as styles from './style/Editor';
 import { sizeSidebar } from '../vars';
@@ -28,7 +28,6 @@ export interface MenuState {
   activePane: ActivePane;
 }
 
-const controller = new GraphController();
 export const Editor = ({
   graphController,
   readonly,
@@ -48,8 +47,9 @@ export const Editor = ({
   const [libraries, setSchemaLibraries] = useState('');
   const [sidebarSize, setSidebarSize] = useState(sizeSidebar);
   const [menuState, setMenuState] = useState<ActivePane>('code-diagram');
+  const [controller] = useState(new GraphController());
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (menuState === 'code') {
       return;
     }
