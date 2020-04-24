@@ -17,7 +17,7 @@ export interface CodePaneOuterProps {
 }
 
 export type CodePaneProps = {
-  size: number;
+  size: number | string;
   schema: string;
   onChange: (v: string) => void;
   libraries?: string;
@@ -82,6 +82,13 @@ export const CodePane = (props: CodePaneProps) => {
       setDecorationIds(newDecorationIds);
     }
   }, [JSON.stringify(errors)]);
+  useEffect(() => {
+    function handleResize() {
+      monacoGql?.layout();
+    }
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [monacoGql]);
   useEffect(() => {
     monacoGql?.layout();
   }, [size]);

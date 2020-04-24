@@ -10,22 +10,18 @@ import { Explorer } from './explorer';
 import { c, cypressGet } from '../cypress_constants';
 import { EditorNode } from '../Models';
 import { DynamicResize } from './code/Components';
+import { Theming } from '../Models/Themable';
 
-export interface CodeEditorOuterProps {
+export interface EditorProps extends Theming {
+  activePane?: ActivePane;
   readonly?: boolean;
   placeholder?: string;
-}
-export type EditorProps = {
   schema?: {
     code: string;
     libraries?: string;
   };
   graphController?: (controller: GraphController) => void;
-} & CodeEditorOuterProps;
-
-export interface MenuState {
-  leftPaneHidden?: boolean;
-  activePane: ActivePane;
+  onPaneChange?: (pane: ActivePane) => void;
 }
 
 export const Editor = ({
@@ -36,6 +32,9 @@ export const Editor = ({
     code: '',
     libraries: '',
   },
+  initialSizeOfSidebar = sizeSidebar,
+  activePane = 'code-diagram',
+  onPaneChange,
 }: EditorProps) => {
   const [controllerMounted, setControllerMounted] = useState(false);
   const [diagramFocus, setDiagramFocus] = useState(false);
@@ -45,9 +44,13 @@ export const Editor = ({
   const [errors, setErrors] = useState('');
   const [code, setCode] = useState('');
   const [libraries, setSchemaLibraries] = useState('');
-  const [sidebarSize, setSidebarSize] = useState(sizeSidebar);
-  const [menuState, setMenuState] = useState<ActivePane>('code-diagram');
+  const [sidebarSize, setSidebarSize] = useState<string | number>(initialSizeOfSidebar);
+  const [menuState, setMenuState] = useState<ActivePane>(activePane);
   const [controller] = useState(new GraphController());
+
+  useEffect(() => {
+    setMenuState(activePane);
+  }, [activePane]);
 
   useLayoutEffect(() => {
     if (menuState === 'code') {
@@ -108,7 +111,15 @@ export const Editor = ({
         }
       }}
     >
-      <Menu activePane={menuState} setActivePane={setMenuState} />
+      <Menu
+        activePane={menuState}
+        setActivePane={(pane) => {
+          setMenuState(pane);
+          if (onPaneChange) {
+            onPaneChange(pane);
+          }
+        }}
+      />
       {menuState !== 'diagram' && (
         <DynamicResize
           disabledClass={menuState === 'code' ? styles.FullScreenContainer : undefined}
@@ -118,7 +129,7 @@ export const Editor = ({
               controller.resizeDiagram();
             }
           }}
-          width={menuState === 'code' ? '100%' : sizeSidebar}
+          width={menuState === 'code' ? '100%' : sidebarSize}
         >
           <div
             className={cx(styles.Sidebar, {

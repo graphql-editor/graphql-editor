@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { render } from 'react-dom';
 import { style } from 'typestyle';
 import { Editor } from '../src/index';
+import { ActivePane } from '../src/editor/Menu';
 export const Full = style({
   backgroundColor: '#444444',
   position: 'relative',
@@ -22,8 +23,13 @@ export const UiDiagram = style({
 export const UIDiagramFull = style({
   marginLeft: '-100vh',
 });
+export const Actions = style({
+  width: 100,
+  height: '100%',
+});
 
 export const App = () => {
+  const [activePane, setActivePane] = useState<ActivePane>('code-diagram');
   const [mySchema, setMySchema] = useState({
     code: `type Person{ 
       """
@@ -39,20 +45,29 @@ export const App = () => {
   const [hide, setHide] = useState(false);
   return (
     <div className={UiDiagram}>
-      <button
-        onClick={() => {
-          setHide(!hide);
-          setMySchema({
-            code: `
+      <div className={Actions}>
+        <button
+          onClick={() => {
+            setHide(!hide);
+            setMySchema({
+              code: `
             scalar URL
             scalar Pizza
             `,
-          });
-        }}
-      >
-        hide
-      </button>
-      {!hide && <Editor schema={mySchema} />}
+            });
+          }}
+        >
+          hide
+        </button>
+        <button
+          onClick={() => {
+            setActivePane('code');
+          }}
+        >
+          code
+        </button>
+      </div>
+      {!hide && <Editor initialSizeOfSidebar={'25vw'} activePane={activePane} schema={mySchema} />}
     </div>
   );
 };
