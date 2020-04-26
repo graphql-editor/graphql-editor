@@ -1,4 +1,4 @@
-import { OperationType, Parser, ParserTree, Utils, Value } from 'graphql-zeus';
+import { Parser, ParserTree, Utils, Value, TreeToGraphQL } from 'graphql-zeus';
 import { Diagram, DiagramEvents, Link, Old, Serializer } from 'graphsource';
 import { EditorNodeDefinition, EditorNode } from '../Models';
 import { NodesToTree } from '../NodesToTree';
@@ -14,13 +14,15 @@ export class GraphController {
    * Strip schema keyword from schema - useful in schema stitch
    */
   static getGraphqlWithoutRootSchema = (schema: string): string => {
-    const basicDefinitions = Definitions.generate([]);
-    const tree = TreeToNodes.resolveTree(Parser.parse(schema), basicDefinitions);
-    const nodes = tree.nodes.map((n) => ({
+    const tree = Parser.parse(schema);
+    tree.nodes.map((n) => ({
       ...n,
-      options: n.options.filter((no) => !(no in OperationType)),
+      type: {
+        ...n.type,
+        operations: undefined,
+      },
     }));
-    return NodesToTree.parse(nodes, tree.links);
+    return TreeToGraphQL.parse(tree);
   };
 
   static flatNodeInputs = (node: EditorNode): EditorNode[] =>
