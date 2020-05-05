@@ -13,3 +13,4 @@ deploy-toolkit.yaml
 .idea
 __test__
 __mock__
+.python-version

@@ -7,7 +7,7 @@ import { Menu, ActivePane } from './Menu';
 import { CodePane } from './code';
 import { Explorer } from './explorer';
 
-import { c, cypressGet } from '../cypress_constants';
+import { GraphQLEditorCypress, cypressGet } from '../cypress_constants';
 import { EditorNode } from '../Models';
 import { DynamicResize } from './code/Components';
 import { Theming } from '../Models/Themable';
@@ -99,7 +99,7 @@ export const Editor = ({
 
   return (
     <div
-      data-cy={cypressGet(c, 'name')}
+      data-cy={cypressGet(GraphQLEditorCypress, 'name')}
       style={{ display: 'flex', flexFlow: 'row nowrap', height: '100%', width: '100%', alignItems: 'stretch' }}
       onKeyDown={(e) => {
         if (!diagramFocus) {
@@ -135,7 +135,7 @@ export const Editor = ({
             className={cx(styles.Sidebar, {
               [styles.FullScreenContainer]: menuState === 'code',
             })}
-            data-cy={cypressGet(c, 'sidebar', 'name')}
+            data-cy={cypressGet(GraphQLEditorCypress, 'sidebar', 'name')}
           >
             {(menuState === 'code' || menuState === 'code-diagram') && (
               <CodePane
@@ -168,7 +168,7 @@ export const Editor = ({
           overflow: 'hidden',
           display: menuState !== 'code' ? 'block' : 'none',
         }}
-        data-cy={cypressGet(c, 'diagram', 'name')}
+        data-cy={cypressGet(GraphQLEditorCypress, 'diagram', 'name')}
         onFocus={() => setDiagramFocus(true)}
         onBlur={() => setDiagramFocus(false)}
         ref={containerRef}

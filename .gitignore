@@ -12,3 +12,4 @@ lib
 .tscache
 tsconfig.tsbuildinfo
 *.tsbuildinfo*
+.python-version

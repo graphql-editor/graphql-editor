@@ -8,7 +8,7 @@ import { StatusDotProps } from './style/Components';
 import { theme, language, conf, settings, mapEditorErrorToMonacoDecoration } from './monaco';
 import { EditorError } from '../../validation';
 import { Workers } from '../../worker';
-import { cypressGet, c } from '../../cypress_constants';
+import { cypressGet, GraphQLEditorCypress } from '../../cypress_constants';
 import { fontFamily } from '../../vars';
 
 export interface CodePaneOuterProps {
@@ -139,7 +139,11 @@ export const CodePane = (props: CodePaneProps) => {
         </div>
         <StatusDot status={syncStatus} />
       </TitleOfPane>
-      <div className={cx(styles.CodeContainer)} ref={holder} data-cy={cypressGet(c, 'sidebar', 'code', 'name')}>
+      <div
+        className={cx(styles.CodeContainer)}
+        ref={holder}
+        data-cy={cypressGet(GraphQLEditorCypress, 'sidebar', 'code', 'name')}
+      >
         <div ref={editor} className={styles.Editor} />
       </div>
     </>

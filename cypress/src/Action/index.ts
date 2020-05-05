@@ -1,4 +1,4 @@
-import { cypressGet, c } from '../../../src/cypress_constants';
+import { cypressGet, GraphQLEditorCypress } from '../../../src/cypress_constants';
 
 export class Action {
   static click = (e: string) => Action.contains(e).click();
@@ -15,13 +15,13 @@ export class Action {
 
 export const getEditorLines = () => cy.get('.lines-content');
 export const typeInEditor = (text: string) => {
-  Action.contains(cypressGet(c, 'sidebar', 'code', 'name')).click(100, 100);
+  Action.contains(cypressGet(GraphQLEditorCypress, 'sidebar', 'code', 'name')).click(100, 100);
   cy.get('body').type(text);
 };
-export const Diagram = () => Action.contains(cypressGet(c, 'diagram', 'name'));
-export const Sidebar = () => Action.contains(cypressGet(c, 'sidebar', 'name'));
+export const Diagram = () => Action.contains(cypressGet(GraphQLEditorCypress, 'diagram', 'name'));
+export const Sidebar = () => Action.contains(cypressGet(GraphQLEditorCypress, 'sidebar', 'name'));
 export const pasteInEditor = (text: string) => {
-  Action.contains(cypressGet(c, 'sidebar', 'code', 'name')).click(100, 100);
+  Action.contains(cypressGet(GraphQLEditorCypress, 'sidebar', 'code', 'name')).click(100, 100);
   cy.get('body').type(text, {
     delay: 0,
     parseSpecialCharSequences: false,

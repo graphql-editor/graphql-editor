@@ -1,15 +1,21 @@
-export const c = {
+export const GraphQLEditorCypress = {
   name: 'editor',
   diagram: {
     name: 'diagram',
+  },
+  code: {
+    name: 'code',
   },
   sidebar: {
     name: 'sidebar',
     menu: {
       name: 'menu',
       children: {
-        hide: {
-          name: 'hide',
+        diagram: {
+          name: 'diagram',
+        },
+        codeDiagram: {
+          name: 'codeDiagram',
         },
         code: {
           name: 'code',
@@ -29,6 +35,17 @@ export const c = {
     },
     explorer: {
       name: 'explorer',
+      children: {
+        search: {
+          name: 'search',
+        },
+        filters: {
+          name: 'filters',
+        },
+        list: {
+          name: 'list',
+        },
+      },
     },
   },
 } as const;

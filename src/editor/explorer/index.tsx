@@ -5,7 +5,7 @@ import { theme } from '../../Graph/theme';
 import * as Icon from '../icons';
 import { TitleOfPane } from '../code/Components';
 import * as styles from './style/Explorer';
-import { cypressGet, c } from '../../cypress_constants';
+import { cypressGet, GraphQLEditorCypress } from '../../cypress_constants';
 import {
   getSearchExpandTree,
   getSelectedExpandTree,
@@ -70,7 +70,7 @@ export const Explorer = ({ visibleNodes, selectedNodes, centerOnNodeByID }: Expl
   return (
     <div
       className={styles.Background}
-      data-cy={cypressGet(c, 'sidebar', 'explorer', 'name')}
+      data-cy={cypressGet(GraphQLEditorCypress, 'sidebar', 'explorer', 'name')}
       onKeyDown={onInputKeyDown}
       tabIndex={0}
     >
@@ -78,6 +78,7 @@ export const Explorer = ({ visibleNodes, selectedNodes, centerOnNodeByID }: Expl
       <div className={styles.Title}>
         <input
           ref={inputEl}
+          data-cy={cypressGet(GraphQLEditorCypress, 'sidebar', 'explorer', 'children', 'search', 'name')}
           value={phrase}
           onChange={(e) => setPhrase(e.target.value)}
           type="text"
@@ -95,6 +96,7 @@ export const Explorer = ({ visibleNodes, selectedNodes, centerOnNodeByID }: Expl
                 }
               : {}),
           }}
+          data-cy={cypressGet(GraphQLEditorCypress, 'sidebar', 'explorer', 'children', 'filters', 'name')}
           onClick={() => {
             if (filtersOpen) {
               setFiltersOpen(!filtersOpen);
@@ -124,7 +126,10 @@ export const Explorer = ({ visibleNodes, selectedNodes, centerOnNodeByID }: Expl
           ))}
         </div>
       )}
-      <div className={styles.NodeList}>
+      <div
+        className={styles.NodeList}
+        data-cy={cypressGet(GraphQLEditorCypress, 'sidebar', 'explorer', 'children', 'list', 'name')}
+      >
         {resultNodes.map((n, index) => (
           <NodeComponent
             onChangeUnfolded={(node, unfolded) => {
