@@ -19,6 +19,7 @@ export interface EditorProps extends Theming {
   schema?: PassedSchema;
   onPaneChange?: (pane: ActivePane) => void;
   onSchemaChange?: (props: PassedSchema) => void;
+  onGraphChange?: (graph: GraphController) => void;
 }
 
 export const Editor = ({
@@ -30,6 +31,7 @@ export const Editor = ({
   },
   initialSizeOfSidebar = sizeSidebar,
   activePane = 'code-diagram',
+  onGraphChange,
   onSchemaChange,
   onPaneChange,
 }: EditorProps) => {
@@ -44,6 +46,7 @@ export const Editor = ({
   const [sidebarSize, setSidebarSize] = useState<string | number>(initialSizeOfSidebar);
   const [menuState, setMenuState] = useState<ActivePane>(activePane);
   const [controller] = useState(new GraphController());
+
   useEffect(() => {
     setMenuState(activePane);
   }, [activePane]);
@@ -55,6 +58,9 @@ export const Editor = ({
     if (!controllerMounted) {
       if (containerRef.current && containerRef.current !== null) {
         controller.setDOMElement(containerRef.current!);
+        if (onGraphChange) {
+          onGraphChange(controller);
+        }
         window.requestAnimationFrame(() => {
           controller.setPassSchema(({ code, libraries }) => {
             setSchemaLibraries(libraries || '');
