@@ -32,13 +32,13 @@ export class GraphController {
   public definitions: EditorNodeDefinition[] = [];
   public stitchDefinitions: EditorNodeDefinition[] = [];
   public schema = '';
-  public librariesCode = '';
+  public librariesCode: string | undefined;
   public nodes: EditorNode[] = [];
   public selectedNodes: EditorNode[] = [];
-  private stitchNodes: { nodes: EditorNode[]; links: Link[] } = { nodes: [], links: [] };
+  private libraryNodes: { nodes: EditorNode[]; links: Link[] } = { nodes: [], links: [] };
   private diagram?: Diagram;
   private passSelectedNodes?: (nodes: EditorNode[]) => void;
-  private passSchema?: (schema: string, stitches: string) => void;
+  private passSchema?: (schema: string, libraries?: string) => void;
   private passDiagramErrors?: (errors: string) => void;
   private onSerialize?: (schema: string) => void;
   private reloadSchema?: boolean;
@@ -130,7 +130,7 @@ export class GraphController {
   resetGraph = () => {
     const nodes: EditorNode[] = [];
     const links: Link[] = [];
-    this.definitions = Definitions.generate(this.stitchNodes.nodes).concat(this.stitchDefinitions);
+    this.definitions = Definitions.generate(this.libraryNodes.nodes).concat(this.stitchDefinitions);
     if (!this.diagram) {
       throw new Error(`Cannot run resetGraph as diagram is not ready`);
     }
@@ -150,8 +150,8 @@ export class GraphController {
    * Reset stitches code
    */
   resetStitches = () => {
-    this.stitchNodes.nodes = [];
-    this.stitchNodes.links = [];
+    this.libraryNodes.nodes = [];
+    this.libraryNodes.links = [];
     this.stitchDefinitions = [];
   };
   loadGraphQLAndLibraries = ({
@@ -176,7 +176,7 @@ export class GraphController {
    */
   loadGraphQL = (schema: string, forceZero?: boolean) => {
     const zeroGraph = this.schema.length === 0 && !!schema;
-    this.definitions = Definitions.generate(this.stitchNodes.nodes).concat(this.stitchDefinitions);
+    this.definitions = Definitions.generate(this.libraryNodes.nodes).concat(this.stitchDefinitions);
     if (!this.diagram) {
       throw new Error(`Cannot run loadGraphQL as diagram is not ready`);
     }
@@ -185,16 +185,24 @@ export class GraphController {
       this.resetGraph();
       return;
     }
-    const result = TreeToNodes.resolveTree(
-      Parser.parse(
-        schema,
-        this.stitchNodes.nodes.filter((n) => n.definition.root).map((n) => n.name),
-        this.librariesCode,
-      ),
-      this.definitions,
-    );
-    this.diagram.setDefinitions(this.definitions);
-    this.load(result.nodes, result.links);
+    if (this.librariesCode) {
+      const excludeLibraryNodesFromDiagram = Parser.parse(this.librariesCode);
+      const parsedResult = Parser.parse(schema, [], this.librariesCode);
+      const filteredResult: ParserTree = {
+        nodes: parsedResult.nodes.filter(
+          (n) =>
+            !excludeLibraryNodesFromDiagram.nodes.find((eln) => eln.name === n.name && eln.data.type === n.data.type),
+        ),
+      };
+      const result = TreeToNodes.resolveTree(filteredResult, this.definitions);
+      this.diagram.setDefinitions(this.definitions);
+      this.load(result.nodes, result.links);
+    } else {
+      const parsedResult = Parser.parse(schema);
+      const result = TreeToNodes.resolveTree(parsedResult, this.definitions);
+      this.diagram.setDefinitions(this.definitions);
+      this.load(result.nodes, result.links);
+    }
     if (zeroGraph || forceZero) {
       this.zeroGraph();
     } else {
@@ -207,7 +215,7 @@ export class GraphController {
   loadLibraries = (schema: string): void => {
     this.librariesCode = schema;
     if (schema.length === 0) {
-      this.stitchNodes = {
+      this.libraryNodes = {
         nodes: [],
         links: [],
       };
@@ -215,10 +223,10 @@ export class GraphController {
       return;
     }
     let basicDefinitions = Definitions.generate([]);
-    this.stitchNodes = TreeToNodes.resolveTree(Parser.parse(this.librariesCode), basicDefinitions);
-    basicDefinitions = Definitions.generate(this.stitchNodes.nodes);
+    this.libraryNodes = TreeToNodes.resolveTree(Parser.parse(this.librariesCode), basicDefinitions);
+    basicDefinitions = Definitions.generate(this.libraryNodes.nodes);
     const rememberBasicDefinitions = [...basicDefinitions];
-    this.stitchNodes = TreeToNodes.resolveTree(Parser.parse(this.librariesCode), basicDefinitions);
+    this.libraryNodes = TreeToNodes.resolveTree(Parser.parse(this.librariesCode), basicDefinitions);
     this.stitchDefinitions = basicDefinitions.filter((bd) => !rememberBasicDefinitions.find((rbd) => rbd.id === bd.id));
   };
   centerOnNodeByID = (id: string) => {
@@ -263,7 +271,7 @@ export class GraphController {
     const schema = await Utils.getFromUrl(url, header);
     this.loadGraphQL(schema);
   };
-  setPassSchema = (fn: (schema: string, stitches: string) => void) => (this.passSchema = fn);
+  setPassSchema = (fn: (schema: string, libraries?: string) => void) => (this.passSchema = fn);
   setPassDiagramErrors = (fn: (errors: string) => void) => (this.passDiagramErrors = fn);
   screenShot = async () => {
     if (!this.diagram) {

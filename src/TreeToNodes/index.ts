@@ -218,6 +218,7 @@ export class TreeToNodes {
     nodes: Array<EditorNode>;
     links: Link[];
   } {
+    console.log(tree);
     const nodes: Array<EditorNode> = [];
     const links: Link[] = [];
     const resolveAllFields = (
