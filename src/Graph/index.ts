@@ -25,10 +25,6 @@ export class GraphController {
     return TreeToGraphQL.parse(tree);
   };
 
-  static flatNodeInputs = (node: EditorNode): EditorNode[] =>
-    node.inputs
-      ? [...node.inputs, node.inputs.map(GraphController.flatNodeInputs)].flat(Infinity)
-      : ([] as EditorNode[]);
   public definitions: EditorNodeDefinition[] = [];
   public stitchDefinitions: EditorNodeDefinition[] = [];
   public schema = '';

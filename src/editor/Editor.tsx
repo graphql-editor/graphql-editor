@@ -8,7 +8,7 @@ import { CodePane } from './code';
 import { Explorer } from './explorer';
 
 import { GraphQLEditorCypress, cypressGet } from '../cypress_constants';
-import { EditorNode } from '../Models';
+import { EditorNode, PassedSchema } from '../Models';
 import { DynamicResize } from './code/Components';
 import { Theming } from '../Models/Themable';
 
@@ -16,16 +16,12 @@ export interface EditorProps extends Theming {
   activePane?: ActivePane;
   readonly?: boolean;
   placeholder?: string;
-  schema?: {
-    code: string;
-    libraries?: string;
-  };
-  graphController?: (controller: GraphController) => void;
+  schema?: PassedSchema;
   onPaneChange?: (pane: ActivePane) => void;
+  onSchemaChange?: (props: PassedSchema) => void;
 }
 
 export const Editor = ({
-  graphController,
   readonly,
   placeholder,
   schema = {
@@ -34,6 +30,7 @@ export const Editor = ({
   },
   initialSizeOfSidebar = sizeSidebar,
   activePane = 'code-diagram',
+  onSchemaChange,
   onPaneChange,
 }: EditorProps) => {
   const [controllerMounted, setControllerMounted] = useState(false);
@@ -64,13 +61,13 @@ export const Editor = ({
             setCode(code);
             setErrors('');
             setNodes([...controller.nodes]);
+            if (onSchemaChange) {
+              onSchemaChange({ code, libraries });
+            }
           });
           controller.setPassDiagramErrors(setErrors);
           controller.setReadOnly(!!readonly);
           controller.setPassSelectedNodes(setSelectedNodes);
-          if (graphController) {
-            graphController(controller);
-          }
           setControllerMounted(true);
         });
       }

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { render } from 'react-dom';
 import { style } from 'typestyle';
-import { Editor, GraphController } from '../src/index';
+import { Editor } from '../src/index';
+import { PassedSchema } from '../src/Models';
 export const Full = style({
   backgroundColor: '#444444',
   position: 'relative',
@@ -28,8 +29,7 @@ export const Actions = style({
 });
 
 export const App = () => {
-  const [graph, setGraph] = useState<GraphController>();
-  const [mySchema, setMySchema] = useState({
+  const [mySchema, setMySchema] = useState<PassedSchema>({
     code: `type Person{ 
       """
         description of name
@@ -51,14 +51,6 @@ export const App = () => {
      }
      `,
   });
-  useEffect(() => {
-    if (graph) {
-      setMySchema({
-        ...mySchema,
-        code: mySchema.code,
-      });
-    }
-  }, [graph]);
   const [hide, setHide] = useState(false);
   return (
     <div className={UiDiagram}>
@@ -72,7 +64,15 @@ export const App = () => {
         </button>
         <button onClick={() => {}}>code</button>
       </div>
-      {!hide && <Editor graphController={setGraph} initialSizeOfSidebar={'25vw'} schema={mySchema} />}
+      {!hide && (
+        <Editor
+          onSchemaChange={(props) => {
+            setMySchema(props);
+          }}
+          initialSizeOfSidebar={'25vw'}
+          schema={mySchema}
+        />
+      )}
     </div>
   );
 };
