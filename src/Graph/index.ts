@@ -1,6 +1,6 @@
-import { Parser, ParserTree, Utils, Value, TreeToGraphQL } from 'graphql-zeus';
-import { Diagram, DiagramEvents, Link, Old, Serializer } from 'graphsource';
-import { EditorNodeDefinition, EditorNode } from '../Models';
+import { Parser, ParserTree, Value, TreeToGraphQL } from 'graphql-zeus';
+import { Diagram, DiagramEvents, Link } from 'graphsource';
+import { EditorNodeDefinition, EditorNode, PassedSchema } from '../Models';
 import { NodesToTree } from '../NodesToTree';
 import { TreeToNodes } from '../TreeToNodes';
 import { Definitions } from './definitions';
@@ -38,9 +38,8 @@ export class GraphController {
   private libraryNodes: { nodes: EditorNode[]; links: Link[] } = { nodes: [], links: [] };
   private diagram?: Diagram;
   private passSelectedNodes?: (nodes: EditorNode[]) => void;
-  private passSchema?: (schema: string, libraries?: string) => void;
+  private passSchema?: (props: PassedSchema) => void;
   private passDiagramErrors?: (errors: string) => void;
-  private onSerialize?: (schema: string) => void;
   private reloadSchema?: boolean;
   private nodeCreated?: boolean;
   /**
@@ -61,7 +60,6 @@ export class GraphController {
     this.diagram.on(DiagramEvents.LinkCreated, this.onCreateLink);
     this.diagram.on(DiagramEvents.NodeCreated, this.onCreateNode);
     this.diagram.on(DiagramEvents.NodeSelected, this.onSelectNode);
-
     // TODO: fix selectSingleNode() to publish proper events in Diagram
     // code so this line might be omitted
     this.diagram.on(DiagramEvents.CenterOnNode, (node: EditorNode) => this.onSelectNode([{}, [node]]));
@@ -93,13 +91,6 @@ export class GraphController {
     }
     this.diagram.autoResize();
   };
-  /**
-   * Set function to be called on serialise
-   */
-  setOnSerialise = (f: (schema: string) => void) => {
-    this.onSerialize = f;
-  };
-
   /**
    * Set function to pass currently selected nodes
    */
@@ -142,7 +133,10 @@ export class GraphController {
       links,
     });
     if (this.passSchema) {
-      this.passSchema('', this.librariesCode);
+      this.passSchema({
+        code: '',
+        libraries: this.librariesCode,
+      });
     }
     this.diagram?.forceRender();
   };
@@ -242,18 +236,6 @@ export class GraphController {
     this.selectedNodes = [node];
   };
 
-  loadOldFormat = (serializedDiagram: string) => {
-    const deserializedOldVersion = Old.deserialize(JSON.parse(serializedDiagram));
-    const deserialized = Serializer.deserialize(
-      {
-        nodes: deserializedOldVersion.nodes,
-        links: deserializedOldVersion.links,
-      },
-      this.definitions,
-    );
-    this.load(deserialized.nodes, deserialized.links);
-    return deserialized;
-  };
   /**
    * Load from serialized ParserTree
    *
@@ -264,14 +246,7 @@ export class GraphController {
     const deserialized = TreeToNodes.resolveTree(serializedDiagram, this.definitions);
     this.load(deserialized.nodes, deserialized.links);
   };
-  /**
-   * Get schema from URL and load it to graph
-   */
-  getSchemaFromURL = async (url: string, header?: string): Promise<void> => {
-    const schema = await Utils.getFromUrl(url, header);
-    this.loadGraphQL(schema);
-  };
-  setPassSchema = (fn: (schema: string, libraries?: string) => void) => (this.passSchema = fn);
+  setPassSchema = (fn: (props: PassedSchema) => void) => (this.passSchema = fn);
   setPassDiagramErrors = (fn: (errors: string) => void) => (this.passDiagramErrors = fn);
   screenShot = async () => {
     if (!this.diagram) {
@@ -304,11 +279,11 @@ export class GraphController {
     let graphQLSchema = '';
     if (nodes.length === 0) {
       this.schema = graphQLSchema;
-      if (this.onSerialize) {
-        this.onSerialize(graphQLSchema);
-      }
       if (this.passSchema) {
-        this.passSchema(graphQLSchema, this.librariesCode);
+        this.passSchema({
+          code: graphQLSchema,
+          libraries: this.librariesCode,
+        });
       }
       return;
     }
@@ -328,11 +303,11 @@ export class GraphController {
           return;
         }
         this.schema = graphQLSchema;
-        if (this.onSerialize) {
-          this.onSerialize(graphQLSchema);
-        }
         if (this.passSchema) {
-          this.passSchema(graphQLSchema, this.librariesCode);
+          this.passSchema({
+            code: graphQLSchema,
+            libraries: this.librariesCode,
+          });
         }
         if (this.nodeCreated) {
           this.nodeCreated = false;

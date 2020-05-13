@@ -47,7 +47,6 @@ export const Editor = ({
   const [sidebarSize, setSidebarSize] = useState<string | number>(initialSizeOfSidebar);
   const [menuState, setMenuState] = useState<ActivePane>(activePane);
   const [controller] = useState(new GraphController());
-
   useEffect(() => {
     setMenuState(activePane);
   }, [activePane]);
@@ -58,9 +57,9 @@ export const Editor = ({
     }
     if (!controllerMounted) {
       if (containerRef.current && containerRef.current !== null) {
+        controller.setDOMElement(containerRef.current!);
         window.requestAnimationFrame(() => {
-          controller.setDOMElement(containerRef.current!);
-          controller.setPassSchema((code, libraries) => {
+          controller.setPassSchema(({ code, libraries }) => {
             setSchemaLibraries(libraries || '');
             setCode(code);
             setErrors('');

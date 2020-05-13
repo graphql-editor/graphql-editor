@@ -48,6 +48,7 @@ export const CodePane = (props: CodePaneProps) => {
       }
       const m = monaco.editor.create(editor.current, settings());
       m.updateOptions({
+        readOnly: readonly,
         fontFamily,
       });
       monaco.editor.remeasureFonts();
