@@ -60,8 +60,8 @@ export const Editor = ({
       if (containerRef.current && containerRef.current !== null) {
         window.requestAnimationFrame(() => {
           controller.setDOMElement(containerRef.current!);
-          controller.setPassSchema((code, stitches) => {
-            setSchemaLibraries(stitches);
+          controller.setPassSchema((code, libraries) => {
+            setSchemaLibraries(libraries || '');
             setCode(code);
             setErrors('');
             setNodes([...controller.nodes]);
