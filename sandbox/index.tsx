@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { render } from 'react-dom';
 import { style } from 'typestyle';
-import { Editor } from '../src/index';
+import { Editor, GraphController } from '../src/index';
 import { PassedSchema } from '../src/Models';
 export const Full = style({
   backgroundColor: '#444444',
@@ -29,6 +29,7 @@ export const Actions = style({
 });
 
 export const App = () => {
+  const [graph, setGraph] = useState<GraphController>();
   const [mySchema, setMySchema] = useState<PassedSchema>({
     code: `type Person{ 
       """
@@ -63,12 +64,21 @@ export const App = () => {
           hide
         </button>
         <button onClick={() => {}}>code</button>
+        <button
+          onClick={() => {
+            // I should be able to create and center node from this button
+            graph;
+          }}
+        >
+          New node
+        </button>
       </div>
       {!hide && (
         <Editor
           onSchemaChange={(props) => {
             setMySchema(props);
           }}
+          onGraphChange={setGraph}
           initialSizeOfSidebar={'25vw'}
           schema={mySchema}
         />

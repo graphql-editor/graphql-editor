@@ -32,7 +32,7 @@ export class GraphController {
   public nodes: EditorNode[] = [];
   public selectedNodes: EditorNode[] = [];
   private libraryNodes: { nodes: EditorNode[]; links: Link[] } = { nodes: [], links: [] };
-  private diagram?: Diagram;
+  public diagram?: Diagram;
   private passSelectedNodes?: (nodes: EditorNode[]) => void;
   private passSchema?: (props: PassedSchema) => void;
   private passDiagramErrors?: (errors: string) => void;

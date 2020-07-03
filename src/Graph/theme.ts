@@ -33,10 +33,6 @@ export const theme: DiagramTheme = {
   },
   menu: {
     ...DefaultDiagramTheme.menu,
-    category: {
-      ...DefaultDiagramTheme.menu.category,
-      fontSize: '12px',
-    },
   },
   help: {
     ...DefaultDiagramTheme.help,
@@ -71,7 +67,7 @@ export const theme: DiagramTheme = {
     },
     menu: {
       ...DefaultDiagramTheme.colors.menu,
-      background: mix(DefaultDiagramTheme.colors.menu.background, Colors.grey[0], 95.0),
+      background: '#151515',
     },
   },
 };
