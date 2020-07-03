@@ -146,10 +146,19 @@ export class TypeDefinitions {
                   .map(Utils.nodeDefinitionToAcceptedEditorNodeDefinition),
             },
           ],
-          acceptsInputs: (d, defs, _) =>
-            defs
+          acceptsInputs: (d, defs, _, nodes) => {
+            const optionNames = nodes
+              ?.find((n) => n.editsDefinitions?.includes(d))
+              ?.inputs?.filter((i) => i.definition.data?.type === ValueDefinition.EnumValueDefinition)
+              .map((i) => i.name);
+            if (!optionNames) {
+              throw new Error('Empty enums are not allowed');
+            }
+            return defs
+              .filter((d) => optionNames.includes(d.type))
               .filter((d) => d.data && d.data.type === Value.EnumValue)
-              .map(Utils.nodeDefinitionToAcceptedEditorNodeDefinition),
+              .map(Utils.nodeDefinitionToAcceptedEditorNodeDefinition);
+          },
         },
       ],
     });

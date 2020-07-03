@@ -41,6 +41,20 @@ export const App = () => {
       """
       name: String
      }
+     enum Status{
+       active
+       notactive
+       online
+     }
+
+     enum Character{
+       positive
+       negative
+     }
+
+     input PersonInput{
+       character: Character
+     }
      
      extend type User{
        password: String!
