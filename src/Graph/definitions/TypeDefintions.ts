@@ -117,7 +117,7 @@ export class TypeDefinitions {
         },
       ],
     });
-  static EnumTypeDefinition = () =>
+  static EnumTypeDefinition = (stitchNodes: Array<EditorNode>) =>
     generateTypeDefinition({
       help: help.enum,
       type: TypeDefinitionDisplayMap[TypeDefinition.EnumTypeDefinition],
@@ -147,8 +147,9 @@ export class TypeDefinitions {
             },
           ],
           acceptsInputs: (d, defs, _, nodes) => {
-            const optionNames = nodes
-              ?.find((n) => n.editsDefinitions?.includes(d))
+            const optionNames = nodes!
+              .concat(stitchNodes)
+              .find((n) => n.name === d.type && n.definition.data?.type === TypeDefinition.EnumTypeDefinition)
               ?.inputs?.filter((i) => i.definition.data?.type === ValueDefinition.EnumValueDefinition)
               .map((i) => i.name);
             if (!optionNames) {
@@ -274,7 +275,7 @@ export class TypeDefinitions {
       ExtensionInstance(InterfaceTypeDefinition, TypeExtension.InterfaceTypeExtension),
     );
 
-    const EnumTypeDefinition = TypeDefinitions.EnumTypeDefinition();
+    const EnumTypeDefinition = TypeDefinitions.EnumTypeDefinition(stitchNodes);
     EnumTypeDefinition.instances!.push(ExtensionInstance(EnumTypeDefinition, TypeExtension.EnumTypeExtension));
     const ScalarTypeDefintion = TypeDefinitions.ScalarTypeDefintion();
     ScalarTypeDefintion.instances!.push(ExtensionInstance(ScalarTypeDefintion, TypeExtension.ScalarTypeExtension));

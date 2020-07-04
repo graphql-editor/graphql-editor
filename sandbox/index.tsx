@@ -54,6 +54,7 @@ export const App = () => {
 
      input PersonInput{
        character: Character
+       state:State
      }
      
      extend type User{
@@ -63,6 +64,10 @@ export const App = () => {
     libraries: `
      type User{
        name: String
+     }
+     enum State{
+       empty
+       full
      }
      `,
   });
