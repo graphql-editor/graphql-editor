@@ -3,26 +3,31 @@
 [![npm](https://img.shields.io/npm/v/graphql-editor.svg?style=flat-square)](https://www.npmjs.com/package/graphql-editor) [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?style=flat-square)](http://commitizen.github.io/cz-cli/) [![npm downloads](https://img.shields.io/npm/dt/graphql-editor.svg?style=flat-square)](https://www.npmjs.com/package/graphql-editor)
 
 GraphQLEditor makes it easier to understand GrapHQL schemas. Create a schema by joining visual blocks. GraphQLEditor will transform them into code. With GraphQLEditor you can create visual diagrams without writing any code or present your schema in a nice way!
+### Cloud version
+
+Here is a [cloud version](https://graphqleditor.com) of GraphQLEditor. Which also contains:
+- cloud project management and versioning
+- team libraries
+- schema libraries
+- live schema mock backend deployment
+- frontend engine to play with mock backend
+- live collaboration
 
 ## How it works
 
 ### Create GraphQL Schemas
 
-[![GraphQLEditor Editor](assets/create.gif)](https://app.graphqleditor.com/?visibleMenu=code)
+[![GraphQLEditor Editor](assets/create.gif)]
 
 ### Explore Large GraphQL Schemas
 
-[![GraphQLEditor Editor](assets/explore.gif)](https://app.graphqleditor.com/explore/github-schema-visualised?visibleMenu=code)
+[![GraphQLEditor Editor](assets/explore.gif)
 
-### Live demo
-
-Here is a [live demo](https://graphqleditor.com) example of GraphQLEditor.
 
 ## Table of contents
 - [How it works](#how-it-works)
   - [Create GraphQL Schemas](#create-graphql-schemas)
   - [Explore Large GraphQL Schemas](#explore-large-graphql-schemas)
-  - [Live demo](#live-demo)
 - [Table of contents](#table-of-contents)
 - [Developer Docs](#developer-docs)
 - [License](#license)
