@@ -1,5 +1,5 @@
 import { Parser, ParserTree, Value, TreeToGraphQL } from 'graphql-zeus';
-import { Diagram, DiagramEvents, Link } from 'graphsource';
+import { Diagram, Link } from 'graphsource';
 import { EditorNodeDefinition, EditorNode, PassedSchema } from '../Models';
 import { NodesToTree } from '../NodesToTree';
 import { TreeToNodes } from '../TreeToNodes';
@@ -53,13 +53,10 @@ export class GraphController {
       },
       theme,
     });
-    this.diagram.on(DiagramEvents.LinkCreated, this.onCreateLink);
-    this.diagram.on(DiagramEvents.NodeCreated, this.onCreateNode);
-    this.diagram.on(DiagramEvents.NodeSelected, this.onSelectNode);
-    // TODO: fix selectSingleNode() to publish proper events in Diagram
-    // code so this line might be omitted
-    this.diagram.on(DiagramEvents.CenterOnNode, (node: EditorNode) => this.onSelectNode([{}, [node]]));
-    this.diagram.on(DiagramEvents.DataModelChanged, this.serialise);
+    this.diagram.eventBus.on('LinkCreated', this.onCreateLink);
+    this.diagram.eventBus.on('NodeCreated', this.onCreateNode);
+    this.diagram.eventBus.on('NodeSelected', this.onSelectNode);
+    this.diagram.eventBus.on('DataModelChanged', this.serialise);
     this.generateBasicDefinitions();
   };
   /**
@@ -333,8 +330,8 @@ export class GraphController {
   private onCreateNode = () => {
     this.nodeCreated = true;
   };
-  private onSelectNode = ([_, nodes]: [any, EditorNode[]]) => {
-    this.selectedNodes = nodes;
+  private onSelectNode = ({ selectedNodes }: { selectedNodes: EditorNode[] }) => {
+    this.selectedNodes = selectedNodes;
     if (this.passSelectedNodes) {
       this.passSelectedNodes(this.selectedNodes);
     }

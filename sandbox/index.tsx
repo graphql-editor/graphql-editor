@@ -86,7 +86,7 @@ export const App = () => {
         <button
           onClick={() => {
             // I should be able to create and center node from this button
-            graph;
+            graph.diagram?.eventBus.publish('MenuCreateNodeRequested', { position: { x: 200, y: 200 } });
           }}
         >
           New node

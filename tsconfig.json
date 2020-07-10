@@ -18,5 +18,5 @@
     "baseUrl": "./src/",
     "skipLibCheck": true
   },
-  "exclude": ["lib", "node_modules", "sandbox", "cloud", "docs", "cypress", "__test__","__mocks__"]
+  "exclude": ["lib", "sandbox", "cloud", "docs", "cypress", "__test__","__mocks__"]
 }
