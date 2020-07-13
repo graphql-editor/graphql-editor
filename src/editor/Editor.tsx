@@ -175,6 +175,7 @@ export const Editor = ({
         onBlur={() => setDiagramFocus(false)}
         ref={containerRef}
       />
+      {menuState !== 'code' && <div></div>}
       {errors && <div className={styles.ErrorContainer}>{errors}</div>}
     </div>
   );

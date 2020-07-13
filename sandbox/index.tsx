@@ -89,6 +89,19 @@ export const App = () => {
             graph.diagram?.eventBus.publish('MenuCreateNodeRequested', { position: { x: 200, y: 200 } });
           }}
         >
+          Open menu
+        </button>
+        <button
+          onClick={() => {
+            // I should be able to create and center node from this button
+            if (graph.diagram && graph.definitions) {
+              graph.diagram?.eventBus.publish('NodeCreationRequested', {
+                nodeDefinition: graph.definitions.filter((d) => d.root)[0],
+                center: true,
+              });
+            }
+          }}
+        >
           New node
         </button>
       </div>
