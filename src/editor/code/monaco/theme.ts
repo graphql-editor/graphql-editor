@@ -1,6 +1,6 @@
 import * as monaco from 'monaco-editor';
 import { Colors, mix } from '../../../Colors';
-import { GraphQLColors } from '../../../Graph/theme';
+import { GraphQLColors } from '../../theme';
 
 const docsColor = Colors.blue[2];
 

@@ -2,12 +2,16 @@ import React from 'react';
 import { ParserField } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { Colors } from '../Colors';
+import { FieldType } from './FieldType';
+import { FieldName } from './FieldName';
 export interface FieldProps {
   node: ParserField;
   inputOpen: boolean;
   outputOpen: boolean;
   onInputClick: () => void;
   onOutputClick: () => void;
+  inputDisabled?: boolean;
+  outputDisabled?: boolean;
   last?: boolean;
 }
 
@@ -26,6 +30,10 @@ const Main = style({
           opacity: 1,
         },
       },
+    },
+    '.NodeFieldPortPlaceholder': {
+      width: 16,
+      height: 16,
     },
     '.NodeFieldPort': {
       width: 16,
@@ -63,19 +71,38 @@ const LastField = style({
 const Title = style({ fontSize: 10, display: 'flex', marginRight: 'auto', marginLeft: 5, alignItems: 'baseline' });
 const Name = style({ fontSize: 10, marginRight: 4 });
 const Type = style({ fontSize: 8, color: Colors.green[0] });
-export const Field: React.FC<FieldProps> = ({ node, inputOpen, outputOpen, onInputClick, onOutputClick, last }) => {
+export const Field: React.FC<FieldProps> = ({
+  node,
+  inputOpen,
+  inputDisabled,
+  outputOpen,
+  outputDisabled,
+  onInputClick,
+  onOutputClick,
+  last,
+}) => {
   return (
     <div className={`${Main} ${last ? LastField : ''} ${inputOpen || outputOpen ? 'Active' : ''}`}>
-      <div className={'NodeFieldPort'} onClick={onInputClick}>
-        {inputOpen ? '-' : '+'}
-      </div>
+      {!inputDisabled ? (
+        <div className={'NodeFieldPort'} onClick={onInputClick}>
+          {inputOpen ? '-' : '+'}
+        </div>
+      ) : (
+        <div className={'NodeFieldPortPlaceholder'} />
+      )}
       <div className={Title}>
-        <div className={Name}>{node.name}</div>
-        <div className={Type}>{node.type.name}</div>
+        <div className={Name}>
+          <FieldName data={node.data} name={node.name} args={node.args} />
+        </div>
+        <div className={Type}>
+          <FieldType type={node.type} />
+        </div>
       </div>
-      <div className={'NodeFieldPort'} onClick={onOutputClick}>
-        {outputOpen ? '-' : '+'}
-      </div>
+      {!outputDisabled && (
+        <div className={'NodeFieldPort'} onClick={onOutputClick}>
+          {outputOpen ? '-' : '+'}
+        </div>
+      )}
     </div>
   );
 };

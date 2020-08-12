@@ -1,17 +1,15 @@
 import cx from 'classnames';
 import React, { useEffect, useState } from 'react';
-import { theme } from '../../Graph/theme';
 import * as Icon from '../icons';
 import * as styles from './style/Explorer';
 import { scrollToSelectedNode } from '../utils';
-import { EditorNode, EditorNodeDefinition } from '../../Models';
 import { NodeNameHighlighted } from './NodeNameHighlited';
 
 export interface NodeComponentProps {
   node: EditorNode;
   centerNode: (id: string) => void;
-  centerType: (parentDefition: EditorNodeDefinition) => void;
-  relatives?: EditorNode[];
+  centerType: (type: string) => void;
+  relatives?: string[];
   indentLevel?: number;
   selectedNodeIds: string[];
   searchPhrase?: string;

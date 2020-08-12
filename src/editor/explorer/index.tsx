@@ -1,7 +1,6 @@
 import cx from 'classnames';
 import { TypeDefinitionDisplayStrings } from 'graphql-zeus';
 import React, { useEffect, useRef, useState } from 'react';
-import { theme } from '../../Graph/theme';
 import * as Icon from '../icons';
 import { TitleOfPane } from '../code/Components';
 import * as styles from './style/Explorer';
@@ -14,7 +13,6 @@ import {
   flattenNodeTree,
   KeyboardNavDirection,
 } from '../utils';
-import { EditorNode } from '../../Models';
 import { NodeComponent } from './NodeComponent';
 import { FilterBlock } from './FilterBlock';
 

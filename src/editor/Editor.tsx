@@ -10,6 +10,7 @@ import { PassedSchema } from '../Models';
 import { DynamicResize } from './code/Components';
 import { Theming } from '../Models/Themable';
 import { Graf } from '../Graf';
+import { ParserTree, Parser } from 'graphql-zeus';
 
 export interface EditorProps extends Theming {
   activePane?: ActivePane;
@@ -35,6 +36,22 @@ export const Editor = ({
   const [code, setCode] = useState(schema.code);
   const [sidebarSize, setSidebarSize] = useState<string | number>(initialSizeOfSidebar);
   const [menuState, setMenuState] = useState<ActivePane>(activePane);
+  const [tree, setTree] = useState<ParserTree>({ nodes: [] });
+
+  useEffect(() => {
+    if (schema.libraries) {
+      const excludeLibraryNodesFromDiagram = Parser.parse(schema.libraries);
+      const parsedResult = Parser.parse(code, [], schema.libraries);
+      setTree({
+        nodes: parsedResult.nodes.filter(
+          (n) =>
+            !excludeLibraryNodesFromDiagram.nodes.find((eln) => eln.name === n.name && eln.data.type === n.data.type),
+        ),
+      });
+    } else {
+      setTree(Parser.parse(code));
+    }
+  }, [code, schema.libraries]);
 
   useEffect(() => {
     setMenuState(activePane);
@@ -90,13 +107,9 @@ export const Editor = ({
           </div>
         </DynamicResize>
       )}
-      <Graf
-        onFocus={() => setDiagramFocus(true)}
-        onBlur={() => setDiagramFocus(false)}
-        schema={code}
-        libraries={schema.libraries}
-      />
-      {menuState !== 'code' && <div></div>}
+      {menuState !== 'code' && (
+        <Graf onFocus={() => setDiagramFocus(true)} onBlur={() => setDiagramFocus(false)} tree={tree} />
+      )}
     </div>
   );
 };
