@@ -10,6 +10,7 @@ import { NestedCSSProperties } from 'typestyle/lib/types';
 export interface NodeProps {
   node: ParserField;
   nodes: ParserField[];
+  isOpen?: boolean;
 }
 const NodeContainer = style({
   position: 'relative',
@@ -22,7 +23,6 @@ const NodeContainer = style({
       gridTemplateColumns: '3fr 1fr',
       fontSize: 10,
       gridGap: 4,
-      padding: 2,
       opacity: 0,
       transition: `opacity .25s ease-in-out`,
       pointerEvents: 'none',
@@ -62,7 +62,6 @@ const RightNodeArea = style({ position: 'absolute', right: -300, width: 300, zIn
 const RightNodeAreaNode = style({ position: 'absolute' });
 
 const MainNodeArea = style({
-  padding: 2,
   position: 'relative',
   borderColor: 'transparent',
   borderWidth: 1,
@@ -72,6 +71,9 @@ const MainNodeArea = style({
   $nest: {
     '&:hover': {
       borderColor: Colors.green[0],
+    },
+    '&.Open': {
+      borderColor: Colors.grey[0],
     },
   },
 });
@@ -103,26 +105,26 @@ const LowerButton = style({
     },
   },
 });
-export const Node: React.FC<NodeProps> = ({ node, nodes }) => {
+export const Node: React.FC<NodeProps> = ({ node, nodes, isOpen }) => {
   const [openedInputs, setOpenedInputs] = useState<number[]>([]);
   const [openedOutputs, setOpenedOutputs] = useState<number[]>([]);
   return (
     <div className={`${NodeContainer}`}>
       <div className={LeftNodeArea}>
-        {openedInputs.map((o) => (
+        {openedInputs.sort().map((o) => (
           <div className={LeftNodeAreaNode} style={{ top: FIELD_HEIGHT * (o + 1) }}>
-            <Node nodes={nodes} node={node.args![o]} />
+            <Node isOpen={true} nodes={nodes} node={node.args![o]} />
           </div>
         ))}
       </div>
       <div className={RightNodeArea}>
-        {openedOutputs.map((o) => (
+        {openedOutputs.sort().map((o) => (
           <div className={RightNodeAreaNode} style={{ top: FIELD_HEIGHT * (o + 1) }}>
-            <Node nodes={nodes} node={nodes.find((n) => n.name === node.args![o].type.name)!} />
+            <Node isOpen={true} nodes={nodes} node={nodes.find((n) => n.name === node.args![o].type.name)!} />
           </div>
         ))}
       </div>
-      <div className={MainNodeArea}>
+      <div className={`${MainNodeArea} ${isOpen ? 'Open' : ''}`}>
         <div className={NodeTitle}>
           <div className={NodeName}>{node.name}</div>
           <div className={NodeType}>
