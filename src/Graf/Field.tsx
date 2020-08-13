@@ -13,6 +13,7 @@ export interface FieldProps {
   inputDisabled?: boolean;
   outputDisabled?: boolean;
   last?: boolean;
+  parentNodeTypeName: string;
 }
 
 const Main = style({
@@ -80,9 +81,14 @@ export const Field: React.FC<FieldProps> = ({
   onInputClick,
   onOutputClick,
   last,
+  parentNodeTypeName,
 }) => {
   return (
-    <div className={`${Main} ${last ? LastField : ''} ${inputOpen || outputOpen ? 'Active' : ''}`}>
+    <div
+      className={`NodeType-${parentNodeTypeName} ${Main} ${last ? LastField : ''} ${
+        inputOpen || outputOpen ? 'Active' : ''
+      }`}
+    >
       {!inputDisabled ? (
         <div className={'NodeFieldPort'} onClick={onInputClick}>
           {inputOpen ? '-' : '+'}

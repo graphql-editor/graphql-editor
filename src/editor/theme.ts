@@ -14,3 +14,19 @@ export const GraphQLColors = {
   ID: Colors.green[0],
   Float: Colors.green[0],
 } as const;
+
+export const GraphQLBackgrounds: Record<string, string> = {
+  type: Colors.main[6],
+  union: Colors.main[7],
+  input: Colors.blue[6],
+  scalar: Colors.green[6],
+  interface: mix(Colors.blue[6], Colors.grey[3]),
+  enum: mix(Colors.blue[6], Colors.main[6]),
+  directive: mix(Colors.main[6], Colors.grey[3]),
+  extend: Colors.yellow[6],
+  String: Colors.green[6],
+  Int: Colors.green[6],
+  Boolean: Colors.green[6],
+  ID: Colors.green[6],
+  Float: Colors.green[6],
+};

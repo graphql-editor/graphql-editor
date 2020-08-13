@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { ParserField } from 'graphql-zeus';
 import { Field } from './Field';
 import { style } from 'typestyle';
-import { Colors } from '../Colors';
+import { Colors, mix } from '../Colors';
 import { FieldType } from './FieldType';
 import { FIELD_HEIGHT } from './constants';
+import { GraphQLBackgrounds } from '../editor/theme';
+import { NestedCSSProperties } from 'typestyle/lib/types';
 export interface NodeProps {
   node: ParserField;
   nodes: ParserField[];
@@ -23,14 +25,27 @@ const NodeContainer = style({
       padding: 2,
       opacity: 0,
       transition: `opacity .25s ease-in-out`,
+      pointerEvents: 'none',
     },
     '&:hover': {
       $nest: {
-        '.ActionsMenu': {
+        '> .ActionsMenu': {
           opacity: 1.0,
+          pointerEvents: 'auto',
         },
       },
     },
+    ...Object.keys(GraphQLBackgrounds).reduce((a, b) => {
+      a[`.NodeType-${b}`] = {
+        background: GraphQLBackgrounds[b],
+        $nest: {
+          '&:hover, &.Active': {
+            background: mix(GraphQLBackgrounds[b], Colors.grey[0], 80),
+          },
+        },
+      };
+      return a;
+    }, {} as Record<string, NestedCSSProperties>),
   },
 });
 const LeftNodeArea = style({
@@ -92,7 +107,7 @@ export const Node: React.FC<NodeProps> = ({ node, nodes }) => {
   const [openedInputs, setOpenedInputs] = useState<number[]>([]);
   const [openedOutputs, setOpenedOutputs] = useState<number[]>([]);
   return (
-    <div className={NodeContainer}>
+    <div className={`${NodeContainer}`}>
       <div className={LeftNodeArea}>
         {openedInputs.map((o) => (
           <div className={LeftNodeAreaNode} style={{ top: FIELD_HEIGHT * (o + 1) }}>
@@ -117,6 +132,7 @@ export const Node: React.FC<NodeProps> = ({ node, nodes }) => {
         <div className={NodeFields}>
           {node.args?.map((a, i) => (
             <Field
+              parentNodeTypeName={node.type.name}
               last={i === node.args!.length - 1}
               key={a.name}
               onInputClick={() => {
