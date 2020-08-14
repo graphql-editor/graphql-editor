@@ -31,36 +31,38 @@ export const Actions = style({
 
 export const App = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
-    code: schemas.googleDirections,
+    code: schemas.muskSchema,
     libraries: ``,
   });
   const [hide, setHide] = useState(false);
   return (
     <div className={UiDiagram}>
-      <div className={Actions}>
-        <button
-          onClick={() => {
-            setHide(!hide);
-          }}
-        >
-          hide
-        </button>
-        <button onClick={() => {}}>code</button>
-        <button
-          onClick={() => {
-            // I should be able to create and center node from this button
-          }}
-        >
-          Open menu
-        </button>
-        <button
-          onClick={() => {
-            // I should be able to create and center node from this button
-          }}
-        >
-          New node
-        </button>
-      </div>
+      {hide && (
+        <div className={Actions}>
+          <button
+            onClick={() => {
+              setHide(!hide);
+            }}
+          >
+            hide
+          </button>
+          <button onClick={() => {}}>code</button>
+          <button
+            onClick={() => {
+              // I should be able to create and center node from this button
+            }}
+          >
+            Open menu
+          </button>
+          <button
+            onClick={() => {
+              // I should be able to create and center node from this button
+            }}
+          >
+            New node
+          </button>
+        </div>
+      )}
       {!hide && (
         <Editor
           onSchemaChange={(props) => {

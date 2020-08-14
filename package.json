@@ -93,9 +93,11 @@
     "graphql": "^15.0.0",
     "graphql-zeus": "^2.6.6",
     "moment": "^2.21.0",
+    "panzoom": "^9.2.5",
     "query-string": "^6.2.0",
     "re-resizable": "^6.1.1",
-    "typestyle": "^2.0.1"
+    "typestyle": "^2.0.1",
+    "unstated-next": "^1.1.0"
   },
   "config": {
     "commitizen": {

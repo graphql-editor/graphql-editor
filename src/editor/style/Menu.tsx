@@ -8,6 +8,7 @@ export const HiderPanel = style({
   color: Colors.grey[2],
   fontSize: 12,
   padding: 3,
+  zIndex: 3,
 });
 export const Hider = style({
   width: 24,

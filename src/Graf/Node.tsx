@@ -15,7 +15,8 @@ export interface NodeProps {
 const NodeContainer = style({
   position: 'relative',
   breakInside: 'avoid',
-  marginBottom: 10,
+  maxWidth: '100%',
+  margin: 10,
   $nest: {
     '.ActionsMenu': {
       marginTop: 4,
@@ -87,12 +88,7 @@ const NodeTitle = style({
 });
 const NodeName = style({ marginRight: 5, color: Colors.grey[0], fontSize: 12 });
 const NodeType = style({ color: Colors.main[0], fontSize: 10 });
-const NodeFields = style({
-  background: Colors.main[8],
-  display: 'grid',
-  gridTemplateColumns: '1fr',
-  gridGap: 1,
-});
+const NodeFields = style({});
 const LowerButton = style({
   background: '#11303D',
   borderRadius: 4,
@@ -112,14 +108,14 @@ export const Node: React.FC<NodeProps> = ({ node, nodes, isOpen }) => {
     <div className={`${NodeContainer}`}>
       <div className={LeftNodeArea}>
         {openedInputs.sort().map((o) => (
-          <div className={LeftNodeAreaNode} style={{ top: FIELD_HEIGHT * (o + 1) }}>
+          <div key={o} className={LeftNodeAreaNode} style={{ top: FIELD_HEIGHT * (o + 1) }}>
             <Node isOpen={true} nodes={nodes} node={node.args![o]} />
           </div>
         ))}
       </div>
       <div className={RightNodeArea}>
         {openedOutputs.sort().map((o) => (
-          <div className={RightNodeAreaNode} style={{ top: FIELD_HEIGHT * (o + 1) }}>
+          <div key={o} className={RightNodeAreaNode} style={{ top: FIELD_HEIGHT * (o + 1) }}>
             <Node isOpen={true} nodes={nodes} node={nodes.find((n) => n.name === node.args![o].type.name)!} />
           </div>
         ))}

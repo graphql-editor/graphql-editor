@@ -4,6 +4,7 @@ import { style } from 'typestyle';
 import { Colors } from '../Colors';
 import { FieldType } from './FieldType';
 import { FieldName } from './FieldName';
+import { FIELD_HEIGHT } from './constants';
 export interface FieldProps {
   node: ParserField;
   inputOpen: boolean;
@@ -20,7 +21,7 @@ const Main = style({
   display: 'flex',
   alignItems: 'center',
   color: Colors.grey[0],
-  padding: `5px 5px`,
+  height: FIELD_HEIGHT,
   background: Colors.main[6],
   transition: 'background 0.25s ease-in-out',
   $nest: {
@@ -69,8 +70,15 @@ const LastField = style({
   borderBottomLeftRadius: 4,
   borderBottomRightRadius: 4,
 });
-const Title = style({ fontSize: 10, display: 'flex', marginRight: 'auto', marginLeft: 5, alignItems: 'baseline' });
-const Name = style({ fontSize: 10, marginRight: 4 });
+const Title = style({
+  fontSize: 10,
+  display: 'flex',
+  flex: 1,
+  marginLeft: 5,
+  alignItems: 'baseline',
+  overflow: 'hidden',
+});
+const Name = style({ fontSize: 10, marginRight: 4, overflow: 'hidden' });
 const Type = style({ fontSize: 8, color: Colors.green[0] });
 export const Field: React.FC<FieldProps> = ({
   node,
