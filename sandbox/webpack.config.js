@@ -5,6 +5,7 @@ var outPath = path.join(__dirname, './');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const baseRules = require('./weback.rules');
+const TsConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 module.exports = {
   context: sourcePath,
   entry: {
@@ -21,9 +22,11 @@ module.exports = {
   resolve: {
     extensions: ['.mjs', '.js', '.jsx', '.ts', '.tsx'],
     mainFields: ['module', 'browser', 'main'],
-    alias: {
-      app: path.resolve(__dirname, '../src/'),
-    },
+    plugins: [
+      new TsConfigPathsPlugin({
+        configFile: path.resolve(__dirname, '../tsconfig.json'),
+      }),
+    ],
   },
   module: {
     rules: [

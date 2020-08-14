@@ -1,15 +1,14 @@
 import cx from 'classnames';
 import React, { useEffect, useState } from 'react';
 import * as styles from './style/Editor';
-import { sizeSidebar } from '../vars';
+import { sizeSidebar } from '@vars';
 import { Menu, ActivePane } from './Menu';
 import { CodePane } from './code';
 
-import { GraphQLEditorCypress, cypressGet } from '../cypress_constants';
-import { PassedSchema } from '../Models';
+import { GraphQLEditorCypress, cypressGet } from '@cypress';
+import { PassedSchema, Theming } from '@Models';
 import { DynamicResize } from './code/Components';
-import { Theming } from '../Models/Themable';
-import { Graf } from '../Graf';
+import { Graf } from '@Graf/Graf';
 import { ParserTree, Parser } from 'graphql-zeus';
 
 export interface EditorProps extends Theming {

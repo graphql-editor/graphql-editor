@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { style } from 'typestyle';
-import { Colors } from '../Colors';
-import { fontFamily } from '../vars';
+import { Colors } from '@Colors';
+import { fontFamily } from '@vars';
 const Input = style({
   border: 0,
   background: 'transparent',
   color: Colors.grey[0],
   minWidth: 'auto',
+  padding: 0,
   fontFamily: fontFamily,
+  fontSize: 10,
 });
 export const EditableText: React.FC<{ value: string; onChange: (value: string) => void }> = ({ value }) => {
   const [isEdited, setIsEdited] = useState(false);

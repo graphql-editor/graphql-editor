@@ -1,8 +1,8 @@
 import cx from 'classnames';
 import React, { useEffect, useState } from 'react';
-import * as Icon from '../icons';
+import * as Icon from '@editor/icons';
 import * as styles from './style/Explorer';
-import { scrollToSelectedNode } from '../utils';
+import { scrollToSelectedNode } from '@editor/utils';
 import { NodeNameHighlighted } from './NodeNameHighlited';
 
 export interface NodeComponentProps {

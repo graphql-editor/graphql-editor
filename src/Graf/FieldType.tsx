@@ -1,6 +1,6 @@
 import React from 'react';
 import { ParserField, Options } from 'graphql-zeus';
-import { GraphQLColors } from '../editor/theme';
+import { GraphQLColors } from '@editor/theme';
 export const FieldType: React.FC<Pick<ParserField, 'type'>> = ({ type }) => {
   let compiledType = type.name;
   if (type.options?.includes(Options.arrayRequired)) {

@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { ParserField } from 'graphql-zeus';
 import { Field } from './Field';
 import { style } from 'typestyle';
-import { Colors, mix } from '../Colors';
+import { Colors, mix } from '@Colors';
 import { FieldType } from './FieldType';
 import { FIELD_HEIGHT } from './constants';
-import { GraphQLBackgrounds } from '../editor/theme';
+import { GraphQLBackgrounds } from '@editor/theme';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 export interface NodeProps {
   node: ParserField;

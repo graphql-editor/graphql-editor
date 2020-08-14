@@ -1,6 +1,6 @@
 import { style } from 'typestyle';
 
-import { Colors } from '../../Colors';
+import { Colors } from '@Colors';
 
 export const HiderPanel = style({
   width: 30,

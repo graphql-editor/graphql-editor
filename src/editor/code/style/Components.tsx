@@ -1,6 +1,6 @@
 import { style } from 'typestyle';
-import { Colors, mix } from '../../../Colors';
-import { fontFamily } from '../../../vars';
+import { Colors, mix } from '@Colors';
+import { fontFamily } from '@vars';
 
 export const TitleOfPane = style({
   padding: `10px 15px`,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { ParserField } from 'graphql-zeus';
 import { style } from 'typestyle';
-import { Colors } from '../Colors';
+import { Colors } from '@Colors';
 import { FieldType } from './FieldType';
 import { FieldName } from './FieldName';
 import { FIELD_HEIGHT } from './constants';

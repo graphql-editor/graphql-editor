@@ -1,6 +1,6 @@
 import { style } from 'typestyle';
-import { Colors, mix, fade } from '../../../Colors';
-import { fontFamily, transition } from '../../../vars';
+import { Colors, mix, fade } from '@Colors';
+import { fontFamily, transition } from '@vars';
 
 export const Background = style({
   background: mix(Colors.grey[9], Colors.grey[10]),

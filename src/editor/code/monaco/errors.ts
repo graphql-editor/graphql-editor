@@ -1,6 +1,6 @@
 import * as monaco from 'monaco-editor';
-import { Colors } from '../../../Colors';
-import { EditorError } from '../../../validation';
+import { Colors } from '@Colors';
+import { EditorError } from '@validation';
 export const mapEditorErrorToMonacoDecoration = (e: EditorError) =>
   ({
     range: new monaco.Range(e.row + 1, 1, e.row + 1, 1000),

@@ -16,6 +16,16 @@
     "lib": ["es6", "es7", "esnext", "dom"],
     "rootDir": "./src",
     "baseUrl": "./src/",
+    "paths": {
+      "@validation":["./validation"],
+      "@vars":["./vars"],
+      "@cypress":["./cypress_constants.ts"],
+      "@Colors":["./Colors"],
+      "@Models":["./Models/index"],
+      "@worker":["./worker/index"],
+      "@Graf/*":["./Graf/*"],
+      "@editor/*":["./editor/*"]
+    },
     "skipLibCheck": true
   },
   "exclude": ["lib", "sandbox", "cloud", "docs", "cypress", "__test__","__mocks__"]

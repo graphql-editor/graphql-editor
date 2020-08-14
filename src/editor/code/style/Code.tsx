@@ -1,6 +1,6 @@
 import { keyframes, style, cssRaw } from 'typestyle';
-import { Colors } from '../../../Colors';
-import * as vars from '../../../vars';
+import { Colors } from '@Colors';
+import * as vars from '@vars';
 
 const animationName = keyframes({
   ['0%']: {

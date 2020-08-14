@@ -69,6 +69,7 @@
     "style-loader": "^1.0.1",
     "ts-jest": "^25.4.0",
     "ts-loader": "^7.0.2",
+    "tsconfig-paths-webpack-plugin": "^3.3.0",
     "typedoc": "^0.17.6",
     "typescript": "^3.9.2",
     "url-loader": "^4.1.0",

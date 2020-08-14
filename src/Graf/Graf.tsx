@@ -2,7 +2,7 @@ import React, { useRef, useLayoutEffect } from 'react';
 import { ParserTree } from 'graphql-zeus';
 import { Node } from './Node';
 import { style } from 'typestyle';
-import { fontFamily } from '../vars';
+import { fontFamily } from '@vars';
 import { FIELD_HEIGHT } from './constants';
 import panzoom from 'panzoom';
 export interface GrafProps {

@@ -1,15 +1,15 @@
 import cx from 'classnames';
 import * as monaco from 'monaco-editor';
 import React, { useEffect, useRef, useState, useLayoutEffect } from 'react';
-import * as Icon from '../icons';
+import * as Icon from '@editor/icons';
 import { StatusDot, TitleOfPane } from './Components';
 import * as styles from './style/Code';
 import { StatusDotProps } from './style/Components';
 import { theme, language, conf, settings, mapEditorErrorToMonacoDecoration } from './monaco';
-import { EditorError } from '../../validation';
-import { Workers } from '../../worker';
-import { cypressGet, GraphQLEditorCypress } from '../../cypress_constants';
-import { fontFamily } from '../../vars';
+import { EditorError } from '@validation';
+import { Workers } from '@worker';
+import { cypressGet, GraphQLEditorCypress } from '@cypress';
+import { fontFamily } from '@vars';
 
 export interface CodePaneOuterProps {
   readonly?: boolean;
