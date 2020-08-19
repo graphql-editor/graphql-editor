@@ -55,7 +55,9 @@ export const PaintNodes: React.FC<PaintNodesProps> = ({ tree, onSelectNode, onTr
           nodes={tree.nodes}
           node={{
             name: TypeDefinitionDisplayMap[d],
-            data: {},
+            data: {
+              type: d,
+            },
             type: {
               name: 'root',
             },

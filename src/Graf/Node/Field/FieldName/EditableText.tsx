@@ -23,8 +23,12 @@ export const EditableText: React.FC<{ value: string; onChange: (value: string) =
           value={editedValue}
           size={editedValue.length + 1}
           onBlur={() => {
+            if (editedValue) {
+              onChange(editedValue);
+            } else {
+              setEditedValue(value);
+            }
             setIsEdited(false);
-            onChange(editedValue);
           }}
           onChange={(e) => setEditedValue(e.target.value)}
         />

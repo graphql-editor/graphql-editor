@@ -40,5 +40,5 @@ export const ActiveFieldName: React.FC<
       </div>
     );
   }
-  return <EditableText value={name} onChange={(e) => {}} />;
+  return <EditableText value={name} onChange={afterChange} />;
 };

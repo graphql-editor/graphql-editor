@@ -8,10 +8,24 @@ import { DOM } from '@Graf/DOM';
 import { NodeTitle } from './SharedNode';
 import { fontFamily } from '@vars';
 export interface NodeProps {
+  nodes: ParserField[];
   node: ParserField;
-  onClick: (position: { offsetLeft: number; offsetTop: number; width: number }) => void;
-  position: { x: number; y: number };
+  onCreate: (name: string) => void;
 }
+const NameError: NestedCSSProperties = {
+  color: Colors.red[0],
+};
+const NameErrorMessage: NestedCSSProperties = {
+  position: 'absolute',
+  height: 30,
+  top: -30,
+  color: Colors.red[0],
+  width: 600,
+  fontSize: 10,
+  marginLeft: -10,
+  display: 'flex',
+  alignItems: 'center',
+};
 const NodeCreate: NestedCSSProperties = {
   color: Colors.grey[0],
   background: 'transparent',
@@ -25,6 +39,7 @@ const NodeCreate: NestedCSSProperties = {
     '&::placeholder': {
       fontFamily,
     },
+    '&.NameError': NameError,
   },
 };
 const MainNodeArea: NestedCSSProperties = {
@@ -45,6 +60,7 @@ const MainNodeArea: NestedCSSProperties = {
       $nest: {
         ...NodeTitle.$nest,
         '.NodeCreate': NodeCreate,
+        '.NameErrorMessage': NameErrorMessage,
       },
     },
     '&:hover': {
@@ -71,10 +87,18 @@ const NodeContainer = style({
     }, {} as Record<string, NestedCSSProperties>),
   },
 });
-export const NewNode: React.FC<NodeProps> = ({ node, onClick, position }) => {
+export const NewNode: React.FC<NodeProps> = ({ node, onCreate, nodes }) => {
   const thisNode = useRef<HTMLDivElement>(null);
   const [newName, setNewName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+  const isError = nodes.map((n) => n.name).includes(newName);
+  const submit = () => {
+    if (newName && !isError) {
+      onCreate(newName);
+    }
+    setNewName('');
+    setIsCreating(false);
+  };
   return (
     <div className={`${NodeContainer}`} ref={thisNode} style={{}}>
       <div
@@ -85,20 +109,24 @@ export const NewNode: React.FC<NodeProps> = ({ node, onClick, position }) => {
         }}
       >
         <div className={`NodeTitle`}>
+          {isError && (
+            <div
+              className={'NameErrorMessage'}
+            >{`Cannot create ${node.name} with name:${newName} type with that name already exists. Try different name`}</div>
+          )}
           {!isCreating && <div className={`NodeName`}>{`New ${node.name} +`}</div>}
           {isCreating && (
             <input
-              className={'NodeCreate'}
+              className={`NodeCreate ${isError ? 'NameError' : ''}`}
               value={newName}
               autoFocus
               placeholder={`New ${node.name} +`}
               onChange={(e) => setNewName(e.target.value)}
-              onBlur={() => {
-                if (newName) {
-                  //create
+              onBlur={submit}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  submit();
                 }
-                setNewName('');
-                setIsCreating(false);
               }}
             />
           )}

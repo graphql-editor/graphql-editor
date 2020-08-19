@@ -1,5 +1,5 @@
 import { Colors, mix } from '../Colors';
-export const GraphQLColors = {
+export const GraphQLColors: Record<string, string> = {
   type: Colors.main[0],
   union: Colors.main[0],
   input: Colors.blue[0],

@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { ParserField } from 'graphql-zeus';
+import { ParserField, TypeDefinitionDisplayMap } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { PaintNode } from './PaintNode';
 import { NewNode } from './NewNode';
@@ -41,11 +41,16 @@ export const RootNode: React.FC<NodeProps> = ({ node, nodes, onClick, onTreeChan
       <div className={`${NodeCaption} CaptionType-${node.name}`}>{node.name}</div>
       {
         <NewNode
+          nodes={nodes}
           node={node}
-          onClick={() => {}}
-          position={{
-            x: 0,
-            y: 0,
+          onCreate={(name) => {
+            nodes.push({
+              ...node,
+              name,
+              args: [],
+              type: { name: (TypeDefinitionDisplayMap as any)[node.data.type as any] },
+            });
+            onTreeChanged();
           }}
         />
       }

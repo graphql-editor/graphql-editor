@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ParserField } from 'graphql-zeus';
+import { ParserField, TypeSystemDefinition } from 'graphql-zeus';
 import { ActiveField } from './Field/ActiveField';
 import { style } from 'typestyle';
 import { Colors, mix } from '@Colors';
@@ -12,6 +12,7 @@ import { More } from '@Graf/icons/More';
 import { Plus } from '@Graf/icons/Plus';
 import { NodeFields, NodeTitle } from './SharedNode';
 import { ResolveCreateField } from '@Graf/Resolve/Resolve';
+import { EditableText } from '@Graf/Node/Field/FieldName/EditableText';
 export interface NodeProps {
   node: ParserField;
   nodes: ParserField[];
@@ -135,7 +136,6 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, nodes, onTreeChanged, is
   const [menuOpen, setMenuOpen] = useState(false);
   const [editMenuOpen, setEditMenuOpen] = useState(false);
   const thisNode = useRef<HTMLDivElement>(null);
-  console.log(node);
   useEffect(() => {
     return () => {
       setOpenedInputs([]);
@@ -173,7 +173,15 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, nodes, onTreeChanged, is
         }}
       >
         <div className={`NodeTitle`}>
-          <div className={`NodeName`}>{node.name}</div>
+          <div className={`NodeName`}>
+            <EditableText
+              value={node.name}
+              onChange={(v) => {
+                //TODO: Change the node name
+                onTreeChanged();
+              }}
+            />
+          </div>
           <div className={`NodeType`}>
             <ActiveFieldType type={node.type} />
             {node.interfaces && node.interfaces.length ? <span> implements {node.interfaces.join(' & ')}</span> : ''}
@@ -190,7 +198,22 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, nodes, onTreeChanged, is
             {ResolveCreateField(node, nodes)
               ?.sort((a, b) => (a.name > b.name ? 1 : -1))
               .map((f) => (
-                <div className={`NodeMenuItem`} key={f.name}>
+                <div
+                  className={`NodeMenuItem`}
+                  key={f.name}
+                  onClick={() => {
+                    node.args?.push({
+                      data: {
+                        type: TypeSystemDefinition.FieldDefinition,
+                      },
+                      type: {
+                        name: f.name,
+                      },
+                      name: 'NewField',
+                      args: [],
+                    });
+                  }}
+                >
                   {f.name}
                 </div>
               ))}
