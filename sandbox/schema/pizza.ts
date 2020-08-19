@@ -1,23 +1,20 @@
-export const pizza = `# graphqleditor.com
-
-# graphqleditor.com
-
-# graphqleditor.com
-
-# graphqleditor.com
-
-# graphqleditor.com
-
-# graphqleditor.com
+export const pizza = `
 
 type Query{
 	pizzas: [Pizza!]
 }
 
-type Pizza{
+type Pizza implements Nameable & Imaged{
 	name: String!
 	ingredients: [Ingredient!]
 	image: S3Object
+}
+
+interface Nameable{
+	name: String!
+}
+interface Imaged{
+	name: String!
 }
 
 type Ingredient{

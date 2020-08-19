@@ -1,7 +1,4 @@
 export const googleDirections = `
-# GraphQL from graph at:
-# graphqleditor.com
-
 type Query{
 	_: Boolean
 	users: [User!]

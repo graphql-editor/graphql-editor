@@ -1,0 +1,57 @@
+import React, { useRef } from 'react';
+import { ParserField } from 'graphql-zeus';
+import { style } from 'typestyle';
+import { PaintNode } from './PaintNode';
+import { NewNode } from './NewNode';
+import { Colors } from '@Colors';
+import { GraphQLColors } from '@editor/theme';
+import { NestedCSSProperties } from 'typestyle/lib/types';
+export interface NodeProps {
+  node: ParserField;
+  nodes: ParserField[];
+  onClick: (name: string, position: { offsetLeft: number; offsetTop: number; width: number }) => void;
+  onTreeChanged: () => void;
+}
+const NodeCaption = style({
+  flexBasis: '100%',
+  margin: `15px 15px`,
+  borderBottom: `1px solid ${Colors.grey[5]}`,
+  paddingBottom: 5,
+  $nest: {
+    ...Object.keys(GraphQLColors).reduce((a, b) => {
+      a[`&.CaptionType-${b}`] = {
+        color: `${GraphQLColors[b]}bb`,
+      };
+      return a;
+    }, {} as Record<string, NestedCSSProperties>),
+  },
+});
+const NodeContainer = style({
+  padding: 10,
+  display: 'flex',
+  flexWrap: 'wrap',
+  width: '100%',
+  height: '100%',
+});
+
+export const RootNode: React.FC<NodeProps> = ({ node, nodes, onClick, onTreeChanged }) => {
+  const thisNode = useRef<HTMLDivElement>(null);
+  return (
+    <div className={`${NodeContainer}`} ref={thisNode}>
+      <div className={`${NodeCaption} CaptionType-${node.name}`}>{node.name}</div>
+      {
+        <NewNode
+          node={node}
+          onClick={() => {}}
+          position={{
+            x: 0,
+            y: 0,
+          }}
+        />
+      }
+      {node.args?.map((a, i) => {
+        return <PaintNode key={a.name} node={a} onClick={(position) => onClick(a.name, position)} />;
+      })}
+    </div>
+  );
+};

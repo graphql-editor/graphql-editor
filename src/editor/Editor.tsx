@@ -9,7 +9,7 @@ import { GraphQLEditorCypress, cypressGet } from '@cypress';
 import { PassedSchema, Theming } from '@Models';
 import { DynamicResize } from './code/Components';
 import { Graf } from '@Graf/Graf';
-import { ParserTree, Parser } from 'graphql-zeus';
+import { ParserTree, Parser, TreeToGraphQL } from 'graphql-zeus';
 
 export interface EditorProps extends Theming {
   activePane?: ActivePane;
@@ -31,12 +31,11 @@ export const Editor = ({
   activePane = 'code-diagram',
   onPaneChange,
 }: EditorProps) => {
-  const [diagramFocus, setDiagramFocus] = useState(false);
   const [code, setCode] = useState(schema.code);
   const [sidebarSize, setSidebarSize] = useState<string | number>(initialSizeOfSidebar);
   const [menuState, setMenuState] = useState<ActivePane>(activePane);
   const [tree, setTree] = useState<ParserTree>({ nodes: [] });
-
+  const [selectedNode, setSelectedNode] = useState<string>();
   useEffect(() => {
     if (schema.libraries) {
       const excludeLibraryNodesFromDiagram = Parser.parse(schema.libraries);
@@ -56,14 +55,17 @@ export const Editor = ({
     setMenuState(activePane);
   }, [activePane]);
 
+  const onTreeChanged = () => {
+    const graphql = TreeToGraphQL.parse(tree);
+    console.log(graphql);
+    setCode(graphql);
+  };
+
   return (
     <div
       data-cy={cypressGet(GraphQLEditorCypress, 'name')}
       style={{ display: 'flex', flexFlow: 'row nowrap', height: '100%', width: '100%', alignItems: 'stretch' }}
       onKeyDown={(e) => {
-        if (!diagramFocus) {
-          return;
-        }
         if (e.key.toLowerCase() === 'f' && (e.metaKey || e.ctrlKey)) {
           e.preventDefault();
           setMenuState('explorer-diagram');
@@ -107,7 +109,15 @@ export const Editor = ({
         </DynamicResize>
       )}
       {menuState !== 'code' && (
-        <Graf onFocus={() => setDiagramFocus(true)} onBlur={() => setDiagramFocus(false)} tree={tree} />
+        <Graf
+          onTreeChanged={onTreeChanged}
+          deselect={() => setSelectedNode(undefined)}
+          onSelectNode={(n: string) => {
+            setSelectedNode(n);
+          }}
+          selectedNode={selectedNode}
+          tree={tree}
+        />
       )}
     </div>
   );

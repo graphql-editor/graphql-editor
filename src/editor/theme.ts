@@ -13,7 +13,7 @@ export const GraphQLColors = {
   Boolean: Colors.green[0],
   ID: Colors.green[0],
   Float: Colors.green[0],
-} as const;
+};
 
 export const GraphQLBackgrounds: Record<string, string> = {
   type: Colors.main[6],

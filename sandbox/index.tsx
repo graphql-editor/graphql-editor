@@ -32,7 +32,6 @@ export const Actions = style({
 export const App = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
     code: schemas.muskSchema,
-    libraries: ``,
   });
   const [hide, setHide] = useState(false);
   return (

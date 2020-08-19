@@ -2,9 +2,9 @@ import React from 'react';
 import { ParserField } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { Colors } from '@Colors';
-import { FieldType } from './FieldType';
-import { FieldName } from './FieldName';
-import { FIELD_HEIGHT } from './constants';
+import { FIELD_HEIGHT } from '@Graf/constants';
+import { ActiveFieldName } from './FieldName/ActiveFieldName';
+import { ActiveFieldType } from './FieldType/ActiveFieldType';
 export interface FieldProps {
   node: ParserField;
   inputOpen: boolean;
@@ -35,7 +35,7 @@ const Main = style({
       },
     },
     '.NodeFieldPortPlaceholder': {
-      width: 16,
+      width: 24,
       height: 16,
     },
     '.NodeFieldPort': {
@@ -81,7 +81,7 @@ const Title = style({
 });
 const Name = style({ fontSize: 10, marginRight: 4, overflow: 'hidden' });
 const Type = style({ fontSize: 8, color: Colors.green[0] });
-export const Field: React.FC<FieldProps> = ({
+export const ActiveField: React.FC<FieldProps> = ({
   node,
   inputOpen,
   inputDisabled,
@@ -108,7 +108,7 @@ export const Field: React.FC<FieldProps> = ({
       )}
       <div className={Title}>
         <div className={Name}>
-          <FieldName
+          <ActiveFieldName
             afterChange={(newName) => {
               node.name = newName;
               onTreeChanged();
@@ -119,7 +119,7 @@ export const Field: React.FC<FieldProps> = ({
           />
         </div>
         <div className={Type}>
-          <FieldType type={node.type} />
+          <ActiveFieldType type={node.type} />
         </div>
       </div>
       {!outputDisabled && (

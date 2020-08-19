@@ -1,6 +1,6 @@
 import React from 'react';
 import { ParserField } from 'graphql-zeus';
-import { FieldType } from './FieldType';
+import { ActiveFieldType } from '@Graf/Node/Field/FieldType/ActiveFieldType';
 import { style } from 'typestyle';
 import { EditableText } from './EditableText';
 const Main = style({
@@ -14,7 +14,7 @@ const Indent = style({
   textOverflow: 'ellipsis',
   overflow: 'hidden',
 });
-export const FieldName: React.FC<
+export const ActiveFieldName: React.FC<
   Pick<ParserField, 'name' | 'args' | 'data'> & { afterChange: (newName: string) => void }
 > = ({ args, data, name, afterChange }) => {
   if (args && args.length > 0) {
@@ -23,7 +23,7 @@ export const FieldName: React.FC<
         <EditableText value={name} onChange={afterChange} />(
         {args.map((a, i) => (
           <div className={Indent} key={a.name}>
-            <FieldName
+            <ActiveFieldName
               afterChange={(newName) => {
                 args[i].name = newName;
                 afterChange(name);
@@ -33,7 +33,7 @@ export const FieldName: React.FC<
               args={a.args}
             />
             :
-            <FieldType type={a.type} />,
+            <ActiveFieldType type={a.type} />,
           </div>
         ))}
         )

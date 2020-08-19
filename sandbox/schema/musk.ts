@@ -1,6 +1,4 @@
 export const muskSchema = `
-# GraphQL from graph at:
-# graphqleditor.com
 
 type Query{
 	capsules(
