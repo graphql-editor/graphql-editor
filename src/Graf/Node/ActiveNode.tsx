@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ParserField, TypeSystemDefinition } from 'graphql-zeus';
+import { ParserField } from 'graphql-zeus';
 import { ActiveField } from './Field/ActiveField';
 import { style } from 'typestyle';
 import { Colors, mix } from '@Colors';
@@ -13,6 +13,7 @@ import { Plus } from '@Graf/icons/Plus';
 import { NodeFields, NodeTitle } from './SharedNode';
 import { ResolveCreateField } from '@Graf/Resolve/Resolve';
 import { EditableText } from '@Graf/Node/Field/FieldName/EditableText';
+import { Description } from './Description';
 export interface NodeProps {
   node: ParserField;
   nodes: ParserField[];
@@ -90,12 +91,19 @@ const MainNodeArea: NestedCSSProperties = {
     '.NodeMenu': NodeMenu,
   },
 };
+const DescriptionPosition: NestedCSSProperties = {
+  position: 'absolute',
+  transformOrigin: 'center bottom',
+  transform: 'translate(0px, -100%)',
+  width: '100%',
+};
 const NodeContainer = style({
   position: 'relative',
   breakInside: 'avoid',
   maxWidth: '100%',
   margin: 10,
   $nest: {
+    '.DescriptionPosition': DescriptionPosition,
     '.LeftNodeArea': LeftNodeArea,
     '.RightNodeArea': RightNodeArea,
     '.MainNodeArea': MainNodeArea,
@@ -147,6 +155,14 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, nodes, onTreeChanged, is
       className={`${NodeContainer} ${DOM.classes.node} ${isSelected ? DOM.classes.nodeSelected : ''}`}
       ref={thisNode}
     >
+      <Description
+        className={'DescriptionPosition'}
+        onChange={(d) => {
+          node.description = d;
+          onTreeChanged();
+        }}
+        value={node.description || ''}
+      />
       <div className={`LeftNodeArea`}>
         {openedInputs.sort().map((o) => (
           <div key={o} className={`LeftNodeAreaNode`} style={{ top: FIELD_HEIGHT * (o + 1) }}>
@@ -203,15 +219,18 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, nodes, onTreeChanged, is
                   key={f.name}
                   onClick={() => {
                     node.args?.push({
-                      data: {
-                        type: TypeSystemDefinition.FieldDefinition,
-                      },
+                      ...f,
+                      description: undefined,
+                      directives: [],
+                      interfaces: undefined,
                       type: {
                         name: f.name,
                       },
-                      name: 'NewField',
+                      name: f.name.toLowerCase(),
                       args: [],
                     });
+                    setMenuOpen(false);
+                    onTreeChanged();
                   }}
                 >
                   {f.name}
@@ -221,7 +240,16 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, nodes, onTreeChanged, is
         )}
         {editMenuOpen && (
           <div className={`NodeMenu  NodeBackground-${node.type.name}`}>
-            <div className={'NodeMenuItem'}>Delete node</div>
+            <div
+              className={'NodeMenuItem'}
+              onClick={() => {
+                nodes.splice(nodes.findIndex((n) => n.name === node.name)!, 1);
+                DOM.panLock = false;
+                onTreeChanged();
+              }}
+            >
+              Delete node
+            </div>
             <div className={'NodeMenuItem'}>implement interface</div>
             <div className={'NodeMenuItem'}>add directive</div>
           </div>

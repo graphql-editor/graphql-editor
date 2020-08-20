@@ -61,9 +61,7 @@ export const PaintNodes: React.FC<PaintNodesProps> = ({ tree, onSelectNode, onTr
             type: {
               name: 'root',
             },
-            args: tree.nodes
-              .filter((n) => n.data.type === d)
-              .sort((a, b) => ((a.args?.length || 1) > (b.args?.length || 1) ? -1 : 1)),
+            args: tree.nodes.filter((n) => n.data.type === d).sort((a, b) => (a.name > b.name ? 1 : -1)),
           }}
           onTreeChanged={onTreeChanged}
         />

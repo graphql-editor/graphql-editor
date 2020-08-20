@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { style } from 'typestyle';
 import { Colors } from '@Colors';
 import { fontFamily } from '@vars';
+import { DOM } from '@Graf/DOM';
 const Input = style({
   border: 0,
   background: 'transparent',
@@ -14,6 +15,15 @@ const Input = style({
 export const EditableText: React.FC<{ value: string; onChange: (value: string) => void }> = ({ value, onChange }) => {
   const [isEdited, setIsEdited] = useState(false);
   const [editedValue, setEditedValue] = useState(value);
+  const checkEdit = () => {
+    DOM.panLock = false;
+    if (editedValue) {
+      onChange(editedValue);
+    } else {
+      setEditedValue(value);
+    }
+    setIsEdited(false);
+  };
   return (
     <>
       {isEdited ? (
@@ -22,13 +32,14 @@ export const EditableText: React.FC<{ value: string; onChange: (value: string) =
           className={Input}
           value={editedValue}
           size={editedValue.length + 1}
-          onBlur={() => {
-            if (editedValue) {
-              onChange(editedValue);
-            } else {
-              setEditedValue(value);
+          onFocus={() => {
+            DOM.panLock = true;
+          }}
+          onBlur={checkEdit}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              checkEdit();
             }
-            setIsEdited(false);
           }}
           onChange={(e) => setEditedValue(e.target.value)}
         />

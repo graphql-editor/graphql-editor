@@ -1,5 +1,6 @@
 export class DOM {
   static lock = false;
+  static panLock = false;
   static classes = {
     node: 'DOMNode',
     nodeSelected: 'DOMSelectedNode',

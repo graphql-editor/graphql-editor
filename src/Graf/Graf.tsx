@@ -43,6 +43,9 @@ export const Graf: React.FC<GrafProps> = ({ tree, selectedNode, deselect, onSele
       const instance = panzoom(grafRef.current, {
         maxZoom: 2.0,
         minZoom: 0.5,
+        beforeMouseDown: (e) => {
+          return DOM.panLock;
+        },
       });
       instance.on('panstart', () => (DOM.lock = true));
       instance.on('panend', (e: any) => {
@@ -75,22 +78,25 @@ export const Graf: React.FC<GrafProps> = ({ tree, selectedNode, deselect, onSele
           onTreeChanged={onTreeChanged}
           tree={tree}
         />
-        {typeof selectedNode === 'string' && position && wrapperRef.current && (
-          <div
-            className={Focus}
-            style={{
-              top: position.offsetTop - 10,
-              left: position.offsetLeft - 10,
-            }}
-          >
-            <ActiveNode
-              isSelected={true}
-              node={tree.nodes.find((n) => n.name === selectedNode)!}
-              nodes={tree.nodes}
-              onTreeChanged={onTreeChanged}
-            />
-          </div>
-        )}
+        {typeof selectedNode === 'string' &&
+          position &&
+          wrapperRef.current &&
+          !!tree.nodes.find((n) => n.name === selectedNode) && (
+            <div
+              className={Focus}
+              style={{
+                top: position.offsetTop - 10,
+                left: position.offsetLeft - 10,
+              }}
+            >
+              <ActiveNode
+                isSelected={true}
+                node={tree.nodes.find((n) => n.name === selectedNode)!}
+                nodes={tree.nodes}
+                onTreeChanged={onTreeChanged}
+              />
+            </div>
+          )}
       </div>
     </div>
   );

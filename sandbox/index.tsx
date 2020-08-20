@@ -31,8 +31,8 @@ export const Actions = style({
 
 export const App = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
-    code: schemas.pizza,
-    libraries: schemas.pizzaLibrary,
+    code: schemas.googleDirections,
+    libraries: '',
   });
   const [hide, setHide] = useState(false);
   return (

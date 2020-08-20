@@ -8,6 +8,7 @@ import { NodeTitle } from './SharedNode';
 export interface NodeProps {
   node: ParserField;
   onClick: (position: { offsetLeft: number; offsetTop: number; width: number }) => void;
+  builtIn?: boolean;
 }
 const MainNodeArea: NestedCSSProperties = {
   position: 'relative',
@@ -60,7 +61,14 @@ export const PaintNode: React.FC<NodeProps> = ({ node, onClick }) => {
         }}
       >
         <div className={`NodeTitle`}>
-          <div className={`NodeName`}>{node.name}</div>
+          <div
+            className={`NodeName`}
+            onSeeked={(e) => {
+              console.log(node);
+            }}
+          >
+            {node.name}
+          </div>
         </div>
       </div>
     </div>

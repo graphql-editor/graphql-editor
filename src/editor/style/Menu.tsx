@@ -1,9 +1,10 @@
 import { style } from 'typestyle';
 
 import { Colors } from '@Colors';
+import { menuWidth } from '@vars';
 
 export const HiderPanel = style({
-  width: 30,
+  width: menuWidth,
   background: Colors.grey[9],
   color: Colors.grey[2],
   fontSize: 12,
