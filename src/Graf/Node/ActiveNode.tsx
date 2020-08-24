@@ -15,14 +15,10 @@ import { ResolveCreateField } from '@Graf/Resolve/Resolve';
 import { EditableText } from '@Graf/Node/Field/FieldName/EditableText';
 import { ActiveDescription } from './Description/ActiveDescription';
 import { ChangeAllRelatedNodes } from '@Graf/Resolve/Related';
+import { useTreesState } from '@state/containers/trees';
 export interface NodeProps {
   node: ParserField;
-  nodes: ParserField[];
-  libraryNodes: ParserField[];
   onTreeChanged: () => void;
-  isSelected?: boolean;
-  onSelect: (name: string) => void;
-  selectedNode?: string;
   isLocked?: boolean;
 }
 const LowerButton: NestedCSSProperties = {
@@ -147,16 +143,17 @@ const NodeContainer = style({
   },
 });
 
-export const ActiveNode: React.FC<NodeProps> = ({ node, isSelected, isLocked, ...sharedProps }) => {
-  const { nodes, onTreeChanged, selectedNode, onSelect, libraryNodes } = sharedProps;
+export const ActiveNode: React.FC<NodeProps> = ({ node, isLocked, ...sharedProps }) => {
+  const { onTreeChanged } = sharedProps;
 
   const [openedInputs, setOpenedInputs] = useState<number[]>([]);
   const [openedOutputs, setOpenedOutputs] = useState<number[]>([]);
   const [menuOpen, setMenuOpen] = useState(false);
   const [editMenuOpen, setEditMenuOpen] = useState(false);
   const thisNode = useRef<HTMLDivElement>(null);
+  const { libraryTree, tree, setSelectedNode, selectedNode } = useTreesState();
 
-  const isLibrary = !!libraryNodes.find((lN) => lN.name === node.name);
+  const isLibrary = !!libraryTree.nodes.find((lN) => lN.name === node.name);
 
   useEffect(() => {
     return () => {
@@ -165,10 +162,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, isSelected, isLocked, ..
     };
   }, [node]);
   return (
-    <div
-      className={`${NodeContainer} ${DOM.classes.node} ${isSelected ? DOM.classes.nodeSelected : ''}`}
-      ref={thisNode}
-    >
+    <div className={`${NodeContainer} ${DOM.classes.node} ${DOM.classes.nodeSelected}`} ref={thisNode}>
       <ActiveDescription
         className={'DescriptionPosition'}
         onChange={(d) => {
@@ -181,7 +175,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, isSelected, isLocked, ..
       <div className={`LeftNodeArea`}>
         {openedInputs.sort().map((o) => (
           <div key={o} className={`LeftNodeAreaNode`} style={{ top: FIELD_HEIGHT * (o + 1) }}>
-            <ActiveNode isSelected={true} node={node.args![o]} isLocked={isLocked} {...sharedProps} />
+            <ActiveNode node={node.args![o]} isLocked={isLocked} {...sharedProps} />
           </div>
         ))}
       </div>
@@ -189,10 +183,9 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, isSelected, isLocked, ..
         {openedOutputs.sort().map((o) => (
           <div key={o} className={`RightNodeAreaNode`} style={{ top: FIELD_HEIGHT * (o + 1) }}>
             <ActiveNode
-              isSelected={true}
               node={
-                (nodes.find((n) => n.name === node.args![o].type.name) ||
-                  libraryNodes.find((n) => n.name === node.args![o].type.name))!
+                (tree.nodes.find((n) => n.name === node.args![o].type.name) ||
+                  libraryTree.nodes.find((n) => n.name === node.args![o].type.name))!
               }
               isLocked={isLocked}
               {...sharedProps}
@@ -216,14 +209,14 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, isSelected, isLocked, ..
                   //TODO: Change the node name
                   ChangeAllRelatedNodes({
                     newName: v,
-                    nodes,
+                    nodes: tree.nodes,
                     oldName: node.name,
                   });
                   const reselect = node.name === selectedNode;
                   node.name = v;
                   onTreeChanged();
                   if (reselect && selectedNode) {
-                    onSelect(v);
+                    setSelectedNode(v);
                   }
                 }}
               />
@@ -255,7 +248,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, isSelected, isLocked, ..
             className={`NodeMenu NodeBackground-${node.type.name}`}
             onScroll={(e) => e.stopPropagation()}
           >
-            {ResolveCreateField(node, nodes)
+            {ResolveCreateField(node, tree.nodes)
               ?.sort((a, b) => (a.name > b.name ? 1 : -1))
               .map((f) => (
                 <div
@@ -288,7 +281,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, isSelected, isLocked, ..
             <div
               className={'NodeMenuItem'}
               onClick={() => {
-                nodes.splice(nodes.findIndex((n) => n.name === node.name)!, 1);
+                tree.nodes.splice(tree.nodes.findIndex((n) => n.name === node.name)!, 1);
                 DOM.panLock = false;
                 onTreeChanged();
               }}
@@ -302,7 +295,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, isSelected, isLocked, ..
         <div className={`NodeFields NodeBackground-${node.type.name}`}>
           {node.args?.map((a, i) => {
             const outputDisabled = !(
-              nodes.find((n) => n.name === a.type.name) || libraryNodes.find((n) => n.name === a.type.name)
+              tree.nodes.find((n) => n.name === a.type.name) || libraryTree.nodes.find((n) => n.name === a.type.name)
             );
             return (
               <ActiveField

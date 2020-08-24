@@ -7,8 +7,8 @@ import { NestedCSSProperties } from 'typestyle/lib/types';
 import { DOM } from '@Graf/DOM';
 import { NodeTitle } from './SharedNode';
 import { fontFamily } from '@vars';
-export interface NodeProps {
-  nodes: ParserField[];
+import { useTreesState } from '@state/containers/trees';
+export interface NewNodeProps {
   node: ParserField;
   onCreate: (name: string) => void;
 }
@@ -87,11 +87,13 @@ const NodeContainer = style({
     }, {} as Record<string, NestedCSSProperties>),
   },
 });
-export const NewNode: React.FC<NodeProps> = ({ node, onCreate, nodes }) => {
+export const NewNode: React.FC<NewNodeProps> = ({ node, onCreate }) => {
   const thisNode = useRef<HTMLDivElement>(null);
   const [newName, setNewName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
-  const isError = nodes.map((n) => n.name).includes(newName);
+  const { libraryTree, tree } = useTreesState();
+  const isError =
+    tree.nodes.map((n) => n.name).includes(newName) || libraryTree.nodes.map((n) => n.name).includes(newName);
   const submit = () => {
     if (newName && !isError) {
       onCreate(newName);

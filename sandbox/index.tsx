@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { render } from 'react-dom';
 import { style } from 'typestyle';
-import { Editor } from '../src/index';
+import { GraphQLEditor } from '../src/index';
 import { PassedSchema } from '../src/Models';
 import * as schemas from './schema';
 export const Full = style({
@@ -64,7 +64,7 @@ export const App = () => {
         </div>
       )}
       {!hide && (
-        <Editor
+        <GraphQLEditor
           onSchemaChange={(props) => {
             setMySchema(props);
           }}

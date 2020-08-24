@@ -6,10 +6,10 @@ import { NewNode } from './NewNode';
 import { Colors } from '@Colors';
 import { GraphQLColors } from '@editor/theme';
 import { NestedCSSProperties } from 'typestyle/lib/types';
-export interface NodeProps {
+import { useTreesState } from '@state/containers/trees';
+export interface RootNodeProps {
   node: ParserField;
   libraryNode?: ParserField;
-  nodes: ParserField[];
   onClick: (name: string, position: { offsetLeft: number; offsetTop: number; width: number }) => void;
   onTreeChanged: () => void;
 }
@@ -35,17 +35,17 @@ const NodeContainer = style({
   height: '100%',
 });
 
-export const RootNode: React.FC<NodeProps> = ({ node, libraryNode, nodes, onClick, onTreeChanged }) => {
+export const RootNode: React.FC<RootNodeProps> = ({ node, libraryNode, onClick, onTreeChanged }) => {
   const thisNode = useRef<HTMLDivElement>(null);
+  const { tree } = useTreesState();
   return (
     <div className={`${NodeContainer}`} ref={thisNode}>
       <div className={`${NodeCaption} CaptionType-${node.name}`}>{node.name}</div>
       {
         <NewNode
-          nodes={nodes}
           node={node}
           onCreate={(name) => {
-            nodes.push({
+            tree.nodes.push({
               ...node,
               name,
               args: [],

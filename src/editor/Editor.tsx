@@ -8,11 +8,12 @@ import { GraphQLEditorCypress, cypressGet } from '@cypress';
 import { PassedSchema, Theming } from '@Models';
 import { DynamicResize } from './code/Components';
 import { Graf } from '@Graf/Graf';
-import { ParserTree, Parser, TreeToGraphQL } from 'graphql-zeus';
+import { Parser, TreeToGraphQL } from 'graphql-zeus';
 import { Workers } from '@worker';
 import { style } from 'typestyle';
 import { Colors } from '@Colors';
 import { useIO, KeyboardActions } from '@Graf/IO';
+import { useTreesState } from '@state/containers/trees';
 
 export const Main = style({
   display: 'flex',
@@ -79,12 +80,9 @@ export const Editor = ({
   const [code, setCode] = useState(schema.code);
   const [sidebarSize, setSidebarSize] = useState<string | number>(initialSizeOfSidebar);
   const [menuState, setMenuState] = useState<ActivePane>(activePane);
-  const [tree, _setTree] = useState<ParserTree>({ nodes: [] });
-  const [libraryTree, setLibraryTree] = useState<ParserTree>({ nodes: [] });
-  const [selectedNode, setSelectedNode] = useState<string>();
   const [errors, setErrors] = useState<string>();
-  const [snapshots, setSnapshots] = useState<ParserTree[]>([]);
-  const [undoCursor, setUndoCursor] = useState(0);
+
+  const { tree, snapshots, undoCursor, setSnapshots, setTree, setUndoCursor, setLibraryTree } = useTreesState();
 
   const reset = () => {
     setSnapshots([]);
@@ -92,14 +90,6 @@ export const Editor = ({
     setErrors(undefined);
   };
 
-  const setTree = (t: ParserTree) => {
-    const newUndoCursor = undoCursor + 1;
-    setUndoCursor(newUndoCursor);
-    setSnapshots((s) => {
-      return [...s.slice(0, newUndoCursor), t];
-    });
-    _setTree(t);
-  };
   useEffect(() => {
     if (schema.libraries) {
       const excludeLibraryNodesFromDiagram = Parser.parse(schema.libraries);
@@ -129,7 +119,6 @@ export const Editor = ({
   }, [activePane]);
 
   const undo = () => {
-    console.log(snapshots.length, undoCursor);
     if (snapshots.length > undoCursor - 1 && snapshots.length > 1) {
       const past = snapshots[undoCursor - 2];
       setUndoCursor(undoCursor - 1);
@@ -145,8 +134,8 @@ export const Editor = ({
       if (action === KeyboardActions.Redo) {
         if (snapshots.length >= undoCursor + 1) {
           const future = snapshots[undoCursor + 1];
-          _setTree(future);
           setUndoCursor(undoCursor + 1);
+          setCode(TreeToGraphQL.parse(future));
         }
       }
     },
@@ -226,16 +215,7 @@ export const Editor = ({
       {menuState !== 'code' && (
         <>
           {errors && <div className={ErrorContainer}>{errors}</div>}
-          <Graf
-            libraryTree={libraryTree}
-            onTreeChanged={onTreeChanged}
-            deselect={() => setSelectedNode(undefined)}
-            onSelectNode={(n: string) => {
-              setSelectedNode(n);
-            }}
-            selectedNode={selectedNode}
-            tree={tree}
-          />
+          <Graf onTreeChanged={onTreeChanged} />
         </>
       )}
     </div>

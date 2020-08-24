@@ -24,7 +24,8 @@
       "@Models":["./Models/index"],
       "@worker":["./worker/index"],
       "@Graf/*":["./Graf/*"],
-      "@editor/*":["./editor/*"]
+      "@editor/*":["./editor/*"],
+      "@state/*":["./state/*"]
     },
     "skipLibCheck": true
   },

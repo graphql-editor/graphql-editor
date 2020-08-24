@@ -1,18 +1,14 @@
 import React, { useRef, useLayoutEffect, useState } from 'react';
-import { ParserTree, ParserField } from 'graphql-zeus';
+import { ParserField } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { fontFamily } from '@vars';
 import panzoom from 'panzoom';
 import { DOM } from './DOM';
 import { PaintNodes } from './PaintNodes';
 import { ActiveNode } from './Node/ActiveNode';
+import { useTreesState } from '@state/containers/trees';
 export interface GrafProps {
-  tree: ParserTree;
-  libraryTree: ParserTree;
-  onSelectNode: (name: string) => void;
-  deselect: () => void;
   onTreeChanged: () => void;
-  selectedNode?: string;
 }
 const Wrapper = style({
   width: '100%',
@@ -31,14 +27,7 @@ const Main = style({
 const Focus = style({
   position: 'absolute',
 });
-export const Graf: React.FC<GrafProps> = ({
-  tree,
-  selectedNode,
-  deselect,
-  onSelectNode,
-  onTreeChanged,
-  libraryTree,
-}) => {
+export const Graf: React.FC<GrafProps> = ({ onTreeChanged }) => {
   const grafRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<{
@@ -46,6 +35,8 @@ export const Graf: React.FC<GrafProps> = ({
     offsetTop: number;
     width: number;
   }>();
+
+  const { libraryTree, tree, selectedNode, setSelectedNode } = useTreesState();
   useLayoutEffect(() => {
     if (grafRef.current) {
       const instance = panzoom(grafRef.current, {
@@ -75,7 +66,7 @@ export const Graf: React.FC<GrafProps> = ({
       className={Wrapper}
       onClick={() => {
         if (DOM.lock) return;
-        deselect();
+        setSelectedNode(undefined);
       }}
     >
       <div ref={grafRef} className={Main}>
@@ -83,16 +74,14 @@ export const Graf: React.FC<GrafProps> = ({
           blur={typeof selectedNode === 'string'}
           onSelectNode={(name, pos) => {
             // hack to reset active node state on reselect
-            deselect();
+            setSelectedNode(undefined);
             setTimeout(() => {
-              onSelectNode(name);
+              setSelectedNode(name);
             }, 1);
 
             setPosition(pos);
           }}
           onTreeChanged={onTreeChanged}
-          tree={tree}
-          libraryTree={libraryTree}
         />
         {node && position && wrapperRef.current && (
           <div
@@ -102,15 +91,7 @@ export const Graf: React.FC<GrafProps> = ({
               left: position.offsetLeft - 10,
             }}
           >
-            <ActiveNode
-              libraryNodes={libraryTree.nodes}
-              onSelect={onSelectNode}
-              selectedNode={selectedNode}
-              isSelected={true}
-              node={node}
-              nodes={tree.nodes}
-              onTreeChanged={onTreeChanged}
-            />
+            <ActiveNode node={node} onTreeChanged={onTreeChanged} />
           </div>
         )}
       </div>
