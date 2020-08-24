@@ -80,10 +80,17 @@ export const Editor = ({
   const [sidebarSize, setSidebarSize] = useState<string | number>(initialSizeOfSidebar);
   const [menuState, setMenuState] = useState<ActivePane>(activePane);
   const [tree, _setTree] = useState<ParserTree>({ nodes: [] });
+  const [libraryTree, setLibraryTree] = useState<ParserTree>({ nodes: [] });
   const [selectedNode, setSelectedNode] = useState<string>();
   const [errors, setErrors] = useState<string>();
   const [snapshots, setSnapshots] = useState<ParserTree[]>([]);
   const [undoCursor, setUndoCursor] = useState(0);
+
+  const reset = () => {
+    setSnapshots([]);
+    setUndoCursor(0);
+    setErrors(undefined);
+  };
 
   const setTree = (t: ParserTree) => {
     const newUndoCursor = undoCursor + 1;
@@ -93,7 +100,6 @@ export const Editor = ({
     });
     _setTree(t);
   };
-
   useEffect(() => {
     if (schema.libraries) {
       const excludeLibraryNodesFromDiagram = Parser.parse(schema.libraries);
@@ -107,7 +113,16 @@ export const Editor = ({
     } else {
       setTree(Parser.parse(code));
     }
-  }, [code, schema.libraries]);
+  }, [code]);
+
+  useEffect(() => {
+    if (schema.libraries) {
+      setLibraryTree(Parser.parse(schema.libraries));
+    } else {
+      setLibraryTree({ nodes: [] });
+    }
+    reset();
+  }, [schema.libraries]);
 
   useEffect(() => {
     setMenuState(activePane);
@@ -118,7 +133,8 @@ export const Editor = ({
     if (snapshots.length > undoCursor - 1 && snapshots.length > 1) {
       const past = snapshots[undoCursor - 2];
       setUndoCursor(undoCursor - 1);
-      _setTree(past);
+      const graphql = TreeToGraphQL.parse(past);
+      setCode(graphql);
     }
   };
   useIO({
@@ -211,6 +227,7 @@ export const Editor = ({
         <>
           {errors && <div className={ErrorContainer}>{errors}</div>}
           <Graf
+            libraryTree={libraryTree}
             onTreeChanged={onTreeChanged}
             deselect={() => setSelectedNode(undefined)}
             onSelectNode={(n: string) => {

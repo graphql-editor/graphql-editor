@@ -9,6 +9,7 @@ export interface NodeProps {
   node: ParserField;
   onClick: (position: { offsetLeft: number; offsetTop: number; width: number }) => void;
   builtIn?: boolean;
+  isLibrary?: boolean;
 }
 const MainNodeArea: NestedCSSProperties = {
   position: 'relative',
@@ -30,8 +31,19 @@ const MainNodeArea: NestedCSSProperties = {
     },
   },
 };
-const NodeContainer = style({
-  margin: 15,
+const LibraryNodeContainer = style({
+  $nest: {
+    '.MainNodeArea': MainNodeArea,
+    ...Object.keys(GraphQLBackgrounds).reduce((a, b) => {
+      a[`.NodeType-${b}`] = {
+        borderColor: `${GraphQLBackgrounds[b]}bb`,
+        borderStyle: 'dashed',
+      };
+      return a;
+    }, {} as Record<string, NestedCSSProperties>),
+  },
+});
+const MainNodeContainer = style({
   $nest: {
     '.MainNodeArea': MainNodeArea,
     ...Object.keys(GraphQLBackgrounds).reduce((a, b) => {
@@ -42,10 +54,17 @@ const NodeContainer = style({
     }, {} as Record<string, NestedCSSProperties>),
   },
 });
-export const PaintNode: React.FC<NodeProps> = ({ node, onClick }) => {
+const NodeContainer = style({
+  margin: 15,
+});
+export const PaintNode: React.FC<NodeProps> = ({ node, onClick, isLibrary }) => {
   const thisNode = useRef<HTMLDivElement>(null);
   return (
-    <div className={`${NodeContainer}`} ref={thisNode} style={{}}>
+    <div
+      className={`${NodeContainer} ${isLibrary ? LibraryNodeContainer : MainNodeContainer}`}
+      ref={thisNode}
+      style={{}}
+    >
       <div
         className={`MainNodeArea NodeType-${node.type.name}`}
         onClick={(e) => {

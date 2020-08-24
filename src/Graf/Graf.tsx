@@ -1,5 +1,5 @@
 import React, { useRef, useLayoutEffect, useState } from 'react';
-import { ParserTree } from 'graphql-zeus';
+import { ParserTree, ParserField } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { fontFamily } from '@vars';
 import panzoom from 'panzoom';
@@ -8,6 +8,7 @@ import { PaintNodes } from './PaintNodes';
 import { ActiveNode } from './Node/ActiveNode';
 export interface GrafProps {
   tree: ParserTree;
+  libraryTree: ParserTree;
   onSelectNode: (name: string) => void;
   deselect: () => void;
   onTreeChanged: () => void;
@@ -30,7 +31,14 @@ const Main = style({
 const Focus = style({
   position: 'absolute',
 });
-export const Graf: React.FC<GrafProps> = ({ tree, selectedNode, deselect, onSelectNode, onTreeChanged }) => {
+export const Graf: React.FC<GrafProps> = ({
+  tree,
+  selectedNode,
+  deselect,
+  onSelectNode,
+  onTreeChanged,
+  libraryTree,
+}) => {
   const grafRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<{
@@ -46,6 +54,9 @@ export const Graf: React.FC<GrafProps> = ({ tree, selectedNode, deselect, onSele
         beforeMouseDown: (e) => {
           return DOM.panLock;
         },
+        beforeWheel: (e) => {
+          return DOM.scrollLock;
+        },
       });
       instance.on('panstart', () => (DOM.lock = true));
       instance.on('panend', (e: any) => {
@@ -54,6 +65,10 @@ export const Graf: React.FC<GrafProps> = ({ tree, selectedNode, deselect, onSele
     }
   }, [grafRef.current]);
   console.log('RERERNDER');
+  let node: ParserField | undefined;
+  if (typeof selectedNode === 'string') {
+    node = tree.nodes.find((n) => n.name === selectedNode) || libraryTree.nodes.find((n) => n.name === selectedNode);
+  }
   return (
     <div
       ref={wrapperRef}
@@ -77,26 +92,27 @@ export const Graf: React.FC<GrafProps> = ({ tree, selectedNode, deselect, onSele
           }}
           onTreeChanged={onTreeChanged}
           tree={tree}
+          libraryTree={libraryTree}
         />
-        {typeof selectedNode === 'string' &&
-          position &&
-          wrapperRef.current &&
-          !!tree.nodes.find((n) => n.name === selectedNode) && (
-            <div
-              className={Focus}
-              style={{
-                top: position.offsetTop - 10,
-                left: position.offsetLeft - 10,
-              }}
-            >
-              <ActiveNode
-                isSelected={true}
-                node={tree.nodes.find((n) => n.name === selectedNode)!}
-                nodes={tree.nodes}
-                onTreeChanged={onTreeChanged}
-              />
-            </div>
-          )}
+        {node && position && wrapperRef.current && (
+          <div
+            className={Focus}
+            style={{
+              top: position.offsetTop - 10,
+              left: position.offsetLeft - 10,
+            }}
+          >
+            <ActiveNode
+              libraryNodes={libraryTree.nodes}
+              onSelect={onSelectNode}
+              selectedNode={selectedNode}
+              isSelected={true}
+              node={node}
+              nodes={tree.nodes}
+              onTreeChanged={onTreeChanged}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

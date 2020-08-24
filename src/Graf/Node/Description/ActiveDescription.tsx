@@ -13,17 +13,33 @@ const Main = style({
   resize: 'none',
 });
 
-export const Description: React.FC<{ value: string; onChange: (changedValue: string) => void; className: string }> = ({
-  onChange,
-  value,
-  className,
-}) => {
+export const ActiveDescription: React.FC<{
+  value: string;
+  onChange: (changedValue: string) => void;
+  className: string;
+  isLocked?: boolean;
+}> = ({ onChange, value, className, isLocked }) => {
   const DescriptionRef = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
     if (DescriptionRef.current) {
       DescriptionRef.current.style.height = `${DescriptionRef.current.scrollHeight}px`;
     }
   }, [DescriptionRef.current]);
+  if (isLocked) {
+    if (!value) {
+      return <></>;
+    }
+    return (
+      <textarea
+        disabled={true}
+        rows={1}
+        data-gramm_editor="false"
+        ref={DescriptionRef}
+        className={`${Main} ${className}`}
+        defaultValue={value}
+      ></textarea>
+    );
+  }
   return (
     <textarea
       rows={1}

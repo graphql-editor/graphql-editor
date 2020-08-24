@@ -13,12 +13,17 @@ import { Plus } from '@Graf/icons/Plus';
 import { NodeFields, NodeTitle } from './SharedNode';
 import { ResolveCreateField } from '@Graf/Resolve/Resolve';
 import { EditableText } from '@Graf/Node/Field/FieldName/EditableText';
-import { Description } from './Description';
+import { ActiveDescription } from './Description/ActiveDescription';
+import { ChangeAllRelatedNodes } from '@Graf/Resolve/Related';
 export interface NodeProps {
   node: ParserField;
   nodes: ParserField[];
+  libraryNodes: ParserField[];
   onTreeChanged: () => void;
   isSelected?: boolean;
+  onSelect: (name: string) => void;
+  selectedNode?: string;
+  isLocked?: boolean;
 }
 const LowerButton: NestedCSSProperties = {
   background: '#11303D',
@@ -78,6 +83,9 @@ const NodeMenu: NestedCSSProperties = {
   },
 };
 
+const LibraryNodeArea: NestedCSSProperties = {
+  borderStyle: 'dashed',
+};
 const MainNodeArea: NestedCSSProperties = {
   position: 'relative',
   borderWidth: 1,
@@ -89,6 +97,7 @@ const MainNodeArea: NestedCSSProperties = {
     '.NodeTitle': NodeTitle,
     '.NodeFields': NodeFields,
     '.NodeMenu': NodeMenu,
+    '&.LibraryNodeArea': LibraryNodeArea,
   },
 };
 const DescriptionPosition: NestedCSSProperties = {
@@ -138,12 +147,17 @@ const NodeContainer = style({
   },
 });
 
-export const ActiveNode: React.FC<NodeProps> = ({ node, nodes, onTreeChanged, isSelected }) => {
+export const ActiveNode: React.FC<NodeProps> = ({ node, isSelected, isLocked, ...sharedProps }) => {
+  const { nodes, onTreeChanged, selectedNode, onSelect, libraryNodes } = sharedProps;
+
   const [openedInputs, setOpenedInputs] = useState<number[]>([]);
   const [openedOutputs, setOpenedOutputs] = useState<number[]>([]);
   const [menuOpen, setMenuOpen] = useState(false);
   const [editMenuOpen, setEditMenuOpen] = useState(false);
   const thisNode = useRef<HTMLDivElement>(null);
+
+  const isLibrary = !!libraryNodes.find((lN) => lN.name === node.name);
+
   useEffect(() => {
     return () => {
       setOpenedInputs([]);
@@ -155,18 +169,19 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, nodes, onTreeChanged, is
       className={`${NodeContainer} ${DOM.classes.node} ${isSelected ? DOM.classes.nodeSelected : ''}`}
       ref={thisNode}
     >
-      <Description
+      <ActiveDescription
         className={'DescriptionPosition'}
         onChange={(d) => {
           node.description = d;
           onTreeChanged();
         }}
+        isLocked={isLibrary}
         value={node.description || ''}
       />
       <div className={`LeftNodeArea`}>
         {openedInputs.sort().map((o) => (
           <div key={o} className={`LeftNodeAreaNode`} style={{ top: FIELD_HEIGHT * (o + 1) }}>
-            <ActiveNode isSelected={true} onTreeChanged={onTreeChanged} nodes={nodes} node={node.args![o]} />
+            <ActiveNode isSelected={true} node={node.args![o]} isLocked={isLocked} {...sharedProps} />
           </div>
         ))}
       </div>
@@ -175,42 +190,71 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, nodes, onTreeChanged, is
           <div key={o} className={`RightNodeAreaNode`} style={{ top: FIELD_HEIGHT * (o + 1) }}>
             <ActiveNode
               isSelected={true}
-              onTreeChanged={onTreeChanged}
-              nodes={nodes}
-              node={nodes.find((n) => n.name === node.args![o].type.name)!}
+              node={
+                (nodes.find((n) => n.name === node.args![o].type.name) ||
+                  libraryNodes.find((n) => n.name === node.args![o].type.name))!
+              }
+              isLocked={isLocked}
+              {...sharedProps}
             />
           </div>
         ))}
       </div>
       <div
-        className={`MainNodeArea`}
+        className={`MainNodeArea${isLibrary ? ' LibraryNodeArea' : ''}`}
         onClick={(e) => {
           e.stopPropagation();
         }}
       >
         <div className={`NodeTitle`}>
           <div className={`NodeName`}>
-            <EditableText
-              value={node.name}
-              onChange={(v) => {
-                //TODO: Change the node name
-                onTreeChanged();
-              }}
-            />
+            {isLibrary && <EditableText value={node.name} />}
+            {!isLibrary && (
+              <EditableText
+                value={node.name}
+                onChange={(v) => {
+                  //TODO: Change the node name
+                  ChangeAllRelatedNodes({
+                    newName: v,
+                    nodes,
+                    oldName: node.name,
+                  });
+                  const reselect = node.name === selectedNode;
+                  node.name = v;
+                  onTreeChanged();
+                  if (reselect && selectedNode) {
+                    onSelect(v);
+                  }
+                }}
+              />
+            )}
           </div>
           <div className={`NodeType`}>
             <ActiveFieldType type={node.type} />
             {node.interfaces && node.interfaces.length ? <span> implements {node.interfaces.join(' & ')}</span> : ''}
           </div>
-          <div className={`NodeIconArea`} onClick={() => setMenuOpen(!menuOpen)}>
-            <Plus />
-          </div>
-          <div className={`NodeIconArea`} onClick={() => setEditMenuOpen(!editMenuOpen)}>
-            <More />
-          </div>
+          {!isLibrary && (
+            <>
+              <div className={`NodeIconArea`} onClick={() => setMenuOpen(!menuOpen)}>
+                <Plus />
+              </div>
+              <div className={`NodeIconArea`} onClick={() => setEditMenuOpen(!editMenuOpen)}>
+                <More />
+              </div>
+            </>
+          )}
         </div>
         {menuOpen && (
-          <div className={`NodeMenu NodeBackground-${node.type.name}`} onScroll={(e) => e.stopPropagation()}>
+          <div
+            onMouseEnter={() => {
+              DOM.scrollLock = true;
+            }}
+            onMouseLeave={() => {
+              DOM.scrollLock = false;
+            }}
+            className={`NodeMenu NodeBackground-${node.type.name}`}
+            onScroll={(e) => e.stopPropagation()}
+          >
             {ResolveCreateField(node, nodes)
               ?.sort((a, b) => (a.name > b.name ? 1 : -1))
               .map((f) => (
@@ -230,6 +274,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, nodes, onTreeChanged, is
                       args: [],
                     });
                     setMenuOpen(false);
+                    DOM.scrollLock = false;
                     onTreeChanged();
                   }}
                 >
@@ -255,24 +300,30 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, nodes, onTreeChanged, is
           </div>
         )}
         <div className={`NodeFields NodeBackground-${node.type.name}`}>
-          {node.args?.map((a, i) => (
-            <ActiveField
-              onTreeChanged={onTreeChanged}
-              parentNodeTypeName={node.type.name}
-              last={i === node.args!.length - 1}
-              key={a.name}
-              onInputClick={() => {
-                setOpenedInputs((oI) => (oI.includes(i) ? oI.filter((o) => o !== i) : [...oI, i]));
-              }}
-              onOutputClick={() => {
-                setOpenedOutputs((oO) => (oO.includes(i) ? oO.filter((o) => o !== i) : [...oO, i]));
-              }}
-              node={a}
-              inputOpen={openedInputs.includes(i)}
-              outputDisabled={!nodes.find((n) => n.name === a.type.name)}
-              outputOpen={openedOutputs.includes(i)}
-            />
-          ))}
+          {node.args?.map((a, i) => {
+            const outputDisabled = !(
+              nodes.find((n) => n.name === a.type.name) || libraryNodes.find((n) => n.name === a.type.name)
+            );
+            return (
+              <ActiveField
+                isLocked={isLibrary}
+                onTreeChanged={onTreeChanged}
+                parentNodeTypeName={node.type.name}
+                last={i === node.args!.length - 1}
+                key={a.name}
+                onInputClick={() => {
+                  setOpenedInputs((oI) => (oI.includes(i) ? oI.filter((o) => o !== i) : [...oI, i]));
+                }}
+                onOutputClick={() => {
+                  setOpenedOutputs((oO) => (oO.includes(i) ? oO.filter((o) => o !== i) : [...oO, i]));
+                }}
+                node={a}
+                inputOpen={openedInputs.includes(i)}
+                outputDisabled={outputDisabled}
+                outputOpen={openedOutputs.includes(i)}
+              />
+            );
+          })}
         </div>
       </div>
     </div>

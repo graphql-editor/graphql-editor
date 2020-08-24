@@ -7,6 +7,7 @@ import { DOM } from './DOM';
 import { RootNode } from './Node/RootNode';
 export interface PaintNodesProps {
   tree: ParserTree;
+  libraryTree: ParserTree;
   onSelectNode: (name: string, position: { offsetLeft: number; offsetTop: number; width: number }) => void;
   onTreeChanged: () => void;
   blur?: boolean;
@@ -21,11 +22,19 @@ const Main = style({
   fontFamily,
   transition: `opacity 0.25s ease-in-out`,
 });
-export const PaintNodes: React.FC<PaintNodesProps> = ({ tree, onSelectNode, onTreeChanged, blur }) => {
+export const PaintNodes: React.FC<PaintNodesProps> = ({ tree, libraryTree, onSelectNode, onTreeChanged, blur }) => {
   const area = tree.nodes.length * 400 * FIELD_HEIGHT * 2;
   const wArea = window.innerHeight * window.innerWidth;
   const totalArea = Math.max(area / wArea, 1);
   const width = Math.floor(Math.sqrt(totalArea) * 100);
+  const baseTypes = [
+    TypeDefinition.ObjectTypeDefinition,
+    TypeDefinition.InterfaceTypeDefinition,
+    TypeDefinition.UnionTypeDefinition,
+    TypeDefinition.EnumTypeDefinition,
+    TypeDefinition.ScalarTypeDefinition,
+    TypeDefinition.InputObjectTypeDefinition,
+  ];
   return (
     <div
       className={Main}
@@ -38,14 +47,7 @@ export const PaintNodes: React.FC<PaintNodesProps> = ({ tree, onSelectNode, onTr
           : {}),
       }}
     >
-      {[
-        TypeDefinition.ObjectTypeDefinition,
-        TypeDefinition.InterfaceTypeDefinition,
-        TypeDefinition.UnionTypeDefinition,
-        TypeDefinition.EnumTypeDefinition,
-        TypeDefinition.ScalarTypeDefinition,
-        TypeDefinition.InputObjectTypeDefinition,
-      ].map((d) => (
+      {baseTypes.map((d) => (
         <RootNode
           key={d}
           onClick={(name, position) => {
@@ -62,6 +64,16 @@ export const PaintNodes: React.FC<PaintNodesProps> = ({ tree, onSelectNode, onTr
               name: 'root',
             },
             args: tree.nodes.filter((n) => n.data.type === d).sort((a, b) => (a.name > b.name ? 1 : -1)),
+          }}
+          libraryNode={{
+            name: TypeDefinitionDisplayMap[d],
+            data: {
+              type: d,
+            },
+            type: {
+              name: 'root',
+            },
+            args: libraryTree.nodes.filter((n) => n.data.type === d).sort((a, b) => (a.name > b.name ? 1 : -1)),
           }}
           onTreeChanged={onTreeChanged}
         />

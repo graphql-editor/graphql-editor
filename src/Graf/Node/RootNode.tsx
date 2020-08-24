@@ -8,6 +8,7 @@ import { GraphQLColors } from '@editor/theme';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 export interface NodeProps {
   node: ParserField;
+  libraryNode?: ParserField;
   nodes: ParserField[];
   onClick: (name: string, position: { offsetLeft: number; offsetTop: number; width: number }) => void;
   onTreeChanged: () => void;
@@ -34,7 +35,7 @@ const NodeContainer = style({
   height: '100%',
 });
 
-export const RootNode: React.FC<NodeProps> = ({ node, nodes, onClick, onTreeChanged }) => {
+export const RootNode: React.FC<NodeProps> = ({ node, libraryNode, nodes, onClick, onTreeChanged }) => {
   const thisNode = useRef<HTMLDivElement>(null);
   return (
     <div className={`${NodeContainer}`} ref={thisNode}>
@@ -56,6 +57,9 @@ export const RootNode: React.FC<NodeProps> = ({ node, nodes, onClick, onTreeChan
       }
       {node.args?.map((a, i) => {
         return <PaintNode key={a.name} node={a} onClick={(position) => onClick(a.name, position)} />;
+      })}
+      {libraryNode?.args?.map((a, i) => {
+        return <PaintNode isLibrary={true} key={a.name} node={a} onClick={(position) => onClick(a.name, position)} />;
       })}
     </div>
   );

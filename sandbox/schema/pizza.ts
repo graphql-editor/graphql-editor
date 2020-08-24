@@ -8,6 +8,7 @@ type Pizza implements Nameable & Imaged{
 	name: String!
 	ingredients: [Ingredient!]
 	image: S3Object
+	data: DataInfo
 }
 
 interface Nameable{
@@ -40,4 +41,14 @@ schema{
 	query: Query,
 	mutation: Mutation
 }`;
-export const pizzaLibrary = `scalar S3Object`;
+export const pizzaLibrary = `scalar S3Object
+
+
+"""
+info bout data
+"""
+type DataInfo {
+	createdAt: String!
+	more: DataInfo
+}
+`;

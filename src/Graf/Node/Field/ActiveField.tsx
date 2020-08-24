@@ -5,6 +5,7 @@ import { Colors } from '@Colors';
 import { FIELD_HEIGHT } from '@Graf/constants';
 import { ActiveFieldName } from './FieldName/ActiveFieldName';
 import { ActiveFieldType } from './FieldType/ActiveFieldType';
+import { PaintFieldName } from './FieldName/PaintFieldName';
 export interface FieldProps {
   node: ParserField;
   inputOpen: boolean;
@@ -14,6 +15,7 @@ export interface FieldProps {
   inputDisabled?: boolean;
   outputDisabled?: boolean;
   last?: boolean;
+  isLocked?: boolean;
   parentNodeTypeName: string;
   onTreeChanged: () => void;
 }
@@ -81,6 +83,7 @@ const Title = style({
 });
 const Name = style({ fontSize: 10, marginRight: 4, overflow: 'hidden' });
 const Type = style({ fontSize: 8, color: Colors.green[0] });
+
 export const ActiveField: React.FC<FieldProps> = ({
   node,
   inputOpen,
@@ -92,6 +95,7 @@ export const ActiveField: React.FC<FieldProps> = ({
   last,
   parentNodeTypeName,
   onTreeChanged,
+  isLocked,
 }) => {
   return (
     <div
@@ -99,7 +103,7 @@ export const ActiveField: React.FC<FieldProps> = ({
         inputOpen || outputOpen ? 'Active' : ''
       }`}
     >
-      {!inputDisabled ? (
+      {!inputDisabled && !isLocked ? (
         <div className={'NodeFieldPort'} onClick={onInputClick}>
           {inputOpen ? '-' : '+'}
         </div>
@@ -108,24 +112,29 @@ export const ActiveField: React.FC<FieldProps> = ({
       )}
       <div className={Title}>
         <div className={Name}>
-          <ActiveFieldName
-            afterChange={(newName) => {
-              node.name = newName;
-              onTreeChanged();
-            }}
-            data={node.data}
-            name={node.name}
-            args={node.args}
-          />
+          {!isLocked && (
+            <ActiveFieldName
+              afterChange={(newName) => {
+                node.name = newName;
+                onTreeChanged();
+              }}
+              data={node.data}
+              name={node.name}
+              args={node.args}
+            />
+          )}
+          {isLocked && <PaintFieldName data={node.data} name={node.name} args={node.args} />}
         </div>
         <div className={Type}>
           <ActiveFieldType type={node.type} />
         </div>
       </div>
-      {!outputDisabled && (
+      {!outputDisabled ? (
         <div className={'NodeFieldPort'} onClick={onOutputClick}>
           {outputOpen ? '-' : '+'}
         </div>
+      ) : (
+        <div className={'NodeFieldPortPlaceholder'} />
       )}
     </div>
   );

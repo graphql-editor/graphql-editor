@@ -1,6 +1,7 @@
 export class DOM {
   static lock = false;
   static panLock = false;
+  static scrollLock = false;
   static classes = {
     node: 'DOMNode',
     nodeSelected: 'DOMSelectedNode',
