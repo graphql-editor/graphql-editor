@@ -4,13 +4,14 @@ import { Colors } from '@Colors';
 import { DOM } from '@Graf/DOM';
 
 const Main = style({
-  background: Colors.grey[10],
-  color: Colors.grey[0],
+  background: Colors.grey[9],
+  color: Colors.grey[3],
   padding: 10,
   fontSize: 12,
-  border: 0,
   overflowY: 'hidden',
   resize: 'none',
+  border: `1px solid ${Colors.grey[8]}`,
+  borderRadius: 4,
 });
 
 export const ActiveDescription: React.FC<{

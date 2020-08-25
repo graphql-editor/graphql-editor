@@ -17,6 +17,9 @@ type CompanyMutations{
 	createIncome(
 		income: IncomeInput!
 	): Income!
+	createInvoice(
+		invoice: InvoiceInput!
+	): Invoice!
 	createRecurringExpense(
 		expense: RecurringExpenseInput!
 	): RecurringExpense!
@@ -50,6 +53,10 @@ type CompanyMutations{
 		income: IncomeInput!
 		id: String!
 	): Income!
+	upsertInvoice(
+		invoice: InvoiceInput!
+		invoiceId: String!
+	): Invoice!
 	upsertRecurringExpense(
 		expense: RecurringExpenseInput!
 		id: String!
@@ -58,13 +65,6 @@ type CompanyMutations{
 		income: RecurringIncomeInput!
 		id: String!
 	): RecurringIncome!
-	createInvoice(
-		invoice: InvoiceInput!
-	): Invoice!
-	upsertInvoice(
-		invoice: InvoiceInput!
-		invoiceId: String!
-	): Invoice!
 }
 
 type CompanyQueries{
@@ -80,6 +80,12 @@ type CompanyQueries{
 	incomes(
 		time: TimeFilter
 	): [Income!]!
+	invoices(
+		"""
+		Pass time between
+		"""
+		time: TimeFilter
+	): [Invoice!]!
 	"""
 	recurring expenses in period of time<br>
 	"""
@@ -93,12 +99,6 @@ type CompanyQueries{
 		time: TimeFilter
 	): [RecurringIncome!]!
 	sources: [Source!]!
-	invoices(
-		"""
-	Pass time between
-	"""
-	time: TimeFilter
-	): [Invoice!]!
 }
 
 type Expense{
@@ -135,6 +135,28 @@ input IncomeInput{
 	source: String!
 }
 
+"""
+Invoice file<br>with extraDetails<br>
+"""
+type Invoice{
+	createdAt: String
+	description: String
+	dueDate: String
+	name: String
+	paid: Boolean
+	payee: Source
+	total: Float!
+}
+
+input InvoiceInput{
+	total: Float
+	description: String
+	name: String
+	sourceId: String!
+	paid: Boolean
+	dueDate: String
+}
+
 type Mutation{
 	addSource(
 		name: String!
@@ -151,6 +173,7 @@ type Mutation{
 	removeSource(
 		name: String!
 	): Boolean!
+	users: UserMutation
 }
 
 type Query{
@@ -159,6 +182,7 @@ type Query{
 		id: String
 	): CompanyQueries
 	sources: [Source!]
+	users: UserQuery
 }
 
 type RecurringExpense{
@@ -188,11 +212,11 @@ type RecurringIncome{
 }
 
 input RecurringIncomeInput{
-	recurrs: RecurringPeriod!
 	startDate: String!
 	endDate: String
 	amount: Int!
 	source: String!
+	recurrs: RecurringPeriod!
 }
 
 enum RecurringPeriod{
@@ -212,28 +236,6 @@ type Source{
 input TimeFilter{
 	fromDate: String!
 	toDate: String
-}
-
-"""
-Invoice file<br>with extraDetails<br>
-"""
-type Invoice{
-	payee: Source
-	total: Float!
-	description: String
-	name: String
-	paid: Boolean
-	createdAt: String
-	dueDate: String
-}
-
-input InvoiceInput{
-	total: Float
-	description: String
-	name: String
-	sourceId: String!
-	paid: Boolean
-	dueDate: String
 }
 schema{
 	query: Query,

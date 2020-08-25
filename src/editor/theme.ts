@@ -19,7 +19,7 @@ export const GraphQLBackgrounds: Record<string, string> = {
   type: Colors.main[6],
   union: Colors.main[7],
   input: Colors.blue[6],
-  scalar: Colors.green[6],
+  scalar: Colors.green[5],
   interface: mix(Colors.blue[6], Colors.grey[3]),
   enum: mix(Colors.blue[6], Colors.main[6]),
   directive: mix(Colors.main[6], Colors.grey[3]),

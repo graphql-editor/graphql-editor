@@ -46,7 +46,7 @@ const MainNodeArea: NestedCSSProperties = {
   position: 'relative',
   borderColor: 'transparent',
   borderWidth: 1,
-  borderStyle: 'dashed',
+  borderStyle: 'solid',
   borderRadius: 4,
   cursor: 'pointer',
   transition: `border-color 0.25s ease-in-out`,

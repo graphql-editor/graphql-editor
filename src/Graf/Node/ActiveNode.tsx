@@ -16,10 +16,14 @@ import { EditableText } from '@Graf/Node/Field/FieldName/EditableText';
 import { ActiveDescription } from './Description/ActiveDescription';
 import { ChangeAllRelatedNodes } from '@Graf/Resolve/Related';
 import { useTreesState } from '@state/containers/trees';
+import { MenuItem } from './Menu/MenuItem';
+import { DetailMenuItem } from './Menu/DetailMenuItem';
+import { Menu } from './Menu/Menu';
+import { MenuScrollingArea } from './Menu/MenuScrollingArea';
+import { MenuSearch } from './Menu/MenuSearch';
 export interface NodeProps {
   node: ParserField;
   onTreeChanged: () => void;
-  isLocked?: boolean;
 }
 const LowerButton: NestedCSSProperties = {
   background: '#11303D',
@@ -59,26 +63,6 @@ const LeftNodeAreaNode: NestedCSSProperties = { position: 'relative' };
 const RightNodeArea: NestedCSSProperties = { position: 'absolute', right: -300, width: 300, zIndex: 4 };
 const RightNodeAreaNode: NestedCSSProperties = { position: 'absolute' };
 
-const NodeMenuItem: NestedCSSProperties = {
-  background: Colors.grey[10],
-  color: Colors.grey[0],
-  fontSize: 10,
-  padding: `5px 10px`,
-};
-const NodeMenu: NestedCSSProperties = {
-  background: Colors.grey[10],
-  color: Colors.grey[0],
-  position: 'absolute',
-  right: 0,
-  maxHeight: 200,
-  overflowY: 'auto',
-  width: 150,
-  zIndex: 2,
-  $nest: {
-    '.NodeMenuItem': NodeMenuItem,
-  },
-};
-
 const LibraryNodeArea: NestedCSSProperties = {
   borderStyle: 'dashed',
 };
@@ -92,14 +76,13 @@ const MainNodeArea: NestedCSSProperties = {
   $nest: {
     '.NodeTitle': NodeTitle,
     '.NodeFields': NodeFields,
-    '.NodeMenu': NodeMenu,
     '&.LibraryNodeArea': LibraryNodeArea,
   },
 };
 const DescriptionPosition: NestedCSSProperties = {
   position: 'absolute',
   transformOrigin: 'center bottom',
-  transform: 'translate(0px, -100%)',
+  transform: 'translate(0px, calc(-100% - 10px))',
   width: '100%',
 };
 const NodeContainer = style({
@@ -143,13 +126,14 @@ const NodeContainer = style({
   },
 });
 
-export const ActiveNode: React.FC<NodeProps> = ({ node, isLocked, ...sharedProps }) => {
+export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
   const { onTreeChanged } = sharedProps;
 
   const [openedInputs, setOpenedInputs] = useState<number[]>([]);
   const [openedOutputs, setOpenedOutputs] = useState<number[]>([]);
   const [menuOpen, setMenuOpen] = useState(false);
   const [editMenuOpen, setEditMenuOpen] = useState(false);
+  const [menuSearchValue, setMenuSearchValue] = useState('');
   const thisNode = useRef<HTMLDivElement>(null);
   const { libraryTree, tree, setSelectedNode, selectedNode } = useTreesState();
 
@@ -175,7 +159,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, isLocked, ...sharedProps
       <div className={`LeftNodeArea`}>
         {openedInputs.sort().map((o) => (
           <div key={o} className={`LeftNodeAreaNode`} style={{ top: FIELD_HEIGHT * (o + 1) }}>
-            <ActiveNode node={node.args![o]} isLocked={isLocked} {...sharedProps} />
+            <ActiveNode node={node.args![o]} {...sharedProps} />
           </div>
         ))}
       </div>
@@ -187,7 +171,6 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, isLocked, ...sharedProps
                 (tree.nodes.find((n) => n.name === node.args![o].type.name) ||
                   libraryTree.nodes.find((n) => n.name === node.args![o].type.name))!
               }
-              isLocked={isLocked}
               {...sharedProps}
             />
           </div>
@@ -228,69 +211,83 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, isLocked, ...sharedProps
           </div>
           {!isLibrary && (
             <>
-              <div className={`NodeIconArea`} onClick={() => setMenuOpen(!menuOpen)}>
+              <div
+                className={`NodeIconArea`}
+                onClick={() => {
+                  setMenuOpen(!menuOpen);
+                  setEditMenuOpen(false);
+                }}
+              >
                 <Plus />
               </div>
-              <div className={`NodeIconArea`} onClick={() => setEditMenuOpen(!editMenuOpen)}>
+              <div
+                className={`NodeIconArea`}
+                onClick={() => {
+                  setEditMenuOpen(!editMenuOpen);
+                  setMenuOpen(false);
+                }}
+              >
                 <More />
               </div>
             </>
           )}
         </div>
         {menuOpen && (
-          <div
+          <Menu
+            style={{ right: -23 }}
             onMouseEnter={() => {
               DOM.scrollLock = true;
             }}
             onMouseLeave={() => {
               DOM.scrollLock = false;
             }}
-            className={`NodeMenu NodeBackground-${node.type.name}`}
             onScroll={(e) => e.stopPropagation()}
           >
-            {ResolveCreateField(node, tree.nodes)
-              ?.sort((a, b) => (a.name > b.name ? 1 : -1))
-              .map((f) => (
-                <div
-                  className={`NodeMenuItem`}
-                  key={f.name}
-                  onClick={() => {
-                    node.args?.push({
-                      ...f,
-                      description: undefined,
-                      directives: [],
-                      interfaces: undefined,
-                      type: {
-                        name: f.name,
-                      },
-                      name: f.name.toLowerCase(),
-                      args: [],
-                    });
-                    setMenuOpen(false);
-                    DOM.scrollLock = false;
-                    onTreeChanged();
-                  }}
-                >
-                  {f.name}
-                </div>
-              ))}
-          </div>
+            <MenuSearch value={menuSearchValue} onChange={setMenuSearchValue} onClear={() => setMenuSearchValue('')} />
+            <MenuScrollingArea>
+              {ResolveCreateField(node, tree.nodes)
+                ?.sort((a, b) => (a.name > b.name ? 1 : -1))
+                .filter((a) => a.name.toLowerCase().includes(menuSearchValue.toLowerCase()))
+                .map((f) => (
+                  <MenuItem
+                    node={f}
+                    onClick={() => {
+                      node.args?.push({
+                        ...f,
+                        description: undefined,
+                        directives: [],
+                        interfaces: undefined,
+                        type: {
+                          name: f.name,
+                        },
+                        name: f.name[0].toLowerCase() + f.name.slice(1),
+                        args: [],
+                      });
+                      setMenuOpen(false);
+                      DOM.scrollLock = false;
+                      onTreeChanged();
+                    }}
+                  />
+                ))}
+            </MenuScrollingArea>
+          </Menu>
         )}
         {editMenuOpen && (
-          <div className={`NodeMenu  NodeBackground-${node.type.name}`}>
-            <div
-              className={'NodeMenuItem'}
-              onClick={() => {
-                tree.nodes.splice(tree.nodes.findIndex((n) => n.name === node.name)!, 1);
-                DOM.panLock = false;
-                onTreeChanged();
-              }}
-            >
-              Delete node
-            </div>
-            <div className={'NodeMenuItem'}>implement interface</div>
-            <div className={'NodeMenuItem'}>add directive</div>
-          </div>
+          <Menu style={{ right: -51 }}>
+            <MenuScrollingArea>
+              <DetailMenuItem
+                onClick={() => {
+                  tree.nodes.splice(tree.nodes.findIndex((n) => n.name === node.name)!, 1);
+                  DOM.panLock = false;
+                  onTreeChanged();
+                }}
+              >
+                Delete node
+              </DetailMenuItem>
+              <DetailMenuItem onClick={() => {}}>implement interface</DetailMenuItem>
+              <DetailMenuItem onClick={() => {}}>add directive</DetailMenuItem>
+            </MenuScrollingArea>
+          </Menu>
         )}
         <div className={`NodeFields NodeBackground-${node.type.name}`}>
           {node.args?.map((a, i) => {
