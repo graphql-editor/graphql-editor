@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { ParserField } from 'graphql-zeus';
+import React, { useState, useRef } from 'react';
+import { ParserField, TypeDefinition, ValueDefinition } from 'graphql-zeus';
 import { ActiveField } from './Field/ActiveField';
 import { style } from 'typestyle';
 import { Colors, mix } from '@Colors';
@@ -11,19 +11,20 @@ import { ActiveFieldType } from './Field/FieldType/ActiveFieldType';
 import { More } from '@Graf/icons/More';
 import { Plus } from '@Graf/icons/Plus';
 import { NodeFields, NodeTitle } from './SharedNode';
-import { ResolveCreateField } from '@Graf/Resolve/Resolve';
 import { EditableText } from '@Graf/Node/Field/FieldName/EditableText';
 import { ActiveDescription } from './Description/ActiveDescription';
 import { ChangeAllRelatedNodes } from '@Graf/Resolve/Related';
 import { useTreesState } from '@state/containers/trees';
-import { MenuItem } from './Menu/MenuItem';
 import { DetailMenuItem } from './Menu/DetailMenuItem';
 import { Menu } from './Menu/Menu';
 import { MenuScrollingArea } from './Menu/MenuScrollingArea';
-import { MenuSearch } from './Menu/MenuSearch';
+import { NodeAddFieldMenu } from './NodeAddFieldMenu';
+import { NodeImplementInterfacesMenu } from './NodeImplementInterfaceMenu';
+import { NodeInterface } from './NodeInterface';
 export interface NodeProps {
   node: ParserField;
   onTreeChanged: () => void;
+  onDelete: () => void;
 }
 const LowerButton: NestedCSSProperties = {
   background: '#11303D',
@@ -126,25 +127,38 @@ const NodeContainer = style({
   },
 });
 
+const NodeInterfaces = style({
+  position: 'absolute',
+  maxWidth: 200,
+  display: 'flex',
+  flexFlow: 'row wrap',
+  transform: 'translate(calc(-100% - 10px))',
+  alignItems: 'flex-start',
+});
+
+const NodeMenuContainer = style({
+  position: 'absolute',
+  top: 35,
+  zIndex: 2,
+});
+
+type PossibleMenus = 'field' | 'interface' | 'directive' | 'options';
+
 export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
-  const { onTreeChanged } = sharedProps;
+  const { onTreeChanged, onDelete } = sharedProps;
 
   const [openedInputs, setOpenedInputs] = useState<number[]>([]);
   const [openedOutputs, setOpenedOutputs] = useState<number[]>([]);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [editMenuOpen, setEditMenuOpen] = useState(false);
-  const [menuSearchValue, setMenuSearchValue] = useState('');
+  const [menuOpen, setMenuOpen] = useState<PossibleMenus>();
   const thisNode = useRef<HTMLDivElement>(null);
   const { libraryTree, tree, setSelectedNode, selectedNode } = useTreesState();
 
   const isLibrary = !!libraryTree.nodes.find((lN) => lN.name === node.name);
+  console.log(node);
+  const hideMenu = () => {
+    setMenuOpen(undefined);
+  };
 
-  useEffect(() => {
-    return () => {
-      setOpenedInputs([]);
-      setOpenedOutputs([]);
-    };
-  }, [node]);
   return (
     <div className={`${NodeContainer} ${DOM.classes.node} ${DOM.classes.nodeSelected}`} ref={thisNode}>
       <ActiveDescription
@@ -156,10 +170,34 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
         isLocked={isLibrary}
         value={node.description || ''}
       />
+      {!!node.interfaces?.length && (
+        <div className={NodeInterfaces}>
+          {node.interfaces.map((i) => (
+            <NodeInterface
+              onDelete={() => {
+                node.interfaces = node.interfaces?.filter((oldInterface) => oldInterface !== i);
+                onTreeChanged();
+              }}
+            >
+              {i}
+            </NodeInterface>
+          ))}
+        </div>
+      )}
       <div className={`LeftNodeArea`}>
         {openedInputs.sort().map((o) => (
           <div key={o} className={`LeftNodeAreaNode`} style={{ top: FIELD_HEIGHT * (o + 1) }}>
-            <ActiveNode node={node.args![o]} {...sharedProps} />
+            <ActiveNode
+              {...sharedProps}
+              node={node.args![o]}
+              onDelete={() => {
+                setOpenedInputs([]);
+                setOpenedOutputs([]);
+                node.args!.splice(o, 1);
+                DOM.panLock = false;
+                onTreeChanged();
+              }}
+            />
           </div>
         ))}
       </div>
@@ -167,11 +205,11 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
         {openedOutputs.sort().map((o) => (
           <div key={o} className={`RightNodeAreaNode`} style={{ top: FIELD_HEIGHT * (o + 1) }}>
             <ActiveNode
+              {...sharedProps}
               node={
                 (tree.nodes.find((n) => n.name === node.args![o].type.name) ||
                   libraryTree.nodes.find((n) => n.name === node.args![o].type.name))!
               }
-              {...sharedProps}
             />
           </div>
         ))}
@@ -207,88 +245,95 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
           </div>
           <div className={`NodeType`}>
             <ActiveFieldType type={node.type} />
-            {node.interfaces && node.interfaces.length ? <span> implements {node.interfaces.join(' & ')}</span> : ''}
           </div>
           {!isLibrary && (
             <>
+              {node.data.type !== TypeDefinition.ScalarTypeDefinition &&
+                node.data.type !== TypeDefinition.EnumTypeDefinition && (
+                  <div
+                    className={'NodeIconArea'}
+                    onClick={() => {
+                      setMenuOpen('field');
+                    }}
+                  >
+                    <Plus />
+                    {menuOpen === 'field' && (
+                      <div className={NodeMenuContainer}>
+                        <NodeAddFieldMenu node={node} onTreeChanged={onTreeChanged} hideMenu={hideMenu} />
+                      </div>
+                    )}
+                  </div>
+                )}
+              {node.data.type === TypeDefinition.EnumTypeDefinition && (
+                <div
+                  className={'NodeIconArea'}
+                  onClick={() => {
+                    node.args = [
+                      ...(node.args || []),
+                      {
+                        data: {
+                          type: ValueDefinition.EnumValueDefinition,
+                        },
+                        name: 'enumValue' + ((node.args?.length || 0) + 1),
+                        type: {
+                          name: ValueDefinition.EnumValueDefinition,
+                        },
+                      },
+                    ];
+                    onTreeChanged();
+                  }}
+                >
+                  <Plus />
+                </div>
+              )}
+
+              {node.data.type === TypeDefinition.ObjectTypeDefinition && (
+                <div
+                  className={'NodeIconArea'}
+                  onClick={() => {
+                    setMenuOpen('interface');
+                  }}
+                >
+                  I
+                  {menuOpen === 'interface' && (
+                    <div className={NodeMenuContainer}>
+                      <NodeImplementInterfacesMenu node={node} onTreeChanged={onTreeChanged} hideMenu={hideMenu} />
+                    </div>
+                  )}
+                </div>
+              )}
               <div
-                className={`NodeIconArea`}
+                className={'NodeIconArea'}
                 onClick={() => {
-                  setMenuOpen(!menuOpen);
-                  setEditMenuOpen(false);
+                  setMenuOpen('directive');
                 }}
               >
-                <Plus />
+                @
               </div>
               <div
-                className={`NodeIconArea`}
+                className={'NodeIconArea'}
                 onClick={() => {
-                  setEditMenuOpen(!editMenuOpen);
-                  setMenuOpen(false);
+                  setMenuOpen('options');
                 }}
               >
                 <More />
+                {menuOpen === 'options' && (
+                  <div className={NodeMenuContainer}>
+                    <Menu hideMenu={hideMenu}>
+                      <MenuScrollingArea>
+                        <DetailMenuItem onClick={onDelete}>Delete node</DetailMenuItem>
+                        {node.data.type === TypeDefinition.ObjectTypeDefinition && (
+                          <DetailMenuItem onClick={() => {}}>implement interface</DetailMenuItem>
+                        )}
+                        <DetailMenuItem onClick={() => {}}>add directive</DetailMenuItem>
+                      </MenuScrollingArea>
+                    </Menu>
+                  </div>
+                )}
               </div>
             </>
           )}
         </div>
-        {menuOpen && (
-          <Menu
-            style={{ right: -23 }}
-            onMouseEnter={() => {
-              DOM.scrollLock = true;
-            }}
-            onMouseLeave={() => {
-              DOM.scrollLock = false;
-            }}
-            onScroll={(e) => e.stopPropagation()}
-          >
-            <MenuSearch value={menuSearchValue} onChange={setMenuSearchValue} onClear={() => setMenuSearchValue('')} />
-            <MenuScrollingArea>
-              {ResolveCreateField(node, tree.nodes)
-                ?.sort((a, b) => (a.name > b.name ? 1 : -1))
-                .filter((a) => a.name.toLowerCase().includes(menuSearchValue.toLowerCase()))
-                .map((f) => (
-                  <MenuItem
-                    node={f}
-                    onClick={() => {
-                      node.args?.push({
-                        ...f,
-                        description: undefined,
-                        directives: [],
-                        interfaces: undefined,
-                        type: {
-                          name: f.name,
-                        },
-                        name: f.name[0].toLowerCase() + f.name.slice(1),
-                        args: [],
-                      });
-                      setMenuOpen(false);
-                      DOM.scrollLock = false;
-                      onTreeChanged();
-                    }}
-                  />
-                ))}
-            </MenuScrollingArea>
-          </Menu>
-        )}
-        {editMenuOpen && (
-          <Menu style={{ right: -51 }}>
-            <MenuScrollingArea>
-              <DetailMenuItem
-                onClick={() => {
-                  tree.nodes.splice(tree.nodes.findIndex((n) => n.name === node.name)!, 1);
-                  DOM.panLock = false;
-                  onTreeChanged();
-                }}
-              >
-                Delete node
-              </DetailMenuItem>
-              <DetailMenuItem onClick={() => {}}>implement interface</DetailMenuItem>
-              <DetailMenuItem onClick={() => {}}>add directive</DetailMenuItem>
-            </MenuScrollingArea>
-          </Menu>
-        )}
         <div className={`NodeFields NodeBackground-${node.type.name}`}>
           {node.args?.map((a, i) => {
             const outputDisabled = !(

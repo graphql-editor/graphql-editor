@@ -66,6 +66,7 @@ export const Graf: React.FC<GrafProps> = ({ onTreeChanged }) => {
       className={Wrapper}
       onClick={() => {
         if (DOM.lock) return;
+        DOM.scrollLock = false;
         setSelectedNode(undefined);
       }}
     >
@@ -91,7 +92,15 @@ export const Graf: React.FC<GrafProps> = ({ onTreeChanged }) => {
               left: position.offsetLeft - 10,
             }}
           >
-            <ActiveNode node={node} onTreeChanged={onTreeChanged} />
+            <ActiveNode
+              onDelete={() => {
+                tree.nodes.splice(tree.nodes.findIndex((n) => n.name === node!.name)!, 1);
+                DOM.panLock = false;
+                onTreeChanged();
+              }}
+              node={node}
+              onTreeChanged={onTreeChanged}
+            />
           </div>
         )}
       </div>

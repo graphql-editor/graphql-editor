@@ -1,6 +1,6 @@
 import { style } from 'typestyle';
 import { Colors } from '@Colors';
-import React from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 const Triangle = style({
   width: 0,
   height: 0,
@@ -12,9 +12,7 @@ const Triangle = style({
 });
 
 const Wrapper = style({
-  position: 'absolute',
   zIndex: 4,
-  top: 30,
   width: 180,
   borderRadius: 4,
 });
@@ -23,12 +21,36 @@ const Content = style({
   borderRadius: 4,
 });
 
-export const Menu: React.FC<React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>> = ({
-  children,
-  ...props
-}) => {
+interface MenuProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+  hideMenu: () => void;
+}
+
+export const Menu: React.FC<MenuProps> = ({ children, hideMenu, ...props }) => {
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [listener, setListener] = useState<(e: MouseEvent) => void>();
+  useEffect(() => {
+    setListener(() => {
+      if (listener) {
+        document.removeEventListener('click', listener);
+      }
+      const l = (e: MouseEvent) => {
+        if (menuRef.current && e.target && !menuRef.current.contains(e.target as any)) {
+          document.removeEventListener('click', l);
+          hideMenu();
+          return;
+        }
+      };
+      document.addEventListener('click', l);
+      return l;
+    });
+    return () => {
+      if (listener) {
+        document.removeEventListener('click', listener);
+      }
+    };
+  }, [menuRef]);
   return (
-    <div {...props} className={Wrapper}>
+    <div {...props} className={Wrapper} ref={menuRef}>
       <div className={Triangle} />
       <div className={Content}>{children}</div>
     </div>

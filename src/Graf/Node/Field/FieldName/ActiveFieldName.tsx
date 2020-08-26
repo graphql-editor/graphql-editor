@@ -32,8 +32,8 @@ export const ActiveFieldName: React.FC<
               name={a.name}
               args={a.args}
             />
-            :
-            <ActiveFieldType type={a.type} />,
+            :<ActiveFieldType type={a.type} />
+            {i < args.length - 1 && <span>,</span>}
           </div>
         ))}
         )

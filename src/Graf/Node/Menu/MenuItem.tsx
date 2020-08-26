@@ -25,6 +25,7 @@ const Main = style({
     }, {} as Record<string, NestedCSSProperties>),
     '.MenuItemText': {
       transition: 'color .25s ease-in-out',
+      width: '100%',
       $nest: {
         '&:hover': {
           color: Colors.grey[0],

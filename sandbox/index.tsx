@@ -31,7 +31,7 @@ export const Actions = style({
 
 export const App = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
-    code: schemas.googleDirections,
+    code: schemas.finance,
     libraries: schemas.usersLibrary,
   });
   const [hide, setHide] = useState(false);

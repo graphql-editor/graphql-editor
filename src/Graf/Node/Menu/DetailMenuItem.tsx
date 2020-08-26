@@ -16,6 +16,7 @@ const Main = style({
     '.MenuItemText': {
       transition: 'color .25s ease-in-out',
       color: Colors.grey[2],
+      width: '100%',
       $nest: {
         '&:hover': {
           color: Colors.grey[0],

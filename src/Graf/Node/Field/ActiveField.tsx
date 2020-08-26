@@ -1,11 +1,14 @@
-import React from 'react';
-import { ParserField } from 'graphql-zeus';
+import React, { useState } from 'react';
+import { ParserField, ValueDefinition } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { Colors } from '@Colors';
 import { FIELD_HEIGHT } from '@Graf/constants';
 import { ActiveFieldName } from './FieldName/ActiveFieldName';
 import { ActiveFieldType } from './FieldType/ActiveFieldType';
 import { PaintFieldName } from './FieldName/PaintFieldName';
+import { NodeTypeOptionsMenu } from '../NodeTypeOptionsMenu';
+import { BuiltInScalars } from '@Graf/Resolve/BuiltInNodes';
+import { ActiveInputValueName } from './FieldName/ActiveInputValueName';
 export interface FieldProps {
   node: ParserField;
   inputOpen: boolean;
@@ -21,6 +24,7 @@ export interface FieldProps {
 }
 
 const Main = style({
+  position: 'relative',
   display: 'flex',
   alignItems: 'center',
   color: Colors.grey[0],
@@ -41,15 +45,17 @@ const Main = style({
       height: 16,
     },
     '.NodeFieldPort': {
+      position: 'relative',
       width: 16,
       height: 16,
       borderRadius: 8,
+      fontSize: 7,
       margin: `0 4px`,
       alignItems: 'center',
       display: 'flex',
       justifyContent: 'center',
-      background: '#11303d',
-      opacity: 0,
+      background: 'transparent',
+      color: 'transparent',
       cursor: 'pointer',
       userSelect: 'none',
       '-moz-user-select': 'none',
@@ -64,7 +70,8 @@ const Main = style({
       background: Colors.main[3],
       $nest: {
         '.NodeFieldPort': {
-          opacity: 1,
+          background: '#11303d',
+          color: Colors.grey[0],
         },
       },
     },
@@ -83,6 +90,11 @@ const Title = style({
 });
 const Name = style({ fontSize: 10, marginRight: 4, overflow: 'hidden' });
 const Type = style({ fontSize: 8, color: Colors.green[0] });
+const OptionsMenuContainer = style({
+  position: 'absolute',
+  top: 20,
+  zIndex: 2,
+});
 
 export const ActiveField: React.FC<FieldProps> = ({
   node,
@@ -97,13 +109,17 @@ export const ActiveField: React.FC<FieldProps> = ({
   onTreeChanged,
   isLocked,
 }) => {
+  const [optionsMenuOpen, setOptionsMenuOpen] = useState(false);
+  const isEnumValue = node.data.type === ValueDefinition.EnumValueDefinition;
+  const isInputValue = node.data.type === ValueDefinition.InputValueDefinition;
+  const isInputScalarValue = isInputValue && BuiltInScalars.find((s) => s.name === node.type.name);
   return (
     <div
       className={`NodeType-${parentNodeTypeName} ${Main} ${last ? LastField : ''} ${
         inputOpen || outputOpen ? 'Active' : ''
       }`}
     >
-      {!inputDisabled && !isLocked ? (
+      {!inputDisabled && !isLocked && !isEnumValue && !isInputScalarValue ? (
         <div className={'NodeFieldPort'} onClick={onInputClick}>
           {inputOpen ? '-' : '+'}
         </div>
@@ -112,7 +128,7 @@ export const ActiveField: React.FC<FieldProps> = ({
       )}
       <div className={Title}>
         <div className={Name}>
-          {!isLocked && (
+          {!isLocked && !isInputValue && (
             <ActiveFieldName
               afterChange={(newName) => {
                 node.name = newName;
@@ -124,18 +140,51 @@ export const ActiveField: React.FC<FieldProps> = ({
             />
           )}
           {isLocked && <PaintFieldName data={node.data} name={node.name} args={node.args} />}
+          {!isLocked && isInputValue && (
+            <ActiveInputValueName
+              afterChange={(newName) => {
+                node.name = newName;
+                onTreeChanged();
+              }}
+              changeValue={(i, v) => {
+                node.args![i].name = v;
+                onTreeChanged();
+              }}
+              node={node}
+            />
+          )}
         </div>
         <div className={Type}>
           <ActiveFieldType type={node.type} />
         </div>
       </div>
-      {!outputDisabled ? (
+      {!isLocked && !isEnumValue && (
+        <>
+          <div
+            className={'NodeFieldPort'}
+            onClick={() => {
+              setOptionsMenuOpen(!optionsMenuOpen);
+            }}
+          >
+            <span>{'[!]'}</span>
+            {optionsMenuOpen && (
+              <div className={OptionsMenuContainer}>
+                <NodeTypeOptionsMenu
+                  hideMenu={() => setOptionsMenuOpen(false)}
+                  node={node}
+                  onTreeChanged={onTreeChanged}
+                />
+              </div>
+            )}
+          </div>
+        </>
+      )}
+      {!outputDisabled && (
         <div className={'NodeFieldPort'} onClick={onOutputClick}>
           {outputOpen ? '-' : '+'}
         </div>
-      ) : (
-        <div className={'NodeFieldPortPlaceholder'} />
       )}
+      {outputDisabled && isLocked && <div className={'NodeFieldPortPlaceholder'} />}
     </div>
   );
 };
