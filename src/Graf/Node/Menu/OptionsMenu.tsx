@@ -16,6 +16,11 @@ const Main = style({
   justifyContent: 'space-between',
   alignItems: 'center',
   width: '100%',
+  $nest: {
+    '&.Selected': {
+      color: Colors.green[0],
+    },
+  },
 });
 const Circle = style({
   borderRadius: 6,
@@ -24,7 +29,13 @@ const Circle = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  border: `solid 1px ${Colors.grey[0]}`,
+  border: `solid 1px`,
+  borderColor: Colors.grey[0],
+  $nest: {
+    '&.Selected': {
+      borderColor: Colors.green[0],
+    },
+  },
 });
 export const OptionsMenu: React.FC<OptionsMenuProps> = ({ children, options, onCheck, hideMenu, ...props }) => {
   return (
@@ -32,9 +43,9 @@ export const OptionsMenu: React.FC<OptionsMenuProps> = ({ children, options, onC
       {Object.keys(options).map((n) => {
         return (
           <DetailMenuItem key={n} onClick={() => onCheck(n)}>
-            <div className={Main}>
+            <div className={`${Main} ${options[n] ? 'Selected' : ''}`}>
               <span>{n}</span>
-              <div className={Circle}>{options[n] ? <Tick /> : <></>}</div>
+              <div className={`${Circle} ${options[n] ? 'Selected' : ''}`}>{options[n] ? <Tick /> : <></>}</div>
             </div>
           </DetailMenuItem>
         );

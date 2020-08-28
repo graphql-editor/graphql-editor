@@ -3,8 +3,8 @@ import { TypeDefinition, TypeDefinitionDisplayMap, TypeSystemDefinition } from '
 import { style } from 'typestyle';
 import { fontFamily } from '@vars';
 import { FIELD_HEIGHT } from './constants';
-import { DOM } from './DOM';
-import { RootNode } from './Node/RootNode';
+import { DOM } from '@Graf/DOM';
+import { RootNode } from '@Graf/Node/RootNode';
 import { useTreesState } from '@state/containers/trees';
 export interface PaintNodesProps {
   onSelectNode: (name: string, position: { offsetLeft: number; offsetTop: number; width: number }) => void;

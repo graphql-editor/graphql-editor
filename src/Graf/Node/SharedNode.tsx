@@ -12,16 +12,19 @@ const NodeType: NestedCSSProperties = {
   color: Colors.main[0],
   fontSize: 10,
   marginRight: 'auto',
-  padding: `5px 0 5px 0`,
+  padding: `5px 30px 5px 0`,
 };
 const NodeIconArea: NestedCSSProperties = {
-  width: 28,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
+  alignSelf: 'center',
+  width: 24,
+  height: 24,
   transition: 'background 0.25s ease-in-out',
   background: 'transparent',
   cursor: 'pointer',
+  borderRadius: 12,
   $nest: {
     '&:hover': {
       background: '#0003',
@@ -34,7 +37,7 @@ export const NodeTitle: NestedCSSProperties = {
   alignItems: 'stretch',
   borderTopLeftRadius: 4,
   borderTopRightRadius: 4,
-  padding: 10,
+  padding: 5,
   $nest: {
     '.NodeName': NodeName,
     '.NodeType': NodeType,

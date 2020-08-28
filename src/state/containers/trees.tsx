@@ -1,5 +1,5 @@
 import { createContainer } from 'unstated-next';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { ParserTree } from 'graphql-zeus';
 const useTreesStateContainer = createContainer(() => {
   const [tree, _setTree] = useState<ParserTree>({ nodes: [] });
@@ -7,6 +7,7 @@ const useTreesStateContainer = createContainer(() => {
   const [snapshots, setSnapshots] = useState<ParserTree[]>([]);
   const [undoCursor, setUndoCursor] = useState(0);
   const [selectedNode, setSelectedNode] = useState<string>();
+  const selectedNodeRef = useRef<HTMLDivElement>(null);
 
   const setTree = (t: ParserTree) => {
     const newUndoCursor = undoCursor + 1;
@@ -27,6 +28,7 @@ const useTreesStateContainer = createContainer(() => {
     setUndoCursor,
     selectedNode,
     setSelectedNode,
+    selectedNodeRef,
   };
 });
 

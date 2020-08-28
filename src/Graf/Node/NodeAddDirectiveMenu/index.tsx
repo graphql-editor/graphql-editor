@@ -3,22 +3,18 @@ import { Menu } from '@Graf/Node/Menu/Menu';
 import { MenuScrollingArea } from '@Graf/Node/Menu/MenuScrollingArea';
 import { MenuSearch } from '@Graf/Node/components';
 import { DOM } from '@Graf/DOM';
-import { ResolveImplementInterface } from '@Graf/Resolve/Resolve';
-import { ParserField } from 'graphql-zeus';
+import { ResolveDirectives } from '@Graf/Resolve/Resolve';
+import { ParserField, Instances } from 'graphql-zeus';
 import { useTreesState } from '@state/containers/trees';
 import { MenuItem } from '@Graf/Node/Menu/MenuItem';
 
-interface NodeImplementInterfacesMenuProps {
+interface NodeAddDirectiveMenuProps {
   node: ParserField;
   hideMenu: () => void;
   onTreeChanged: () => void;
 }
 
-export const NodeImplementInterfacesMenu: React.FC<NodeImplementInterfacesMenuProps> = ({
-  node,
-  hideMenu,
-  onTreeChanged,
-}) => {
+export const NodeAddDirectiveMenu: React.FC<NodeAddDirectiveMenuProps> = ({ node, hideMenu, onTreeChanged }) => {
   const { tree } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   return (
@@ -30,22 +26,29 @@ export const NodeImplementInterfacesMenu: React.FC<NodeImplementInterfacesMenuPr
         DOM.scrollLock = false;
       }}
       onScroll={(e) => e.stopPropagation()}
-      hideMenu={() => hideMenu()}
+      hideMenu={hideMenu}
     >
       <MenuSearch value={menuSearchValue} onChange={setMenuSearchValue} onClear={() => setMenuSearchValue('')} />
       <MenuScrollingArea>
-        {ResolveImplementInterface(node, tree.nodes)
+        {ResolveDirectives(node, tree.nodes)
           ?.sort((a, b) => (a.name > b.name ? 1 : -1))
-          .filter((a) => !node.interfaces?.includes(a.name))
           .filter((a) => a.name.toLowerCase().includes(menuSearchValue.toLowerCase()))
           .map((f) => (
             <MenuItem
               key={f.name}
               node={f}
               onClick={() => {
-                node.interfaces?.push(f.name);
-                const argsToPush = f.args?.filter((a) => !node.args?.find((na) => na.name === a.name)) || [];
-                node.args = node.args?.concat(argsToPush);
+                node.directives?.push({
+                  ...f,
+                  type: {
+                    name: f.name,
+                  },
+                  name: f.name[0].toLowerCase() + f.name.slice(1),
+                  args: [],
+                  data: {
+                    type: Instances.Directive,
+                  },
+                });
                 hideMenu();
                 DOM.scrollLock = false;
                 onTreeChanged();

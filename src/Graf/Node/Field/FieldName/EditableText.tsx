@@ -12,18 +12,22 @@ const Input = style({
   fontFamily: fontFamily,
   fontSize: 10,
 });
-export const EditableText: React.FC<{ value: string; onChange?: (value: string) => void; autoFocus?: boolean }> = ({
-  value,
-  onChange,
-  autoFocus,
-}) => {
+export const EditableText: React.FC<{
+  value: string;
+  onChange?: (value: string) => void;
+  autoFocus?: boolean;
+  fontSize?: number;
+}> = ({ value, onChange, autoFocus, fontSize }) => {
   const [editedValue, setEditedValue] = useState(value);
   const [focus, setFocus] = useState(!!autoFocus);
   const checkEdit = () => {
     setFocus(false);
     DOM.panLock = false;
+    DOM.keyLock = false;
     if (editedValue && onChange) {
-      onChange(editedValue);
+      if (editedValue !== value) {
+        onChange(editedValue);
+      }
     } else {
       setEditedValue(value);
     }
@@ -35,9 +39,11 @@ export const EditableText: React.FC<{ value: string; onChange?: (value: string) 
           autoFocus={focus}
           className={Input}
           value={editedValue}
-          size={editedValue.length || 1}
+          pattern="[_A-Za-z][_0-9A-Za-z]*"
+          style={{ width: `${editedValue.length}ch`, fontSize }}
           onFocus={() => {
             DOM.panLock = true;
+            DOM.keyLock = true;
           }}
           onBlur={checkEdit}
           onKeyDown={(e) => {

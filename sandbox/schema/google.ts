@@ -66,7 +66,7 @@ type OtherPointDetails{
 	location: Coords!
 }
 
-type TypedData{
+type TypedData @authentication{
 	formattedValue: String!
 	rawValue: Int!
 }

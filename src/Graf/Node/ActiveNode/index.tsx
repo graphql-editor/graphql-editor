@@ -1,56 +1,28 @@
-import React, { useState, useRef } from 'react';
-import { ParserField, TypeDefinition, ValueDefinition } from 'graphql-zeus';
-import { ActiveField } from './Field/ActiveField';
+import React, { useState } from 'react';
+import { ParserField, ValueDefinition, Value } from 'graphql-zeus';
+import { ActiveField } from '@Graf/Node/Field/ActiveField';
+import { ActiveDirectiveField } from '@Graf/Node/Field/ActiveDirectiveField';
+import { ActiveScalarArgument } from '@Graf/Node/Field/ActiveScalarArgument';
 import { style } from 'typestyle';
 import { Colors, mix } from '@Colors';
 import { FIELD_HEIGHT } from '@Graf/constants';
 import { GraphQLBackgrounds } from '@editor/theme';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { DOM } from '@Graf/DOM';
-import { ActiveFieldType } from './Field/FieldType/ActiveFieldType';
-import { More } from '@Graf/icons/More';
-import { Plus } from '@Graf/icons/Plus';
-import { NodeFields, NodeTitle } from './SharedNode';
+import { ActiveFieldType } from '@Graf/Node/Field/FieldType/ActiveFieldType';
+import { NodeFields, NodeTitle } from '@Graf/Node/SharedNode';
 import { EditableText } from '@Graf/Node/Field/FieldName/EditableText';
-import { ActiveDescription } from './Description/ActiveDescription';
+import { ActiveDescription } from '@Graf/Node/Description/ActiveDescription';
 import { ChangeAllRelatedNodes } from '@Graf/Resolve/Related';
 import { useTreesState } from '@state/containers/trees';
-import { DetailMenuItem } from './Menu/DetailMenuItem';
-import { Menu } from './Menu/Menu';
-import { MenuScrollingArea } from './Menu/MenuScrollingArea';
-import { NodeAddFieldMenu } from './NodeAddFieldMenu';
-import { NodeImplementInterfacesMenu } from './NodeImplementInterfaceMenu';
-import { NodeInterface } from './NodeInterface';
+import { NodeInterface } from '@Graf/Node/NodeInterface';
+import { TopNodeMenu } from '@Graf/Node/ActiveNode/TopNodeMenu';
+import { isScalarArgument } from '@Graf/Resolve/Resolve';
 export interface NodeProps {
   node: ParserField;
   onTreeChanged: () => void;
   onDelete: () => void;
 }
-const LowerButton: NestedCSSProperties = {
-  background: '#11303D',
-  borderRadius: 4,
-  color: Colors.grey[0],
-  padding: `5px 10px`,
-  transition: `background .25s ease-in-out`,
-  $nest: {
-    '&:hover': {
-      background: Colors.blue[3],
-    },
-  },
-};
-const ActionsMenu: NestedCSSProperties = {
-  marginTop: 4,
-  display: 'grid',
-  gridTemplateColumns: '3fr 1fr',
-  fontSize: 10,
-  gridGap: 4,
-  opacity: 0,
-  transition: `opacity .25s ease-in-out`,
-  pointerEvents: 'none',
-  $nest: {
-    '.LowerButton': LowerButton,
-  },
-};
 const LeftNodeArea: NestedCSSProperties = {
   position: 'absolute',
   left: -300,
@@ -98,7 +70,6 @@ const NodeContainer = style({
     '.MainNodeArea': MainNodeArea,
     '.RightNodeAreaNode': RightNodeAreaNode,
     '.LeftNodeAreaNode': LeftNodeAreaNode,
-    '.ActionsMenu': ActionsMenu,
     '&:hover': {
       $nest: {
         '> .ActionsMenu': {
@@ -136,31 +107,22 @@ const NodeInterfaces = style({
   alignItems: 'flex-start',
 });
 
-const NodeMenuContainer = style({
-  position: 'absolute',
-  top: 35,
-  zIndex: 2,
-});
-
-type PossibleMenus = 'field' | 'interface' | 'directive' | 'options';
-
 export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
-  const { onTreeChanged, onDelete } = sharedProps;
+  const { onTreeChanged } = sharedProps;
 
   const [openedInputs, setOpenedInputs] = useState<number[]>([]);
   const [openedOutputs, setOpenedOutputs] = useState<number[]>([]);
-  const [menuOpen, setMenuOpen] = useState<PossibleMenus>();
-  const thisNode = useRef<HTMLDivElement>(null);
-  const { libraryTree, tree, setSelectedNode, selectedNode } = useTreesState();
+
+  const [openedDirectiveInputs, setOpenedDirectiveInputs] = useState<number[]>([]);
+  const [openedDirectiveOutputs, setOpenedDirectiveOutputs] = useState<number[]>([]);
+
+  const { libraryTree, tree, setSelectedNode, selectedNode, selectedNodeRef } = useTreesState();
 
   const isLibrary = !!libraryTree.nodes.find((lN) => lN.name === node.name);
   console.log(node);
-  const hideMenu = () => {
-    setMenuOpen(undefined);
-  };
 
   return (
-    <div className={`${NodeContainer} ${DOM.classes.node} ${DOM.classes.nodeSelected}`} ref={thisNode}>
+    <div className={`${NodeContainer} ${DOM.classes.node} ${DOM.classes.nodeSelected}`} ref={selectedNodeRef}>
       <ActiveDescription
         className={'DescriptionPosition'}
         onChange={(d) => {
@@ -174,6 +136,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
         <div className={NodeInterfaces}>
           {node.interfaces.map((i) => (
             <NodeInterface
+              key={i}
               onDelete={() => {
                 node.interfaces = node.interfaces?.filter((oldInterface) => oldInterface !== i);
                 onTreeChanged();
@@ -185,8 +148,27 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
         </div>
       )}
       <div className={`LeftNodeArea`}>
-        {openedInputs.sort().map((o) => (
+        {openedDirectiveInputs.sort().map((o) => (
           <div key={o} className={`LeftNodeAreaNode`} style={{ top: FIELD_HEIGHT * (o + 1) }}>
+            <ActiveNode
+              {...sharedProps}
+              node={node.directives![o]}
+              onDelete={() => {
+                setOpenedDirectiveInputs([]);
+                setOpenedDirectiveOutputs([]);
+                node.args!.splice(o, 1);
+                DOM.panLock = false;
+                onTreeChanged();
+              }}
+            />
+          </div>
+        ))}
+        {openedInputs.sort().map((o) => (
+          <div
+            key={o}
+            className={`LeftNodeAreaNode`}
+            style={{ top: FIELD_HEIGHT * (o + (node.directives?.length || 0) + 1) }}
+          >
             <ActiveNode
               {...sharedProps}
               node={node.args![o]}
@@ -203,7 +185,11 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
       </div>
       <div className={`RightNodeArea`}>
         {openedOutputs.sort().map((o) => (
-          <div key={o} className={`RightNodeAreaNode`} style={{ top: FIELD_HEIGHT * (o + 1) }}>
+          <div
+            key={o}
+            className={`RightNodeAreaNode`}
+            style={{ top: FIELD_HEIGHT * (o + (node.directives?.length || 0) + 1) }}
+          >
             <ActiveNode
               {...sharedProps}
               node={
@@ -225,6 +211,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
             {isLibrary && <EditableText value={node.name} />}
             {!isLibrary && (
               <EditableText
+                fontSize={12}
                 value={node.name}
                 onChange={(v) => {
                   //TODO: Change the node name
@@ -246,119 +233,83 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
           <div className={`NodeType`}>
             <ActiveFieldType type={node.type} />
           </div>
-          {!isLibrary && (
-            <>
-              {node.data.type !== TypeDefinition.ScalarTypeDefinition &&
-                node.data.type !== TypeDefinition.EnumTypeDefinition && (
-                  <div
-                    className={'NodeIconArea'}
-                    onClick={() => {
-                      setMenuOpen('field');
-                    }}
-                  >
-                    <Plus />
-                    {menuOpen === 'field' && (
-                      <div className={NodeMenuContainer}>
-                        <NodeAddFieldMenu node={node} onTreeChanged={onTreeChanged} hideMenu={hideMenu} />
-                      </div>
-                    )}
-                  </div>
-                )}
-              {node.data.type === TypeDefinition.EnumTypeDefinition && (
-                <div
-                  className={'NodeIconArea'}
-                  onClick={() => {
-                    node.args = [
-                      ...(node.args || []),
-                      {
-                        data: {
-                          type: ValueDefinition.EnumValueDefinition,
-                        },
-                        name: 'enumValue' + ((node.args?.length || 0) + 1),
-                        type: {
-                          name: ValueDefinition.EnumValueDefinition,
-                        },
-                      },
-                    ];
-                    onTreeChanged();
-                  }}
-                >
-                  <Plus />
-                </div>
-              )}
-
-              {node.data.type === TypeDefinition.ObjectTypeDefinition && (
-                <div
-                  className={'NodeIconArea'}
-                  onClick={() => {
-                    setMenuOpen('interface');
-                  }}
-                >
-                  I
-                  {menuOpen === 'interface' && (
-                    <div className={NodeMenuContainer}>
-                      <NodeImplementInterfacesMenu node={node} onTreeChanged={onTreeChanged} hideMenu={hideMenu} />
-                    </div>
-                  )}
-                </div>
-              )}
-              <div
-                className={'NodeIconArea'}
-                onClick={() => {
-                  setMenuOpen('directive');
-                }}
-              >
-                @
-              </div>
-              <div
-                className={'NodeIconArea'}
-                onClick={() => {
-                  setMenuOpen('options');
-                }}
-              >
-                <More />
-                {menuOpen === 'options' && (
-                  <div className={NodeMenuContainer}>
-                    <Menu hideMenu={hideMenu}>
-                      <MenuScrollingArea>
-                        <DetailMenuItem onClick={onDelete}>Delete node</DetailMenuItem>
-                        {node.data.type === TypeDefinition.ObjectTypeDefinition && (
-                          <DetailMenuItem onClick={() => {}}>implement interface</DetailMenuItem>
-                        )}
-                        <DetailMenuItem onClick={() => {}}>add directive</DetailMenuItem>
-                      </MenuScrollingArea>
-                    </Menu>
-                  </div>
-                )}
-              </div>
-            </>
-          )}
+          {!isLibrary && <TopNodeMenu {...sharedProps} node={node} />}
         </div>
         <div className={`NodeFields NodeBackground-${node.type.name}`}>
-          {node.args?.map((a, i) => {
+          {node.directives?.map((d, i) => {
             const outputDisabled = !(
-              tree.nodes.find((n) => n.name === a.type.name) || libraryTree.nodes.find((n) => n.name === a.type.name)
+              tree.nodes.find((n) => n.name === d.type.name) || libraryTree.nodes.find((n) => n.name === d.type.name)
             );
             return (
-              <ActiveField
+              <ActiveDirectiveField
                 isLocked={isLibrary}
                 onTreeChanged={onTreeChanged}
                 parentNodeTypeName={node.type.name}
                 last={i === node.args!.length - 1}
-                key={a.name}
+                key={d.name}
                 onInputClick={() => {
-                  setOpenedInputs((oI) => (oI.includes(i) ? oI.filter((o) => o !== i) : [...oI, i]));
+                  setOpenedDirectiveInputs((oI) => (oI.includes(i) ? oI.filter((o) => o !== i) : [...oI, i]));
                 }}
                 onOutputClick={() => {
-                  setOpenedOutputs((oO) => (oO.includes(i) ? oO.filter((o) => o !== i) : [...oO, i]));
+                  setOpenedDirectiveOutputs((oO) => (oO.includes(i) ? oO.filter((o) => o !== i) : [...oO, i]));
                 }}
-                node={a}
-                inputOpen={openedInputs.includes(i)}
+                node={d}
+                inputOpen={openedDirectiveInputs.includes(i)}
                 outputDisabled={outputDisabled}
-                outputOpen={openedOutputs.includes(i)}
+                outputOpen={openedDirectiveOutputs.includes(i)}
               />
             );
           })}
+          {node.data.type !== ValueDefinition.InputValueDefinition &&
+            node.args?.map((a, i) => {
+              const outputDisabled = !(
+                tree.nodes.find((n) => n.name === a.type.name) || libraryTree.nodes.find((n) => n.name === a.type.name)
+              );
+              const isSc = isScalarArgument(a);
+              const isObjectArg =
+                (a.data.type === ValueDefinition.InputValueDefinition && !isSc) || a.data.type === Value.ObjectValue;
+              if (isSc || isObjectArg) {
+                return (
+                  <ActiveScalarArgument
+                    isLocked={isLibrary}
+                    onTreeChanged={onTreeChanged}
+                    parentNodeTypeName={node.type.name}
+                    last={i === node.args!.length - 1}
+                    key={a.name}
+                    onInputClick={() => {
+                      setOpenedInputs((oI) => (oI.includes(i) ? oI.filter((o) => o !== i) : [...oI, i]));
+                    }}
+                    onOutputClick={() => {
+                      setOpenedOutputs((oO) => (oO.includes(i) ? oO.filter((o) => o !== i) : [...oO, i]));
+                    }}
+                    node={a}
+                    inputOpen={openedInputs.includes(i)}
+                    outputDisabled={outputDisabled}
+                    outputOpen={openedOutputs.includes(i)}
+                  />
+                );
+              }
+
+              return (
+                <ActiveField
+                  isLocked={isLibrary}
+                  onTreeChanged={onTreeChanged}
+                  parentNodeTypeName={node.type.name}
+                  last={i === node.args!.length - 1}
+                  key={a.name}
+                  onInputClick={() => {
+                    setOpenedInputs((oI) => (oI.includes(i) ? oI.filter((o) => o !== i) : [...oI, i]));
+                  }}
+                  onOutputClick={() => {
+                    setOpenedOutputs((oO) => (oO.includes(i) ? oO.filter((o) => o !== i) : [...oO, i]));
+                  }}
+                  node={a}
+                  inputOpen={openedInputs.includes(i)}
+                  outputDisabled={outputDisabled}
+                  outputOpen={openedOutputs.includes(i)}
+                />
+              );
+            })}
         </div>
       </div>
     </div>

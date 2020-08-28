@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
-import { ParserField, ValueDefinition } from 'graphql-zeus';
+import { ParserField, Options, ValueDefinition, Value } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { Colors } from '@Colors';
 import { FIELD_HEIGHT } from '@Graf/constants';
-import { ActiveFieldName } from './FieldName/ActiveFieldName';
 import { ActiveFieldType } from './FieldType/ActiveFieldType';
 import { PaintFieldName } from './FieldName/PaintFieldName';
 import { NodeTypeOptionsMenu } from '../NodeTypeOptionsMenu';
+import { ActiveInputValueName } from './FieldName/ActiveInputValueName';
 import { Plus } from '@Graf/icons/Plus';
 import { Arrq } from '@Graf/icons/Arrq';
-
+import { EditableDefaultValue } from './FieldName/EditableDefaultValue';
+import { isScalarArgument } from '@Graf/Resolve/Resolve';
+import { ConvertStringToObject, ConvertValueToEditableString } from '@Graf/Convert';
 export interface FieldProps {
   node: ParserField;
   inputOpen: boolean;
@@ -94,7 +96,61 @@ const OptionsMenuContainer = style({
   zIndex: 2,
 });
 
-export const ActiveField: React.FC<FieldProps> = ({
+interface PlaceFunctionArgs {
+  v: string;
+  node: ParserField;
+  onTreeChanged: () => void;
+}
+
+const placeStringInNode = ({ node, v, onTreeChanged }: PlaceFunctionArgs) => {
+  const valueType = isScalarArgument(node);
+  const isObjectArg =
+    (node.data.type === ValueDefinition.InputValueDefinition && !valueType) || node.data.type === Value.ObjectValue;
+  if (node.type.options?.includes(Options.array)) {
+    return ConvertStringToObject(v);
+  }
+  if (isObjectArg) {
+    return ConvertStringToObject(v);
+  }
+  if (valueType) {
+    let value = v;
+    if (valueType === Value.StringValue) {
+      if (!(v.startsWith(`\"`) && v.endsWith(`\"`))) {
+        //String must have ciapki
+        return node.args;
+      }
+      value = v.slice(1, -1);
+    }
+    const n: ParserField = {
+      data: {
+        type: valueType,
+      },
+      type: {
+        name: valueType,
+      },
+      name: value,
+    };
+    return [n];
+  }
+};
+
+const resolveValueFromNode = (node: ParserField) => {
+  const inside =
+    node.args
+      ?.map((a) => {
+        if (a.data.type === Value.NullValue) {
+          return 'null';
+        }
+        return ConvertValueToEditableString(a);
+      })
+      .join(',') || '';
+  if (node.args && node.args.length > 0 && node.type.options?.includes(Options.array)) {
+    return `[ ${inside} ]`;
+  }
+  return inside;
+};
+
+export const ActiveScalarArgument: React.FC<FieldProps> = ({
   node,
   inputOpen,
   inputDisabled,
@@ -108,14 +164,13 @@ export const ActiveField: React.FC<FieldProps> = ({
   isLocked,
 }) => {
   const [optionsMenuOpen, setOptionsMenuOpen] = useState(false);
-  const isEnumValue = node.data.type === ValueDefinition.EnumValueDefinition;
   return (
     <div
       className={`NodeType-${parentNodeTypeName} ${Main} ${last ? LastField : ''} ${
         inputOpen || outputOpen || optionsMenuOpen ? 'Active' : ''
       }`}
     >
-      {!inputDisabled && !isLocked && !isEnumValue ? (
+      {!inputDisabled && !isLocked ? (
         <div className={'NodeFieldPort'} onClick={onInputClick}>
           {inputOpen ? '-' : <Plus height={7} width={7} />}
         </div>
@@ -124,24 +179,30 @@ export const ActiveField: React.FC<FieldProps> = ({
       )}
       <div className={Title}>
         <div className={Name}>
+          {isLocked && <PaintFieldName data={node.data} name={node.name} args={node.args} />}
           {!isLocked && (
-            <ActiveFieldName
+            <ActiveInputValueName
               afterChange={(newName) => {
                 node.name = newName;
                 onTreeChanged();
               }}
-              data={node.data}
-              name={node.name}
-              args={node.args}
+              node={node}
             />
           )}
-          {isLocked && <PaintFieldName data={node.data} name={node.name} args={node.args} />}
         </div>
         <div className={Type}>
           <ActiveFieldType type={node.type} />
         </div>
+        <EditableDefaultValue
+          value={resolveValueFromNode(node)}
+          style={{ fontSize: 8, marginLeft: 5 }}
+          onChange={(v) => {
+            node.args = placeStringInNode({ v, node, onTreeChanged });
+            onTreeChanged();
+          }}
+        />
       </div>
-      {!isLocked && !isEnumValue && (
+      {!isLocked && (
         <>
           <div
             className={'NodeFieldPort'}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Menu } from '@Graf/Node/Menu/Menu';
 import { MenuScrollingArea } from '@Graf/Node/Menu/MenuScrollingArea';
-import { MenuSearch } from '@Graf/Node/Menu/MenuSearch';
+import { MenuSearch } from '@Graf/Node/components';
 import { DOM } from '@Graf/DOM';
 import { ResolveCreateField } from '@Graf/Resolve/Resolve';
 import { ParserField } from 'graphql-zeus';

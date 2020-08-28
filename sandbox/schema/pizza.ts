@@ -25,17 +25,33 @@ type Ingredient{
 
 type Mutation{
 	addPizza(
-		name: String!
-		ingredientIds: [String!]
+		pizza : CreatePizza
 	): Pizza
 	addIngredient(
-		ingredient: createIngredient
+		ingredient: CreateIngredient
 	): Ingredient
 }
 
-input createIngredient{
+input CreatePizza{
+	name: String!
+	ingredients: [CreateIngredient!] =[{
+        name:"Tomato",
+		price:300,
+		sku:{
+			name:"13231a"
+		}
+    },{
+        name:"Pineapple",
+        price:200
+    }]
+}
+input CreateSKU{
+	name: String!
+}
+input CreateIngredient{
 	name: String!
 	price: Int!
+	sku: CreateSKU
 }
 schema{
 	query: Query,

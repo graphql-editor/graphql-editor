@@ -4,7 +4,6 @@ import { style } from 'typestyle';
 import { Colors } from '@Colors';
 import { FIELD_HEIGHT } from '@Graf/constants';
 import { ActiveFieldName } from './FieldName/ActiveFieldName';
-import { ActiveFieldType } from './FieldType/ActiveFieldType';
 import { PaintFieldName } from './FieldName/PaintFieldName';
 import { NodeTypeOptionsMenu } from '../NodeTypeOptionsMenu';
 import { Plus } from '@Graf/icons/Plus';
@@ -32,6 +31,7 @@ const Main = style({
   height: FIELD_HEIGHT,
   margin: `0 0`,
   transition: 'background 0.25s ease-in-out',
+  background: Colors.grey[7],
   $nest: {
     '&.Active': {
       background: Colors.main[3],
@@ -46,7 +46,7 @@ const Main = style({
       height: 16,
     },
     '&:hover': {
-      background: Colors.main[3],
+      background: Colors.grey[6],
       $nest: {
         '.NodeFieldPort': {
           opacity: 0.5,
@@ -87,14 +87,13 @@ const Title = style({
   overflow: 'hidden',
 });
 const Name = style({ fontSize: 10, marginRight: 4, overflow: 'hidden' });
-const Type = style({ fontSize: 8, color: Colors.green[0] });
 const OptionsMenuContainer = style({
   position: 'absolute',
   top: 20,
   zIndex: 2,
 });
 
-export const ActiveField: React.FC<FieldProps> = ({
+export const ActiveDirectiveField: React.FC<FieldProps> = ({
   node,
   inputOpen,
   inputDisabled,
@@ -103,18 +102,13 @@ export const ActiveField: React.FC<FieldProps> = ({
   onInputClick,
   onOutputClick,
   last,
-  parentNodeTypeName,
   onTreeChanged,
   isLocked,
 }) => {
   const [optionsMenuOpen, setOptionsMenuOpen] = useState(false);
   const isEnumValue = node.data.type === ValueDefinition.EnumValueDefinition;
   return (
-    <div
-      className={`NodeType-${parentNodeTypeName} ${Main} ${last ? LastField : ''} ${
-        inputOpen || outputOpen || optionsMenuOpen ? 'Active' : ''
-      }`}
-    >
+    <div className={`${Main} ${last ? LastField : ''} ${inputOpen || outputOpen || optionsMenuOpen ? 'Active' : ''}`}>
       {!inputDisabled && !isLocked && !isEnumValue ? (
         <div className={'NodeFieldPort'} onClick={onInputClick}>
           {inputOpen ? '-' : <Plus height={7} width={7} />}
@@ -124,6 +118,7 @@ export const ActiveField: React.FC<FieldProps> = ({
       )}
       <div className={Title}>
         <div className={Name}>
+          @
           {!isLocked && (
             <ActiveFieldName
               afterChange={(newName) => {
@@ -136,9 +131,6 @@ export const ActiveField: React.FC<FieldProps> = ({
             />
           )}
           {isLocked && <PaintFieldName data={node.data} name={node.name} args={node.args} />}
-        </div>
-        <div className={Type}>
-          <ActiveFieldType type={node.type} />
         </div>
       </div>
       {!isLocked && !isEnumValue && (
