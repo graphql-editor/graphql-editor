@@ -7,7 +7,7 @@ import {
   ScalarTypes,
   Value,
 } from 'graphql-zeus';
-import { BuiltInScalars } from '@Graf/Resolve/BuiltInNodes';
+import { BuiltInScalars } from '@GraphQL/Resolve/BuiltInNodes';
 
 export const ResolveCreateField = (field: ParserField, actualFields: ParserField[]): ParserField[] | undefined => {
   if (

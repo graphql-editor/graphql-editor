@@ -1,7 +1,7 @@
 import React from 'react';
 import { ParserField } from 'graphql-zeus';
 import { style } from 'typestyle';
-import { PaintFieldType } from '@Graf/Node/Field/FieldType/PaintFieldType';
+import { PaintType } from '@Graf/Node/Type';
 const Main = style({
   display: 'flex',
   flexFlow: 'row no-wrap',
@@ -22,7 +22,7 @@ export const PaintFieldName: React.FC<Pick<ParserField, 'name' | 'args' | 'data'
           <div className={Indent} key={a.name}>
             <PaintFieldName data={a.data} name={a.name} args={a.args} />
             :
-            <PaintFieldType type={a.type} />,
+            <PaintType type={a.type} />,
           </div>
         ))}
         )

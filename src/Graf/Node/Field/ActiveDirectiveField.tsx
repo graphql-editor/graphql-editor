@@ -3,13 +3,11 @@ import { ParserField, ValueDefinition } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { Colors } from '@Colors';
 import { FIELD_HEIGHT } from '@Graf/constants';
-import { ActiveFieldName } from './FieldName/ActiveFieldName';
-import { PaintFieldName } from './FieldName/PaintFieldName';
-import { NodeTypeOptionsMenu } from '../NodeTypeOptionsMenu';
-import { Plus } from '@Graf/icons/Plus';
-import { Arrq } from '@Graf/icons/Arrq';
+import { ActiveFieldName, PaintFieldName } from './FieldName';
+import { NodeTypeOptionsMenu } from '@Graf/Node/ContextMenu';
+import { Plus, Arrq } from '@Graf/icons';
 
-export interface FieldProps {
+interface FieldProps {
   node: ParserField;
   inputOpen: boolean;
   outputOpen: boolean;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ParserField } from 'graphql-zeus';
-import { ActiveType } from '@Graf/Node/Type';
+import { ActiveFieldType } from '@Graf/Node/Field/FieldType/ActiveFieldType';
 import { style } from 'typestyle';
 import { EditableText } from '@Graf/Node/components';
 const Main = style({
@@ -32,7 +32,7 @@ export const ActiveFieldName: React.FC<
               name={a.name}
               args={a.args}
             />
-            :<ActiveType type={a.type} />
+            :<ActiveFieldType type={a.type} />
             {i < args.length - 1 && <span>,</span>}
           </div>
         ))}

@@ -25,7 +25,8 @@
       "@worker":["./worker/index"],
       "@Graf/*":["./Graf/*"],
       "@editor/*":["./editor/*"],
-      "@state/*":["./state/*"]
+      "@state/*":["./state/*"],
+      "@GraphQL/*":["./GraphQL/*"]
     },
     "skipLibCheck": true
   },

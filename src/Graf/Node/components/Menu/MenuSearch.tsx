@@ -1,8 +1,7 @@
 import React, { useRef } from 'react';
 import { style } from 'typestyle';
 import { Colors } from '@Colors';
-import { X } from '@Graf/icons/X';
-import { Search } from '@Graf/icons/Search';
+import { Search, X } from '@Graf/icons';
 
 interface MenuSearchProps {
   value: string;

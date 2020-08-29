@@ -3,14 +3,12 @@ import { ParserField, ValueDefinition } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { Colors } from '@Colors';
 import { FIELD_HEIGHT } from '@Graf/constants';
-import { ActiveFieldName } from './FieldName/ActiveFieldName';
-import { ActiveFieldType } from './FieldType/ActiveFieldType';
-import { PaintFieldName } from './FieldName/PaintFieldName';
-import { NodeTypeOptionsMenu } from '../NodeTypeOptionsMenu';
-import { Plus } from '@Graf/icons/Plus';
-import { Arrq } from '@Graf/icons/Arrq';
+import { ActiveFieldName, PaintFieldName } from './FieldName';
+import { ActiveType } from '@Graf/Node/Type';
+import { NodeTypeOptionsMenu } from '@Graf/Node/ContextMenu';
+import { Arrq, Plus } from '@Graf/icons';
 
-export interface FieldProps {
+interface FieldProps {
   node: ParserField;
   inputOpen: boolean;
   outputOpen: boolean;
@@ -138,7 +136,7 @@ export const ActiveField: React.FC<FieldProps> = ({
           {isLocked && <PaintFieldName data={node.data} name={node.name} args={node.args} />}
         </div>
         <div className={Type}>
-          <ActiveFieldType type={node.type} />
+          <ActiveType type={node.type} />
         </div>
       </div>
       {!isLocked && !isEnumValue && (

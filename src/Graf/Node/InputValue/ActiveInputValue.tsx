@@ -3,15 +3,13 @@ import { ParserField, Options, ValueDefinition, Value } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { Colors } from '@Colors';
 import { FIELD_HEIGHT } from '@Graf/constants';
-import { ActiveFieldType } from './FieldType/ActiveFieldType';
-import { PaintFieldName } from './FieldName/PaintFieldName';
-import { NodeTypeOptionsMenu } from '../NodeTypeOptionsMenu';
-import { ActiveInputValueName } from './FieldName/ActiveInputValueName';
-import { Plus } from '@Graf/icons/Plus';
-import { Arrq } from '@Graf/icons/Arrq';
-import { EditableDefaultValue } from './FieldName/EditableDefaultValue';
-import { isScalarArgument } from '@Graf/Resolve/Resolve';
-import { ConvertStringToObject, ConvertValueToEditableString } from '@Graf/Convert';
+import { ActiveType } from '@Graf/Node/Type';
+import { NodeTypeOptionsMenu } from '@Graf/Node/ContextMenu';
+import { ActiveInputValueName } from './ActiveInputValueName';
+import { Arrq, Plus } from '@Graf/icons';
+import { EditableDefaultValue } from '@Graf/Node/components';
+import { isScalarArgument } from '@GraphQL/Resolve';
+import { ConvertStringToObject, ConvertValueToEditableString } from '@GraphQL/Convert';
 export interface FieldProps {
   node: ParserField;
   inputOpen: boolean;
@@ -150,7 +148,7 @@ const resolveValueFromNode = (node: ParserField) => {
   return inside;
 };
 
-export const ActiveScalarArgument: React.FC<FieldProps> = ({
+export const ActiveInputValue: React.FC<FieldProps> = ({
   node,
   inputOpen,
   inputDisabled,
@@ -179,7 +177,7 @@ export const ActiveScalarArgument: React.FC<FieldProps> = ({
       )}
       <div className={Title}>
         <div className={Name}>
-          {isLocked && <PaintFieldName data={node.data} name={node.name} args={node.args} />}
+          {isLocked && <span>{node.name}</span>}
           {!isLocked && (
             <ActiveInputValueName
               afterChange={(newName) => {
@@ -191,7 +189,7 @@ export const ActiveScalarArgument: React.FC<FieldProps> = ({
           )}
         </div>
         <div className={Type}>
-          <ActiveFieldType type={node.type} />
+          <ActiveType type={node.type} />
         </div>
         <EditableDefaultValue
           value={resolveValueFromNode(node)}

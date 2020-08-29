@@ -1,28 +1,26 @@
 import React, { useState } from 'react';
 import { ParserField, ValueDefinition, Value } from 'graphql-zeus';
-import { ActiveField } from '@Graf/Node/Field/ActiveField';
-import { ActiveDirectiveField } from '@Graf/Node/Field/ActiveDirectiveField';
-import { ActiveScalarArgument } from '@Graf/Node/Field/ActiveScalarArgument';
+import { ActiveField, ActiveDirectiveField } from '@Graf/Node/Field';
+import { ActiveInputValue } from '@Graf/Node/InputValue';
 import { style } from 'typestyle';
 import { Colors, mix } from '@Colors';
 import { FIELD_HEIGHT } from '@Graf/constants';
 import { GraphQLBackgrounds } from '@editor/theme';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { DOM } from '@Graf/DOM';
-import { ActiveFieldType } from '@Graf/Node/Field/FieldType/ActiveFieldType';
+import { ActiveType } from '@Graf/Node/Type';
 import { NodeFields, NodeTitle } from '@Graf/Node/SharedNode';
-import { EditableText } from '@Graf/Node/Field/FieldName/EditableText';
-import { ActiveDescription } from '@Graf/Node/Description/ActiveDescription';
-import { ChangeAllRelatedNodes } from '@Graf/Resolve/Related';
+import { ActiveDescription, NodeInterface, EditableText } from '@Graf/Node/components';
 import { useTreesState } from '@state/containers/trees';
-import { NodeInterface } from '@Graf/Node/NodeInterface';
 import { TopNodeMenu } from '@Graf/Node/ActiveNode/TopNodeMenu';
-import { isScalarArgument } from '@Graf/Resolve/Resolve';
-export interface NodeProps {
+import { isScalarArgument, ChangeAllRelatedNodes } from '@GraphQL/Resolve';
+
+interface NodeProps {
   node: ParserField;
   onTreeChanged: () => void;
   onDelete: () => void;
 }
+
 const LeftNodeArea: NestedCSSProperties = {
   position: 'absolute',
   left: -300,
@@ -231,7 +229,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
             )}
           </div>
           <div className={`NodeType`}>
-            <ActiveFieldType type={node.type} />
+            <ActiveType type={node.type} />
           </div>
           {!isLibrary && <TopNodeMenu {...sharedProps} node={node} />}
         </div>
@@ -270,7 +268,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
                 (a.data.type === ValueDefinition.InputValueDefinition && !isSc) || a.data.type === Value.ObjectValue;
               if (isSc || isObjectArg) {
                 return (
-                  <ActiveScalarArgument
+                  <ActiveInputValue
                     isLocked={isLibrary}
                     onTreeChanged={onTreeChanged}
                     parentNodeTypeName={node.type.name}

@@ -1,7 +1,6 @@
-import React from 'react';
 import { ParserField, Options } from 'graphql-zeus';
-import { GraphQLColors } from '@editor/theme';
-export const PaintFieldType: React.FC<Pick<ParserField, 'type'>> = ({ type }) => {
+
+export const compileTypeOptions = ({ type }: Pick<ParserField, 'type'>) => {
   let compiledType = type.name;
   if (type.options?.includes(Options.arrayRequired)) {
     compiledType = `${compiledType}!`;
@@ -12,9 +11,5 @@ export const PaintFieldType: React.FC<Pick<ParserField, 'type'>> = ({ type }) =>
   if (type.options?.includes(Options.required)) {
     compiledType = `${compiledType}!`;
   }
-  return (
-    <span style={{ color: type.name in GraphQLColors ? ((GraphQLColors as any)[type.name] as string) : '#fff' }}>
-      {compiledType}
-    </span>
-  );
+  return compiledType;
 };

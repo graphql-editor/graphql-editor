@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
 import { TypeDefinition, ValueDefinition, ParserField, TypeSystemDefinition } from 'graphql-zeus';
-import { NodeAddFieldMenu } from '@Graf/Node/NodeAddFieldMenu';
+import { MenuScrollingArea, DetailMenuItem, Menu } from '@Graf/Node/components';
+import { More, Interface, Monkey, Plus } from '@Graf/icons';
+import {
+  NodeAddDirectiveMenu,
+  NodeDirectiveOptionsMenu,
+  NodeImplementInterfacesMenu,
+  NodeAddFieldMenu,
+} from '@Graf/Node/ContextMenu';
 import { style } from 'typestyle';
-import { Plus } from '@Graf/icons/Plus';
-import { Interface } from '@Graf/icons/Interface';
-import { NodeImplementInterfacesMenu } from '../NodeImplementInterfaceMenu';
-import { DetailMenuItem } from '../Menu/DetailMenuItem';
-import { Menu } from '../Menu/Menu';
-import { MenuScrollingArea } from '../Menu/MenuScrollingArea';
-import { More } from '@Graf/icons/More';
-import { NodeDirectiveOptionsMenu } from '../NodeDirectiveOptionsMenu';
-import { NodeAddDirectiveMenu } from '../NodeAddDirectiveMenu';
-import { Monkey } from '@Graf/icons/Monkey';
 
 type PossibleMenus = 'field' | 'interface' | 'directive' | 'options';
 

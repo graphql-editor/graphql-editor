@@ -1,24 +1,17 @@
 import React, { useState } from 'react';
-import { Menu } from '@Graf/Node/Menu/Menu';
-import { MenuScrollingArea } from '@Graf/Node/Menu/MenuScrollingArea';
-import { MenuSearch } from '@Graf/Node/components';
 import { DOM } from '@Graf/DOM';
-import { ResolveImplementInterface } from '@Graf/Resolve/Resolve';
+import { ResolveCreateField } from '@GraphQL/Resolve';
 import { ParserField } from 'graphql-zeus';
 import { useTreesState } from '@state/containers/trees';
-import { MenuItem } from '@Graf/Node/Menu/MenuItem';
+import { Menu, MenuScrollingArea, MenuSearch, MenuItem } from '@Graf/Node/components';
 
-interface NodeImplementInterfacesMenuProps {
+interface NodeAddFieldMenuProps {
   node: ParserField;
   hideMenu: () => void;
   onTreeChanged: () => void;
 }
 
-export const NodeImplementInterfacesMenu: React.FC<NodeImplementInterfacesMenuProps> = ({
-  node,
-  hideMenu,
-  onTreeChanged,
-}) => {
+export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({ node, hideMenu, onTreeChanged }) => {
   const { tree } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   return (
@@ -30,22 +23,29 @@ export const NodeImplementInterfacesMenu: React.FC<NodeImplementInterfacesMenuPr
         DOM.scrollLock = false;
       }}
       onScroll={(e) => e.stopPropagation()}
-      hideMenu={() => hideMenu()}
+      hideMenu={hideMenu}
     >
       <MenuSearch value={menuSearchValue} onChange={setMenuSearchValue} onClear={() => setMenuSearchValue('')} />
       <MenuScrollingArea>
-        {ResolveImplementInterface(node, tree.nodes)
+        {ResolveCreateField(node, tree.nodes)
           ?.sort((a, b) => (a.name > b.name ? 1 : -1))
-          .filter((a) => !node.interfaces?.includes(a.name))
           .filter((a) => a.name.toLowerCase().includes(menuSearchValue.toLowerCase()))
           .map((f) => (
             <MenuItem
               key={f.name}
               node={f}
               onClick={() => {
-                node.interfaces?.push(f.name);
-                const argsToPush = f.args?.filter((a) => !node.args?.find((na) => na.name === a.name)) || [];
-                node.args = node.args?.concat(argsToPush);
+                node.args?.push({
+                  ...f,
+                  description: undefined,
+                  directives: [],
+                  interfaces: undefined,
+                  type: {
+                    name: f.name,
+                  },
+                  name: f.name[0].toLowerCase() + f.name.slice(1),
+                  args: [],
+                });
                 hideMenu();
                 DOM.scrollLock = false;
                 onTreeChanged();

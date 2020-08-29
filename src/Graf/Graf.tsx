@@ -5,7 +5,7 @@ import { fontFamily } from '@vars';
 import panzoom, { PanZoom } from 'panzoom';
 import { DOM } from './DOM';
 import { PaintNodes } from './PaintNodes';
-import { ActiveNode } from '@Graf/Node/ActiveNode';
+import { ActiveNode } from '@Graf/Node';
 import { useTreesState } from '@state/containers/trees';
 export interface GrafProps {
   onTreeChanged: () => void;

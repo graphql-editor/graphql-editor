@@ -2,7 +2,7 @@ import React from 'react';
 import { GraphQLBackgrounds } from '@editor/theme';
 import { style } from 'typestyle';
 import { Colors } from '@Colors';
-import { X } from '@Graf/icons/X';
+import { X } from '@Graf/icons';
 
 interface NodeInterfaceProps {
   onDelete: () => void;

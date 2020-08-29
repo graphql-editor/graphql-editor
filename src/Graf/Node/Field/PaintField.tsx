@@ -3,8 +3,8 @@ import { ParserField } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { Colors } from '@Colors';
 import { FIELD_HEIGHT } from '@Graf/constants';
-import { PaintFieldName } from './FieldName/PaintFieldName';
-import { PaintFieldType } from './FieldType/PaintFieldType';
+import { PaintFieldName } from './FieldName';
+import { PaintType } from '@Graf/Node/Type';
 export interface PaintFieldProps {
   node: ParserField;
   last?: boolean;
@@ -47,7 +47,7 @@ export const PaintField: React.FC<PaintFieldProps> = ({ node, last, parentNodeTy
           <PaintFieldName data={node.data} name={node.name} args={node.args} />
         </div>
         <div className={Type}>
-          <PaintFieldType type={node.type} />
+          <PaintType type={node.type} />
         </div>
       </div>
       <div className={'NodeFieldPortPlaceholder'} />

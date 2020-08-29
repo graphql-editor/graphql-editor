@@ -1,7 +1,7 @@
 import { style } from 'typestyle';
 import React from 'react';
 import { Menu } from './Menu';
-import { Tick } from '@Graf/icons/Tick';
+import { Tick } from '@Graf/icons';
 import { Colors } from '@Colors';
 import { DetailMenuItem } from './DetailMenuItem';
 
