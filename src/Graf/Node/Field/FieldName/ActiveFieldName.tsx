@@ -23,14 +23,12 @@ export const ActiveFieldName: React.FC<
         <EditableText value={name} onChange={afterChange} />(
         {args.map((a, i) => (
           <div className={Indent} key={a.name}>
-            <ActiveFieldName
-              afterChange={(newName) => {
+            <EditableText
+              onChange={(newName) => {
                 args[i].name = newName;
                 afterChange(name);
               }}
-              data={a.data}
-              name={a.name}
-              args={a.args}
+              value={a.name}
             />
             :<ActiveType type={a.type} />
             {i < args.length - 1 && <span>,</span>}

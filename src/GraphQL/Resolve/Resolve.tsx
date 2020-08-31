@@ -6,6 +6,7 @@ import {
   Directive,
   ScalarTypes,
   Value,
+  Instances,
 } from 'graphql-zeus';
 import { BuiltInScalars } from '@GraphQL/Resolve/BuiltInNodes';
 
@@ -70,6 +71,20 @@ export const ResolveCreateField = (field: ParserField, actualFields: ParserField
   if (field.data.type === TypeSystemDefinition.UnionMemberDefinition) {
     return undefined;
   }
+  if (field.data.type === Instances.Directive) {
+    console.log('Actualfields');
+    return actualFields
+      .find((a) => a.name === field.type.name)!
+      .args?.map((a) => {
+        return {
+          ...a,
+          data: {
+            type: Instances.Argument,
+          },
+          args: [],
+        };
+      });
+  }
   return [];
 };
 
@@ -124,22 +139,20 @@ export const ResolveDirectives = (field: ParserField, actualFields: ParserField[
 };
 
 export const isScalarArgument = (field: ParserField) => {
-  if (field.data.type === ValueDefinition.InputValueDefinition) {
-    if (field.type.name === ScalarTypes.Boolean) {
-      return Value.BooleanValue;
-    }
-    if (field.type.name === ScalarTypes.Float) {
-      return Value.FloatValue;
-    }
-    if (field.type.name === ScalarTypes.ID) {
-      return Value.StringValue;
-    }
-    if (field.type.name === ScalarTypes.Int) {
-      return Value.IntValue;
-    }
-    if (field.type.name === ScalarTypes.String) {
-      return Value.StringValue;
-    }
+  if (field.type.name === ScalarTypes.Boolean) {
+    return Value.BooleanValue;
+  }
+  if (field.type.name === ScalarTypes.Float) {
+    return Value.FloatValue;
+  }
+  if (field.type.name === ScalarTypes.ID) {
+    return Value.StringValue;
+  }
+  if (field.type.name === ScalarTypes.Int) {
+    return Value.IntValue;
+  }
+  if (field.type.name === ScalarTypes.String) {
+    return Value.StringValue;
   }
   return;
 };

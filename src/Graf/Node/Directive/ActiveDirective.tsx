@@ -3,9 +3,9 @@ import { ParserField, ValueDefinition } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { Colors } from '@Colors';
 import { FIELD_HEIGHT } from '@Graf/constants';
-import { ActiveFieldName, PaintFieldName } from './FieldName';
 import { NodeTypeOptionsMenu } from '@Graf/Node/ContextMenu';
 import { Plus, Arrq } from '@Graf/icons';
+import { ConvertValueToEditableString } from '@GraphQL/Convert';
 
 interface FieldProps {
   node: ParserField;
@@ -91,7 +91,7 @@ const OptionsMenuContainer = style({
   zIndex: 2,
 });
 
-export const ActiveDirectiveField: React.FC<FieldProps> = ({
+export const ActiveDirective: React.FC<FieldProps> = ({
   node,
   inputOpen,
   inputDisabled,
@@ -115,21 +115,7 @@ export const ActiveDirectiveField: React.FC<FieldProps> = ({
         <div className={'NodeFieldPortPlaceholder'} />
       )}
       <div className={Title}>
-        <div className={Name}>
-          @
-          {!isLocked && (
-            <ActiveFieldName
-              afterChange={(newName) => {
-                node.name = newName;
-                onTreeChanged();
-              }}
-              data={node.data}
-              name={node.name}
-              args={node.args}
-            />
-          )}
-          {isLocked && <PaintFieldName data={node.data} name={node.name} args={node.args} />}
-        </div>
+        <div className={Name}>{ConvertValueToEditableString(node)}</div>
       </div>
       {!isLocked && !isEnumValue && (
         <>

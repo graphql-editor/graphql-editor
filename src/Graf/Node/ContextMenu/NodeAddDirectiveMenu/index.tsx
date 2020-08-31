@@ -12,7 +12,7 @@ interface NodeAddDirectiveMenuProps {
 }
 
 export const NodeAddDirectiveMenu: React.FC<NodeAddDirectiveMenuProps> = ({ node, hideMenu, onTreeChanged }) => {
-  const { tree } = useTreesState();
+  const { tree, libraryTree } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   return (
     <Menu
@@ -27,7 +27,7 @@ export const NodeAddDirectiveMenu: React.FC<NodeAddDirectiveMenuProps> = ({ node
     >
       <MenuSearch value={menuSearchValue} onChange={setMenuSearchValue} onClear={() => setMenuSearchValue('')} />
       <MenuScrollingArea>
-        {ResolveDirectives(node, tree.nodes)
+        {ResolveDirectives(node, tree.nodes.concat(libraryTree.nodes))
           ?.sort((a, b) => (a.name > b.name ? 1 : -1))
           .filter((a) => a.name.toLowerCase().includes(menuSearchValue.toLowerCase()))
           .map((f) => (

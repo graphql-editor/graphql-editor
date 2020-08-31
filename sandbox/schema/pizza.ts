@@ -4,7 +4,11 @@ type Query{
 	pizzas: [Pizza!]
 }
 
-type Pizza implements Nameable & Imaged{
+type Pizza implements Nameable & Imaged @auth(
+	passwords: ["password","password2"],
+	username: "username"
+	data: [{name:"AAA"},{name:"BBB"}]
+){
 	name: String!
 	ingredients: [Ingredient!]
 	image: S3Object
@@ -67,4 +71,14 @@ type DataInfo {
 	createdAt: String!
 	more: DataInfo
 }
+
+input AuthData {
+	name:String = "Hello"
+}
+
+directive @auth(
+	username:String!
+	passwords:[String]!
+	data: [AuthData]
+) on OBJECT
 `;

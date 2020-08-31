@@ -12,7 +12,7 @@ interface NodeAddFieldMenuProps {
 }
 
 export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({ node, hideMenu, onTreeChanged }) => {
-  const { tree } = useTreesState();
+  const { tree, libraryTree } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   return (
     <Menu
@@ -27,7 +27,7 @@ export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({ node, hideMe
     >
       <MenuSearch value={menuSearchValue} onChange={setMenuSearchValue} onClear={() => setMenuSearchValue('')} />
       <MenuScrollingArea>
-        {ResolveCreateField(node, tree.nodes)
+        {ResolveCreateField(node, tree.nodes.concat(libraryTree.nodes))
           ?.sort((a, b) => (a.name > b.name ? 1 : -1))
           .filter((a) => a.name.toLowerCase().includes(menuSearchValue.toLowerCase()))
           .map((f) => (

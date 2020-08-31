@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { ParserField, ValueDefinition, Value } from 'graphql-zeus';
-import { ActiveField, ActiveDirectiveField } from '@Graf/Node/Field';
+import { ParserField, TypeSystemDefinition, Instances, TypeDefinition } from 'graphql-zeus';
+import { ActiveField } from '@Graf/Node/Field';
+import { ActiveDirective } from '@Graf/Node/Directive';
 import { ActiveInputValue } from '@Graf/Node/InputValue';
 import { style } from 'typestyle';
 import { Colors, mix } from '@Colors';
@@ -13,7 +14,8 @@ import { NodeFields, NodeTitle } from '@Graf/Node/SharedNode';
 import { ActiveDescription, NodeInterface, EditableText } from '@Graf/Node/components';
 import { useTreesState } from '@state/containers/trees';
 import { TopNodeMenu } from '@Graf/Node/ActiveNode/TopNodeMenu';
-import { isScalarArgument, ChangeAllRelatedNodes } from '@GraphQL/Resolve';
+import { ChangeAllRelatedNodes } from '@GraphQL/Resolve';
+import { ActiveArgument } from '@Graf/Node/Argument';
 
 interface NodeProps {
   node: ParserField;
@@ -116,8 +118,18 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
 
   const { libraryTree, tree, setSelectedNode, selectedNode, selectedNodeRef } = useTreesState();
 
-  const isLibrary = !!libraryTree.nodes.find((lN) => lN.name === node.name);
+  const isLibrary = !!libraryTree.nodes.find((lN) => lN.name === node.name && lN.data.type === node.data.type);
   console.log(node);
+
+  const isInputNode = [
+    TypeSystemDefinition.FieldDefinition,
+    TypeSystemDefinition.DirectiveDefinition,
+    TypeDefinition.InputObjectTypeDefinition,
+    Instances.Directive,
+  ].includes(node.data.type as any);
+
+  const isArgumentNode = [Instances.Directive].includes(node.data.type as any);
+  const parentNode = tree.nodes.find((n) => n.name === node.type.name);
 
   return (
     <div className={`${NodeContainer} ${DOM.classes.node} ${DOM.classes.nodeSelected}`} ref={selectedNodeRef}>
@@ -233,13 +245,13 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
           </div>
           {!isLibrary && <TopNodeMenu {...sharedProps} node={node} />}
         </div>
-        <div className={`NodeFields NodeBackground-${node.type.name}`}>
+        <div className={`NodeFields NodeBackground-${parentNode ? parentNode.type.name : node.type.name}`}>
           {node.directives?.map((d, i) => {
             const outputDisabled = !(
               tree.nodes.find((n) => n.name === d.type.name) || libraryTree.nodes.find((n) => n.name === d.type.name)
             );
             return (
-              <ActiveDirectiveField
+              <ActiveDirective
                 isLocked={isLibrary}
                 onTreeChanged={onTreeChanged}
                 parentNodeTypeName={node.type.name}
@@ -258,38 +270,14 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
               />
             );
           })}
-          {node.data.type !== ValueDefinition.InputValueDefinition &&
-            node.args?.map((a, i) => {
-              const outputDisabled = !(
-                tree.nodes.find((n) => n.name === a.type.name) || libraryTree.nodes.find((n) => n.name === a.type.name)
-              );
-              const isSc = isScalarArgument(a);
-              const isObjectArg =
-                (a.data.type === ValueDefinition.InputValueDefinition && !isSc) || a.data.type === Value.ObjectValue;
-              if (isSc || isObjectArg) {
-                return (
-                  <ActiveInputValue
-                    isLocked={isLibrary}
-                    onTreeChanged={onTreeChanged}
-                    parentNodeTypeName={node.type.name}
-                    last={i === node.args!.length - 1}
-                    key={a.name}
-                    onInputClick={() => {
-                      setOpenedInputs((oI) => (oI.includes(i) ? oI.filter((o) => o !== i) : [...oI, i]));
-                    }}
-                    onOutputClick={() => {
-                      setOpenedOutputs((oO) => (oO.includes(i) ? oO.filter((o) => o !== i) : [...oO, i]));
-                    }}
-                    node={a}
-                    inputOpen={openedInputs.includes(i)}
-                    outputDisabled={outputDisabled}
-                    outputOpen={openedOutputs.includes(i)}
-                  />
-                );
-              }
-
+          {node.args?.map((a, i) => {
+            const outputDisabled = !(
+              tree.nodes.find((n) => n.name === a.type.name) || libraryTree.nodes.find((n) => n.name === a.type.name)
+            );
+            if (isArgumentNode) {
               return (
-                <ActiveField
+                <ActiveArgument
+                  parentNode={node}
                   isLocked={isLibrary}
                   onTreeChanged={onTreeChanged}
                   parentNodeTypeName={node.type.name}
@@ -307,7 +295,49 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
                   outputOpen={openedOutputs.includes(i)}
                 />
               );
-            })}
+            }
+            if (isInputNode) {
+              return (
+                <ActiveInputValue
+                  isLocked={isLibrary}
+                  onTreeChanged={onTreeChanged}
+                  parentNodeTypeName={node.type.name}
+                  last={i === node.args!.length - 1}
+                  key={a.name}
+                  onInputClick={() => {
+                    setOpenedInputs((oI) => (oI.includes(i) ? oI.filter((o) => o !== i) : [...oI, i]));
+                  }}
+                  onOutputClick={() => {
+                    setOpenedOutputs((oO) => (oO.includes(i) ? oO.filter((o) => o !== i) : [...oO, i]));
+                  }}
+                  node={a}
+                  inputOpen={openedInputs.includes(i)}
+                  outputDisabled={outputDisabled}
+                  outputOpen={openedOutputs.includes(i)}
+                />
+              );
+            }
+
+            return (
+              <ActiveField
+                isLocked={isLibrary}
+                onTreeChanged={onTreeChanged}
+                parentNodeTypeName={node.type.name}
+                last={i === node.args!.length - 1}
+                key={a.name}
+                onInputClick={() => {
+                  setOpenedInputs((oI) => (oI.includes(i) ? oI.filter((o) => o !== i) : [...oI, i]));
+                }}
+                onOutputClick={() => {
+                  setOpenedOutputs((oO) => (oO.includes(i) ? oO.filter((o) => o !== i) : [...oO, i]));
+                }}
+                node={a}
+                inputOpen={openedInputs.includes(i)}
+                outputDisabled={outputDisabled}
+                outputOpen={openedOutputs.includes(i)}
+              />
+            );
+          })}
         </div>
       </div>
     </div>

@@ -48,6 +48,7 @@ export const NodeTitle: NestedCSSProperties = {
 export const NodeFields: NestedCSSProperties = {
   borderBottomLeftRadius: 4,
   borderBottomRightRadius: 4,
+  background: Colors.grey[8],
   ...Object.keys(GraphQLBackgrounds).reduce((a, b) => {
     a[`.NodeBackground-${b}`] = {
       background: GraphQLBackgrounds[b],
