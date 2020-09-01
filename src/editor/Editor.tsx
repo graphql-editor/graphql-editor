@@ -73,7 +73,7 @@ export const Editor = ({
     libraries: '',
   },
   initialSizeOfSidebar = sizeSidebar,
-  activePane = 'code-diagram',
+  activePane = 'diagram',
   onPaneChange,
   onSchemaChange,
 }: EditorProps) => {
@@ -172,7 +172,6 @@ export const Editor = ({
       onKeyDown={(e) => {
         if (e.key.toLowerCase() === 'f' && (e.metaKey || e.ctrlKey)) {
           e.preventDefault();
-          setMenuState('explorer-diagram');
         }
       }}
     >

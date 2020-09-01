@@ -80,14 +80,7 @@ export const PaintNode: React.FC<NodeProps> = ({ node, onClick, isLibrary }) => 
         }}
       >
         <div className={`NodeTitle`}>
-          <div
-            className={`NodeName`}
-            onSeeked={(e) => {
-              console.log(node);
-            }}
-          >
-            {node.name}
-          </div>
+          <div className={`NodeName`}>{node.name}</div>
         </div>
       </div>
     </div>

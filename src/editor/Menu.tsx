@@ -3,7 +3,7 @@ import * as Icons from './icons';
 import * as styles from './style/Menu';
 import cx from 'classnames';
 import { cypressGet, GraphQLEditorCypress } from '../cypress_constants';
-export type ActivePane = 'code' | 'explorer-diagram' | 'diagram' | 'code-diagram';
+export type ActivePane = 'code' | 'diagram' | 'code-diagram';
 export interface MenuProps {
   activePane: ActivePane;
   setActivePane: (pane: ActivePane) => void;
@@ -41,14 +41,6 @@ export const Menu = ({ setActivePane, activePane }: MenuProps) => {
         title="Code View"
       >
         <Icons.FullScreen size={16} />
-      </div>
-      <div
-        data-cy={cypressGet(GraphQLEditorCypress, 'sidebar', 'menu', 'children', 'explorer', 'name')}
-        className={cx(styles.Hider, { active: activePane === 'explorer-diagram' })}
-        onClick={() => setActivePane('explorer-diagram')}
-        title="Graph Explorer View"
-      >
-        <Icons.Layers size={16} />
       </div>
     </div>
   );

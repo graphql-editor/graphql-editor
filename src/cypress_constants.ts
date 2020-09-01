@@ -20,9 +20,6 @@ export const GraphQLEditorCypress = {
         code: {
           name: 'code',
         },
-        explorer: {
-          name: 'explorer',
-        },
       },
     },
     code: {
