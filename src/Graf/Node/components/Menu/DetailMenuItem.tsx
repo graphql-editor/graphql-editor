@@ -1,6 +1,6 @@
 import React from 'react';
 import { style } from 'typestyle';
-import { Colors } from '@Colors';
+import { Colors } from '@/Colors';
 
 interface MenuItemProps {
   onClick: () => void;

@@ -1,9 +1,9 @@
 import React from 'react';
 import { ParserField } from 'graphql-zeus';
 import { style } from 'typestyle';
-import { GraphQLColors } from '@editor/theme';
+import { GraphQLColors } from '@/editor/theme';
 import { NestedCSSProperties } from 'typestyle/lib/types';
-import { Colors } from '@Colors';
+import { Colors } from '@/Colors';
 
 interface MenuItemProps {
   node: ParserField;

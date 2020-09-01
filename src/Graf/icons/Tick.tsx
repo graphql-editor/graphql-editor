@@ -1,5 +1,5 @@
 import React from 'react';
-import { Colors } from '@Colors';
+import { Colors } from '@/Colors';
 export const Tick: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="6" height="6" fill="none" viewBox="0 0 5 3" {...props}>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { ParserField } from 'graphql-zeus';
-import { GraphQLColors } from '@editor/theme';
-import { compileTypeOptions } from '@GraphQL/Compile';
+import { GraphQLColors } from '@/editor/theme';
+import { compileTypeOptions } from '@/GraphQL/Compile';
 export const PaintType: React.FC<Pick<ParserField, 'type'>> = ({ type }) => {
   let compiledType = compileTypeOptions({ type });
   return (

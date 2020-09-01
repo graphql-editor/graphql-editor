@@ -1,4 +1,4 @@
-import { Parser, ParserField } from 'graphql-zeus';
+import { Parser, ParserField, Options } from 'graphql-zeus';
 import { TemplateUtils } from 'graphql-zeus/lib/TreeToGraphQL/templates/TemplateUtils';
 export const ConvertStringToObject = (value: string) => {
   const computeString = `
@@ -19,4 +19,20 @@ export const ConvertStringToObject = (value: string) => {
 export const ConvertValueToEditableString = (f: ParserField) => {
   const TranslatedString = TemplateUtils.resolverForConnection(f);
   return TranslatedString;
+};
+
+export const ConvertValueNodeToString = (node: ParserField) => {
+  if (!node.args) {
+    return '';
+  }
+  if (node.type.options?.includes(Options.array)) {
+    if (node.args.length === 0) {
+      return '[]';
+    }
+    return ConvertValueToEditableString(node).split('=')[1];
+  }
+  if (node.args.length === 0) {
+    return '';
+  }
+  return ConvertValueToEditableString(node).split('=')[1];
 };

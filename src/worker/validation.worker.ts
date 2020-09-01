@@ -1,4 +1,4 @@
-import { catchSchemaErrors } from '@validation';
+import { catchSchemaErrors } from '@/validation';
 const ctx: Worker = self as any;
 ctx.addEventListener('message', (message) => {
   const data = message.data as {

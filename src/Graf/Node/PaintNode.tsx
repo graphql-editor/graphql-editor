@@ -1,8 +1,8 @@
 import React, { useRef } from 'react';
 import { ParserField } from 'graphql-zeus';
 import { style } from 'typestyle';
-import { Colors } from '@Colors';
-import { GraphQLBackgrounds } from '@editor/theme';
+import { Colors } from '@/Colors';
+import { GraphQLBackgrounds } from '@/editor/theme';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { NodeTitle } from './SharedNode';
 export interface NodeProps {

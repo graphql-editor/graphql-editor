@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { DOM } from '@Graf/DOM';
+import { DOM } from '@/Graf/DOM';
 
 export enum KeyboardActions {
   Delete = 'Delete',

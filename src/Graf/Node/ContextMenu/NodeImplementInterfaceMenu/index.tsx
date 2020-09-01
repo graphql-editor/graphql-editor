@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { DOM } from '@Graf/DOM';
-import { ResolveImplementInterface } from '@GraphQL/Resolve';
+import { DOM } from '@/Graf/DOM';
+import { ResolveImplementInterface } from '@/GraphQL/Resolve';
 import { ParserField } from 'graphql-zeus';
-import { useTreesState } from '@state/containers/trees';
-import { Menu, MenuScrollingArea, MenuSearch, MenuItem } from '@Graf/Node/components';
+import { useTreesState } from '@/state/containers/trees';
+import { Menu, MenuScrollingArea, MenuSearch, MenuItem } from '@/Graf/Node/components';
 
 interface NodeImplementInterfacesMenuProps {
   node: ParserField;

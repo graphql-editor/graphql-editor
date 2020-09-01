@@ -1,13 +1,14 @@
 import React, { useRef, useState } from 'react';
 import { ParserField } from 'graphql-zeus';
 import { style } from 'typestyle';
-import { Colors } from '@Colors';
-import { GraphQLBackgrounds } from '@editor/theme';
+import { Colors } from '@/Colors';
+import { GraphQLBackgrounds } from '@/editor/theme';
 import { NestedCSSProperties } from 'typestyle/lib/types';
-import { DOM } from '@Graf/DOM';
+import { DOM } from '@/Graf/DOM';
 import { NodeTitle } from './SharedNode';
-import { fontFamily } from '@vars';
-import { useTreesState } from '@state/containers/trees';
+import { fontFamily } from '@/vars';
+import { useTreesState } from '@/state/containers/trees';
+import { Plus } from '@/Graf/icons';
 export interface NewNodeProps {
   node: ParserField;
   onCreate: (name: string) => void;
@@ -87,6 +88,21 @@ const NodeContainer = style({
     }, {} as Record<string, NestedCSSProperties>),
   },
 });
+
+const PlusButton = style({
+  marginLeft: 'auto',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  alignSelf: 'center',
+  color: Colors.grey[0],
+  border: `1px solid ${Colors.grey[0]}11`,
+  width: 20,
+  height: 20,
+  borderRadius: 10,
+  marginRight: 5,
+});
+
 export const NewNode: React.FC<NewNodeProps> = ({ node, onCreate }) => {
   const thisNode = useRef<HTMLDivElement>(null);
   const [newName, setNewName] = useState('');
@@ -116,13 +132,13 @@ export const NewNode: React.FC<NewNodeProps> = ({ node, onCreate }) => {
               className={'NameErrorMessage'}
             >{`Cannot create ${node.name} with name:${newName} type with that name already exists. Try different name`}</div>
           )}
-          {!isCreating && <div className={`NodeName`}>{`New ${node.name} +`}</div>}
+          {!isCreating && <div className={`NodeName`}>{`New ${node.name}`}</div>}
           {isCreating && (
             <input
               className={`NodeCreate ${isError ? 'NameError' : ''}`}
               value={newName}
               autoFocus
-              placeholder={`New ${node.name} +`}
+              placeholder={`New ${node.name} name...`}
               onChange={(e) => setNewName(e.target.value)}
               onBlur={submit}
               onKeyDown={(e) => {
@@ -131,6 +147,11 @@ export const NewNode: React.FC<NewNodeProps> = ({ node, onCreate }) => {
                 }
               }}
             />
+          )}
+          {!isCreating && (
+            <span className={`${PlusButton}`}>
+              <Plus width={10} height={10} />
+            </span>
           )}
         </div>
       </div>

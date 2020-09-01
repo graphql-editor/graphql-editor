@@ -1,10 +1,10 @@
 import React from 'react';
 import { ParserField } from 'graphql-zeus';
 import { style } from 'typestyle';
-import { Colors } from '@Colors';
-import { FIELD_HEIGHT } from '@Graf/constants';
+import { Colors } from '@/Colors';
+import { FIELD_HEIGHT } from '@/Graf/constants';
 import { PaintFieldName } from './FieldName';
-import { PaintType } from '@Graf/Node/Type';
+import { PaintType } from '@/Graf/Node/Type';
 export interface PaintFieldProps {
   node: ParserField;
   last?: boolean;

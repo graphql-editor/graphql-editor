@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ParserField, ValueDefinition } from 'graphql-zeus';
 import { style } from 'typestyle';
-import { Colors } from '@Colors';
-import { FIELD_HEIGHT } from '@Graf/constants';
-import { NodeTypeOptionsMenu } from '@Graf/Node/ContextMenu';
-import { Plus, Arrq } from '@Graf/icons';
-import { ConvertValueToEditableString } from '@GraphQL/Convert';
+import { Colors } from '@/Colors';
+import { FIELD_HEIGHT } from '@/Graf/constants';
+import { Plus } from '@/Graf/icons';
+import { ConvertValueToEditableString } from '@/GraphQL/Convert';
 
 interface FieldProps {
   node: ParserField;
@@ -84,11 +83,12 @@ const Title = style({
   alignItems: 'baseline',
   overflow: 'hidden',
 });
-const Name = style({ fontSize: 10, marginRight: 4, overflow: 'hidden' });
-const OptionsMenuContainer = style({
-  position: 'absolute',
-  top: 20,
-  zIndex: 2,
+const Name = style({
+  fontSize: 10,
+  marginRight: 4,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
 });
 
 export const ActiveDirective: React.FC<FieldProps> = ({
@@ -103,10 +103,9 @@ export const ActiveDirective: React.FC<FieldProps> = ({
   onTreeChanged,
   isLocked,
 }) => {
-  const [optionsMenuOpen, setOptionsMenuOpen] = useState(false);
   const isEnumValue = node.data.type === ValueDefinition.EnumValueDefinition;
   return (
-    <div className={`${Main} ${last ? LastField : ''} ${inputOpen || outputOpen || optionsMenuOpen ? 'Active' : ''}`}>
+    <div className={`${Main} ${last ? LastField : ''} ${inputOpen || outputOpen ? 'Active' : ''}`}>
       {!inputDisabled && !isLocked && !isEnumValue ? (
         <div className={'NodeFieldPort'} onClick={onInputClick}>
           {inputOpen ? '-' : <Plus height={7} width={7} />}
@@ -117,27 +116,6 @@ export const ActiveDirective: React.FC<FieldProps> = ({
       <div className={Title}>
         <div className={Name}>{ConvertValueToEditableString(node)}</div>
       </div>
-      {!isLocked && !isEnumValue && (
-        <>
-          <div
-            className={'NodeFieldPort'}
-            onClick={() => {
-              setOptionsMenuOpen(!optionsMenuOpen);
-            }}
-          >
-            <Arrq height={7} width={7} />
-            {optionsMenuOpen && (
-              <div className={OptionsMenuContainer}>
-                <NodeTypeOptionsMenu
-                  hideMenu={() => setOptionsMenuOpen(false)}
-                  node={node}
-                  onTreeChanged={onTreeChanged}
-                />
-              </div>
-            )}
-          </div>
-        </>
-      )}
       {!outputDisabled && (
         <div className={'NodeFieldPort'} onClick={onOutputClick}>
           {outputOpen ? '-' : <Plus height={7} width={7} />}

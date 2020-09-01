@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { ParserField, ValueDefinition } from 'graphql-zeus';
 import { style } from 'typestyle';
-import { Colors } from '@Colors';
-import { FIELD_HEIGHT } from '@Graf/constants';
+import { Colors } from '@/Colors';
+import { FIELD_HEIGHT } from '@/Graf/constants';
 import { ActiveFieldName, PaintFieldName } from './FieldName';
-import { ActiveType } from '@Graf/Node/Type';
-import { NodeTypeOptionsMenu } from '@Graf/Node/ContextMenu';
-import { Arrq, Plus } from '@Graf/icons';
+import { ActiveType } from '@/Graf/Node/Type';
+import { NodeTypeOptionsMenu } from '@/Graf/Node/ContextMenu';
+import { Arrq, Plus } from '@/Graf/icons';
 
 interface FieldProps {
   node: ParserField;
@@ -84,7 +84,13 @@ const Title = style({
   alignItems: 'baseline',
   overflow: 'hidden',
 });
-const Name = style({ fontSize: 10, marginRight: 4, overflow: 'hidden' });
+const Name = style({
+  fontSize: 10,
+  marginRight: 4,
+  overflow: 'hidden',
+  whiteSpace: 'nowrap',
+  textOverflow: 'ellipsis',
+});
 const Type = style({ fontSize: 8, color: Colors.green[0] });
 const OptionsMenuContainer = style({
   position: 'absolute',

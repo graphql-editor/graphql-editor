@@ -1,13 +1,13 @@
 import React, { useRef, useState } from 'react';
 import { ParserField, TypeDefinitionDisplayMap, TypeSystemDefinition, Directive } from 'graphql-zeus';
 import { style } from 'typestyle';
-import { PaintNode } from '@Graf/Node/PaintNode';
-import { NewNode } from '@Graf/Node/NewNode';
-import { Colors } from '@Colors';
-import { GraphQLColors } from '@editor/theme';
+import { PaintNode } from '@/Graf/Node/PaintNode';
+import { NewNode } from '@/Graf/Node/NewNode';
+import { Colors } from '@/Colors';
+import { GraphQLColors } from '@/editor/theme';
 import { NestedCSSProperties } from 'typestyle/lib/types';
-import { useTreesState } from '@state/containers/trees';
-import { MenuSearch } from '@Graf/Node/components';
+import { useTreesState } from '@/state/containers/trees';
+import { MenuSearch } from '@/Graf/Node/components';
 export interface RootNodeProps {
   node: ParserField;
   libraryNode?: ParserField;

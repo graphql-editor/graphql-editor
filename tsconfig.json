@@ -17,18 +17,18 @@
     "rootDir": "./src",
     "baseUrl": "./src/",
     "paths": {
-      "@validation":["./validation"],
-      "@vars":["./vars"],
-      "@cypress":["./cypress_constants.ts"],
-      "@Colors":["./Colors"],
-      "@Models":["./Models/index"],
-      "@worker":["./worker/index"],
-      "@Graf/*":["./Graf/*"],
-      "@editor/*":["./editor/*"],
-      "@state/*":["./state/*"],
-      "@GraphQL/*":["./GraphQL/*"]
+      "@/*": ["./*"]
     },
+    "plugins": [
+      {
+        "transform": "typescript-transform-paths"
+      },
+      {
+        "transform": "typescript-transform-paths",
+        "afterDeclarations": true
+      }
+    ],
     "skipLibCheck": true
   },
-  "exclude": ["lib", "sandbox", "cloud", "docs", "cypress", "__test__","__mocks__"]
+  "exclude": ["lib", "sandbox", "cloud", "docs", "cypress", "__test__", "__mocks__"]
 }

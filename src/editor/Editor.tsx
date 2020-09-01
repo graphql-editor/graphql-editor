@@ -1,19 +1,19 @@
 import cx from 'classnames';
 import React, { useEffect, useState } from 'react';
-import { sizeSidebar, fontFamily, menuWidth } from '@vars';
+import { sizeSidebar, fontFamily, menuWidth } from '@/vars';
 import { Menu, ActivePane } from './Menu';
 import { CodePane } from './code';
 
-import { GraphQLEditorCypress, cypressGet } from '@cypress';
-import { PassedSchema, Theming } from '@Models';
+import { GraphQLEditorCypress, cypressGet } from '@/cypress_constants';
+import { PassedSchema, Theming } from '@/Models';
 import { DynamicResize } from './code/Components';
-import { Graf } from '@Graf/Graf';
+import { Graf } from '@/Graf/Graf';
 import { Parser, TreeToGraphQL } from 'graphql-zeus';
-import { Workers } from '@worker';
+import { Workers } from '@/worker';
 import { style } from 'typestyle';
-import { Colors } from '@Colors';
-import { useIO, KeyboardActions } from '@Graf/IO';
-import { useTreesState } from '@state/containers/trees';
+import { Colors } from '@/Colors';
+import { useIO, KeyboardActions } from '@/Graf/IO';
+import { useTreesState } from '@/state/containers/trees';
 
 export const Main = style({
   display: 'flex',

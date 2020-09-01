@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { ParserField, Options, ValueDefinition, Value } from 'graphql-zeus';
 import { style } from 'typestyle';
-import { Colors } from '@Colors';
-import { FIELD_HEIGHT } from '@Graf/constants';
-import { ActiveType } from '@Graf/Node/Type';
-import { NodeTypeOptionsMenu } from '@Graf/Node/ContextMenu';
+import { Colors } from '@/Colors';
+import { FIELD_HEIGHT } from '@/Graf/constants';
+import { ActiveType } from '@/Graf/Node/Type';
+import { NodeTypeOptionsMenu } from '@/Graf/Node/ContextMenu';
 import { ActiveInputValueName } from './ActiveInputValueName';
-import { Arrq, Plus } from '@Graf/icons';
-import { EditableDefaultValue } from '@Graf/Node/components';
-import { isScalarArgument } from '@GraphQL/Resolve';
-import { ConvertStringToObject, ConvertValueToEditableString } from '@GraphQL/Convert';
+import { Arrq, Plus } from '@/Graf/icons';
+import { EditableDefaultValue } from '@/Graf/Node/components';
+import { isScalarArgument } from '@/GraphQL/Resolve';
+import { ConvertStringToObject, ConvertValueNodeToString } from '@/GraphQL/Convert';
 export interface FieldProps {
   node: ParserField;
   inputOpen: boolean;
@@ -101,6 +101,13 @@ interface PlaceFunctionArgs {
 }
 
 const placeStringInNode = ({ node, v, onTreeChanged }: PlaceFunctionArgs) => {
+  if (!v) {
+    return;
+  }
+  console.log(v);
+  if (v.length === 2 && v[0] === '[' && v[1] === ']') {
+    return [];
+  }
   const valueType = isScalarArgument(node);
   const isObjectArg =
     (node.data.type === ValueDefinition.InputValueDefinition && !valueType) || node.data.type === Value.ObjectValue;
@@ -114,10 +121,9 @@ const placeStringInNode = ({ node, v, onTreeChanged }: PlaceFunctionArgs) => {
     let value = v;
     if (valueType === Value.StringValue) {
       if (!(v.startsWith(`\"`) && v.endsWith(`\"`))) {
-        //String must have ciapki
-        return node.args;
+        value = `"${value}"`;
       }
-      value = v.slice(1, -1);
+      value = value.slice(1, -1);
     }
     const n: ParserField = {
       data: {
@@ -130,22 +136,6 @@ const placeStringInNode = ({ node, v, onTreeChanged }: PlaceFunctionArgs) => {
     };
     return [n];
   }
-};
-
-const resolveValueFromNode = (node: ParserField) => {
-  const inside =
-    node.args
-      ?.map((a) => {
-        if (a.data.type === Value.NullValue) {
-          return 'null';
-        }
-        return ConvertValueToEditableString(a);
-      })
-      .join(',') || '';
-  if (node.args && node.args.length > 0 && node.type.options?.includes(Options.array)) {
-    return `[ ${inside} ]`;
-  }
-  return inside;
 };
 
 export const ActiveInputValue: React.FC<FieldProps> = ({
@@ -192,7 +182,7 @@ export const ActiveInputValue: React.FC<FieldProps> = ({
           <ActiveType type={node.type} />
         </div>
         <EditableDefaultValue
-          value={resolveValueFromNode(node)}
+          value={ConvertValueNodeToString(node)}
           style={{ fontSize: 8, marginLeft: 5 }}
           onChange={(v) => {
             node.args = placeStringInNode({ v, node, onTreeChanged });

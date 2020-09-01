@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { style } from 'typestyle';
-import { Colors } from '@Colors';
-import { fontFamily } from '@vars';
-import { DOM } from '@Graf/DOM';
+import { Colors } from '@/Colors';
+import { fontFamily } from '@/vars';
+import { DOM } from '@/Graf/DOM';
 const Input = style({
   border: 0,
   background: 'transparent',

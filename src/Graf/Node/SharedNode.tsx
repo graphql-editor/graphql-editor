@@ -1,6 +1,6 @@
 import { NestedCSSProperties } from 'typestyle/lib/types';
-import { Colors } from '@Colors';
-import { GraphQLBackgrounds } from '@editor/theme';
+import { Colors } from '@/Colors';
+import { GraphQLBackgrounds } from '@/editor/theme';
 
 const NodeName: NestedCSSProperties = {
   marginRight: 5,

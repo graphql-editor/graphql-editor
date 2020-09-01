@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
 import { ParserField, TypeSystemDefinition, Instances, TypeDefinition } from 'graphql-zeus';
-import { ActiveField } from '@Graf/Node/Field';
-import { ActiveDirective } from '@Graf/Node/Directive';
-import { ActiveInputValue } from '@Graf/Node/InputValue';
+import { ActiveField } from '@/Graf/Node/Field';
+import { ActiveDirective } from '@/Graf/Node/Directive';
+import { ActiveInputValue } from '@/Graf/Node/InputValue';
 import { style } from 'typestyle';
-import { Colors, mix } from '@Colors';
-import { FIELD_HEIGHT } from '@Graf/constants';
-import { GraphQLBackgrounds } from '@editor/theme';
+import { Colors, mix } from '@/Colors';
+import { FIELD_HEIGHT } from '@/Graf/constants';
+import { GraphQLBackgrounds } from '@/editor/theme';
 import { NestedCSSProperties } from 'typestyle/lib/types';
-import { DOM } from '@Graf/DOM';
-import { ActiveType } from '@Graf/Node/Type';
-import { NodeFields, NodeTitle } from '@Graf/Node/SharedNode';
-import { ActiveDescription, NodeInterface, EditableText } from '@Graf/Node/components';
-import { useTreesState } from '@state/containers/trees';
-import { TopNodeMenu } from '@Graf/Node/ActiveNode/TopNodeMenu';
-import { ChangeAllRelatedNodes } from '@GraphQL/Resolve';
-import { ActiveArgument } from '@Graf/Node/Argument';
+import { DOM } from '@/Graf/DOM';
+import { ActiveType } from '@/Graf/Node/Type';
+import { NodeFields, NodeTitle } from '@/Graf/Node/SharedNode';
+import { ActiveDescription, NodeInterface, EditableText } from '@/Graf/Node/components';
+import { useTreesState } from '@/state/containers/trees';
+import { TopNodeMenu } from '@/Graf/Node/ActiveNode/TopNodeMenu';
+import { ChangeAllRelatedNodes } from '@/GraphQL/Resolve';
+import { ActiveArgument } from '@/Graf/Node/Argument';
 
 interface NodeProps {
   node: ParserField;
@@ -44,6 +44,7 @@ const MainNodeArea: NestedCSSProperties = {
   borderWidth: 1,
   borderStyle: 'solid',
   borderRadius: 4,
+  maxWidth: 600,
   transition: `border-color .25s ease-in-out`,
   borderColor: Colors.green[0],
   $nest: {

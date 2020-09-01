@@ -6,6 +6,7 @@ module.exports = {
   moduleNameMapper: {
     '\\.worker': '<rootDir>/__mocks__/workerMock.ts',
     'monaco-editor': '<rootDir>/__mocks__/monaco-editor.ts',
+    '@/(.*)': ['<rootDir>/src/$1'],
   },
   globals: {
     'ts-jest': {

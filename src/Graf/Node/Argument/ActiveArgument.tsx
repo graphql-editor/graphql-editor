@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { ParserField, Options, Value } from 'graphql-zeus';
 import { style } from 'typestyle';
-import { Colors } from '@Colors';
-import { FIELD_HEIGHT } from '@Graf/constants';
-import { NodeTypeOptionsMenu } from '@Graf/Node/ContextMenu';
+import { Colors } from '@/Colors';
+import { FIELD_HEIGHT } from '@/Graf/constants';
+import { NodeTypeOptionsMenu } from '@/Graf/Node/ContextMenu';
 import { ActiveArgumentName } from './ActiveArgumentName';
-import { Arrq, Plus } from '@Graf/icons';
-import { EditableDefaultValue } from '@Graf/Node/components';
-import { isScalarArgument } from '@GraphQL/Resolve';
-import { ConvertStringToObject, ConvertValueToEditableString } from '@GraphQL/Convert';
+import { Arrq, Plus } from '@/Graf/icons';
+import { EditableDefaultValue } from '@/Graf/Node/components';
+import { isScalarArgument } from '@/GraphQL/Resolve';
+import { ConvertStringToObject, ConvertValueToEditableString } from '@/GraphQL/Convert';
 export interface FieldProps {
   parentNode: ParserField;
   node: ParserField;

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Menu, MenuScrollingArea, MenuSearch, MenuItem } from '@Graf/Node/components';
-import { DOM } from '@Graf/DOM';
-import { ResolveDirectives } from '@GraphQL/Resolve';
+import { Menu, MenuScrollingArea, MenuSearch, MenuItem } from '@/Graf/Node/components';
+import { DOM } from '@/Graf/DOM';
+import { ResolveDirectives } from '@/GraphQL/Resolve';
 import { ParserField, Instances } from 'graphql-zeus';
-import { useTreesState } from '@state/containers/trees';
+import { useTreesState } from '@/state/containers/trees';
 
 interface NodeAddDirectiveMenuProps {
   node: ParserField;

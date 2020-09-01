@@ -1,7 +1,7 @@
 import React from 'react';
 import { ParserField } from 'graphql-zeus';
 import { style } from 'typestyle';
-import { PaintType } from '@Graf/Node/Type';
+import { PaintType } from '@/Graf/Node/Type';
 const Main = style({
   display: 'flex',
   flexFlow: 'row no-wrap',

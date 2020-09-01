@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { OptionsMenu } from '@Graf/Node/components';
+import { OptionsMenu } from '@/Graf/Node/components';
 import { ParserField, Directive } from 'graphql-zeus';
 interface NodeDirectiveOptionsMenuProps {
   node: ParserField;

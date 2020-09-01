@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { style } from 'typestyle';
-import { Colors } from '@Colors';
-import { DOM } from '@Graf/DOM';
+import { Colors } from '@/Colors';
+import { DOM } from '@/Graf/DOM';
 
 const Main = style({
   background: Colors.grey[9],

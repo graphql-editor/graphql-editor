@@ -8,7 +8,7 @@ import {
   Value,
   Instances,
 } from 'graphql-zeus';
-import { BuiltInScalars } from '@GraphQL/Resolve/BuiltInNodes';
+import { BuiltInScalars } from '@/GraphQL/Resolve/BuiltInNodes';
 
 export const ResolveCreateField = (field: ParserField, actualFields: ParserField[]): ParserField[] | undefined => {
   if (

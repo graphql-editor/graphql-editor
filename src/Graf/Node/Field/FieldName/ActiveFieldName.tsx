@@ -1,8 +1,8 @@
 import React from 'react';
 import { ParserField } from 'graphql-zeus';
-import { ActiveType } from '@Graf/Node/Type';
+import { ActiveType } from '@/Graf/Node/Type';
 import { style } from 'typestyle';
-import { EditableText } from '@Graf/Node/components';
+import { EditableText } from '@/Graf/Node/components';
 const Main = style({
   display: 'flex',
   flexFlow: 'row no-wrap',

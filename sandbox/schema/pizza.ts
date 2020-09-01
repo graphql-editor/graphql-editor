@@ -37,9 +37,11 @@ type Mutation{
 }
 
 input CreatePizza{
-	name: String!
+	name: String! = ""
+	pizzasRelated: [String]! = []
+	pizzasRelated2: [String]!
 	ingredients: [CreateIngredient!] =[{
-        name:"Tomato",
+        name:"",
 		price:300,
 		sku:{
 			name:"13231a"

@@ -1,5 +1,5 @@
 import { style } from 'typestyle';
-import { Colors } from '@Colors';
+import { Colors } from '@/Colors';
 import React, { useRef, useState, useEffect } from 'react';
 const Triangle = style({
   width: 0,

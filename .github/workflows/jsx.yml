@@ -1,4 +1,4 @@
-name: Node.js Package JSX
+name: Node.js Package
 on:
   push:
     branches:
@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps:
+    steps
     - uses: actions/checkout@v2
     # Setup .npmrc file to publish to npm
     - uses: actions/setup-node@v1
@@ -14,6 +14,7 @@ jobs:
         node-version: '12.x'
         registry-url: 'https://registry.npmjs.org'
     - run: npm install
+    - run: npm run build
     - run: npm publish --tag jsx
       env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
