@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { render } from 'react-dom';
 import { style } from 'typestyle';
 import { GraphQLEditor } from '../src/index';
 import { PassedSchema } from '../src/Models';
-// import * as schemas from './schema';
+import * as schemas from './schema';
 export const Full = style({
   backgroundColor: '#444444',
   position: 'relative',
@@ -34,6 +34,14 @@ export const App = () => {
     code: '',
     libraries: '',
   });
+  useEffect(() => {
+    setTimeout(() => {
+      setMySchema({
+        code: schemas.pizza,
+        libraries: schemas.pizzaLibrary,
+      });
+    }, 1000);
+  }, []);
   const [hide, setHide] = useState(false);
   return (
     <div className={UiDiagram}>

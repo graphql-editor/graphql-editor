@@ -79,7 +79,7 @@ export const Editor = ({
   onPaneChange,
   onSchemaChange,
 }: EditorProps) => {
-  const [code, setCode] = useState(schema.code);
+  const [code, setCode] = useState('');
   const [sidebarSize, setSidebarSize] = useState<string | number>(initialSizeOfSidebar);
   const [menuState, setMenuState] = useState<ActivePane>(activePane);
   const [errors, setErrors] = useState<string>();
@@ -93,11 +93,16 @@ export const Editor = ({
   };
 
   useEffect(() => {
+    if (schema.code !== code) {
+      setCode(schema.code);
+    }
+  }, [schema.code]);
+
+  useEffect(() => {
     if (treeLock) {
       treeLock = false;
       return;
     }
-    codeLock = true;
     if (!code) {
       setTree({ nodes: [] });
       return;
@@ -134,34 +139,39 @@ export const Editor = ({
       codeLock = false;
       return;
     }
-    treeLock = true;
     if (tree.nodes.length === 0) {
-      setCode('');
-      if (onSchemaChange) {
-        onSchemaChange({
-          code: '',
-          libraries: schema.libraries,
-        });
+      if (code !== '') {
+        treeLock = true;
+        setCode('');
+        if (onSchemaChange) {
+          onSchemaChange({
+            code: '',
+            libraries: schema.libraries,
+          });
+        }
       }
       return;
     }
     try {
       //TODO: UNNAMED NODES
       const graphql = TreeToGraphQL.parse(tree);
-      Workers.validate(graphql, schema.libraries).then((errors) => {
-        if (errors.length > 0) {
-          setErrors(errors.map((e) => e.text).join('\n\n'));
-          return;
-        }
-        setErrors(undefined);
-        setCode(graphql);
-        if (onSchemaChange) {
-          onSchemaChange({
-            code: graphql,
-            libraries: schema.libraries,
-          });
-        }
-      });
+      if (graphql !== code) {
+        treeLock = true;
+        Workers.validate(graphql, schema.libraries).then((errors) => {
+          if (errors.length > 0) {
+            setErrors(errors.map((e) => e.text).join('\n\n'));
+            return;
+          }
+          setErrors(undefined);
+          setCode(graphql);
+          if (onSchemaChange) {
+            onSchemaChange({
+              code: graphql,
+              libraries: schema.libraries,
+            });
+          }
+        });
+      }
     } catch (error) {
       setErrors(error.message);
       return;
