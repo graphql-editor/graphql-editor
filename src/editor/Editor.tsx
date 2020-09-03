@@ -65,6 +65,7 @@ export interface EditorProps extends Theming {
 }
 
 let treeLock = false;
+let codeLock = false;
 
 export const Editor = ({
   readonly,
@@ -96,6 +97,11 @@ export const Editor = ({
       treeLock = false;
       return;
     }
+    codeLock = true;
+    if (!code) {
+      setTree({ nodes: [] });
+      return;
+    }
     if (schema.libraries) {
       const excludeLibraryNodesFromDiagram = Parser.parse(schema.libraries);
       const parsedResult = Parser.parse(code, [], schema.libraries);
@@ -124,6 +130,21 @@ export const Editor = ({
   }, [activePane]);
 
   useEffect(() => {
+    if (codeLock) {
+      codeLock = false;
+      return;
+    }
+    treeLock = true;
+    if (tree.nodes.length === 0) {
+      setCode('');
+      if (onSchemaChange) {
+        onSchemaChange({
+          code: '',
+          libraries: schema.libraries,
+        });
+      }
+      return;
+    }
     try {
       //TODO: UNNAMED NODES
       const graphql = TreeToGraphQL.parse(tree);
@@ -132,7 +153,6 @@ export const Editor = ({
           setErrors(errors.map((e) => e.text).join('\n\n'));
           return;
         }
-        treeLock = true;
         setErrors(undefined);
         setCode(graphql);
         if (onSchemaChange) {

@@ -3,7 +3,7 @@ import { render } from 'react-dom';
 import { style } from 'typestyle';
 import { GraphQLEditor } from '../src/index';
 import { PassedSchema } from '../src/Models';
-import * as schemas from './schema';
+// import * as schemas from './schema';
 export const Full = style({
   backgroundColor: '#444444',
   position: 'relative',
@@ -31,38 +31,36 @@ export const Actions = style({
 
 export const App = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
-    code: schemas.pizza,
-    libraries: schemas.pizzaLibrary,
+    code: '',
+    libraries: '',
   });
   const [hide, setHide] = useState(false);
   return (
     <div className={UiDiagram}>
-      {hide && (
-        <div className={Actions}>
-          <button
-            onClick={() => {
-              setHide(!hide);
-            }}
-          >
-            hide
-          </button>
-          <button onClick={() => {}}>code</button>
-          <button
-            onClick={() => {
-              // I should be able to create and center node from this button
-            }}
-          >
-            Open menu
-          </button>
-          <button
-            onClick={() => {
-              // I should be able to create and center node from this button
-            }}
-          >
-            New node
-          </button>
-        </div>
-      )}
+      <div className={Actions}>
+        <button
+          onClick={() => {
+            setHide(!hide);
+          }}
+        >
+          hide
+        </button>
+        <button onClick={() => {}}>code</button>
+        <button
+          onClick={() => {
+            // I should be able to create and center node from this button
+          }}
+        >
+          Open menu
+        </button>
+        <button
+          onClick={() => {
+            // I should be able to create and center node from this button
+          }}
+        >
+          New node
+        </button>
+      </div>
       {!hide && (
         <GraphQLEditor
           onSchemaChange={(props) => {
