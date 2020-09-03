@@ -17,6 +17,7 @@ const NodeInterfaceBlock = style({
   marginLeft: 10,
   position: 'relative',
   cursor: 'pointer',
+  marginBottom: 5,
   $nest: {
     '.DeleteInterface': {
       opacity: 0.0,

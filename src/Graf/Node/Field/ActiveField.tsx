@@ -7,6 +7,7 @@ import { ActiveFieldName, PaintFieldName } from './FieldName';
 import { ActiveType } from '@/Graf/Node/Type';
 import { NodeTypeOptionsMenu } from '@/Graf/Node/ContextMenu';
 import { Arrq, Plus } from '@/Graf/icons';
+import { useTreesState } from '@/state/containers/trees';
 
 interface FieldProps {
   node: ParserField;
@@ -19,7 +20,6 @@ interface FieldProps {
   last?: boolean;
   isLocked?: boolean;
   parentNodeTypeName: string;
-  onTreeChanged: () => void;
 }
 
 const Main = style({
@@ -108,9 +108,9 @@ export const ActiveField: React.FC<FieldProps> = ({
   onOutputClick,
   last,
   parentNodeTypeName,
-  onTreeChanged,
   isLocked,
 }) => {
+  const { tree, setTree } = useTreesState();
   const [optionsMenuOpen, setOptionsMenuOpen] = useState(false);
   const isEnumValue = node.data.type === ValueDefinition.EnumValueDefinition;
   return (
@@ -132,7 +132,7 @@ export const ActiveField: React.FC<FieldProps> = ({
             <ActiveFieldName
               afterChange={(newName) => {
                 node.name = newName;
-                onTreeChanged();
+                setTree({ ...tree });
               }}
               data={node.data}
               name={node.name}
@@ -156,11 +156,7 @@ export const ActiveField: React.FC<FieldProps> = ({
             <Arrq height={7} width={7} />
             {optionsMenuOpen && (
               <div className={OptionsMenuContainer}>
-                <NodeTypeOptionsMenu
-                  hideMenu={() => setOptionsMenuOpen(false)}
-                  node={node}
-                  onTreeChanged={onTreeChanged}
-                />
+                <NodeTypeOptionsMenu hideMenu={() => setOptionsMenuOpen(false)} node={node} />
               </div>
             )}
           </div>

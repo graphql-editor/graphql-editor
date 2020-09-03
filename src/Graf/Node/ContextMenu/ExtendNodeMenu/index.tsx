@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { DOM } from '@/Graf/DOM';
-import { ResolveCreateField } from '@/GraphQL/Resolve';
-import { ParserField } from 'graphql-zeus';
+import { ResolveExtension } from '@/GraphQL/Resolve';
+import { TypeExtension, TypeSystemDefinition, TypeDefinitionDisplayMap } from 'graphql-zeus';
 import { useTreesState } from '@/state/containers/trees';
 import { Menu, MenuScrollingArea, MenuSearch, MenuItem } from '@/Graf/Node/components';
 
-interface NodeAddFieldMenuProps {
-  node: ParserField;
+interface ExtendNodeMenuProps {
   hideMenu: () => void;
 }
 
-export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({ node, hideMenu }) => {
+export const ExtendNodeMenu: React.FC<ExtendNodeMenuProps> = ({ hideMenu }) => {
   const { tree, setTree, libraryTree } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
+  const allNodes = tree.nodes.concat(libraryTree.nodes);
   return (
     <Menu
       onMouseEnter={() => {
@@ -26,7 +26,19 @@ export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({ node, hideMe
     >
       <MenuSearch value={menuSearchValue} onChange={setMenuSearchValue} onClear={() => setMenuSearchValue('')} />
       <MenuScrollingArea>
-        {ResolveCreateField(node, tree.nodes.concat(libraryTree.nodes))
+        {allNodes
+          .filter(
+            (a) =>
+              ![
+                TypeExtension.EnumTypeExtension,
+                TypeExtension.InputObjectTypeExtension,
+                TypeExtension.InterfaceTypeExtension,
+                TypeExtension.ObjectTypeExtension,
+                TypeExtension.ScalarTypeExtension,
+                TypeExtension.UnionTypeExtension,
+                TypeSystemDefinition.DirectiveDefinition,
+              ].find((o) => a.data.type === o),
+          )
           ?.sort((a, b) => (a.name > b.name ? 1 : -1))
           .filter((a) => a.name.toLowerCase().includes(menuSearchValue.toLowerCase()))
           .map((f) => (
@@ -34,15 +46,15 @@ export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({ node, hideMe
               key={f.name}
               node={f}
               onClick={() => {
-                node.args?.push({
-                  ...f,
-                  description: undefined,
-                  directives: [],
-                  interfaces: undefined,
-                  type: {
-                    name: f.name,
+                tree.nodes.push({
+                  data: {
+                    type: ResolveExtension(f.data.type!),
                   },
-                  name: f.name[0].toLowerCase() + f.name.slice(1),
+                  description: undefined,
+                  type: {
+                    name: TypeDefinitionDisplayMap[ResolveExtension(f.data.type!)!],
+                  },
+                  name: f.name,
                   args: [],
                 });
                 hideMenu();

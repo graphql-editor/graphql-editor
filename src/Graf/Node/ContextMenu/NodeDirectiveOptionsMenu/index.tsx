@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { OptionsMenu } from '@/Graf/Node/components';
 import { ParserField, Directive } from 'graphql-zeus';
+import { useTreesState } from '@/state/containers/trees';
 interface NodeDirectiveOptionsMenuProps {
   node: ParserField;
-  onTreeChanged: () => void;
   hideMenu: () => void;
 }
 const configureOpts = (node: ParserField) => {
@@ -15,11 +15,8 @@ const configureOpts = (node: ParserField) => {
   });
   return opts;
 };
-export const NodeDirectiveOptionsMenu: React.FC<NodeDirectiveOptionsMenuProps> = ({
-  node,
-  onTreeChanged,
-  hideMenu,
-}) => {
+export const NodeDirectiveOptionsMenu: React.FC<NodeDirectiveOptionsMenuProps> = ({ node, hideMenu }) => {
+  const { tree, setTree } = useTreesState();
   const [opts, setOpts] = useState(configureOpts(node));
   useEffect(() => {
     setOpts(configureOpts(node));
@@ -35,7 +32,7 @@ export const NodeDirectiveOptionsMenu: React.FC<NodeDirectiveOptionsMenuProps> =
         } else {
           node.type.directiveOptions = [...(node.type.directiveOptions || []), o as Directive];
         }
-        onTreeChanged();
+        setTree({ ...tree });
       }}
     />
   );

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { ParserField, TypeSystemDefinition, Instances, TypeDefinition } from 'graphql-zeus';
+import { ParserField, TypeSystemDefinition, Instances, TypeDefinition, TypeExtension } from 'graphql-zeus';
 import { ActiveField } from '@/Graf/Node/Field';
 import { ActiveDirective } from '@/Graf/Node/Directive';
 import { ActiveInputValue } from '@/Graf/Node/InputValue';
-import { style } from 'typestyle';
+import { style, keyframes } from 'typestyle';
 import { Colors, mix } from '@/Colors';
 import { FIELD_HEIGHT } from '@/Graf/constants';
 import { GraphQLBackgrounds } from '@/editor/theme';
@@ -19,10 +19,17 @@ import { ActiveArgument } from '@/Graf/Node/Argument';
 
 interface NodeProps {
   node: ParserField;
-  onTreeChanged: () => void;
   onDelete: () => void;
 }
 
+const fadeIn = keyframes({
+  ['0%']: {
+    opacity: 0.0,
+  },
+  ['100%']: {
+    opacity: 1.0,
+  },
+});
 const LeftNodeArea: NestedCSSProperties = {
   position: 'absolute',
   left: -300,
@@ -68,7 +75,11 @@ const NodeContainer = style({
     '.DescriptionPosition': DescriptionPosition,
     '.LeftNodeArea': LeftNodeArea,
     '.RightNodeArea': RightNodeArea,
-    '.MainNodeArea': MainNodeArea,
+    '.MainNodeArea': {
+      ...MainNodeArea,
+      animationName: fadeIn,
+      animationDuration: '0.25s',
+    },
     '.RightNodeAreaNode': RightNodeAreaNode,
     '.LeftNodeAreaNode': LeftNodeAreaNode,
     '&:hover': {
@@ -100,32 +111,29 @@ const NodeContainer = style({
 });
 
 const NodeInterfaces = style({
-  position: 'absolute',
-  maxWidth: 200,
+  maxWidth: 600,
   display: 'flex',
   flexFlow: 'row wrap',
-  transform: 'translate(calc(-100% - 10px))',
   alignItems: 'flex-start',
+  marginBottom: 5,
 });
 
 export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
-  const { onTreeChanged } = sharedProps;
-
   const [openedInputs, setOpenedInputs] = useState<number[]>([]);
   const [openedOutputs, setOpenedOutputs] = useState<number[]>([]);
 
   const [openedDirectiveInputs, setOpenedDirectiveInputs] = useState<number[]>([]);
   const [openedDirectiveOutputs, setOpenedDirectiveOutputs] = useState<number[]>([]);
 
-  const { libraryTree, tree, setSelectedNode, selectedNode, selectedNodeRef } = useTreesState();
+  const { libraryTree, tree, setTree, setSelectedNode, selectedNode, selectedNodeRef } = useTreesState();
 
   const isLibrary = !!libraryTree.nodes.find((lN) => lN.name === node.name && lN.data.type === node.data.type);
-  console.log(node);
 
   const isInputNode = [
     TypeSystemDefinition.FieldDefinition,
     TypeSystemDefinition.DirectiveDefinition,
     TypeDefinition.InputObjectTypeDefinition,
+    TypeExtension.InputObjectTypeExtension,
     Instances.Directive,
   ].includes(node.data.type as any);
 
@@ -138,7 +146,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
         className={'DescriptionPosition'}
         onChange={(d) => {
           node.description = d;
-          onTreeChanged();
+          setTree({ ...tree });
         }}
         isLocked={isLibrary}
         value={node.description || ''}
@@ -150,7 +158,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
               key={i}
               onDelete={() => {
                 node.interfaces = node.interfaces?.filter((oldInterface) => oldInterface !== i);
-                onTreeChanged();
+                setTree({ ...tree });
               }}
             >
               {i}
@@ -169,7 +177,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
                 setOpenedDirectiveOutputs([]);
                 node.args!.splice(o, 1);
                 DOM.panLock = false;
-                onTreeChanged();
+                setTree({ ...tree });
               }}
             />
           </div>
@@ -188,7 +196,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
                 setOpenedOutputs([]);
                 node.args!.splice(o, 1);
                 DOM.panLock = false;
-                onTreeChanged();
+                setTree({ ...tree });
               }}
             />
           </div>
@@ -231,11 +239,14 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
                     nodes: tree.nodes,
                     oldName: node.name,
                   });
-                  const reselect = node.name === selectedNode;
+                  const reselect = node.name === selectedNode?.name;
                   node.name = v;
-                  onTreeChanged();
+                  setTree({ ...tree });
                   if (reselect && selectedNode) {
-                    setSelectedNode(v);
+                    setSelectedNode({
+                      name: v,
+                      dataType: node.data.type!,
+                    });
                   }
                 }}
               />
@@ -254,7 +265,6 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
             return (
               <ActiveDirective
                 isLocked={isLibrary}
-                onTreeChanged={onTreeChanged}
                 parentNodeTypeName={node.type.name}
                 last={i === node.args!.length - 1}
                 key={d.name}
@@ -280,7 +290,6 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
                 <ActiveArgument
                   parentNode={node}
                   isLocked={isLibrary}
-                  onTreeChanged={onTreeChanged}
                   parentNodeTypeName={node.type.name}
                   last={i === node.args!.length - 1}
                   key={a.name}
@@ -301,7 +310,6 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
               return (
                 <ActiveInputValue
                   isLocked={isLibrary}
-                  onTreeChanged={onTreeChanged}
                   parentNodeTypeName={node.type.name}
                   last={i === node.args!.length - 1}
                   key={a.name}
@@ -322,7 +330,6 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
             return (
               <ActiveField
                 isLocked={isLibrary}
-                onTreeChanged={onTreeChanged}
                 parentNodeTypeName={node.type.name}
                 last={i === node.args!.length - 1}
                 key={a.name}

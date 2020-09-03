@@ -8,11 +8,10 @@ import { useTreesState } from '@/state/containers/trees';
 interface NodeAddDirectiveMenuProps {
   node: ParserField;
   hideMenu: () => void;
-  onTreeChanged: () => void;
 }
 
-export const NodeAddDirectiveMenu: React.FC<NodeAddDirectiveMenuProps> = ({ node, hideMenu, onTreeChanged }) => {
-  const { tree, libraryTree } = useTreesState();
+export const NodeAddDirectiveMenu: React.FC<NodeAddDirectiveMenuProps> = ({ node, hideMenu }) => {
+  const { tree, libraryTree, setTree } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   return (
     <Menu
@@ -48,7 +47,7 @@ export const NodeAddDirectiveMenu: React.FC<NodeAddDirectiveMenuProps> = ({ node
                 });
                 hideMenu();
                 DOM.scrollLock = false;
-                onTreeChanged();
+                setTree({ ...tree });
               }}
             />
           ))}

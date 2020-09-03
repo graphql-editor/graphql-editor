@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { OptionsMenu } from '@/Graf/Node/components';
 import { ParserField, Options } from 'graphql-zeus';
+import { useTreesState } from '@/state/containers/trees';
 interface NodeTypeOptionsMenuProps {
   node: ParserField;
-  onTreeChanged: () => void;
   hideMenu: () => void;
 }
 const configureOpts = (node: ParserField) => {
@@ -16,7 +16,8 @@ const configureOpts = (node: ParserField) => {
   }
   return opts;
 };
-export const NodeTypeOptionsMenu: React.FC<NodeTypeOptionsMenuProps> = ({ node, onTreeChanged, hideMenu }) => {
+export const NodeTypeOptionsMenu: React.FC<NodeTypeOptionsMenuProps> = ({ node, hideMenu }) => {
+  const { tree, setTree } = useTreesState();
   const [opts, setOpts] = useState(configureOpts(node));
   useEffect(() => {
     setOpts(configureOpts(node));
@@ -32,7 +33,7 @@ export const NodeTypeOptionsMenu: React.FC<NodeTypeOptionsMenuProps> = ({ node, 
         } else {
           node.type.options = [...(node.type.options || []), o as Options];
         }
-        onTreeChanged();
+        setTree({ ...tree });
       }}
     />
   );

@@ -5,9 +5,10 @@ import { Colors } from '@/Colors';
 import { GraphQLBackgrounds } from '@/editor/theme';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { NodeTitle } from './SharedNode';
+import { useTreesState } from '@/state/containers/trees';
+import { DOM } from '../DOM';
 export interface NodeProps {
   node: ParserField;
-  onClick: (position: { offsetLeft: number; offsetTop: number; width: number }) => void;
   builtIn?: boolean;
   isLibrary?: boolean;
 }
@@ -57,8 +58,9 @@ const MainNodeContainer = style({
 const NodeContainer = style({
   margin: 15,
 });
-export const PaintNode: React.FC<NodeProps> = ({ node, onClick, isLibrary }) => {
+export const PaintNode: React.FC<NodeProps> = ({ node, isLibrary }) => {
   const thisNode = useRef<HTMLDivElement>(null);
+  const { setSelectedNode, setPosition } = useTreesState();
   return (
     <div
       className={`${NodeContainer} ${isLibrary ? LibraryNodeContainer : MainNodeContainer}`}
@@ -69,14 +71,22 @@ export const PaintNode: React.FC<NodeProps> = ({ node, onClick, isLibrary }) => 
         className={`MainNodeArea NodeType-${node.type.name}`}
         onClick={(e) => {
           e.stopPropagation();
-          const rect = thisNode.current;
-          if (rect) {
-            onClick({
-              offsetLeft: rect.offsetLeft,
-              offsetTop: rect.offsetTop,
-              width: rect.offsetWidth,
+          if (DOM.panLock) return;
+          setSelectedNode(undefined);
+          setTimeout(() => {
+            setSelectedNode({
+              name: node.name,
+              dataType: node.data.type!,
             });
-          }
+            const rect = thisNode.current;
+            if (rect) {
+              setPosition({
+                offsetLeft: rect.offsetLeft,
+                offsetTop: rect.offsetTop,
+                width: rect.offsetWidth,
+              });
+            }
+          }, 1);
         }}
       >
         <div className={`NodeTitle`}>

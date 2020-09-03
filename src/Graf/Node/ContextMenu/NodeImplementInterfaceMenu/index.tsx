@@ -8,15 +8,10 @@ import { Menu, MenuScrollingArea, MenuSearch, MenuItem } from '@/Graf/Node/compo
 interface NodeImplementInterfacesMenuProps {
   node: ParserField;
   hideMenu: () => void;
-  onTreeChanged: () => void;
 }
 
-export const NodeImplementInterfacesMenu: React.FC<NodeImplementInterfacesMenuProps> = ({
-  node,
-  hideMenu,
-  onTreeChanged,
-}) => {
-  const { tree } = useTreesState();
+export const NodeImplementInterfacesMenu: React.FC<NodeImplementInterfacesMenuProps> = ({ node, hideMenu }) => {
+  const { tree, setTree } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   return (
     <Menu
@@ -45,7 +40,7 @@ export const NodeImplementInterfacesMenu: React.FC<NodeImplementInterfacesMenuPr
                 node.args = node.args?.concat(argsToPush);
                 hideMenu();
                 DOM.scrollLock = false;
-                onTreeChanged();
+                setTree({ ...tree });
               }}
             />
           ))}

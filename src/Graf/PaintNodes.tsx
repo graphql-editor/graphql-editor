@@ -1,14 +1,18 @@
 import React from 'react';
-import { TypeDefinition, TypeDefinitionDisplayMap, TypeSystemDefinition } from 'graphql-zeus';
+import {
+  TypeDefinition,
+  TypeDefinitionDisplayMap,
+  TypeSystemDefinition,
+  TypeSystemExtension,
+  TypeExtension,
+} from 'graphql-zeus';
 import { style } from 'typestyle';
 import { fontFamily } from '@/vars';
 import { FIELD_HEIGHT } from './constants';
-import { DOM } from '@/Graf/DOM';
 import { RootNode } from '@/Graf/Node';
 import { useTreesState } from '@/state/containers/trees';
+import { RootExtendNode } from './Node/RootExtendNode';
 export interface PaintNodesProps {
-  onSelectNode: (name: string, position: { offsetLeft: number; offsetTop: number; width: number }) => void;
-  onTreeChanged: () => void;
   blur?: boolean;
 }
 const Main = style({
@@ -21,7 +25,7 @@ const Main = style({
   fontFamily,
   transition: `opacity 0.25s ease-in-out`,
 });
-export const PaintNodes: React.FC<PaintNodesProps> = ({ onSelectNode, onTreeChanged, blur }) => {
+export const PaintNodes: React.FC<PaintNodesProps> = ({ blur }) => {
   const { libraryTree, tree } = useTreesState();
 
   const area = tree.nodes.length * 400 * FIELD_HEIGHT * 2;
@@ -51,10 +55,6 @@ export const PaintNodes: React.FC<PaintNodesProps> = ({ onSelectNode, onTreeChan
       {baseTypes.map((d) => (
         <RootNode
           key={d}
-          onClick={(name, position) => {
-            if (DOM.lock) return;
-            onSelectNode(name, position);
-          }}
           node={{
             name: TypeDefinitionDisplayMap[d],
             data: {
@@ -75,14 +75,9 @@ export const PaintNodes: React.FC<PaintNodesProps> = ({ onSelectNode, onTreeChan
             },
             args: libraryTree.nodes.filter((n) => n.data.type === d).sort((a, b) => (a.name > b.name ? 1 : -1)),
           }}
-          onTreeChanged={onTreeChanged}
         />
       ))}
       <RootNode
-        onClick={(name, position) => {
-          if (DOM.lock) return;
-          onSelectNode(name, position);
-        }}
         node={{
           name: TypeDefinitionDisplayMap.DirectiveDefinition,
           data: {
@@ -107,7 +102,48 @@ export const PaintNodes: React.FC<PaintNodesProps> = ({ onSelectNode, onTreeChan
             .filter((n) => n.data.type === TypeSystemDefinition.DirectiveDefinition)
             .sort((a, b) => (a.name > b.name ? 1 : -1)),
         }}
-        onTreeChanged={onTreeChanged}
+      />
+      <RootExtendNode
+        node={{
+          name: TypeSystemExtension.TypeExtension,
+          data: {
+            type: TypeExtension.ObjectTypeExtension,
+          },
+          type: {
+            name: 'root',
+          },
+          args: tree.nodes
+            .filter(
+              (n) =>
+                n.data.type === TypeExtension.ObjectTypeExtension ||
+                n.data.type === TypeExtension.InputObjectTypeExtension ||
+                n.data.type === TypeExtension.EnumTypeExtension ||
+                n.data.type === TypeExtension.ScalarTypeExtension ||
+                n.data.type === TypeExtension.InterfaceTypeExtension ||
+                n.data.type === TypeExtension.UnionTypeExtension,
+            )
+            .sort((a, b) => (a.name > b.name ? 1 : -1)),
+        }}
+        libraryNode={{
+          name: TypeDefinitionDisplayMap.ObjectTypeExtension,
+          data: {
+            type: TypeExtension.ObjectTypeExtension,
+          },
+          type: {
+            name: 'root',
+          },
+          args: libraryTree.nodes
+            .filter(
+              (n) =>
+                n.data.type === TypeExtension.ObjectTypeExtension ||
+                n.data.type === TypeExtension.InputObjectTypeExtension ||
+                n.data.type === TypeExtension.EnumTypeExtension ||
+                n.data.type === TypeExtension.ScalarTypeExtension ||
+                n.data.type === TypeExtension.InterfaceTypeExtension ||
+                n.data.type === TypeExtension.UnionTypeExtension,
+            )
+            .sort((a, b) => (a.name > b.name ? 1 : -1)),
+        }}
       />
     </div>
   );

@@ -4,7 +4,6 @@ import { style } from 'typestyle';
 import { Colors } from '@/Colors';
 import { GraphQLBackgrounds } from '@/editor/theme';
 import { NestedCSSProperties } from 'typestyle/lib/types';
-import { DOM } from '@/Graf/DOM';
 import { NodeTitle } from './SharedNode';
 import { fontFamily } from '@/vars';
 import { useTreesState } from '@/state/containers/trees';
@@ -73,13 +72,6 @@ const NodeContainer = style({
   margin: 15,
   $nest: {
     '.MainNodeArea': MainNodeArea,
-    [`&.${DOM.classes.nodeSelected}`]: {
-      $nest: {
-        '.MainNodeArea': {
-          borderColor: Colors.green[0],
-        },
-      },
-    },
     ...Object.keys(GraphQLBackgrounds).reduce((a, b) => {
       a[`.NodeType-${b}`] = {
         borderColor: GraphQLBackgrounds[b],
@@ -107,7 +99,7 @@ export const NewNode: React.FC<NewNodeProps> = ({ node, onCreate }) => {
   const thisNode = useRef<HTMLDivElement>(null);
   const [newName, setNewName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
-  const { libraryTree, tree } = useTreesState();
+  const { libraryTree, tree, setSelectedNode } = useTreesState();
   const isError =
     tree.nodes.map((n) => n.name).includes(newName) || libraryTree.nodes.map((n) => n.name).includes(newName);
   const submit = () => {
@@ -124,6 +116,7 @@ export const NewNode: React.FC<NewNodeProps> = ({ node, onCreate }) => {
         onClick={(e) => {
           e.stopPropagation();
           setIsCreating(true);
+          setSelectedNode(undefined);
         }}
       >
         <div className={`NodeTitle`}>

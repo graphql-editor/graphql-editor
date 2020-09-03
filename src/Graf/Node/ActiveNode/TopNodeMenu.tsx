@@ -9,6 +9,7 @@ import {
   NodeAddFieldMenu,
 } from '@/Graf/Node/ContextMenu';
 import { style } from 'typestyle';
+import { useTreesState } from '@/state/containers/trees';
 
 type PossibleMenus = 'field' | 'interface' | 'directive' | 'options';
 
@@ -18,11 +19,8 @@ const NodeMenuContainer = style({
   zIndex: 2,
 });
 
-export const TopNodeMenu: React.FC<{ node: ParserField; onTreeChanged: () => void; onDelete: () => void }> = ({
-  node,
-  onTreeChanged,
-  onDelete,
-}) => {
+export const TopNodeMenu: React.FC<{ node: ParserField; onDelete: () => void }> = ({ node, onDelete }) => {
+  const { tree, setTree } = useTreesState();
   const [menuOpen, setMenuOpen] = useState<PossibleMenus>();
 
   const hideMenu = () => {
@@ -40,7 +38,7 @@ export const TopNodeMenu: React.FC<{ node: ParserField; onTreeChanged: () => voi
           <Plus height={10} width={10} />
           {menuOpen === 'field' && (
             <div className={NodeMenuContainer}>
-              <NodeAddFieldMenu node={node} onTreeChanged={onTreeChanged} hideMenu={hideMenu} />
+              <NodeAddFieldMenu node={node} hideMenu={hideMenu} />
             </div>
           )}
         </div>
@@ -61,7 +59,7 @@ export const TopNodeMenu: React.FC<{ node: ParserField; onTreeChanged: () => voi
                 },
               },
             ];
-            onTreeChanged();
+            setTree({ ...tree });
           }}
         >
           <Plus height={10} width={10} />
@@ -78,7 +76,7 @@ export const TopNodeMenu: React.FC<{ node: ParserField; onTreeChanged: () => voi
           <Interface height={10} width={10} />
           {menuOpen === 'interface' && (
             <div className={NodeMenuContainer}>
-              <NodeImplementInterfacesMenu node={node} onTreeChanged={onTreeChanged} hideMenu={hideMenu} />
+              <NodeImplementInterfacesMenu node={node} hideMenu={hideMenu} />
             </div>
           )}
         </div>
@@ -92,12 +90,12 @@ export const TopNodeMenu: React.FC<{ node: ParserField; onTreeChanged: () => voi
         <Monkey height={10} width={10} />
         {menuOpen === 'directive' && node.data.type !== TypeSystemDefinition.DirectiveDefinition && (
           <div className={NodeMenuContainer}>
-            <NodeAddDirectiveMenu node={node} onTreeChanged={onTreeChanged} hideMenu={hideMenu} />
+            <NodeAddDirectiveMenu node={node} hideMenu={hideMenu} />
           </div>
         )}
         {menuOpen === 'directive' && node.data.type === TypeSystemDefinition.DirectiveDefinition && (
           <div className={NodeMenuContainer}>
-            <NodeDirectiveOptionsMenu node={node} onTreeChanged={onTreeChanged} hideMenu={hideMenu} />
+            <NodeDirectiveOptionsMenu node={node} hideMenu={hideMenu} />
           </div>
         )}
       </div>

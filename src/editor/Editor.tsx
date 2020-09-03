@@ -12,7 +12,6 @@ import { Parser, TreeToGraphQL } from 'graphql-zeus';
 import { Workers } from '@/worker';
 import { style } from 'typestyle';
 import { Colors } from '@/Colors';
-import { useIO, KeyboardActions } from '@/Graf/IO';
 import { useTreesState } from '@/state/containers/trees';
 
 export const Main = style({
@@ -65,6 +64,8 @@ export interface EditorProps extends Theming {
   onSchemaChange?: (props: PassedSchema) => void;
 }
 
+let treeLock = false;
+
 export const Editor = ({
   readonly,
   placeholder,
@@ -82,15 +83,19 @@ export const Editor = ({
   const [menuState, setMenuState] = useState<ActivePane>(activePane);
   const [errors, setErrors] = useState<string>();
 
-  const { tree, snapshots, undoCursor, setSnapshots, setTree, setUndoCursor, setLibraryTree } = useTreesState();
+  const { tree, setSnapshots, setUndos, setTree, setLibraryTree } = useTreesState();
 
   const reset = () => {
     setSnapshots([]);
-    setUndoCursor(0);
+    setUndos([]);
     setErrors(undefined);
   };
 
   useEffect(() => {
+    if (treeLock) {
+      treeLock = false;
+      return;
+    }
     if (schema.libraries) {
       const excludeLibraryNodesFromDiagram = Parser.parse(schema.libraries);
       const parsedResult = Parser.parse(code, [], schema.libraries);
@@ -118,30 +123,7 @@ export const Editor = ({
     setMenuState(activePane);
   }, [activePane]);
 
-  const undo = () => {
-    if (snapshots.length > undoCursor - 1 && snapshots.length > 1) {
-      const past = snapshots[undoCursor - 2];
-      setUndoCursor(undoCursor - 1);
-      const graphql = TreeToGraphQL.parse(past);
-      setCode(graphql);
-    }
-  };
-  useIO({
-    on: (action) => {
-      if (action === KeyboardActions.Undo) {
-        undo();
-      }
-      if (action === KeyboardActions.Redo) {
-        if (snapshots.length >= undoCursor + 1) {
-          const future = snapshots[undoCursor + 1];
-          setUndoCursor(undoCursor + 1);
-          setCode(TreeToGraphQL.parse(future));
-        }
-      }
-    },
-  });
-
-  const onTreeChanged = () => {
+  useEffect(() => {
     try {
       //TODO: UNNAMED NODES
       const graphql = TreeToGraphQL.parse(tree);
@@ -150,6 +132,7 @@ export const Editor = ({
           setErrors(errors.map((e) => e.text).join('\n\n'));
           return;
         }
+        treeLock = true;
         setErrors(undefined);
         setCode(graphql);
         if (onSchemaChange) {
@@ -163,7 +146,7 @@ export const Editor = ({
       setErrors(error.message);
       return;
     }
-  };
+  }, [tree]);
 
   return (
     <div
@@ -214,7 +197,7 @@ export const Editor = ({
       {menuState !== 'code' && (
         <>
           {errors && <div className={ErrorContainer}>{errors}</div>}
-          <Graf onTreeChanged={onTreeChanged} />
+          <Graf />
         </>
       )}
     </div>

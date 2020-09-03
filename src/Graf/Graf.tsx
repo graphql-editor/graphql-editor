@@ -7,9 +7,8 @@ import { DOM } from './DOM';
 import { PaintNodes } from './PaintNodes';
 import { ActiveNode } from '@/Graf/Node';
 import { useTreesState } from '@/state/containers/trees';
-export interface GrafProps {
-  onTreeChanged: () => void;
-}
+import { useIO, KeyboardActions } from './IO';
+export interface GrafProps {}
 const Wrapper = style({
   width: '100%',
   height: '100%',
@@ -27,17 +26,27 @@ const Main = style({
 const Focus = style({
   position: 'absolute',
 });
-export const Graf: React.FC<GrafProps> = ({ onTreeChanged }) => {
+
+let snapLock = true;
+
+export const Graf: React.FC<GrafProps> = () => {
   const grafRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [panRef, setPanRef] = useState<PanZoom>();
-  const [position, setPosition] = useState<{
-    offsetLeft: number;
-    offsetTop: number;
-    width: number;
-  }>();
 
-  const { libraryTree, tree, selectedNode, setSelectedNode, selectedNodeRef } = useTreesState();
+  const {
+    libraryTree,
+    tree,
+    setTree,
+    selectedNode,
+    setSelectedNode,
+    selectedNodeRef,
+    position,
+    setSnapshots,
+    snapshots,
+    past,
+    future,
+  } = useTreesState();
   useLayoutEffect(() => {
     if (grafRef.current) {
       const instance = panzoom(grafRef.current, {
@@ -51,7 +60,7 @@ export const Graf: React.FC<GrafProps> = ({ onTreeChanged }) => {
         beforeWheel: (e) => {
           return DOM.scrollLock;
         },
-        filterKey: function (/* e, dx, dy, dz */) {
+        filterKey: () => {
           return DOM.keyLock;
         },
       });
@@ -82,10 +91,47 @@ export const Graf: React.FC<GrafProps> = ({ onTreeChanged }) => {
         panRef?.moveBy(distanceVector.x, distanceVector.y, true);
       }
     }
-  }, [selectedNode]);
+  }, [position]);
+
+  useIO({
+    on: (action) => {
+      if (action === KeyboardActions.Undo) {
+        const p = past();
+        if (p) {
+          snapLock = true;
+          setTree(JSON.parse(p));
+        }
+      }
+      if (action === KeyboardActions.Redo) {
+        const f = future();
+        if (f) {
+          snapLock = true;
+          setTree(JSON.parse(f));
+        }
+      }
+    },
+  });
+
+  useEffect(() => {
+    if (snapLock) {
+      snapLock = false;
+      return;
+    }
+    const copyTree = JSON.stringify(tree);
+    if (snapshots.length === 0) {
+      setSnapshots([copyTree]);
+      return;
+    }
+    if (snapshots[snapshots.length - 1] !== copyTree) {
+      setSnapshots([...snapshots, copyTree]);
+    }
+  }, [tree]);
+
   let node: ParserField | undefined;
-  if (typeof selectedNode === 'string') {
-    node = tree.nodes.find((n) => n.name === selectedNode) || libraryTree.nodes.find((n) => n.name === selectedNode);
+  if (selectedNode) {
+    node =
+      tree.nodes.find((n) => n.name === selectedNode.name && n.data.type === selectedNode.dataType) ||
+      libraryTree.nodes.find((n) => n.name === selectedNode.name && n.data.type === selectedNode.dataType);
   }
   return (
     <div
@@ -98,19 +144,7 @@ export const Graf: React.FC<GrafProps> = ({ onTreeChanged }) => {
       }}
     >
       <div ref={grafRef} className={Main}>
-        <PaintNodes
-          blur={typeof selectedNode === 'string'}
-          onSelectNode={(name, pos) => {
-            // hack to reset active node state on reselect
-            setSelectedNode(undefined);
-            setTimeout(() => {
-              setSelectedNode(name);
-            }, 1);
-
-            setPosition(pos);
-          }}
-          onTreeChanged={onTreeChanged}
-        />
+        <PaintNodes blur={typeof selectedNode === 'string'} />
         {node && position && wrapperRef.current && (
           <div
             className={Focus}
@@ -121,12 +155,14 @@ export const Graf: React.FC<GrafProps> = ({ onTreeChanged }) => {
           >
             <ActiveNode
               onDelete={() => {
-                tree.nodes.splice(tree.nodes.findIndex((n) => n.name === node!.name)!, 1);
+                const deletedNode = tree.nodes.findIndex((n) => n.name === node!.name)!;
+                const allNodes = [...tree.nodes];
+                allNodes.splice(deletedNode, 1);
+                setSelectedNode(undefined);
+                setTree({ nodes: allNodes });
                 DOM.panLock = false;
-                onTreeChanged();
               }}
               node={node}
-              onTreeChanged={onTreeChanged}
             />
           </div>
         )}

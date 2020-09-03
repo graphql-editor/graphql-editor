@@ -17,7 +17,6 @@ interface FieldProps {
   last?: boolean;
   isLocked?: boolean;
   parentNodeTypeName: string;
-  onTreeChanged: () => void;
 }
 
 const Main = style({
@@ -100,7 +99,6 @@ export const ActiveDirective: React.FC<FieldProps> = ({
   onInputClick,
   onOutputClick,
   last,
-  onTreeChanged,
   isLocked,
 }) => {
   const isEnumValue = node.data.type === ValueDefinition.EnumValueDefinition;

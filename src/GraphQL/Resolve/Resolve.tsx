@@ -7,13 +7,16 @@ import {
   ScalarTypes,
   Value,
   Instances,
+  TypeExtension,
 } from 'graphql-zeus';
 import { BuiltInScalars } from '@/GraphQL/Resolve/BuiltInNodes';
 
 export const ResolveCreateField = (field: ParserField, actualFields: ParserField[]): ParserField[] | undefined => {
   if (
     field.data.type === TypeDefinition.ObjectTypeDefinition ||
-    field.data.type === TypeDefinition.InterfaceTypeDefinition
+    field.data.type === TypeDefinition.InterfaceTypeDefinition ||
+    field.data.type === TypeExtension.InterfaceTypeExtension ||
+    field.data.type === TypeExtension.ObjectTypeExtension
   ) {
     return actualFields
       .filter(
@@ -34,6 +37,7 @@ export const ResolveCreateField = (field: ParserField, actualFields: ParserField
   }
   if (
     field.data.type === TypeDefinition.InputObjectTypeDefinition ||
+    field.data.type === TypeExtension.InputObjectTypeExtension ||
     field.data.type === TypeSystemDefinition.FieldDefinition ||
     field.data.type === TypeSystemDefinition.DirectiveDefinition
   ) {
@@ -55,7 +59,7 @@ export const ResolveCreateField = (field: ParserField, actualFields: ParserField
   if (field.data.type === TypeDefinition.EnumTypeDefinition) {
     return [];
   }
-  if (field.data.type === TypeDefinition.UnionTypeDefinition) {
+  if (field.data.type === TypeDefinition.UnionTypeDefinition || field.data.type === TypeExtension.UnionTypeExtension) {
     return actualFields
       .filter((f) => f.data.type === TypeDefinition.ObjectTypeDefinition)
       .map((n) => ({

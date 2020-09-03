@@ -21,7 +21,6 @@ interface Nameable{
 interface Imaged{
 	name: String!
 }
-
 type Ingredient{
 	name: String!
 	price: Int!
@@ -58,6 +57,11 @@ input CreateIngredient{
 	name: String!
 	price: Int!
 	sku: CreateSKU
+	status: Status!
+	statusy: [Status]! = []
+}
+extend type DataInfo {
+	name:String
 }
 schema{
 	query: Query,
@@ -76,6 +80,11 @@ type DataInfo {
 
 input AuthData {
 	name:String = "Hello"
+}
+
+enum Status {
+	READY
+	EATEN
 }
 
 directive @auth(

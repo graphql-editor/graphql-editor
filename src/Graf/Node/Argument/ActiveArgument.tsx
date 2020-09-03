@@ -9,6 +9,7 @@ import { Arrq, Plus } from '@/Graf/icons';
 import { EditableDefaultValue } from '@/Graf/Node/components';
 import { isScalarArgument } from '@/GraphQL/Resolve';
 import { ConvertStringToObject, ConvertValueToEditableString } from '@/GraphQL/Convert';
+import { useTreesState } from '@/state/containers/trees';
 export interface FieldProps {
   parentNode: ParserField;
   node: ParserField;
@@ -21,7 +22,6 @@ export interface FieldProps {
   last?: boolean;
   isLocked?: boolean;
   parentNodeTypeName: string;
-  onTreeChanged: () => void;
 }
 
 const Main = style({
@@ -97,10 +97,9 @@ interface PlaceFunctionArgs {
   v: string;
   node: ParserField;
   parentNodeOfArgument: ParserField;
-  onTreeChanged: () => void;
 }
 
-const placeStringInNode = ({ node, v, onTreeChanged }: PlaceFunctionArgs) => {
+const placeStringInNode = ({ node, v }: PlaceFunctionArgs) => {
   const valueType = isScalarArgument(node);
   const isObjectArg = !valueType || node.data.type === Value.ObjectValue;
   if (node.type.options?.includes(Options.array)) {
@@ -158,9 +157,9 @@ export const ActiveArgument: React.FC<FieldProps> = ({
   onOutputClick,
   last,
   parentNodeTypeName,
-  onTreeChanged,
   isLocked,
 }) => {
+  const { tree, setTree } = useTreesState();
   const [optionsMenuOpen, setOptionsMenuOpen] = useState(false);
   return (
     <div
@@ -182,7 +181,7 @@ export const ActiveArgument: React.FC<FieldProps> = ({
             <ActiveArgumentName
               afterChange={(newName) => {
                 node.name = newName;
-                onTreeChanged();
+                setTree({ ...tree });
               }}
               node={node}
             />
@@ -196,9 +195,8 @@ export const ActiveArgument: React.FC<FieldProps> = ({
               v,
               node,
               parentNodeOfArgument: parentNode,
-              onTreeChanged,
             });
-            onTreeChanged();
+            setTree({ ...tree });
           }}
         />
       </div>
@@ -213,11 +211,7 @@ export const ActiveArgument: React.FC<FieldProps> = ({
             <Arrq height={7} width={7} />
             {optionsMenuOpen && (
               <div className={OptionsMenuContainer}>
-                <NodeTypeOptionsMenu
-                  hideMenu={() => setOptionsMenuOpen(false)}
-                  node={node}
-                  onTreeChanged={onTreeChanged}
-                />
+                <NodeTypeOptionsMenu hideMenu={() => setOptionsMenuOpen(false)} node={node} />
               </div>
             )}
           </div>
