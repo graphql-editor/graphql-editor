@@ -65,6 +65,12 @@ const DescriptionPosition: NestedCSSProperties = {
   transformOrigin: 'center bottom',
   transform: 'translate(0px, calc(-100% - 10px))',
   width: '100%',
+  outline: 'none',
+  $nest: {
+    '&:focus': {
+      border: `1px solid ${Colors.grey[3]}`,
+    },
+  },
 };
 const NodeContainer = style({
   position: 'relative',

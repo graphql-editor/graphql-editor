@@ -1,6 +1,6 @@
 import cx from 'classnames';
 import React, { useEffect, useState } from 'react';
-import { sizeSidebar, fontFamily, menuWidth } from '@/vars';
+import { sizeSidebar, fontFamily } from '@/vars';
 import { Menu, ActivePane } from './Menu';
 import { CodePane } from './code';
 
@@ -32,7 +32,7 @@ export const ErrorContainer = style({
   zIndex: 2,
   top: 0,
   right: 0,
-  width: `calc(100vw - ${sizeSidebar} - 40px - ${menuWidth}px)`,
+  width: `calc(100% - 40px)`,
   padding: 20,
   color: Colors.red[0],
   background: `${Colors.grey[9]}ee`,
@@ -52,6 +52,11 @@ export const Sidebar = style({
   flexDirection: 'column',
   overflow: 'hidden',
   background: Colors.grey[8],
+  position: 'relative',
+});
+
+export const ErrorOuterContainer = style({
+  width: '100%',
   position: 'relative',
 });
 
@@ -195,10 +200,10 @@ export const Editor = ({
         </DynamicResize>
       )}
       {menuState !== 'code' && (
-        <>
+        <div className={ErrorOuterContainer}>
           {errors && <div className={ErrorContainer}>{errors}</div>}
           <Graf />
-        </>
+        </div>
       )}
     </div>
   );

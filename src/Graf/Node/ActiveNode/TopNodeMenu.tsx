@@ -34,6 +34,7 @@ export const TopNodeMenu: React.FC<{ node: ParserField; onDelete: () => void }> 
           onClick={() => {
             setMenuOpen('field');
           }}
+          title="Click to add field"
         >
           <Plus height={10} width={10} />
           {menuOpen === 'field' && (
@@ -61,6 +62,7 @@ export const TopNodeMenu: React.FC<{ node: ParserField; onDelete: () => void }> 
             ];
             setTree({ ...tree });
           }}
+          title="Click to add field"
         >
           <Plus height={10} width={10} />
         </div>
@@ -72,6 +74,7 @@ export const TopNodeMenu: React.FC<{ node: ParserField; onDelete: () => void }> 
           onClick={() => {
             setMenuOpen('interface');
           }}
+          title="Click to implement interface"
         >
           <Interface height={10} width={10} />
           {menuOpen === 'interface' && (
@@ -86,6 +89,7 @@ export const TopNodeMenu: React.FC<{ node: ParserField; onDelete: () => void }> 
         onClick={() => {
           setMenuOpen('directive');
         }}
+        title="Click to add directive"
       >
         <Monkey height={10} width={10} />
         {menuOpen === 'directive' && node.data.type !== TypeSystemDefinition.DirectiveDefinition && (
@@ -104,6 +108,7 @@ export const TopNodeMenu: React.FC<{ node: ParserField; onDelete: () => void }> 
         onClick={() => {
           setMenuOpen('options');
         }}
+        title="Click to see node actions"
       >
         <More height={10} width={10} />
         {menuOpen === 'options' && (
