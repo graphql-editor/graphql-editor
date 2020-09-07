@@ -7,3 +7,4 @@ export * from './Plus';
 export * from './Search';
 export * from './Tick';
 export * from './X';
+export * from './Minus';

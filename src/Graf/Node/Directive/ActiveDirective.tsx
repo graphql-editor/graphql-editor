@@ -3,7 +3,7 @@ import { ParserField, ValueDefinition } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { Colors } from '@/Colors';
 import { FIELD_HEIGHT } from '@/Graf/constants';
-import { Plus } from '@/Graf/icons';
+import { Plus, Minus } from '@/Graf/icons';
 import { ConvertValueToEditableString } from '@/GraphQL/Convert';
 
 interface FieldProps {
@@ -106,7 +106,7 @@ export const ActiveDirective: React.FC<FieldProps> = ({
     <div className={`${Main} ${last ? LastField : ''} ${inputOpen || outputOpen ? 'Active' : ''}`}>
       {!inputDisabled && !isLocked && !isEnumValue ? (
         <div className={'NodeFieldPort'} onClick={onInputClick}>
-          {inputOpen ? '-' : <Plus height={7} width={7} />}
+          {inputOpen ? <Minus height={6} width={6} /> : <Plus height={8} width={8} />}
         </div>
       ) : (
         <div className={'NodeFieldPortPlaceholder'} />
@@ -116,7 +116,7 @@ export const ActiveDirective: React.FC<FieldProps> = ({
       </div>
       {!outputDisabled && (
         <div className={'NodeFieldPort'} onClick={onOutputClick}>
-          {outputOpen ? '-' : <Plus height={7} width={7} />}
+          {outputOpen ? <Minus height={6} width={6} /> : <Plus height={8} width={8} />}
         </div>
       )}
       {outputDisabled && isLocked && <div className={'NodeFieldPortPlaceholder'} />}
