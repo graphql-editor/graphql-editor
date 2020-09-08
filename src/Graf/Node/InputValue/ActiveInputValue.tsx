@@ -6,7 +6,7 @@ import { FIELD_HEIGHT } from '@/Graf/constants';
 import { ActiveType } from '@/Graf/Node/Type';
 import { NodeTypeOptionsMenu } from '@/Graf/Node/ContextMenu';
 import { ActiveInputValueName } from './ActiveInputValueName';
-import { Arrq, Plus } from '@/Graf/icons';
+import { Arrq, Plus, Minus } from '@/Graf/icons';
 import { EditableDefaultValue } from '@/Graf/Node/components';
 import { isScalarArgument } from '@/GraphQL/Resolve';
 import { ConvertStringToObject, ConvertValueNodeToString } from '@/GraphQL/Convert';
@@ -158,7 +158,7 @@ export const ActiveInputValue: React.FC<FieldProps> = ({
     >
       {!inputDisabled && !isLocked ? (
         <div className={'NodeFieldPort'} onClick={onInputClick}>
-          {inputOpen ? '-' : <Plus height={7} width={7} />}
+          {inputOpen ? <Minus height={6} width={6} /> : <Plus height={8} width={8} />}
         </div>
       ) : (
         <div className={'NodeFieldPortPlaceholder'} />
@@ -196,7 +196,7 @@ export const ActiveInputValue: React.FC<FieldProps> = ({
               setOptionsMenuOpen(!optionsMenuOpen);
             }}
           >
-            <Arrq height={7} width={7} />
+            <Arrq height={8} width={8} />
             {optionsMenuOpen && (
               <div className={OptionsMenuContainer}>
                 <NodeTypeOptionsMenu hideMenu={() => setOptionsMenuOpen(false)} node={node} />
@@ -207,7 +207,7 @@ export const ActiveInputValue: React.FC<FieldProps> = ({
       )}
       {!outputDisabled && (
         <div className={'NodeFieldPort'} onClick={onOutputClick}>
-          {outputOpen ? '-' : <Plus height={7} width={7} />}
+          {outputOpen ? <Minus height={6} width={6} /> : <Plus height={8} width={8} />}
         </div>
       )}
       {outputDisabled && isLocked && <div className={'NodeFieldPortPlaceholder'} />}
