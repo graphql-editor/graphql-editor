@@ -84,16 +84,25 @@ export const RootNode: React.FC<RootNodeProps> = ({ node, libraryNode }) => {
           }}
         />
       }
-      {node.args
-        ?.filter((a) => a.name.toLowerCase().includes(filterNodes.toLowerCase()))
-        .map((a, i) => {
-          return <PaintNode key={a.name} node={a} />;
-        })}
-      {libraryNode?.args
-        ?.filter((a) => a.name.toLowerCase().includes(filterNodes.toLowerCase()))
-        .map((a, i) => {
-          return <PaintNode isLibrary={true} key={a.name} node={a} />;
-        })}
+      {node.args?.map((a, i) => {
+        return (
+          <PaintNode
+            key={a.name}
+            node={a}
+            isMatchedToSearch={a.name.toLowerCase().includes(filterNodes.toLowerCase())}
+          />
+        );
+      })}
+      {libraryNode?.args?.map((a, i) => {
+        return (
+          <PaintNode
+            isLibrary={true}
+            key={a.name}
+            node={a}
+            isMatchedToSearch={a.name.toLowerCase().includes(filterNodes.toLowerCase())}
+          />
+        );
+      })}
     </div>
   );
 };

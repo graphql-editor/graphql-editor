@@ -11,6 +11,7 @@ export interface NodeProps {
   node: ParserField;
   builtIn?: boolean;
   isLibrary?: boolean;
+  isMatchedToSearch?: boolean;
 }
 const MainNodeArea: NestedCSSProperties = {
   position: 'relative',
@@ -58,12 +59,20 @@ const MainNodeContainer = style({
 const NodeContainer = style({
   margin: 15,
 });
-export const PaintNode: React.FC<NodeProps> = ({ node, isLibrary }) => {
+const MatchedSearchContainer = style({
+  opacity: 1,
+});
+const NoMatchedSearchContainer = style({
+  opacity: 0.3,
+});
+export const PaintNode: React.FC<NodeProps> = ({ node, isLibrary, isMatchedToSearch }) => {
   const thisNode = useRef<HTMLDivElement>(null);
   const { setSelectedNode, setPosition } = useTreesState();
   return (
     <div
-      className={`${NodeContainer} ${isLibrary ? LibraryNodeContainer : MainNodeContainer}`}
+      className={`${NodeContainer} ${isLibrary ? LibraryNodeContainer : MainNodeContainer} ${
+        isMatchedToSearch ? MatchedSearchContainer : NoMatchedSearchContainer
+      }`}
       ref={thisNode}
       style={{}}
     >
