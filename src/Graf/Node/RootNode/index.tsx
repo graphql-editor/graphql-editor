@@ -71,15 +71,16 @@ export const RootNode: React.FC<RootNodeProps> = ({ node, libraryNode }) => {
                   directiveOptions: [Directive.OBJECT],
                 },
               });
+            } else {
+              tree.nodes.push({
+                ...node,
+                name,
+                args: [],
+                type: {
+                  name: (TypeDefinitionDisplayMap as any)[node.data.type as any],
+                },
+              });
             }
-            tree.nodes.push({
-              ...node,
-              name,
-              args: [],
-              type: {
-                name: (TypeDefinitionDisplayMap as any)[node.data.type as any],
-              },
-            });
             setTree({ ...tree });
           }}
         />

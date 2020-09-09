@@ -34,6 +34,11 @@ export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({ node, hideMe
               key={f.name}
               node={f}
               onClick={() => {
+                let newName = f.name[0].toLowerCase() + f.name.slice(1);
+                const existingNodes = node.args?.filter((a) => a.name.match(`${newName}\d?`)) || [];
+                if (existingNodes.length > 0) {
+                  newName = `${newName}${existingNodes.length}`;
+                }
                 node.args?.push({
                   ...f,
                   description: undefined,
@@ -42,7 +47,7 @@ export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({ node, hideMe
                   type: {
                     name: f.name,
                   },
-                  name: f.name[0].toLowerCase() + f.name.slice(1),
+                  name: newName,
                   args: [],
                 });
                 hideMenu();

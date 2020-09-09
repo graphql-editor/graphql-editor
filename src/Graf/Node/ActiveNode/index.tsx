@@ -181,7 +181,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
               onDelete={() => {
                 setOpenedDirectiveInputs([]);
                 setOpenedDirectiveOutputs([]);
-                node.args!.splice(o, 1);
+                node.directives!.splice(o, 1);
                 DOM.panLock = false;
                 setTree({ ...tree });
               }}
