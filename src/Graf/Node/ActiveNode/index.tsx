@@ -209,6 +209,17 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
         ))}
       </div>
       <div className={`RightNodeArea`}>
+        {openedDirectiveOutputs.sort().map((o) => (
+          <div key={o} className={`RightNodeAreaNode`} style={{ top: FIELD_HEIGHT * (o + 1) }}>
+            <ActiveNode
+              {...sharedProps}
+              node={
+                (tree.nodes.find((n) => n.name === node.directives![o].type.name) ||
+                  libraryTree.nodes.find((n) => n.name === node.directives![o].type.name))!
+              }
+            />
+          </div>
+        ))}
         {openedOutputs.sort().map((o) => (
           <div
             key={o}
