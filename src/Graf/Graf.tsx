@@ -48,12 +48,18 @@ export const Graf: React.FC<GrafProps> = () => {
     future,
   } = useTreesState();
   useLayoutEffect(() => {
-    if (grafRef.current) {
+    if (grafRef.current && wrapperRef.current) {
       const instance = panzoom(grafRef.current, {
         maxZoom: 2.0,
         minZoom: 0.5,
         enableTextSelection: true,
         disableKeyboardInteraction: true,
+        bounds: {
+          top: -0.4 * grafRef.current.getBoundingClientRect().height,
+          right: 0.6 * wrapperRef.current.getBoundingClientRect().width,
+          bottom: 0.6 * grafRef.current.getBoundingClientRect().height,
+          left: 0.4 * wrapperRef.current.getBoundingClientRect().width,
+        },
         beforeMouseDown: (e) => {
           return DOM.panLock;
         },
@@ -78,6 +84,7 @@ export const Graf: React.FC<GrafProps> = () => {
       if (nodePosition && panRef && wrapperRef.current) {
         const distanceVector = {
           x:
+            wrapperRef.current.getBoundingClientRect().left +
             -nodePosition.left +
             wrapperRef.current.offsetLeft +
             wrapperRef.current.offsetWidth / 2.0 -
