@@ -76,10 +76,10 @@ export const ResolveCreateField = (field: ParserField, actualFields: ParserField
     return undefined;
   }
   if (field.data.type === Instances.Directive) {
-    console.log('Actualfields');
     return actualFields
       .find((a) => a.name === field.type.name)!
-      .args?.map((a) => {
+      .args?.filter((a) => !field.args?.map((el) => el.name).includes(a.name))
+      .map((a) => {
         return {
           ...a,
           data: {
