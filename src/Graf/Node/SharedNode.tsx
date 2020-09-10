@@ -3,7 +3,7 @@ import { Colors } from '@/Colors';
 import { GraphQLBackgrounds } from '@/editor/theme';
 
 const NodeName: NestedCSSProperties = {
-  marginRight: 5,
+  marginRight: 10,
   color: Colors.grey[0],
   fontSize: 12,
   padding: `5px 0 5px 10px`,
