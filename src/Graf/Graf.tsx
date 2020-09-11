@@ -51,15 +51,10 @@ export const Graf: React.FC<GrafProps> = () => {
     if (grafRef.current && wrapperRef.current) {
       const instance = panzoom(grafRef.current, {
         maxZoom: 2.0,
-        minZoom: 0.5,
+        minZoom: 1,
         enableTextSelection: true,
         disableKeyboardInteraction: true,
-        bounds: {
-          top: -0.4 * grafRef.current.getBoundingClientRect().height,
-          right: 0.6 * wrapperRef.current.getBoundingClientRect().width,
-          bottom: 0.6 * grafRef.current.getBoundingClientRect().height,
-          left: 0.4 * wrapperRef.current.getBoundingClientRect().width,
-        },
+        bounds: true,
         beforeMouseDown: (e) => {
           return DOM.panLock;
         },
