@@ -111,7 +111,7 @@ render(<App />, document.getElementById('root'));
 
 ## Support 
 
-[Join our Slack Channel](https://join.slack.com/t/graphqleditor/shared_invite/zt-69jykd3b-OsF9ptwlxZCSUXyjFVVuCg)
+[Join our Discord Channel](https://discord.gg/xREyAec)
 
 ## Contribute
 
