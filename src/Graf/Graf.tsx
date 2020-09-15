@@ -164,6 +164,18 @@ export const Graf: React.FC<GrafProps> = () => {
                 setTree({ nodes: allNodes });
                 DOM.panLock = false;
               }}
+              onDuplicate={() => {
+                const allNodes = [...tree.nodes];
+                allNodes.push(
+                  JSON.parse(
+                    JSON.stringify({
+                      ...node,
+                      name: node?.name + 'Copy',
+                    }),
+                  ),
+                );
+                setTree({ nodes: allNodes });
+              }}
               node={node}
             />
           </div>

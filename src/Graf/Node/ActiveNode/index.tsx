@@ -20,6 +20,7 @@ import { ActiveArgument } from '@/Graf/Node/Argument';
 interface NodeProps {
   node: ParserField;
   onDelete: () => void;
+  onDuplicate: () => void;
 }
 
 const fadeIn = keyframes({

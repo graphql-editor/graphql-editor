@@ -19,7 +19,11 @@ const NodeMenuContainer = style({
   zIndex: 2,
 });
 
-export const TopNodeMenu: React.FC<{ node: ParserField; onDelete: () => void }> = ({ node, onDelete }) => {
+export const TopNodeMenu: React.FC<{
+  node: ParserField;
+  onDelete: () => void;
+  onDuplicate: () => void;
+}> = ({ node, onDelete, onDuplicate }) => {
   const { tree, setTree } = useTreesState();
   const [menuOpen, setMenuOpen] = useState<PossibleMenus>();
 
@@ -116,7 +120,7 @@ export const TopNodeMenu: React.FC<{ node: ParserField; onDelete: () => void }> 
             <Menu hideMenu={hideMenu}>
               <MenuScrollingArea>
                 <DetailMenuItem onClick={onDelete}>Delete node</DetailMenuItem>
-                <DetailMenuItem onClick={onDelete}>Duplicate node</DetailMenuItem>
+                <DetailMenuItem onClick={onDuplicate}>Duplicate node</DetailMenuItem>
               </MenuScrollingArea>
             </Menu>
           </div>
