@@ -119,7 +119,7 @@ export const ActiveField: React.FC<FieldProps> = ({
         inputOpen || outputOpen || optionsMenuOpen ? 'Active' : ''
       }`}
     >
-      {!inputDisabled && !isLocked && !isEnumValue ? (
+      {!inputDisabled && !isEnumValue ? (
         <div className={'NodeFieldPort'} onClick={onInputClick}>
           {inputOpen ? <Minus height={6} width={6} /> : <Plus height={8} width={8} />}
         </div>

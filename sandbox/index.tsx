@@ -71,7 +71,6 @@ export const App = () => {
       </div>
       {!hide && (
         <GraphQLEditor
-          readonly
           onSchemaChange={(props) => {
             setMySchema(props);
           }}

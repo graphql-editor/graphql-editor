@@ -76,6 +76,11 @@ info bout data
 type DataInfo {
 	createdAt: String!
 	more: DataInfo
+	remoteInputTest(inp:RemoteInput): String!
+}
+
+input RemoteInput {
+	name:String = "Hello"
 }
 
 input AuthData {

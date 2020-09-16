@@ -14,7 +14,7 @@ import { NodeFields, NodeTitle } from '@/Graf/Node/SharedNode';
 import { ActiveDescription, NodeInterface, EditableText } from '@/Graf/Node/components';
 import { useTreesState } from '@/state/containers/trees';
 import { TopNodeMenu } from '@/Graf/Node/ActiveNode/TopNodeMenu';
-import { ChangeAllRelatedNodes } from '@/GraphQL/Resolve';
+import { ChangeAllRelatedNodes, isExtensionNode } from '@/GraphQL/Resolve';
 import { ActiveArgument } from '@/Graf/Node/Argument';
 
 interface NodeProps {
@@ -135,8 +135,9 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
 
   const { libraryTree, tree, setTree, setSelectedNode, selectedNode, selectedNodeRef } = useTreesState();
 
-  const isLibrary = !!libraryTree.nodes.find((lN) => lN.name === node.name && lN.data.type === node.data.type);
-
+  const isLibrary =
+    !!libraryTree.nodes.find((lN) => lN.name === node.name && lN.data.type === node.data.type) ||
+    !!libraryTree.nodes.find((lN) => lN.name === node.type.name);
   const isInputNode = [
     TypeSystemDefinition.FieldDefinition,
     TypeSystemDefinition.DirectiveDefinition,
@@ -147,7 +148,12 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
 
   const isArgumentNode = [Instances.Directive].includes(node.data.type as any);
   const parentNode = tree.nodes.find((n) => n.name === node.type.name);
-  const isLocked = isLibrary || !!sharedProps.readonly;
+  const isLocked = !!sharedProps.readonly || isLibrary;
+
+  const findNodeByField = (field: ParserField) => {
+    return (tree.nodes.find((n) => n.name === field.type.name && !isExtensionNode(n.data.type!)) ||
+      libraryTree.nodes.find((n) => n.name === field.type.name && !isExtensionNode(n.data.type!)))!;
+  };
 
   return (
     <div className={`${NodeContainer} ${DOM.classes.node} ${DOM.classes.nodeSelected}`} ref={selectedNodeRef}>
@@ -181,6 +187,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
           <div key={o} className={`LeftNodeAreaNode`} style={{ top: FIELD_HEIGHT * (o + 1) }}>
             <ActiveNode
               {...sharedProps}
+              readonly={isLocked}
               node={node.directives![o]}
               onDelete={() => {
                 setOpenedDirectiveInputs([]);
@@ -200,6 +207,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
           >
             <ActiveNode
               {...sharedProps}
+              readonly={isLocked}
               node={node.args![o]}
               onDelete={() => {
                 setOpenedInputs([]);
@@ -215,13 +223,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
       <div className={`RightNodeArea`}>
         {openedDirectiveOutputs.sort().map((o) => (
           <div key={o} className={`RightNodeAreaNode`} style={{ top: FIELD_HEIGHT * (o + 1) }}>
-            <ActiveNode
-              {...sharedProps}
-              node={
-                (tree.nodes.find((n) => n.name === node.directives![o].type.name) ||
-                  libraryTree.nodes.find((n) => n.name === node.directives![o].type.name))!
-              }
-            />
+            <ActiveNode {...sharedProps} readonly={isLocked} node={findNodeByField(node.directives![o])} />
           </div>
         ))}
         {openedOutputs.sort().map((o) => (
@@ -230,13 +232,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
             className={`RightNodeAreaNode`}
             style={{ top: FIELD_HEIGHT * (o + (node.directives?.length || 0) + 1) }}
           >
-            <ActiveNode
-              {...sharedProps}
-              node={
-                (tree.nodes.find((n) => n.name === node.args![o].type.name) ||
-                  libraryTree.nodes.find((n) => n.name === node.args![o].type.name))!
-              }
-            />
+            <ActiveNode {...sharedProps} readonly={isLocked} node={findNodeByField(node.args![o])} />
           </div>
         ))}
       </div>

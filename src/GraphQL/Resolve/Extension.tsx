@@ -19,3 +19,12 @@ export const ResolveExtension = (t: AllTypes) => {
       break;
   }
 };
+export const isExtensionNode = (t: AllTypes) =>
+  !![
+    TypeExtension.EnumTypeExtension,
+    TypeExtension.InputObjectTypeExtension,
+    TypeExtension.InterfaceTypeExtension,
+    TypeExtension.ObjectTypeExtension,
+    TypeExtension.ScalarTypeExtension,
+    TypeExtension.UnionTypeExtension,
+  ].find((o) => o === t);
