@@ -7,6 +7,8 @@ const NodeName: NestedCSSProperties = {
   color: Colors.grey[0],
   fontSize: 12,
   padding: `5px 0 5px 10px`,
+  userSelect: 'none',
+  '-moz-user-select': '-moz-none',
 };
 const NodeType: NestedCSSProperties = {
   color: Colors.main[0],

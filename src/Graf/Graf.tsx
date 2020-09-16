@@ -8,7 +8,9 @@ import { PaintNodes } from './PaintNodes';
 import { ActiveNode } from '@/Graf/Node';
 import { useTreesState } from '@/state/containers/trees';
 import { useIO, KeyboardActions } from './IO';
-export interface GrafProps {}
+export interface GrafProps {
+  readonly?: boolean;
+}
 const Wrapper = style({
   width: '100%',
   height: '100%',
@@ -29,7 +31,7 @@ const Focus = style({
 
 let snapLock = true;
 
-export const Graf: React.FC<GrafProps> = () => {
+export const Graf: React.FC<GrafProps> = ({ readonly }) => {
   const grafRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [panRef, setPanRef] = useState<PanZoom>();
@@ -54,7 +56,6 @@ export const Graf: React.FC<GrafProps> = () => {
         minZoom: 1,
         enableTextSelection: true,
         disableKeyboardInteraction: true,
-        bounds: true,
         beforeMouseDown: (e) => {
           return DOM.panLock;
         },
@@ -156,6 +157,7 @@ export const Graf: React.FC<GrafProps> = () => {
             }}
           >
             <ActiveNode
+              readonly={readonly}
               onDelete={() => {
                 const deletedNode = tree.nodes.findIndex((n) => n.name === node!.name)!;
                 const allNodes = [...tree.nodes];

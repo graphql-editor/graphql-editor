@@ -232,7 +232,7 @@ export const Editor = ({
       {menuState !== 'code' && (
         <div className={ErrorOuterContainer}>
           {errors && <div className={ErrorContainer}>{errors}</div>}
-          <Graf />
+          <Graf readonly={readonly} />
         </div>
       )}
     </div>

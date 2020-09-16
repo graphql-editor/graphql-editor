@@ -21,6 +21,7 @@ interface NodeProps {
   node: ParserField;
   onDelete: () => void;
   onDuplicate: () => void;
+  readonly?: boolean;
 }
 
 const fadeIn = keyframes({
@@ -146,6 +147,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
 
   const isArgumentNode = [Instances.Directive].includes(node.data.type as any);
   const parentNode = tree.nodes.find((n) => n.name === node.type.name);
+  const isLocked = isLibrary || !!sharedProps.readonly;
 
   return (
     <div className={`${NodeContainer} ${DOM.classes.node} ${DOM.classes.nodeSelected}`} ref={selectedNodeRef}>
@@ -155,7 +157,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
           node.description = d;
           setTree({ ...tree });
         }}
-        isLocked={isLibrary}
+        isLocked={isLocked}
         value={node.description || ''}
       />
       {!!node.interfaces?.length && (
@@ -163,6 +165,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
           {node.interfaces.map((i) => (
             <NodeInterface
               key={i}
+              isLocked={isLocked}
               onDelete={() => {
                 node.interfaces = node.interfaces?.filter((oldInterface) => oldInterface !== i);
                 setTree({ ...tree });
@@ -245,8 +248,8 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
       >
         <div className={`NodeTitle`}>
           <div className={`NodeName`}>
-            {isLibrary && <EditableText value={node.name} />}
-            {!isLibrary && (
+            {isLocked && <EditableText value={node.name} />}
+            {!isLocked && (
               <EditableText
                 fontSize={12}
                 value={node.name}
@@ -273,7 +276,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
           <div className={`NodeType`}>
             <ActiveType type={node.type} />
           </div>
-          {!isLibrary && <TopNodeMenu {...sharedProps} node={node} />}
+          {!isLocked && <TopNodeMenu {...sharedProps} node={node} />}
         </div>
         <div className={`NodeFields NodeBackground-${parentNode ? parentNode.type.name : node.type.name}`}>
           {node.directives?.map((d, i) => {
@@ -282,7 +285,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
             );
             return (
               <ActiveDirective
-                isLocked={isLibrary}
+                isLocked={isLocked}
                 parentNodeTypeName={node.type.name}
                 last={i === node.args!.length - 1}
                 key={d.name}
@@ -307,7 +310,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
               return (
                 <ActiveArgument
                   parentNode={node}
-                  isLocked={isLibrary}
+                  isLocked={isLocked}
                   parentNodeTypeName={node.type.name}
                   last={i === node.args!.length - 1}
                   key={a.name}
@@ -327,7 +330,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
             if (isInputNode) {
               return (
                 <ActiveInputValue
-                  isLocked={isLibrary}
+                  isLocked={isLocked}
                   parentNodeTypeName={node.type.name}
                   last={i === node.args!.length - 1}
                   key={a.name}
@@ -347,7 +350,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
 
             return (
               <ActiveField
-                isLocked={isLibrary}
+                isLocked={isLocked}
                 parentNodeTypeName={node.type.name}
                 last={i === node.args!.length - 1}
                 key={a.name}

@@ -6,6 +6,7 @@ import { X } from '@/Graf/icons';
 
 interface NodeInterfaceProps {
   onDelete: () => void;
+  isLocked?: boolean;
 }
 
 const NodeInterfaceBlock = style({
@@ -56,19 +57,22 @@ const NodeInterfaceBlock = style({
   },
 });
 
-export const NodeInterface: React.FC<NodeInterfaceProps> = ({ onDelete, children }) => {
+export const NodeInterface: React.FC<NodeInterfaceProps> = ({ onDelete, children, isLocked }) => {
   return (
     <div
       className={NodeInterfaceBlock}
       onClick={(e) => {
+        if (isLocked) {
+          return;
+        }
         e.stopPropagation();
         onDelete();
       }}
     >
-      <div className={'DeleteInterface'}>Click to delete</div>
+      {!isLocked && <div className={'DeleteInterface'}>Click to delete</div>}
       <span>
         {children}
-        <X fill={Colors.red[0]} />
+        {!isLocked && <X fill={Colors.red[0]} />}
       </span>
     </div>
   );

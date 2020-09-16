@@ -182,10 +182,14 @@ export const ActiveInputValue: React.FC<FieldProps> = ({
         <EditableDefaultValue
           value={ConvertValueNodeToString(node)}
           style={{ fontSize: 8, marginLeft: 5 }}
-          onChange={(v) => {
-            node.args = placeStringInNode({ v, node });
-            setTree({ ...tree });
-          }}
+          onChange={
+            isLocked
+              ? undefined
+              : (v) => {
+                  node.args = placeStringInNode({ v, node });
+                  setTree({ ...tree });
+                }
+          }
         />
       </div>
       {!isLocked && (

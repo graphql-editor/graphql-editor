@@ -19,6 +19,8 @@ const NodeCaption = style({
   borderBottom: `1px solid ${Colors.grey[5]}`,
   paddingBottom: 5,
   alignItems: 'center',
+  userSelect: 'none',
+  '-moz-user-select': '-moz-none',
   $nest: {
     ...Object.keys(GraphQLColors).reduce((a, b) => {
       a[`&.CaptionType-${b}`] = {

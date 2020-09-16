@@ -37,8 +37,8 @@ export const App = () => {
   useEffect(() => {
     setTimeout(() => {
       setMySchema({
-        code: schemas.finance,
-        libraries: schemas.usersLibrary,
+        code: schemas.pizza,
+        libraries: schemas.pizzaLibrary,
       });
     }, 1000);
   }, []);
@@ -71,6 +71,7 @@ export const App = () => {
       </div>
       {!hide && (
         <GraphQLEditor
+          readonly
           onSchemaChange={(props) => {
             setMySchema(props);
           }}
