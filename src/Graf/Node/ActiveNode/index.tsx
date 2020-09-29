@@ -20,7 +20,7 @@ import { ActiveArgument } from '@/Graf/Node/Argument';
 interface NodeProps {
   node: ParserField;
   onDelete: () => void;
-  onDuplicate: () => void;
+  onDuplicate?: () => void;
   readonly?: boolean;
 }
 
@@ -283,7 +283,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
               <ActiveDirective
                 isLocked={isLocked}
                 parentNodeTypeName={node.type.name}
-                last={i === node.args!.length - 1}
+                last={i === (node.args?.length || 0) - 1}
                 key={d.name}
                 onInputClick={() => {
                   setOpenedDirectiveInputs((oI) => (oI.includes(i) ? oI.filter((o) => o !== i) : [...oI, i]));

@@ -63,6 +63,12 @@ input CreateIngredient{
 extend type DataInfo {
 	name:String
 }
+enum Spod{
+	bialy @enumas
+	czerwony
+}
+
+directive @enumas(default: Boolean) on ENUM_VALUE
 schema{
 	query: Query,
 	mutation: Mutation

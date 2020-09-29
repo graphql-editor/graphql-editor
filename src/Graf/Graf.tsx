@@ -50,7 +50,7 @@ export const Graf: React.FC<GrafProps> = ({ readonly }) => {
     future,
   } = useTreesState();
   useLayoutEffect(() => {
-    if (grafRef.current && wrapperRef.current) {
+    if (grafRef.current && wrapperRef.current && !panRef) {
       const instance = panzoom(grafRef.current, {
         maxZoom: 2.0,
         minZoom: 1,
@@ -70,8 +70,13 @@ export const Graf: React.FC<GrafProps> = ({ readonly }) => {
       instance.on('panend', (e: any) => {
         setTimeout(() => (DOM.lock = false), 1);
       });
+      instance.on('zoomstart', () => (DOM.lock = true));
+      instance.on('zoomend', (e: any) => {
+        setTimeout(() => (DOM.lock = false), 1);
+      });
       setPanRef(instance);
     }
+    return () => panRef?.dispose();
   }, [grafRef.current]);
   useEffect(() => {
     if (selectedNodeRef.current) {
