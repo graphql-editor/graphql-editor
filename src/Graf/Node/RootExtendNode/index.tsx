@@ -3,8 +3,6 @@ import { ParserField } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { PaintNode } from '@/Graf/Node/PaintNode';
 import { Colors } from '@/Colors';
-import { GraphQLColors } from '@/editor/theme';
-import { NestedCSSProperties } from 'typestyle/lib/types';
 import { MenuSearch } from '@/Graf/Node/components';
 import { ExtendNodeMenu } from '@/Graf/Node/ContextMenu';
 import { Plus } from '@/Graf/icons';
@@ -16,21 +14,13 @@ const NodeCaption = style({
   flexBasis: '100%',
   margin: `15px 15px`,
   display: 'flex',
-  borderBottom: `1px solid ${Colors.grey[5]}`,
+  borderBottom: `1px solid ${Colors.orange[0]}22`,
   paddingBottom: 5,
   alignItems: 'center',
-  $nest: {
-    ...Object.keys(GraphQLColors).reduce((a, b) => {
-      a[`&.CaptionType-${b}`] = {
-        color: `${GraphQLColors[b]}bb`,
-      };
-      return a;
-    }, {} as Record<string, NestedCSSProperties>),
-  },
 });
 const CaptionTitle = style({
   marginRight: 10,
-  color: Colors.yellow[0],
+  color: Colors.orange[0],
 });
 const NodeContainer = style({
   padding: 10,
@@ -42,7 +32,7 @@ const NodeContainer = style({
 
 const ExtendButton = style({
   position: 'relative',
-  borderColor: Colors.yellow[0],
+  borderColor: Colors.orange[0],
   borderWidth: 1,
   borderStyle: 'solid',
   padding: `5px 10px`,
@@ -85,7 +75,7 @@ export const RootExtendNode: React.FC<RootExtendNodeProps> = ({ node, libraryNod
   const [menuOpen, setMenuOpen] = useState(false);
   return (
     <div className={`${NodeContainer}`} ref={thisNode}>
-      <div className={`${NodeCaption} CaptionType-${node.name}`}>
+      <div className={`${NodeCaption}`}>
         <span className={CaptionTitle}>extend</span>
         <MenuSearch
           onClear={() => {

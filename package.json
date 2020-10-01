@@ -1,6 +1,6 @@
 {
   "name": "graphql-editor",
-  "version": "4.1.2-0",
+  "version": "4.1.4-0",
   "private": false,
   "license": "MIT",
   "description": "Visual node editor for GraphQL",
@@ -59,8 +59,8 @@
     "jest": "^26.0.1",
     "mini-css-extract-plugin": "^0.9.0",
     "mocha": "^7.1.2",
-    "monaco-editor": "^0.20.0",
-    "monaco-editor-webpack-plugin": "^1.8.1",
+    "monaco-editor": "^0.21.2",
+    "monaco-editor-webpack-plugin": "^2.0.0",
     "prettier": "^2.0.5",
     "raw-loader": "^4.0.1",
     "react": "16.13.1",

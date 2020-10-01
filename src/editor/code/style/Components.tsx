@@ -1,5 +1,5 @@
 import { style } from 'typestyle';
-import { Colors, mix } from '@/Colors';
+import { Colors } from '@/Colors';
 import { fontFamily } from '@/vars';
 
 export const TitleOfPane = style({
@@ -8,9 +8,11 @@ export const TitleOfPane = style({
   fontSize: 12,
   textTransform: 'uppercase',
   color: Colors.grey[4],
-  background: `${mix(Colors.grey[9], Colors.grey[8])}`,
   display: 'flex',
   alignItems: 'center',
+  width: '100%',
+  zIndex: 3,
+  position: 'absolute',
 });
 export enum StatusDotProps {
   sync = 'sync',

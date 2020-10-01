@@ -20,7 +20,7 @@ export const Menu = ({ setActivePane, activePane }: MenuProps) => {
         onClick={() => setActivePane('diagram')}
         title="Diagram View"
       >
-        <Icons.Eye size={16} />
+        <Icons.Eye size={18} />
       </div>
       <div
         data-cy={cypressGet(GraphQLEditorCypress, 'sidebar', 'menu', 'children', 'codeDiagram', 'name')}
@@ -30,7 +30,7 @@ export const Menu = ({ setActivePane, activePane }: MenuProps) => {
         onClick={() => setActivePane('code-diagram')}
         title="Code and Diagram View"
       >
-        <Icons.Code size={16} />
+        <Icons.Code size={18} />
       </div>
       <div
         data-cy={cypressGet(GraphQLEditorCypress, 'sidebar', 'menu', 'children', 'code', 'name')}
@@ -40,7 +40,7 @@ export const Menu = ({ setActivePane, activePane }: MenuProps) => {
         onClick={() => setActivePane('code')}
         title="Code View"
       >
-        <Icons.FullScreen size={16} />
+        <Icons.FullScreen size={18} />
       </div>
     </div>
   );

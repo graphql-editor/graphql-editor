@@ -3,7 +3,6 @@ import { ParserField, TypeDefinitionDisplayMap, TypeSystemDefinition, Directive 
 import { style } from 'typestyle';
 import { PaintNode } from '@/Graf/Node/PaintNode';
 import { NewNode } from '@/Graf/Node/NewNode';
-import { Colors } from '@/Colors';
 import { GraphQLColors } from '@/editor/theme';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { useTreesState } from '@/state/containers/trees';
@@ -16,7 +15,7 @@ const NodeCaption = style({
   flexBasis: '100%',
   margin: `15px 15px`,
   display: 'flex',
-  borderBottom: `1px solid ${Colors.grey[5]}`,
+  borderBottom: `1px solid`,
   paddingBottom: 5,
   alignItems: 'center',
   userSelect: 'none',
@@ -24,7 +23,8 @@ const NodeCaption = style({
   $nest: {
     ...Object.keys(GraphQLColors).reduce((a, b) => {
       a[`&.CaptionType-${b}`] = {
-        color: `${GraphQLColors[b]}bb`,
+        color: `${GraphQLColors[b]}`,
+        borderColor: `${GraphQLColors[b]}22`,
       };
       return a;
     }, {} as Record<string, NestedCSSProperties>),

@@ -111,7 +111,6 @@ export const CodePane = (props: CodePaneProps) => {
   return (
     <>
       <TitleOfPane>
-        code editor
         <div
           className={cx(styles.Generate, {
             disabled: !generateEnabled,

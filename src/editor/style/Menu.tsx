@@ -5,16 +5,15 @@ import { menuWidth } from '@/vars';
 
 export const HiderPanel = style({
   width: menuWidth,
-  background: Colors.grey[9],
-  color: Colors.grey[2],
+  background: Colors.main[10],
+  color: Colors.grey[7],
   fontSize: 12,
   padding: 3,
   zIndex: 3,
 });
 export const Hider = style({
-  width: 24,
-  height: 24,
-  marginBottom: 3,
+  width: 42,
+  height: 42,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -25,7 +24,7 @@ export const Hider = style({
       background: Colors.grey[10],
     },
     '&.active': {
-      color: Colors.green[0],
+      color: Colors.pink[0],
     },
   },
 });

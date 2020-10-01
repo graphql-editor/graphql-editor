@@ -16,14 +16,15 @@ const Wrapper = style({
   height: '100%',
   overflow: 'hidden',
   position: 'relative',
-  background: '#191919',
+  background: `#0b050d`,
 });
 const Main = style({
   width: '100%',
   height: '100%',
   position: 'relative',
-  background: '#191919',
   fontFamily,
+  backgroundSize: `100px 100px`,
+  backgroundImage: `linear-gradient(to right, #ffffff04 1px, transparent 1px), linear-gradient(to bottom, #ffffff04 1px, transparent 1px)`,
 });
 const Focus = style({
   position: 'absolute',
@@ -56,6 +57,7 @@ export const Graf: React.FC<GrafProps> = ({ readonly }) => {
         minZoom: 1,
         enableTextSelection: true,
         disableKeyboardInteraction: true,
+        bounds: true,
         beforeMouseDown: (e) => {
           return DOM.panLock;
         },

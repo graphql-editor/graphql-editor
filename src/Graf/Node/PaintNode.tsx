@@ -38,7 +38,7 @@ const LibraryNodeContainer = style({
     '.MainNodeArea': MainNodeArea,
     ...Object.keys(GraphQLBackgrounds).reduce((a, b) => {
       a[`.NodeType-${b}`] = {
-        borderColor: `${GraphQLBackgrounds[b]}bb`,
+        borderColor: `${GraphQLBackgrounds[b]}`,
         borderStyle: 'dashed',
       };
       return a;
@@ -50,7 +50,7 @@ const MainNodeContainer = style({
     '.MainNodeArea': MainNodeArea,
     ...Object.keys(GraphQLBackgrounds).reduce((a, b) => {
       a[`.NodeType-${b}`] = {
-        background: `${GraphQLBackgrounds[b]}bb`,
+        background: `${GraphQLBackgrounds[b]}`,
       };
       return a;
     }, {} as Record<string, NestedCSSProperties>),

@@ -10,7 +10,7 @@ interface MenuSearchProps {
 }
 
 const Main = style({
-  background: Colors.grey[8],
+  background: Colors.main[9],
   color: Colors.grey[0],
   border: 0,
   width: '100%',
