@@ -3,6 +3,7 @@ import { style } from 'typestyle';
 import { Colors } from '@/Colors';
 import { fontFamily } from '@/vars';
 import { DOM } from '@/Graf/DOM';
+import { FIELD_NAME_SIZE } from '@/Graf/constants';
 const Input = style({
   border: 0,
   background: 'transparent',
@@ -10,7 +11,7 @@ const Input = style({
   minWidth: 'auto',
   padding: 0,
   fontFamily: fontFamily,
-  fontSize: 10,
+  fontSize: FIELD_NAME_SIZE,
 });
 export const EditableText: React.FC<{
   value: string;

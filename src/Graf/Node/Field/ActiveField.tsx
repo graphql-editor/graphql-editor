@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ParserField, ValueDefinition } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { Colors } from '@/Colors';
-import { FIELD_HEIGHT } from '@/Graf/constants';
+import { FIELD_HEIGHT, FIELD_NAME_SIZE, FIELD_TYPE_SIZE } from '@/Graf/constants';
 import { ActiveFieldName, PaintFieldName } from './FieldName';
 import { ActiveType } from '@/Graf/Node/Type';
 import { NodeTypeOptionsMenu } from '@/Graf/Node/ContextMenu';
@@ -85,13 +85,13 @@ const Title = style({
   overflow: 'hidden',
 });
 const Name = style({
-  fontSize: 10,
+  fontSize: FIELD_NAME_SIZE,
   marginRight: 4,
   overflow: 'hidden',
   whiteSpace: 'nowrap',
   textOverflow: 'ellipsis',
 });
-const Type = style({ fontSize: 8, color: Colors.green[0] });
+const Type = style({ fontSize: FIELD_TYPE_SIZE, color: Colors.green[0] });
 const OptionsMenuContainer = style({
   position: 'absolute',
   top: 20,

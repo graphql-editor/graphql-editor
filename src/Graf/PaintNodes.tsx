@@ -8,7 +8,6 @@ import {
 } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { fontFamily } from '@/vars';
-import { FIELD_HEIGHT } from './constants';
 import { RootNode } from '@/Graf/Node';
 import { useTreesState } from '@/state/containers/trees';
 import { RootExtendNode } from './Node/RootExtendNode';
@@ -27,11 +26,6 @@ const Main = style({
 });
 export const PaintNodes: React.FC<PaintNodesProps> = ({ blur }) => {
   const { libraryTree, tree } = useTreesState();
-
-  const area = tree.nodes.length * 400 * FIELD_HEIGHT * 2;
-  const wArea = window.innerHeight * window.innerWidth;
-  const totalArea = Math.max(area / wArea, 1);
-  const width = Math.floor(Math.sqrt(totalArea) * 100);
   const baseTypes = [
     TypeDefinition.ObjectTypeDefinition,
     TypeDefinition.InterfaceTypeDefinition,
@@ -44,7 +38,7 @@ export const PaintNodes: React.FC<PaintNodesProps> = ({ blur }) => {
     <div
       className={Main}
       style={{
-        width: `${width}%`,
+        width: `100%`,
         ...(blur
           ? {
               opacity: 0.5,

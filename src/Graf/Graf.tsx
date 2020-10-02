@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { ParserField } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { fontFamily } from '@/vars';
@@ -14,7 +14,8 @@ export interface GrafProps {
 const Wrapper = style({
   width: '100%',
   height: '100%',
-  overflow: 'hidden',
+  overflowY: 'auto',
+  overflowX: 'hidden',
   position: 'relative',
   background: `#0b050d`,
 });
@@ -33,7 +34,7 @@ const Focus = style({
 let snapLock = true;
 
 export const Graf: React.FC<GrafProps> = ({ readonly }) => {
-  const grafRef = useRef<HTMLDivElement>(null);
+  const [grafRef, setGrafRef] = useState<HTMLDivElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [panRef, setPanRef] = useState<PanZoom>();
 
@@ -50,22 +51,26 @@ export const Graf: React.FC<GrafProps> = ({ readonly }) => {
     past,
     future,
   } = useTreesState();
-  useLayoutEffect(() => {
-    if (grafRef.current && wrapperRef.current && !panRef) {
-      const instance = panzoom(grafRef.current, {
-        maxZoom: 2.0,
+  useEffect(() => {
+    if (grafRef && wrapperRef.current && !panRef) {
+      const instance = panzoom(grafRef, {
+        maxZoom: 1,
         minZoom: 1,
         enableTextSelection: true,
         disableKeyboardInteraction: true,
-        bounds: true,
+        zoomDoubleClickSpeed: 1,
         beforeMouseDown: (e) => {
           return DOM.panLock;
         },
         beforeWheel: (e) => {
-          return DOM.scrollLock;
+          return true;
         },
         filterKey: () => {
           return DOM.keyLock;
+        },
+
+        onDoubleClick: (e) => {
+          return false;
         },
       });
       instance.on('panstart', () => (DOM.lock = true));
@@ -78,12 +83,22 @@ export const Graf: React.FC<GrafProps> = ({ readonly }) => {
       });
       setPanRef(instance);
     }
-    return () => panRef?.dispose();
-  }, [grafRef.current]);
+    if (!grafRef) {
+      panRef?.dispose();
+    }
+    return () => {
+      panRef?.dispose();
+      setPanRef(undefined);
+    };
+  }, [grafRef]);
   useEffect(() => {
     if (selectedNodeRef.current) {
       const n = selectedNodeRef.current;
       const nodePosition = n.getBoundingClientRect();
+      wrapperRef.current?.scrollTo({
+        top: nodePosition.top + (wrapperRef.current?.scrollTop || 0) - wrapperRef.current.offsetHeight / 4.0,
+        behavior: 'smooth',
+      });
       if (nodePosition && panRef && wrapperRef.current) {
         const distanceVector = {
           x:
@@ -98,7 +113,8 @@ export const Graf: React.FC<GrafProps> = ({ readonly }) => {
             wrapperRef.current.offsetHeight / 2.0 -
             nodePosition.height / 2.0,
         };
-        panRef?.moveBy(distanceVector.x, distanceVector.y, true);
+        distanceVector;
+        // panRef?.moveBy(distanceVector.x, distanceVector.y, true);
       }
     }
   }, [position]);
@@ -147,17 +163,23 @@ export const Graf: React.FC<GrafProps> = ({ readonly }) => {
     <div
       ref={wrapperRef}
       className={Wrapper}
+      style={{
+        cursor: grafRef ? 'grab' : 'auto',
+      }}
       onClick={() => {
         if (DOM.lock) return;
         DOM.scrollLock = false;
         setSelectedNode(undefined);
       }}
     >
-      <div ref={grafRef} className={Main}>
-        <PaintNodes blur={typeof selectedNode === 'string'} />
+      <div className={Main}>
+        <PaintNodes blur={!!selectedNode} />
         {node && position && wrapperRef.current && (
           <div
             className={Focus}
+            ref={(r) => {
+              setGrafRef(r);
+            }}
             style={{
               top: position.offsetTop - 10,
               left: position.offsetLeft - 10,
