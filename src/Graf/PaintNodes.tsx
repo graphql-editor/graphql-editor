@@ -11,9 +11,6 @@ import { fontFamily } from '@/vars';
 import { RootNode } from '@/Graf/Node';
 import { useTreesState } from '@/state/containers/trees';
 import { RootExtendNode } from './Node/RootExtendNode';
-export interface PaintNodesProps {
-  blur?: boolean;
-}
 const Main = style({
   width: '100%',
   position: 'relative',
@@ -24,7 +21,7 @@ const Main = style({
   fontFamily,
   transition: `opacity 0.25s ease-in-out`,
 });
-export const PaintNodes: React.FC<PaintNodesProps> = ({ blur }) => {
+export const PaintNodes: React.FC = () => {
   const { libraryTree, tree } = useTreesState();
   const baseTypes = [
     TypeDefinition.ObjectTypeDefinition,
@@ -39,11 +36,6 @@ export const PaintNodes: React.FC<PaintNodesProps> = ({ blur }) => {
       className={Main}
       style={{
         width: `100%`,
-        ...(blur
-          ? {
-              opacity: 0.5,
-            }
-          : {}),
       }}
     >
       {baseTypes.map((d) => (

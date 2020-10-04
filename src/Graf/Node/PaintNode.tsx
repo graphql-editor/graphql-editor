@@ -65,12 +65,27 @@ const MatchedSearchContainer = style({
 const NoMatchedSearchContainer = style({
   opacity: 0.3,
 });
+const UnRelatedNode = style({
+  opacity: 0.5,
+});
+const RelatedNode = style({
+  opacity: 1.0,
+});
 export const PaintNode: React.FC<NodeProps> = ({ node, isLibrary, isMatchedToSearch }) => {
   const thisNode = useRef<HTMLDivElement>(null);
-  const { setSelectedNode, setPosition } = useTreesState();
+  const { setSelectedNode, setPosition, relatedToSelected } = useTreesState();
+  const relatedNodes = relatedToSelected();
+  let relationClass = '';
+  if (relatedNodes) {
+    if (relatedNodes.includes(node.name)) {
+      relationClass = RelatedNode;
+    } else {
+      relationClass = UnRelatedNode;
+    }
+  }
   return (
     <div
-      className={`${NodeContainer} ${isLibrary ? LibraryNodeContainer : MainNodeContainer} ${
+      className={`${NodeContainer} ${relationClass} ${isLibrary ? LibraryNodeContainer : MainNodeContainer} ${
         isMatchedToSearch ? MatchedSearchContainer : NoMatchedSearchContainer
       }`}
       ref={thisNode}

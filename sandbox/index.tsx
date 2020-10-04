@@ -37,8 +37,8 @@ export const App = () => {
   useEffect(() => {
     setTimeout(() => {
       setMySchema({
-        code: schemas.pizza,
-        libraries: schemas.pizzaLibrary,
+        code: schemas.github,
+        libraries: '',
       });
     }, 1000);
   }, []);

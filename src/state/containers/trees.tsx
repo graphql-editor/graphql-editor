@@ -1,5 +1,5 @@
 import { createContainer } from 'unstated-next';
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { ParserTree, AllTypes } from 'graphql-zeus';
 const useTreesStateContainer = createContainer(() => {
   const [tree, setTree] = useState<ParserTree>({ nodes: [] });
@@ -32,6 +32,13 @@ const useTreesStateContainer = createContainer(() => {
     }
   };
 
+  const relatedToSelected = useCallback(() => {
+    const node = tree.nodes.find((n) => n.name === selectedNode?.name && n.data.type === selectedNode.dataType);
+    if (node) {
+      return node.args?.map((a) => a.type.name);
+    }
+  }, [selectedNode]);
+
   return {
     tree,
     setTree,
@@ -48,6 +55,7 @@ const useTreesStateContainer = createContainer(() => {
     undos,
     setUndos,
     future,
+    relatedToSelected,
   };
 });
 

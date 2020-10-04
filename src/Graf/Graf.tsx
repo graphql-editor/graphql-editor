@@ -173,7 +173,7 @@ export const Graf: React.FC<GrafProps> = ({ readonly }) => {
       }}
     >
       <div className={Main}>
-        <PaintNodes blur={!!selectedNode} />
+        <PaintNodes />
         {node && position && wrapperRef.current && (
           <div
             className={Focus}
