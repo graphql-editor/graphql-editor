@@ -95,6 +95,9 @@ export const CodePane = (props: CodePaneProps) => {
   }, [size]);
   useEffect(() => {
     monacoGql?.setValue(schema);
+    Workers.validate(schema, libraries).then((errors) => {
+      setErrors(errors);
+    });
   }, [schema]);
   useLayoutEffect(() => {
     monaco.editor.remeasureFonts();

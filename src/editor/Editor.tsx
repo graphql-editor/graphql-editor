@@ -112,17 +112,22 @@ export const Editor = ({
       setTree({ nodes: [] });
       return;
     }
-    if (schema.libraries) {
-      const excludeLibraryNodesFromDiagram = Parser.parse(schema.libraries);
-      const parsedResult = Parser.parse(code, [], schema.libraries);
-      setTree({
-        nodes: parsedResult.nodes.filter(
-          (n) =>
-            !excludeLibraryNodesFromDiagram.nodes.find((eln) => eln.name === n.name && eln.data.type === n.data.type),
-        ),
-      });
-    } else {
-      setTree(Parser.parse(code));
+    try {
+      if (schema.libraries) {
+        const excludeLibraryNodesFromDiagram = Parser.parse(schema.libraries);
+        const parsedResult = Parser.parse(code, [], schema.libraries);
+        setTree({
+          nodes: parsedResult.nodes.filter(
+            (n) =>
+              !excludeLibraryNodesFromDiagram.nodes.find((eln) => eln.name === n.name && eln.data.type === n.data.type),
+          ),
+        });
+      } else {
+        setTree(Parser.parse(code));
+      }
+    } catch (error) {
+      console.log('Dupa');
+      console.log(error);
     }
   }, [code]);
 

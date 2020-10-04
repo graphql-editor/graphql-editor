@@ -37,7 +37,7 @@ export const App = () => {
   useEffect(() => {
     setTimeout(() => {
       setMySchema({
-        code: schemas.github,
+        code: schemas.errorSchema,
         libraries: '',
       });
     }, 1000);
