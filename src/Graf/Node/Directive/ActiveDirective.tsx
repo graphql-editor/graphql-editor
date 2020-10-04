@@ -3,8 +3,8 @@ import { ParserField, ValueDefinition } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { Colors } from '@/Colors';
 import { FIELD_HEIGHT } from '@/Graf/constants';
-import { Plus, Minus } from '@/Graf/icons';
 import { ConvertValueToEditableString } from '@/GraphQL/Convert';
+import { FieldPort } from '../components';
 
 interface FieldProps {
   node: ParserField;
@@ -49,26 +49,6 @@ const Main = style({
         },
       },
     },
-    '.NodeFieldPort': {
-      position: 'relative',
-      width: 16,
-      height: 16,
-      borderRadius: 8,
-      fontSize: 7,
-      margin: `0 4px`,
-      alignItems: 'center',
-      display: 'flex',
-      justifyContent: 'center',
-      backgroundColor: Colors.blue[6],
-      cursor: 'pointer',
-      opacity: 0.0,
-      transition: 'all 0.25s ease-in-out',
-      $nest: {
-        '&:hover': {
-          opacity: `1.0 !important`,
-        },
-      },
-    },
   },
 });
 const LastField = style({
@@ -105,9 +85,14 @@ export const ActiveDirective: React.FC<FieldProps> = ({
   return (
     <div className={`${Main} ${last ? LastField : ''} ${inputOpen || outputOpen ? 'Active' : ''}`}>
       {!inputDisabled && !isLocked && !isEnumValue ? (
-        <div className={'NodeFieldPort'} onClick={onInputClick}>
-          {inputOpen ? <Minus height={6} width={6} /> : <Plus height={8} width={8} />}
-        </div>
+        <FieldPort
+          onClick={onInputClick}
+          open={inputOpen}
+          info={{
+            message: 'Edit directive arguments',
+            placement: 'left',
+          }}
+        />
       ) : (
         <div className={'NodeFieldPortPlaceholder'} />
       )}
@@ -115,9 +100,14 @@ export const ActiveDirective: React.FC<FieldProps> = ({
         <div className={Name}>{ConvertValueToEditableString(node)}</div>
       </div>
       {!outputDisabled && (
-        <div className={'NodeFieldPort'} onClick={onOutputClick}>
-          {outputOpen ? <Minus height={6} width={6} /> : <Plus height={8} width={8} />}
-        </div>
+        <FieldPort
+          onClick={onOutputClick}
+          open={outputOpen}
+          info={{
+            message: `Expand ${node.type.name} details`,
+            placement: 'right',
+          }}
+        />
       )}
       {outputDisabled && isLocked && <div className={'NodeFieldPortPlaceholder'} />}
     </div>

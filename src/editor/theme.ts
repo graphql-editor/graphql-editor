@@ -1,11 +1,11 @@
-import { Colors, mix } from '../Colors';
+import { Colors } from '../Colors';
 export const GraphQLColors: Record<string, string> = {
   type: Colors.main[0],
   union: Colors.main[0],
   input: Colors.blue[0],
   scalar: Colors.green[0],
   interface: Colors.sky[0],
-  enum: mix(Colors.blue[0], Colors.main[0]),
+  enum: Colors.yellow[0],
   directive: Colors.pink[0],
   extend: Colors.orange[0],
   String: Colors.green[0],

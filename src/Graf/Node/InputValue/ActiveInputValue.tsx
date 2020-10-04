@@ -6,8 +6,7 @@ import { FIELD_HEIGHT } from '@/Graf/constants';
 import { ActiveType } from '@/Graf/Node/Type';
 import { NodeTypeOptionsMenu } from '@/Graf/Node/ContextMenu';
 import { ActiveInputValueName } from './ActiveInputValueName';
-import { Arrq, Plus, Minus } from '@/Graf/icons';
-import { EditableDefaultValue } from '@/Graf/Node/components';
+import { EditableDefaultValue, FieldPort } from '@/Graf/Node/components';
 import { isScalarArgument } from '@/GraphQL/Resolve';
 import { ConvertStringToObject, ConvertValueNodeToString } from '@/GraphQL/Convert';
 import { useTreesState } from '@/state/containers/trees';
@@ -50,26 +49,6 @@ const Main = style({
       $nest: {
         '.NodeFieldPort': {
           opacity: 0.5,
-        },
-      },
-    },
-    '.NodeFieldPort': {
-      position: 'relative',
-      width: 16,
-      height: 16,
-      borderRadius: 8,
-      fontSize: 7,
-      margin: `0 4px`,
-      alignItems: 'center',
-      display: 'flex',
-      justifyContent: 'center',
-      backgroundColor: Colors.blue[6],
-      cursor: 'pointer',
-      opacity: 0.0,
-      transition: 'all 0.25s ease-in-out',
-      $nest: {
-        '&:hover': {
-          opacity: `1.0 !important`,
         },
       },
     },
@@ -157,9 +136,14 @@ export const ActiveInputValue: React.FC<FieldProps> = ({
       }`}
     >
       {!inputDisabled && !isLocked ? (
-        <div className={'NodeFieldPort'} onClick={onInputClick}>
-          {inputOpen ? <Minus height={6} width={6} /> : <Plus height={8} width={8} />}
-        </div>
+        <FieldPort
+          onClick={onInputClick}
+          open={inputOpen}
+          info={{
+            message: 'Edit input value directives',
+            placement: 'left',
+          }}
+        />
       ) : (
         <div className={'NodeFieldPortPlaceholder'} />
       )}
@@ -193,26 +177,28 @@ export const ActiveInputValue: React.FC<FieldProps> = ({
         />
       </div>
       {!isLocked && (
-        <>
-          <div
-            className={'NodeFieldPort'}
-            onClick={() => {
-              setOptionsMenuOpen(!optionsMenuOpen);
-            }}
-          >
-            <Arrq height={8} width={8} />
-            {optionsMenuOpen && (
-              <div className={OptionsMenuContainer}>
-                <NodeTypeOptionsMenu hideMenu={() => setOptionsMenuOpen(false)} node={node} />
-              </div>
-            )}
-          </div>
-        </>
+        <FieldPort
+          icons={{ closed: 'Arrq', open: 'Arrq' }}
+          onClick={() => {
+            setOptionsMenuOpen(!optionsMenuOpen);
+          }}
+        >
+          {optionsMenuOpen && (
+            <div className={OptionsMenuContainer}>
+              <NodeTypeOptionsMenu hideMenu={() => setOptionsMenuOpen(false)} node={node} />
+            </div>
+          )}
+        </FieldPort>
       )}
       {!outputDisabled && (
-        <div className={'NodeFieldPort'} onClick={onOutputClick}>
-          {outputOpen ? <Minus height={6} width={6} /> : <Plus height={8} width={8} />}
-        </div>
+        <FieldPort
+          onClick={onOutputClick}
+          open={outputOpen}
+          info={{
+            message: `Expand ${node.type.name} details`,
+            placement: 'right',
+          }}
+        />
       )}
       {outputDisabled && isLocked && <div className={'NodeFieldPortPlaceholder'} />}
     </div>
