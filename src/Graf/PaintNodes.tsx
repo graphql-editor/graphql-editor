@@ -14,10 +14,6 @@ import { RootExtendNode } from './Node/RootExtendNode';
 const Main = style({
   width: '100%',
   position: 'relative',
-  display: 'flex',
-  flexDirection: 'row',
-  flexWrap: 'wrap',
-  justifyContent: 'center',
   fontFamily,
   transition: `opacity 0.25s ease-in-out`,
 });
@@ -32,12 +28,7 @@ export const PaintNodes: React.FC = () => {
     TypeDefinition.InputObjectTypeDefinition,
   ];
   return (
-    <div
-      className={Main}
-      style={{
-        width: `100%`,
-      }}
-    >
+    <div className={Main}>
       {baseTypes.map((d) => (
         <RootNode
           key={d}

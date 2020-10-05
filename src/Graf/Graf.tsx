@@ -8,16 +8,18 @@ import { PaintNodes } from './PaintNodes';
 import { ActiveNode } from '@/Graf/Node';
 import { useTreesState } from '@/state/containers/trees';
 import { useIO, KeyboardActions } from './IO';
+import { useErrorsState } from '@/state/containers';
+import { Colors } from '@/Colors';
 export interface GrafProps {
   readonly?: boolean;
 }
 const Wrapper = style({
   width: '100%',
   height: '100%',
-  overflowY: 'auto',
   overflowX: 'hidden',
   position: 'relative',
   background: `#0b050d`,
+  overflowY: 'auto',
 });
 const Main = style({
   width: '100%',
@@ -29,6 +31,26 @@ const Main = style({
 });
 const Focus = style({
   position: 'absolute',
+});
+const ErrorLock = style({
+  width: '100%',
+  height: '100%',
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  background: `${Colors.main[9]}99`,
+  cursor: 'auto',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+});
+const ErrorLockMessage = style({
+  width: `clamp(200px,50vw,500px)`,
+  fontFamily,
+  fontSize: 14,
+  padding: 30,
+  color: Colors.red[0],
+  background: Colors.main[10],
 });
 
 let snapLock = true;
@@ -51,6 +73,7 @@ export const Graf: React.FC<GrafProps> = ({ readonly }) => {
     past,
     future,
   } = useTreesState();
+  const { lockGraf } = useErrorsState();
   useEffect(() => {
     if (grafRef && wrapperRef.current && !panRef) {
       const instance = panzoom(grafRef, {
@@ -173,45 +196,56 @@ export const Graf: React.FC<GrafProps> = ({ readonly }) => {
       }}
     >
       <div className={Main}>
-        <PaintNodes />
-        {node && position && wrapperRef.current && (
-          <div
-            className={Focus}
-            ref={(r) => {
-              setGrafRef(r);
-            }}
-            style={{
-              top: position.offsetTop - 10,
-              left: position.offsetLeft - 10,
-            }}
-          >
-            <ActiveNode
-              readonly={readonly}
-              onDelete={() => {
-                const deletedNode = tree.nodes.findIndex((n) => n.name === node!.name)!;
-                const allNodes = [...tree.nodes];
-                allNodes.splice(deletedNode, 1);
-                setSelectedNode(undefined);
-                setTree({ nodes: allNodes });
-                DOM.panLock = false;
-              }}
-              onDuplicate={() => {
-                const allNodes = [...tree.nodes];
-                allNodes.push(
-                  JSON.parse(
-                    JSON.stringify({
-                      ...node,
-                      name: node?.name + 'Copy',
-                    }),
-                  ),
-                );
-                setTree({ nodes: allNodes });
-              }}
-              node={node}
-            />
-          </div>
+        {!lockGraf && (
+          <>
+            <PaintNodes />
+            {node && position && wrapperRef.current && (
+              <div
+                className={Focus}
+                ref={(r) => {
+                  setGrafRef(r);
+                }}
+                style={{
+                  top: position.offsetTop - 10,
+                  left: position.offsetLeft - 10,
+                }}
+              >
+                <ActiveNode
+                  readonly={readonly}
+                  onDelete={() => {
+                    const deletedNode = tree.nodes.findIndex((n) => n.name === node!.name)!;
+                    const allNodes = [...tree.nodes];
+                    allNodes.splice(deletedNode, 1);
+                    setSelectedNode(undefined);
+                    setTree({ nodes: allNodes });
+                    DOM.panLock = false;
+                  }}
+                  onDuplicate={() => {
+                    const allNodes = [...tree.nodes];
+                    allNodes.push(
+                      JSON.parse(
+                        JSON.stringify({
+                          ...node,
+                          name: node?.name + 'Copy',
+                        }),
+                      ),
+                    );
+                    setTree({ nodes: allNodes });
+                  }}
+                  node={node}
+                />
+              </div>
+            )}
+          </>
         )}
       </div>
+      {lockGraf && (
+        <div className={ErrorLock}>
+          <div
+            className={ErrorLockMessage}
+          >{`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema`}</div>
+        </div>
+      )}
     </div>
   );
 };

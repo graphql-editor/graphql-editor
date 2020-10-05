@@ -33,7 +33,9 @@ const useTreesStateContainer = createContainer(() => {
   };
 
   const relatedToSelected = useCallback(() => {
-    const node = tree.nodes.find((n) => n.name === selectedNode?.name && n.data.type === selectedNode.dataType);
+    const node =
+      tree.nodes.find((n) => n.name === selectedNode?.name && n.data.type === selectedNode.dataType) ||
+      libraryTree.nodes.find((n) => n.name === selectedNode?.name && n.data.type === selectedNode.dataType);
     if (node) {
       return node.args?.map((a) => a.type.name);
     }

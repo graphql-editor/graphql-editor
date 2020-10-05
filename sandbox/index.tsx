@@ -31,7 +31,7 @@ export const Actions = style({
 
 export const App = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
-    code: '',
+    code: schemas.muskSchema,
     libraries: '',
   });
   useEffect(() => {

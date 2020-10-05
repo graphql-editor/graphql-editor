@@ -13,6 +13,7 @@ import { Workers } from '@/worker';
 import { style } from 'typestyle';
 import { Colors } from '@/Colors';
 import { useTreesState } from '@/state/containers/trees';
+import { useErrorsState } from '@/state/containers';
 
 export const Main = style({
   display: 'flex',
@@ -35,7 +36,7 @@ export const ErrorContainer = style({
   width: `calc(100% - 40px)`,
   padding: 20,
   color: Colors.red[0],
-  background: `${Colors.grey[9]}ee`,
+  background: `${Colors.red[6]}ee`,
   margin: 20,
   borderRadius: 4,
   border: `1px solid ${Colors.red[0]}`,
@@ -87,19 +88,23 @@ export const Editor = ({
   const [code, setCode] = useState('');
   const [sidebarSize, setSidebarSize] = useState<string | number>(initialSizeOfSidebar);
   const [menuState, setMenuState] = useState<ActivePane>(activePane);
-  const [errors, setErrors] = useState<string>();
+  const { grafErrors, setGrafErrors, setCodeErrors, setLockGraf } = useErrorsState();
 
   const { tree, setSnapshots, setUndos, setTree, setLibraryTree } = useTreesState();
 
   const reset = () => {
     setSnapshots([]);
     setUndos([]);
-    setErrors(undefined);
+    setGrafErrors(undefined);
   };
 
   useEffect(() => {
     if (schema.code !== code) {
       setCode(schema.code);
+      Workers.validate(schema.code, schema.libraries).then((errors) => {
+        setCodeErrors(errors);
+        setLockGraf(!!errors.length);
+      });
     }
   }, [schema.code]);
 
@@ -169,10 +174,10 @@ export const Editor = ({
         treeLock = true;
         Workers.validate(graphql, schema.libraries).then((errors) => {
           if (errors.length > 0) {
-            setErrors(errors.map((e) => e.text).join('\n\n'));
+            setGrafErrors(errors.map((e) => e.text).join('\n\n'));
             return;
           }
-          setErrors(undefined);
+          setGrafErrors(undefined);
           setCode(graphql);
           if (onSchemaChange) {
             onSchemaChange({
@@ -183,7 +188,7 @@ export const Editor = ({
         });
       }
     } catch (error) {
-      setErrors(error.message);
+      setGrafErrors(error.message);
       return;
     }
   }, [tree]);
@@ -236,7 +241,7 @@ export const Editor = ({
       )}
       {menuState !== 'code' && (
         <div className={ErrorOuterContainer}>
-          {errors && <div className={ErrorContainer}>{errors}</div>}
+          {grafErrors && <div className={ErrorContainer}>{grafErrors}</div>}
           <Graf readonly={readonly} />
         </div>
       )}

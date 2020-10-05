@@ -6,10 +6,10 @@ import { StatusDot, TitleOfPane } from './Components';
 import * as styles from './style/Code';
 import { StatusDotProps } from './style/Components';
 import { theme, language, conf, settings, mapEditorErrorToMonacoDecoration } from './monaco';
-import { EditorError } from '@/validation';
 import { Workers } from '@/worker';
 import { cypressGet, GraphQLEditorCypress } from '@/cypress_constants';
 import { fontFamily } from '@/vars';
+import { useErrorsState } from '@/state/containers';
 
 export interface CodePaneOuterProps {
   readonly?: boolean;
@@ -36,9 +36,8 @@ export const CodePane = (props: CodePaneProps) => {
   const editor = useRef<HTMLDivElement>(null);
   const [monacoGql, setMonacoGql] = useState<monaco.editor.IStandaloneCodeEditor>();
   const [decorationIds, setDecorationIds] = useState<string[]>([]);
-  const [errors, setErrors] = useState<EditorError[]>([]);
-  const generateEnabled = !readonly && errors.length === 0;
-
+  const { codeErrors, setCodeErrors, setLockGraf } = useErrorsState();
+  const generateEnabled = !readonly && codeErrors.length === 0;
   useEffect(() => {
     if (editor.current) {
       monacoGql?.dispose();
@@ -56,7 +55,7 @@ export const CodePane = (props: CodePaneProps) => {
       m.onDidChangeModelContent((e) => {
         const value = m!.getModel()!.getValue();
         Workers.validate(value, libraries).then((errors) => {
-          setErrors(errors);
+          setCodeErrors(errors);
         });
       });
       m.onDidBlurEditorText(() => {
@@ -68,6 +67,7 @@ export const CodePane = (props: CodePaneProps) => {
         Workers.validate(value, libraries).then((errors) => {
           if (errors.length === 0) {
             onChange(value);
+            setLockGraf(false);
           }
         });
       });
@@ -78,11 +78,11 @@ export const CodePane = (props: CodePaneProps) => {
   }, [libraries]);
   useEffect(() => {
     if (monacoGql) {
-      const monacoDecorations = errors.map(mapEditorErrorToMonacoDecoration);
+      const monacoDecorations = codeErrors.map(mapEditorErrorToMonacoDecoration);
       const newDecorationIds = monacoGql.deltaDecorations(decorationIds, monacoDecorations);
       setDecorationIds(newDecorationIds);
     }
-  }, [JSON.stringify(errors)]);
+  }, [JSON.stringify(codeErrors), monacoGql]);
   useEffect(() => {
     function handleResize() {
       monacoGql?.layout();
@@ -95,9 +95,6 @@ export const CodePane = (props: CodePaneProps) => {
   }, [size]);
   useEffect(() => {
     monacoGql?.setValue(schema);
-    Workers.validate(schema, libraries).then((errors) => {
-      setErrors(errors);
-    });
   }, [schema]);
   useLayoutEffect(() => {
     monaco.editor.remeasureFonts();

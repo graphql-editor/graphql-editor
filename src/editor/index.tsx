@@ -1,11 +1,13 @@
 import React from 'react';
 import { Editor, EditorProps } from './Editor';
-import { TreesStateProvider } from '@/state/containers/trees';
+import { TreesStateProvider, ErrorsStateProvider } from '@/state/containers';
 
 export const GraphQLEditor = (props: EditorProps) => {
   return (
     <TreesStateProvider>
-      <Editor {...props} />
+      <ErrorsStateProvider>
+        <Editor {...props} />
+      </ErrorsStateProvider>
     </TreesStateProvider>
   );
 };
