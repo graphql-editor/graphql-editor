@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { render } from 'react-dom';
 import { style } from 'typestyle';
 import { GraphQLEditor } from '../src/index';
@@ -34,14 +34,6 @@ export const App = () => {
     code: schemas.muskSchema,
     libraries: '',
   });
-  useEffect(() => {
-    setTimeout(() => {
-      setMySchema({
-        code: schemas.errorSchema,
-        libraries: '',
-      });
-    }, 1000);
-  }, []);
   const [hide, setHide] = useState(false);
   return (
     <div className={UiDiagram}>
@@ -74,7 +66,6 @@ export const App = () => {
           onSchemaChange={(props) => {
             setMySchema(props);
           }}
-          initialSizeOfSidebar={'25vw'}
           schema={mySchema}
         />
       )}

@@ -9,9 +9,7 @@ import { ActiveNode } from '@/Graf/Node';
 import { useTreesState } from '@/state/containers/trees';
 import { KeyboardActions, useErrorsState, useIOState, useNavigationState } from '@/state/containers';
 import { Colors } from '@/Colors';
-export interface GrafProps {
-  readonly?: boolean;
-}
+export interface GrafProps {}
 const Wrapper = style({
   width: '100%',
   height: '100%',
@@ -54,7 +52,7 @@ const ErrorLockMessage = style({
 
 let snapLock = true;
 
-export const Graf: React.FC<GrafProps> = ({ readonly }) => {
+export const Graf: React.FC<GrafProps> = () => {
   const [grafRef, setGrafRef] = useState<HTMLDivElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [panRef, setPanRef] = useState<PanZoom>();
@@ -71,6 +69,7 @@ export const Graf: React.FC<GrafProps> = ({ readonly }) => {
     snapshots,
     past,
     future,
+    readonly,
   } = useTreesState();
   const { lockGraf } = useErrorsState();
   const { setMenuState } = useNavigationState();

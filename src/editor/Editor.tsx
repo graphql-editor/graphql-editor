@@ -90,7 +90,7 @@ export const Editor = ({
   const { menuState, setMenuState } = useNavigationState();
   const { grafErrors, setGrafErrors, setCodeErrors, setLockGraf } = useErrorsState();
 
-  const { tree, setSnapshots, setUndos, setTree, setLibraryTree } = useTreesState();
+  const { tree, setSnapshots, setUndos, setTree, setLibraryTree, setReadonly } = useTreesState();
 
   const reset = () => {
     setSnapshots([]);
@@ -107,6 +107,9 @@ export const Editor = ({
       });
     }
   }, [schema.code]);
+  useEffect(() => {
+    setReadonly(!!readonly);
+  }, [readonly]);
 
   useEffect(() => {
     if (treeLock) {
@@ -240,7 +243,7 @@ export const Editor = ({
       {menuState !== 'code' && (
         <div className={ErrorOuterContainer}>
           {grafErrors && <div className={ErrorContainer}>{grafErrors}</div>}
-          <Graf readonly={readonly} />
+          <Graf />
         </div>
       )}
     </div>

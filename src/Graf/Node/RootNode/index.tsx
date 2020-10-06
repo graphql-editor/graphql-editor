@@ -43,7 +43,7 @@ const NodeContainer = style({
 
 export const RootNode: React.FC<RootNodeProps> = ({ node, libraryNode }) => {
   const thisNode = useRef<HTMLDivElement>(null);
-  const { tree, setTree } = useTreesState();
+  const { tree, setTree, readonly } = useTreesState();
 
   const [filterNodes, setFilterNodes] = useState('');
 
@@ -59,7 +59,7 @@ export const RootNode: React.FC<RootNodeProps> = ({ node, libraryNode }) => {
           onChange={setFilterNodes}
         />
       </div>
-      {
+      {!readonly && (
         <NewNode
           node={node}
           onCreate={(name) => {
@@ -86,7 +86,7 @@ export const RootNode: React.FC<RootNodeProps> = ({ node, libraryNode }) => {
             setTree({ ...tree });
           }}
         />
-      }
+      )}
       {node.args?.map((a, i) => {
         return (
           <PaintNode
