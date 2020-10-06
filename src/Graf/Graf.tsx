@@ -7,8 +7,7 @@ import { DOM } from './DOM';
 import { PaintNodes } from './PaintNodes';
 import { ActiveNode } from '@/Graf/Node';
 import { useTreesState } from '@/state/containers/trees';
-import { useIO, KeyboardActions } from './IO';
-import { useErrorsState } from '@/state/containers';
+import { KeyboardActions, useErrorsState, useIOState, useNavigationState } from '@/state/containers';
 import { Colors } from '@/Colors';
 export interface GrafProps {
   readonly?: boolean;
@@ -39,7 +38,7 @@ const ErrorLock = style({
   top: 0,
   left: 0,
   background: `${Colors.main[9]}99`,
-  cursor: 'auto',
+  cursor: 'pointer',
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
@@ -74,6 +73,8 @@ export const Graf: React.FC<GrafProps> = ({ readonly }) => {
     future,
   } = useTreesState();
   const { lockGraf } = useErrorsState();
+  const { setMenuState } = useNavigationState();
+  const { setActions } = useIOState();
   useEffect(() => {
     if (grafRef && wrapperRef.current && !panRef) {
       const instance = panzoom(grafRef, {
@@ -142,25 +143,6 @@ export const Graf: React.FC<GrafProps> = ({ readonly }) => {
     }
   }, [position]);
 
-  useIO({
-    on: (action) => {
-      if (action === KeyboardActions.Undo) {
-        const p = past();
-        if (p) {
-          snapLock = true;
-          setTree(JSON.parse(p));
-        }
-      }
-      if (action === KeyboardActions.Redo) {
-        const f = future();
-        if (f) {
-          snapLock = true;
-          setTree(JSON.parse(f));
-        }
-      }
-    },
-  });
-
   useEffect(() => {
     if (snapLock) {
       snapLock = false;
@@ -175,6 +157,26 @@ export const Graf: React.FC<GrafProps> = ({ readonly }) => {
       setSnapshots([...snapshots, copyTree]);
     }
   }, [tree]);
+
+  useEffect(() => {
+    setActions((acts) => ({
+      ...acts,
+      [KeyboardActions.Undo]: () => {
+        const p = past();
+        if (p) {
+          snapLock = true;
+          setTree(JSON.parse(p));
+        }
+      },
+      [KeyboardActions.Redo]: () => {
+        const f = future();
+        if (f) {
+          snapLock = true;
+          setTree(JSON.parse(f));
+        }
+      },
+    }));
+  }, [snapshots]);
 
   let node: ParserField | undefined;
   if (selectedNode) {
@@ -240,7 +242,12 @@ export const Graf: React.FC<GrafProps> = ({ readonly }) => {
         )}
       </div>
       {lockGraf && (
-        <div className={ErrorLock}>
+        <div
+          className={ErrorLock}
+          onClick={() => {
+            setMenuState('code-diagram');
+          }}
+        >
           <div
             className={ErrorLockMessage}
           >{`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema`}</div>

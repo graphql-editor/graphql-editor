@@ -9,7 +9,7 @@ import { theme, language, conf, settings, mapEditorErrorToMonacoDecoration } fro
 import { Workers } from '@/worker';
 import { cypressGet, GraphQLEditorCypress } from '@/cypress_constants';
 import { fontFamily } from '@/vars';
-import { useErrorsState } from '@/state/containers';
+import { KeyboardActions, useErrorsState, useIOState } from '@/state/containers';
 
 export interface CodePaneOuterProps {
   readonly?: boolean;
@@ -37,6 +37,7 @@ export const CodePane = (props: CodePaneProps) => {
   const [monacoGql, setMonacoGql] = useState<monaco.editor.IStandaloneCodeEditor>();
   const [decorationIds, setDecorationIds] = useState<string[]>([]);
   const { codeErrors, setCodeErrors, setLockGraf } = useErrorsState();
+  const { setActions } = useIOState();
   const generateEnabled = !readonly && codeErrors.length === 0;
   useEffect(() => {
     if (editor.current) {
@@ -94,14 +95,39 @@ export const CodePane = (props: CodePaneProps) => {
     monacoGql?.layout();
   }, [size]);
   useEffect(() => {
-    monacoGql?.setValue(schema);
-  }, [schema]);
+    const v = monacoGql?.getModel()?.getValue();
+    if (v !== schema) {
+      const cursorPos = monacoGql?.getPosition();
+      monacoGql?.setValue(schema);
+      if (cursorPos) {
+        monacoGql?.setPosition(cursorPos);
+      }
+    }
+  }, [schema, monacoGql]);
   useLayoutEffect(() => {
     monaco.editor.remeasureFonts();
   }, [schema]);
 
   const monacoEditorModel = monacoGql?.getModel();
   const monacoEditorValue = monacoEditorModel && monacoEditorModel.getValue();
+  useEffect(() => {
+    setActions((acts) => ({
+      ...acts,
+      [KeyboardActions.Save]: () => {
+        const v = monacoGql?.getModel()?.getValue();
+        if (v && generateEnabled) {
+          Workers.validate(v, libraries).then((errors) => {
+            if (errors.length === 0) {
+              onChange(v);
+              setLockGraf(false);
+              return;
+            }
+          });
+        }
+      },
+    }));
+  }, [monacoGql, codeErrors]);
+
   const holder = useRef<HTMLDivElement>(null);
   const syncStatus = readonly
     ? StatusDotProps.readonly

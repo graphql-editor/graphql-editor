@@ -13,7 +13,7 @@ import { Workers } from '@/worker';
 import { style } from 'typestyle';
 import { Colors } from '@/Colors';
 import { useTreesState } from '@/state/containers/trees';
-import { useErrorsState } from '@/state/containers';
+import { useErrorsState, useNavigationState } from '@/state/containers';
 
 export const Main = style({
   display: 'flex',
@@ -87,7 +87,7 @@ export const Editor = ({
 }: EditorProps) => {
   const [code, setCode] = useState('');
   const [sidebarSize, setSidebarSize] = useState<string | number>(initialSizeOfSidebar);
-  const [menuState, setMenuState] = useState<ActivePane>(activePane);
+  const { menuState, setMenuState } = useNavigationState();
   const { grafErrors, setGrafErrors, setCodeErrors, setLockGraf } = useErrorsState();
 
   const { tree, setSnapshots, setUndos, setTree, setLibraryTree } = useTreesState();
@@ -131,8 +131,7 @@ export const Editor = ({
         setTree(Parser.parse(code));
       }
     } catch (error) {
-      console.log('Dupa');
-      console.log(error);
+      // TODO: Catch the error and dispaly
     }
   }, [code]);
 
@@ -168,7 +167,6 @@ export const Editor = ({
       return;
     }
     try {
-      //TODO: UNNAMED NODES
       const graphql = TreeToGraphQL.parse(tree);
       if (graphql !== code) {
         treeLock = true;
