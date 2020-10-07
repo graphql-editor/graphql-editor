@@ -171,7 +171,7 @@ export const Editor = ({
     }
     try {
       const graphql = TreeToGraphQL.parse(tree);
-      if (graphql !== code) {
+      if (graphql !== code || (grafErrors?.length || 0) > 0) {
         treeLock = true;
         Workers.validate(graphql, schema.libraries).then((errors) => {
           if (errors.length > 0) {
