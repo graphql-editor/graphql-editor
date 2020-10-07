@@ -36,8 +36,8 @@ const Title = style({
   alignItems: 'baseline',
   overflow: 'hidden',
 });
-const Name = style({ fontSize: 10, marginRight: 4, overflow: 'hidden' });
-const Type = style({ fontSize: 8, color: Colors.green[0] });
+const Name = style({ fontSize: 12, marginRight: 4, overflow: 'hidden' });
+const Type = style({ fontSize: 10, color: Colors.green[0] });
 export const PaintField: React.FC<PaintFieldProps> = ({ node, last, parentNodeTypeName }) => {
   return (
     <div className={`NodeType-${parentNodeTypeName} ${Main} ${last ? LastField : ''}`}>

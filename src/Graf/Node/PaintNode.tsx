@@ -63,10 +63,10 @@ const MatchedSearchContainer = style({
   opacity: 1,
 });
 const NoMatchedSearchContainer = style({
-  opacity: 0.3,
+  opacity: 0.2,
 });
 const UnRelatedNode = style({
-  opacity: 0.5,
+  opacity: 0.2,
 });
 const RelatedNode = style({
   opacity: 1.0,

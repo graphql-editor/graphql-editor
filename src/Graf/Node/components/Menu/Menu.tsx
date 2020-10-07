@@ -6,7 +6,7 @@ const Triangle = style({
   height: 0,
   borderLeft: `10px solid transparent`,
   borderRight: `10px solid transparent`,
-  borderBottom: `15px solid ${Colors.grey[10]}`,
+  borderBottom: `15px solid ${Colors.pink[10]}`,
   margin: 'auto',
   marginBottom: -1,
 });
@@ -17,7 +17,7 @@ const Wrapper = style({
   borderRadius: 4,
 });
 const Content = style({
-  background: Colors.grey[10],
+  background: Colors.pink[10],
   borderRadius: 4,
 });
 

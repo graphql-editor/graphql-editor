@@ -66,7 +66,7 @@ const Title = style({
   overflow: 'hidden',
 });
 const Name = style({ fontSize: 10, marginRight: 4, overflow: 'hidden' });
-const Type = style({ fontSize: 8, color: Colors.green[0] });
+const Type = style({ fontSize: 10, color: Colors.green[0] });
 const OptionsMenuContainer = style({
   position: 'absolute',
   top: 20,
@@ -165,7 +165,7 @@ export const ActiveInputValue: React.FC<FieldProps> = ({
         </div>
         <EditableDefaultValue
           value={ConvertValueNodeToString(node)}
-          style={{ fontSize: 8, marginLeft: 5 }}
+          style={{ fontSize: 10, marginLeft: 5 }}
           onChange={
             isLocked
               ? undefined

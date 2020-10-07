@@ -31,8 +31,8 @@ export const Actions = style({
 
 export const App = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
-    code: schemas.muskSchema,
-    libraries: '',
+    code: schemas.pizza,
+    libraries: schemas.pizzaLibrary,
   });
   const [hide, setHide] = useState(false);
   return (

@@ -173,7 +173,7 @@ export const ActiveArgument: React.FC<FieldProps> = ({
         </div>
         <EditableDefaultValue
           value={resolveValueFromNode(node, parentNode)}
-          style={{ fontSize: 8, marginLeft: 5 }}
+          style={{ marginLeft: 5 }}
           onChange={(v) => {
             node.args = placeStringInNode({
               v,
