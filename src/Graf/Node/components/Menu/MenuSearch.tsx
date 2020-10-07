@@ -35,7 +35,7 @@ const SearchIconContainer = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  zIndex: 2,
+  zIndex: 1,
 });
 const XIconContainer = style({
   position: 'absolute',
@@ -46,7 +46,7 @@ const XIconContainer = style({
   alignItems: 'center',
   justifyContent: 'center',
   cursor: 'pointer',
-  zIndex: 2,
+  zIndex: 1,
 });
 const Wrapper = style({
   position: 'relative',

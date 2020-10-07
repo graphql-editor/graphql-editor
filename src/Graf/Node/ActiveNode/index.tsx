@@ -135,9 +135,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
 
   const { libraryTree, tree, setTree, setSelectedNode, selectedNode, selectedNodeRef } = useTreesState();
 
-  const isLibrary =
-    !!libraryTree.nodes.find((lN) => lN.name === node.name && lN.data.type === node.data.type) ||
-    !!libraryTree.nodes.find((lN) => lN.name === node.type.name);
+  const isLibrary = !!libraryTree.nodes.find((lN) => lN.name === node.name && lN.data.type === node.data.type);
   const isInputNode = [
     TypeSystemDefinition.FieldDefinition,
     TypeSystemDefinition.DirectiveDefinition,
@@ -295,6 +293,13 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
                 inputOpen={openedDirectiveInputs.includes(i)}
                 outputDisabled={outputDisabled}
                 outputOpen={openedDirectiveOutputs.includes(i)}
+                onDelete={() => {
+                  setOpenedDirectiveInputs([]);
+                  setOpenedDirectiveOutputs([]);
+                  node.directives!.splice(i, 1);
+                  DOM.panLock = false;
+                  setTree({ ...tree });
+                }}
               />
             );
           })}
@@ -320,6 +325,11 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
                   inputOpen={openedInputs.includes(i)}
                   outputDisabled={outputDisabled}
                   outputOpen={openedOutputs.includes(i)}
+                  onDelete={() => {
+                    node.args!.splice(i, 1);
+                    DOM.panLock = false;
+                    setTree({ ...tree });
+                  }}
                 />
               );
             }
@@ -340,6 +350,11 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
                   inputOpen={openedInputs.includes(i)}
                   outputDisabled={outputDisabled}
                   outputOpen={openedOutputs.includes(i)}
+                  onDelete={() => {
+                    node.args!.splice(i, 1);
+                    DOM.panLock = false;
+                    setTree({ ...tree });
+                  }}
                 />
               );
             }
@@ -360,6 +375,11 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
                 inputOpen={openedInputs.includes(i)}
                 outputDisabled={outputDisabled}
                 outputOpen={openedOutputs.includes(i)}
+                onDelete={() => {
+                  node.args!.splice(i, 1);
+                  DOM.panLock = false;
+                  setTree({ ...tree });
+                }}
               />
             );
           })}

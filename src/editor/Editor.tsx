@@ -35,7 +35,7 @@ export const ErrorContainer = style({
   right: 0,
   width: `calc(100% - 40px)`,
   padding: 20,
-  color: Colors.red[0],
+  color: Colors.pink[0],
   background: `${Colors.red[6]}ee`,
   margin: 20,
   borderRadius: 4,
@@ -175,7 +175,7 @@ export const Editor = ({
         treeLock = true;
         Workers.validate(graphql, schema.libraries).then((errors) => {
           if (errors.length > 0) {
-            setGrafErrors(errors.map((e) => e.text).join('\n\n'));
+            setGrafErrors([...new Set(errors.map((e) => e.text))].join('\n\n'));
             return;
           }
           setGrafErrors(undefined);

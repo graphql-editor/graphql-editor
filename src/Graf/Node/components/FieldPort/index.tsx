@@ -26,13 +26,12 @@ const Main = style({
   alignItems: 'center',
   display: 'flex',
   justifyContent: 'center',
-  backgroundColor: Colors.grey[9],
+  backgroundColor: `${Colors.grey[9]}00`,
   cursor: 'pointer',
-  opacity: 0.0,
   transition: 'all 0.25s ease-in-out',
   $nest: {
     '&:hover': {
-      opacity: `1.0 !important`,
+      backgroundColor: `${Colors.grey[9]}ff !important`,
       $nest: {
         '.EditArguments': {
           display: 'block',
@@ -40,7 +39,14 @@ const Main = style({
         '.ExpandDetails': {
           display: 'block',
         },
+        '.OpenerIcon': {
+          opacity: `1.0 !important`,
+        },
       },
+    },
+    '.OpenerIcon': {
+      opacity: 0.0,
+      transition: 'all 0.25s ease-in-out',
     },
     '.EditArguments': {
       position: 'absolute',
@@ -84,7 +90,11 @@ export const FieldPort: React.FC<FieldPortProps> = ({
   return (
     <div className={`${Main} NodeFieldPort`} onClick={onClick}>
       {!open && info && <div className={`EditArguments ${info.placement}`}>{info.message}</div>}
-      {open ? <OpenComponent height={6} width={6} /> : <ClosedComponent height={8} width={8} />}
+      {open ? (
+        <OpenComponent className={'OpenerIcon'} height={6} width={6} />
+      ) : (
+        <ClosedComponent className={'OpenerIcon'} height={8} width={8} />
+      )}
       {children}
     </div>
   );

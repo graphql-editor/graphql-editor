@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
 import { ParserField, Options, Value } from 'graphql-zeus';
 import { style } from 'typestyle';
-import { Colors } from '@/Colors';
-import { FIELD_HEIGHT } from '@/Graf/constants';
 import { NodeTypeOptionsMenu } from '@/Graf/Node/ContextMenu';
 import { ActiveArgumentName } from './ActiveArgumentName';
-import { EditableDefaultValue, FieldPort } from '@/Graf/Node/components';
+import {
+  DetailMenuItem,
+  EditableDefaultValue,
+  FieldPort,
+  Menu,
+  MenuScrollingArea,
+  NodeFieldContainer,
+  Title,
+} from '@/Graf/Node/components';
 import { isScalarArgument } from '@/GraphQL/Resolve';
 import { ConvertStringToObject, ConvertValueToEditableString } from '@/GraphQL/Convert';
 import { useTreesState } from '@/state/containers/trees';
@@ -21,49 +27,12 @@ export interface FieldProps {
   last?: boolean;
   isLocked?: boolean;
   parentNodeTypeName: string;
+  onDelete: () => void;
 }
 
-const Main = style({
-  position: 'relative',
-  display: 'flex',
-  alignItems: 'center',
-  color: Colors.grey[0],
-  height: FIELD_HEIGHT,
-  margin: `0 0`,
-  transition: 'background 0.25s ease-in-out',
-  $nest: {
-    '&.Active': {
-      background: Colors.main[3],
-      $nest: {
-        '.NodeFieldPort': {
-          opacity: 1,
-        },
-      },
-    },
-    '.NodeFieldPortPlaceholder': {
-      width: 24,
-      height: 16,
-    },
-    '&:hover': {
-      background: Colors.main[3],
-      $nest: {
-        '.NodeFieldPort': {
-          opacity: 0.5,
-        },
-      },
-    },
-  },
-});
 const LastField = style({
   borderBottomLeftRadius: 4,
   borderBottomRightRadius: 4,
-});
-const Title = style({
-  fontSize: 10,
-  display: 'flex',
-  flex: 1,
-  alignItems: 'baseline',
-  overflow: 'hidden',
 });
 const Name = style({ fontSize: 10, marginRight: 4, overflow: 'hidden' });
 const OptionsMenuContainer = style({
@@ -137,12 +106,14 @@ export const ActiveArgument: React.FC<FieldProps> = ({
   last,
   parentNodeTypeName,
   isLocked,
+  onDelete,
 }) => {
   const { tree, setTree } = useTreesState();
   const [optionsMenuOpen, setOptionsMenuOpen] = useState(false);
+  const [detailsMenuOpen, setDetailsMenuOpen] = useState(false);
   return (
-    <div
-      className={`NodeType-${parentNodeTypeName} ${Main} ${last ? LastField : ''} ${
+    <NodeFieldContainer
+      className={`NodeType-${parentNodeTypeName} ${last ? LastField : ''} ${
         inputOpen || outputOpen || optionsMenuOpen ? 'Active' : ''
       }`}
     >
@@ -158,7 +129,7 @@ export const ActiveArgument: React.FC<FieldProps> = ({
       ) : (
         <div className={'NodeFieldPortPlaceholder'} />
       )}
-      <div className={Title}>
+      <Title>
         <div className={Name}>
           {isLocked && <span>{node.name}</span>}
           {!isLocked && (
@@ -183,7 +154,25 @@ export const ActiveArgument: React.FC<FieldProps> = ({
             setTree({ ...tree });
           }}
         />
-      </div>
+      </Title>
+      {!isLocked && (
+        <FieldPort
+          icons={{ closed: 'More', open: 'More' }}
+          onClick={() => {
+            setDetailsMenuOpen(!detailsMenuOpen);
+          }}
+        >
+          {detailsMenuOpen && (
+            <div className={OptionsMenuContainer}>
+              <Menu hideMenu={() => setDetailsMenuOpen(false)}>
+                <MenuScrollingArea>
+                  <DetailMenuItem onClick={onDelete}>Delete</DetailMenuItem>
+                </MenuScrollingArea>
+              </Menu>
+            </div>
+          )}
+        </FieldPort>
+      )}
       {!isLocked && (
         <FieldPort
           icons={{ closed: 'Arrq', open: 'Arrq' }}
@@ -209,6 +198,6 @@ export const ActiveArgument: React.FC<FieldProps> = ({
         />
       )}
       {outputDisabled && isLocked && <div className={'NodeFieldPortPlaceholder'} />}
-    </div>
+    </NodeFieldContainer>
   );
 };
