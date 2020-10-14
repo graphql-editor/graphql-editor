@@ -11,7 +11,7 @@ const Main = style({
 });
 
 export const Hierarchy = () => {
-  const { tree } = useTreesState();
+  const { tree, libraryTree } = useTreesState();
   const [hierarchy, setHierarchy] = useState<DiagramEngine>();
 
   const diagramRef = useRef<HTMLDivElement>(null);
@@ -23,11 +23,14 @@ export const Hierarchy = () => {
   }, []);
 
   useEffect(() => {
-    if (hierarchy && tree) {
-      hierarchy.setNodes(TreeToNodes.resolveTree(tree).nodes);
-      console.log(hierarchy);
+    if (hierarchy && tree && libraryTree) {
+      hierarchy.setNodes(
+        TreeToNodes.resolveTree({
+          nodes: [...tree.nodes, ...libraryTree.nodes],
+        }).nodes,
+      );
     }
-  }, [tree, hierarchy]);
+  }, [tree, hierarchy, libraryTree]);
 
   const setDOMElement = (element: HTMLElement): void => {
     setHierarchy(

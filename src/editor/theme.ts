@@ -24,6 +24,7 @@ export const GraphQLBackgrounds: Record<string, string> = {
   enum: Colors.yellow[6],
   directive: Colors.pink[6],
   extend: Colors.orange[6],
+  Extend: Colors.orange[6],
   String: Colors.green[6],
   Int: Colors.green[6],
   Boolean: Colors.green[6],
