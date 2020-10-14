@@ -8,6 +8,7 @@ import { GraphQLEditorCypress, cypressGet } from '@/cypress_constants';
 import { PassedSchema, Theming } from '@/Models';
 import { DynamicResize } from './code/Components';
 import { Graf } from '@/Graf/Graf';
+import { Hierarchy } from '@/Hierarchy';
 import { Parser, TreeToGraphQL } from 'graphql-zeus';
 import { Workers } from '@/worker';
 import { style } from 'typestyle';
@@ -213,7 +214,7 @@ export const Editor = ({
           }
         }}
       />
-      {menuState !== 'diagram' && (
+      {(menuState === 'code' || menuState === 'code-diagram') && (
         <DynamicResize
           disabledClass={menuState === 'code' ? FullScreenContainer : undefined}
           resizeCallback={(e, r, c, w) => {
@@ -240,12 +241,13 @@ export const Editor = ({
           </div>
         </DynamicResize>
       )}
-      {menuState !== 'code' && (
+      {(menuState === 'diagram' || menuState === 'code-diagram') && (
         <div className={ErrorOuterContainer}>
           {grafErrors && <div className={ErrorContainer}>{grafErrors}</div>}
           <Graf />
         </div>
       )}
+      {menuState === 'hierarchy' && <Hierarchy />}
     </div>
   );
 };
