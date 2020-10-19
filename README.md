@@ -2,32 +2,32 @@
 
 [![npm](https://img.shields.io/npm/v/graphql-editor.svg?style=flat-square)](https://www.npmjs.com/package/graphql-editor) [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?style=flat-square)](http://commitizen.github.io/cz-cli/) [![npm downloads](https://img.shields.io/npm/dt/graphql-editor.svg?style=flat-square)](https://www.npmjs.com/package/graphql-editor)
 
-GraphQLEditor makes it easier to understand GrapHQL schemas. Create a schema by joining visual blocks. GraphQLEditor will transform them into code. With GraphQLEditor you can create visual diagrams without writing any code or present your schema in a nice way!
+GraphQLEditor makes it easier to understand GraphQL schemas. Create a schema by using visual blocks system. GraphQL Editor will transform them into code. With GraphQL Editor you can create visual diagrams without writing any code or present your schema in a nice way!
+
 ### Cloud version
 
-Here is a [cloud version](https://graphqleditor.com) of GraphQLEditor. Which also contains:
-- cloud project management and versioning
-- team libraries
-- schema libraries
-- live schema mock backend deployment
-- frontend engine to play with mock backend
-- live collaboration
+Here is a [cloud version](https://graphqleditor.com) of GraphQL Editor. 
 
 ## How it works
 
-### Create GraphQL Schemas
+### GraphQL View
 
-[![GraphQLEditor Editor](assets/create.gif)]
+![GraphQLEditor Editor](assets/browse-graf.gif)
 
-### Explore Large GraphQL Schemas
+### Code Editor View
 
-[![GraphQLEditor Editor](assets/explore.gif)
+![GraphQLEditor Editor](assets/browse-code.gif)
+
+### Hierarchy View
+
+![GraphQLEditor Editor](assets/browse-diagram.gif)
 
 
 ## Table of contents
 - [How it works](#how-it-works)
-  - [Create GraphQL Schemas](#create-graphql-schemas)
-  - [Explore Large GraphQL Schemas](#explore-large-graphql-schemas)
+  - [GraphQL View](#graphql-view)
+  - [Code Editor View](#code-editor-view)
+  - [Hierarchy View](#hierarchy-view)
 - [Table of contents](#table-of-contents)
 - [Developer Docs](#developer-docs)
 - [License](#license)
@@ -54,13 +54,13 @@ Create GraphQL nodes and connect them to generate a database schema. You can als
 
 ## Develop or use standalone
 
+To use standalone you have to use webpack right now. If you want to use it without webpack you need to handle monaco  editor workers yourself.
+
 Install dependencies
 
 ```
 npm i react react-dom monaco-editor
 ```
-
-and if you are using webpack
 
 ```
 npm i -D monaco-editor-webpack-plugin worker-loader css-loader file-loader
@@ -71,35 +71,43 @@ npm i graphql-editor
 ```
 
 ```tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { render } from 'react-dom';
-import { Editor } from 'graphql-editor';
+import { GraphQLEditor,PassedSchema } from 'graphql-editor';
+
+const schemas = {
+  pizza:`
+type Query{
+	pizzas: [Pizza!]
+}
+`,
+pizzaLibrary:`
+type Pizza{
+  name:String;
+}
+`
+}
+
 export const App = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
-    code: `type Person{ 
-      """
-      very description of name
-      """
-      name: String
-     }
-     
-     extend type User{
-       password: String!
-     }
-     `,
-    libraries: `
-     type User{
-       name: String
-     }
-     `,
+    code: schemas.pizza,
+    libraries: schemas.pizzaLibrary,
   });
   return (
-    <div className={UiDiagram}>
-      <Editor
+    <div
+      style={{
+        flex: 1,
+        width: '100%',
+        height: '100%',
+        alignSelf: 'stretch',
+        display: 'flex',
+        position: 'relative',
+      }}
+    >
+      <GraphQLEditor
         onSchemaChange={(props) => {
           setMySchema(props);
         }}
-        initialSizeOfSidebar={'25vw'}
         schema={mySchema}
       />
     </div>
@@ -111,7 +119,7 @@ render(<App />, document.getElementById('root'));
 
 ## Support 
 
-[Join our Slack Channel](https://join.slack.com/t/graphqleditor/shared_invite/zt-69jykd3b-OsF9ptwlxZCSUXyjFVVuCg)
+[Join our Discord Channel](https://discord.gg/6QeW7K)
 
 ## Contribute
 
@@ -129,14 +137,16 @@ For a complete guide to contributing to GraphQL Editor, see the [Contribution Gu
 
 ## Underlying Diagram technology
 
-Whole graphql-editor is based on underlying [diagram](https://github.com/graphql-editor/diagram) technology. We need much more help there feel free to contribute!
+Whole graphql-editor is based on underlying [diagram](https://github.com/graphql-editor/diagram) technology.
 
 ## Underlying Parsing technology
 
-Whole graphql-editor parsing stuff is based on underlying [zeus](https://github.com/graphql-editor/graphql-zeus) technology. We need much more help there feel free to contribute!
+Whole graphql-editor parsing stuff is based on underlying [zeus](https://github.com/graphql-editor/graphql-zeus) technology.
 
 ## GraphQL Tutorials
 
-Best GraphQL tutorials [here](https://blog.graphqleditor.com/top-graphql-tutorials-reviewed-2019)
+GraphQL Editor Guide [here](https://guide.graphqleditor.com/)
+
+GraphQL Blog [here](https://blog.graphqleditor.com/)
 
 My Video Blog Tutorials [here](https://stackofthefuture.com)
