@@ -12,9 +12,8 @@ import { Hierarchy } from '@/Hierarchy';
 import { Parser, TreeToGraphQL } from 'graphql-zeus';
 import { Workers } from '@/worker';
 import { style } from 'typestyle';
-import { Colors } from '@/Colors';
 import { useTreesState } from '@/state/containers/trees';
-import { useErrorsState, useNavigationState } from '@/state/containers';
+import { useErrorsState, useNavigationState, useTheme } from '@/state/containers';
 
 export const Main = style({
   display: 'flex',
@@ -36,11 +35,8 @@ export const ErrorContainer = style({
   right: 0,
   width: `calc(100% - 40px)`,
   padding: 20,
-  color: Colors.pink[0],
-  background: `${Colors.red[6]}ee`,
   margin: 20,
   borderRadius: 4,
-  border: `1px solid ${Colors.red[0]}`,
   fontSize: 12,
   fontFamily,
   letterSpacing: 1,
@@ -53,7 +49,6 @@ export const Sidebar = style({
   flex: 1,
   flexDirection: 'column',
   overflow: 'hidden',
-  background: Colors.grey[8],
   position: 'relative',
 });
 
@@ -90,6 +85,7 @@ export const Editor = ({
   const [sidebarSize, setSidebarSize] = useState<string | number>(initialSizeOfSidebar);
   const { menuState, setMenuState } = useNavigationState();
   const { grafErrors, setGrafErrors, setCodeErrors, setLockGraf } = useErrorsState();
+  const { themed } = useTheme();
 
   const { tree, setSnapshots, setUndos, setTree, setLibraryTree, setReadonly } = useTreesState();
 
@@ -223,7 +219,7 @@ export const Editor = ({
           width={menuState === 'code' ? '100%' : sidebarSize}
         >
           <div
-            className={cx(Sidebar, {
+            className={cx(themed('Sidebar')(Sidebar), {
               [FullScreenContainer]: menuState === 'code',
             })}
             data-cy={cypressGet(GraphQLEditorCypress, 'sidebar', 'name')}
@@ -243,7 +239,7 @@ export const Editor = ({
       )}
       {(menuState === 'diagram' || menuState === 'code-diagram') && (
         <div className={ErrorOuterContainer}>
-          {grafErrors && <div className={ErrorContainer}>{grafErrors}</div>}
+          {grafErrors && <div className={themed('ErrorContainer')(ErrorContainer)}>{grafErrors}</div>}
           <Graf />
         </div>
       )}

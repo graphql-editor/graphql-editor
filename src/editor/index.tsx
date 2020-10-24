@@ -1,6 +1,12 @@
 import React from 'react';
 import { Editor, EditorProps } from './Editor';
-import { TreesStateProvider, ErrorsStateProvider, NavigationStateProvider, IOStateProvider } from '@/state/containers';
+import {
+  TreesStateProvider,
+  ErrorsStateProvider,
+  NavigationStateProvider,
+  IOStateProvider,
+  ThemeProvider,
+} from '@/state/containers';
 
 export const GraphQLEditor = (props: EditorProps) => {
   return (
@@ -8,7 +14,9 @@ export const GraphQLEditor = (props: EditorProps) => {
       <ErrorsStateProvider>
         <NavigationStateProvider>
           <IOStateProvider>
-            <Editor {...props} />
+            <ThemeProvider>
+              <Editor {...props} />
+            </ThemeProvider>
           </IOStateProvider>
         </NavigationStateProvider>
       </ErrorsStateProvider>

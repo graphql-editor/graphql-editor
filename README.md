@@ -8,7 +8,14 @@ GraphQLEditor makes it easier to understand GraphQL schemas. Create a schema by 
 
 Here is a [cloud version](https://graphqleditor.com) of GraphQL Editor. 
 
+## Docs 
+
+Here is a [guide](https://guide.graphqleditor.com) for GraphQL Editor.
+
+
 ## How it works
+
+Create GraphQL nodes and connect them to generate a database schema. You can also use builtin text IDE with GraphQL syntax validation
 
 ### GraphQL View
 
@@ -24,6 +31,7 @@ Here is a [cloud version](https://graphqleditor.com) of GraphQL Editor.
 
 
 ## Table of contents
+- [Docs](#docs)
 - [How it works](#how-it-works)
   - [GraphQL View](#graphql-view)
   - [Code Editor View](#code-editor-view)
@@ -31,7 +39,6 @@ Here is a [cloud version](https://graphqleditor.com) of GraphQL Editor.
 - [Table of contents](#table-of-contents)
 - [Developer Docs](#developer-docs)
 - [License](#license)
-- [How It Works](#how-it-works-1)
 - [Develop or use standalone](#develop-or-use-standalone)
 - [Support](#support)
 - [Contribute](#contribute)
@@ -47,10 +54,6 @@ If you wish to contribute docs from `typedoc` are availble on [https://graphql-e
 ## License
 
 MIT
-
-## How It Works
-
-Create GraphQL nodes and connect them to generate a database schema. You can also use builtin text IDE with GraphQL syntax validation
 
 ## Develop or use standalone
 
