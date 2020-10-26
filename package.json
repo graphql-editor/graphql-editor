@@ -1,6 +1,6 @@
 {
   "name": "graphql-editor",
-  "version": "4.2.6-0",
+  "version": "4.0.0",
   "private": false,
   "license": "MIT",
   "description": "Visual node editor for GraphQL",
@@ -71,7 +71,7 @@
     "ts-loader": "^7.0.2",
     "tsconfig-paths-webpack-plugin": "^3.3.0",
     "ttypescript": "^1.5.12",
-    "typedoc": "^0.17.6",
+    "typedoc": "^0.19.2",
     "typescript": "^4.0.3",
     "typescript-transform-paths": "^2.0.1",
     "url-loader": "^4.1.0",
