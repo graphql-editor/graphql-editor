@@ -7,6 +7,7 @@ interface MenuSearchProps {
   value: string;
   onChange: (v: string) => void;
   onClear: () => void;
+  autoFocus?: boolean;
 }
 
 const Main = style({
@@ -54,7 +55,7 @@ const Wrapper = style({
   padding: 12,
 });
 
-export const MenuSearch: React.FC<MenuSearchProps> = ({ value, onChange, onClear }) => {
+export const MenuSearch: React.FC<MenuSearchProps> = ({ value, onChange, onClear, autoFocus = true }) => {
   const ref = useRef<HTMLInputElement>(null);
   return (
     <div className={Wrapper}>
@@ -68,7 +69,7 @@ export const MenuSearch: React.FC<MenuSearchProps> = ({ value, onChange, onClear
       )}
       <input
         ref={ref}
-        autoFocus
+        autoFocus={autoFocus}
         className={Main}
         placeholder="Search..."
         type="text"

@@ -78,6 +78,7 @@ export const RootExtendNode: React.FC<RootExtendNodeProps> = ({ node, libraryNod
       <div className={`${NodeCaption}`}>
         <span className={CaptionTitle}>extend</span>
         <MenuSearch
+          autoFocus={false}
           onClear={() => {
             setFilterNodes('');
           }}

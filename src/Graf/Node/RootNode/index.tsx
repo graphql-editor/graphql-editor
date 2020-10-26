@@ -52,6 +52,7 @@ export const RootNode: React.FC<RootNodeProps> = ({ node, libraryNode }) => {
       <div className={`${NodeCaption} CaptionType-${node.name}`}>
         <span className={CaptionTitle}>{node.name}</span>
         <MenuSearch
+          autoFocus={false}
           onClear={() => {
             setFilterNodes('');
           }}
