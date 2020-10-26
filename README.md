@@ -122,7 +122,7 @@ render(<App />, document.getElementById('root'));
 
 ## Support 
 
-[Join our Discord Channel](https://discord.gg/6QeW7K)
+[Join our Discord Channel](https://discord.gg/wVcZdmd)
 
 ## Contribute
 
