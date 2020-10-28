@@ -1,6 +1,6 @@
 {
   "name": "graphql-editor",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "private": false,
   "license": "MIT",
   "description": "Visual node editor for GraphQL",
@@ -95,7 +95,7 @@
     "faker": "^4.1.0",
     "graphql": "^15.0.0",
     "graphql-zeus": "^2.8.2",
-    "graphsource": "^2.0.4-0",
+    "graphsource": "^2.0.1",
     "moment": "^2.21.0",
     "panzoom": "^9.2.5",
     "query-string": "^6.2.0",
