@@ -24,11 +24,11 @@ export const Hierarchy = () => {
 
   useEffect(() => {
     if (hierarchy && tree && libraryTree) {
-      hierarchy.setNodes(
-        TreeToNodes.resolveTree({
-          nodes: [...tree.nodes, ...libraryTree.nodes],
-        }).nodes,
-      );
+      const tr = TreeToNodes.resolveTree({
+        nodes: [...tree.nodes, ...libraryTree.nodes],
+      });
+      console.log(tr);
+      hierarchy.setNodes(tr.nodes);
     }
   }, [tree, hierarchy, libraryTree]);
 
