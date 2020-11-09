@@ -113,6 +113,12 @@ export const Editor = ({
       treeLock = false;
       return;
     }
+    if (onSchemaChange) {
+      onSchemaChange({
+        code,
+        libraries: schema.libraries,
+      });
+    }
     if (!code) {
       setTree({ nodes: [] });
       return;
