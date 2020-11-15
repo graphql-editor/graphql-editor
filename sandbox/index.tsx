@@ -22,7 +22,6 @@ export const App = () => {
     >
       <GraphQLEditor
         onSchemaChange={(props) => {
-          console.log('changing schema');
           setMySchema(props);
         }}
         schema={mySchema}

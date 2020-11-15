@@ -27,7 +27,6 @@ export const Hierarchy = () => {
       const tr = TreeToNodes.resolveTree({
         nodes: [...tree.nodes, ...libraryTree.nodes],
       });
-      console.log(tr);
       hierarchy.setNodes(tr.nodes);
     }
   }, [tree, hierarchy, libraryTree]);
