@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { TypeDefinition, ValueDefinition, ParserField, TypeSystemDefinition, Instances } from 'graphql-zeus';
 import { MenuScrollingArea, DetailMenuItem, Menu } from '@/Graf/Node/components';
-import { More, Interface, Monkey, Plus } from '@/Graf/icons';
+import { More, Interface, Monkey, Plus, Tick } from '@/Graf/icons';
 import {
   NodeAddDirectiveMenu,
   NodeDirectiveOptionsMenu,
   NodeImplementInterfacesMenu,
   NodeAddFieldMenu,
+  NodeOperationsMenu,
 } from '@/Graf/Node/ContextMenu';
 import { style } from 'typestyle';
 import { useTreesState } from '@/state/containers/trees';
+import { Colors } from '@/Colors';
 
-type PossibleMenus = 'field' | 'interface' | 'directive' | 'options';
+type PossibleMenus = 'field' | 'interface' | 'directive' | 'options' | 'operations';
 
 const NodeMenuContainer = style({
   position: 'absolute',
@@ -75,20 +77,23 @@ export const TopNodeMenu: React.FC<{
       )}
 
       {node.data.type === TypeDefinition.ObjectTypeDefinition && (
-        <div
-          className={'NodeIconArea'}
-          onClick={() => {
-            setMenuOpen('interface');
-          }}
-          title="Click to implement interface"
-        >
-          <Interface height={10} width={10} />
-          {menuOpen === 'interface' && (
-            <div className={NodeMenuContainer}>
-              <NodeImplementInterfacesMenu node={node} hideMenu={hideMenu} />
-            </div>
-          )}
-        </div>
+        <>
+          {/* TODO: Implement operations menu */}
+          <div
+            className={'NodeIconArea'}
+            onClick={() => {
+              setMenuOpen('interface');
+            }}
+            title="Click to implement interface"
+          >
+            <Interface height={10} width={10} />
+            {menuOpen === 'interface' && (
+              <div className={NodeMenuContainer}>
+                <NodeImplementInterfacesMenu node={node} hideMenu={hideMenu} />
+              </div>
+            )}
+          </div>
+        </>
       )}
       {node.data.type !== Instances.Directive && (
         <div
@@ -110,6 +115,25 @@ export const TopNodeMenu: React.FC<{
             </div>
           )}
         </div>
+      )}
+      {node.data.type === TypeDefinition.ObjectTypeDefinition && (
+        <>
+          {/* TODO: Implement operations menu */}
+          <div
+            className={'NodeIconArea'}
+            onClick={() => {
+              setMenuOpen('operations');
+            }}
+            title="Click set schema query, mutation, subscription"
+          >
+            <Tick height={10} width={10} fill={Colors.grey[0]} />
+            {menuOpen === 'operations' && (
+              <div className={NodeMenuContainer}>
+                <NodeOperationsMenu node={node} hideMenu={hideMenu} />
+              </div>
+            )}
+          </div>
+        </>
       )}
       <div
         className={'NodeIconArea'}
