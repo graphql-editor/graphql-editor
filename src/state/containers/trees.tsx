@@ -9,6 +9,7 @@ const useTreesStateContainer = createContainer(() => {
   const [selectedNode, setSelectedNode] = useState<{ name: string; dataType: AllTypes }>();
   const selectedNodeRef = useRef<HTMLDivElement>(null);
   const [readonly, setReadonly] = useState(false);
+  const [isTreeInitial, setIsTreeInitial] = useState(true);
 
   const [position, setPosition] = useState<{
     offsetLeft: number;
@@ -62,6 +63,8 @@ const useTreesStateContainer = createContainer(() => {
     relatedToSelected,
     readonly,
     setReadonly,
+    isTreeInitial,
+    setIsTreeInitial,
   };
 });
 

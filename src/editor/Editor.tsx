@@ -68,7 +68,6 @@ export interface EditorProps extends Theming {
 
 let stopCodeFromTreeGeneration = false;
 let stopTreeFromCodeGeneration = false;
-let isTreeInitial = true;
 
 export const Editor = ({
   readonly,
@@ -87,7 +86,16 @@ export const Editor = ({
   const { grafErrors, setGrafErrors, setLockGraf, setCodeErrors } = useErrorsState();
   const { themed } = useTheme();
 
-  const { tree, setSnapshots, setUndos, setTree, setLibraryTree, setReadonly } = useTreesState();
+  const {
+    tree,
+    setSnapshots,
+    setUndos,
+    setTree,
+    setLibraryTree,
+    setReadonly,
+    isTreeInitial,
+    setIsTreeInitial,
+  } = useTreesState();
 
   const reset = () => {
     setSnapshots([]);
@@ -179,9 +187,8 @@ export const Editor = ({
     generateTreeFromSchema();
   }, [schema.code]);
   useEffect(() => {
-    console.log(tree, isTreeInitial);
     if (isTreeInitial) {
-      isTreeInitial = false;
+      setIsTreeInitial(false);
       return;
     }
     if (stopCodeFromTreeGeneration) {
