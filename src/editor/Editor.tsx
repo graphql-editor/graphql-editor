@@ -68,6 +68,7 @@ export interface EditorProps extends Theming {
 
 let stopCodeFromTreeGeneration = false;
 let stopTreeFromCodeGeneration = false;
+let isTreeInitial = true;
 
 export const Editor = ({
   readonly,
@@ -178,6 +179,11 @@ export const Editor = ({
     generateTreeFromSchema();
   }, [schema.code]);
   useEffect(() => {
+    console.log(tree, isTreeInitial);
+    if (isTreeInitial) {
+      isTreeInitial = false;
+      return;
+    }
     if (stopCodeFromTreeGeneration) {
       stopCodeFromTreeGeneration = false;
       return;

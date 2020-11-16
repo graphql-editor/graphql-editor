@@ -22,6 +22,7 @@ export const App = () => {
     >
       <GraphQLEditor
         setSchema={(props) => {
+          console.log(props);
           console.log('SCHEMA CHANGED');
           setMySchema(props);
         }}
