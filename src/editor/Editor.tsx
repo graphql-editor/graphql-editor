@@ -77,7 +77,7 @@ export const Editor = ({
     libraries: '',
   },
   initialSizeOfSidebar = sizeSidebar,
-  activePane = 'diagram',
+  activePane = 'code-diagram',
   onPaneChange,
   setSchema,
 }: EditorProps) => {
