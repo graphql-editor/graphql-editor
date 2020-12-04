@@ -76,7 +76,8 @@ export const TopNodeMenu: React.FC<{
         </div>
       )}
 
-      {node.data.type === TypeDefinition.ObjectTypeDefinition && (
+      {(node.data.type === TypeDefinition.ObjectTypeDefinition ||
+        node.data.type === TypeDefinition.InterfaceTypeDefinition) && (
         <>
           {/* TODO: Implement operations menu */}
           <div
