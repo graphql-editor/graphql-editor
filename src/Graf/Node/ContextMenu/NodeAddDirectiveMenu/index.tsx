@@ -34,7 +34,10 @@ export const NodeAddDirectiveMenu: React.FC<NodeAddDirectiveMenuProps> = ({ node
               key={f.name}
               node={f}
               onClick={() => {
-                node.directives?.push({
+                if (!node.directives) {
+                  node.directives = [];
+                }
+                node.directives.push({
                   ...f,
                   type: {
                     name: f.name,

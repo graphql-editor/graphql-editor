@@ -1,6 +1,6 @@
 {
   "name": "graphql-editor",
-  "version": "4.1.1",
+  "version": "4.1.2",
   "private": false,
   "license": "MIT",
   "description": "Visual node editor for GraphQL",
@@ -9,7 +9,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "start": "webpack-dev-server --config ./sandbox/webpack.config.js --content-base ./sandbox/ --port 1568 --hot --inline --open",
-    "build": "ttsc --build",
+    "build": "ttsc --build tsconfig.build.json",
     "watch": "ttsc --watch",
     "test": "jest",
     "e2e:test": "tsc --watch --project cypress/tsconfig.json | cypress open",
@@ -94,7 +94,7 @@
     "classnames": "^2.2.5",
     "faker": "^4.1.0",
     "graphql": "^15.0.0",
-    "graphql-zeus": "^2.8.5",
+    "graphql-zeus": "^2.8.6",
     "graphsource": "^2.0.2",
     "moment": "^2.21.0",
     "panzoom": "^9.2.5",

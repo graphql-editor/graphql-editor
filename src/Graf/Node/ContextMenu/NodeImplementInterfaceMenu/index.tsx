@@ -35,7 +35,10 @@ export const NodeImplementInterfacesMenu: React.FC<NodeImplementInterfacesMenuPr
               key={f.name}
               node={f}
               onClick={() => {
-                node.interfaces?.push(f.name);
+                if (!node.interfaces) {
+                  node.interfaces = [];
+                }
+                node.interfaces.push(f.name);
                 const argsToPush = f.args?.filter((a) => !node.args?.find((na) => na.name === a.name)) || [];
                 node.args = node.args?.concat(argsToPush);
                 hideMenu();
