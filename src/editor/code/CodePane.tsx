@@ -76,7 +76,7 @@ export const CodePane = (props: CodePaneProps) => {
       setTimeout(() => m.layout(), 100);
     }
     return () => monacoGql?.dispose();
-  }, [libraries]);
+  }, [libraries, readonly]);
   useEffect(() => {
     if (monacoGql) {
       const monacoDecorations = codeErrors.map(mapEditorErrorToMonacoDecoration);
