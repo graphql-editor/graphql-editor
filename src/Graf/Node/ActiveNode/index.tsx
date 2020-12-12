@@ -260,7 +260,8 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
                   if (reselect && selectedNode) {
                     setSelectedNode({
                       name: v,
-                      dataType: node.data.type!,
+                      data: node.data,
+                      type: node.type,
                     });
                   }
                 }}

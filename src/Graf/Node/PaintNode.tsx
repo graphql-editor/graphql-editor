@@ -99,8 +99,9 @@ export const PaintNode: React.FC<NodeProps> = ({ node, isLibrary, isMatchedToSea
           setSelectedNode(undefined);
           setTimeout(() => {
             setSelectedNode({
+              data: node.data,
               name: node.name,
-              dataType: node.data.type!,
+              type: node.type,
             });
             const rect = thisNode.current;
             if (rect) {

@@ -180,8 +180,8 @@ export const Graf: React.FC<GrafProps> = () => {
   let node: ParserField | undefined;
   if (selectedNode) {
     node =
-      tree.nodes.find((n) => n.name === selectedNode.name && n.data.type === selectedNode.dataType) ||
-      libraryTree.nodes.find((n) => n.name === selectedNode.name && n.data.type === selectedNode.dataType);
+      tree.nodes.find((n) => n.name === selectedNode.name && n.data.type === selectedNode.data.type) ||
+      libraryTree.nodes.find((n) => n.name === selectedNode.name && n.data.type === selectedNode.data.type);
   }
   return (
     <div

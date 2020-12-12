@@ -5,4 +5,5 @@ export const settings = (
   language: 'graphqle',
   glyphMargin: true,
   theme: 'graphql-editor',
+  smoothScrolling: true,
 });

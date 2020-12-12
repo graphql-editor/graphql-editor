@@ -21,6 +21,7 @@ export type CodePaneProps = {
   schema: string;
   onChange: (v: string) => void;
   libraries?: string;
+  scrollTo?: string;
 } & CodePaneOuterProps;
 
 monaco.languages.register({ id: 'graphqle' });
@@ -32,13 +33,38 @@ monaco.editor.defineTheme('graphql-editor', theme);
  * React compontent holding GraphQL IDE
  */
 export const CodePane = (props: CodePaneProps) => {
-  const { schema, libraries = '', onChange, readonly, size } = props;
+  const { schema, libraries = '', onChange, readonly, size, scrollTo } = props;
   const editor = useRef<HTMLDivElement>(null);
   const [monacoGql, setMonacoGql] = useState<monaco.editor.IStandaloneCodeEditor>();
   const [decorationIds, setDecorationIds] = useState<string[]>([]);
   const { codeErrors, setCodeErrors, setLockGraf } = useErrorsState();
   const { setActions } = useIOState();
   const generateEnabled = !readonly && codeErrors.length === 0;
+  useEffect(() => {
+    if (scrollTo) {
+      const items = monacoGql
+        ?.getModel()
+        ?.findNextMatch(scrollTo, { column: 0, lineNumber: 0 }, false, false, null, true);
+
+      if (items) {
+        const {
+          range: { startLineNumber, endLineNumber, startColumn, endColumn },
+        } = items;
+        monacoGql?.setPosition({
+          column: 0,
+          lineNumber: startLineNumber,
+        });
+        monacoGql?.setPosition({ column: 0, lineNumber: startLineNumber });
+        monacoGql?.revealPositionInCenter({ column: 0, lineNumber: startLineNumber }, monaco.editor.ScrollType.Smooth);
+        monacoGql?.setSelection({
+          startLineNumber,
+          endLineNumber,
+          startColumn,
+          endColumn,
+        });
+      }
+    }
+  }, [scrollTo]);
   useEffect(() => {
     if (editor.current) {
       monacoGql?.dispose();

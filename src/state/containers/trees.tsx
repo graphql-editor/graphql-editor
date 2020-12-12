@@ -1,12 +1,12 @@
 import { createContainer } from 'unstated-next';
 import { useState, useRef, useCallback } from 'react';
-import { ParserTree, AllTypes } from 'graphql-zeus';
+import { ParserTree, ParserField } from 'graphql-zeus';
 const useTreesStateContainer = createContainer(() => {
   const [tree, setTree] = useState<ParserTree>({ nodes: [] });
   const [libraryTree, setLibraryTree] = useState<ParserTree>({ nodes: [] });
   const [snapshots, setSnapshots] = useState<string[]>([]);
   const [undos, setUndos] = useState<string[]>([]);
-  const [selectedNode, setSelectedNode] = useState<{ name: string; dataType: AllTypes }>();
+  const [selectedNode, setSelectedNode] = useState<Pick<ParserField, 'name' | 'type' | 'data'>>();
   const selectedNodeRef = useRef<HTMLDivElement>(null);
   const [readonly, setReadonly] = useState(false);
   const [isTreeInitial, setIsTreeInitial] = useState(true);
@@ -37,8 +37,8 @@ const useTreesStateContainer = createContainer(() => {
 
   const relatedToSelected = useCallback(() => {
     const node =
-      tree.nodes.find((n) => n.name === selectedNode?.name && n.data.type === selectedNode.dataType) ||
-      libraryTree.nodes.find((n) => n.name === selectedNode?.name && n.data.type === selectedNode.dataType);
+      tree.nodes.find((n) => n.name === selectedNode?.name && n.data.type === selectedNode.data.type) ||
+      libraryTree.nodes.find((n) => n.name === selectedNode?.name && n.data.type === selectedNode.data.type);
     if (node) {
       return node.args?.map((a) => a.type.name);
     }
