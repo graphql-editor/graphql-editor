@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { style } from 'typestyle';
 import { Colors } from '@/Colors';
 import { fontFamily } from '@/vars';
@@ -19,7 +19,7 @@ export const EditableText: React.FC<{
   autoFocus?: boolean;
   fontSize?: number;
 }> = ({ value, onChange, autoFocus, fontSize }) => {
-  const [editedValue, setEditedValue] = useState(value);
+  const [editedValue, setEditedValue] = useState('');
   const [focus, setFocus] = useState(!!autoFocus);
   const checkEdit = () => {
     setFocus(false);
@@ -33,6 +33,9 @@ export const EditableText: React.FC<{
       setEditedValue(value);
     }
   };
+  useEffect(() => {
+    setEditedValue(value);
+  }, [value]);
   return (
     <>
       {onChange ? (

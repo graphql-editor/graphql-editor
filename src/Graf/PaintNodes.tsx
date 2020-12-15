@@ -11,14 +11,17 @@ import { fontFamily } from '@/vars';
 import { RootNode } from '@/Graf/Node';
 import { useTreesState } from '@/state/containers/trees';
 import { RootExtendNode } from './Node/RootExtendNode';
+import { SubNode } from './Node/SubNode';
 const Main = style({
   width: '100%',
   position: 'relative',
   fontFamily,
   transition: `opacity 0.25s ease-in-out`,
+  paddingBottom: 300,
 });
 export const PaintNodes: React.FC = () => {
-  const { libraryTree, tree } = useTreesState();
+  const { libraryTree, tree, selectedNode } = useTreesState();
+  console.log(selectedNode);
   const baseTypes = [
     TypeDefinition.ObjectTypeDefinition,
     TypeDefinition.InterfaceTypeDefinition,
@@ -26,33 +29,35 @@ export const PaintNodes: React.FC = () => {
     TypeDefinition.EnumTypeDefinition,
     TypeDefinition.ScalarTypeDefinition,
     TypeDefinition.InputObjectTypeDefinition,
-  ];
+  ].map((d) => ({
+    node: {
+      name: TypeDefinitionDisplayMap[d],
+      data: {
+        type: d,
+      },
+      type: {
+        name: 'root',
+      },
+      args: tree.nodes.filter((n) => n.data.type === d).sort((a, b) => (a.name > b.name ? 1 : -1)),
+    },
+    libraryNode: {
+      name: TypeDefinitionDisplayMap[d],
+      data: {
+        type: d,
+      },
+      type: {
+        name: 'root',
+      },
+      args: libraryTree.nodes.filter((n) => n.data.type === d).sort((a, b) => (a.name > b.name ? 1 : -1)),
+    },
+  }));
   return (
     <div className={Main}>
       {baseTypes.map((d) => (
-        <RootNode
-          key={d}
-          node={{
-            name: TypeDefinitionDisplayMap[d],
-            data: {
-              type: d,
-            },
-            type: {
-              name: 'root',
-            },
-            args: tree.nodes.filter((n) => n.data.type === d).sort((a, b) => (a.name > b.name ? 1 : -1)),
-          }}
-          libraryNode={{
-            name: TypeDefinitionDisplayMap[d],
-            data: {
-              type: d,
-            },
-            type: {
-              name: 'root',
-            },
-            args: libraryTree.nodes.filter((n) => n.data.type === d).sort((a, b) => (a.name > b.name ? 1 : -1)),
-          }}
-        />
+        <React.Fragment>
+          {selectedNode?.type.name === d.node.name && <SubNode node={selectedNode} />}
+          <RootNode key={d.node.type.name} node={d.node} libraryNode={d.node} />
+        </React.Fragment>
       ))}
       <RootNode
         node={{

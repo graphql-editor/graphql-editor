@@ -22,6 +22,7 @@ interface NodeProps {
   onDelete: () => void;
   onDuplicate?: () => void;
   readonly?: boolean;
+  subNode?: boolean;
 }
 
 const fadeIn = keyframes({
@@ -133,7 +134,15 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
   const [openedDirectiveInputs, setOpenedDirectiveInputs] = useState<number[]>([]);
   const [openedDirectiveOutputs, setOpenedDirectiveOutputs] = useState<number[]>([]);
 
-  const { libraryTree, tree, setTree, setSelectedNode, selectedNode, selectedNodeRef } = useTreesState();
+  const {
+    libraryTree,
+    tree,
+    setTree,
+    setSelectedNode,
+    selectedNode,
+    selectedNodeRef,
+    selectedSubNodeRef,
+  } = useTreesState();
 
   const isLibrary = !!libraryTree.nodes.find((lN) => lN.name === node.name && lN.data.type === node.data.type);
   const isInputNode = [
@@ -154,7 +163,10 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
   };
 
   return (
-    <div className={`${NodeContainer} ${DOM.classes.node} ${DOM.classes.nodeSelected}`} ref={selectedNodeRef}>
+    <div
+      className={`${NodeContainer} ${DOM.classes.node} ${DOM.classes.nodeSelected}`}
+      ref={sharedProps.subNode ? selectedSubNodeRef : selectedNodeRef}
+    >
       <ActiveDescription
         className={'DescriptionPosition'}
         onChange={(d) => {
@@ -259,9 +271,8 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
                   setTree({ ...tree });
                   if (reselect && selectedNode) {
                     setSelectedNode({
+                      ...node,
                       name: v,
-                      data: node.data,
-                      type: node.type,
                     });
                   }
                 }}

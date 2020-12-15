@@ -1,5 +1,4 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { ParserField } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { fontFamily } from '@/vars';
 import panzoom, { PanZoom } from 'panzoom';
@@ -63,13 +62,15 @@ export const Graf: React.FC<GrafProps> = () => {
     setTree,
     selectedNode,
     setSelectedNode,
-    selectedNodeRef,
     position,
     setSnapshots,
     snapshots,
     past,
     future,
     readonly,
+    subNodePosition,
+    selectedSubNode,
+    setSelectedSubNode,
   } = useTreesState();
   const { lockGraf } = useErrorsState();
   const { setMenuState } = useNavigationState();
@@ -114,33 +115,6 @@ export const Graf: React.FC<GrafProps> = () => {
       setPanRef(undefined);
     };
   }, [grafRef]);
-  useEffect(() => {
-    if (selectedNodeRef.current) {
-      const n = selectedNodeRef.current;
-      const nodePosition = n.getBoundingClientRect();
-      wrapperRef.current?.scrollTo({
-        top: nodePosition.top + (wrapperRef.current?.scrollTop || 0) - wrapperRef.current.offsetHeight / 4.0,
-        behavior: 'smooth',
-      });
-      if (nodePosition && panRef && wrapperRef.current) {
-        const distanceVector = {
-          x:
-            wrapperRef.current.getBoundingClientRect().left +
-            -nodePosition.left +
-            wrapperRef.current.offsetLeft +
-            wrapperRef.current.offsetWidth / 2.0 -
-            nodePosition.width / 2.0,
-          y:
-            -nodePosition.top +
-            wrapperRef.current.offsetTop +
-            wrapperRef.current.offsetHeight / 2.0 -
-            nodePosition.height / 2.0,
-        };
-        distanceVector;
-        // panRef?.moveBy(distanceVector.x, distanceVector.y, true);
-      }
-    }
-  }, [position]);
 
   useEffect(() => {
     if (snapLock) {
@@ -177,12 +151,14 @@ export const Graf: React.FC<GrafProps> = () => {
     }));
   }, [snapshots]);
 
-  let node: ParserField | undefined;
-  if (selectedNode) {
-    node =
-      tree.nodes.find((n) => n.name === selectedNode.name && n.data.type === selectedNode.data.type) ||
-      libraryTree.nodes.find((n) => n.name === selectedNode.name && n.data.type === selectedNode.data.type);
-  }
+  const node = selectedNode
+    ? tree.nodes.find((n) => n.name === selectedNode.name && n.data.type === selectedNode.data.type) ||
+      libraryTree.nodes.find((n) => n.name === selectedNode.name && n.data.type === selectedNode.data.type)
+    : undefined;
+  const subNode =
+    selectedNode && selectedSubNode
+      ? selectedNode.args?.find((n) => n.name === selectedSubNode.name && n.data.type === selectedSubNode.data.type)
+      : undefined;
   return (
     <div
       ref={wrapperRef}
@@ -193,6 +169,10 @@ export const Graf: React.FC<GrafProps> = () => {
       onClick={() => {
         if (DOM.lock) return;
         DOM.scrollLock = false;
+        if (subNode) {
+          setSelectedSubNode(undefined);
+          return;
+        }
         setSelectedNode(undefined);
       }}
     >
@@ -207,34 +187,51 @@ export const Graf: React.FC<GrafProps> = () => {
                   setGrafRef(r);
                 }}
                 style={{
-                  top: position.offsetTop - 10,
-                  left: position.offsetLeft - 10,
+                  top: (subNode && subNodePosition ? subNodePosition.offsetTop : position.offsetTop) - 10,
+                  left: (subNode && subNodePosition ? subNodePosition.offsetLeft : position.offsetLeft) - 10,
                 }}
               >
-                <ActiveNode
-                  readonly={readonly}
-                  onDelete={() => {
-                    const deletedNode = tree.nodes.findIndex((n) => n.name === node!.name)!;
-                    const allNodes = [...tree.nodes];
-                    allNodes.splice(deletedNode, 1);
-                    setSelectedNode(undefined);
-                    setTree({ nodes: allNodes });
-                    DOM.panLock = false;
-                  }}
-                  onDuplicate={() => {
-                    const allNodes = [...tree.nodes];
-                    allNodes.push(
-                      JSON.parse(
-                        JSON.stringify({
-                          ...node,
-                          name: node?.name + 'Copy',
-                        }),
-                      ),
-                    );
-                    setTree({ nodes: allNodes });
-                  }}
-                  node={node}
-                />
+                {!subNode && (
+                  <ActiveNode
+                    readonly={readonly}
+                    onDelete={() => {
+                      const deletedNode = tree.nodes.findIndex((n) => n.name === node!.name)!;
+                      const allNodes = [...tree.nodes];
+                      allNodes.splice(deletedNode, 1);
+                      setSelectedNode(undefined);
+                      setTree({ nodes: allNodes });
+                      DOM.panLock = false;
+                    }}
+                    onDuplicate={() => {
+                      const allNodes = [...tree.nodes];
+                      allNodes.push(
+                        JSON.parse(
+                          JSON.stringify({
+                            ...node,
+                            name: node?.name + 'Copy',
+                          }),
+                        ),
+                      );
+                      setTree({ nodes: allNodes });
+                    }}
+                    node={node}
+                  />
+                )}
+                {subNode && subNodePosition && (
+                  <ActiveNode
+                    readonly={readonly}
+                    node={subNode}
+                    subNode
+                    onDelete={() => {
+                      if (node && node.args) {
+                        node.args = node.args.filter((a) => a.name !== subNode.name);
+                        setSelectedSubNode(undefined);
+                        setTree({ ...tree });
+                        DOM.panLock = false;
+                      }
+                    }}
+                  />
+                )}
               </div>
             )}
           </>

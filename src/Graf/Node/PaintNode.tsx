@@ -12,6 +12,7 @@ export interface NodeProps {
   builtIn?: boolean;
   isLibrary?: boolean;
   isMatchedToSearch?: boolean;
+  subNode?: boolean;
 }
 const MainNodeArea: NestedCSSProperties = {
   position: 'relative',
@@ -46,6 +47,7 @@ const LibraryNodeContainer = style({
   },
 });
 const MainNodeContainer = style({
+  background: Colors.grey[8],
   $nest: {
     '.MainNodeArea': MainNodeArea,
     ...Object.keys(GraphQLBackgrounds).reduce((a, b) => {
@@ -65,27 +67,12 @@ const MatchedSearchContainer = style({
 const NoMatchedSearchContainer = style({
   opacity: 0.2,
 });
-const UnRelatedNode = style({
-  opacity: 0.2,
-});
-const RelatedNode = style({
-  opacity: 1.0,
-});
-export const PaintNode: React.FC<NodeProps> = ({ node, isLibrary, isMatchedToSearch }) => {
+export const PaintNode: React.FC<NodeProps> = ({ node, isLibrary, isMatchedToSearch, subNode }) => {
   const thisNode = useRef<HTMLDivElement>(null);
-  const { setSelectedNode, setPosition, relatedToSelected } = useTreesState();
-  const relatedNodes = relatedToSelected();
-  let relationClass = '';
-  if (relatedNodes) {
-    if (relatedNodes.includes(node.name)) {
-      relationClass = RelatedNode;
-    } else {
-      relationClass = UnRelatedNode;
-    }
-  }
+  const { setSelectedNode, setPosition, setSelectedSubNode, setSubNodePosition } = useTreesState();
   return (
     <div
-      className={`${NodeContainer} ${relationClass} ${isLibrary ? LibraryNodeContainer : MainNodeContainer} ${
+      className={`${NodeContainer} ${isLibrary ? LibraryNodeContainer : MainNodeContainer} ${
         isMatchedToSearch ? MatchedSearchContainer : NoMatchedSearchContainer
       }`}
       ref={thisNode}
@@ -96,13 +83,25 @@ export const PaintNode: React.FC<NodeProps> = ({ node, isLibrary, isMatchedToSea
         onClick={(e) => {
           e.stopPropagation();
           if (DOM.panLock) return;
-          setSelectedNode(undefined);
+          if (subNode) {
+            setSelectedSubNode(node);
+            setTimeout(() => {
+              setSelectedSubNode(node);
+              const rect = thisNode.current;
+              if (rect) {
+                setSubNodePosition({
+                  offsetLeft: rect.offsetLeft,
+                  offsetTop: rect.offsetTop,
+                  width: rect.offsetWidth,
+                });
+              }
+            }, 1);
+
+            return;
+          }
+          setSelectedNode(node);
           setTimeout(() => {
-            setSelectedNode({
-              data: node.data,
-              name: node.name,
-              type: node.type,
-            });
+            setSelectedNode(node);
             const rect = thisNode.current;
             if (rect) {
               setPosition({
