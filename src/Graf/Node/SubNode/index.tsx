@@ -1,10 +1,11 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ParserField } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { PaintNode } from '@/Graf/Node/PaintNode';
 import { GraphQLColors } from '@/editor/theme';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { MenuSearch } from '@/Graf/Node/components';
+import { Colors } from '@/Colors';
 export interface SubNodeProps {
   node: ParserField;
   libraryNode?: ParserField;
@@ -32,20 +33,30 @@ const CaptionTitle = style({
   marginRight: 10,
 });
 const NodeContainer = style({
-  padding: 10,
   display: 'flex',
   flexWrap: 'wrap',
   width: '100%',
-  height: '100%',
+  height: 'auto',
+  overflowY: 'hidden',
+  transition: '0.25s max-height',
+  backgroundColor: Colors.grey[9],
 });
 
 export const SubNode: React.FC<SubNodeProps> = ({ node, libraryNode }) => {
   const thisNode = useRef<HTMLDivElement>(null);
+  const [mh, setMh] = useState(0);
 
   const [filterNodes, setFilterNodes] = useState('');
-
+  useEffect(() => {
+    setTimeout(() => {
+      setMh(500);
+    }, 1);
+    return () => {
+      setMh(0);
+    };
+  }, []);
   return (
-    <div className={`${NodeContainer}`} ref={thisNode}>
+    <div style={{ maxHeight: mh }} className={`${NodeContainer}`} ref={thisNode}>
       <div className={`${NodeCaption} CaptionType-${node.type.name}`}>
         <span className={CaptionTitle}>{node.name}</span>
         <MenuSearch

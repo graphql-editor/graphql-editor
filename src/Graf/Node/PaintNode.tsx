@@ -95,11 +95,12 @@ export const PaintNode: React.FC<NodeProps> = ({ node, isLibrary, isMatchedToSea
                   width: rect.offsetWidth,
                 });
               }
-            }, 1);
+            }, 250);
 
             return;
           }
           setSelectedNode(node);
+          setPosition(undefined);
           setTimeout(() => {
             setSelectedNode(node);
             const rect = thisNode.current;
@@ -110,7 +111,7 @@ export const PaintNode: React.FC<NodeProps> = ({ node, isLibrary, isMatchedToSea
                 width: rect.offsetWidth,
               });
             }
-          }, 1);
+          }, 250);
         }}
       >
         <div className={`NodeTitle`}>
