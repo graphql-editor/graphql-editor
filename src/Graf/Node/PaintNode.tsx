@@ -4,7 +4,6 @@ import { style } from 'typestyle';
 import { Colors } from '@/Colors';
 import { GraphQLBackgrounds } from '@/editor/theme';
 import { NestedCSSProperties } from 'typestyle/lib/types';
-import { NodeTitle } from './SharedNode';
 import { useTreesState } from '@/state/containers/trees';
 import { DOM } from '../DOM';
 export interface NodeProps {
@@ -22,23 +21,25 @@ const MainNodeArea: NestedCSSProperties = {
   borderRadius: 4,
   cursor: 'pointer',
   transition: `border-color 0.25s ease-in-out`,
+  display: 'flex',
+  alignItems: 'stretch',
+  color: Colors.grey[0],
+  fontSize: 12,
+  padding: `10px 15px`,
+  userSelect: 'none',
+  '-moz-user-select': '-moz-none',
   $nest: {
-    '.NodeTitle': {
-      ...NodeTitle,
-      borderBottomLeftRadius: 4,
-      borderBottomRightRadius: 4,
-      background: 'transparent',
-    },
     '&:hover': {
       borderColor: Colors.green[0],
     },
   },
 };
 const LibraryNodeContainer = style({
+  ...MainNodeArea,
   $nest: {
-    '.MainNodeArea': MainNodeArea,
+    ...MainNodeArea.$nest,
     ...Object.keys(GraphQLBackgrounds).reduce((a, b) => {
-      a[`.NodeType-${b}`] = {
+      a[`&.NodeType-${b}`] = {
         borderColor: `${GraphQLBackgrounds[b]}`,
         borderStyle: 'dashed',
       };
@@ -47,11 +48,12 @@ const LibraryNodeContainer = style({
   },
 });
 const MainNodeContainer = style({
+  ...MainNodeArea,
   background: Colors.grey[8],
   $nest: {
-    '.MainNodeArea': MainNodeArea,
+    ...MainNodeArea.$nest,
     ...Object.keys(GraphQLBackgrounds).reduce((a, b) => {
-      a[`.NodeType-${b}`] = {
+      a[`&.NodeType-${b}`] = {
         background: `${GraphQLBackgrounds[b]}`,
       };
       return a;
@@ -59,7 +61,7 @@ const MainNodeContainer = style({
   },
 });
 const NodeContainer = style({
-  margin: 15,
+  margin: 10,
 });
 const MatchedSearchContainer = style({
   opacity: 1,
@@ -74,50 +76,43 @@ export const PaintNode: React.FC<NodeProps> = ({ node, isLibrary, isMatchedToSea
     <div
       className={`${NodeContainer} ${isLibrary ? LibraryNodeContainer : MainNodeContainer} ${
         isMatchedToSearch ? MatchedSearchContainer : NoMatchedSearchContainer
-      }`}
+      } NodeType-${node.type.name}`}
       ref={thisNode}
-      style={{}}
-    >
-      <div
-        className={`MainNodeArea NodeType-${node.type.name}`}
-        onClick={(e) => {
-          e.stopPropagation();
-          if (DOM.panLock) return;
-          if (subNode) {
-            setSelectedSubNode(node);
-            setTimeout(() => {
-              setSelectedSubNode(node);
-              const rect = thisNode.current;
-              if (rect) {
-                setSubNodePosition({
-                  offsetLeft: rect.offsetLeft,
-                  offsetTop: rect.offsetTop,
-                  width: rect.offsetWidth,
-                });
-              }
-            }, 250);
-
-            return;
-          }
-          setSelectedNode(node);
-          setPosition(undefined);
+      onClick={(e) => {
+        e.stopPropagation();
+        if (DOM.panLock) return;
+        if (subNode) {
+          setSelectedSubNode(node);
           setTimeout(() => {
-            setSelectedNode(node);
+            setSelectedSubNode(node);
             const rect = thisNode.current;
             if (rect) {
-              setPosition({
+              setSubNodePosition({
                 offsetLeft: rect.offsetLeft,
                 offsetTop: rect.offsetTop,
                 width: rect.offsetWidth,
               });
             }
           }, 250);
-        }}
-      >
-        <div className={`NodeTitle`}>
-          <div className={`NodeName`}>{node.name}</div>
-        </div>
-      </div>
+
+          return;
+        }
+        setSelectedNode(node);
+        setPosition(undefined);
+        setTimeout(() => {
+          setSelectedNode(node);
+          const rect = thisNode.current;
+          if (rect) {
+            setPosition({
+              offsetLeft: rect.offsetLeft,
+              offsetTop: rect.offsetTop,
+              width: rect.offsetWidth,
+            });
+          }
+        }, 250);
+      }}
+    >
+      {node.name}
     </div>
   );
 };

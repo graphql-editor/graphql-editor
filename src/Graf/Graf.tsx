@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { style } from 'typestyle';
+import { keyframes, style } from 'typestyle';
 import { fontFamily } from '@/vars';
 import panzoom, { PanZoom } from 'panzoom';
 import { DOM } from './DOM';
@@ -8,14 +8,43 @@ import { ActiveNode } from '@/Graf/Node';
 import { useTreesState } from '@/state/containers/trees';
 import { KeyboardActions, useErrorsState, useIOState, useNavigationState } from '@/state/containers';
 import { Colors } from '@/Colors';
+import { SubNode } from './Node/SubNode';
+
+const unfold = keyframes({
+  ['0%']: {
+    marginRight: -400,
+  },
+  ['100%']: {
+    marginRight: 0,
+  },
+});
+const slideLeft = keyframes({
+  ['0%']: {
+    marginLeft: 0,
+    marginRight: 0,
+  },
+  ['100%']: {
+    marginLeft: -400,
+    marginRight: 400,
+  },
+});
 export interface GrafProps {}
 const Wrapper = style({
   width: '100%',
   height: '100%',
   overflowX: 'hidden',
   position: 'relative',
+  flex: 5,
   background: `#0b050d`,
   overflowY: 'auto',
+  scrollbarColor: `${Colors.grey[8]} ${Colors.grey[10]}`,
+});
+const AnimatedWrapper = style({
+  animationName: slideLeft,
+  animationTimingFunction: 'ease-in-out',
+  animationDuration: '0.25s',
+  marginLeft: -400,
+  marginRight: 400,
 });
 const Main = style({
   width: '100%',
@@ -27,6 +56,7 @@ const Main = style({
 });
 const Focus = style({
   position: 'absolute',
+  zIndex: 2,
 });
 const ErrorLock = style({
   width: '100%',
@@ -48,7 +78,20 @@ const ErrorLockMessage = style({
   color: Colors.red[0],
   background: Colors.main[10],
 });
-
+const SubNodeContainer = style({
+  animationName: unfold,
+  animationTimingFunction: 'ease-in-out',
+  animationDuration: '0.25s',
+  background: Colors.grey[9],
+  overflowY: 'auto',
+  position: 'absolute',
+  fontFamily,
+  width: 400,
+  right: 0,
+  top: 0,
+  bottom: 0,
+  scrollbarColor: `${Colors.grey[8]} ${Colors.grey[10]}`,
+});
 let snapLock = true;
 
 export const Graf: React.FC<GrafProps> = () => {
@@ -160,38 +203,38 @@ export const Graf: React.FC<GrafProps> = () => {
       ? selectedNode.args?.find((n) => n.name === selectedSubNode.name && n.data.type === selectedSubNode.data.type)
       : undefined;
   return (
-    <div
-      ref={wrapperRef}
-      className={Wrapper}
-      style={{
-        cursor: grafRef ? 'grab' : 'auto',
-      }}
-      onClick={() => {
-        if (DOM.lock) return;
-        DOM.scrollLock = false;
-        if (subNode) {
-          setSelectedSubNode(undefined);
-          return;
-        }
-        setSelectedNode(undefined);
-      }}
-    >
-      <div className={Main}>
-        {!lockGraf && (
-          <>
-            <PaintNodes />
-            {node && position && wrapperRef.current && (
-              <div
-                className={Focus}
-                ref={(r) => {
-                  setGrafRef(r);
-                }}
-                style={{
-                  top: (subNode && subNodePosition ? subNodePosition.offsetTop : position.offsetTop) - 10,
-                  left: (subNode && subNodePosition ? subNodePosition.offsetLeft : position.offsetLeft) - 10,
-                }}
-              >
-                {!subNode && (
+    <>
+      <div
+        ref={wrapperRef}
+        className={`${Wrapper} ${node ? AnimatedWrapper : ''}`}
+        style={{
+          cursor: grafRef ? 'grab' : 'auto',
+        }}
+        onClick={() => {
+          if (DOM.lock) return;
+          DOM.scrollLock = false;
+          if (subNode) {
+            setSelectedSubNode(undefined);
+            return;
+          }
+          setSelectedNode(undefined);
+        }}
+      >
+        <div className={Main}>
+          {!lockGraf && (
+            <>
+              <PaintNodes />
+              {node && position && wrapperRef.current && (
+                <div
+                  className={Focus}
+                  ref={(r) => {
+                    setGrafRef(r);
+                  }}
+                  style={{
+                    top: position.offsetTop - 10,
+                    left: position.offsetLeft - 10,
+                  }}
+                >
                   <ActiveNode
                     readonly={readonly}
                     onDelete={() => {
@@ -216,39 +259,61 @@ export const Graf: React.FC<GrafProps> = () => {
                     }}
                     node={node}
                   />
-                )}
-                {subNode && subNodePosition && (
-                  <ActiveNode
-                    readonly={readonly}
-                    node={subNode}
-                    subNode
-                    onDelete={() => {
-                      if (node && node.args) {
-                        node.args = node.args.filter((a) => a.name !== subNode.name);
-                        setSelectedSubNode(undefined);
-                        setTree({ ...tree });
-                        DOM.panLock = false;
-                      }
-                    }}
-                  />
-                )}
-              </div>
-            )}
-          </>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+        {lockGraf && (
+          <div
+            className={ErrorLock}
+            onClick={() => {
+              setMenuState('code-diagram');
+            }}
+          >
+            <div
+              className={ErrorLockMessage}
+            >{`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema`}</div>
+          </div>
         )}
       </div>
-      {lockGraf && (
+      {node && (
         <div
-          className={ErrorLock}
+          className={SubNodeContainer}
           onClick={() => {
-            setMenuState('code-diagram');
+            if (subNode) {
+              setSelectedSubNode(undefined);
+            }
           }}
         >
-          <div
-            className={ErrorLockMessage}
-          >{`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema`}</div>
+          <SubNode node={node} />
+          {subNode && subNodePosition && (
+            <div
+              className={Focus}
+              style={{
+                top: subNodePosition.offsetTop - 10,
+                left: subNodePosition.offsetLeft - 10,
+              }}
+            >
+              {subNodePosition && (
+                <ActiveNode
+                  readonly={readonly}
+                  node={subNode}
+                  subNode
+                  onDelete={() => {
+                    if (node && node.args) {
+                      node.args = node.args.filter((a) => a.name !== subNode.name);
+                      setSelectedSubNode(undefined);
+                      setTree({ ...tree });
+                      DOM.panLock = false;
+                    }
+                  }}
+                />
+              )}
+            </div>
+          )}
         </div>
       )}
-    </div>
+    </>
   );
 };

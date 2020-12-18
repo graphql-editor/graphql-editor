@@ -69,7 +69,7 @@ const MainNodeArea: NestedCSSProperties = {
   },
 };
 const NodeContainer = style({
-  margin: 15,
+  margin: 10,
   $nest: {
     '.MainNodeArea': MainNodeArea,
     ...Object.keys(GraphQLBackgrounds).reduce((a, b) => {

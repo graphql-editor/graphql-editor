@@ -55,6 +55,7 @@ export const Sidebar = style({
 export const ErrorOuterContainer = style({
   width: '100%',
   position: 'relative',
+  display: 'flex',
 });
 
 export interface EditorProps extends Theming {

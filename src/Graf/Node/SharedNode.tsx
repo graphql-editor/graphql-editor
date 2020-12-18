@@ -39,7 +39,11 @@ export const NodeTitle: NestedCSSProperties = {
   alignItems: 'stretch',
   borderTopLeftRadius: 4,
   borderTopRightRadius: 4,
-  padding: 5,
+  color: Colors.grey[0],
+  fontSize: 12,
+  padding: `5px 0 5px 10px`,
+  userSelect: 'none',
+  '-moz-user-select': '-moz-none',
   $nest: {
     '.NodeName': NodeName,
     '.NodeType': NodeType,

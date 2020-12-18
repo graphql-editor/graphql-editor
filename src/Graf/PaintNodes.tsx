@@ -11,7 +11,6 @@ import { fontFamily } from '@/vars';
 import { RootNode } from '@/Graf/Node';
 import { useTreesState } from '@/state/containers/trees';
 import { RootExtendNode } from './Node/RootExtendNode';
-import { SubNode } from './Node/SubNode';
 const Main = style({
   width: '100%',
   position: 'relative',
@@ -55,8 +54,7 @@ export const PaintNodes: React.FC = () => {
     <div className={Main}>
       {baseTypes.map((d) => (
         <React.Fragment>
-          {selectedNode?.type.name === d.node.name && <SubNode node={selectedNode} />}
-          <RootNode key={d.node.type.name} node={d.node} libraryNode={d.node} />
+          <RootNode key={d.node.type.name} node={d.node} libraryNode={d.libraryNode} />
         </React.Fragment>
       ))}
       <RootNode
