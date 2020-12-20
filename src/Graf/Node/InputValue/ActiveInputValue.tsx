@@ -25,16 +25,11 @@ export interface FieldProps {
   onOutputClick: () => void;
   inputDisabled?: boolean;
   outputDisabled?: boolean;
-  last?: boolean;
   isLocked?: boolean;
   parentNodeTypeName: string;
   onDelete: () => void;
 }
 
-const LastField = style({
-  borderBottomLeftRadius: 4,
-  borderBottomRightRadius: 4,
-});
 const Name = style({ fontSize: 10, marginRight: 4, overflow: 'hidden' });
 const Type = style({ fontSize: 10, color: Colors.green[0] });
 const OptionsMenuContainer = style({
@@ -93,7 +88,6 @@ export const ActiveInputValue: React.FC<FieldProps> = ({
   outputDisabled,
   onInputClick,
   onOutputClick,
-  last,
   parentNodeTypeName,
   isLocked,
   onDelete,
@@ -103,9 +97,7 @@ export const ActiveInputValue: React.FC<FieldProps> = ({
   const [detailsMenuOpen, setDetailsMenuOpen] = useState(false);
   return (
     <NodeFieldContainer
-      className={`NodeType-${parentNodeTypeName} ${last ? LastField : ''} ${
-        inputOpen || outputOpen || optionsMenuOpen ? 'Active' : ''
-      }`}
+      className={`NodeType-${parentNodeTypeName} ${inputOpen || outputOpen || optionsMenuOpen ? 'Active' : ''}`}
     >
       {!inputDisabled && !isLocked ? (
         <FieldPort

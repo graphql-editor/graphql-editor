@@ -71,7 +71,7 @@ const NoMatchedSearchContainer = style({
 });
 export const PaintNode: React.FC<NodeProps> = ({ node, isLibrary, isMatchedToSearch, subNode }) => {
   const thisNode = useRef<HTMLDivElement>(null);
-  const { setSelectedNode, setPosition, setSelectedSubNode, setSubNodePosition } = useTreesState();
+  const { setSelectedNode, setPosition } = useTreesState();
   return (
     <div
       className={`${NodeContainer} ${isLibrary ? LibraryNodeContainer : MainNodeContainer} ${
@@ -81,35 +81,17 @@ export const PaintNode: React.FC<NodeProps> = ({ node, isLibrary, isMatchedToSea
       onClick={(e) => {
         e.stopPropagation();
         if (DOM.panLock) return;
-        if (subNode) {
-          setSelectedSubNode(node);
-          setTimeout(() => {
-            setSelectedSubNode(node);
-            const rect = thisNode.current;
-            if (rect) {
-              setSubNodePosition({
-                offsetLeft: rect.offsetLeft,
-                offsetTop: rect.offsetTop,
-                width: rect.offsetWidth,
-              });
-            }
-          }, 250);
 
-          return;
-        }
         setSelectedNode(node);
         setPosition(undefined);
-        setTimeout(() => {
-          setSelectedNode(node);
-          const rect = thisNode.current;
-          if (rect) {
-            setPosition({
-              offsetLeft: rect.offsetLeft,
-              offsetTop: rect.offsetTop,
-              width: rect.offsetWidth,
-            });
-          }
-        }, 250);
+        const rect = thisNode.current;
+        if (rect) {
+          setPosition({
+            offsetLeft: rect.offsetLeft,
+            offsetTop: rect.offsetTop,
+            width: rect.offsetWidth,
+          });
+        }
       }}
     >
       {node.name}

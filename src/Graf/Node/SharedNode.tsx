@@ -12,7 +12,7 @@ const NodeName: NestedCSSProperties = {
 };
 const NodeType: NestedCSSProperties = {
   color: Colors.main[0],
-  fontSize: 10,
+  fontSize: 12,
   marginRight: 'auto',
   padding: `5px 30px 5px 0`,
 };
@@ -37,8 +37,6 @@ export const NodeTitle: NestedCSSProperties = {
   background: Colors.grey[8],
   display: 'flex',
   alignItems: 'stretch',
-  borderTopLeftRadius: 4,
-  borderTopRightRadius: 4,
   color: Colors.grey[0],
   fontSize: 12,
   padding: `5px 0 5px 10px`,
@@ -52,8 +50,6 @@ export const NodeTitle: NestedCSSProperties = {
 };
 
 export const NodeFields: NestedCSSProperties = {
-  borderBottomLeftRadius: 4,
-  borderBottomRightRadius: 4,
   background: Colors.grey[8],
   ...Object.keys(GraphQLBackgrounds).reduce((a, b) => {
     a[`.NodeBackground-${b}`] = {

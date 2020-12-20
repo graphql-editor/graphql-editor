@@ -8,7 +8,6 @@ import { ActiveNode } from '@/Graf/Node';
 import { useTreesState } from '@/state/containers/trees';
 import { KeyboardActions, useErrorsState, useIOState, useNavigationState } from '@/state/containers';
 import { Colors } from '@/Colors';
-import { SubNode } from './Node/SubNode';
 
 const unfold = keyframes({
   ['0%']: {
@@ -16,16 +15,6 @@ const unfold = keyframes({
   },
   ['100%']: {
     marginRight: 0,
-  },
-});
-const slideLeft = keyframes({
-  ['0%']: {
-    marginLeft: 0,
-    marginRight: 0,
-  },
-  ['100%']: {
-    marginLeft: -400,
-    marginRight: 400,
   },
 });
 export interface GrafProps {}
@@ -39,13 +28,7 @@ const Wrapper = style({
   overflowY: 'auto',
   scrollbarColor: `${Colors.grey[8]} ${Colors.grey[10]}`,
 });
-const AnimatedWrapper = style({
-  animationName: slideLeft,
-  animationTimingFunction: 'ease-in-out',
-  animationDuration: '0.25s',
-  marginLeft: -400,
-  marginRight: 400,
-});
+const AnimatedWrapper = style({});
 const Main = style({
   width: '100%',
   height: '100%',
@@ -84,9 +67,9 @@ const SubNodeContainer = style({
   animationDuration: '0.25s',
   background: Colors.grey[9],
   overflowY: 'auto',
-  position: 'absolute',
+  flex: 5,
   fontFamily,
-  width: 400,
+  width: 300,
   right: 0,
   top: 0,
   bottom: 0,
@@ -111,9 +94,6 @@ export const Graf: React.FC<GrafProps> = () => {
     past,
     future,
     readonly,
-    subNodePosition,
-    selectedSubNode,
-    setSelectedSubNode,
   } = useTreesState();
   const { lockGraf } = useErrorsState();
   const { setMenuState } = useNavigationState();
@@ -198,10 +178,6 @@ export const Graf: React.FC<GrafProps> = () => {
     ? tree.nodes.find((n) => n.name === selectedNode.name && n.data.type === selectedNode.data.type) ||
       libraryTree.nodes.find((n) => n.name === selectedNode.name && n.data.type === selectedNode.data.type)
     : undefined;
-  const subNode =
-    selectedNode && selectedSubNode
-      ? selectedNode.args?.find((n) => n.name === selectedSubNode.name && n.data.type === selectedSubNode.data.type)
-      : undefined;
   return (
     <>
       <div
@@ -213,10 +189,6 @@ export const Graf: React.FC<GrafProps> = () => {
         onClick={() => {
           if (DOM.lock) return;
           DOM.scrollLock = false;
-          if (subNode) {
-            setSelectedSubNode(undefined);
-            return;
-          }
           setSelectedNode(undefined);
         }}
       >
@@ -234,32 +206,7 @@ export const Graf: React.FC<GrafProps> = () => {
                     top: position.offsetTop - 10,
                     left: position.offsetLeft - 10,
                   }}
-                >
-                  <ActiveNode
-                    readonly={readonly}
-                    onDelete={() => {
-                      const deletedNode = tree.nodes.findIndex((n) => n.name === node!.name)!;
-                      const allNodes = [...tree.nodes];
-                      allNodes.splice(deletedNode, 1);
-                      setSelectedNode(undefined);
-                      setTree({ nodes: allNodes });
-                      DOM.panLock = false;
-                    }}
-                    onDuplicate={() => {
-                      const allNodes = [...tree.nodes];
-                      allNodes.push(
-                        JSON.parse(
-                          JSON.stringify({
-                            ...node,
-                            name: node?.name + 'Copy',
-                          }),
-                        ),
-                      );
-                      setTree({ nodes: allNodes });
-                    }}
-                    node={node}
-                  />
-                </div>
+                ></div>
               )}
             </>
           )}
@@ -277,41 +224,32 @@ export const Graf: React.FC<GrafProps> = () => {
           </div>
         )}
       </div>
-      {node && (
-        <div
-          className={SubNodeContainer}
-          onClick={() => {
-            if (subNode) {
-              setSelectedSubNode(undefined);
-            }
-          }}
-        >
-          <SubNode node={node} />
-          {subNode && subNodePosition && (
-            <div
-              className={Focus}
-              style={{
-                top: subNodePosition.offsetTop - 10,
-                left: subNodePosition.offsetLeft - 10,
-              }}
-            >
-              {subNodePosition && (
-                <ActiveNode
-                  readonly={readonly}
-                  node={subNode}
-                  subNode
-                  onDelete={() => {
-                    if (node && node.args) {
-                      node.args = node.args.filter((a) => a.name !== subNode.name);
-                      setSelectedSubNode(undefined);
-                      setTree({ ...tree });
-                      DOM.panLock = false;
-                    }
-                  }}
-                />
-              )}
-            </div>
-          )}
+      {node && position && wrapperRef.current && (
+        <div className={SubNodeContainer} onClick={() => {}}>
+          <ActiveNode
+            readonly={readonly}
+            onDelete={() => {
+              const deletedNode = tree.nodes.findIndex((n) => n.name === node!.name)!;
+              const allNodes = [...tree.nodes];
+              allNodes.splice(deletedNode, 1);
+              setSelectedNode(undefined);
+              setTree({ nodes: allNodes });
+              DOM.panLock = false;
+            }}
+            onDuplicate={() => {
+              const allNodes = [...tree.nodes];
+              allNodes.push(
+                JSON.parse(
+                  JSON.stringify({
+                    ...node,
+                    name: node?.name + 'Copy',
+                  }),
+                ),
+              );
+              setTree({ nodes: allNodes });
+            }}
+            node={node}
+          />
         </div>
       )}
     </>

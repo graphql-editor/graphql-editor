@@ -2,12 +2,10 @@ import React from 'react';
 import { ParserField } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { Colors } from '@/Colors';
-import { FIELD_HEIGHT } from '@/Graf/constants';
 import { PaintFieldName } from './FieldName';
 import { PaintType } from '@/Graf/Node/Type';
 export interface PaintFieldProps {
   node: ParserField;
-  last?: boolean;
   parentNodeTypeName: string;
 }
 
@@ -15,7 +13,6 @@ const Main = style({
   display: 'flex',
   alignItems: 'center',
   color: Colors.grey[0],
-  height: FIELD_HEIGHT,
   margin: `0 0`,
   transition: 'background 0.25s ease-in-out',
   $nest: {
@@ -24,10 +21,6 @@ const Main = style({
       height: 16,
     },
   },
-});
-const LastField = style({
-  borderBottomLeftRadius: 4,
-  borderBottomRightRadius: 4,
 });
 const Title = style({
   fontSize: 10,
@@ -38,9 +31,9 @@ const Title = style({
 });
 const Name = style({ fontSize: 12, marginRight: 4, overflow: 'hidden' });
 const Type = style({ fontSize: 10, color: Colors.green[0] });
-export const PaintField: React.FC<PaintFieldProps> = ({ node, last, parentNodeTypeName }) => {
+export const PaintField: React.FC<PaintFieldProps> = ({ node, parentNodeTypeName }) => {
   return (
-    <div className={`NodeType-${parentNodeTypeName} ${Main} ${last ? LastField : ''}`}>
+    <div className={`NodeType-${parentNodeTypeName} ${Main}`}>
       <div className={'NodeFieldPortPlaceholder'} />
       <div className={Title}>
         <div className={Name}>

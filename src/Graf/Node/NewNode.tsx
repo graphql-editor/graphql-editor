@@ -54,8 +54,6 @@ const MainNodeArea: NestedCSSProperties = {
     '.NodeTitle': {
       ...NodeTitle,
       width: 200,
-      borderBottomLeftRadius: 4,
-      borderBottomRightRadius: 4,
       background: 'transparent',
       $nest: {
         ...NodeTitle.$nest,

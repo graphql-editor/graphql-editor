@@ -5,7 +5,6 @@ import { ActiveDirective } from '@/Graf/Node/Directive';
 import { ActiveInputValue } from '@/Graf/Node/InputValue';
 import { style, keyframes } from 'typestyle';
 import { Colors, mix } from '@/Colors';
-import { FIELD_HEIGHT } from '@/Graf/constants';
 import { GraphQLBackgrounds } from '@/editor/theme';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { DOM } from '@/Graf/DOM';
@@ -22,7 +21,6 @@ interface NodeProps {
   onDelete: () => void;
   onDuplicate?: () => void;
   readonly?: boolean;
-  subNode?: boolean;
 }
 
 const fadeIn = keyframes({
@@ -51,10 +49,6 @@ const LibraryNodeArea: NestedCSSProperties = {
 };
 const MainNodeArea: NestedCSSProperties = {
   position: 'relative',
-  borderWidth: 1,
-  borderStyle: 'solid',
-  borderRadius: 4,
-  maxWidth: 600,
   transition: `border-color .25s ease-in-out`,
   borderColor: Colors.green[0],
   $nest: {
@@ -79,7 +73,6 @@ const NodeContainer = style({
   position: 'relative',
   breakInside: 'avoid',
   maxWidth: '100%',
-  margin: 10,
   $nest: {
     '.DescriptionPosition': DescriptionPosition,
     '.LeftNodeArea': LeftNodeArea,
@@ -134,15 +127,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
   const [openedDirectiveInputs, setOpenedDirectiveInputs] = useState<number[]>([]);
   const [openedDirectiveOutputs, setOpenedDirectiveOutputs] = useState<number[]>([]);
 
-  const {
-    libraryTree,
-    tree,
-    setTree,
-    setSelectedNode,
-    selectedNode,
-    selectedNodeRef,
-    selectedSubNodeRef,
-  } = useTreesState();
+  const { libraryTree, tree, setTree, setSelectedNode, selectedNode, selectedNodeRef } = useTreesState();
 
   const isLibrary = !!libraryTree.nodes.find((lN) => lN.name === node.name && lN.data.type === node.data.type);
   const isInputNode = [
@@ -163,10 +148,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
   };
 
   return (
-    <div
-      className={`${NodeContainer} ${DOM.classes.node} ${DOM.classes.nodeSelected}`}
-      ref={sharedProps.subNode ? selectedSubNodeRef : selectedNodeRef}
-    >
+    <div className={`${NodeContainer} ${DOM.classes.node} ${DOM.classes.nodeSelected}`} ref={selectedNodeRef}>
       <ActiveDescription
         className={'DescriptionPosition'}
         onChange={(d) => {
@@ -194,7 +176,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
       )}
       <div className={`LeftNodeArea`}>
         {openedDirectiveInputs.sort().map((o) => (
-          <div key={o} className={`LeftNodeAreaNode`} style={{ top: FIELD_HEIGHT * (o + 1) }}>
+          <div key={o} className={`LeftNodeAreaNode`}>
             <ActiveNode
               {...sharedProps}
               readonly={isLocked}
@@ -210,11 +192,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
           </div>
         ))}
         {openedInputs.sort().map((o) => (
-          <div
-            key={o}
-            className={`LeftNodeAreaNode`}
-            style={{ top: FIELD_HEIGHT * (o + (node.directives?.length || 0) + 1) }}
-          >
+          <div key={o} className={`LeftNodeAreaNode`}>
             <ActiveNode
               {...sharedProps}
               readonly={isLocked}
@@ -232,16 +210,12 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
       </div>
       <div className={`RightNodeArea`}>
         {openedDirectiveOutputs.sort().map((o) => (
-          <div key={o} className={`RightNodeAreaNode`} style={{ top: FIELD_HEIGHT * (o + 1) }}>
+          <div key={o} className={`RightNodeAreaNode`}>
             <ActiveNode {...sharedProps} readonly={isLocked} node={findNodeByField(node.directives![o])} />
           </div>
         ))}
         {openedOutputs.sort().map((o) => (
-          <div
-            key={o}
-            className={`RightNodeAreaNode`}
-            style={{ top: FIELD_HEIGHT * (o + (node.directives?.length || 0) + 1) }}
-          >
+          <div key={o} className={`RightNodeAreaNode`}>
             <ActiveNode {...sharedProps} readonly={isLocked} node={findNodeByField(node.args![o])} />
           </div>
         ))}
@@ -293,7 +267,6 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
               <ActiveDirective
                 isLocked={isLocked}
                 parentNodeTypeName={node.type.name}
-                last={i === (node.args?.length || 0) - 1}
                 key={d.name}
                 onInputClick={() => {
                   setOpenedDirectiveInputs((oI) => (oI.includes(i) ? oI.filter((o) => o !== i) : [...oI, i]));
@@ -325,7 +298,6 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
                   parentNode={node}
                   isLocked={isLocked}
                   parentNodeTypeName={node.type.name}
-                  last={i === node.args!.length - 1}
                   key={a.name}
                   onInputClick={() => {
                     setOpenedInputs((oI) => (oI.includes(i) ? oI.filter((o) => o !== i) : [...oI, i]));
@@ -350,7 +322,6 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
                 <ActiveInputValue
                   isLocked={isLocked}
                   parentNodeTypeName={node.type.name}
-                  last={i === node.args!.length - 1}
                   key={a.name}
                   onInputClick={() => {
                     setOpenedInputs((oI) => (oI.includes(i) ? oI.filter((o) => o !== i) : [...oI, i]));
@@ -375,7 +346,6 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
               <ActiveField
                 isLocked={isLocked}
                 parentNodeTypeName={node.type.name}
-                last={i === node.args!.length - 1}
                 key={a.name}
                 onInputClick={() => {
                   setOpenedInputs((oI) => (oI.includes(i) ? oI.filter((o) => o !== i) : [...oI, i]));

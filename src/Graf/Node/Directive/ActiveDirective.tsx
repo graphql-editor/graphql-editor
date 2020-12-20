@@ -13,16 +13,11 @@ interface FieldProps {
   onOutputClick: () => void;
   inputDisabled?: boolean;
   outputDisabled?: boolean;
-  last?: boolean;
   isLocked?: boolean;
   parentNodeTypeName: string;
   onDelete: () => void;
 }
 
-const LastField = style({
-  borderBottomLeftRadius: 4,
-  borderBottomRightRadius: 4,
-});
 const Name = style({
   fontSize: 10,
   marginRight: 4,
@@ -47,16 +42,13 @@ export const ActiveDirective: React.FC<FieldProps> = ({
   outputDisabled,
   onInputClick,
   onOutputClick,
-  last,
   isLocked,
   onDelete,
 }) => {
   const [detailsMenuOpen, setDetailsMenuOpen] = useState(false);
   const isEnumValue = node.data.type === ValueDefinition.EnumValueDefinition;
   return (
-    <NodeFieldContainer
-      className={`${DirectiveBackground} ${last ? LastField : ''} ${inputOpen || outputOpen ? 'Active' : ''}`}
-    >
+    <NodeFieldContainer className={`${DirectiveBackground} ${inputOpen || outputOpen ? 'Active' : ''}`}>
       {!inputDisabled && !isLocked && !isEnumValue ? (
         <FieldPort
           onClick={onInputClick}

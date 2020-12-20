@@ -7,9 +7,7 @@ const useTreesStateContainer = createContainer(() => {
   const [snapshots, setSnapshots] = useState<string[]>([]);
   const [undos, setUndos] = useState<string[]>([]);
   const [selectedNode, setSelectedNode] = useState<ParserField>();
-  const [selectedSubNode, setSelectedSubNode] = useState<ParserField>();
   const selectedNodeRef = useRef<HTMLDivElement>(null);
-  const selectedSubNodeRef = useRef<HTMLDivElement>(null);
   const [readonly, setReadonly] = useState(false);
   const [isTreeInitial, setIsTreeInitial] = useState(true);
 
@@ -19,11 +17,6 @@ const useTreesStateContainer = createContainer(() => {
     width: number;
   }>();
 
-  const [subNodePosition, setSubNodePosition] = useState<{
-    offsetLeft: number;
-    offsetTop: number;
-    width: number;
-  }>();
   const past = () => {
     const p = snapshots.pop();
     if (p) {
@@ -60,10 +53,7 @@ const useTreesStateContainer = createContainer(() => {
     setSnapshots,
     selectedNode,
     setSelectedNode,
-    selectedSubNode,
-    setSelectedSubNode,
     selectedNodeRef,
-    selectedSubNodeRef,
     position,
     setPosition,
     past,
@@ -75,8 +65,6 @@ const useTreesStateContainer = createContainer(() => {
     setReadonly,
     isTreeInitial,
     setIsTreeInitial,
-    subNodePosition,
-    setSubNodePosition,
   };
 });
 

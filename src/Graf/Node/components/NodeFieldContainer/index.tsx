@@ -1,5 +1,4 @@
 import { Colors } from '@/Colors';
-import { FIELD_HEIGHT } from '@/Graf/constants';
 import React from 'react';
 import { style } from 'typestyle';
 
@@ -8,7 +7,6 @@ const Main = style({
   display: 'flex',
   alignItems: 'center',
   color: Colors.grey[0],
-  height: FIELD_HEIGHT,
   margin: `0 0`,
   transition: 'background 0.25s ease-in-out',
   $nest: {
