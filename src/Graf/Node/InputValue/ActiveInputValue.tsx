@@ -17,18 +17,7 @@ import {
 import { isScalarArgument } from '@/GraphQL/Resolve';
 import { ConvertStringToObject, ConvertValueNodeToString } from '@/GraphQL/Convert';
 import { useTreesState } from '@/state/containers/trees';
-export interface FieldProps {
-  node: ParserField;
-  inputOpen: boolean;
-  outputOpen: boolean;
-  onInputClick: () => void;
-  onOutputClick: () => void;
-  inputDisabled?: boolean;
-  outputDisabled?: boolean;
-  isLocked?: boolean;
-  parentNodeTypeName: string;
-  onDelete: () => void;
-}
+import { FieldProps } from '@/Graf/Node/models';
 
 const Name = style({ fontSize: 10, marginRight: 4, overflow: 'hidden' });
 const Type = style({ fontSize: 10, color: Colors.green[0] });

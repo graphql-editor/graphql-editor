@@ -8,18 +8,22 @@ const Main = style({
   color: Colors.grey[3],
   padding: 10,
   fontSize: 12,
-  overflowY: 'hidden',
   resize: 'none',
-  border: `1px solid ${Colors.grey[8]}`,
   borderRadius: 4,
+  outline: 'none',
+  border: `1px solid ${Colors.grey[3]}00`,
+  $nest: {
+    '&:focus': {
+      border: `1px solid ${Colors.grey[3]}`,
+    },
+  },
 });
 
 export const ActiveDescription: React.FC<{
   value: string;
   onChange: (changedValue: string) => void;
-  className: string;
   isLocked?: boolean;
-}> = ({ onChange, value, className, isLocked }) => {
+}> = ({ onChange, value, isLocked }) => {
   const DescriptionRef = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
     if (DescriptionRef.current) {
@@ -36,7 +40,7 @@ export const ActiveDescription: React.FC<{
         rows={1}
         data-gramm_editor="false"
         ref={DescriptionRef}
-        className={`${Main} ${className}`}
+        className={`${Main} `}
         defaultValue={value}
       ></textarea>
     );
@@ -68,7 +72,7 @@ export const ActiveDescription: React.FC<{
         e.currentTarget.style.height = 'auto';
         e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
       }}
-      className={`${Main} ${className}`}
+      className={`${Main} `}
       defaultValue={value}
     ></textarea>
   );

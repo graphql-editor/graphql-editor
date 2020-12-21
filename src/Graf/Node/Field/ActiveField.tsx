@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ParserField, ValueDefinition } from 'graphql-zeus';
+import { ValueDefinition } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { Colors } from '@/Colors';
 import { FIELD_NAME_SIZE, FIELD_TYPE_SIZE } from '@/Graf/constants';
@@ -8,19 +8,7 @@ import { ActiveType } from '@/Graf/Node/Type';
 import { NodeTypeOptionsMenu } from '@/Graf/Node/ContextMenu';
 import { useTreesState } from '@/state/containers/trees';
 import { DetailMenuItem, FieldPort, Menu, MenuScrollingArea, NodeFieldContainer, Title } from '@/Graf/Node/components';
-
-interface FieldProps {
-  node: ParserField;
-  inputOpen: boolean;
-  outputOpen: boolean;
-  onInputClick: () => void;
-  onOutputClick: () => void;
-  inputDisabled?: boolean;
-  outputDisabled?: boolean;
-  isLocked?: boolean;
-  parentNodeTypeName: string;
-  onDelete: () => void;
-}
+import { FieldProps } from '@/Graf/Node/models';
 
 const Name = style({
   fontSize: FIELD_NAME_SIZE,

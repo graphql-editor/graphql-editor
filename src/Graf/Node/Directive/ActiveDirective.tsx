@@ -1,22 +1,10 @@
 import React, { useState } from 'react';
-import { ParserField, ValueDefinition } from 'graphql-zeus';
+import { ValueDefinition } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { ConvertValueToEditableString } from '@/GraphQL/Convert';
 import { DetailMenuItem, FieldPort, Menu, MenuScrollingArea, NodeFieldContainer, Title } from '@/Graf/Node/components';
 import { Colors } from '@/Colors';
-
-interface FieldProps {
-  node: ParserField;
-  inputOpen: boolean;
-  outputOpen: boolean;
-  onInputClick: () => void;
-  onOutputClick: () => void;
-  inputDisabled?: boolean;
-  outputDisabled?: boolean;
-  isLocked?: boolean;
-  parentNodeTypeName: string;
-  onDelete: () => void;
-}
+import { FieldProps } from '@/Graf/Node/models';
 
 const Name = style({
   fontSize: 10,
