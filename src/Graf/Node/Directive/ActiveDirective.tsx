@@ -18,7 +18,7 @@ const DirectiveBackground = style({
 });
 const OptionsMenuContainer = style({
   position: 'absolute',
-  top: 20,
+  top: 32,
   zIndex: 2,
 });
 

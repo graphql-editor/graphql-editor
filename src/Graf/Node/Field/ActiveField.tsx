@@ -20,7 +20,7 @@ const Name = style({
 const Type = style({ fontSize: FIELD_TYPE_SIZE, color: Colors.green[0] });
 const OptionsMenuContainer = style({
   position: 'absolute',
-  top: 20,
+  top: 32,
   zIndex: 2,
 });
 
@@ -42,7 +42,9 @@ export const ActiveField: React.FC<FieldProps> = ({
   const isEnumValue = node.data.type === ValueDefinition.EnumValueDefinition;
   return (
     <NodeFieldContainer
-      className={`NodeType-${parentNodeTypeName} ${inputOpen || outputOpen || optionsMenuOpen ? 'Active' : ''}`}
+      className={`NodeType-${parentNodeTypeName} ${
+        inputOpen || detailsMenuOpen || outputOpen || optionsMenuOpen ? 'Active' : ''
+      }`}
     >
       {!inputDisabled && (
         <FieldPort

@@ -23,7 +23,7 @@ const Name = style({ fontSize: 10, marginRight: 4, overflow: 'hidden' });
 const Type = style({ fontSize: 10, color: Colors.green[0] });
 const OptionsMenuContainer = style({
   position: 'absolute',
-  top: 20,
+  top: 32,
   zIndex: 2,
 });
 

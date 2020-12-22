@@ -19,7 +19,9 @@ const NodeMenuContainer = style({
   position: 'absolute',
   top: 35,
   zIndex: 2,
+  right: 5,
 });
+const ICON_SIZE = 14;
 
 export const TopNodeMenu: React.FC<{
   node: ParserField;
@@ -44,7 +46,7 @@ export const TopNodeMenu: React.FC<{
             }}
             title="Click to add field"
           >
-            <Plus height={10} width={10} />
+            <Plus fill={menuOpen === 'field' ? Colors.green[0] : Colors.grey[0]} height={ICON_SIZE} width={ICON_SIZE} />
             {menuOpen === 'field' && (
               <div className={NodeMenuContainer}>
                 <NodeAddFieldMenu node={node} hideMenu={hideMenu} />
@@ -72,7 +74,7 @@ export const TopNodeMenu: React.FC<{
           }}
           title="Click to add field"
         >
-          <Plus height={10} width={10} />
+          <Plus height={ICON_SIZE} width={ICON_SIZE} />
         </div>
       )}
 
@@ -87,7 +89,11 @@ export const TopNodeMenu: React.FC<{
             }}
             title="Click to implement interface"
           >
-            <Interface height={10} width={10} />
+            <Interface
+              fill={menuOpen === 'interface' ? Colors.green[0] : Colors.grey[0]}
+              height={ICON_SIZE}
+              width={ICON_SIZE}
+            />
             {menuOpen === 'interface' && (
               <div className={NodeMenuContainer}>
                 <NodeImplementInterfacesMenu node={node} hideMenu={hideMenu} />
@@ -104,7 +110,11 @@ export const TopNodeMenu: React.FC<{
           }}
           title="Click to add directive"
         >
-          <Monkey height={10} width={10} />
+          <Monkey
+            fill={menuOpen === 'directive' ? Colors.green[0] : Colors.grey[0]}
+            height={ICON_SIZE}
+            width={ICON_SIZE}
+          />
           {menuOpen === 'directive' && node.data.type !== TypeSystemDefinition.DirectiveDefinition && (
             <div className={NodeMenuContainer}>
               <NodeAddDirectiveMenu node={node} hideMenu={hideMenu} />
@@ -127,7 +137,11 @@ export const TopNodeMenu: React.FC<{
             }}
             title="Click set schema query, mutation, subscription"
           >
-            <Tick height={10} width={10} fill={Colors.grey[0]} />
+            <Tick
+              height={ICON_SIZE}
+              width={ICON_SIZE}
+              fill={menuOpen === 'operations' ? Colors.green[0] : Colors.grey[0]}
+            />
             {menuOpen === 'operations' && (
               <div className={NodeMenuContainer}>
                 <NodeOperationsMenu node={node} hideMenu={hideMenu} />
@@ -143,7 +157,7 @@ export const TopNodeMenu: React.FC<{
         }}
         title="Click to see node actions"
       >
-        <More height={10} width={10} />
+        <More fill={menuOpen === 'options' ? Colors.green[0] : Colors.grey[0]} height={ICON_SIZE} width={ICON_SIZE} />
         {menuOpen === 'options' && (
           <div className={NodeMenuContainer}>
             <Menu hideMenu={hideMenu}>

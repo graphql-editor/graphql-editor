@@ -1,15 +1,6 @@
 import { style } from 'typestyle';
 import { Colors } from '@/Colors';
 import React, { useRef, useState, useEffect } from 'react';
-const Triangle = style({
-  width: 0,
-  height: 0,
-  borderLeft: `10px solid transparent`,
-  borderRight: `10px solid transparent`,
-  borderBottom: `15px solid ${Colors.pink[10]}`,
-  margin: 'auto',
-  marginBottom: -1,
-});
 
 const Wrapper = style({
   zIndex: 4,
@@ -51,7 +42,6 @@ export const Menu: React.FC<MenuProps> = ({ children, hideMenu, ...props }) => {
   }, [menuRef]);
   return (
     <div {...props} className={Wrapper} ref={menuRef}>
-      <div className={Triangle} />
       <div className={Content}>{children}</div>
     </div>
   );

@@ -1,6 +1,6 @@
 import cx from 'classnames';
 import React, { useEffect, useState } from 'react';
-import { sizeSidebar, fontFamily } from '@/vars';
+import { sizeSidebar } from '@/vars';
 import { Menu, ActivePane } from './Menu';
 import { CodePane } from './code';
 
@@ -27,19 +27,6 @@ export const FullScreenContainer = style({
   flex: 1,
   alignSelf: 'stretch',
   height: '100%',
-});
-export const ErrorContainer = style({
-  position: 'absolute',
-  zIndex: 2,
-  top: 0,
-  right: 0,
-  width: `calc(100% - 40px)`,
-  padding: 20,
-  margin: 20,
-  borderRadius: 4,
-  fontSize: 12,
-  fontFamily,
-  letterSpacing: 1,
 });
 
 export const Sidebar = style({
@@ -250,7 +237,6 @@ export const Editor = ({
       )}
       {(menuState === 'diagram' || menuState === 'code-diagram') && (
         <div className={ErrorOuterContainer}>
-          {grafErrors && <div className={themed('ErrorContainer')(ErrorContainer)}>{grafErrors}</div>}
           <Graf />
         </div>
       )}

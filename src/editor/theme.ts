@@ -31,3 +31,19 @@ export const GraphQLBackgrounds: Record<string, string> = {
   ID: Colors.green[6],
   Float: Colors.green[6],
 };
+export const GraphQLDarkBackgrounds: Record<string, string> = {
+  type: Colors.main[8],
+  union: Colors.main[9],
+  input: Colors.blue[8],
+  scalar: Colors.green[8],
+  interface: Colors.sky[8],
+  enum: Colors.yellow[8],
+  directive: Colors.pink[8],
+  extend: Colors.orange[8],
+  Extend: Colors.orange[8],
+  String: Colors.green[8],
+  Int: Colors.green[8],
+  Boolean: Colors.green[8],
+  ID: Colors.green[8],
+  Float: Colors.green[8],
+};

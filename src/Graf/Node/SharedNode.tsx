@@ -1,6 +1,5 @@
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { Colors } from '@/Colors';
-import { GraphQLBackgrounds } from '@/editor/theme';
 
 const NodeName: NestedCSSProperties = {
   marginRight: 10,
@@ -34,11 +33,10 @@ const NodeIconArea: NestedCSSProperties = {
   },
 };
 export const NodeTitle: NestedCSSProperties = {
-  background: Colors.grey[8],
   display: 'flex',
   alignItems: 'stretch',
   color: Colors.grey[0],
-  fontSize: 12,
+  fontSize: 14,
   padding: `5px 0 5px 10px`,
   userSelect: 'none',
   '-moz-user-select': '-moz-none',
@@ -49,12 +47,4 @@ export const NodeTitle: NestedCSSProperties = {
   },
 };
 
-export const NodeFields: NestedCSSProperties = {
-  background: Colors.grey[8],
-  ...Object.keys(GraphQLBackgrounds).reduce((a, b) => {
-    a[`.NodeBackground-${b}`] = {
-      background: GraphQLBackgrounds[b],
-    };
-    return a;
-  }, {} as Record<string, NestedCSSProperties>),
-};
+export const NodeFields: NestedCSSProperties = {};

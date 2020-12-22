@@ -6,24 +6,25 @@ import { DOM } from './DOM';
 import { PaintNodes } from './PaintNodes';
 import { ActiveNode } from '@/Graf/Node';
 import { useTreesState } from '@/state/containers/trees';
-import { KeyboardActions, useErrorsState, useIOState, useNavigationState } from '@/state/containers';
+import { KeyboardActions, useErrorsState, useIOState, useNavigationState, useTheme } from '@/state/containers';
 import { Colors } from '@/Colors';
 
 const unfold = keyframes({
   ['0%']: {
-    marginRight: -400,
+    flexBasis: '0%',
   },
   ['100%']: {
-    marginRight: 0,
+    flexBasis: '50%',
   },
 });
 export interface GrafProps {}
+
 const Wrapper = style({
   width: '100%',
   height: '100%',
   overflowX: 'hidden',
   position: 'relative',
-  flex: 5,
+  flex: 1,
   background: `#0b050d`,
   overflowY: 'auto',
   scrollbarColor: `${Colors.grey[8]} ${Colors.grey[10]}`,
@@ -36,6 +37,19 @@ const Main = style({
   fontFamily,
   backgroundSize: `100px 100px`,
   backgroundImage: `linear-gradient(to right, #ffffff04 1px, transparent 1px), linear-gradient(to bottom, #ffffff04 1px, transparent 1px)`,
+});
+const ErrorContainer = style({
+  position: 'absolute',
+  zIndex: 2,
+  top: 0,
+  right: 0,
+  width: `calc(100% - 40px)`,
+  padding: 20,
+  margin: 20,
+  borderRadius: 4,
+  fontSize: 12,
+  fontFamily,
+  letterSpacing: 1,
 });
 const Focus = style({
   position: 'absolute',
@@ -64,16 +78,16 @@ const ErrorLockMessage = style({
 const SubNodeContainer = style({
   animationName: unfold,
   animationTimingFunction: 'ease-in-out',
+  flexBasis: '50%',
   animationDuration: '0.25s',
   background: Colors.grey[9],
   overflowY: 'auto',
-  flex: 5,
   fontFamily,
-  width: 300,
   right: 0,
   top: 0,
   bottom: 0,
   scrollbarColor: `${Colors.grey[8]} ${Colors.grey[10]}`,
+  overflowX: 'visible',
 });
 let snapLock = true;
 
@@ -95,9 +109,10 @@ export const Graf: React.FC<GrafProps> = () => {
     future,
     readonly,
   } = useTreesState();
-  const { lockGraf } = useErrorsState();
+  const { lockGraf, grafErrors } = useErrorsState();
   const { setMenuState } = useNavigationState();
   const { setActions } = useIOState();
+  const { themed } = useTheme();
   useEffect(() => {
     if (grafRef && wrapperRef.current && !panRef) {
       const instance = panzoom(grafRef, {
@@ -180,6 +195,34 @@ export const Graf: React.FC<GrafProps> = () => {
     : undefined;
   return (
     <>
+      {node && position && wrapperRef.current && (
+        <div className={SubNodeContainer} onClick={() => {}}>
+          <ActiveNode
+            readonly={readonly}
+            onDelete={(nodeToDelete) => {
+              const deletedNode = tree.nodes.findIndex((n) => n.name === nodeToDelete!.name)!;
+              const allNodes = [...tree.nodes];
+              allNodes.splice(deletedNode, 1);
+              setSelectedNode(undefined);
+              setTree({ nodes: allNodes });
+              DOM.panLock = false;
+            }}
+            onDuplicate={(nodeToDuplicate) => {
+              const allNodes = [...tree.nodes];
+              allNodes.push(
+                JSON.parse(
+                  JSON.stringify({
+                    ...node,
+                    name: nodeToDuplicate?.name + 'Copy',
+                  }),
+                ),
+              );
+              setTree({ nodes: allNodes });
+            }}
+            node={node}
+          />
+        </div>
+      )}
       <div
         ref={wrapperRef}
         className={`${Wrapper} ${node ? AnimatedWrapper : ''}`}
@@ -223,35 +266,9 @@ export const Graf: React.FC<GrafProps> = () => {
             >{`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema`}</div>
           </div>
         )}
+
+        {grafErrors && <div className={themed('ErrorContainer')(ErrorContainer)}>{grafErrors}</div>}
       </div>
-      {node && position && wrapperRef.current && (
-        <div className={SubNodeContainer} onClick={() => {}}>
-          <ActiveNode
-            readonly={readonly}
-            onDelete={() => {
-              const deletedNode = tree.nodes.findIndex((n) => n.name === node!.name)!;
-              const allNodes = [...tree.nodes];
-              allNodes.splice(deletedNode, 1);
-              setSelectedNode(undefined);
-              setTree({ nodes: allNodes });
-              DOM.panLock = false;
-            }}
-            onDuplicate={() => {
-              const allNodes = [...tree.nodes];
-              allNodes.push(
-                JSON.parse(
-                  JSON.stringify({
-                    ...node,
-                    name: node?.name + 'Copy',
-                  }),
-                ),
-              );
-              setTree({ nodes: allNodes });
-            }}
-            node={node}
-          />
-        </div>
-      )}
     </>
   );
 };

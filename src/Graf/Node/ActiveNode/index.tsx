@@ -1,11 +1,11 @@
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { ParserField, TypeSystemDefinition, Instances, TypeDefinition, TypeExtension } from 'graphql-zeus';
 import { ActiveField } from '@/Graf/Node/Field';
 import { ActiveDirective } from '@/Graf/Node/Directive';
 import { ActiveInputValue } from '@/Graf/Node/InputValue';
 import { style, keyframes } from 'typestyle';
 import { Colors, mix } from '@/Colors';
-import { GraphQLBackgrounds } from '@/editor/theme';
+import { GraphQLBackgrounds, GraphQLDarkBackgrounds } from '@/editor/theme';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { DOM } from '@/Graf/DOM';
 import { ActiveType } from '@/Graf/Node/Type';
@@ -18,8 +18,8 @@ import { ActiveArgument } from '@/Graf/Node/Argument';
 
 interface NodeProps {
   node: ParserField;
-  onDelete: () => void;
-  onDuplicate?: () => void;
+  onDelete: (node: ParserField) => void;
+  onDuplicate?: (node: ParserField) => void;
   readonly?: boolean;
 }
 
@@ -31,15 +31,8 @@ const fadeIn = keyframes({
     opacity: 1.0,
   },
 });
-const LeftNodeArea: NestedCSSProperties = {
-  width: 300,
-  zIndex: 4,
-  display: 'flex',
-  alignItems: 'flex-end',
-  flexDirection: 'column',
-};
-const LeftNodeAreaNode: NestedCSSProperties = { position: 'relative' };
-const RightNodeArea: NestedCSSProperties = {
+
+const OpenedNode: NestedCSSProperties = {
   position: 'absolute',
   zIndex: 4,
   left: 0,
@@ -77,16 +70,15 @@ const NodeContainer = style({
   position: 'relative',
   breakInside: 'avoid',
   height: '100%',
+  background: Colors.grey[9],
   $nest: {
     '.DescriptionPosition': DescriptionPosition,
-    '.LeftNodeArea': LeftNodeArea,
-    '.RightNodeArea': RightNodeArea,
+    '.OpenedNode': OpenedNode,
     '.MainNodeArea': {
       ...MainNodeArea,
       animationName: fadeIn,
       animationDuration: '0.25s',
     },
-    '.LeftNodeAreaNode': LeftNodeAreaNode,
     '&:hover': {
       $nest: {
         '> .ActionsMenu': {
@@ -95,15 +87,14 @@ const NodeContainer = style({
         },
       },
     },
-    ...Object.keys(GraphQLBackgrounds).reduce((a, b) => {
-      a[`.NodeBackground-${b}`] = {
-        background: GraphQLBackgrounds[b],
+    ...Object.keys(GraphQLDarkBackgrounds).reduce((a, b) => {
+      a[`&.NodeBackground-${b}`] = {
+        background: `${mix(GraphQLDarkBackgrounds[b], Colors.grey[10])}`,
       };
       return a;
     }, {} as Record<string, NestedCSSProperties>),
     ...Object.keys(GraphQLBackgrounds).reduce((a, b) => {
       a[`.NodeType-${b}`] = {
-        background: GraphQLBackgrounds[b],
         $nest: {
           '&:hover, &.Active': {
             background: mix(GraphQLBackgrounds[b], Colors.grey[0], 80),
@@ -127,19 +118,22 @@ const GapBar = style({
   width: 40,
   height: '100%',
   background: `${Colors.grey[10]}99`,
+  $nest: {
+    '&:hover': {
+      background: `${Colors.grey[10]}11`,
+    },
+  },
 });
 
 const NodeArea = style({
   flex: 1,
-  background: Colors.grey[9],
 });
 
 export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
-  const [openedInput, setOpenedInput] = useState<number>();
-  const [openedOutput, setOpenedOutput] = useState<number>();
-
-  const [openedDirectiveInput, setOpenedDirectiveInput] = useState<number>();
-  const [openedDirectiveOutput, setOpenedDirectiveOutput] = useState<number>();
+  const [openedNode, setOpenedNode] = useState<{
+    type: keyof Pick<ParserField, 'args' | 'directives'> | 'output' | 'directiveOutput';
+    index: number;
+  }>();
 
   const { libraryTree, tree, setTree, setSelectedNode, selectedNode, selectedNodeRef } = useTreesState();
 
@@ -153,7 +147,6 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
   ].includes(node.data.type as any);
 
   const isArgumentNode = [Instances.Directive].includes(node.data.type as any);
-  const parentNode = tree.nodes.find((n) => n.name === node.type.name);
   const isLocked = !!sharedProps.readonly || isLibrary;
 
   const findNodeByField = (field: ParserField) => {
@@ -162,18 +155,25 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
   };
 
   const inactiveClick = () => {
-    if (openedOutput) {
-      setOpenedOutput(undefined);
+    if (openedNode) {
+      setOpenedNode(undefined);
     }
   };
-  useLayoutEffect(() => {
-    console.log('NODECHANGED');
-    setOpenedInput(undefined);
-    setOpenedOutput(undefined);
-  }, [node]);
+  const openedNodeNode = openedNode
+    ? openedNode.type === 'directives'
+      ? node.directives![openedNode.index]
+      : openedNode.type === 'args'
+      ? node.args![openedNode.index]
+      : openedNode.type === 'directiveOutput'
+      ? findNodeByField(node.directives![openedNode.index])
+      : findNodeByField(node.args![openedNode.index])
+    : undefined;
 
   return (
-    <div className={`${NodeContainer} ${DOM.classes.node} ${DOM.classes.nodeSelected}`} ref={selectedNodeRef}>
+    <div
+      className={`${NodeContainer} NodeContainer NodeBackground-${node.type.name} ${DOM.classes.node} ${DOM.classes.nodeSelected}`}
+      ref={selectedNodeRef}
+    >
       <ActiveDescription
         onChange={(d) => {
           node.description = d;
@@ -198,57 +198,30 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
           ))}
         </div>
       )}
-      <div className={`LeftNodeArea`}>
-        {openedDirectiveInput && (
-          <div className={`LeftNodeAreaNode`}>
-            <ActiveNode
-              {...sharedProps}
-              readonly={isLocked}
-              node={node.directives![openedDirectiveInput]}
-              onDelete={() => {
-                setOpenedDirectiveInput(undefined);
-                setOpenedDirectiveOutput(undefined);
-                node.directives!.splice(openedDirectiveInput, 1);
-                DOM.panLock = false;
-                setTree({ ...tree });
-              }}
-            />
-          </div>
-        )}
-        {openedInput && (
-          <div className={`LeftNodeAreaNode`}>
-            <ActiveNode
-              {...sharedProps}
-              readonly={isLocked}
-              node={node.args![openedInput]}
-              onDelete={() => {
-                setOpenedInput(undefined);
-                setOpenedOutput(undefined);
-                node.args!.splice(openedInput, 1);
-                DOM.panLock = false;
-                setTree({ ...tree });
-              }}
-            />
-          </div>
-        )}
-      </div>
-      {openedDirectiveOutput && (
-        <div className={`RightNodeArea`}>
+      {openedNodeNode && openedNode && (
+        <div className={`OpenedNode`}>
           <div className={GapBar} onClick={inactiveClick} />
           <div className={NodeArea}>
             <ActiveNode
               {...sharedProps}
               readonly={isLocked}
-              node={findNodeByField(node.directives![openedDirectiveOutput])}
+              node={openedNodeNode}
+              onDuplicate={undefined}
+              onDelete={() => {
+                if (openedNode.type === 'directives') {
+                  node.directives!.splice(openedNode.index, 1);
+                }
+                if (openedNode.type === 'args') {
+                  node.args!.splice(openedNode.index, 1);
+                }
+                if (openedNode.type === 'output' || openedNode.type === 'directiveOutput') {
+                  sharedProps.onDelete(openedNodeNode);
+                  return;
+                }
+                DOM.panLock = false;
+                setTree({ ...tree });
+              }}
             />
-          </div>
-        </div>
-      )}
-      {openedOutput && (
-        <div className={`RightNodeArea`}>
-          <div className={GapBar} onClick={inactiveClick} />
-          <div className={NodeArea}>
-            <ActiveNode {...sharedProps} readonly={isLocked} node={findNodeByField(node.args![openedOutput])} />
           </div>
         </div>
       )}
@@ -260,10 +233,10 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
       >
         <div className={`NodeTitle`}>
           <div className={`NodeName`}>
-            {isLocked && <EditableText value={node.name} />}
+            {isLocked && <EditableText fontSize={14} value={node.name} />}
             {!isLocked && (
               <EditableText
-                fontSize={12}
+                fontSize={14}
                 value={node.name}
                 onChange={(v) => {
                   //TODO: Change the node name
@@ -288,9 +261,16 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
           <div className={`NodeType`}>
             <ActiveType type={node.type} />
           </div>
-          {!isLocked && <TopNodeMenu {...sharedProps} node={node} />}
+          {!isLocked && (
+            <TopNodeMenu
+              {...sharedProps}
+              onDelete={() => sharedProps.onDelete(node)}
+              onDuplicate={() => sharedProps.onDuplicate?.(node)}
+              node={node}
+            />
+          )}
         </div>
-        <div className={`NodeFields NodeBackground-${parentNode ? parentNode.type.name : node.type.name}`}>
+        <div className={`NodeFields`}>
           {node.directives?.map((d, i) => {
             const outputDisabled = !(
               tree.nodes.find((n) => n.name === d.type.name) || libraryTree.nodes.find((n) => n.name === d.type.name)
@@ -302,18 +282,23 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
                 parentNodeTypeName={node.type.name}
                 key={d.name}
                 onInputClick={() => {
-                  setOpenedDirectiveInput((oI) => (oI === i ? undefined : i));
+                  setOpenedNode((oN) =>
+                    oN?.index === i && oN.type === 'directives' ? undefined : { type: 'directives', index: i },
+                  );
                 }}
                 onOutputClick={() => {
-                  setOpenedDirectiveOutput((oO) => (oO === i ? undefined : i));
+                  setOpenedNode((oN) =>
+                    oN?.index === i && oN.type === 'directiveOutput'
+                      ? undefined
+                      : { type: 'directiveOutput', index: i },
+                  );
                 }}
                 node={d}
-                inputOpen={openedDirectiveInput === i}
+                inputOpen={openedNode?.type === 'directives' && openedNode?.index === i}
                 outputDisabled={outputDisabled}
-                outputOpen={openedDirectiveOutput === i}
+                outputOpen={openedNode?.type === 'directiveOutput' && openedNode?.index === i}
                 onDelete={() => {
-                  setOpenedDirectiveInput(undefined);
-                  setOpenedDirectiveOutput(undefined);
+                  setOpenedNode(undefined);
                   node.directives!.splice(i, 1);
                   DOM.panLock = false;
                   setTree({ ...tree });
@@ -334,15 +319,19 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
                   parentNodeTypeName={node.type.name}
                   key={a.name}
                   onInputClick={() => {
-                    setOpenedInput((oI) => (oI === i ? undefined : i));
+                    setOpenedNode((oN) =>
+                      oN?.index === i && oN.type === 'args' ? undefined : { type: 'args', index: i },
+                    );
                   }}
                   onOutputClick={() => {
-                    setOpenedOutput((oO) => (oO === i ? undefined : i));
+                    setOpenedNode((oN) =>
+                      oN?.index === i && oN.type === 'output' ? undefined : { type: 'output', index: i },
+                    );
                   }}
                   node={a}
-                  inputOpen={openedInput === i}
+                  inputOpen={openedNode?.type === 'args' && openedNode?.index === i}
                   outputDisabled={outputDisabled}
-                  outputOpen={openedOutput === i}
+                  outputOpen={openedNode?.type === 'output' && openedNode?.index === i}
                   onDelete={() => {
                     node.args!.splice(i, 1);
                     DOM.panLock = false;
