@@ -4,12 +4,13 @@ import React, { useRef, useState, useEffect } from 'react';
 
 const Wrapper = style({
   zIndex: 4,
-  width: 180,
+  width: 220,
   borderRadius: 4,
 });
 const Content = style({
   background: Colors.pink[10],
   borderRadius: 4,
+  padding: 10,
 });
 
 interface MenuProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {

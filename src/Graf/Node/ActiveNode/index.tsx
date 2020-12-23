@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ParserField, TypeSystemDefinition, Instances, TypeDefinition, TypeExtension } from 'graphql-zeus';
 import { ActiveField } from '@/Graf/Node/Field';
 import { ActiveDirective } from '@/Graf/Node/Directive';
@@ -21,6 +21,7 @@ interface NodeProps {
   onDelete: (node: ParserField) => void;
   onDuplicate?: (node: ParserField) => void;
   readonly?: boolean;
+  parentNode?: ParserField;
 }
 
 const fadeIn = keyframes({
@@ -71,6 +72,7 @@ const NodeContainer = style({
   breakInside: 'avoid',
   height: '100%',
   background: Colors.grey[9],
+  maxWidth: '100%',
   $nest: {
     '.DescriptionPosition': DescriptionPosition,
     '.OpenedNode': OpenedNode,
@@ -89,7 +91,7 @@ const NodeContainer = style({
     },
     ...Object.keys(GraphQLDarkBackgrounds).reduce((a, b) => {
       a[`&.NodeBackground-${b}`] = {
-        background: `${mix(GraphQLDarkBackgrounds[b], Colors.grey[10])}`,
+        background: `${mix(GraphQLDarkBackgrounds[b], Colors.grey[10], 40)}`,
       };
       return a;
     }, {} as Record<string, NestedCSSProperties>),
@@ -115,9 +117,10 @@ const NodeInterfaces = style({
 });
 
 const GapBar = style({
-  width: 40,
+  width: '20%',
   height: '100%',
   background: `${Colors.grey[10]}99`,
+  transition: '.25s background ease-in-out',
   $nest: {
     '&:hover': {
       background: `${Colors.grey[10]}11`,
@@ -126,10 +129,11 @@ const GapBar = style({
 });
 
 const NodeArea = style({
-  flex: 1,
+  width: '80%',
+  boxShadow: `${Colors.grey[10]} 0 0 20px`,
 });
 
-export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
+export const ActiveNode: React.FC<NodeProps> = ({ node, parentNode, ...sharedProps }) => {
   const [openedNode, setOpenedNode] = useState<{
     type: keyof Pick<ParserField, 'args' | 'directives'> | 'output' | 'directiveOutput';
     index: number;
@@ -149,10 +153,15 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
   const isArgumentNode = [Instances.Directive].includes(node.data.type as any);
   const isLocked = !!sharedProps.readonly || isLibrary;
 
-  const findNodeByField = (field: ParserField) => {
-    return (tree.nodes.find((n) => n.name === field.type.name && !isExtensionNode(n.data.type!)) ||
-      libraryTree.nodes.find((n) => n.name === field.type.name && !isExtensionNode(n.data.type!)))!;
+  const findNodeByField = (field?: ParserField) => {
+    return field
+      ? (tree.nodes.find((n) => n.name === field.type.name && !isExtensionNode(n.data.type!)) ||
+          libraryTree.nodes.find((n) => n.name === field.type.name && !isExtensionNode(n.data.type!)))!
+      : undefined;
   };
+  useEffect(() => {
+    setOpenedNode(undefined);
+  }, [node]);
 
   const inactiveClick = () => {
     if (openedNode) {
@@ -205,6 +214,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
             <ActiveNode
               {...sharedProps}
               readonly={isLocked}
+              parentNode={openedNode.type === 'args' || openedNode.type === 'directives' ? node : undefined}
               node={openedNodeNode}
               onDuplicate={undefined}
               onDelete={() => {
@@ -233,6 +243,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
       >
         <div className={`NodeTitle`}>
           <div className={`NodeName`}>
+            {parentNode && <EditableText fontSize={14} value={`${parentNode.name}.`} />}
             {isLocked && <EditableText fontSize={14} value={node.name} />}
             {!isLocked && (
               <EditableText

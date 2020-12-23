@@ -12,8 +12,8 @@ interface MenuItemProps {
 
 const Main = style({
   display: 'flex',
-  padding: `6px 12px`,
-  fontSize: 12,
+  padding: `8px 16px`,
+  fontSize: 14,
   cursor: 'pointer',
   scrollSnapAlign: 'end',
   $nest: {

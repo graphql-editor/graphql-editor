@@ -11,10 +11,10 @@ import { Colors } from '@/Colors';
 
 const unfold = keyframes({
   ['0%']: {
-    flexBasis: '0%',
+    width: '0%',
   },
   ['100%']: {
-    flexBasis: '50%',
+    width: '60%',
   },
 });
 export interface GrafProps {}
@@ -78,7 +78,7 @@ const ErrorLockMessage = style({
 const SubNodeContainer = style({
   animationName: unfold,
   animationTimingFunction: 'ease-in-out',
-  flexBasis: '50%',
+  width: '60%',
   animationDuration: '0.25s',
   background: Colors.grey[9],
   overflowY: 'auto',

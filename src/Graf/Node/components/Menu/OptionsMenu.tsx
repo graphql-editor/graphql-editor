@@ -1,7 +1,6 @@
 import { style } from 'typestyle';
 import React from 'react';
 import { Menu } from './Menu';
-import { Tick } from '@/Graf/icons';
 import { Colors } from '@/Colors';
 import { DetailMenuItem } from './DetailMenuItem';
 
@@ -20,6 +19,15 @@ const Main = style({
     '&.Selected': {
       color: Colors.green[0],
     },
+    '&:hover': {
+      color: Colors.green[0],
+      $nest: {
+        '.Circle': {
+          background: Colors.green[0],
+          borderColor: Colors.green[0],
+        },
+      },
+    },
   },
 });
 const Circle = style({
@@ -30,10 +38,13 @@ const Circle = style({
   alignItems: 'center',
   justifyContent: 'center',
   border: `solid 1px`,
+  position: 'relative',
   borderColor: Colors.grey[0],
+  transition: '.25s background ease-in-out',
   $nest: {
     '&.Selected': {
       borderColor: Colors.green[0],
+      background: Colors.green[0],
     },
   },
 });
@@ -45,7 +56,7 @@ export const OptionsMenu: React.FC<OptionsMenuProps> = ({ children, options, onC
           <DetailMenuItem key={n} onClick={() => onCheck(n)}>
             <div className={`${Main} ${options[n] ? 'Selected' : ''}`}>
               <span>{n}</span>
-              <div className={`${Circle} ${options[n] ? 'Selected' : ''}`}>{options[n] ? <Tick /> : <></>}</div>
+              <div className={`${Circle} Circle ${options[n] ? 'Selected' : ''}`}></div>
             </div>
           </DetailMenuItem>
         );

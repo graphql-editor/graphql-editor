@@ -58,7 +58,7 @@ export const EditableText: React.FC<{
           onChange={(e) => setEditedValue(e.target.value)}
         />
       ) : (
-        <span>{editedValue}</span>
+        <span style={{ fontSize }}>{editedValue}</span>
       )}
     </>
   );

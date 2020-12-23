@@ -69,14 +69,17 @@ const MatchedSearchContainer = style({
 const NoMatchedSearchContainer = style({
   opacity: 0.2,
 });
+const NotSelected = style({
+  opacity: 0.4,
+});
 export const PaintNode: React.FC<NodeProps> = ({ node, isLibrary, isMatchedToSearch, subNode }) => {
   const thisNode = useRef<HTMLDivElement>(null);
-  const { setSelectedNode, setPosition } = useTreesState();
+  const { setSelectedNode, setPosition, selectedNode } = useTreesState();
   return (
     <div
       className={`${NodeContainer} ${isLibrary ? LibraryNodeContainer : MainNodeContainer} ${
         isMatchedToSearch ? MatchedSearchContainer : NoMatchedSearchContainer
-      } NodeType-${node.type.name}`}
+      } ${selectedNode ? (selectedNode !== node ? NotSelected : '') : ''} NodeType-${node.type.name}`}
       ref={thisNode}
       onClick={(e) => {
         e.stopPropagation();
