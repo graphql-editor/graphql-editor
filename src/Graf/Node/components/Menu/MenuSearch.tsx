@@ -11,15 +11,15 @@ interface MenuSearchProps {
 }
 
 const Main = style({
-  background: Colors.pink[9],
+  background: `${Colors.main[0]}22`,
   color: Colors.grey[0],
   border: 0,
   width: '100%',
   minWidth: 0,
-  height: 24,
+  height: 36,
   padding: `0 12px`,
-  paddingLeft: 24,
-  borderRadius: 4,
+  paddingLeft: 28,
+  fontSize: 14,
   outline: 0,
   position: 'relative',
   $nest: {
@@ -31,8 +31,8 @@ const Main = style({
 
 const SearchIconContainer = style({
   position: 'absolute',
-  height: 24,
-  width: 24,
+  height: 36,
+  width: 30,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -40,9 +40,9 @@ const SearchIconContainer = style({
 });
 const XIconContainer = style({
   position: 'absolute',
-  height: 24,
-  width: 24,
-  right: 10,
+  height: 36,
+  width: 36,
+  right: 12,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -52,7 +52,9 @@ const XIconContainer = style({
 const Wrapper = style({
   position: 'relative',
   maxWidth: '100%',
-  padding: 12,
+  padding: 16,
+  paddingTop: 0,
+  paddingBottom: 6,
 });
 
 export const MenuSearch: React.FC<MenuSearchProps> = ({ value, onChange, onClear, autoFocus = true }) => {
@@ -60,11 +62,11 @@ export const MenuSearch: React.FC<MenuSearchProps> = ({ value, onChange, onClear
   return (
     <div className={Wrapper}>
       <span className={SearchIconContainer}>
-        <Search />
+        <Search width={14} height={14} />
       </span>
       {value && (
         <span onClick={onClear} className={XIconContainer}>
-          <X />
+          <X width={10} height={10} />
         </span>
       )}
       <input

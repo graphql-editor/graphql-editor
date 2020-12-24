@@ -19,7 +19,7 @@ const Main = style({
       width: '100%',
       $nest: {
         '&:hover': {
-          color: Colors.grey[0],
+          color: Colors.green[0],
         },
       },
     },

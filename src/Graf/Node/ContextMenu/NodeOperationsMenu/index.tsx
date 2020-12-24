@@ -23,6 +23,7 @@ export const NodeOperationsMenu: React.FC<NodeOperationsMenuProps> = ({ node, hi
   return (
     <OptionsMenu
       hideMenu={hideMenu}
+      menuName={'Operations'}
       options={opts}
       onCheck={(o) => {
         const turnOff = !!node.type.operations?.includes(o as OperationType);

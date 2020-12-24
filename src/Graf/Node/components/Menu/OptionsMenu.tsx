@@ -8,6 +8,7 @@ interface OptionsMenuProps extends React.DetailedHTMLProps<React.HTMLAttributes<
   options: Record<string, boolean>;
   onCheck: (name: string) => void;
   hideMenu: () => void;
+  menuName: string;
 }
 
 const Main = style({
@@ -48,9 +49,16 @@ const Circle = style({
     },
   },
 });
-export const OptionsMenu: React.FC<OptionsMenuProps> = ({ children, options, onCheck, hideMenu, ...props }) => {
+export const OptionsMenu: React.FC<OptionsMenuProps> = ({
+  children,
+  options,
+  onCheck,
+  hideMenu,
+  menuName,
+  ...props
+}) => {
   return (
-    <Menu hideMenu={hideMenu} {...props}>
+    <Menu menuName={menuName} hideMenu={hideMenu} {...props}>
       {Object.keys(options).map((n) => {
         return (
           <DetailMenuItem key={n} onClick={() => onCheck(n)}>

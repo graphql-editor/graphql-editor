@@ -24,6 +24,7 @@ export const NodeTypeOptionsMenu: React.FC<NodeTypeOptionsMenuProps> = ({ node, 
   }, [node.type.options]);
   return (
     <OptionsMenu
+      menuName={'Node kind'}
       hideMenu={hideMenu}
       options={opts}
       onCheck={(o) => {

@@ -15,6 +15,7 @@ export const NodeAddDirectiveMenu: React.FC<NodeAddDirectiveMenuProps> = ({ node
   const [menuSearchValue, setMenuSearchValue] = useState('');
   return (
     <Menu
+      menuName={'Add directive'}
       onMouseEnter={() => {
         DOM.scrollLock = true;
       }}

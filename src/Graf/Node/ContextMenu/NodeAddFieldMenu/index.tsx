@@ -15,6 +15,7 @@ export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({ node, hideMe
   const [menuSearchValue, setMenuSearchValue] = useState('');
   return (
     <Menu
+      menuName={'Create Field'}
       onMouseEnter={() => {
         DOM.scrollLock = true;
       }}

@@ -8,16 +8,21 @@ const Wrapper = style({
   borderRadius: 4,
 });
 const Content = style({
-  background: Colors.pink[10],
+  background: Colors.blue[10],
+  border: `solid 1px ${Colors.blue[0]}22`,
   borderRadius: 4,
-  padding: 10,
+  padding: 0,
 });
-
+const Title = style({
+  padding: 16,
+  color: Colors.blue[0],
+});
 interface MenuProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
   hideMenu: () => void;
+  menuName: string;
 }
 
-export const Menu: React.FC<MenuProps> = ({ children, hideMenu, ...props }) => {
+export const Menu: React.FC<MenuProps> = ({ children, hideMenu, menuName, ...props }) => {
   const menuRef = useRef<HTMLDivElement>(null);
   const [listener, setListener] = useState<(e: MouseEvent) => void>();
   useEffect(() => {
@@ -43,7 +48,10 @@ export const Menu: React.FC<MenuProps> = ({ children, hideMenu, ...props }) => {
   }, [menuRef]);
   return (
     <div {...props} className={Wrapper} ref={menuRef}>
-      <div className={Content}>{children}</div>
+      <div className={Content}>
+        <div className={Title}>{menuName}</div>
+        {children}
+      </div>
     </div>
   );
 };

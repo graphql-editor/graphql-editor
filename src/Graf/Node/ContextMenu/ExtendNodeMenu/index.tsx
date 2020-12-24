@@ -15,6 +15,7 @@ export const ExtendNodeMenu: React.FC<ExtendNodeMenuProps> = ({ hideMenu }) => {
   const allNodes = tree.nodes.concat(libraryTree.nodes);
   return (
     <Menu
+      menuName={'Extend node'}
       onMouseEnter={() => {
         DOM.scrollLock = true;
       }}

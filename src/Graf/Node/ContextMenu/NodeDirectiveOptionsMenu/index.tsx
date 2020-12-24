@@ -25,6 +25,7 @@ export const NodeDirectiveOptionsMenu: React.FC<NodeDirectiveOptionsMenuProps> =
     <OptionsMenu
       hideMenu={hideMenu}
       options={opts}
+      menuName={'Add directive'}
       onCheck={(o) => {
         const turnOff = !!node.type.directiveOptions?.includes(o as Directive);
         if (turnOff) {

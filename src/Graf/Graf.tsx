@@ -11,10 +11,10 @@ import { Colors } from '@/Colors';
 
 const unfold = keyframes({
   ['0%']: {
-    width: '0%',
+    maxWidth: '0%',
   },
   ['100%']: {
-    width: '60%',
+    maxWidth: '60%',
   },
 });
 export interface GrafProps {}
@@ -68,7 +68,7 @@ const ErrorLock = style({
   alignItems: 'center',
 });
 const ErrorLockMessage = style({
-  width: `clamp(200px,50vw,500px)`,
+  width: `clamp(200px, 50vw, 500px)`,
   fontFamily,
   fontSize: 14,
   padding: 30,
@@ -78,7 +78,7 @@ const ErrorLockMessage = style({
 const SubNodeContainer = style({
   animationName: unfold,
   animationTimingFunction: 'ease-in-out',
-  width: '60%',
+  maxWidth: 'clamp(320px, 60%, 1280px)',
   animationDuration: '0.25s',
   background: Colors.grey[9],
   overflowY: 'auto',

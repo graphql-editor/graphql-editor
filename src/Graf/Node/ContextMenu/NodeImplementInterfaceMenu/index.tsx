@@ -15,6 +15,7 @@ export const NodeImplementInterfacesMenu: React.FC<NodeImplementInterfacesMenuPr
   const [menuSearchValue, setMenuSearchValue] = useState('');
   return (
     <Menu
+      menuName={'Implement interface'}
       onMouseEnter={() => {
         DOM.scrollLock = true;
       }}

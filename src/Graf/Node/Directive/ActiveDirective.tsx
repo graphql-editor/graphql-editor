@@ -61,7 +61,7 @@ export const ActiveDirective: React.FC<FieldProps> = ({
         >
           {detailsMenuOpen && (
             <div className={OptionsMenuContainer}>
-              <Menu hideMenu={() => setDetailsMenuOpen(false)}>
+              <Menu menuName={'Node options'} hideMenu={() => setDetailsMenuOpen(false)}>
                 <MenuScrollingArea>
                   <DetailMenuItem onClick={onDelete}>Delete</DetailMenuItem>
                 </MenuScrollingArea>

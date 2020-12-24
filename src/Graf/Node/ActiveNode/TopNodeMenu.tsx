@@ -160,7 +160,7 @@ export const TopNodeMenu: React.FC<{
         <More fill={menuOpen === 'options' ? Colors.green[0] : Colors.grey[0]} height={ICON_SIZE} width={ICON_SIZE} />
         {menuOpen === 'options' && (
           <div className={NodeMenuContainer}>
-            <Menu hideMenu={hideMenu}>
+            <Menu menuName={'Node options'} hideMenu={hideMenu}>
               <MenuScrollingArea>
                 <DetailMenuItem onClick={onDelete}>Delete node</DetailMenuItem>
                 {onDuplicate && <DetailMenuItem onClick={onDuplicate}>Duplicate node</DetailMenuItem>}
