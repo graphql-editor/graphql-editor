@@ -46,5 +46,3 @@ export const NodeTitle: NestedCSSProperties = {
     '.NodeIconArea': NodeIconArea,
   },
 };
-
-export const NodeFields: NestedCSSProperties = {};

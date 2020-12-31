@@ -48,7 +48,7 @@ export const RootNode: React.FC<RootNodeProps> = ({ node, libraryNode }) => {
   const [filterNodes, setFilterNodes] = useState('');
 
   return (
-    <div className={`${NodeContainer}`} ref={thisNode}>
+    <div className={NodeContainer} ref={thisNode}>
       <div className={`${NodeCaption} CaptionType-${node.name}`}>
         <span className={CaptionTitle}>{node.name}</span>
         <MenuSearch
@@ -56,6 +56,7 @@ export const RootNode: React.FC<RootNodeProps> = ({ node, libraryNode }) => {
           onClear={() => {
             setFilterNodes('');
           }}
+          onSubmit={() => {}}
           value={filterNodes}
           onChange={setFilterNodes}
         />

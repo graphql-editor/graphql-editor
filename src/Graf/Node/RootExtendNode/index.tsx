@@ -74,10 +74,11 @@ export const RootExtendNode: React.FC<RootExtendNodeProps> = ({ node, libraryNod
   const [filterNodes, setFilterNodes] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   return (
-    <div className={`${NodeContainer}`} ref={thisNode}>
+    <div className={NodeContainer} ref={thisNode}>
       <div className={`${NodeCaption}`}>
         <span className={CaptionTitle}>extend</span>
         <MenuSearch
+          onSubmit={() => {}}
           autoFocus={false}
           onClear={() => {
             setFilterNodes('');

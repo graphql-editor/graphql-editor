@@ -9,7 +9,7 @@ import { GraphQLBackgrounds, GraphQLDarkBackgrounds } from '@/editor/theme';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { DOM } from '@/Graf/DOM';
 import { ActiveType } from '@/Graf/Node/Type';
-import { NodeFields, NodeTitle } from '@/Graf/Node/SharedNode';
+import { NodeTitle } from '@/Graf/Node/SharedNode';
 import { ActiveDescription, NodeInterface, EditableText } from '@/Graf/Node/components';
 import { useTreesState } from '@/state/containers/trees';
 import { TopNodeMenu } from '@/Graf/Node/ActiveNode/TopNodeMenu';
@@ -47,17 +47,21 @@ const OpenedNode: NestedCSSProperties = {
 const LibraryNodeArea: NestedCSSProperties = {
   borderStyle: 'dashed',
 };
-const MainNodeArea: NestedCSSProperties = {
+const MainNodeArea = style({
   position: 'relative',
   transition: `border-color .25s ease-in-out`,
   borderColor: Colors.green[0],
   flex: 1,
+  display: 'flex',
+  flexFlow: 'column nowrap',
+  animationName: fadeIn,
+  animationDuration: '0.25s',
+  overflowY: 'auto',
   $nest: {
     '.NodeTitle': NodeTitle,
-    '.NodeFields': NodeFields,
     '&.LibraryNodeArea': LibraryNodeArea,
   },
-};
+});
 const DescriptionPosition: NestedCSSProperties = {
   outline: 'none',
   border: `1px solid ${Colors.grey[3]}00`,
@@ -73,14 +77,11 @@ const NodeContainer = style({
   height: '100%',
   background: Colors.grey[9],
   maxWidth: '100%',
+  display: 'flex',
+  flexFlow: 'column nowrap',
   $nest: {
     '.DescriptionPosition': DescriptionPosition,
     '.OpenedNode': OpenedNode,
-    '.MainNodeArea': {
-      ...MainNodeArea,
-      animationName: fadeIn,
-      animationDuration: '0.25s',
-    },
     '&:hover': {
       $nest: {
         '> .ActionsMenu': {
@@ -106,6 +107,11 @@ const NodeContainer = style({
       return a;
     }, {} as Record<string, NestedCSSProperties>),
   },
+});
+
+const NodeFields = style({
+  flex: 1,
+  overflowY: 'auto',
 });
 
 const NodeInterfaces = style({
@@ -136,6 +142,11 @@ const NodeArea = style({
   height: '100%',
   boxShadow: `${Colors.grey[10]} 0 0 20px`,
 });
+
+const EditableTitle: React.CSSProperties = {
+  fontSize: 14,
+  fontWeight: 'bold',
+};
 
 export const ActiveNode: React.FC<NodeProps> = ({ node, parentNode, ...sharedProps }) => {
   const [openedNode, setOpenedNode] = useState<{
@@ -184,7 +195,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, parentNode, ...sharedPro
 
   return (
     <div
-      className={`${NodeContainer} NodeContainer NodeBackground-${node.type.name} ${DOM.classes.node} ${DOM.classes.nodeSelected}`}
+      className={`${NodeContainer} NodeBackground-${node.type.name} ${DOM.classes.node} ${DOM.classes.nodeSelected}`}
       ref={selectedNodeRef}
     >
       <ActiveDescription
@@ -240,18 +251,18 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, parentNode, ...sharedPro
         </div>
       )}
       <div
-        className={`MainNodeArea${isLibrary ? ' LibraryNodeArea' : ''}`}
+        className={`${MainNodeArea}${isLibrary ? ' LibraryNodeArea' : ''}`}
         onClick={(e) => {
           e.stopPropagation();
         }}
       >
         <div className={`NodeTitle`}>
           <div className={`NodeName`}>
-            {parentNode && <EditableText fontSize={14} value={`${parentNode.name}.`} />}
-            {isLocked && <EditableText fontSize={14} value={node.name} />}
+            {parentNode && <EditableText style={EditableTitle} value={`${parentNode.name}.`} />}
+            {isLocked && <EditableText style={EditableTitle} value={node.name} />}
             {!isLocked && (
               <EditableText
-                fontSize={14}
+                style={EditableTitle}
                 value={node.name}
                 onChange={(v) => {
                   //TODO: Change the node name
@@ -285,7 +296,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, parentNode, ...sharedPro
             />
           )}
         </div>
-        <div className={`NodeFields`}>
+        <div className={NodeFields}>
           {node.directives?.map((d, i) => {
             const outputDisabled = !(
               tree.nodes.find((n) => n.name === d.type.name) || libraryTree.nodes.find((n) => n.name === d.type.name)
@@ -356,6 +367,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, parentNode, ...sharedPro
               </>
             );
           })}
+          <div style={{ marginBottom: 50 }} />
         </div>
       </div>
     </div>

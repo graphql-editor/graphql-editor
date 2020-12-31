@@ -4,7 +4,7 @@ import { Colors } from '@/Colors';
 import { DOM } from '@/Graf/DOM';
 
 const Main = style({
-  background: Colors.grey[9],
+  background: `${Colors.grey[10]}44`,
   color: Colors.grey[3],
   padding: 10,
   fontSize: 12,
@@ -16,7 +16,10 @@ const Main = style({
   $nest: {
     '&:focus': {
       cursor: 'auto',
-      borderBottom: `1px solid ${Colors.grey[3]}55`,
+      borderBottom: `1px solid ${Colors.grey[0]}11`,
+    },
+    '&::placeholder': {
+      color: `${Colors.grey[0]}99`,
     },
   },
 });

@@ -7,6 +7,7 @@ interface MenuSearchProps {
   value: string;
   onChange: (v: string) => void;
   onClear: () => void;
+  onSubmit: () => void;
   autoFocus?: boolean;
 }
 
@@ -57,7 +58,7 @@ const Wrapper = style({
   paddingBottom: 6,
 });
 
-export const MenuSearch: React.FC<MenuSearchProps> = ({ value, onChange, onClear, autoFocus = true }) => {
+export const MenuSearch: React.FC<MenuSearchProps> = ({ value, onChange, onClear, onSubmit, autoFocus = true }) => {
   const ref = useRef<HTMLInputElement>(null);
   return (
     <div className={Wrapper}>
@@ -73,6 +74,11 @@ export const MenuSearch: React.FC<MenuSearchProps> = ({ value, onChange, onClear
         ref={ref}
         autoFocus={autoFocus}
         className={Main}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            onSubmit();
+          }
+        }}
         placeholder="Search..."
         type="text"
         value={value}
