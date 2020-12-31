@@ -15,6 +15,7 @@ const Content = style({
 });
 const Title = style({
   padding: 16,
+  fontSize: 14,
   color: Colors.blue[0],
 });
 interface MenuProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {

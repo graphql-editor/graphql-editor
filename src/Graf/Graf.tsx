@@ -1,7 +1,6 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { keyframes, style } from 'typestyle';
 import { fontFamily } from '@/vars';
-import panzoom, { PanZoom } from 'panzoom';
 import { DOM } from './DOM';
 import { PaintNodes } from './PaintNodes';
 import { ActiveNode } from '@/Graf/Node';
@@ -51,10 +50,6 @@ const ErrorContainer = style({
   fontFamily,
   letterSpacing: 1,
 });
-const Focus = style({
-  position: 'absolute',
-  zIndex: 2,
-});
 const ErrorLock = style({
   width: '100%',
   height: '100%',
@@ -78,23 +73,20 @@ const ErrorLockMessage = style({
 const SubNodeContainer = style({
   animationName: unfold,
   animationTimingFunction: 'ease-in-out',
-  maxWidth: 'clamp(320px, 60%, 1280px)',
+  width: 'clamp(400px, 40%, 1280px)',
   animationDuration: '0.25s',
   background: Colors.grey[9],
-  overflowY: 'auto',
   fontFamily,
   right: 0,
   top: 0,
   bottom: 0,
   scrollbarColor: `${Colors.grey[8]} ${Colors.grey[10]}`,
-  overflowX: 'visible',
+  transition: `max-width 0.25s ease-in-out`,
 });
 let snapLock = true;
 
 export const Graf: React.FC<GrafProps> = () => {
-  const [grafRef, setGrafRef] = useState<HTMLDivElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const [panRef, setPanRef] = useState<PanZoom>();
 
   const {
     libraryTree,
@@ -113,46 +105,6 @@ export const Graf: React.FC<GrafProps> = () => {
   const { setMenuState } = useNavigationState();
   const { setActions } = useIOState();
   const { themed } = useTheme();
-  useEffect(() => {
-    if (grafRef && wrapperRef.current && !panRef) {
-      const instance = panzoom(grafRef, {
-        maxZoom: 1,
-        minZoom: 1,
-        enableTextSelection: true,
-        disableKeyboardInteraction: true,
-        zoomDoubleClickSpeed: 1,
-        beforeMouseDown: (e) => {
-          return DOM.panLock;
-        },
-        beforeWheel: (e) => {
-          return true;
-        },
-        filterKey: () => {
-          return DOM.keyLock;
-        },
-
-        onDoubleClick: (e) => {
-          return false;
-        },
-      });
-      instance.on('panstart', () => (DOM.lock = true));
-      instance.on('panend', (e: any) => {
-        setTimeout(() => (DOM.lock = false), 1);
-      });
-      instance.on('zoomstart', () => (DOM.lock = true));
-      instance.on('zoomend', (e: any) => {
-        setTimeout(() => (DOM.lock = false), 1);
-      });
-      setPanRef(instance);
-    }
-    if (!grafRef) {
-      panRef?.dispose();
-    }
-    return () => {
-      panRef?.dispose();
-      setPanRef(undefined);
-    };
-  }, [grafRef]);
 
   useEffect(() => {
     if (snapLock) {
@@ -226,34 +178,13 @@ export const Graf: React.FC<GrafProps> = () => {
       <div
         ref={wrapperRef}
         className={`${Wrapper} ${node ? AnimatedWrapper : ''}`}
-        style={{
-          cursor: grafRef ? 'grab' : 'auto',
-        }}
         onClick={() => {
           if (DOM.lock) return;
           DOM.scrollLock = false;
           setSelectedNode(undefined);
         }}
       >
-        <div className={Main}>
-          {!lockGraf && (
-            <>
-              <PaintNodes />
-              {node && position && wrapperRef.current && (
-                <div
-                  className={Focus}
-                  ref={(r) => {
-                    setGrafRef(r);
-                  }}
-                  style={{
-                    top: position.offsetTop - 10,
-                    left: position.offsetLeft - 10,
-                  }}
-                ></div>
-              )}
-            </>
-          )}
-        </div>
+        <div className={Main}>{!lockGraf && <PaintNodes />}</div>
         {lockGraf && (
           <div
             className={ErrorLock}

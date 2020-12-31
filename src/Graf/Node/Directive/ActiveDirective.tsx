@@ -20,6 +20,7 @@ const OptionsMenuContainer = style({
   position: 'absolute',
   top: 32,
   zIndex: 2,
+  right: 5,
 });
 
 export const ActiveDirective: React.FC<FieldProps> = ({

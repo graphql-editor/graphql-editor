@@ -21,6 +21,7 @@ const OptionsMenuContainer = style({
   position: 'absolute',
   top: 20,
   zIndex: 2,
+  right: 5,
 });
 
 interface PlaceFunctionArgs {

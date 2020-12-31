@@ -117,7 +117,7 @@ const NodeInterfaces = style({
 });
 
 const GapBar = style({
-  width: '20%',
+  width: '100%',
   height: '100%',
   background: `${Colors.grey[10]}99`,
   transition: '.25s background ease-in-out',
@@ -129,7 +129,11 @@ const GapBar = style({
 });
 
 const NodeArea = style({
-  width: '80%',
+  minWidth: '80%',
+  maxWidth: '50vw',
+  left: '20%',
+  position: 'absolute',
+  height: '100%',
   boxShadow: `${Colors.grey[10]} 0 0 20px`,
 });
 
