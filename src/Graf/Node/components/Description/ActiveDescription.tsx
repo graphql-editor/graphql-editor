@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { style } from 'typestyle';
 import { Colors } from '@/Colors';
 import { DOM } from '@/Graf/DOM';
@@ -29,7 +29,11 @@ export const ActiveDescription: React.FC<{
   onChange: (changedValue: string) => void;
   isLocked?: boolean;
 }> = ({ onChange, value, isLocked }) => {
+  const [text, setText] = useState(value);
   const DescriptionRef = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => {
+    setText(value);
+  }, [value]);
   if (isLocked) {
     if (!value) {
       return <></>;
@@ -41,7 +45,7 @@ export const ActiveDescription: React.FC<{
         data-gramm_editor="false"
         ref={DescriptionRef}
         className={`${Main} `}
-        defaultValue={value}
+        value={text}
       ></textarea>
     );
   }
@@ -65,16 +69,17 @@ export const ActiveDescription: React.FC<{
         e.currentTarget.style.height = 'auto';
         DOM.panLock = false;
         if (DescriptionRef.current) {
-          onChange(DescriptionRef.current.value);
+          onChange(text);
         }
       }}
-      onInput={(e) => {
+      onChange={(e) => {
+        setText(e.target.value);
         DOM.panLock = true;
         e.currentTarget.style.height = 'auto';
         e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
       }}
       className={`${Main} `}
-      defaultValue={value}
+      value={text}
     ></textarea>
   );
 };
