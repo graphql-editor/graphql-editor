@@ -9,15 +9,13 @@ export const ActiveType: React.FC<Pick<ParserField, 'type'> & { parentTypes?: Re
   let compiledType = compileTypeOptions({ type });
 
   const getTypeColor = () => {
-    let color = '#fff';
     if (type.name in GraphQLColors) {
-      color = (GraphQLColors as any)[type.name] as string;
+      return (GraphQLColors as any)[type.name] as string;
     }
     if (parentTypes && type.name in parentTypes) {
-      color = (GraphQLColors as any)[parentTypes[type.name]];
+      return (GraphQLColors as any)[parentTypes[type.name]];
     }
-
-    return color;
+    return '#fff';
   };
 
   return (
