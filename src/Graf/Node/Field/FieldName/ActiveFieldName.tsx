@@ -15,8 +15,11 @@ const Indent = style({
   overflow: 'hidden',
 });
 export const ActiveFieldName: React.FC<
-  Pick<ParserField, 'name' | 'args' | 'data'> & { afterChange: (newName: string) => void }
-> = ({ args, data, name, afterChange }) => {
+  Pick<ParserField, 'name' | 'args' | 'data'> & {
+    afterChange: (newName: string) => void;
+    parentTypes?: Record<string, string>;
+  }
+> = ({ args, data, name, afterChange, parentTypes }) => {
   if (args && args.length > 0) {
     return (
       <div className={Main}>
@@ -30,7 +33,7 @@ export const ActiveFieldName: React.FC<
               }}
               value={a.name}
             />
-            :<ActiveType type={a.type} />
+            :<ActiveType type={a.type} parentTypes={parentTypes} />
             {i < args.length - 1 && <span>,</span>}
           </div>
         ))}

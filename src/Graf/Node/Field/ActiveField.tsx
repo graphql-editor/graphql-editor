@@ -37,7 +37,7 @@ export const ActiveField: React.FC<FieldProps> = ({
   isLocked,
   onDelete,
 }) => {
-  const { tree, setTree } = useTreesState();
+  const { tree, setTree, parentTypes } = useTreesState();
   const [optionsMenuOpen, setOptionsMenuOpen] = useState(false);
   const [detailsMenuOpen, setDetailsMenuOpen] = useState(false);
   const isEnumValue = node.data.type === ValueDefinition.EnumValueDefinition;
@@ -68,12 +68,13 @@ export const ActiveField: React.FC<FieldProps> = ({
               data={node.data}
               name={node.name}
               args={node.args}
+              parentTypes={parentTypes}
             />
           )}
           {isLocked && <PaintFieldName data={node.data} name={node.name} args={node.args} />}
         </div>
         <div className={Type}>
-          <ActiveType type={node.type} />
+          <ActiveType type={node.type} parentTypes={parentTypes} />
         </div>
       </Title>
       {!isLocked && (

@@ -44,6 +44,17 @@ const useTreesStateContainer = createContainer(() => {
     }
   }, [selectedNode]);
 
+  const parentTypes = {
+    ...tree.nodes.reduce(
+      (obj: Record<string, string>, item: ParserField) => Object.assign(obj, { [item.name]: item.type.name }),
+      {},
+    ),
+    ...libraryTree.nodes.reduce(
+      (obj: Record<string, string>, item: ParserField) => Object.assign(obj, { [item.name]: item.type.name }),
+      {},
+    ),
+  };
+
   return {
     tree,
     setTree,
@@ -65,6 +76,7 @@ const useTreesStateContainer = createContainer(() => {
     setReadonly,
     isTreeInitial,
     setIsTreeInitial,
+    parentTypes,
   };
 });
 
