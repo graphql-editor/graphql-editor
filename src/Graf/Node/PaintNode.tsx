@@ -74,7 +74,7 @@ const NotSelected = style({
 });
 export const PaintNode: React.FC<NodeProps> = ({ node, isLibrary, isMatchedToSearch, subNode }) => {
   const thisNode = useRef<HTMLDivElement>(null);
-  const { setSelectedNode, setPosition, selectedNode } = useTreesState();
+  const { setSelectedNode, selectedNode } = useTreesState();
   return (
     <div
       className={`${NodeContainer} ${isLibrary ? LibraryNodeContainer : MainNodeContainer} ${
@@ -84,17 +84,7 @@ export const PaintNode: React.FC<NodeProps> = ({ node, isLibrary, isMatchedToSea
       onClick={(e) => {
         e.stopPropagation();
         if (DOM.panLock) return;
-
         setSelectedNode(node);
-        setPosition(undefined);
-        const rect = thisNode.current;
-        if (rect) {
-          setPosition({
-            offsetLeft: rect.offsetLeft,
-            offsetTop: rect.offsetTop,
-            width: rect.offsetWidth,
-          });
-        }
       }}
     >
       {node.name}

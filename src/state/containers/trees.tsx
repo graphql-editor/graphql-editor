@@ -1,5 +1,5 @@
 import { createContainer } from 'unstated-next';
-import { useState, useRef, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { ParserTree, ParserField } from 'graphql-zeus';
 const useTreesStateContainer = createContainer(() => {
   const [tree, setTree] = useState<ParserTree>({ nodes: [] });
@@ -7,15 +7,8 @@ const useTreesStateContainer = createContainer(() => {
   const [snapshots, setSnapshots] = useState<string[]>([]);
   const [undos, setUndos] = useState<string[]>([]);
   const [selectedNode, setSelectedNode] = useState<ParserField>();
-  const selectedNodeRef = useRef<HTMLDivElement>(null);
   const [readonly, setReadonly] = useState(false);
   const [isTreeInitial, setIsTreeInitial] = useState(true);
-
-  const [position, setPosition] = useState<{
-    offsetLeft: number;
-    offsetTop: number;
-    width: number;
-  }>();
 
   const past = () => {
     const p = snapshots.pop();
@@ -64,9 +57,6 @@ const useTreesStateContainer = createContainer(() => {
     setSnapshots,
     selectedNode,
     setSelectedNode,
-    selectedNodeRef,
-    position,
-    setPosition,
     past,
     undos,
     setUndos,

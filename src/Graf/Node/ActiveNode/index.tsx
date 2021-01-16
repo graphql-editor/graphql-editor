@@ -154,7 +154,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, parentNode, ...sharedPro
     index: number;
   }>();
 
-  const { libraryTree, tree, setTree, setSelectedNode, selectedNode, selectedNodeRef } = useTreesState();
+  const { libraryTree, tree, setTree, setSelectedNode, selectedNode } = useTreesState();
 
   const isLibrary = !!libraryTree.nodes.find((lN) => lN.name === node.name && lN.data.type === node.data.type);
   const isInputNode = [
@@ -196,7 +196,6 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, parentNode, ...sharedPro
   return (
     <div
       className={`${NodeContainer} NodeBackground-${node.type.name} ${DOM.classes.node} ${DOM.classes.nodeSelected}`}
-      ref={selectedNodeRef}
     >
       <ActiveDescription
         onChange={(d) => {

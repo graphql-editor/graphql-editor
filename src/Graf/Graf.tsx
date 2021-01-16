@@ -94,7 +94,6 @@ export const Graf: React.FC<GrafProps> = () => {
     setTree,
     selectedNode,
     setSelectedNode,
-    position,
     setSnapshots,
     snapshots,
     past,
@@ -147,7 +146,7 @@ export const Graf: React.FC<GrafProps> = () => {
     : undefined;
   return (
     <>
-      {node && position && wrapperRef.current && (
+      {node && wrapperRef.current && (
         <div className={SubNodeContainer} onClick={() => {}}>
           <ActiveNode
             readonly={readonly}

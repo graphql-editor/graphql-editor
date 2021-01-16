@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { render } from 'react-dom';
 import { GraphQLEditor } from '../src/index';
 import { PassedSchema } from '../src/Models';
@@ -6,9 +6,17 @@ import * as schemas from './schema';
 
 export const App = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
-    code: schemas.finance,
-    libraries: schemas.usersLibrary,
+    code: schemas.usersLibrary,
+    libraries: undefined,
   });
+  useEffect(() => {
+    setTimeout(() => {
+      setMySchema((schema) => ({
+        ...schema,
+        libraries: 'scalar URL',
+      }));
+    }, 4000);
+  }, []);
   return (
     <div
       style={{
