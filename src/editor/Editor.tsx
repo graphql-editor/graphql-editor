@@ -4,7 +4,6 @@ import { sizeSidebar } from '@/vars';
 import { Menu, ActivePane } from './Menu';
 import { CodePane } from './code';
 
-import { GraphQLEditorCypress, cypressGet } from '@/cypress_constants';
 import { PassedSchema, Theming } from '@/Models';
 import { DynamicResize } from './code/Components';
 import { Graf } from '@/Graf/Graf';
@@ -14,6 +13,7 @@ import { Workers } from '@/worker';
 import { style } from 'typestyle';
 import { useTreesState } from '@/state/containers/trees';
 import { useErrorsState, useNavigationState, useTheme } from '@/state/containers';
+import { GraphQLEditorDomStructure } from '@/domStructure';
 
 export const Main = style({
   display: 'flex',
@@ -51,7 +51,7 @@ export interface EditorProps extends Theming {
   placeholder?: string;
   schema: PassedSchema;
   onPaneChange?: (pane: ActivePane) => void;
-  setSchema: (props: PassedSchema) => void;
+  setSchema: (props: PassedSchema, isInvalid?: boolean) => void;
 }
 
 let stopCodeFromTreeGeneration = false;
@@ -141,6 +141,7 @@ export const Editor = ({
       } else {
         setTree(Parser.parse(schema.code));
       }
+      setLockGraf(false);
     } catch (error) {
       // TODO: Catch the error and dispaly
       Workers.validate(schema.code, schema.libraries).then((errors) => {
@@ -190,7 +191,7 @@ export const Editor = ({
 
   return (
     <div
-      data-cy={cypressGet(GraphQLEditorCypress, 'name')}
+      data-cy={GraphQLEditorDomStructure.tree.editor}
       className={Main}
       onKeyDown={(e) => {
         if (e.key.toLowerCase() === 'f' && (e.metaKey || e.ctrlKey)) {
@@ -219,12 +220,12 @@ export const Editor = ({
             className={cx(themed('Sidebar')(Sidebar), {
               [FullScreenContainer]: menuState === 'code',
             })}
-            data-cy={cypressGet(GraphQLEditorCypress, 'sidebar', 'name')}
+            data-cy={GraphQLEditorDomStructure.tree.sidebar.name}
           >
             {(menuState === 'code' || menuState === 'code-diagram') && (
               <CodePane
                 size={menuState === 'code' ? 100000 : sidebarSize}
-                onChange={(v) => setSchema({ ...schema, code: v })}
+                onChange={(v, isInvalid) => setSchema({ ...schema, code: v }, isInvalid)}
                 schema={schema.code}
                 libraries={schema.libraries}
                 placeholder={placeholder}

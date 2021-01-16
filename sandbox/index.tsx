@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { render } from 'react-dom';
 import { GraphQLEditor } from '../src/index';
 import { PassedSchema } from '../src/Models';
@@ -9,14 +9,6 @@ export const App = () => {
     code: schemas.usersLibrary,
     libraries: undefined,
   });
-  useEffect(() => {
-    setTimeout(() => {
-      setMySchema((schema) => ({
-        ...schema,
-        libraries: 'scalar URL',
-      }));
-    }, 4000);
-  }, []);
   return (
     <div
       style={{

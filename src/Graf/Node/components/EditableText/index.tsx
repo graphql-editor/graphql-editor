@@ -4,6 +4,7 @@ import { Colors } from '@/Colors';
 import { fontFamily } from '@/vars';
 import { DOM } from '@/Graf/DOM';
 import { FIELD_NAME_SIZE } from '@/Graf/constants';
+import cx from 'classnames';
 const Input = style({
   border: 0,
   background: 'transparent',
@@ -13,18 +14,27 @@ const Input = style({
   fontFamily: fontFamily,
   fontSize: FIELD_NAME_SIZE,
 });
+const InputIsError = style({
+  color: Colors.red[0],
+});
 export const EditableText: React.FC<{
   value: string;
   onChange?: (value: string) => void;
   autoFocus?: boolean;
   style?: React.CSSProperties;
-}> = ({ value, onChange, autoFocus, style = {} }) => {
+  exclude?: string[];
+}> = ({ value, onChange, autoFocus, style = {}, exclude = [] }) => {
   const [editedValue, setEditedValue] = useState('');
   const [focus, setFocus] = useState(!!autoFocus);
+  const [isError, setIsError] = useState(false);
   const checkEdit = () => {
     setFocus(false);
     DOM.panLock = false;
     DOM.keyLock = false;
+    if (isError) {
+      setEditedValue(value);
+      return;
+    }
     if (editedValue && onChange) {
       if (editedValue !== value) {
         onChange(editedValue);
@@ -34,6 +44,9 @@ export const EditableText: React.FC<{
     }
   };
   useEffect(() => {
+    setIsError(exclude.includes(editedValue));
+  }, [editedValue]);
+  useEffect(() => {
     setEditedValue(value);
   }, [value]);
   return (
@@ -41,7 +54,9 @@ export const EditableText: React.FC<{
       {onChange ? (
         <input
           autoFocus={focus}
-          className={Input}
+          className={cx(Input, {
+            [InputIsError]: isError,
+          })}
           value={editedValue}
           pattern="[_A-Za-z][_0-9A-Za-z]*"
           style={{ width: `${editedValue.length}ch`, ...style }}
@@ -49,6 +64,7 @@ export const EditableText: React.FC<{
             DOM.panLock = true;
             DOM.keyLock = true;
           }}
+          title={isError ? 'Name already exists' : 'rename'}
           onBlur={checkEdit}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {

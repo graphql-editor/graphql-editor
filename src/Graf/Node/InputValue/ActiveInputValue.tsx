@@ -3,7 +3,7 @@ import { ParserField, Options, ValueDefinition, Value } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { Colors } from '@/Colors';
 import { ActiveType } from '@/Graf/Node/Type';
-import { NodeTypeOptionsMenu } from '@/Graf/Node/ContextMenu';
+import { NodeChangeFieldTypeMenu, NodeTypeOptionsMenu } from '@/Graf/Node/ContextMenu';
 import { ActiveInputValueName } from './ActiveInputValueName';
 import {
   DetailMenuItem,
@@ -22,6 +22,11 @@ import { FieldProps } from '@/Graf/Node/models';
 const Name = style({ fontSize: 10, marginRight: 4, overflow: 'hidden' });
 const Type = style({ fontSize: 10, color: Colors.green[0] });
 const OptionsMenuContainer = style({
+  position: 'absolute',
+  top: 32,
+  zIndex: 2,
+});
+const TypeMenuContainer = style({
   position: 'absolute',
   top: 32,
   zIndex: 2,
@@ -77,16 +82,17 @@ export const ActiveInputValue: React.FC<FieldProps> = ({
   outputDisabled,
   onInputClick,
   onOutputClick,
+  parentNode,
+  indexInParentNode,
   parentNodeTypeName,
   isLocked,
   onDelete,
 }) => {
-  const { tree, setTree } = useTreesState();
-  const [optionsMenuOpen, setOptionsMenuOpen] = useState(false);
-  const [detailsMenuOpen, setDetailsMenuOpen] = useState(false);
+  const { tree, setTree, parentTypes } = useTreesState();
+  const [menuOpen, setMenuOpen] = useState<'options' | 'details' | 'type'>();
   return (
     <NodeFieldContainer
-      className={`NodeType-${parentNodeTypeName} ${inputOpen || outputOpen || optionsMenuOpen ? 'Active' : ''}`}
+      className={`NodeType-${parentNodeTypeName} ${inputOpen || outputOpen || menuOpen ? 'Active' : ''}`}
     >
       {!inputDisabled && !isLocked ? (
         <FieldPort
@@ -114,7 +120,22 @@ export const ActiveInputValue: React.FC<FieldProps> = ({
           )}
         </div>
         <div className={Type}>
-          <ActiveType type={node.type} />
+          <ActiveType
+            onClick={() => setMenuOpen(menuOpen === 'type' ? undefined : 'type')}
+            type={node.type}
+            parentTypes={parentTypes}
+          />
+          {menuOpen === 'type' && (
+            <div className={TypeMenuContainer}>
+              <NodeChangeFieldTypeMenu
+                node={parentNode}
+                fieldIndex={indexInParentNode}
+                hideMenu={() => {
+                  setMenuOpen(undefined);
+                }}
+              />
+            </div>
+          )}
         </div>
         <EditableDefaultValue
           value={ConvertValueNodeToString(node)}
@@ -133,12 +154,12 @@ export const ActiveInputValue: React.FC<FieldProps> = ({
         <FieldPort
           icons={{ closed: 'More', open: 'More' }}
           onClick={() => {
-            setDetailsMenuOpen(!detailsMenuOpen);
+            setMenuOpen(menuOpen === 'details' ? undefined : 'details');
           }}
         >
-          {detailsMenuOpen && (
+          {menuOpen === 'details' && (
             <div className={OptionsMenuContainer}>
-              <Menu menuName={'Node options'} hideMenu={() => setDetailsMenuOpen(false)}>
+              <Menu menuName={'Node options'} hideMenu={() => setMenuOpen(undefined)}>
                 <MenuScrollingArea>
                   <DetailMenuItem onClick={onDelete}>Delete</DetailMenuItem>
                 </MenuScrollingArea>
@@ -151,12 +172,12 @@ export const ActiveInputValue: React.FC<FieldProps> = ({
         <FieldPort
           icons={{ closed: 'Arrq', open: 'Arrq' }}
           onClick={() => {
-            setOptionsMenuOpen(!optionsMenuOpen);
+            setMenuOpen(menuOpen === 'options' ? undefined : 'options');
           }}
         >
-          {optionsMenuOpen && (
+          {menuOpen === 'options' && (
             <div className={OptionsMenuContainer}>
-              <NodeTypeOptionsMenu hideMenu={() => setOptionsMenuOpen(false)} node={node} />
+              <NodeTypeOptionsMenu hideMenu={() => setMenuOpen(undefined)} node={node} />
             </div>
           )}
         </FieldPort>

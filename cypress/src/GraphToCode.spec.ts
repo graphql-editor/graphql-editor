@@ -6,9 +6,7 @@ const createNode = (
   nodeType: 'type' | 'scalar' | 'input' | 'interface' | 'directive' | 'union' | 'Extend',
 ) => {
   Diagram().rightclick(x, y);
-  Diagram()
-    .contains(nodeType)
-    .click();
+  Diagram().contains(nodeType).click();
   cy.get('body').type(name);
   // Defocus
   Diagram().click(100, 300);
@@ -23,9 +21,7 @@ describe('Testing creation of nodes and transforming them to code', () => {
   it('shows code for created root node', () => {
     cy.visit('/');
     Diagram().rightclick(100, 100);
-    Diagram()
-      .contains('scalar')
-      .click();
+    Diagram().contains('scalar').click();
     cy.get('body').type('Hello');
     Sidebar().click();
     compareWithEditor(`scalar Hello`);
@@ -42,9 +38,7 @@ describe('Testing creation of nodes and transforming them to code', () => {
     cy.visit('/');
     const HelloNode = createNode(100, 100, 'Hello', 'scalar');
     HelloNode.rightclick();
-    Diagram()
-      .contains('delete')
-      .click();
+    Diagram().contains('delete').click();
     getEditorLines().then(($element) => {
       expect($element.text()).not.to.match(/scalar\sHello/);
     });
@@ -53,17 +47,11 @@ describe('Testing creation of nodes and transforming them to code', () => {
     cy.visit('/');
     const HelloNode = createNode(100, 100, 'Hello', 'type');
     HelloNode.inputs();
-    Diagram()
-      .contains('scalars')
-      .click();
-    Diagram()
-      .contains('String')
-      .click();
+    Diagram().contains('scalars').click();
+    Diagram().contains('String').click();
     cy.get('body').type('Helloooo');
     HelloNode.rightclick();
-    Diagram()
-      .contains('query')
-      .click();
+    Diagram().contains('query').click();
     Sidebar().click();
     compareWithEditor(`type Hello{ Helloooo: String } schema{ query: Hello }`);
   });

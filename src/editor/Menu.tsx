@@ -1,11 +1,11 @@
 import React from 'react';
 import * as Icons from './icons';
 import cx from 'classnames';
-import { cypressGet, GraphQLEditorCypress } from '../cypress_constants';
 import { style } from 'typestyle';
 
 import { Colors } from '@/Colors';
 import { menuWidth } from '@/vars';
+import { GraphQLEditorDomStructure } from '@/domStructure';
 
 export const HiderPanel = style({
   width: menuWidth,
@@ -39,11 +39,13 @@ export interface MenuProps {
   setActivePane: (pane: ActivePane) => void;
 }
 
+const MenuChildren = GraphQLEditorDomStructure.tree.sidebar.menu.children;
+
 export const Menu = ({ setActivePane, activePane }: MenuProps) => {
   return (
     <div className={HiderPanel}>
       <div
-        data-cy={cypressGet(GraphQLEditorCypress, 'sidebar', 'menu', 'children', 'diagram', 'name')}
+        data-cy={MenuChildren.diagram}
         className={cx(Hider, {
           active: activePane === 'diagram',
         })}
@@ -53,7 +55,7 @@ export const Menu = ({ setActivePane, activePane }: MenuProps) => {
         <Icons.Eye size={18} />
       </div>
       <div
-        data-cy={cypressGet(GraphQLEditorCypress, 'sidebar', 'menu', 'children', 'codeDiagram', 'name')}
+        data-cy={MenuChildren.codeDiagram}
         className={cx(Hider, {
           active: activePane === 'code-diagram',
         })}
@@ -63,7 +65,7 @@ export const Menu = ({ setActivePane, activePane }: MenuProps) => {
         <Icons.Code size={18} />
       </div>
       <div
-        data-cy={cypressGet(GraphQLEditorCypress, 'sidebar', 'menu', 'children', 'code', 'name')}
+        data-cy={MenuChildren.code}
         className={cx(Hider, {
           active: activePane === 'code',
         })}
@@ -73,7 +75,7 @@ export const Menu = ({ setActivePane, activePane }: MenuProps) => {
         <Icons.FullScreen size={18} />
       </div>
       <div
-        data-cy={cypressGet(GraphQLEditorCypress, 'sidebar', 'menu', 'children', 'hierarchy')}
+        data-cy={MenuChildren.hierarchy}
         className={cx(Hider, {
           active: activePane === 'hierarchy',
         })}

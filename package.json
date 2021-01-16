@@ -1,6 +1,6 @@
 {
   "name": "graphql-editor",
-  "version": "4.2.5",
+  "version": "4.2.6",
   "private": false,
   "license": "MIT",
   "description": "Visual node editor for GraphQL",
@@ -11,6 +11,7 @@
     "start": "webpack-dev-server --config ./sandbox/webpack.config.js --content-base ./sandbox/ --port 1568 --hot --inline --open",
     "build": "ttsc --build tsconfig.build.json",
     "watch": "ttsc --watch",
+    "domTree": "tree src/domStructure/domStructure.treelang -f ts > src/domStructure/domStructure.ts",
     "test": "jest",
     "e2e:test": "tsc --watch --project cypress/tsconfig.json | cypress open",
     "docs": "typedoc --mode file --out docs  --theme minimal --ignoreCompilerErrors --target ES6 ",
@@ -67,6 +68,7 @@
     "react-dom": "16.13.1",
     "react-hot-loader": "^4.3.11",
     "style-loader": "^1.0.1",
+    "treelang": "0.0.1",
     "ts-jest": "^25.4.0",
     "ts-loader": "^7.0.2",
     "tsconfig-paths-webpack-plugin": "^3.3.0",
@@ -92,13 +94,8 @@
   },
   "dependencies": {
     "classnames": "^2.2.5",
-    "faker": "^4.1.0",
-    "graphql": "^15.0.0",
-    "graphql-zeus": "^3.0.0-13",
+    "graphql-zeus": "^3.0.0-18",
     "graphsource": "^2.0.2",
-    "moment": "^2.21.0",
-    "panzoom": "^9.2.5",
-    "query-string": "^6.2.0",
     "re-resizable": "^6.1.1",
     "typestyle": "^2.0.1",
     "unstated-next": "^1.1.0"

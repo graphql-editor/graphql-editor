@@ -154,7 +154,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, parentNode, ...sharedPro
     index: number;
   }>();
 
-  const { libraryTree, tree, setTree, setSelectedNode, selectedNode } = useTreesState();
+  const { libraryTree, tree, setTree, setSelectedNode, selectedNode, parentTypes } = useTreesState();
 
   const isLibrary = !!libraryTree.nodes.find((lN) => lN.name === node.name && lN.data.type === node.data.type);
   const isInputNode = [
@@ -263,7 +263,13 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, parentNode, ...sharedPro
               <EditableText
                 style={EditableTitle}
                 value={node.name}
+                exclude={Object.keys(parentTypes).filter((pt) => pt !== node.name)}
                 onChange={(v) => {
+                  const isError =
+                    tree.nodes.map((n) => n.name).includes(v) || libraryTree.nodes.map((n) => n.name).includes(v);
+                  if (isError) {
+                    return;
+                  }
                   //TODO: Change the node name
                   ChangeAllRelatedNodes({
                     newName: v,
@@ -303,6 +309,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, parentNode, ...sharedPro
             return (
               <ActiveDirective
                 isLocked={isLocked}
+                indexInParentNode={i}
                 parentNode={node}
                 parentNodeTypeName={node.type.name}
                 key={d.name}
@@ -339,6 +346,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, parentNode, ...sharedPro
             return (
               <>
                 <Component
+                  indexInParentNode={i}
                   parentNode={node}
                   isLocked={isLocked}
                   parentNodeTypeName={node.type.name}
@@ -366,7 +374,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, parentNode, ...sharedPro
               </>
             );
           })}
-          <div style={{ marginBottom: 50 }} />
+          <div style={{ marginBottom: 400 }} />
         </div>
       </div>
     </div>

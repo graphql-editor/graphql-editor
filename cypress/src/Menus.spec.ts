@@ -1,4 +1,4 @@
-import { typeInEditor, Action } from './Action';
+import { Action } from './Action';
 import { cypressGet, GraphQLEditorCypress } from '../../src/cypress_constants';
 describe('testss for diagram from code generation', () => {
   it('can open code', () => {
@@ -15,9 +15,9 @@ describe('testss for diagram from code generation', () => {
       Cypress.dom.isVisible($el); // true
     });
   });
-  it('can open explorer', () => {
+  it('can open hierarchy', () => {
     cy.visit('/');
-    Action.click(cypressGet(GraphQLEditorCypress, 'sidebar', 'menu', 'children', 'explorer', 'name'));
+    Action.click(cypressGet(GraphQLEditorCypress, 'sidebar', 'menu', 'children', 'hierarchy', 'name'));
     Action.contains(cypressGet(GraphQLEditorCypress, 'sidebar', 'explorer', 'name')).then(($el) => {
       Cypress.dom.isVisible($el); // true
     });

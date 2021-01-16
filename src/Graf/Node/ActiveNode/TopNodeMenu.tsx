@@ -28,7 +28,7 @@ export const TopNodeMenu: React.FC<{
   onDelete: () => void;
   onDuplicate?: () => void;
 }> = ({ node, onDelete, onDuplicate }) => {
-  const { tree, setTree } = useTreesState();
+  const { tree, setTree, setSelectedNode } = useTreesState();
   const [menuOpen, setMenuOpen] = useState<PossibleMenus>();
 
   const hideMenu = () => {
@@ -164,6 +164,13 @@ export const TopNodeMenu: React.FC<{
               <MenuScrollingArea>
                 <DetailMenuItem onClick={onDelete}>Delete node</DetailMenuItem>
                 {onDuplicate && <DetailMenuItem onClick={onDuplicate}>Duplicate node</DetailMenuItem>}
+                <DetailMenuItem
+                  onClick={() => {
+                    setSelectedNode(undefined);
+                  }}
+                >
+                  Deselect node
+                </DetailMenuItem>
               </MenuScrollingArea>
             </Menu>
           </div>

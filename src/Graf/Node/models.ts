@@ -11,5 +11,6 @@ export interface FieldProps {
   outputDisabled?: boolean;
   isLocked?: boolean;
   parentNodeTypeName: string;
+  indexInParentNode: number;
   onDelete: () => void;
 }

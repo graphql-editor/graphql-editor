@@ -7,9 +7,9 @@ import * as styles from './style/Code';
 import { StatusDotProps } from './style/Components';
 import { theme, language, conf, settings, mapEditorErrorToMonacoDecoration } from './monaco';
 import { Workers } from '@/worker';
-import { cypressGet, GraphQLEditorCypress } from '@/cypress_constants';
 import { fontFamily } from '@/vars';
 import { KeyboardActions, useErrorsState, useIOState } from '@/state/containers';
+import { GraphQLEditorDomStructure } from '@/domStructure';
 
 export interface CodePaneOuterProps {
   readonly?: boolean;
@@ -19,7 +19,7 @@ export interface CodePaneOuterProps {
 export type CodePaneProps = {
   size: number | string;
   schema: string;
-  onChange: (v: string) => void;
+  onChange: (v: string, isInvalid?: boolean) => void;
   libraries?: string;
   scrollTo?: string;
 } & CodePaneOuterProps;
@@ -37,9 +37,9 @@ export const CodePane = (props: CodePaneProps) => {
   const editor = useRef<HTMLDivElement>(null);
   const [monacoGql, setMonacoGql] = useState<monaco.editor.IStandaloneCodeEditor>();
   const [decorationIds, setDecorationIds] = useState<string[]>([]);
-  const { codeErrors, setCodeErrors, setLockGraf } = useErrorsState();
+  const { codeErrors, setCodeErrors } = useErrorsState();
   const { setActions } = useIOState();
-  const generateEnabled = !readonly && codeErrors.length === 0;
+  const generateEnabled = !readonly;
   useEffect(() => {
     if (scrollTo) {
       const items = monacoGql
@@ -92,10 +92,8 @@ export const CodePane = (props: CodePaneProps) => {
           return;
         }
         Workers.validate(value, libraries).then((errors) => {
-          if (errors.length === 0) {
-            onChange(value);
-            setLockGraf(false);
-          }
+          const isInvalid = errors.length > 0;
+          onChange(value, isInvalid);
         });
       });
       setMonacoGql(m);
@@ -143,11 +141,9 @@ export const CodePane = (props: CodePaneProps) => {
         const v = monacoGql?.getModel()?.getValue();
         if (v && generateEnabled) {
           Workers.validate(v, libraries).then((errors) => {
-            if (errors.length === 0) {
-              onChange(v);
-              setLockGraf(false);
-              return;
-            }
+            const isInvalid = errors.length > 0;
+            onChange(v, isInvalid);
+            return;
           });
         }
       },
@@ -194,7 +190,7 @@ export const CodePane = (props: CodePaneProps) => {
       <div
         className={cx(styles.CodeContainer)}
         ref={holder}
-        data-cy={cypressGet(GraphQLEditorCypress, 'sidebar', 'code', 'name')}
+        data-cy={GraphQLEditorDomStructure.tree.elements.CodePane.name}
       >
         <div ref={editor} className={styles.Editor} />
       </div>

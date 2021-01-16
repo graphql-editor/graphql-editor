@@ -73,7 +73,7 @@ const ErrorLockMessage = style({
 const SubNodeContainer = style({
   animationName: unfold,
   animationTimingFunction: 'ease-in-out',
-  width: 'clamp(400px, 40%, 1280px)',
+  width: 'min(clamp(400px, 40%, 1280px), calc(100vw - 50px))',
   animationDuration: '0.25s',
   background: Colors.grey[9],
   fontFamily,

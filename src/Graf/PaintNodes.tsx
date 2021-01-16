@@ -19,8 +19,7 @@ const Main = style({
   paddingBottom: 300,
 });
 export const PaintNodes: React.FC = () => {
-  const { libraryTree, tree, selectedNode } = useTreesState();
-  console.log(selectedNode);
+  const { libraryTree, tree } = useTreesState();
   const baseTypes = [
     TypeDefinition.ObjectTypeDefinition,
     TypeDefinition.InterfaceTypeDefinition,
@@ -53,9 +52,7 @@ export const PaintNodes: React.FC = () => {
   return (
     <div className={Main}>
       {baseTypes.map((d) => (
-        <React.Fragment>
-          <RootNode key={d.node.type.name} node={d.node} libraryNode={d.libraryNode} />
-        </React.Fragment>
+        <RootNode key={d.node.type.name} node={d.node} libraryNode={d.libraryNode} />
       ))}
       <RootNode
         node={{
