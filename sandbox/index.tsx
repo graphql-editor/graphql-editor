@@ -6,8 +6,8 @@ import * as schemas from './schema';
 
 export const App = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
-    code: schemas.usersLibrary,
-    libraries: undefined,
+    code: schemas.pizza,
+    libraries: schemas.pizzaLibrary,
   });
   return (
     <div
@@ -22,8 +22,6 @@ export const App = () => {
     >
       <GraphQLEditor
         setSchema={(props) => {
-          console.log(props);
-          console.log('SCHEMA CHANGED');
           setMySchema(props);
         }}
         schema={mySchema}

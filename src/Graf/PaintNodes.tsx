@@ -34,7 +34,7 @@ export const PaintNodes: React.FC = () => {
         type: d,
       },
       type: {
-        name: 'root',
+        name: `root-${d}`,
       },
       args: tree.nodes.filter((n) => n.data.type === d).sort((a, b) => (a.name > b.name ? 1 : -1)),
     },
@@ -44,7 +44,7 @@ export const PaintNodes: React.FC = () => {
         type: d,
       },
       type: {
-        name: 'root',
+        name: `library-${d}`,
       },
       args: libraryTree.nodes.filter((n) => n.data.type === d).sort((a, b) => (a.name > b.name ? 1 : -1)),
     },

@@ -24,6 +24,7 @@ const Type = style({ fontSize: 10, color: Colors.green[0] });
 const OptionsMenuContainer = style({
   position: 'absolute',
   top: 32,
+  right: 5,
   zIndex: 2,
 });
 const TypeMenuContainer = style({

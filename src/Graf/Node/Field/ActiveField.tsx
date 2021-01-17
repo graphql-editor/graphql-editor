@@ -3,7 +3,7 @@ import { ValueDefinition } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { Colors } from '@/Colors';
 import { FIELD_NAME_SIZE, FIELD_TYPE_SIZE } from '@/Graf/constants';
-import { ActiveFieldName, PaintFieldName } from './FieldName';
+import { ActiveFieldName } from './FieldName';
 import { ActiveType } from '@/Graf/Node/Type';
 import { NodeChangeFieldTypeMenu, NodeTypeOptionsMenu } from '@/Graf/Node/ContextMenu';
 import { useTreesState } from '@/state/containers/trees';
@@ -62,19 +62,20 @@ export const ActiveField: React.FC<FieldProps> = ({
       )}
       <Title>
         <div className={Name}>
-          {!isLocked && (
-            <ActiveFieldName
-              afterChange={(newName) => {
-                node.name = newName;
-                setTree({ ...tree });
-              }}
-              data={node.data}
-              name={node.name}
-              args={node.args}
-              parentTypes={parentTypes}
-            />
-          )}
-          {isLocked && <PaintFieldName data={node.data} name={node.name} args={node.args} />}
+          <ActiveFieldName
+            afterChange={
+              isLocked
+                ? undefined
+                : (newName) => {
+                    node.name = newName;
+                    setTree({ ...tree });
+                  }
+            }
+            data={node.data}
+            name={node.name}
+            args={node.args}
+            parentTypes={parentTypes}
+          />
         </div>
         <div className={Type}>
           <ActiveType

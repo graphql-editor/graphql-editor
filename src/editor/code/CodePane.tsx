@@ -44,7 +44,7 @@ export const CodePane = (props: CodePaneProps) => {
     if (scrollTo) {
       const items = monacoGql
         ?.getModel()
-        ?.findNextMatch(`${scrollTo}[\s|\{]`, { column: 0, lineNumber: 0 }, true, false, null, true);
+        ?.findNextMatch(`${scrollTo}[ |\{]`, { column: 0, lineNumber: 0 }, true, false, null, true);
 
       if (items) {
         const {

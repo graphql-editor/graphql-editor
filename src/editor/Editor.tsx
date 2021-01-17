@@ -93,6 +93,7 @@ export const Editor = ({
   };
 
   const generateSchemaFromTree = () => {
+    console.log('Generating new schema from tree');
     if (!tree) {
       return;
     }
@@ -124,6 +125,7 @@ export const Editor = ({
   };
 
   const generateTreeFromSchema = () => {
+    console.log('Generating new tree from schema');
     if (!schema.code) {
       setTree({ nodes: [] });
       return;
@@ -139,10 +141,12 @@ export const Editor = ({
           ),
         });
       } else {
-        setTree(Parser.parse(schema.code));
+        const parsedCode = Parser.parse(schema.code);
+        setTree(parsedCode);
       }
       setLockGraf(false);
     } catch (error) {
+      console.log(error);
       // TODO: Catch the error and dispaly
       Workers.validate(schema.code, schema.libraries).then((errors) => {
         setCodeErrors(errors);
@@ -169,8 +173,8 @@ export const Editor = ({
   }, [activePane]);
 
   useEffect(() => {
-    if (stopTreeFromCodeGeneration) {
-      stopTreeFromCodeGeneration = false;
+    if (stopCodeFromTreeGeneration) {
+      stopCodeFromTreeGeneration = false;
       return;
     }
     stopCodeFromTreeGeneration = true;
@@ -181,8 +185,9 @@ export const Editor = ({
       setIsTreeInitial(false);
       return;
     }
-    if (stopCodeFromTreeGeneration) {
-      stopCodeFromTreeGeneration = false;
+    if (stopTreeFromCodeGeneration) {
+      console.log('Stopped code gen');
+      stopTreeFromCodeGeneration = false;
       return;
     }
     stopTreeFromCodeGeneration = true;
@@ -225,7 +230,15 @@ export const Editor = ({
             {(menuState === 'code' || menuState === 'code-diagram') && (
               <CodePane
                 size={menuState === 'code' ? 100000 : sidebarSize}
-                onChange={(v, isInvalid) => setSchema({ ...schema, code: v }, isInvalid)}
+                onChange={(v, isInvalid) => {
+                  if (isInvalid) {
+                    stopCodeFromTreeGeneration = true;
+                    setLockGraf(true);
+                  } else {
+                    stopCodeFromTreeGeneration = false;
+                  }
+                  setSchema({ ...schema, code: v }, isInvalid);
+                }}
                 schema={schema.code}
                 libraries={schema.libraries}
                 placeholder={placeholder}

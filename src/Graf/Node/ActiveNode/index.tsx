@@ -344,34 +344,32 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, parentNode, ...sharedPro
             );
             const Component = isArgumentNode ? ActiveArgument : isInputNode ? ActiveInputValue : ActiveField;
             return (
-              <>
-                <Component
-                  indexInParentNode={i}
-                  parentNode={node}
-                  isLocked={isLocked}
-                  parentNodeTypeName={node.type.name}
-                  key={a.name}
-                  onInputClick={() => {
-                    setOpenedNode((oN) =>
-                      oN?.index === i && oN.type === 'args' ? undefined : { type: 'args', index: i },
-                    );
-                  }}
-                  onOutputClick={() => {
-                    setOpenedNode((oN) =>
-                      oN?.index === i && oN.type === 'output' ? undefined : { type: 'output', index: i },
-                    );
-                  }}
-                  node={a}
-                  inputOpen={openedNode?.type === 'args' && openedNode?.index === i}
-                  outputDisabled={outputDisabled}
-                  outputOpen={openedNode?.type === 'output' && openedNode?.index === i}
-                  onDelete={() => {
-                    node.args!.splice(i, 1);
-                    DOM.panLock = false;
-                    setTree({ ...tree });
-                  }}
-                />
-              </>
+              <Component
+                indexInParentNode={i}
+                parentNode={node}
+                isLocked={isLocked}
+                parentNodeTypeName={node.type.name}
+                key={a.name}
+                onInputClick={() => {
+                  setOpenedNode((oN) =>
+                    oN?.index === i && oN.type === 'args' ? undefined : { type: 'args', index: i },
+                  );
+                }}
+                onOutputClick={() => {
+                  setOpenedNode((oN) =>
+                    oN?.index === i && oN.type === 'output' ? undefined : { type: 'output', index: i },
+                  );
+                }}
+                node={a}
+                inputOpen={openedNode?.type === 'args' && openedNode?.index === i}
+                outputDisabled={outputDisabled}
+                outputOpen={openedNode?.type === 'output' && openedNode?.index === i}
+                onDelete={() => {
+                  node.args!.splice(i, 1);
+                  DOM.panLock = false;
+                  setTree({ ...tree });
+                }}
+              />
             );
           })}
           <div style={{ marginBottom: 400 }} />

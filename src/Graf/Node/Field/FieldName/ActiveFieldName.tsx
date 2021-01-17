@@ -16,7 +16,7 @@ const Indent = style({
 });
 export const ActiveFieldName: React.FC<
   Pick<ParserField, 'name' | 'args' | 'data'> & {
-    afterChange: (newName: string) => void;
+    afterChange?: (newName: string) => void;
     parentTypes?: Record<string, string>;
   }
 > = ({ args, data, name, afterChange, parentTypes }) => {
@@ -27,10 +27,14 @@ export const ActiveFieldName: React.FC<
         {args.map((a, i) => (
           <div className={Indent} key={a.name}>
             <EditableText
-              onChange={(newName) => {
-                args[i].name = newName;
-                afterChange(name);
-              }}
+              onChange={
+                afterChange
+                  ? (newName) => {
+                      args[i].name = newName;
+                      afterChange(name);
+                    }
+                  : undefined
+              }
               value={a.name}
             />
             :<ActiveType type={a.type} parentTypes={parentTypes} />
