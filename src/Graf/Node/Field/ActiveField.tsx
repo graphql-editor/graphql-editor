@@ -16,6 +16,7 @@ const Name = style({
   overflow: 'hidden',
   whiteSpace: 'nowrap',
   textOverflow: 'ellipsis',
+  minWidth: 30,
 });
 const Type = style({ fontSize: FIELD_TYPE_SIZE, color: Colors.green[0] });
 const OptionsMenuContainer = style({

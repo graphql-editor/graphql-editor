@@ -7,7 +7,7 @@ const Main = style({
   flex: 1,
   alignItems: 'baseline',
   overflow: 'hidden',
-  marginRight: 10,
+  marginRight: 70,
   padding: 5,
 });
 

@@ -18,9 +18,10 @@ import { isScalarArgument } from '@/GraphQL/Resolve';
 import { ConvertStringToObject, ConvertValueNodeToString } from '@/GraphQL/Convert';
 import { useTreesState } from '@/state/containers/trees';
 import { FieldProps } from '@/Graf/Node/models';
+import { FIELD_TYPE_SIZE } from '@/Graf/constants';
 
-const Name = style({ fontSize: 10, marginRight: 4, overflow: 'hidden' });
-const Type = style({ fontSize: 10, color: Colors.green[0] });
+const Name = style({ marginRight: 4, overflow: 'hidden' });
+const Type = style({ fontSize: FIELD_TYPE_SIZE, color: Colors.green[0] });
 const OptionsMenuContainer = style({
   position: 'absolute',
   top: 32,
