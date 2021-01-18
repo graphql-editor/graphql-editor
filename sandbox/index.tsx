@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { render } from 'react-dom';
 import { GraphQLEditor } from '../src/index';
 import { PassedSchema } from '../src/Models';
@@ -6,9 +6,17 @@ import * as schemas from './schema';
 
 export const App = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
-    code: schemas.pizza,
-    libraries: schemas.pizzaLibrary,
+    code: '',
+    libraries: '',
   });
+  useEffect(() => {
+    setTimeout(() => {
+      setMySchema({
+        code: schemas.pizza,
+        libraries: schemas.pizzaLibrary,
+      });
+    }, 2000);
+  }, []);
   return (
     <div
       style={{

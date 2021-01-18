@@ -174,10 +174,12 @@ export const Editor = ({
 
   useEffect(() => {
     if (stopCodeFromTreeGeneration) {
+      console.log('Stoppin code from tree gen');
+      console.log(schema.code);
       stopCodeFromTreeGeneration = false;
       return;
     }
-    stopCodeFromTreeGeneration = true;
+    stopTreeFromCodeGeneration = true;
     generateTreeFromSchema();
   }, [schema.code]);
   useEffect(() => {
@@ -190,7 +192,7 @@ export const Editor = ({
       stopTreeFromCodeGeneration = false;
       return;
     }
-    stopTreeFromCodeGeneration = true;
+    stopCodeFromTreeGeneration = true;
     generateSchemaFromTree();
   }, [tree]);
 
