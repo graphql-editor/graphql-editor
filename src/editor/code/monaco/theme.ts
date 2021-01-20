@@ -31,6 +31,8 @@ const colors: monaco.editor.IColors = {
   'editor.foreground': Colors.grey[0],
   'editor.background': `#0b050d`,
   'minimap.background': '#0b050d',
+  'diffEditor.insertedTextBackground': '#ff0000',
+  'diffEditor.removedTextBackground': '#28d228',
 };
 
 export const theme: monaco.editor.IStandaloneThemeData = {

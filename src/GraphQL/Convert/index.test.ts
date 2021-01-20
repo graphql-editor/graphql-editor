@@ -18,7 +18,6 @@ describe('Convertion of string to nodes test', () => {
   it('Converts array of empty objects properly', () => {
     const v = '[{},{}]';
     const result = ConvertStringToObject(v);
-    console.log(result);
     const expected: ParserField[] = [
       {
         name: 'ObjectValue',

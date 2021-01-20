@@ -14,6 +14,7 @@ import { style } from 'typestyle';
 import { useTreesState } from '@/state/containers/trees';
 import { useErrorsState, useNavigationState, useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
+import { DiffEditor } from '@/DiffEditor';
 
 export const Main = style({
   display: 'flex',
@@ -50,6 +51,10 @@ export interface EditorProps extends Theming {
   readonly?: boolean;
   placeholder?: string;
   schema: PassedSchema;
+  diffSchemas?: {
+    oldSchema: PassedSchema;
+    newSchema: PassedSchema;
+  };
   onPaneChange?: (pane: ActivePane) => void;
   setSchema: (props: PassedSchema, isInvalid?: boolean) => void;
 }
@@ -68,6 +73,7 @@ export const Editor = ({
   activePane = 'code-diagram',
   onPaneChange,
   setSchema,
+  diffSchemas,
 }: EditorProps) => {
   const [sidebarSize, setSidebarSize] = useState<string | number>(initialSizeOfSidebar);
   const { menuState, setMenuState } = useNavigationState();
@@ -93,7 +99,6 @@ export const Editor = ({
   };
 
   const generateSchemaFromTree = () => {
-    console.log('Generating new schema from tree');
     if (!tree) {
       return;
     }
@@ -125,7 +130,6 @@ export const Editor = ({
   };
 
   const generateTreeFromSchema = () => {
-    console.log('Generating new tree from schema');
     if (!schema.code) {
       setTree({ nodes: [] });
       return;
@@ -146,7 +150,6 @@ export const Editor = ({
       }
       setLockGraf(false);
     } catch (error) {
-      console.log(error);
       // TODO: Catch the error and dispaly
       Workers.validate(schema.code, schema.libraries).then((errors) => {
         setCodeErrors(errors);
@@ -174,8 +177,6 @@ export const Editor = ({
 
   useEffect(() => {
     if (stopCodeFromTreeGeneration) {
-      console.log('Stoppin code from tree gen');
-      console.log(schema.code);
       stopCodeFromTreeGeneration = false;
       return;
     }
@@ -188,7 +189,6 @@ export const Editor = ({
       return;
     }
     if (stopTreeFromCodeGeneration) {
-      console.log('Stopped code gen');
       stopTreeFromCodeGeneration = false;
       return;
     }
@@ -208,6 +208,7 @@ export const Editor = ({
     >
       <Menu
         activePane={menuState}
+        excludePanes={diffSchemas ? undefined : ['diff']}
         setActivePane={(pane) => {
           setMenuState(pane);
           if (onPaneChange) {
@@ -257,6 +258,9 @@ export const Editor = ({
         </div>
       )}
       {menuState === 'hierarchy' && <Hierarchy />}
+      {menuState === 'diff' && diffSchemas && (
+        <DiffEditor schema={diffSchemas.oldSchema.code} newSchema={diffSchemas.newSchema.code} />
+      )}
     </div>
   );
 };

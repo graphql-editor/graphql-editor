@@ -33,57 +33,78 @@ export const Hider = style({
   },
 });
 
-export type ActivePane = 'code' | 'diagram' | 'code-diagram' | 'hierarchy';
+export type ActivePane = 'code' | 'diagram' | 'code-diagram' | 'hierarchy' | 'diff';
 export interface MenuProps {
   activePane: ActivePane;
+  excludePanes?: ActivePane[];
   setActivePane: (pane: ActivePane) => void;
 }
 
 const MenuChildren = GraphQLEditorDomStructure.tree.sidebar.menu.children;
 
-export const Menu = ({ setActivePane, activePane }: MenuProps) => {
+export const Menu = ({ setActivePane, activePane, excludePanes = [] }: MenuProps) => {
   return (
     <div className={HiderPanel}>
-      <div
-        data-cy={MenuChildren.diagram}
-        className={cx(Hider, {
-          active: activePane === 'diagram',
-        })}
-        onClick={() => setActivePane('diagram')}
-        title="Diagram View"
-      >
-        <Icons.Eye size={18} />
-      </div>
-      <div
-        data-cy={MenuChildren.codeDiagram}
-        className={cx(Hider, {
-          active: activePane === 'code-diagram',
-        })}
-        onClick={() => setActivePane('code-diagram')}
-        title="Code and Diagram View"
-      >
-        <Icons.Code size={18} />
-      </div>
-      <div
-        data-cy={MenuChildren.code}
-        className={cx(Hider, {
-          active: activePane === 'code',
-        })}
-        onClick={() => setActivePane('code')}
-        title="Code View"
-      >
-        <Icons.FullScreen size={18} />
-      </div>
-      <div
-        data-cy={MenuChildren.hierarchy}
-        className={cx(Hider, {
-          active: activePane === 'hierarchy',
-        })}
-        onClick={() => setActivePane('hierarchy')}
-        title="Hierarchy View"
-      >
-        <Icons.Layers size={18} />
-      </div>
+      {!excludePanes.includes('diagram') && (
+        <div
+          data-cy={MenuChildren.diagram}
+          className={cx(Hider, {
+            active: activePane === 'diagram',
+          })}
+          onClick={() => setActivePane('diagram')}
+          title="Diagram View"
+        >
+          <Icons.Eye size={18} />
+        </div>
+      )}
+      {!excludePanes.includes('code-diagram') && (
+        <div
+          data-cy={MenuChildren.codeDiagram}
+          className={cx(Hider, {
+            active: activePane === 'code-diagram',
+          })}
+          onClick={() => setActivePane('code-diagram')}
+          title="Code and Diagram View"
+        >
+          <Icons.Code size={18} />
+        </div>
+      )}
+      {!excludePanes.includes('code') && (
+        <div
+          data-cy={MenuChildren.code}
+          className={cx(Hider, {
+            active: activePane === 'code',
+          })}
+          onClick={() => setActivePane('code')}
+          title="Code View"
+        >
+          <Icons.FullScreen size={18} />
+        </div>
+      )}
+      {!excludePanes.includes('hierarchy') && (
+        <div
+          data-cy={MenuChildren.hierarchy}
+          className={cx(Hider, {
+            active: activePane === 'hierarchy',
+          })}
+          onClick={() => setActivePane('hierarchy')}
+          title="Hierarchy View"
+        >
+          <Icons.Layers size={18} />
+        </div>
+      )}
+      {!excludePanes.includes('diff') && (
+        <div
+          data-cy={MenuChildren.hierarchy}
+          className={cx(Hider, {
+            active: activePane === 'diff',
+          })}
+          onClick={() => setActivePane('diff')}
+          title="Diff View"
+        >
+          <Icons.Filter size={18} />
+        </div>
+      )}
     </div>
   );
 };

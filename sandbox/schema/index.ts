@@ -7,3 +7,4 @@ export * from './errorSchema';
 export * from './pizza';
 export * from './userLibrary';
 export * from './finance';
+export * from './versioned';

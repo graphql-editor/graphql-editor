@@ -95,6 +95,11 @@ tree{
             name
             canvas
         }
+        DiffEditor{
+            name
+            oldPane
+            newPane
+        }
     }
     sidebar{
         name
