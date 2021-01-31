@@ -34,10 +34,6 @@ export const DiffEditorPane = (props: DiffEditorPaneProps) => {
         fontFamily,
       });
       monaco.editor.remeasureFonts();
-      m.onDidUpdateDiff(() => {
-        var linesChanged = m.getLineChanges();
-        alert(JSON.stringify(linesChanged));
-      });
       m.setModel({ original, modified });
       setMonacoGql(m);
       setTimeout(() => m.layout(), 100);
