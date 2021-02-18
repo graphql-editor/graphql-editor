@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { style } from 'typestyle';
 import { Colors } from '@/Colors';
-import { DOM } from '@/Graf/DOM';
 
 const Main = style({
   background: `${Colors.grey[10]}44`,
@@ -57,24 +56,18 @@ export const ActiveDescription: React.FC<{
       placeholder="Put your description here"
       onClick={(e) => e.stopPropagation()}
       onMouseMove={(e) => e.stopPropagation()}
-      onMouseDown={(e) => {
-        DOM.panLock = true;
-      }}
       onFocus={(e) => {
         e.currentTarget.style.height = 'auto';
         e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
-        DOM.panLock = true;
       }}
       onBlur={(e) => {
         e.currentTarget.style.height = 'auto';
-        DOM.panLock = false;
         if (DescriptionRef.current) {
           onChange(text);
         }
       }}
       onChange={(e) => {
         setText(e.target.value);
-        DOM.panLock = true;
         e.currentTarget.style.height = 'auto';
         e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
       }}

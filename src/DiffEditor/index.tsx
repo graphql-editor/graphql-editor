@@ -7,11 +7,19 @@ interface DiffEditorProps {
   newSchema: string;
 }
 
-const Main = style({ display: 'flex', width: '100%', $debugName: 'DiffEditor' });
+const Main = style({
+  display: 'flex',
+  width: '100%',
+  $debugName: 'DiffEditor',
+});
 export const DiffEditor = ({ schema, newSchema }: DiffEditorProps) => {
   return (
     <div className={Main}>
-      <DiffEditorPane schema={schema} newSchema={newSchema} size={`100vw-50px`} />
+      <DiffEditorPane
+        schema={schema}
+        newSchema={newSchema}
+        size={`100vw-50px`}
+      />
     </div>
   );
 };

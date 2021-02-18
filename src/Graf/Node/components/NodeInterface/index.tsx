@@ -57,7 +57,11 @@ const NodeInterfaceBlock = style({
   },
 });
 
-export const NodeInterface: React.FC<NodeInterfaceProps> = ({ onDelete, children, isLocked }) => {
+export const NodeInterface: React.FC<NodeInterfaceProps> = ({
+  onDelete,
+  children,
+  isLocked,
+}) => {
   return (
     <div
       className={NodeInterfaceBlock}

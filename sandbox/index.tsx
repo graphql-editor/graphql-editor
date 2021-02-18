@@ -6,7 +6,7 @@ import * as schemas from './schema';
 
 export const App = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
-    code: schemas.versionedUsersLibraryLatest,
+    code: schemas.github,
     libraries: '',
   });
   return (

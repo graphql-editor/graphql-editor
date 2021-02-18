@@ -3,7 +3,10 @@ import { ParserField } from 'graphql-zeus';
 import { GraphQLColors } from '@/editor/theme';
 import { compileTypeOptions } from '@/GraphQL/Compile';
 export const ActiveType: React.FC<
-  Pick<ParserField, 'type'> & { parentTypes?: Record<string, string>; onClick?: () => void }
+  Pick<ParserField, 'type'> & {
+    parentTypes?: Record<string, string>;
+    onClick?: () => void;
+  }
 > = ({ type, parentTypes, onClick }) => {
   let compiledType = compileTypeOptions({ type });
 

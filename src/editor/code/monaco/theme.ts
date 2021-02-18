@@ -22,9 +22,16 @@ const rules: monaco.editor.ITokenThemeRule[] = [
   { token: 'string.md', foreground: docsColor },
   { token: 'string.doc', foreground: docsColor },
   { token: 'string.gql', foreground: mix(Colors.yellow[0], Colors.grey[0]) },
-  { token: 'string.quote.gql', foreground: mix(Colors.yellow[0], Colors.grey[0]) },
+  {
+    token: 'string.quote.gql',
+    foreground: mix(Colors.yellow[0], Colors.grey[0]),
+  },
   { token: 'comment.gql', foreground: Colors.blue[3] },
-  { token: 'exclamation', fontStyle: 'bold', foreground: mix(Colors.yellow[0], Colors.grey[0], 90.0) },
+  {
+    token: 'exclamation',
+    fontStyle: 'bold',
+    foreground: mix(Colors.yellow[0], Colors.grey[0], 90.0),
+  },
 ];
 
 const colors: monaco.editor.IColors = {

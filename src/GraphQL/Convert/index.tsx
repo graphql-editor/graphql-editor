@@ -9,7 +9,9 @@ export const ConvertStringToObject = (value: string) => {
 `;
   const TranslatedString = Parser.parse(computeString);
 
-  const translationNode = TranslatedString.nodes.find((n) => n.name === 'Translate');
+  const translationNode = TranslatedString.nodes.find(
+    (n) => n.name === 'Translate',
+  );
   if (!translationNode || !translationNode.args) {
     return;
   }

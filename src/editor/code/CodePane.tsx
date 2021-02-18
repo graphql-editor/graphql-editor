@@ -5,10 +5,20 @@ import * as Icon from '@/editor/icons';
 import { StatusDot, TitleOfPane } from './Components';
 import * as styles from './style/Code';
 import { StatusDotProps } from './style/Components';
-import { theme, language, conf, settings, mapEditorErrorToMonacoDecoration } from './monaco';
+import {
+  theme,
+  language,
+  conf,
+  settings,
+  mapEditorErrorToMonacoDecoration,
+} from './monaco';
 import { Workers } from '@/worker';
 import { fontFamily } from '@/vars';
-import { KeyboardActions, useErrorsState, useIOState } from '@/state/containers';
+import {
+  KeyboardActions,
+  useErrorsState,
+  useIOState,
+} from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 
 export interface CodePaneOuterProps {
@@ -35,7 +45,9 @@ monaco.editor.defineTheme('graphql-editor', theme);
 export const CodePane = (props: CodePaneProps) => {
   const { schema, libraries = '', onChange, readonly, size, scrollTo } = props;
   const editor = useRef<HTMLDivElement>(null);
-  const [monacoGql, setMonacoGql] = useState<monaco.editor.IStandaloneCodeEditor>();
+  const [monacoGql, setMonacoGql] = useState<
+    monaco.editor.IStandaloneCodeEditor
+  >();
   const [decorationIds, setDecorationIds] = useState<string[]>([]);
   const { codeErrors, setCodeErrors } = useErrorsState();
   const { setActions } = useIOState();
@@ -44,7 +56,14 @@ export const CodePane = (props: CodePaneProps) => {
     if (scrollTo) {
       const items = monacoGql
         ?.getModel()
-        ?.findNextMatch(`${scrollTo}[ |\{]`, { column: 0, lineNumber: 0 }, true, false, null, true);
+        ?.findNextMatch(
+          `${scrollTo}[ |\{]`,
+          { column: 0, lineNumber: 0 },
+          true,
+          false,
+          null,
+          true,
+        );
 
       if (items) {
         const {
@@ -55,7 +74,10 @@ export const CodePane = (props: CodePaneProps) => {
           lineNumber: startLineNumber,
         });
         monacoGql?.setPosition({ column: 0, lineNumber: startLineNumber });
-        monacoGql?.revealPositionInCenter({ column: 0, lineNumber: startLineNumber }, monaco.editor.ScrollType.Smooth);
+        monacoGql?.revealPositionInCenter(
+          { column: 0, lineNumber: startLineNumber },
+          monaco.editor.ScrollType.Smooth,
+        );
         monacoGql?.setSelection({
           startLineNumber,
           endLineNumber,
@@ -103,8 +125,13 @@ export const CodePane = (props: CodePaneProps) => {
   }, [libraries, readonly]);
   useEffect(() => {
     if (monacoGql) {
-      const monacoDecorations = codeErrors.map(mapEditorErrorToMonacoDecoration);
-      const newDecorationIds = monacoGql.deltaDecorations(decorationIds, monacoDecorations);
+      const monacoDecorations = codeErrors.map(
+        mapEditorErrorToMonacoDecoration,
+      );
+      const newDecorationIds = monacoGql.deltaDecorations(
+        decorationIds,
+        monacoDecorations,
+      );
       setDecorationIds(newDecorationIds);
     }
   }, [JSON.stringify(codeErrors), monacoGql]);

@@ -100,6 +100,9 @@ tree{
             oldPane
             newPane
         }
+        Relation{
+            name
+        }
     }
     sidebar{
         name
@@ -110,6 +113,8 @@ tree{
                 codeDiagram
                 code
                 hierarchy
+                diff
+                relation
             }
         }
     }

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { style } from 'typestyle';
 import { Colors } from '@/Colors';
 import { fontFamily } from '@/vars';
-import { DOM } from '@/Graf/DOM';
 const Input = style({
   border: 0,
   background: `${Colors.grey[10]}44`,
@@ -30,8 +29,6 @@ export const EditableDefaultValue: React.FC<EditableDefaultValueProps> = ({
   const [focus, setFocus] = useState(!!autoFocus);
   const checkEdit = () => {
     setFocus(false);
-    DOM.panLock = false;
-    DOM.keyLock = false;
     if (onChange) {
       if (editedValue !== value) {
         onChange(editedValue);
@@ -46,10 +43,6 @@ export const EditableDefaultValue: React.FC<EditableDefaultValueProps> = ({
         disabled={!onChange}
         value={editedValue}
         style={{ width: `${editedValue.length + 3}ch`, ...style }}
-        onFocus={() => {
-          DOM.panLock = true;
-          DOM.keyLock = true;
-        }}
         onBlur={checkEdit}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {

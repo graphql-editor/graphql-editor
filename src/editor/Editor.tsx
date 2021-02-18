@@ -12,9 +12,14 @@ import { Parser, TreeToGraphQL } from 'graphql-zeus';
 import { Workers } from '@/worker';
 import { style } from 'typestyle';
 import { useTreesState } from '@/state/containers/trees';
-import { useErrorsState, useNavigationState, useTheme } from '@/state/containers';
+import {
+  useErrorsState,
+  useNavigationState,
+  useTheme,
+} from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { DiffEditor } from '@/DiffEditor';
+import { Relation } from '@/Relation/Relation';
 
 export const Main = style({
   display: 'flex',
@@ -75,9 +80,16 @@ export const Editor = ({
   setSchema,
   diffSchemas,
 }: EditorProps) => {
-  const [sidebarSize, setSidebarSize] = useState<string | number>(initialSizeOfSidebar);
+  const [sidebarSize, setSidebarSize] = useState<string | number>(
+    initialSizeOfSidebar,
+  );
   const { menuState, setMenuState } = useNavigationState();
-  const { grafErrors, setGrafErrors, setLockGraf, setCodeErrors } = useErrorsState();
+  const {
+    grafErrors,
+    setGrafErrors,
+    setLockGraf,
+    setCodeErrors,
+  } = useErrorsState();
   const { themed } = useTheme();
 
   const {
@@ -141,7 +153,9 @@ export const Editor = ({
         setTree({
           nodes: parsedResult.nodes.filter(
             (n) =>
-              !excludeLibraryNodesFromDiagram.nodes.find((eln) => eln.name === n.name && eln.data.type === n.data.type),
+              !excludeLibraryNodesFromDiagram.nodes.find(
+                (eln) => eln.name === n.name && eln.data.type === n.data.type,
+              ),
           ),
         });
       } else {
@@ -246,7 +260,10 @@ export const Editor = ({
                 libraries={schema.libraries}
                 placeholder={placeholder}
                 readonly={readonly}
-                scrollTo={selectedNode && `${selectedNode.type.name} ${selectedNode.name}`}
+                scrollTo={
+                  selectedNode &&
+                  `${selectedNode.type.name} ${selectedNode.name}`
+                }
               />
             )}
           </div>
@@ -257,9 +274,17 @@ export const Editor = ({
           <Graf />
         </div>
       )}
+      {menuState === 'relation' && (
+        <div className={ErrorOuterContainer}>
+          <Relation />
+        </div>
+      )}
       {menuState === 'hierarchy' && <Hierarchy />}
       {menuState === 'diff' && diffSchemas && (
-        <DiffEditor schema={diffSchemas.oldSchema.code} newSchema={diffSchemas.newSchema.code} />
+        <DiffEditor
+          schema={diffSchemas.oldSchema.code}
+          newSchema={diffSchemas.newSchema.code}
+        />
       )}
     </div>
   );

@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { ParserField, TypeSystemDefinition, Instances, TypeDefinition, TypeExtension } from 'graphql-zeus';
+import {
+  ParserField,
+  TypeSystemDefinition,
+  Instances,
+  TypeDefinition,
+  TypeExtension,
+} from 'graphql-zeus';
 import { ActiveField } from '@/Graf/Node/Field';
 import { ActiveDirective } from '@/Graf/Node/Directive';
 import { ActiveInputValue } from '@/Graf/Node/InputValue';
@@ -10,7 +16,11 @@ import { NestedCSSProperties } from 'typestyle/lib/types';
 import { DOM } from '@/Graf/DOM';
 import { ActiveType } from '@/Graf/Node/Type';
 import { NodeTitle } from '@/Graf/Node/SharedNode';
-import { ActiveDescription, NodeInterface, EditableText } from '@/Graf/Node/components';
+import {
+  ActiveDescription,
+  NodeInterface,
+  EditableText,
+} from '@/Graf/Node/components';
 import { useTreesState } from '@/state/containers/trees';
 import { TopNodeMenu } from '@/Graf/Node/ActiveNode/TopNodeMenu';
 import { ChangeAllRelatedNodes, isExtensionNode } from '@/GraphQL/Resolve';
@@ -148,15 +158,31 @@ const EditableTitle: React.CSSProperties = {
   fontWeight: 'bold',
 };
 
-export const ActiveNode: React.FC<NodeProps> = ({ node, parentNode, ...sharedProps }) => {
+export const ActiveNode: React.FC<NodeProps> = ({
+  node,
+  parentNode,
+  ...sharedProps
+}) => {
   const [openedNode, setOpenedNode] = useState<{
-    type: keyof Pick<ParserField, 'args' | 'directives'> | 'output' | 'directiveOutput';
+    type:
+      | keyof Pick<ParserField, 'args' | 'directives'>
+      | 'output'
+      | 'directiveOutput';
     index: number;
   }>();
 
-  const { libraryTree, tree, setTree, setSelectedNode, selectedNode, parentTypes } = useTreesState();
+  const {
+    libraryTree,
+    tree,
+    setTree,
+    setSelectedNode,
+    selectedNode,
+    parentTypes,
+  } = useTreesState();
 
-  const isLibrary = !!libraryTree.nodes.find((lN) => lN.name === node.name && lN.data.type === node.data.type);
+  const isLibrary = !!libraryTree.nodes.find(
+    (lN) => lN.name === node.name && lN.data.type === node.data.type,
+  );
   const isInputNode = [
     TypeSystemDefinition.FieldDefinition,
     TypeSystemDefinition.DirectiveDefinition,
@@ -170,8 +196,12 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, parentNode, ...sharedPro
 
   const findNodeByField = (field?: ParserField) => {
     return field
-      ? (tree.nodes.find((n) => n.name === field.type.name && !isExtensionNode(n.data.type!)) ||
-          libraryTree.nodes.find((n) => n.name === field.type.name && !isExtensionNode(n.data.type!)))!
+      ? (tree.nodes.find(
+          (n) => n.name === field.type.name && !isExtensionNode(n.data.type!),
+        ) ||
+          libraryTree.nodes.find(
+            (n) => n.name === field.type.name && !isExtensionNode(n.data.type!),
+          ))!
       : undefined;
   };
   useEffect(() => {
@@ -212,7 +242,9 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, parentNode, ...sharedPro
               key={i}
               isLocked={isLocked}
               onDelete={() => {
-                node.interfaces = node.interfaces?.filter((oldInterface) => oldInterface !== i);
+                node.interfaces = node.interfaces?.filter(
+                  (oldInterface) => oldInterface !== i,
+                );
                 setTree({ ...tree });
               }}
             >
@@ -228,7 +260,11 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, parentNode, ...sharedPro
             <ActiveNode
               {...sharedProps}
               readonly={isLocked}
-              parentNode={openedNode.type === 'args' || openedNode.type === 'directives' ? node : undefined}
+              parentNode={
+                openedNode.type === 'args' || openedNode.type === 'directives'
+                  ? node
+                  : undefined
+              }
               node={openedNodeNode}
               onDuplicate={undefined}
               onDelete={() => {
@@ -238,11 +274,13 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, parentNode, ...sharedPro
                 if (openedNode.type === 'args') {
                   node.args!.splice(openedNode.index, 1);
                 }
-                if (openedNode.type === 'output' || openedNode.type === 'directiveOutput') {
+                if (
+                  openedNode.type === 'output' ||
+                  openedNode.type === 'directiveOutput'
+                ) {
                   sharedProps.onDelete(openedNodeNode);
                   return;
                 }
-                DOM.panLock = false;
                 setTree({ ...tree });
               }}
             />
@@ -257,16 +295,26 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, parentNode, ...sharedPro
       >
         <div className={`NodeTitle`}>
           <div className={`NodeName`}>
-            {parentNode && <EditableText style={EditableTitle} value={`${parentNode.name}.`} />}
-            {isLocked && <EditableText style={EditableTitle} value={node.name} />}
+            {parentNode && (
+              <EditableText
+                style={EditableTitle}
+                value={`${parentNode.name}.`}
+              />
+            )}
+            {isLocked && (
+              <EditableText style={EditableTitle} value={node.name} />
+            )}
             {!isLocked && (
               <EditableText
                 style={EditableTitle}
                 value={node.name}
-                exclude={Object.keys(parentTypes).filter((pt) => pt !== node.name)}
+                exclude={Object.keys(parentTypes).filter(
+                  (pt) => pt !== node.name,
+                )}
                 onChange={(v) => {
                   const isError =
-                    tree.nodes.map((n) => n.name).includes(v) || libraryTree.nodes.map((n) => n.name).includes(v);
+                    tree.nodes.map((n) => n.name).includes(v) ||
+                    libraryTree.nodes.map((n) => n.name).includes(v);
                   if (isError) {
                     return;
                   }
@@ -304,7 +352,8 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, parentNode, ...sharedPro
         <div className={NodeFields}>
           {node.directives?.map((d, i) => {
             const outputDisabled = !(
-              tree.nodes.find((n) => n.name === d.type.name) || libraryTree.nodes.find((n) => n.name === d.type.name)
+              tree.nodes.find((n) => n.name === d.type.name) ||
+              libraryTree.nodes.find((n) => n.name === d.type.name)
             );
             return (
               <ActiveDirective
@@ -315,7 +364,9 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, parentNode, ...sharedPro
                 key={d.name}
                 onInputClick={() => {
                   setOpenedNode((oN) =>
-                    oN?.index === i && oN.type === 'directives' ? undefined : { type: 'directives', index: i },
+                    oN?.index === i && oN.type === 'directives'
+                      ? undefined
+                      : { type: 'directives', index: i },
                   );
                 }}
                 onOutputClick={() => {
@@ -326,13 +377,17 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, parentNode, ...sharedPro
                   );
                 }}
                 node={d}
-                inputOpen={openedNode?.type === 'directives' && openedNode?.index === i}
+                inputOpen={
+                  openedNode?.type === 'directives' && openedNode?.index === i
+                }
                 outputDisabled={outputDisabled}
-                outputOpen={openedNode?.type === 'directiveOutput' && openedNode?.index === i}
+                outputOpen={
+                  openedNode?.type === 'directiveOutput' &&
+                  openedNode?.index === i
+                }
                 onDelete={() => {
                   setOpenedNode(undefined);
                   node.directives!.splice(i, 1);
-                  DOM.panLock = false;
                   setTree({ ...tree });
                 }}
               />
@@ -340,9 +395,14 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, parentNode, ...sharedPro
           })}
           {node.args?.map((a, i) => {
             const outputDisabled = !(
-              tree.nodes.find((n) => n.name === a.type.name) || libraryTree.nodes.find((n) => n.name === a.type.name)
+              tree.nodes.find((n) => n.name === a.type.name) ||
+              libraryTree.nodes.find((n) => n.name === a.type.name)
             );
-            const Component = isArgumentNode ? ActiveArgument : isInputNode ? ActiveInputValue : ActiveField;
+            const Component = isArgumentNode
+              ? ActiveArgument
+              : isInputNode
+              ? ActiveInputValue
+              : ActiveField;
             return (
               <Component
                 indexInParentNode={i}
@@ -352,21 +412,28 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, parentNode, ...sharedPro
                 key={a.name}
                 onInputClick={() => {
                   setOpenedNode((oN) =>
-                    oN?.index === i && oN.type === 'args' ? undefined : { type: 'args', index: i },
+                    oN?.index === i && oN.type === 'args'
+                      ? undefined
+                      : { type: 'args', index: i },
                   );
                 }}
                 onOutputClick={() => {
                   setOpenedNode((oN) =>
-                    oN?.index === i && oN.type === 'output' ? undefined : { type: 'output', index: i },
+                    oN?.index === i && oN.type === 'output'
+                      ? undefined
+                      : { type: 'output', index: i },
                   );
                 }}
                 node={a}
-                inputOpen={openedNode?.type === 'args' && openedNode?.index === i}
+                inputOpen={
+                  openedNode?.type === 'args' && openedNode?.index === i
+                }
                 outputDisabled={outputDisabled}
-                outputOpen={openedNode?.type === 'output' && openedNode?.index === i}
+                outputOpen={
+                  openedNode?.type === 'output' && openedNode?.index === i
+                }
                 onDelete={() => {
                   node.args!.splice(i, 1);
-                  DOM.panLock = false;
                   setTree({ ...tree });
                 }}
               />

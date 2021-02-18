@@ -2,7 +2,14 @@ import React, { useState } from 'react';
 import { ValueDefinition } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { ConvertValueToEditableString } from '@/GraphQL/Convert';
-import { DetailMenuItem, FieldPort, Menu, MenuScrollingArea, NodeFieldContainer, Title } from '@/Graf/Node/components';
+import {
+  DetailMenuItem,
+  FieldPort,
+  Menu,
+  MenuScrollingArea,
+  NodeFieldContainer,
+  Title,
+} from '@/Graf/Node/components';
 import { Colors } from '@/Colors';
 import { FieldProps } from '@/Graf/Node/models';
 
@@ -37,7 +44,11 @@ export const ActiveDirective: React.FC<FieldProps> = ({
   const [detailsMenuOpen, setDetailsMenuOpen] = useState(false);
   const isEnumValue = node.data.type === ValueDefinition.EnumValueDefinition;
   return (
-    <NodeFieldContainer className={`${DirectiveBackground} ${inputOpen || outputOpen ? 'Active' : ''}`}>
+    <NodeFieldContainer
+      className={`${DirectiveBackground} ${
+        inputOpen || outputOpen ? 'Active' : ''
+      }`}
+    >
       {!inputDisabled && !isLocked && !isEnumValue ? (
         <FieldPort
           onClick={onInputClick}
@@ -62,7 +73,10 @@ export const ActiveDirective: React.FC<FieldProps> = ({
         >
           {detailsMenuOpen && (
             <div className={OptionsMenuContainer}>
-              <Menu menuName={'Node options'} hideMenu={() => setDetailsMenuOpen(false)}>
+              <Menu
+                menuName={'Node options'}
+                hideMenu={() => setDetailsMenuOpen(false)}
+              >
                 <MenuScrollingArea>
                   <DetailMenuItem onClick={onDelete}>Delete</DetailMenuItem>
                 </MenuScrollingArea>
@@ -81,7 +95,9 @@ export const ActiveDirective: React.FC<FieldProps> = ({
           }}
         />
       )}
-      {outputDisabled && isLocked && <div className={'NodeFieldPortPlaceholder'} />}
+      {outputDisabled && isLocked && (
+        <div className={'NodeFieldPortPlaceholder'} />
+      )}
     </NodeFieldContainer>
   );
 };

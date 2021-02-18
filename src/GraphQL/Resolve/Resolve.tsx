@@ -11,7 +11,10 @@ import {
 } from 'graphql-zeus';
 import { BuiltInScalars } from '@/GraphQL/Resolve/BuiltInNodes';
 
-export const ResolveCreateField = (field: ParserField, actualFields: ParserField[]): ParserField[] | undefined => {
+export const ResolveCreateField = (
+  field: ParserField,
+  actualFields: ParserField[],
+): ParserField[] | undefined => {
   if (
     field.data.type === TypeDefinition.ObjectTypeDefinition ||
     field.data.type === TypeDefinition.InterfaceTypeDefinition ||
@@ -59,7 +62,10 @@ export const ResolveCreateField = (field: ParserField, actualFields: ParserField
   if (field.data.type === TypeDefinition.EnumTypeDefinition) {
     return [];
   }
-  if (field.data.type === TypeDefinition.UnionTypeDefinition || field.data.type === TypeExtension.UnionTypeExtension) {
+  if (
+    field.data.type === TypeDefinition.UnionTypeDefinition ||
+    field.data.type === TypeExtension.UnionTypeExtension
+  ) {
     return actualFields
       .filter((f) => f.data.type === TypeDefinition.ObjectTypeDefinition)
       .map((n) => ({
@@ -100,7 +106,9 @@ export const ResolveImplementInterface = (
     field.data.type === TypeDefinition.ObjectTypeDefinition ||
     field.data.type === TypeDefinition.InterfaceTypeDefinition
   ) {
-    return actualFields.filter((f) => f.data.type === TypeDefinition.InterfaceTypeDefinition);
+    return actualFields.filter(
+      (f) => f.data.type === TypeDefinition.InterfaceTypeDefinition,
+    );
   }
   return [];
 };
@@ -138,11 +146,19 @@ const getAcceptedDirectives = (f: ParserField): Directive[] => {
   }
   return [];
 };
-export const ResolveDirectives = (field: ParserField, actualFields: ParserField[]): ParserField[] => {
+export const ResolveDirectives = (
+  field: ParserField,
+  actualFields: ParserField[],
+): ParserField[] => {
   const acceptedDirectives = getAcceptedDirectives(field);
   return actualFields
     .filter((f) => f.data.type === TypeSystemDefinition.DirectiveDefinition)
-    .filter((f) => !!f.type.directiveOptions?.find((dO) => acceptedDirectives.includes(dO)));
+    .filter(
+      (f) =>
+        !!f.type.directiveOptions?.find((dO) =>
+          acceptedDirectives.includes(dO),
+        ),
+    );
 };
 
 export const isScalarArgument = (field: ParserField) => {

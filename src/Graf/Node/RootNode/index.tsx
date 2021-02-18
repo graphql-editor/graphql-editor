@@ -1,5 +1,10 @@
 import React, { useRef, useState } from 'react';
-import { ParserField, TypeDefinitionDisplayMap, TypeSystemDefinition, Directive } from 'graphql-zeus';
+import {
+  ParserField,
+  TypeDefinitionDisplayMap,
+  TypeSystemDefinition,
+  Directive,
+} from 'graphql-zeus';
 import { style } from 'typestyle';
 import { PaintNode } from '@/Graf/Node/PaintNode';
 import { NewNode } from '@/Graf/Node/NewNode';
@@ -10,6 +15,7 @@ import { MenuSearch } from '@/Graf/Node/components';
 export interface RootNodeProps {
   node: ParserField;
   libraryNode?: ParserField;
+  readonly?: boolean;
 }
 const NodeCaption = style({
   flexBasis: '100%',
@@ -37,13 +43,17 @@ const NodeContainer = style({
   padding: 10,
   display: 'flex',
   flexWrap: 'wrap',
+  alignItems: 'flex-start',
   width: '100%',
-  height: '100%',
 });
 
-export const RootNode: React.FC<RootNodeProps> = ({ node, libraryNode }) => {
+export const RootNode: React.FC<RootNodeProps> = ({
+  node,
+  libraryNode,
+  readonly,
+}) => {
   const thisNode = useRef<HTMLDivElement>(null);
-  const { tree, setTree, readonly } = useTreesState();
+  const { tree, setTree } = useTreesState();
 
   const [filterNodes, setFilterNodes] = useState('');
 
@@ -81,7 +91,9 @@ export const RootNode: React.FC<RootNodeProps> = ({ node, libraryNode }) => {
                 name,
                 args: [],
                 type: {
-                  name: (TypeDefinitionDisplayMap as any)[node.data.type as any],
+                  name: (TypeDefinitionDisplayMap as any)[
+                    node.data.type as any
+                  ],
                 },
               });
             }
@@ -94,7 +106,9 @@ export const RootNode: React.FC<RootNodeProps> = ({ node, libraryNode }) => {
           <PaintNode
             key={a.name}
             node={a}
-            isMatchedToSearch={a.name.toLowerCase().includes(filterNodes.toLowerCase())}
+            isMatchedToSearch={a.name
+              .toLowerCase()
+              .includes(filterNodes.toLowerCase())}
           />
         );
       })}
@@ -104,7 +118,9 @@ export const RootNode: React.FC<RootNodeProps> = ({ node, libraryNode }) => {
             isLibrary={true}
             key={a.name}
             node={a}
-            isMatchedToSearch={a.name.toLowerCase().includes(filterNodes.toLowerCase())}
+            isMatchedToSearch={a.name
+              .toLowerCase()
+              .includes(filterNodes.toLowerCase())}
           />
         );
       })}

@@ -1,7 +1,9 @@
 import { Colors } from '@/Colors';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 
-type ThemeType<T extends keyof NestedCSSProperties> = Required<Pick<NestedCSSProperties, T>> &
+type ThemeType<T extends keyof NestedCSSProperties> = Required<
+  Pick<NestedCSSProperties, T>
+> &
   Omit<NestedCSSProperties, T>;
 
 export interface ThemeDefinition {

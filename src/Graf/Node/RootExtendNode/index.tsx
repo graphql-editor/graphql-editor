@@ -68,7 +68,10 @@ const PlusButton = style({
   borderRadius: 10,
 });
 
-export const RootExtendNode: React.FC<RootExtendNodeProps> = ({ node, libraryNode }) => {
+export const RootExtendNode: React.FC<RootExtendNodeProps> = ({
+  node,
+  libraryNode,
+}) => {
   const thisNode = useRef<HTMLDivElement>(null);
 
   const [filterNodes, setFilterNodes] = useState('');
@@ -110,7 +113,9 @@ export const RootExtendNode: React.FC<RootExtendNodeProps> = ({ node, libraryNod
       {node.args?.map((a, i) => {
         return (
           <PaintNode
-            isMatchedToSearch={a.name.toLowerCase().includes(filterNodes.toLowerCase())}
+            isMatchedToSearch={a.name
+              .toLowerCase()
+              .includes(filterNodes.toLowerCase())}
             key={a.name}
             node={a}
           />
@@ -119,7 +124,9 @@ export const RootExtendNode: React.FC<RootExtendNodeProps> = ({ node, libraryNod
       {libraryNode?.args?.map((a) => {
         return (
           <PaintNode
-            isMatchedToSearch={a.name.toLowerCase().includes(filterNodes.toLowerCase())}
+            isMatchedToSearch={a.name
+              .toLowerCase()
+              .includes(filterNodes.toLowerCase())}
             isLibrary={true}
             key={a.name}
             node={a}

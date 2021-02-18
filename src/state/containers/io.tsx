@@ -8,13 +8,14 @@ export enum KeyboardActions {
 }
 
 const useIOStateContainer = createContainer(() => {
-  const [actions, setActions] = useState<Partial<Record<KeyboardActions, Function>>>({});
+  const [actions, setActions] = useState<
+    Partial<Record<KeyboardActions, Function>>
+  >({});
   const on = (action: KeyboardActions) => {
     actions[action]?.();
   };
   useEffect(() => {
     const handleKeyboard = (event: KeyboardEvent) => {
-      //   if (DOM.panLock) return;
       const ctrl = event.ctrlKey || event.metaKey;
       if (event.key === 'm') {
       }

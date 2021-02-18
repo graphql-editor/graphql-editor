@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { style } from 'typestyle';
 import { Colors } from '@/Colors';
 import { fontFamily } from '@/vars';
-import { DOM } from '@/Graf/DOM';
 import { FIELD_NAME_SIZE } from '@/Graf/constants';
 import cx from 'classnames';
 const Input = style({
@@ -29,8 +28,6 @@ export const EditableText: React.FC<{
   const [isError, setIsError] = useState(false);
   const checkEdit = () => {
     setFocus(false);
-    DOM.panLock = false;
-    DOM.keyLock = false;
     if (isError) {
       setEditedValue(value);
       return;
@@ -60,10 +57,6 @@ export const EditableText: React.FC<{
           value={editedValue}
           pattern="[_A-Za-z][_0-9A-Za-z]*"
           style={{ width: `${editedValue.length}ch`, ...style }}
-          onFocus={() => {
-            DOM.panLock = true;
-            DOM.keyLock = true;
-          }}
           title={isError ? 'Name already exists' : 'rename'}
           onBlur={checkEdit}
           onKeyDown={(e) => {

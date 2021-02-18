@@ -26,7 +26,10 @@ const Main = style({
   },
 });
 
-export const DetailMenuItem: React.FC<MenuItemProps> = ({ children, onClick }) => {
+export const DetailMenuItem: React.FC<MenuItemProps> = ({
+  children,
+  onClick,
+}) => {
   return (
     <div className={Main} onClick={onClick}>
       <span className={`MenuItemText`}>{children}</span>

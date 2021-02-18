@@ -99,7 +99,8 @@ export const NewNode: React.FC<NewNodeProps> = ({ node, onCreate }) => {
   const [isCreating, setIsCreating] = useState(false);
   const { libraryTree, tree, setSelectedNode } = useTreesState();
   const isError =
-    tree.nodes.map((n) => n.name).includes(newName) || libraryTree.nodes.map((n) => n.name).includes(newName);
+    tree.nodes.map((n) => n.name).includes(newName) ||
+    libraryTree.nodes.map((n) => n.name).includes(newName);
   const submit = () => {
     if (newName && !isError) {
       onCreate(newName);
@@ -123,7 +124,9 @@ export const NewNode: React.FC<NewNodeProps> = ({ node, onCreate }) => {
               className={'NameErrorMessage'}
             >{`Cannot create ${node.name} with name:${newName} type with that name already exists. Try different name`}</div>
           )}
-          {!isCreating && <div className={`NodeName`}>{`New ${node.name}`}</div>}
+          {!isCreating && (
+            <div className={`NodeName`}>{`New ${node.name}`}</div>
+          )}
           {isCreating && (
             <input
               className={`NodeCreate ${isError ? 'NameError' : ''}`}

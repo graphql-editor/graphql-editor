@@ -47,7 +47,10 @@ const moveErrorsByLibraryPadding = (libraries: string) => {
   };
 };
 
-export const catchSchemaErrors = (schema: string, libraries: string = ''): EditorError[] => {
+export const catchSchemaErrors = (
+  schema: string,
+  libraries: string = '',
+): EditorError[] => {
   const s = libraries + '\n' + schema;
   const paddingFunction = moveErrorsByLibraryPadding(libraries);
   try {

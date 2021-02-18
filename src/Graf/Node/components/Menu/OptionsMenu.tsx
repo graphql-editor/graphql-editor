@@ -4,7 +4,11 @@ import { Menu } from './Menu';
 import { Colors } from '@/Colors';
 import { DetailMenuItem } from './DetailMenuItem';
 
-interface OptionsMenuProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+interface OptionsMenuProps
+  extends React.DetailedHTMLProps<
+    React.HTMLAttributes<HTMLDivElement>,
+    HTMLDivElement
+  > {
   options: Record<string, boolean>;
   onCheck: (name: string) => void;
   hideMenu: () => void;
@@ -64,7 +68,9 @@ export const OptionsMenu: React.FC<OptionsMenuProps> = ({
           <DetailMenuItem key={n} onClick={() => onCheck(n)}>
             <div className={`${Main} ${options[n] ? 'Selected' : ''}`}>
               <span>{n}</span>
-              <div className={`${Circle} Circle ${options[n] ? 'Selected' : ''}`}></div>
+              <div
+                className={`${Circle} Circle ${options[n] ? 'Selected' : ''}`}
+              ></div>
             </div>
           </DetailMenuItem>
         );

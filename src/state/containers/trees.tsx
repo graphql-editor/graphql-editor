@@ -30,8 +30,16 @@ const useTreesStateContainer = createContainer(() => {
 
   const relatedToSelected = useCallback(() => {
     const node =
-      tree.nodes.find((n) => n.name === selectedNode?.name && n.data.type === selectedNode.data.type) ||
-      libraryTree.nodes.find((n) => n.name === selectedNode?.name && n.data.type === selectedNode.data.type);
+      tree.nodes.find(
+        (n) =>
+          n.name === selectedNode?.name &&
+          n.data.type === selectedNode.data.type,
+      ) ||
+      libraryTree.nodes.find(
+        (n) =>
+          n.name === selectedNode?.name &&
+          n.data.type === selectedNode.data.type,
+      );
     if (node) {
       return node.args?.map((a) => a.type.name);
     }
@@ -39,11 +47,13 @@ const useTreesStateContainer = createContainer(() => {
 
   const parentTypes = {
     ...tree.nodes.reduce(
-      (obj: Record<string, string>, item: ParserField) => Object.assign(obj, { [item.name]: item.type.name }),
+      (obj: Record<string, string>, item: ParserField) =>
+        Object.assign(obj, { [item.name]: item.type.name }),
       {},
     ),
     ...libraryTree.nodes.reduce(
-      (obj: Record<string, string>, item: ParserField) => Object.assign(obj, { [item.name]: item.type.name }),
+      (obj: Record<string, string>, item: ParserField) =>
+        Object.assign(obj, { [item.name]: item.type.name }),
       {},
     ),
   };

@@ -16,7 +16,10 @@ interface Layout {
   boxes: Box[];
 }
 
-export function packBoxes(sizes: IndexedDimensions[], sort?: boolean): IndexedBoxes[] {
+export function packBoxes(
+  sizes: IndexedDimensions[],
+  sort?: boolean,
+): IndexedBoxes[] {
   const layout: Layout = { size: [0, 0], boxes: [] };
   const order = new Array(sizes.length);
   for (let i = 0; i < sizes.length; i++) {
@@ -25,7 +28,10 @@ export function packBoxes(sizes: IndexedDimensions[], sort?: boolean): IndexedBo
 
   if (sort) {
     order.sort(function (a, b) {
-      return sizes[b].dimensions[0] * sizes[b].dimensions[1] - sizes[a].dimensions[0] * sizes[a].dimensions[1];
+      return (
+        sizes[b].dimensions[0] * sizes[b].dimensions[1] -
+        sizes[a].dimensions[0] * sizes[a].dimensions[1]
+      );
     });
   }
 

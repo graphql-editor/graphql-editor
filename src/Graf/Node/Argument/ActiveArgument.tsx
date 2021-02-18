@@ -13,7 +13,10 @@ import {
   Title,
 } from '@/Graf/Node/components';
 import { isScalarArgument } from '@/GraphQL/Resolve';
-import { ConvertStringToObject, ConvertValueToEditableString } from '@/GraphQL/Convert';
+import {
+  ConvertStringToObject,
+  ConvertValueToEditableString,
+} from '@/GraphQL/Convert';
 import { useTreesState } from '@/state/containers/trees';
 import { FieldProps } from '@/Graf/Node/models';
 const Name = style({ fontSize: 10, marginRight: 4, overflow: 'hidden' });
@@ -71,7 +74,11 @@ const resolveValueFromNode = (node: ParserField, parentNode: ParserField) => {
         return ConvertValueToEditableString(a);
       })
       .join(',') || '';
-  if (node.args && node.args.length > 0 && node.type.options?.includes(Options.array)) {
+  if (
+    node.args &&
+    node.args.length > 0 &&
+    node.type.options?.includes(Options.array)
+  ) {
     return `[ ${inside} ]`;
   }
   return inside;
@@ -95,7 +102,9 @@ export const ActiveArgument: React.FC<FieldProps> = ({
   const [detailsMenuOpen, setDetailsMenuOpen] = useState(false);
   return (
     <NodeFieldContainer
-      className={`NodeType-${parentNodeTypeName} ${inputOpen || outputOpen || optionsMenuOpen ? 'Active' : ''}`}
+      className={`NodeType-${parentNodeTypeName} ${
+        inputOpen || outputOpen || optionsMenuOpen ? 'Active' : ''
+      }`}
     >
       {!inputDisabled && !isLocked ? (
         <FieldPort
@@ -144,7 +153,10 @@ export const ActiveArgument: React.FC<FieldProps> = ({
         >
           {detailsMenuOpen && (
             <div className={OptionsMenuContainer}>
-              <Menu menuName={'Node options'} hideMenu={() => setDetailsMenuOpen(false)}>
+              <Menu
+                menuName={'Node options'}
+                hideMenu={() => setDetailsMenuOpen(false)}
+              >
                 <MenuScrollingArea>
                   <DetailMenuItem onClick={onDelete}>Delete</DetailMenuItem>
                 </MenuScrollingArea>
@@ -162,7 +174,10 @@ export const ActiveArgument: React.FC<FieldProps> = ({
         >
           {optionsMenuOpen && (
             <div className={OptionsMenuContainer}>
-              <NodeTypeOptionsMenu hideMenu={() => setOptionsMenuOpen(false)} node={node} />
+              <NodeTypeOptionsMenu
+                hideMenu={() => setOptionsMenuOpen(false)}
+                node={node}
+              />
             </div>
           )}
         </FieldPort>
@@ -177,7 +192,9 @@ export const ActiveArgument: React.FC<FieldProps> = ({
           }}
         />
       )}
-      {outputDisabled && isLocked && <div className={'NodeFieldPortPlaceholder'} />}
+      {outputDisabled && isLocked && (
+        <div className={'NodeFieldPortPlaceholder'} />
+      )}
     </NodeFieldContainer>
   );
 };

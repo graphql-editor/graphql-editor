@@ -1,7 +1,17 @@
 import React from 'react';
-export const Monkey: React.FC<React.SVGProps<SVGSVGElement>> = ({ fill = '#fff', ...props }) => {
+export const Monkey: React.FC<React.SVGProps<SVGSVGElement>> = ({
+  fill = '#fff',
+  ...props
+}) => {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 6 7" {...props}>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="14"
+      height="14"
+      fill="none"
+      viewBox="0 0 6 7"
+      {...props}
+    >
       <g clipPath="url(#clip0)">
         <path
           fill={fill}

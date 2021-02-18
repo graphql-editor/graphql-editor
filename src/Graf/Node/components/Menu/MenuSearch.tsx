@@ -58,7 +58,13 @@ const Wrapper = style({
   paddingBottom: 6,
 });
 
-export const MenuSearch: React.FC<MenuSearchProps> = ({ value, onChange, onClear, onSubmit, autoFocus = true }) => {
+export const MenuSearch: React.FC<MenuSearchProps> = ({
+  value,
+  onChange,
+  onClear,
+  onSubmit,
+  autoFocus = true,
+}) => {
   const ref = useRef<HTMLInputElement>(null);
   return (
     <div className={Wrapper}>

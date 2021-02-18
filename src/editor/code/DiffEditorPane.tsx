@@ -23,13 +23,18 @@ monaco.editor.defineTheme('graphql-editor', theme);
 export const DiffEditorPane = (props: DiffEditorPaneProps) => {
   const { schema, newSchema, size } = props;
   const editor = useRef<HTMLDivElement>(null);
-  const [monacoGql, setMonacoGql] = useState<monaco.editor.IStandaloneDiffEditor>();
+  const [monacoGql, setMonacoGql] = useState<
+    monaco.editor.IStandaloneDiffEditor
+  >();
   useEffect(() => {
     if (editor.current) {
       const original = monaco.editor.createModel(schema, 'graphqle');
       const modified = monaco.editor.createModel(newSchema, 'graphqle');
       monacoGql?.dispose();
-      const m = monaco.editor.createDiffEditor(editor.current, diffEditorSettings());
+      const m = monaco.editor.createDiffEditor(
+        editor.current,
+        diffEditorSettings(),
+      );
       m.updateOptions({
         fontFamily,
       });
@@ -53,7 +58,10 @@ export const DiffEditorPane = (props: DiffEditorPaneProps) => {
 
   return (
     <>
-      <div className={cx(styles.CodeContainer)} data-cy={GraphQLEditorDomStructure.tree.elements.DiffEditor.name}>
+      <div
+        className={cx(styles.CodeContainer)}
+        data-cy={GraphQLEditorDomStructure.tree.elements.DiffEditor.name}
+      >
         <div ref={editor} className={styles.Editor} />
       </div>
     </>

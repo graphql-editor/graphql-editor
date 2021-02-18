@@ -38,7 +38,9 @@ const Main = style({
 export const MenuItem: React.FC<MenuItemProps> = ({ node, onClick }) => {
   return (
     <div className={Main} onClick={onClick}>
-      <span className={`MenuItemText MenuItemText-${node.type.name}`}>{node.name}</span>
+      <span className={`MenuItemText MenuItemText-${node.type.name}`}>
+        {node.name}
+      </span>
     </div>
   );
 };

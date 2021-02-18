@@ -86,7 +86,11 @@ export const FieldPort: React.FC<FieldPortProps> = ({
   const OpenComponent = Icons[icons.open];
   const ClosedComponent = Icons[icons.closed];
   return (
-    <div title={info?.message} className={`${Main} NodeFieldPort`} onClick={onClick}>
+    <div
+      title={info?.message}
+      className={`${Main} NodeFieldPort`}
+      onClick={onClick}
+    >
       {open ? (
         <OpenComponent className={'OpenerIcon'} height={10} width={10} />
       ) : (

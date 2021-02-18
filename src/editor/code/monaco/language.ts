@@ -28,12 +28,26 @@ export const conf: monaco.languages.LanguageConfiguration = {
   },
 };
 
-export const language = <monaco.languages.IMonarchLanguage | monaco.Thenable<monaco.languages.IMonarchLanguage>>{
+export const language = <
+  | monaco.languages.IMonarchLanguage
+  | monaco.Thenable<monaco.languages.IMonarchLanguage>
+>{
   // Set defaultToken to invalid to see what you do not tokenize yet
   defaultToken: 'invalid',
   tokenPostfix: '.gql',
 
-  keywords: ['null', 'true', 'false', 'query', 'mutation', 'subscription', 'schema', 'implements', 'fragment', 'on'],
+  keywords: [
+    'null',
+    'true',
+    'false',
+    'query',
+    'mutation',
+    'subscription',
+    'schema',
+    'implements',
+    'fragment',
+    'on',
+  ],
   inputs: ['input'],
   types: ['type'],
   interfaces: ['interface'],
@@ -135,14 +149,19 @@ export const language = <monaco.languages.IMonarchLanguage | monaco.Thenable<mon
       // delimiter: after number because of .\d floats
       [/[;,.]/, 'delimiter'],
 
-      [`"""`, { token: 'string.doc', next: '@mlstring', nextEmbedded: 'markdown' }],
+      [
+        `"""`,
+        { token: 'string.doc', next: '@mlstring', nextEmbedded: 'markdown' },
+      ],
 
       // strings
       [/"([^"\\]|\\.)*$/, 'string.invalid'], // non-teminated string
       [/"/, { token: 'string.quote', bracket: '@open', next: '@string' }],
     ],
 
-    mlstring: [[`"""`, { token: 'string.doc', next: '@pop', nextEmbedded: '@pop' }]],
+    mlstring: [
+      [`"""`, { token: 'string.doc', next: '@pop', nextEmbedded: '@pop' }],
+    ],
 
     string: [
       [/[^\\"]+/, 'string'],

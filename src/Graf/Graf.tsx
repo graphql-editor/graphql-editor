@@ -1,11 +1,16 @@
 import React, { useRef, useEffect } from 'react';
 import { keyframes, style } from 'typestyle';
 import { fontFamily } from '@/vars';
-import { DOM } from './DOM';
 import { PaintNodes } from './PaintNodes';
 import { ActiveNode } from '@/Graf/Node';
 import { useTreesState } from '@/state/containers/trees';
-import { KeyboardActions, useErrorsState, useIOState, useNavigationState, useTheme } from '@/state/containers';
+import {
+  KeyboardActions,
+  useErrorsState,
+  useIOState,
+  useNavigationState,
+  useTheme,
+} from '@/state/containers';
 import { Colors } from '@/Colors';
 
 const unfold = keyframes({
@@ -141,8 +146,16 @@ export const Graf: React.FC<GrafProps> = () => {
   }, [snapshots]);
 
   const node = selectedNode
-    ? tree.nodes.find((n) => n.name === selectedNode.name && n.data.type === selectedNode.data.type) ||
-      libraryTree.nodes.find((n) => n.name === selectedNode.name && n.data.type === selectedNode.data.type)
+    ? tree.nodes.find(
+        (n) =>
+          n.name === selectedNode.name &&
+          n.data.type === selectedNode.data.type,
+      ) ||
+      libraryTree.nodes.find(
+        (n) =>
+          n.name === selectedNode.name &&
+          n.data.type === selectedNode.data.type,
+      )
     : undefined;
   return (
     <>
@@ -151,12 +164,13 @@ export const Graf: React.FC<GrafProps> = () => {
           <ActiveNode
             readonly={readonly}
             onDelete={(nodeToDelete) => {
-              const deletedNode = tree.nodes.findIndex((n) => n.name === nodeToDelete!.name)!;
+              const deletedNode = tree.nodes.findIndex(
+                (n) => n.name === nodeToDelete!.name,
+              )!;
               const allNodes = [...tree.nodes];
               allNodes.splice(deletedNode, 1);
               setSelectedNode(undefined);
               setTree({ nodes: allNodes });
-              DOM.panLock = false;
             }}
             onDuplicate={(nodeToDuplicate) => {
               const allNodes = [...tree.nodes];
@@ -178,8 +192,6 @@ export const Graf: React.FC<GrafProps> = () => {
         ref={wrapperRef}
         className={`${Wrapper} ${node ? AnimatedWrapper : ''}`}
         onClick={() => {
-          if (DOM.lock) return;
-          DOM.scrollLock = false;
           setSelectedNode(undefined);
         }}
       >
@@ -197,7 +209,11 @@ export const Graf: React.FC<GrafProps> = () => {
           </div>
         )}
 
-        {grafErrors && <div className={themed('ErrorContainer')(ErrorContainer)}>{grafErrors}</div>}
+        {grafErrors && (
+          <div className={themed('ErrorContainer')(ErrorContainer)}>
+            {grafErrors}
+          </div>
+        )}
       </div>
     </>
   );

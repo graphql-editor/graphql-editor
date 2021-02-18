@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
-import { Menu, MenuScrollingArea, MenuSearch, MenuItem } from '@/Graf/Node/components';
-import { DOM } from '@/Graf/DOM';
+import {
+  Menu,
+  MenuScrollingArea,
+  MenuSearch,
+  MenuItem,
+} from '@/Graf/Node/components';
 import { ResolveDirectives } from '@/GraphQL/Resolve';
 import { ParserField, Instances } from 'graphql-zeus';
 import { useTreesState } from '@/state/containers/trees';
@@ -10,12 +14,20 @@ interface NodeAddDirectiveMenuProps {
   hideMenu: () => void;
 }
 
-export const NodeAddDirectiveMenu: React.FC<NodeAddDirectiveMenuProps> = ({ node, hideMenu }) => {
+export const NodeAddDirectiveMenu: React.FC<NodeAddDirectiveMenuProps> = ({
+  node,
+  hideMenu,
+}) => {
   const { tree, libraryTree, setTree } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
-  const filteredNodes = ResolveDirectives(node, tree.nodes.concat(libraryTree.nodes))
+  const filteredNodes = ResolveDirectives(
+    node,
+    tree.nodes.concat(libraryTree.nodes),
+  )
     .sort((a, b) => (a.name > b.name ? 1 : -1))
-    .filter((a) => a.name.toLowerCase().includes(menuSearchValue.toLowerCase()));
+    .filter((a) =>
+      a.name.toLowerCase().includes(menuSearchValue.toLowerCase()),
+    );
   const onNodeClick = (f: ParserField) => {
     if (!node.directives) {
       node.directives = [];
@@ -32,18 +44,11 @@ export const NodeAddDirectiveMenu: React.FC<NodeAddDirectiveMenuProps> = ({ node
       },
     });
     hideMenu();
-    DOM.scrollLock = false;
     setTree({ ...tree });
   };
   return (
     <Menu
       menuName={'Add directive'}
-      onMouseEnter={() => {
-        DOM.scrollLock = true;
-      }}
-      onMouseLeave={() => {
-        DOM.scrollLock = false;
-      }}
       onScroll={(e) => e.stopPropagation()}
       hideMenu={hideMenu}
     >

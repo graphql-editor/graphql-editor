@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
-import { TypeDefinition, ValueDefinition, ParserField, TypeSystemDefinition, Instances } from 'graphql-zeus';
-import { MenuScrollingArea, DetailMenuItem, Menu } from '@/Graf/Node/components';
+import {
+  TypeDefinition,
+  ValueDefinition,
+  ParserField,
+  TypeSystemDefinition,
+  Instances,
+} from 'graphql-zeus';
+import {
+  MenuScrollingArea,
+  DetailMenuItem,
+  Menu,
+} from '@/Graf/Node/components';
 import { More, Interface, Monkey, Plus, Tick } from '@/Graf/icons';
 import {
   NodeAddDirectiveMenu,
@@ -13,7 +23,12 @@ import { style } from 'typestyle';
 import { useTreesState } from '@/state/containers/trees';
 import { Colors } from '@/Colors';
 
-type PossibleMenus = 'field' | 'interface' | 'directive' | 'options' | 'operations';
+type PossibleMenus =
+  | 'field'
+  | 'interface'
+  | 'directive'
+  | 'options'
+  | 'operations';
 
 const NodeMenuContainer = style({
   position: 'absolute',
@@ -46,7 +61,11 @@ export const TopNodeMenu: React.FC<{
             }}
             title="Click to add field"
           >
-            <Plus fill={menuOpen === 'field' ? Colors.green[0] : Colors.grey[0]} height={ICON_SIZE} width={ICON_SIZE} />
+            <Plus
+              fill={menuOpen === 'field' ? Colors.green[0] : Colors.grey[0]}
+              height={ICON_SIZE}
+              width={ICON_SIZE}
+            />
             {menuOpen === 'field' && (
               <div className={NodeMenuContainer}>
                 <NodeAddFieldMenu node={node} hideMenu={hideMenu} />
@@ -115,16 +134,18 @@ export const TopNodeMenu: React.FC<{
             height={ICON_SIZE}
             width={ICON_SIZE}
           />
-          {menuOpen === 'directive' && node.data.type !== TypeSystemDefinition.DirectiveDefinition && (
-            <div className={NodeMenuContainer}>
-              <NodeAddDirectiveMenu node={node} hideMenu={hideMenu} />
-            </div>
-          )}
-          {menuOpen === 'directive' && node.data.type === TypeSystemDefinition.DirectiveDefinition && (
-            <div className={NodeMenuContainer}>
-              <NodeDirectiveOptionsMenu node={node} hideMenu={hideMenu} />
-            </div>
-          )}
+          {menuOpen === 'directive' &&
+            node.data.type !== TypeSystemDefinition.DirectiveDefinition && (
+              <div className={NodeMenuContainer}>
+                <NodeAddDirectiveMenu node={node} hideMenu={hideMenu} />
+              </div>
+            )}
+          {menuOpen === 'directive' &&
+            node.data.type === TypeSystemDefinition.DirectiveDefinition && (
+              <div className={NodeMenuContainer}>
+                <NodeDirectiveOptionsMenu node={node} hideMenu={hideMenu} />
+              </div>
+            )}
         </div>
       )}
       {node.data.type === TypeDefinition.ObjectTypeDefinition && (
@@ -140,7 +161,9 @@ export const TopNodeMenu: React.FC<{
             <Tick
               height={ICON_SIZE}
               width={ICON_SIZE}
-              fill={menuOpen === 'operations' ? Colors.green[0] : Colors.grey[0]}
+              fill={
+                menuOpen === 'operations' ? Colors.green[0] : Colors.grey[0]
+              }
             />
             {menuOpen === 'operations' && (
               <div className={NodeMenuContainer}>
@@ -157,13 +180,21 @@ export const TopNodeMenu: React.FC<{
         }}
         title="Click to see node actions"
       >
-        <More fill={menuOpen === 'options' ? Colors.green[0] : Colors.grey[0]} height={ICON_SIZE} width={ICON_SIZE} />
+        <More
+          fill={menuOpen === 'options' ? Colors.green[0] : Colors.grey[0]}
+          height={ICON_SIZE}
+          width={ICON_SIZE}
+        />
         {menuOpen === 'options' && (
           <div className={NodeMenuContainer}>
             <Menu menuName={'Node options'} hideMenu={hideMenu}>
               <MenuScrollingArea>
                 <DetailMenuItem onClick={onDelete}>Delete node</DetailMenuItem>
-                {onDuplicate && <DetailMenuItem onClick={onDuplicate}>Duplicate node</DetailMenuItem>}
+                {onDuplicate && (
+                  <DetailMenuItem onClick={onDuplicate}>
+                    Duplicate node
+                  </DetailMenuItem>
+                )}
                 <DetailMenuItem
                   onClick={() => {
                     setSelectedNode(undefined);

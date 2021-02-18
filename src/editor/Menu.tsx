@@ -33,7 +33,13 @@ export const Hider = style({
   },
 });
 
-export type ActivePane = 'code' | 'diagram' | 'code-diagram' | 'hierarchy' | 'diff';
+export type ActivePane =
+  | 'code'
+  | 'diagram'
+  | 'code-diagram'
+  | 'hierarchy'
+  | 'diff'
+  | 'relation';
 export interface MenuProps {
   activePane: ActivePane;
   excludePanes?: ActivePane[];
@@ -42,7 +48,11 @@ export interface MenuProps {
 
 const MenuChildren = GraphQLEditorDomStructure.tree.sidebar.menu.children;
 
-export const Menu = ({ setActivePane, activePane, excludePanes = [] }: MenuProps) => {
+export const Menu = ({
+  setActivePane,
+  activePane,
+  excludePanes = [],
+}: MenuProps) => {
   return (
     <div className={HiderPanel}>
       {!excludePanes.includes('diagram') && (
@@ -95,7 +105,7 @@ export const Menu = ({ setActivePane, activePane, excludePanes = [] }: MenuProps
       )}
       {!excludePanes.includes('diff') && (
         <div
-          data-cy={MenuChildren.hierarchy}
+          data-cy={MenuChildren.diff}
           className={cx(Hider, {
             active: activePane === 'diff',
           })}
@@ -103,6 +113,18 @@ export const Menu = ({ setActivePane, activePane, excludePanes = [] }: MenuProps
           title="Diff View"
         >
           <Icons.Filter size={18} />
+        </div>
+      )}
+      {!excludePanes.includes('relation') && (
+        <div
+          data-cy={MenuChildren.relation}
+          className={cx(Hider, {
+            active: activePane === 'relation',
+          })}
+          onClick={() => setActivePane('relation')}
+          title="Relation View"
+        >
+          <Icons.Play size={18} />
         </div>
       )}
     </div>

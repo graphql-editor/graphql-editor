@@ -11,11 +11,10 @@ const Main = style({
   padding: 5,
 });
 
-export const Title: React.FC<React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>> = ({
-  children,
-  className = '',
-  ...props
-}) => {
+export const Title: React.FC<React.DetailedHTMLProps<
+  React.HTMLAttributes<HTMLDivElement>,
+  HTMLDivElement
+>> = ({ children, className = '', ...props }) => {
   return (
     <div className={[Main, className].join(' ')} {...props}>
       {children}

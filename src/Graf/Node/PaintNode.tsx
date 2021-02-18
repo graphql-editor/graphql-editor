@@ -5,7 +5,6 @@ import { Colors } from '@/Colors';
 import { GraphQLBackgrounds } from '@/editor/theme';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { useTreesState } from '@/state/containers/trees';
-import { DOM } from '../DOM';
 export interface NodeProps {
   node: ParserField;
   builtIn?: boolean;
@@ -72,18 +71,26 @@ const NoMatchedSearchContainer = style({
 const NotSelected = style({
   opacity: 0.4,
 });
-export const PaintNode: React.FC<NodeProps> = ({ node, isLibrary, isMatchedToSearch, subNode }) => {
+export const PaintNode: React.FC<NodeProps> = ({
+  node,
+  isLibrary,
+  isMatchedToSearch,
+  subNode,
+}) => {
   const thisNode = useRef<HTMLDivElement>(null);
   const { setSelectedNode, selectedNode } = useTreesState();
   return (
     <div
-      className={`${NodeContainer} ${isLibrary ? LibraryNodeContainer : MainNodeContainer} ${
+      className={`${NodeContainer} ${
+        isLibrary ? LibraryNodeContainer : MainNodeContainer
+      } ${
         isMatchedToSearch ? MatchedSearchContainer : NoMatchedSearchContainer
-      } ${selectedNode ? (selectedNode !== node ? NotSelected : '') : ''} NodeType-${node.type.name}`}
+      } ${
+        selectedNode ? (selectedNode !== node ? NotSelected : '') : ''
+      } NodeType-${node.type.name}`}
       ref={thisNode}
       onClick={(e) => {
         e.stopPropagation();
-        if (DOM.panLock) return;
         setSelectedNode(node);
       }}
     >

@@ -19,7 +19,7 @@ const Main = style({
   paddingBottom: 300,
 });
 export const PaintNodes: React.FC = () => {
-  const { libraryTree, tree } = useTreesState();
+  const { libraryTree, tree, readonly } = useTreesState();
   const baseTypes = [
     TypeDefinition.ObjectTypeDefinition,
     TypeDefinition.InterfaceTypeDefinition,
@@ -36,7 +36,9 @@ export const PaintNodes: React.FC = () => {
       type: {
         name: `root-${d}`,
       },
-      args: tree.nodes.filter((n) => n.data.type === d).sort((a, b) => (a.name > b.name ? 1 : -1)),
+      args: tree.nodes
+        .filter((n) => n.data.type === d)
+        .sort((a, b) => (a.name > b.name ? 1 : -1)),
     },
     libraryNode: {
       name: TypeDefinitionDisplayMap[d],
@@ -46,15 +48,23 @@ export const PaintNodes: React.FC = () => {
       type: {
         name: `library-${d}`,
       },
-      args: libraryTree.nodes.filter((n) => n.data.type === d).sort((a, b) => (a.name > b.name ? 1 : -1)),
+      args: libraryTree.nodes
+        .filter((n) => n.data.type === d)
+        .sort((a, b) => (a.name > b.name ? 1 : -1)),
     },
   }));
   return (
     <div className={Main}>
       {baseTypes.map((d) => (
-        <RootNode key={d.node.type.name} node={d.node} libraryNode={d.libraryNode} />
+        <RootNode
+          readonly={readonly}
+          key={d.node.type.name}
+          node={d.node}
+          libraryNode={d.libraryNode}
+        />
       ))}
       <RootNode
+        readonly={readonly}
         node={{
           name: TypeDefinitionDisplayMap.DirectiveDefinition,
           data: {
@@ -64,7 +74,9 @@ export const PaintNodes: React.FC = () => {
             name: 'root',
           },
           args: tree.nodes
-            .filter((n) => n.data.type === TypeSystemDefinition.DirectiveDefinition)
+            .filter(
+              (n) => n.data.type === TypeSystemDefinition.DirectiveDefinition,
+            )
             .sort((a, b) => (a.name > b.name ? 1 : -1)),
         }}
         libraryNode={{
@@ -76,7 +88,9 @@ export const PaintNodes: React.FC = () => {
             name: 'root',
           },
           args: libraryTree.nodes
-            .filter((n) => n.data.type === TypeSystemDefinition.DirectiveDefinition)
+            .filter(
+              (n) => n.data.type === TypeSystemDefinition.DirectiveDefinition,
+            )
             .sort((a, b) => (a.name > b.name ? 1 : -1)),
         }}
       />

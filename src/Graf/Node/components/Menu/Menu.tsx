@@ -18,12 +18,21 @@ const Title = style({
   fontSize: 14,
   color: Colors.blue[0],
 });
-interface MenuProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+interface MenuProps
+  extends React.DetailedHTMLProps<
+    React.HTMLAttributes<HTMLDivElement>,
+    HTMLDivElement
+  > {
   hideMenu: () => void;
   menuName: string;
 }
 
-export const Menu: React.FC<MenuProps> = ({ children, hideMenu, menuName, ...props }) => {
+export const Menu: React.FC<MenuProps> = ({
+  children,
+  hideMenu,
+  menuName,
+  ...props
+}) => {
   const menuRef = useRef<HTMLDivElement>(null);
   const [listener, setListener] = useState<(e: MouseEvent) => void>();
   useEffect(() => {
@@ -32,7 +41,11 @@ export const Menu: React.FC<MenuProps> = ({ children, hideMenu, menuName, ...pro
         document.removeEventListener('click', listener);
       }
       const l = (e: MouseEvent) => {
-        if (menuRef.current && e.target && !menuRef.current.contains(e.target as any)) {
+        if (
+          menuRef.current &&
+          e.target &&
+          !menuRef.current.contains(e.target as any)
+        ) {
           document.removeEventListener('click', l);
           hideMenu();
           return;

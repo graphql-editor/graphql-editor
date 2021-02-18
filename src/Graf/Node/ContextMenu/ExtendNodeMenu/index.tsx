@@ -1,9 +1,18 @@
 import React, { useState } from 'react';
-import { DOM } from '@/Graf/DOM';
 import { ResolveExtension } from '@/GraphQL/Resolve';
-import { TypeExtension, TypeSystemDefinition, TypeDefinitionDisplayMap, ParserField } from 'graphql-zeus';
+import {
+  TypeExtension,
+  TypeSystemDefinition,
+  TypeDefinitionDisplayMap,
+  ParserField,
+} from 'graphql-zeus';
 import { useTreesState } from '@/state/containers/trees';
-import { Menu, MenuScrollingArea, MenuSearch, MenuItem } from '@/Graf/Node/components';
+import {
+  Menu,
+  MenuScrollingArea,
+  MenuSearch,
+  MenuItem,
+} from '@/Graf/Node/components';
 
 interface ExtendNodeMenuProps {
   hideMenu: () => void;
@@ -27,7 +36,9 @@ export const ExtendNodeMenu: React.FC<ExtendNodeMenuProps> = ({ hideMenu }) => {
         ].find((o) => a.data.type === o),
     )
     .sort((a, b) => (a.name > b.name ? 1 : -1))
-    .filter((a) => a.name.toLowerCase().includes(menuSearchValue.toLowerCase()));
+    .filter((a) =>
+      a.name.toLowerCase().includes(menuSearchValue.toLowerCase()),
+    );
   const onClickFilteredNode = (f: ParserField) => {
     tree.nodes.push({
       data: {
@@ -41,18 +52,11 @@ export const ExtendNodeMenu: React.FC<ExtendNodeMenuProps> = ({ hideMenu }) => {
       args: [],
     });
     hideMenu();
-    DOM.scrollLock = false;
     setTree({ ...tree });
   };
   return (
     <Menu
       menuName={'Extend node'}
-      onMouseEnter={() => {
-        DOM.scrollLock = true;
-      }}
-      onMouseLeave={() => {
-        DOM.scrollLock = false;
-      }}
       onScroll={(e) => e.stopPropagation()}
       hideMenu={hideMenu}
     >
