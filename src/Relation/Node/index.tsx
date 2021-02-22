@@ -25,6 +25,9 @@ const Content = style({
     '&:hover': {
       border: `solid 1px ${Colors.blue[0]}`,
     },
+    '&.Fade': {
+      opacity: 0.25,
+    },
     '&.Selected': {
       border: `solid 1px ${Colors.blue[0]}`,
     },
@@ -39,6 +42,7 @@ const Content = style({
 
 interface NodeProps {
   field: ParserField;
+  fade?: boolean;
   setRef: (instance: HTMLDivElement) => void;
 }
 
@@ -46,7 +50,7 @@ const EditableTitle: React.CSSProperties = {
   fontSize: 14,
   fontWeight: 'bold',
 };
-export const Node: React.FC<NodeProps> = ({ field, setRef }) => {
+export const Node: React.FC<NodeProps> = ({ field, setRef, fade }) => {
   const { setSelectedNode, selectedNode } = useTreesState();
   return (
     <div
@@ -55,10 +59,13 @@ export const Node: React.FC<NodeProps> = ({ field, setRef }) => {
           setRef(ref);
         }
       }}
-      onClick={() => setSelectedNode(field)}
+      onClick={(e) => {
+        e.stopPropagation();
+        setSelectedNode(field);
+      }}
       className={
         Content +
-        ` NodeBackground-${field.type.name}` +
+        ` NodeBackground-${field.type.name} ${fade ? 'Fade' : ''}` +
         (selectedNode === field ? ` Selected` : '')
       }
     >

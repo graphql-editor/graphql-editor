@@ -1,31 +1,35 @@
 import React from 'react';
-
+let PortNumber = 0;
 export const Draw = ({
   from,
   to,
+  active,
+  color,
 }: {
   from?: HTMLDivElement;
   to?: HTMLDivElement;
+  color: string;
+  active?: boolean;
 }) => {
   if (from && to) {
     const f = {
-      x: from.offsetLeft + from.clientWidth / 2.0,
-      y: from.offsetTop + from.clientHeight / 2.0,
+      x: from.offsetLeft,
+      y: from.offsetTop + from.clientHeight / 2.0 + PortNumber,
     };
     const t = {
-      x: to.offsetLeft + to.clientWidth / 2.0,
-      y: to.offsetTop + to.clientHeight / 2.0,
+      x: to.offsetLeft + to.clientWidth,
+      y: to.offsetTop + to.clientHeight / 2.0 + PortNumber,
     };
     const center = {
-      x: (t.x + f.x) / 2.0,
+      x: (t.x + f.x) / 2.0 + PortNumber,
       y: (t.y + f.y) / 2.0,
     };
+    PortNumber = (PortNumber + 5) % 25;
 
     return (
       <path
-        d={`M ${t.x} ${t.y} Q ${(center.x + t.x) / 2.0} ${
-          (center.y + t.y) / 2.2
-        }, ${center.x} ${center.y} T ${f.x} ${f.y} `}
+        stroke={active ? color : `${color}33`}
+        d={`M ${t.x} ${t.y} L ${center.x} ${t.y} L ${center.x} ${f.y} L ${f.x} ${f.y} `}
       />
     );
   }

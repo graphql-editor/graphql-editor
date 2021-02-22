@@ -12,9 +12,14 @@ import { sortByConnection } from './Algorithm';
 import { Node } from './Node';
 import { isScalarArgument } from '@/GraphQL/Resolve';
 import { Draw } from './Draw';
-import { TypeDefinition } from 'graphql-zeus';
+import { ParserField, TypeDefinition } from 'graphql-zeus';
+import { GraphQLColors } from '@/editor/theme';
 
 export interface RelationProps {}
+interface RelationPath {
+  htmlNode: HTMLDivElement;
+  field: ParserField;
+}
 const Wrapper = style({
   width: '100%',
   height: '100%',
@@ -81,7 +86,7 @@ const tRefs: Record<string, HTMLDivElement> = {};
 export const Relation: React.FC<RelationProps> = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const { libraryTree, tree } = useTreesState();
+  const { libraryTree, tree, selectedNode, setSelectedNode } = useTreesState();
   const { lockGraf, grafErrors } = useErrorsState();
   const { setMenuState } = useNavigationState();
   const { themed } = useTheme();
@@ -90,7 +95,7 @@ export const Relation: React.FC<RelationProps> = () => {
 
   const [refs, setRefs] = useState<Record<string, HTMLDivElement>>({});
   const [relations, setRelations] = useState<
-    { to: HTMLDivElement; from: HTMLDivElement[] }[]
+    { to: RelationPath; from: RelationPath[] }[]
   >();
 
   useLayoutEffect(() => {
@@ -99,33 +104,53 @@ export const Relation: React.FC<RelationProps> = () => {
         nodes
           .filter((n) => n.data.type !== TypeDefinition.EnumTypeDefinition)
           .map((n) => ({
-            to: refs[n.name + n.data.type],
+            to: { htmlNode: refs[n.name + n.data.type], field: n },
             from: n.args
               ?.filter((a) => !isScalarArgument(a))
               .map((a) => {
                 const pn = nodes.find((nf) => nf.name === a.type.name)!;
-                return refs[pn.name + pn.data.type];
+                return { htmlNode: refs[pn.name + pn.data.type], field: pn };
               }),
           }))
           .filter((n) => n.from)
-          .map((n) => n as { from: HTMLDivElement[]; to: HTMLDivElement }),
+          .map((n) => n as { from: RelationPath[]; to: RelationPath }),
       );
     }
   }, [refs]);
   return (
     <>
       <div ref={wrapperRef} className={`${Wrapper}`}>
-        <div className={Main}>
+        <div className={Main} onClick={() => setSelectedNode(undefined)}>
           <svg className={RelationsContainer}>
             {relations?.map((r, index) =>
               r.from?.map((rf, i) => (
-                <Draw key={`${index}-${i}`} from={rf} to={r.to} />
+                <Draw
+                  active={
+                    selectedNode?.name === rf.field.name ||
+                    r.to.field.name === selectedNode?.name
+                  }
+                  color={GraphQLColors[rf.field.type.name]}
+                  key={`${index}-${i}`}
+                  from={rf.htmlNode}
+                  to={r.to.htmlNode}
+                />
               )),
             )}
           </svg>
           {!lockGraf &&
             nodes.map((n, i) => (
               <Node
+                fade={
+                  selectedNode
+                    ? selectedNode.name === n.name
+                      ? false
+                      : selectedNode.args?.find((a) => a.type.name === n.name)
+                      ? false
+                      : n.args?.find((na) => na.type.name === selectedNode.name)
+                      ? false
+                      : true
+                    : false
+                }
                 key={n.name + n.data.type}
                 setRef={(ref) => {
                   tRefs[n.name + n.data.type] = ref;
