@@ -149,7 +149,7 @@ export const Relation: React.FC<RelationProps> = () => {
                       : n.args?.find((na) => na.type.name === selectedNode.name)
                       ? false
                       : true
-                    : false
+                    : undefined
                 }
                 key={n.name + n.data.type}
                 setRef={(ref) => {

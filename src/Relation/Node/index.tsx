@@ -27,8 +27,11 @@ const Content = style({
     },
     '&.Fade': {
       opacity: 0.25,
-      transform: 'scale(0.95)',
     },
+    '&.Active': {
+      transform: 'scale(1.05)',
+    },
+
     '&.Selected': {
       border: `solid 1px ${Colors.blue[0]}`,
     },
@@ -66,7 +69,9 @@ export const Node: React.FC<NodeProps> = ({ field, setRef, fade }) => {
       }}
       className={
         Content +
-        ` NodeBackground-${field.type.name} ${fade ? 'Fade' : ''}` +
+        ` NodeBackground-${field.type.name} ${
+          fade ? 'Fade' : typeof fade === 'undefined' ? '' : 'Active'
+        }` +
         (selectedNode === field ? ` Selected` : '')
       }
     >
