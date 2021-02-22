@@ -3,6 +3,8 @@ import { GraphQLBackgrounds, GraphQLDarkBackgrounds } from '@/editor/theme';
 import { NodeTitle } from '@/Graf/Node';
 import { EditableText } from '@/Graf/Node/components';
 import { ActiveType } from '@/Graf/Node/Type';
+import { isScalarArgument } from '@/GraphQL/Resolve';
+import { useTreesState } from '@/state/containers';
 import { ParserField } from 'graphql-zeus';
 import React from 'react';
 import { style } from 'typestyle';
@@ -10,14 +12,22 @@ import { NestedCSSProperties } from 'typestyle/lib/types';
 import { Field } from '../Field';
 
 const Content = style({
-  minWidth: 320,
   padding: 20,
   margin: 20,
-  maxHeight: '30vh',
   textOverflow: 'elipssis',
-  overflowY: 'auto',
+  overflowY: 'hidden',
+  border: `solid 1px ${Colors.blue[0]}00`,
+  transition: '.25s all ease-in-out',
+  zIndex: 1,
+  flex: '1 0 auto',
   $nest: {
     '.NodeTitle': NodeTitle,
+    '&:hover': {
+      border: `solid 1px ${Colors.blue[0]}`,
+    },
+    '&.Selected': {
+      border: `solid 1px ${Colors.blue[0]}`,
+    },
     ...Object.keys(GraphQLDarkBackgrounds).reduce((a, b) => {
       a[`&.NodeBackground-${b}`] = {
         background: `${mix(GraphQLBackgrounds[b], Colors.grey[10], 40)}`,
@@ -29,15 +39,29 @@ const Content = style({
 
 interface NodeProps {
   field: ParserField;
+  setRef: (instance: HTMLDivElement) => void;
 }
 
 const EditableTitle: React.CSSProperties = {
   fontSize: 14,
   fontWeight: 'bold',
 };
-export const Node: React.FC<NodeProps> = ({ field }) => {
+export const Node: React.FC<NodeProps> = ({ field, setRef }) => {
+  const { setSelectedNode, selectedNode } = useTreesState();
   return (
-    <div className={Content + ` NodeBackground-${field.type.name}`}>
+    <div
+      ref={(ref) => {
+        if (ref) {
+          setRef(ref);
+        }
+      }}
+      onClick={() => setSelectedNode(field)}
+      className={
+        Content +
+        ` NodeBackground-${field.type.name}` +
+        (selectedNode === field ? ` Selected` : '')
+      }
+    >
       <div className={'NodeTitle'}>
         <div className={`NodeName`}>
           <EditableText style={EditableTitle} value={field.name} />
@@ -47,9 +71,11 @@ export const Node: React.FC<NodeProps> = ({ field }) => {
         </div>
       </div>
       <div>
-        {field.args?.map((a) => (
-          <Field node={a} parentNodeTypeName={field.type.name} />
-        ))}
+        {field.args
+          ?.filter((a) => !isScalarArgument(a))
+          .map((a) => (
+            <Field node={a} parentNodeTypeName={field.type.name} />
+          ))}
       </div>
     </div>
   );
