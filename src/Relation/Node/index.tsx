@@ -27,6 +27,7 @@ const Content = style({
     },
     '&.Fade': {
       opacity: 0.25,
+      transform: 'scale(0.95)',
     },
     '&.Selected': {
       border: `solid 1px ${Colors.blue[0]}`,
