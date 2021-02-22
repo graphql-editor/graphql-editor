@@ -24,23 +24,32 @@ export const ActiveFieldName: React.FC<
     return (
       <div className={Main}>
         <EditableText value={name} onChange={afterChange} />(
-        {args.map((a, i) => (
-          <div className={Indent} key={a.name}>
-            <EditableText
-              onChange={
-                afterChange
-                  ? (newName) => {
-                      args[i].name = newName;
-                      afterChange(name);
-                    }
-                  : undefined
-              }
-              value={a.name}
-            />
-            :<ActiveType type={a.type} parentTypes={parentTypes} />
-            {i < args.length - 1 && <span>,</span>}
-          </div>
-        ))}
+        {afterChange &&
+          args.map((a, i) => (
+            <div className={Indent} key={a.name}>
+              <EditableText
+                onChange={
+                  afterChange
+                    ? (newName) => {
+                        args[i].name = newName;
+                        afterChange(name);
+                      }
+                    : undefined
+                }
+                value={a.name}
+              />
+              :<ActiveType type={a.type} parentTypes={parentTypes} />
+              {i < args.length - 1 && <span>,</span>}
+            </div>
+          ))}
+        {!afterChange &&
+          args.map((a, i) => (
+            <div className={Indent} key={a.name}>
+              <span>{a.name}</span>
+              :<ActiveType type={a.type} parentTypes={parentTypes} />
+              {i < args.length - 1 && <span>,</span>}
+            </div>
+          ))}
         )
       </div>
     );

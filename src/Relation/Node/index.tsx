@@ -1,6 +1,5 @@
 import { Colors, mix } from '@/Colors';
 import { GraphQLBackgrounds, GraphQLDarkBackgrounds } from '@/editor/theme';
-import { NodeTitle } from '@/Graf/Node';
 import { EditableText } from '@/Graf/Node/components';
 import { ActiveType } from '@/Graf/Node/Type';
 import { isScalarArgument } from '@/GraphQL/Resolve';
@@ -21,7 +20,18 @@ const Content = style({
   zIndex: 1,
   flex: '1 0 auto',
   $nest: {
-    '.NodeTitle': NodeTitle,
+    '.NodeTitle': {
+      alignItems: 'stretch',
+      color: Colors.grey[1],
+      fontSize: 14,
+      padding: `10px 5px`,
+      display: 'flex',
+      $nest: {
+        '.NodeName': {
+          marginRight: 5,
+        },
+      },
+    },
     '&:hover': {
       border: `solid 1px ${Colors.blue[0]}`,
     },
@@ -87,7 +97,7 @@ export const Node: React.FC<NodeProps> = ({ field, setRef, fade }) => {
         {field.args
           ?.filter((a) => !isScalarArgument(a))
           .map((a) => (
-            <Field node={a} parentNodeTypeName={field.type.name} />
+            <Field key={a.name} node={a} parentNodeTypeName={field.type.name} />
           ))}
       </div>
     </div>

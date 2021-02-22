@@ -133,6 +133,8 @@ export const Relation: React.FC<RelationProps> = () => {
                   key={`${index}-${i}`}
                   from={rf.htmlNode}
                   to={r.to.htmlNode}
+                  PortNumber={i}
+                  maxIndex={r.from.length}
                 />
               )),
             )}
