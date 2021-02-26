@@ -21,7 +21,7 @@ import { Node } from './Node';
 import { isScalarArgument } from '@/GraphQL/Resolve';
 import { Draw } from './Draw';
 import { ParserField, TypeDefinition } from 'graphql-zeus';
-import { GraphQLColors, GraphQLDarkBackgrounds } from '@/editor/theme';
+import { GraphQLBackgrounds, GraphQLColors } from '@/editor/theme';
 import { Search } from '@/Graf/icons';
 
 export interface RelationProps {}
@@ -247,7 +247,7 @@ export const Relation: React.FC<RelationProps> = () => {
                     r.to.field.name === selectedNode?.name
                   }
                   color={GraphQLColors[rf.field.type.name]}
-                  inActiveColor={GraphQLDarkBackgrounds[rf.field.type.name]}
+                  inActiveColor={GraphQLBackgrounds[rf.field.type.name]}
                   key={`${index}-${i}`}
                   from={rf.htmlNode}
                   to={r.to.htmlNode}
