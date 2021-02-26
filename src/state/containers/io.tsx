@@ -5,6 +5,7 @@ export enum KeyboardActions {
   Undo = 'Undo',
   Redo = 'Redo',
   Save = 'Save',
+  FindRelation = 'FindRelation',
 }
 
 const useIOStateContainer = createContainer(() => {
@@ -34,6 +35,10 @@ const useIOStateContainer = createContainer(() => {
       if (event.key === 's' && ctrl) {
         event.preventDefault();
         on(KeyboardActions.Save);
+      }
+      if (event.key === 'f' && ctrl) {
+        event.preventDefault();
+        on(KeyboardActions.FindRelation);
       }
     };
     document.addEventListener('keydown', handleKeyboard);

@@ -1,9 +1,17 @@
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import { style } from 'typestyle';
 import { fontFamily } from '@/vars';
 import { useTreesState } from '@/state/containers/trees';
 import {
+  KeyboardActions,
   useErrorsState,
+  useIOState,
   useNavigationState,
   useTheme,
 } from '@/state/containers';
@@ -14,6 +22,7 @@ import { isScalarArgument } from '@/GraphQL/Resolve';
 import { Draw } from './Draw';
 import { ParserField, TypeDefinition } from 'graphql-zeus';
 import { GraphQLColors } from '@/editor/theme';
+import { Search } from '@/Graf/icons';
 
 export interface RelationProps {}
 interface RelationPath {
@@ -82,13 +91,46 @@ const RelationsContainer = style({
   stroke: Colors.main[6],
   fill: 'transparent',
 });
+const SearchContainer = style({
+  position: 'fixed',
+  bottom: 10,
+  left: 10,
+  zIndex: 200,
+});
+const SearchIcon = style({
+  position: 'absolute',
+  bottom: 8,
+  left: 6,
+  zIndex: 200,
+});
+const SearchInput = style({
+  background: `${Colors.main[0]}52`,
+  color: Colors.grey[0],
+  border: 0,
+  width: '100%',
+  minWidth: 0,
+  height: 36,
+  padding: `0 12px`,
+  paddingLeft: 28,
+  fontSize: 14,
+  outline: 0,
+  position: 'relative',
+  userSelect: 'none',
+  $nest: {
+    '&::placeholder': {
+      color: Colors.grey[4],
+    },
+  },
+});
+
 const tRefs: Record<string, HTMLDivElement> = {};
 export const Relation: React.FC<RelationProps> = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const { libraryTree, tree, selectedNode, setSelectedNode } = useTreesState();
   const { lockGraf, grafErrors } = useErrorsState();
-  const { setMenuState } = useNavigationState();
+  const { menuState, setMenuState } = useNavigationState();
+  const { setActions } = useIOState();
   const { themed } = useTheme();
   const allNodes = tree.nodes.concat(libraryTree.nodes);
   const nodes = sortByConnection(allNodes);
@@ -97,6 +139,7 @@ export const Relation: React.FC<RelationProps> = () => {
   const [relations, setRelations] = useState<
     { to: RelationPath; from: RelationPath[] }[]
   >();
+  const [searchVisible, setSearchVisible] = useState<boolean>(false);
 
   useLayoutEffect(() => {
     if (Object.keys(refs).length === nodes.length) {
@@ -117,10 +160,84 @@ export const Relation: React.FC<RelationProps> = () => {
       );
     }
   }, [refs]);
+
+  const handleSearch = useCallback(
+    (searchValue) => {
+      if (searchValue.length) {
+        const node = nodes
+          .sort((a, b) => a.name.toLocaleLowerCase().localeCompare(b.name))
+          .filter((n) => {
+            return n.name.toLocaleLowerCase().indexOf(searchValue) > -1;
+          });
+        if (node.length > 0) {
+          setSelectedNode(node[0]);
+          const ref = tRefs[node[0].name + node[0].data.type];
+          ref.scrollIntoView({
+            block: 'center',
+            inline: 'center',
+          });
+        }
+      } else {
+        setSelectedNode(undefined);
+      }
+    },
+    [nodes],
+  );
+
+  useEffect(() => {
+    setActions((acts) => ({
+      ...acts,
+      [KeyboardActions.FindRelation]: () => {
+        if (menuState === 'relation') {
+          setSearchVisible(!searchVisible);
+        }
+      },
+    }));
+
+    return () => {
+      setActions((acts) => ({
+        ...acts,
+        [KeyboardActions.FindRelation]: () => {},
+      }));
+    };
+  }, [searchVisible]);
+
   return (
     <>
       <div ref={wrapperRef} className={`${Wrapper}`}>
-        <div className={Main} onClick={() => setSelectedNode(undefined)}>
+        <div className={SearchContainer}>
+          <Search
+            width={18}
+            height={18}
+            className={SearchIcon}
+            onClick={() => {
+              console.log(!searchVisible);
+              setSearchVisible(!searchVisible);
+            }}
+          />
+          {searchVisible && (
+            <input
+              autoFocus={true}
+              className={SearchInput}
+              placeholder="Search..."
+              type="text"
+              onChange={(e) => handleSearch(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') {
+                  setSearchVisible(false);
+                  setSelectedNode(undefined);
+                }
+              }}
+            />
+          )}
+        </div>
+        <div
+          className={Main}
+          onClick={() => {
+            setSearchVisible(false);
+            setSelectedNode(undefined);
+          }}
+        >
           <svg className={RelationsContainer}>
             {relations?.map((r, index) =>
               r.from?.map((rf, i) => (
