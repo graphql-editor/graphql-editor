@@ -21,7 +21,7 @@ import { Node } from './Node';
 import { isScalarArgument } from '@/GraphQL/Resolve';
 import { Draw } from './Draw';
 import { ParserField, TypeDefinition } from 'graphql-zeus';
-import { GraphQLColors } from '@/editor/theme';
+import { GraphQLColors, GraphQLDarkBackgrounds } from '@/editor/theme';
 import { Search } from '@/Graf/icons';
 
 export interface RelationProps {}
@@ -48,7 +48,6 @@ const Main = style({
   display: 'flex',
   flexDirection: 'row',
   flexWrap: 'wrap',
-  backgroundImage: `linear-gradient(to right, #ffffff08 1px, transparent 1px), linear-gradient(to bottom, #ffffff08 1px, transparent 1px)`,
 });
 const ErrorContainer = style({
   position: 'absolute',
@@ -90,6 +89,7 @@ const RelationsContainer = style({
   pointerEvents: 'none',
   stroke: Colors.main[6],
   fill: 'transparent',
+  strokeWidth: 2,
 });
 const SearchContainer = style({
   position: 'fixed',
@@ -247,6 +247,7 @@ export const Relation: React.FC<RelationProps> = () => {
                     r.to.field.name === selectedNode?.name
                   }
                   color={GraphQLColors[rf.field.type.name]}
+                  inActiveColor={GraphQLDarkBackgrounds[rf.field.type.name]}
                   key={`${index}-${i}`}
                   from={rf.htmlNode}
                   to={r.to.htmlNode}

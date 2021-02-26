@@ -6,8 +6,8 @@ import * as schemas from './schema';
 
 export const App = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
-    code: schemas.googleDirections,
-    libraries: '',
+    code: schemas.finance,
+    libraries: schemas.usersLibrary,
   });
   return (
     <div

@@ -39,7 +39,7 @@ const Content = style({
       opacity: 0.25,
     },
     '&.Active': {
-      transform: 'scale(1.05)',
+      boxShadow: `${Colors.grey[10]} 2px 2px 10px`,
     },
 
     '&.Selected': {

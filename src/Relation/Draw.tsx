@@ -1,39 +1,51 @@
 import React from 'react';
+import { RELATION_CONSTANTS } from './constants';
 export const Draw = ({
   from,
   to,
   active,
   color,
+  inActiveColor,
   PortNumber,
   maxIndex,
 }: {
   from?: HTMLDivElement;
   to?: HTMLDivElement;
   color: string;
+  inActiveColor: string;
   active?: boolean;
   PortNumber: number;
   maxIndex: number;
 }) => {
+  const stroke = active ? color : `${inActiveColor}22`;
   if (from && to) {
-    const ltr = from.offsetLeft > to.offsetLeft;
-    const pos = (-maxIndex / 2.0 + PortNumber + 1) * 10;
+    const pos = 75 + PortNumber * 30;
     const f = {
-      x: ltr ? from.offsetLeft : from.offsetLeft + from.clientWidth,
-      y: from.offsetTop + from.clientHeight / 2.0 + pos,
+      x: from.offsetLeft,
+      y: from.offsetTop,
     };
     const t = {
-      x: ltr ? to.offsetLeft + to.clientWidth : to.offsetLeft,
-      y: to.offsetTop + to.clientHeight / 2.0 + pos,
+      x: to.offsetLeft + to.clientWidth,
+      y: to.offsetTop + pos,
     };
-    const center = {
-      x: (t.x + f.x) / 2.0 + pos,
-      y: (t.y + f.y) / 2.0,
-    };
-
+    const gapSize = PortNumber * RELATION_CONSTANTS.PORT_GAP;
+    const portRight = t.x + RELATION_CONSTANTS.PORT_PADDING + gapSize;
+    const topOffset = to.offsetTop - RELATION_CONSTANTS.PORT_PADDING - gapSize;
+    const bottomOffset =
+      to.offsetTop +
+      to.clientHeight +
+      RELATION_CONSTANTS.PORT_PADDING +
+      gapSize;
+    const yOffset = t.y < f.y ? bottomOffset : topOffset;
+    const bFX = f.x + RELATION_CONSTANTS.PORT_PADDING + gapSize;
     return (
       <path
-        stroke={active ? color : `${color}22`}
-        d={`M ${t.x} ${t.y} L ${center.x} ${t.y} L ${center.x} ${f.y} L ${f.x} ${f.y} `}
+        stroke={stroke}
+        d={`M ${t.x} ${t.y}
+            L ${portRight} ${t.y}
+            L ${portRight} ${yOffset}
+            L ${bFX} ${yOffset}
+            L ${bFX} ${f.y}`}
       />
     );
   }
