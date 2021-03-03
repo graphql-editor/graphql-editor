@@ -36,8 +36,7 @@ const Content = style({
       border: `solid 1px ${Colors.blue[0]}`,
     },
     '&.Fade': {
-      opacity: 0.0,
-      pointerEvents: 'none',
+      opacity: 0.2,
     },
     '&.Active': {
       boxShadow: `${Colors.grey[10]} 2px 2px 10px`,
