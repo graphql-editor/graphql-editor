@@ -5,8 +5,8 @@ import { FIELD_NAME_SIZE, FIELD_TYPE_SIZE } from '@/Graf/constants';
 import { ActiveFieldName } from '@/Graf/Node/Field/FieldName';
 import { ActiveType } from '@/Graf/Node/Type';
 import { useTreesState } from '@/state/containers/trees';
-import { NodeFieldContainer, Title } from '@/Graf/Node/components';
-import { FieldProps } from '@/Graf/Node/models';
+import { Title } from '@/Graf/Node/components';
+import { FieldProps as GrafFieldProps } from '@/Graf/Node/models';
 
 const Name = style({
   fontSize: FIELD_NAME_SIZE,
@@ -14,15 +14,53 @@ const Name = style({
   whiteSpace: 'nowrap',
   minWidth: 30,
 });
-const Type = style({ fontSize: FIELD_TYPE_SIZE, color: Colors.green[0] });
 
-export const Field: React.FC<Pick<
-  FieldProps,
-  'node' | 'parentNodeTypeName'
->> = ({ node, parentNodeTypeName }) => {
+const Main = style({
+  position: 'relative',
+  display: 'flex',
+  alignItems: 'center',
+  color: Colors.grey[0],
+  margin: `0 0`,
+  transition: 'background 0.25s ease-in-out',
+  $nest: {
+    '.NodeFieldPortPlaceholder': {
+      width: 24,
+      height: 16,
+    },
+    '&.ActiveParent': {
+      cursor: 'pointer',
+      $nest: {
+        '&:hover': {
+          background: Colors.main[3],
+        },
+      },
+    },
+  },
+});
+const Type = style({ fontSize: FIELD_TYPE_SIZE, color: Colors.green[0] });
+type FieldProps = Pick<GrafFieldProps, 'node' | 'parentNodeTypeName'> & {
+  onClick: () => void;
+  active?: boolean;
+};
+export const Field: React.FC<FieldProps> = ({
+  node,
+  parentNodeTypeName,
+  onClick,
+  active,
+}) => {
   const { parentTypes } = useTreesState();
   return (
-    <NodeFieldContainer className={`NodeType-${parentNodeTypeName}`}>
+    <div
+      onClick={(e) => {
+        if (active) {
+          e.stopPropagation();
+          onClick();
+        }
+      }}
+      className={`NodeType-${parentNodeTypeName} ${Main} ${
+        active ? ' ActiveParent' : ''
+      }`}
+    >
       <Title>
         <div className={Name}>
           <ActiveFieldName
@@ -37,6 +75,6 @@ export const Field: React.FC<Pick<
         </div>
       </Title>
       <div className={'NodeFieldPortPlaceholder'} />
-    </NodeFieldContainer>
+    </div>
   );
 };

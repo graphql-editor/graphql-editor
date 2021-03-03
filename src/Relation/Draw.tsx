@@ -4,6 +4,7 @@ export const Draw = ({
   from,
   to,
   active,
+  inverse,
   color,
   inActiveColor,
   PortNumber,
@@ -14,6 +15,7 @@ export const Draw = ({
   color: string;
   inActiveColor: string;
   active?: boolean;
+  inverse?: boolean;
   PortNumber: number;
   maxIndex: number;
 }) => {
@@ -41,6 +43,7 @@ export const Draw = ({
     return (
       <path
         stroke={stroke}
+        strokeDasharray={inverse ? '5,5' : undefined}
         d={`M ${t.x} ${t.y}
             L ${portRight} ${t.y}
             L ${portRight} ${yOffset}

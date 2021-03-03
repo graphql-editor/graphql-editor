@@ -65,7 +65,7 @@ const EditableTitle: React.CSSProperties = {
   fontWeight: 'bold',
 };
 export const Node: React.FC<NodeProps> = ({ field, setRef, fade }) => {
-  const { setSelectedNode, selectedNode } = useTreesState();
+  const { setSelectedNode, selectedNode, tree } = useTreesState();
   return (
     <div
       ref={(ref) => {
@@ -97,7 +97,17 @@ export const Node: React.FC<NodeProps> = ({ field, setRef, fade }) => {
         {field.args
           ?.filter((a) => !isScalarArgument(a))
           .map((a) => (
-            <Field key={a.name} node={a} parentNodeTypeName={field.type.name} />
+            <Field
+              onClick={() => {
+                setSelectedNode(
+                  tree.nodes.find((tn) => tn.name === a.type.name),
+                );
+              }}
+              active={selectedNode === field}
+              key={a.name}
+              node={a}
+              parentNodeTypeName={field.type.name}
+            />
           ))}
       </div>
     </div>

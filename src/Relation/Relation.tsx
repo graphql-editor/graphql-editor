@@ -160,6 +160,16 @@ export const Relation: React.FC<RelationProps> = () => {
       );
     }
   }, [refs]);
+  useEffect(() => {
+    if (selectedNode) {
+      const ref = tRefs[selectedNode.name + selectedNode.data.type];
+      ref.scrollIntoView({
+        block: 'center',
+        inline: 'center',
+        behavior: 'smooth',
+      });
+    }
+  }, [selectedNode]);
 
   const handleSearch = useCallback(
     (searchValue) => {
@@ -171,11 +181,6 @@ export const Relation: React.FC<RelationProps> = () => {
           });
         if (node.length > 0) {
           setSelectedNode(node[0]);
-          const ref = tRefs[node[0].name + node[0].data.type];
-          ref.scrollIntoView({
-            block: 'center',
-            inline: 'center',
-          });
         }
       } else {
         setSelectedNode(undefined);
@@ -240,21 +245,23 @@ export const Relation: React.FC<RelationProps> = () => {
         >
           <svg className={RelationsContainer}>
             {relations?.map((r, index) =>
-              r.from?.map((rf, i) => (
-                <Draw
-                  active={
-                    selectedNode?.name === rf.field.name ||
-                    r.to.field.name === selectedNode?.name
-                  }
-                  color={GraphQLColors[rf.field.type.name]}
-                  inActiveColor={GraphQLBackgrounds[rf.field.type.name]}
-                  key={`${index}-${i}`}
-                  from={rf.htmlNode}
-                  to={r.to.htmlNode}
-                  PortNumber={i}
-                  maxIndex={r.from.length}
-                />
-              )),
+              r.from?.map((rf, i) => {
+                const fromField = selectedNode?.name === rf.field.name;
+                const toField = r.to.field.name === selectedNode?.name;
+                return (
+                  <Draw
+                    active={fromField || toField}
+                    inverse={fromField}
+                    color={GraphQLColors[rf.field.type.name]}
+                    inActiveColor={GraphQLBackgrounds[rf.field.type.name]}
+                    key={`${index}-${i}`}
+                    from={rf.htmlNode}
+                    to={r.to.htmlNode}
+                    PortNumber={i}
+                    maxIndex={r.from.length}
+                  />
+                );
+              }),
             )}
           </svg>
           {!lockGraf &&
