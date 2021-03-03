@@ -259,6 +259,11 @@ export const Relation: React.FC<RelationProps> = () => {
                     to={r.to.htmlNode}
                     PortNumber={i}
                     maxIndex={r.from.length}
+                    onClick={() =>
+                      toField
+                        ? setSelectedNode(rf.field)
+                        : setSelectedNode(r.to.field)
+                    }
                   />
                 );
               }),

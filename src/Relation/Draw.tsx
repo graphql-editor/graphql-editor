@@ -1,5 +1,18 @@
+import { Colors } from '@/Colors';
 import React from 'react';
+import { style } from 'typestyle';
 import { RELATION_CONSTANTS } from './constants';
+
+const PathClass = style({
+  pointerEvents: 'auto',
+  cursor: 'pointer',
+  $nest: {
+    '&:hover': {
+      stroke: Colors.grey[0],
+    },
+  },
+});
+
 export const Draw = ({
   from,
   to,
@@ -9,6 +22,7 @@ export const Draw = ({
   inActiveColor,
   PortNumber,
   maxIndex,
+  onClick,
 }: {
   from?: HTMLDivElement;
   to?: HTMLDivElement;
@@ -18,6 +32,7 @@ export const Draw = ({
   inverse?: boolean;
   PortNumber: number;
   maxIndex: number;
+  onClick: () => void;
 }) => {
   const stroke = active ? color : `${inActiveColor}22`;
   if (from && to) {
@@ -42,6 +57,13 @@ export const Draw = ({
     const bFX = f.x + RELATION_CONSTANTS.PORT_PADDING + gapSize;
     return (
       <path
+        className={`${active ? PathClass : ''}`}
+        onClick={(e) => {
+          if (active) {
+            e.stopPropagation();
+            onClick();
+          }
+        }}
         stroke={stroke}
         strokeDasharray={inverse ? '5,5' : undefined}
         d={`M ${t.x} ${t.y}
