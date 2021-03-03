@@ -1,4 +1,3 @@
-import { Colors } from '@/Colors';
 import React from 'react';
 import { style } from 'typestyle';
 import { RELATION_CONSTANTS } from './constants';
@@ -7,9 +6,7 @@ const PathClass = style({
   pointerEvents: 'auto',
   cursor: 'pointer',
   $nest: {
-    '&:hover': {
-      stroke: Colors.grey[0],
-    },
+    '&:hover': {},
   },
 });
 
@@ -58,12 +55,6 @@ export const Draw = ({
     return (
       <path
         className={`${active ? PathClass : ''}`}
-        onClick={(e) => {
-          if (active) {
-            e.stopPropagation();
-            onClick();
-          }
-        }}
         stroke={stroke}
         strokeDasharray={inverse ? '5,5' : undefined}
         d={`M ${t.x} ${t.y}

@@ -4,7 +4,7 @@ import { EditableText } from '@/Graf/Node/components';
 import { ActiveType } from '@/Graf/Node/Type';
 import { isScalarArgument } from '@/GraphQL/Resolve';
 import { useTreesState } from '@/state/containers';
-import { ParserField } from 'graphql-zeus';
+import { ParserField, TypeDefinition } from 'graphql-zeus';
 import React from 'react';
 import { style } from 'typestyle';
 import { NestedCSSProperties } from 'typestyle/lib/types';
@@ -19,6 +19,7 @@ const Content = style({
   transition: '.25s all ease-in-out',
   zIndex: 1,
   flex: '1 0 auto',
+  cursor: 'pointer',
   $nest: {
     '.NodeTitle': {
       alignItems: 'stretch',
@@ -36,7 +37,7 @@ const Content = style({
       border: `solid 1px ${Colors.blue[0]}`,
     },
     '&.Fade': {
-      opacity: 0.2,
+      opacity: 0.5,
     },
     '&.Active': {
       boxShadow: `${Colors.grey[10]} 2px 2px 10px`,
@@ -44,6 +45,7 @@ const Content = style({
 
     '&.Selected': {
       border: `solid 1px ${Colors.blue[0]}`,
+      cursor: 'auto',
     },
     ...Object.keys(GraphQLDarkBackgrounds).reduce((a, b) => {
       a[`&.NodeBackground-${b}`] = {
@@ -103,7 +105,10 @@ export const Node: React.FC<NodeProps> = ({ field, setRef, fade }) => {
                   tree.nodes.find((tn) => tn.name === a.type.name),
                 );
               }}
-              active={selectedNode === field}
+              active={
+                selectedNode === field &&
+                field.data.type !== TypeDefinition.EnumTypeDefinition
+              }
               key={a.name}
               node={a}
               parentNodeTypeName={field.type.name}
