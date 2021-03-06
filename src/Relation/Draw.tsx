@@ -3,8 +3,6 @@ import { style } from 'typestyle';
 import { RELATION_CONSTANTS } from './constants';
 
 const PathClass = style({
-  pointerEvents: 'auto',
-  cursor: 'pointer',
   $nest: {
     '&:hover': {},
   },

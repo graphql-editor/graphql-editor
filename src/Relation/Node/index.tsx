@@ -31,13 +31,43 @@ const Content = style({
         '.NodeName': {
           marginRight: 5,
         },
+        '.NodeFocus': {
+          marginLeft: 'auto',
+          textTransform: 'uppercase',
+          fontSize: 10,
+          opacity: 0.0,
+          pointerEvents: 'none',
+          color: Colors.grey[2],
+          $nest: { '&:hover': { color: Colors.grey[0] } },
+        },
       },
     },
     '&:hover': {
       border: `solid 1px ${Colors.blue[0]}`,
     },
     '&.Fade': {
-      opacity: 0.5,
+      background: Colors.grey[9],
+      $nest: {
+        '.NodeRelationFields': {
+          opacity: 0.25,
+        },
+        '.NodeTitle': {
+          color: Colors.grey[7],
+        },
+        '.NodeType': {
+          opacity: 0.25,
+        },
+        ...Object.keys(GraphQLDarkBackgrounds).reduce((a, b) => {
+          a[`&.NodeBackground-${b}`] = {
+            background: `${mix(
+              GraphQLDarkBackgrounds[b],
+              Colors.grey[10],
+              22,
+            )}00`,
+          };
+          return a;
+        }, {} as Record<string, NestedCSSProperties>),
+      },
     },
     '&.Active': {
       boxShadow: `${Colors.grey[10]} 2px 2px 10px`,
@@ -46,6 +76,13 @@ const Content = style({
     '&.Selected': {
       border: `solid 1px ${Colors.blue[0]}`,
       cursor: 'auto',
+      $nest: {
+        '.NodeFocus': {
+          opacity: 1.0,
+          pointerEvents: 'auto',
+          cursor: 'pointer',
+        },
+      },
     },
     ...Object.keys(GraphQLDarkBackgrounds).reduce((a, b) => {
       a[`&.NodeBackground-${b}`] = {
@@ -58,6 +95,7 @@ const Content = style({
 
 interface NodeProps {
   field: ParserField;
+  focus: () => void;
   fade?: boolean;
   setRef: (instance: HTMLDivElement) => void;
 }
@@ -66,7 +104,7 @@ const EditableTitle: React.CSSProperties = {
   fontSize: 14,
   fontWeight: 'bold',
 };
-export const Node: React.FC<NodeProps> = ({ field, setRef, fade }) => {
+export const Node: React.FC<NodeProps> = ({ field, setRef, fade, focus }) => {
   const { setSelectedNode, selectedNode, tree } = useTreesState();
   return (
     <div
@@ -94,8 +132,17 @@ export const Node: React.FC<NodeProps> = ({ field, setRef, fade }) => {
         <div className={`NodeType`}>
           <ActiveType type={field.type} />
         </div>
+        <div
+          className={'NodeFocus'}
+          onClick={(e) => {
+            e.stopPropagation();
+            focus();
+          }}
+        >
+          Focus
+        </div>
       </div>
-      <div>
+      <div className={'NodeRelationFields'}>
         {field.args
           ?.filter((a) => !isScalarArgument(a))
           .map((a) => (

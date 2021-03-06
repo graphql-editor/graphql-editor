@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { style } from 'typestyle';
 import { fontFamily } from '@/vars';
 import { useTreesState } from '@/state/containers/trees';
@@ -20,9 +14,10 @@ import { sortByConnection } from './Algorithm';
 import { Node } from './Node';
 import { isScalarArgument } from '@/GraphQL/Resolve';
 import { Draw } from './Draw';
-import { ParserField, TypeDefinition } from 'graphql-zeus';
+import { ParserField } from 'graphql-zeus';
 import { GraphQLBackgrounds, GraphQLColors } from '@/editor/theme';
 import { Search } from '@/Graf/icons';
+import { LevenshteinDistance } from '@/search';
 
 export interface RelationProps {}
 interface RelationPath {
@@ -43,7 +38,6 @@ const Main = style({
   width: '100%',
   position: 'relative',
   fontFamily,
-  backgroundSize: `100px 100px`,
   alignItems: 'flex-start',
   display: 'flex',
   flexDirection: 'row',
@@ -126,14 +120,19 @@ const SearchInput = style({
 const tRefs: Record<string, HTMLDivElement> = {};
 export const Relation: React.FC<RelationProps> = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
-
+  const [focusedNode, setFocusedNode] = useState<ParserField>();
   const { libraryTree, tree, selectedNode, setSelectedNode } = useTreesState();
   const { lockGraf, grafErrors } = useErrorsState();
   const { menuState, setMenuState } = useNavigationState();
   const { setActions } = useIOState();
   const { themed } = useTheme();
-  const allNodes = tree.nodes.concat(libraryTree.nodes);
-  const nodes = sortByConnection(allNodes);
+  const [currentNodes, setCurrentNodes] = useState<ParserField[]>(
+    sortByConnection(tree.nodes.concat(libraryTree.nodes)),
+  );
+  const [relationDrawingNodes, setRelationDrawingNodes] = useState<
+    ParserField[]
+  >([]);
+  const [scrollBeforeFocus, setScrollBeforeFocus] = useState(0);
 
   const [refs, setRefs] = useState<Record<string, HTMLDivElement>>({});
   const [relations, setRelations] = useState<
@@ -142,25 +141,75 @@ export const Relation: React.FC<RelationProps> = () => {
   const [searchVisible, setSearchVisible] = useState<boolean>(false);
 
   useLayoutEffect(() => {
-    if (Object.keys(refs).length === nodes.length) {
+    if (!focusedNode) {
+      setTimeout(() => {
+        wrapperRef.current?.parentElement?.scrollTo({ top: scrollBeforeFocus });
+      }, 10);
+      return;
+    }
+  }, [focusedNode]);
+  useEffect(() => {
+    if (focusedNode) {
+      setScrollBeforeFocus(wrapperRef.current?.parentElement?.scrollTop || 0);
+      const relatedNodes = currentNodes.filter(
+        (n) =>
+          n.args?.find((a) => a.type.name === focusedNode.name) ||
+          n === focusedNode ||
+          focusedNode.args?.find((a) => a.type.name === n.name),
+      );
+      const focusedNodeIndex = currentNodes.findIndex((n) => n === focusedNode);
+      const sortedCurrentNodes = currentNodes.sort((a, b) => {
+        if (b === focusedNode || a === focusedNode) {
+          return 0;
+        }
+        const aIsRelated = relatedNodes.includes(a);
+        const bIsRelated = relatedNodes.includes(b);
+        const siblings = +aIsRelated === +bIsRelated;
+        if (siblings) {
+          return 0;
+        }
+        const bIndex = currentNodes.findIndex((cn) => cn === b);
+        if (bIndex > focusedNodeIndex) {
+          return +aIsRelated > +bIsRelated ? -1 : 1;
+        } else {
+          return +aIsRelated > +bIsRelated ? 1 : -1;
+        }
+      });
+      setCurrentNodes(sortedCurrentNodes);
+      setRelationDrawingNodes(relatedNodes);
+    } else {
+      setRelationDrawingNodes(currentNodes);
+    }
+  }, [focusedNode]);
+
+  useLayoutEffect(() => {
+    if (Object.keys(refs).length > 0) {
       setRelations(
-        nodes
-          .filter((n) => n.data.type !== TypeDefinition.EnumTypeDefinition)
+        relationDrawingNodes
           .map((n) => ({
             to: { htmlNode: refs[n.name + n.data.type], field: n },
             from: n.args
               ?.filter((a) => !isScalarArgument(a))
               .map((a) => {
-                const pn = nodes.find((nf) => nf.name === a.type.name)!;
+                const pn = relationDrawingNodes.find(
+                  (nf) => nf.name === a.type.name,
+                );
+                if (!pn) {
+                  return;
+                }
                 return { htmlNode: refs[pn.name + pn.data.type], field: pn };
-              }),
+              })
+              .filter((o) => !!o),
           }))
           .filter((n) => n.from)
           .map((n) => n as { from: RelationPath[]; to: RelationPath }),
       );
     }
-  }, [refs]);
+  }, [refs, relationDrawingNodes]);
   useEffect(() => {
+    if (focusedNode) {
+      setFocusedNode(undefined);
+    }
     if (selectedNode) {
       const ref = tRefs[selectedNode.name + selectedNode.data.type];
       ref.scrollIntoView({
@@ -168,26 +217,27 @@ export const Relation: React.FC<RelationProps> = () => {
         inline: 'center',
         behavior: 'smooth',
       });
+      return;
     }
   }, [selectedNode]);
 
-  const handleSearch = useCallback(
-    (searchValue) => {
-      if (searchValue.length) {
-        const node = nodes
-          .sort((a, b) => a.name.toLocaleLowerCase().localeCompare(b.name))
-          .filter((n) => {
-            return n.name.toLocaleLowerCase().indexOf(searchValue) > -1;
-          });
-        if (node.length > 0) {
-          setSelectedNode(node[0]);
-        }
-      } else {
-        setSelectedNode(undefined);
-      }
-    },
-    [nodes],
-  );
+  const handleSearch = (searchValue: string) => {
+    if (searchValue.length) {
+      const [node] = currentNodes
+        .map((n) => ({
+          distance: LevenshteinDistance(
+            searchValue.toLocaleLowerCase(),
+            n.name.toLocaleLowerCase(),
+          ),
+          n,
+        }))
+        .sort((a, b) => (a.distance > b.distance ? 1 : -1))
+        .map(({ n }) => n);
+      setSelectedNode(node);
+    } else {
+      setSelectedNode(undefined);
+    }
+  };
 
   useEffect(() => {
     setActions((acts) => ({
@@ -209,7 +259,7 @@ export const Relation: React.FC<RelationProps> = () => {
 
   return (
     <>
-      <div ref={wrapperRef} className={`${Wrapper}`}>
+      <div className={`${Wrapper}`}>
         <div className={SearchContainer}>
           <Search
             width={18}
@@ -242,36 +292,41 @@ export const Relation: React.FC<RelationProps> = () => {
             setSearchVisible(false);
             setSelectedNode(undefined);
           }}
+          ref={wrapperRef}
         >
           <svg className={RelationsContainer}>
-            {relations?.map((r, index) =>
-              r.from?.map((rf, i) => {
-                const fromField = selectedNode?.name === rf.field.name;
-                const toField = r.to.field.name === selectedNode?.name;
-                return (
-                  <Draw
-                    active={fromField || toField}
-                    inverse={fromField}
-                    color={GraphQLColors[rf.field.type.name]}
-                    inActiveColor={GraphQLBackgrounds[rf.field.type.name]}
-                    key={`${index}-${i}`}
-                    from={rf.htmlNode}
-                    to={r.to.htmlNode}
-                    PortNumber={i}
-                    maxIndex={r.from.length}
-                    onClick={() =>
-                      toField
-                        ? setSelectedNode(rf.field)
-                        : setSelectedNode(r.to.field)
-                    }
-                  />
-                );
-              }),
-            )}
+            {selectedNode &&
+              relations?.map((r, index) =>
+                r.from?.map((rf, i) => {
+                  const fromField = selectedNode?.name === rf.field.name;
+                  const toField = r.to.field.name === selectedNode?.name;
+                  return (
+                    <Draw
+                      active={fromField || toField}
+                      inverse={fromField}
+                      color={GraphQLColors[rf.field.type.name]}
+                      inActiveColor={GraphQLBackgrounds[rf.field.type.name]}
+                      key={`${index}-${i}`}
+                      from={rf.htmlNode}
+                      to={r.to.htmlNode}
+                      PortNumber={i}
+                      maxIndex={r.from.length}
+                      onClick={() =>
+                        toField
+                          ? setSelectedNode(rf.field)
+                          : setSelectedNode(r.to.field)
+                      }
+                    />
+                  );
+                }),
+              )}
           </svg>
           {!lockGraf &&
-            nodes.map((n, i) => (
+            currentNodes.map((n, i) => (
               <Node
+                focus={() => {
+                  setFocusedNode(n);
+                }}
                 fade={
                   selectedNode
                     ? selectedNode.name === n.name
@@ -286,7 +341,7 @@ export const Relation: React.FC<RelationProps> = () => {
                 key={n.name + n.data.type}
                 setRef={(ref) => {
                   tRefs[n.name + n.data.type] = ref;
-                  if (Object.keys(tRefs).length === nodes.length) {
+                  if (Object.keys(tRefs).length === currentNodes.length) {
                     setRefs(tRefs);
                   }
                 }}
