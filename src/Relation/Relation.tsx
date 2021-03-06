@@ -126,7 +126,7 @@ function insert<T>(arr: T[], index: number, before: T[], after: T[]) {
   ];
 }
 
-const tRefs: Record<string, HTMLDivElement> = {};
+let tRefs: Record<string, HTMLDivElement> = {};
 export const Relation: React.FC<RelationProps> = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [focusedNode, setFocusedNode] = useState<ParserField>();
@@ -148,6 +148,15 @@ export const Relation: React.FC<RelationProps> = () => {
   >();
   const [searchVisible, setSearchVisible] = useState<boolean>(false);
 
+  useEffect(() => {
+    tRefs = {};
+    setSelectedNode(undefined);
+    setFocusedNode(undefined);
+    const current = sortByConnection(tree.nodes.concat(libraryTree.nodes));
+    setCurrentNodes(current);
+    setRelationDrawingNodes(current);
+  }, [tree, libraryTree]);
+
   useLayoutEffect(() => {
     if (!focusedNode) {
       return;
@@ -161,6 +170,7 @@ export const Relation: React.FC<RelationProps> = () => {
       });
     }, 50);
   }, [focusedNode]);
+
   useEffect(() => {
     if (focusedNode) {
       const relatedNodes = currentNodes.filter(
@@ -191,7 +201,9 @@ export const Relation: React.FC<RelationProps> = () => {
       setCurrentNodes(inserted);
       setRelationDrawingNodes(relatedNodes);
     } else {
-      setRelationDrawingNodes(currentNodes);
+      if (currentNodes.length > 0) {
+        setRelationDrawingNodes(currentNodes);
+      }
     }
   }, [focusedNode]);
 
@@ -232,7 +244,7 @@ export const Relation: React.FC<RelationProps> = () => {
       });
       return;
     }
-    if (!selectedNode) {
+    if (!selectedNode || currentNodes.length > 0) {
       setRelationDrawingNodes(currentNodes);
     }
   }, [selectedNode]);
@@ -355,7 +367,7 @@ export const Relation: React.FC<RelationProps> = () => {
                 key={n.name + n.data.type}
                 setRef={(ref) => {
                   tRefs[n.name + n.data.type] = ref;
-                  if (Object.keys(tRefs).length === currentNodes.length) {
+                  if (i === currentNodes.length - 1) {
                     setRefs(tRefs);
                   }
                 }}

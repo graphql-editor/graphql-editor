@@ -21,6 +21,7 @@ const Content = style({
   zIndex: 1,
   flex: '1 0 auto',
   cursor: 'pointer',
+  maxWidth: '50%',
   $nest: {
     '.NodeTitle': {
       alignItems: 'stretch',
