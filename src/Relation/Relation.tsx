@@ -116,6 +116,15 @@ const SearchInput = style({
     },
   },
 });
+function insert<T>(arr: T[], index: number, before: T[], after: T[]) {
+  return [
+    ...arr.slice(0, index),
+    ...before,
+    arr[index],
+    ...after,
+    ...arr.slice(index + 1),
+  ];
+}
 
 const tRefs: Record<string, HTMLDivElement> = {};
 export const Relation: React.FC<RelationProps> = () => {
@@ -132,7 +141,6 @@ export const Relation: React.FC<RelationProps> = () => {
   const [relationDrawingNodes, setRelationDrawingNodes] = useState<
     ParserField[]
   >([]);
-  const [scrollBeforeFocus, setScrollBeforeFocus] = useState(0);
 
   const [refs, setRefs] = useState<Record<string, HTMLDivElement>>({});
   const [relations, setRelations] = useState<
@@ -142,40 +150,45 @@ export const Relation: React.FC<RelationProps> = () => {
 
   useLayoutEffect(() => {
     if (!focusedNode) {
-      setTimeout(() => {
-        wrapperRef.current?.parentElement?.scrollTo({ top: scrollBeforeFocus });
-      }, 10);
       return;
     }
+    setTimeout(() => {
+      const ref = tRefs[focusedNode.name + focusedNode.data.type];
+      ref.scrollIntoView({
+        block: 'center',
+        inline: 'center',
+        behavior: 'smooth',
+      });
+    }, 50);
   }, [focusedNode]);
   useEffect(() => {
     if (focusedNode) {
-      setScrollBeforeFocus(wrapperRef.current?.parentElement?.scrollTop || 0);
       const relatedNodes = currentNodes.filter(
         (n) =>
           n.args?.find((a) => a.type.name === focusedNode.name) ||
           n === focusedNode ||
           focusedNode.args?.find((a) => a.type.name === n.name),
       );
-      const focusedNodeIndex = currentNodes.findIndex((n) => n === focusedNode);
-      const sortedCurrentNodes = currentNodes.sort((a, b) => {
-        if (b === focusedNode || a === focusedNode) {
-          return 0;
-        }
-        const aIsRelated = relatedNodes.includes(a);
-        const bIsRelated = relatedNodes.includes(b);
-        const siblings = +aIsRelated === +bIsRelated;
-        if (siblings) {
-          return 0;
-        }
-        const bIndex = currentNodes.findIndex((cn) => cn === b);
-        if (bIndex > focusedNodeIndex) {
-          return +aIsRelated > +bIsRelated ? -1 : 1;
-        } else {
-          return +aIsRelated > +bIsRelated ? 1 : -1;
-        }
-      });
-      setCurrentNodes(sortedCurrentNodes);
+      const withoutRelated = currentNodes.filter(
+        (n) => !relatedNodes.includes(n) || n === focusedNode,
+      );
+
+      const focusedNodeIndex = currentNodes.findIndex(
+        (cn) => cn === focusedNode,
+      );
+      const before = currentNodes
+        .slice(0, focusedNodeIndex)
+        .filter((n) => relatedNodes.includes(n));
+      const after = currentNodes
+        .slice(focusedNodeIndex + 1)
+        .filter((n) => relatedNodes.includes(n));
+      const inserted = insert(
+        withoutRelated,
+        withoutRelated.findIndex((wr) => wr === focusedNode),
+        before,
+        after,
+      );
+      setCurrentNodes(inserted);
       setRelationDrawingNodes(relatedNodes);
     } else {
       setRelationDrawingNodes(currentNodes);
@@ -218,6 +231,9 @@ export const Relation: React.FC<RelationProps> = () => {
         behavior: 'smooth',
       });
       return;
+    }
+    if (!selectedNode) {
+      setRelationDrawingNodes(currentNodes);
     }
   }, [selectedNode]);
 
@@ -266,7 +282,6 @@ export const Relation: React.FC<RelationProps> = () => {
             height={18}
             className={SearchIcon}
             onClick={() => {
-              console.log(!searchVisible);
               setSearchVisible(!searchVisible);
             }}
           />
@@ -295,31 +310,30 @@ export const Relation: React.FC<RelationProps> = () => {
           ref={wrapperRef}
         >
           <svg className={RelationsContainer}>
-            {selectedNode &&
-              relations?.map((r, index) =>
-                r.from?.map((rf, i) => {
-                  const fromField = selectedNode?.name === rf.field.name;
-                  const toField = r.to.field.name === selectedNode?.name;
-                  return (
-                    <Draw
-                      active={fromField || toField}
-                      inverse={fromField}
-                      color={GraphQLColors[rf.field.type.name]}
-                      inActiveColor={GraphQLBackgrounds[rf.field.type.name]}
-                      key={`${index}-${i}`}
-                      from={rf.htmlNode}
-                      to={r.to.htmlNode}
-                      PortNumber={i}
-                      maxIndex={r.from.length}
-                      onClick={() =>
-                        toField
-                          ? setSelectedNode(rf.field)
-                          : setSelectedNode(r.to.field)
-                      }
-                    />
-                  );
-                }),
-              )}
+            {relations?.map((r, index) =>
+              r.from?.map((rf, i) => {
+                const fromField = selectedNode?.name === rf.field.name;
+                const toField = r.to.field.name === selectedNode?.name;
+                return (
+                  <Draw
+                    active={fromField || toField}
+                    inverse={fromField}
+                    color={GraphQLColors[rf.field.type.name]}
+                    inActiveColor={GraphQLBackgrounds[rf.field.type.name]}
+                    key={`${index}-${i}`}
+                    from={rf.htmlNode}
+                    to={r.to.htmlNode}
+                    PortNumber={i}
+                    maxIndex={r.from.length}
+                    onClick={() =>
+                      toField
+                        ? setSelectedNode(rf.field)
+                        : setSelectedNode(r.to.field)
+                    }
+                  />
+                );
+              }),
+            )}
           </svg>
           {!lockGraf &&
             currentNodes.map((n, i) => (

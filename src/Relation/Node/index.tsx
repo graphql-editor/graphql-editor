@@ -5,10 +5,11 @@ import { ActiveType } from '@/Graf/Node/Type';
 import { isScalarArgument } from '@/GraphQL/Resolve';
 import { useTreesState } from '@/state/containers';
 import { ParserField, TypeDefinition } from 'graphql-zeus';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { style } from 'typestyle';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { Field } from '../Field';
+import * as Icons from '@/editor/icons';
 
 const Content = style({
   padding: 20,
@@ -33,12 +34,18 @@ const Content = style({
         },
         '.NodeFocus': {
           marginLeft: 'auto',
-          textTransform: 'uppercase',
-          fontSize: 10,
+          textTransform: 'lowercase',
+          fontSize: 12,
           opacity: 0.0,
           pointerEvents: 'none',
           color: Colors.grey[2],
-          $nest: { '&:hover': { color: Colors.grey[0] } },
+          display: 'flex',
+          alignItems: 'center',
+          $nest: {
+            '&:hover': { color: Colors.grey[0] },
+            span: { marginRight: 5 },
+          },
+          fontWeight: 'bold',
         },
       },
     },
@@ -106,6 +113,30 @@ const EditableTitle: React.CSSProperties = {
 };
 export const Node: React.FC<NodeProps> = ({ field, setRef, fade, focus }) => {
   const { setSelectedNode, selectedNode, tree } = useTreesState();
+  const RelationFields = useMemo(() => {
+    return (
+      <div className={'NodeRelationFields'}>
+        {field.args
+          ?.filter((a) => !isScalarArgument(a))
+          .map((a) => (
+            <Field
+              onClick={() => {
+                setSelectedNode(
+                  tree.nodes.find((tn) => tn.name === a.type.name),
+                );
+              }}
+              active={
+                selectedNode === field &&
+                field.data.type !== TypeDefinition.EnumTypeDefinition
+              }
+              key={a.name}
+              node={a}
+              parentNodeTypeName={field.type.name}
+            />
+          ))}
+      </div>
+    );
+  }, [selectedNode, field]);
   return (
     <div
       ref={(ref) => {
@@ -139,29 +170,11 @@ export const Node: React.FC<NodeProps> = ({ field, setRef, fade, focus }) => {
             focus();
           }}
         >
-          Focus
+          <span>Focus</span>
+          <Icons.Eye size={16} />
         </div>
       </div>
-      <div className={'NodeRelationFields'}>
-        {field.args
-          ?.filter((a) => !isScalarArgument(a))
-          .map((a) => (
-            <Field
-              onClick={() => {
-                setSelectedNode(
-                  tree.nodes.find((tn) => tn.name === a.type.name),
-                );
-              }}
-              active={
-                selectedNode === field &&
-                field.data.type !== TypeDefinition.EnumTypeDefinition
-              }
-              key={a.name}
-              node={a}
-              parentNodeTypeName={field.type.name}
-            />
-          ))}
-      </div>
+      <div className={'NodeRelationFields'}>{RelationFields}</div>
     </div>
   );
 };
