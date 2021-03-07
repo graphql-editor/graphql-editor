@@ -163,11 +163,13 @@ export const Relation: React.FC<RelationProps> = () => {
     }
     setTimeout(() => {
       const ref = tRefs[focusedNode.name + focusedNode.data.type];
-      ref.scrollIntoView({
-        block: 'center',
-        inline: 'center',
-        behavior: 'smooth',
-      });
+      if (ref) {
+        ref.scrollIntoView({
+          block: 'center',
+          inline: 'center',
+          behavior: 'smooth',
+        });
+      }
     }, 50);
   }, [focusedNode]);
 
@@ -237,11 +239,13 @@ export const Relation: React.FC<RelationProps> = () => {
     }
     if (selectedNode) {
       const ref = tRefs[selectedNode.name + selectedNode.data.type];
-      ref.scrollIntoView({
-        block: 'center',
-        inline: 'center',
-        behavior: 'smooth',
-      });
+      if (ref) {
+        ref.scrollIntoView({
+          block: 'center',
+          inline: 'center',
+          behavior: 'smooth',
+        });
+      }
       return;
     }
     if (!selectedNode || currentNodes.length > 0) {
