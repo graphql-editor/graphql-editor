@@ -33,14 +33,6 @@ export const Lines: React.FC<LinesProps> = ({ relations, selectedNode }) => {
         return r.from?.map((rf, i) => {
           const fromField = selectedNode?.name === rf.field.name;
           const toField = r.to.field.name === selectedNode?.name;
-          if (fromField) {
-            console.log(r.to.field);
-          }
-          if (toField) {
-            console.log('to field');
-            console.log(r.to.field);
-            console.log('end to field');
-          }
           let portNumber = i;
           if (fromField) {
             portNumber =
