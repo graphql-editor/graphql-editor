@@ -17,7 +17,6 @@ export const Draw = ({
   inActiveColor,
   PortNumber,
   maxIndex,
-  onClick,
 }: {
   from?: HTMLDivElement;
   to?: HTMLDivElement;
@@ -27,9 +26,8 @@ export const Draw = ({
   inverse?: boolean;
   PortNumber: number;
   maxIndex: number;
-  onClick: () => void;
 }) => {
-  const stroke = active ? color : `${inActiveColor}22`;
+  const stroke = active ? color : `${inActiveColor}10`;
   if (from && to) {
     const pos = 75 + PortNumber * 30;
     const f = {

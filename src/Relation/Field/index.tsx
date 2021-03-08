@@ -42,6 +42,9 @@ type FieldProps = Pick<GrafFieldProps, 'node' | 'parentNodeTypeName'> & {
   onClick: () => void;
   active?: boolean;
 };
+const ChangeTitle = style({
+  marginRight: 0,
+});
 export const Field: React.FC<FieldProps> = ({
   node,
   parentNodeTypeName,
@@ -61,7 +64,7 @@ export const Field: React.FC<FieldProps> = ({
         active ? ' ActiveParent' : ''
       }`}
     >
-      <Title>
+      <Title className={ChangeTitle}>
         <div className={Name}>
           <ActiveFieldName
             data={node.data}
@@ -74,7 +77,6 @@ export const Field: React.FC<FieldProps> = ({
           <ActiveType type={node.type} parentTypes={parentTypes} />
         </div>
       </Title>
-      <div className={'NodeFieldPortPlaceholder'} />
     </div>
   );
 };

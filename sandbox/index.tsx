@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { render } from 'react-dom';
 import { GraphQLEditor } from '../src/index';
 import { PassedSchema } from '../src/Models';
@@ -8,11 +8,6 @@ export const App = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
     code: schemas.food,
   });
-  useEffect(() => {
-    setTimeout(() => {
-      setMySchema({ code: schemas.github });
-    }, 5000);
-  }, []);
   return (
     <div
       style={{

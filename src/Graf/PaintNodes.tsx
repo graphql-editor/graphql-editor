@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   TypeDefinition,
   TypeDefinitionDisplayMap,
@@ -53,16 +53,20 @@ export const PaintNodes: React.FC = () => {
         .sort((a, b) => (a.name > b.name ? 1 : -1)),
     },
   }));
+  const RootBaseTypes = useMemo(() => {
+    return baseTypes.map((d) => (
+      <RootNode
+        readonly={readonly}
+        key={d.node.type.name}
+        node={d.node}
+        libraryNode={d.libraryNode}
+      />
+    ));
+  }, [baseTypes]);
+
   return (
     <div className={Main}>
-      {baseTypes.map((d) => (
-        <RootNode
-          readonly={readonly}
-          key={d.node.type.name}
-          node={d.node}
-          libraryNode={d.libraryNode}
-        />
-      ))}
+      {RootBaseTypes}
       <RootNode
         readonly={readonly}
         node={{

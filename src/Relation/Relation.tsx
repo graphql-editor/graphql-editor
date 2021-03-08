@@ -1,4 +1,10 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { style } from 'typestyle';
 import { fontFamily } from '@/vars';
 import { useTreesState } from '@/state/containers/trees';
@@ -13,17 +19,12 @@ import { Colors } from '@/Colors';
 import { sortByConnection } from './Algorithm';
 import { Node } from './Node';
 import { isScalarArgument } from '@/GraphQL/Resolve';
-import { Draw } from './Draw';
 import { ParserField } from 'graphql-zeus';
-import { GraphQLBackgrounds, GraphQLColors } from '@/editor/theme';
 import { Search } from '@/Graf/icons';
 import { LevenshteinDistance } from '@/search';
+import { Lines, RelationPath } from '@/Relation/Lines';
 
 export interface RelationProps {}
-interface RelationPath {
-  htmlNode: HTMLDivElement;
-  field: ParserField;
-}
 const Wrapper = style({
   width: '100%',
   height: '100%',
@@ -41,6 +42,7 @@ const Main = style({
   alignItems: 'flex-start',
   display: 'flex',
   flexDirection: 'row',
+  padding: 20,
   flexWrap: 'wrap',
 });
 const ErrorContainer = style({
@@ -75,15 +77,6 @@ const ErrorLockMessage = style({
   padding: 30,
   color: Colors.red[0],
   background: Colors.main[10],
-});
-const RelationsContainer = style({
-  width: '100%',
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  stroke: Colors.main[6],
-  fill: 'transparent',
-  strokeWidth: 2,
 });
 const SearchContainer = style({
   position: 'fixed',
@@ -201,11 +194,6 @@ export const Relation: React.FC<RelationProps> = () => {
         after,
       );
       setCurrentNodes(inserted);
-      setRelationDrawingNodes(relatedNodes);
-    } else {
-      if (currentNodes.length > 0) {
-        setRelationDrawingNodes(currentNodes);
-      }
     }
   }, [focusedNode]);
 
@@ -232,12 +220,18 @@ export const Relation: React.FC<RelationProps> = () => {
           .map((n) => n as { from: RelationPath[]; to: RelationPath }),
       );
     }
-  }, [refs, relationDrawingNodes]);
+  }, [refs, relationDrawingNodes, currentNodes]);
   useEffect(() => {
     if (focusedNode) {
       setFocusedNode(undefined);
     }
     if (selectedNode) {
+      const relatedNodes = currentNodes.filter(
+        (n) =>
+          n.args?.find((a) => a.type.name === selectedNode.name) ||
+          n === selectedNode ||
+          selectedNode.args?.find((a) => a.type.name === n.name),
+      );
       const ref = tRefs[selectedNode.name + selectedNode.data.type];
       if (ref) {
         ref.scrollIntoView({
@@ -246,10 +240,8 @@ export const Relation: React.FC<RelationProps> = () => {
           behavior: 'smooth',
         });
       }
+      setRelationDrawingNodes(relatedNodes);
       return;
-    }
-    if (!selectedNode || currentNodes.length > 0) {
-      setRelationDrawingNodes(currentNodes);
     }
   }, [selectedNode]);
 
@@ -289,6 +281,37 @@ export const Relation: React.FC<RelationProps> = () => {
     };
   }, [searchVisible]);
 
+  const SvgLinesContainer = useMemo(() => {
+    return <Lines relations={relations} selectedNode={selectedNode} />;
+  }, [relations, selectedNode]);
+  const NodesContainer = useMemo(() => {
+    return currentNodes.map((n, i) => (
+      <Node
+        focus={() => {
+          setFocusedNode(n);
+        }}
+        fade={
+          selectedNode
+            ? selectedNode.name === n.name
+              ? false
+              : selectedNode.args?.find((a) => a.type.name === n.name)
+              ? false
+              : n.args?.find((na) => na.type.name === selectedNode.name)
+              ? false
+              : true
+            : undefined
+        }
+        key={n.name + n.data.type}
+        setRef={(ref) => {
+          tRefs[n.name + n.data.type] = ref;
+          if (i === currentNodes.length - 1) {
+            setRefs(tRefs);
+          }
+        }}
+        field={n}
+      />
+    ));
+  }, [currentNodes, setRefs, setFocusedNode, selectedNode]);
   return (
     <>
       <div className={`${Wrapper}`}>
@@ -325,59 +348,8 @@ export const Relation: React.FC<RelationProps> = () => {
           }}
           ref={wrapperRef}
         >
-          <svg className={RelationsContainer}>
-            {relations?.map((r, index) =>
-              r.from?.map((rf, i) => {
-                const fromField = selectedNode?.name === rf.field.name;
-                const toField = r.to.field.name === selectedNode?.name;
-                return (
-                  <Draw
-                    active={fromField || toField}
-                    inverse={fromField}
-                    color={GraphQLColors[rf.field.type.name]}
-                    inActiveColor={GraphQLBackgrounds[rf.field.type.name]}
-                    key={`${index}-${i}`}
-                    from={rf.htmlNode}
-                    to={r.to.htmlNode}
-                    PortNumber={i}
-                    maxIndex={r.from.length}
-                    onClick={() =>
-                      toField
-                        ? setSelectedNode(rf.field)
-                        : setSelectedNode(r.to.field)
-                    }
-                  />
-                );
-              }),
-            )}
-          </svg>
-          {!lockGraf &&
-            currentNodes.map((n, i) => (
-              <Node
-                focus={() => {
-                  setFocusedNode(n);
-                }}
-                fade={
-                  selectedNode
-                    ? selectedNode.name === n.name
-                      ? false
-                      : selectedNode.args?.find((a) => a.type.name === n.name)
-                      ? false
-                      : n.args?.find((na) => na.type.name === selectedNode.name)
-                      ? false
-                      : true
-                    : undefined
-                }
-                key={n.name + n.data.type}
-                setRef={(ref) => {
-                  tRefs[n.name + n.data.type] = ref;
-                  if (i === currentNodes.length - 1) {
-                    setRefs(tRefs);
-                  }
-                }}
-                field={n}
-              />
-            ))}
+          {SvgLinesContainer}
+          {!lockGraf && NodesContainer}
         </div>
         {lockGraf && (
           <div

@@ -114,6 +114,7 @@ const EditableTitle: React.CSSProperties = {
 };
 export const Node: React.FC<NodeProps> = ({ field, setRef, fade, focus }) => {
   const { setSelectedNode, selectedNode, tree } = useTreesState();
+  const isNodeActive = field === selectedNode;
   const RelationFields = useMemo(() => {
     return (
       <div className={'NodeRelationFields'}>
@@ -127,7 +128,7 @@ export const Node: React.FC<NodeProps> = ({ field, setRef, fade, focus }) => {
                 );
               }}
               active={
-                selectedNode === field &&
+                isNodeActive &&
                 field.data.type !== TypeDefinition.EnumTypeDefinition
               }
               key={a.name}
@@ -137,7 +138,30 @@ export const Node: React.FC<NodeProps> = ({ field, setRef, fade, focus }) => {
           ))}
       </div>
     );
-  }, [selectedNode, field]);
+  }, [field, isNodeActive]);
+  const NodeContent = useMemo(
+    () => (
+      <div className={'NodeTitle'}>
+        <div className={`NodeName`}>
+          <EditableText style={EditableTitle} value={field.name} />
+        </div>
+        <div className={`NodeType`}>
+          <ActiveType type={field.type} />
+        </div>
+        <div
+          className={'NodeFocus'}
+          onClick={(e) => {
+            e.stopPropagation();
+            focus();
+          }}
+        >
+          <span>Focus</span>
+          <Icons.Eye size={16} />
+        </div>
+      </div>
+    ),
+    [field],
+  );
   return (
     <div
       ref={(ref) => {
@@ -157,25 +181,8 @@ export const Node: React.FC<NodeProps> = ({ field, setRef, fade, focus }) => {
         (selectedNode === field ? ` Selected` : '')
       }
     >
-      <div className={'NodeTitle'}>
-        <div className={`NodeName`}>
-          <EditableText style={EditableTitle} value={field.name} />
-        </div>
-        <div className={`NodeType`}>
-          <ActiveType type={field.type} />
-        </div>
-        <div
-          className={'NodeFocus'}
-          onClick={(e) => {
-            e.stopPropagation();
-            focus();
-          }}
-        >
-          <span>Focus</span>
-          <Icons.Eye size={16} />
-        </div>
-      </div>
-      <div className={'NodeRelationFields'}>{RelationFields}</div>
+      {NodeContent}
+      {RelationFields}
     </div>
   );
 };
