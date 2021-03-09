@@ -116,26 +116,23 @@ export const Node: React.FC<NodeProps> = ({ field, setRef, fade, focus }) => {
   const { setSelectedNode, selectedNode, tree } = useTreesState();
   const isNodeActive = field === selectedNode;
   const RelationFields = useMemo(() => {
+    const nodeFields = field.args?.filter((a) => !isScalarArgument(a));
     return (
       <div className={'NodeRelationFields'}>
-        {field.args
-          ?.filter((a) => !isScalarArgument(a))
-          .map((a) => (
-            <Field
-              onClick={() => {
-                setSelectedNode(
-                  tree.nodes.find((tn) => tn.name === a.type.name),
-                );
-              }}
-              active={
-                isNodeActive &&
-                field.data.type !== TypeDefinition.EnumTypeDefinition
-              }
-              key={a.name}
-              node={a}
-              parentNodeTypeName={field.type.name}
-            />
-          ))}
+        {nodeFields?.map((a) => (
+          <Field
+            onClick={() => {
+              setSelectedNode(tree.nodes.find((tn) => tn.name === a.type.name));
+            }}
+            active={
+              isNodeActive &&
+              field.data.type !== TypeDefinition.EnumTypeDefinition
+            }
+            key={a.name}
+            node={a}
+            parentNodeTypeName={field.type.name}
+          />
+        ))}
       </div>
     );
   }, [field, isNodeActive]);

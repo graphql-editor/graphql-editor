@@ -19,6 +19,7 @@ const Main = style({
   position: 'relative',
   display: 'flex',
   alignItems: 'center',
+  height: 31,
   color: Colors.grey[0],
   margin: `0 0`,
   transition: 'background 0.25s ease-in-out',

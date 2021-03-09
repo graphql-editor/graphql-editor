@@ -29,7 +29,10 @@ export const Draw = ({
 }) => {
   const stroke = active ? color : `${inActiveColor}10`;
   if (from && to) {
-    const pos = 75 + PortNumber * 30;
+    const pos =
+      RELATION_CONSTANTS.TOP_HEIGHT +
+      PortNumber * RELATION_CONSTANTS.FIELD_HEIGHT +
+      RELATION_CONSTANTS.FIELD_HEIGHT / 2;
     const f = {
       x: from.offsetLeft,
       y: from.offsetTop,
