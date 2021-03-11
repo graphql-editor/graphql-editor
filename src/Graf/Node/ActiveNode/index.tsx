@@ -11,7 +11,6 @@ import { ActiveDirective } from '@/Graf/Node/Directive';
 import { ActiveInputValue } from '@/Graf/Node/InputValue';
 import { style, keyframes } from 'typestyle';
 import { Colors, mix } from '@/Colors';
-import { GraphQLBackgrounds, GraphQLDarkBackgrounds } from '@/editor/theme';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { DOM } from '@/Graf/DOM';
 import { ActiveType } from '@/Graf/Node/Type';
@@ -25,6 +24,8 @@ import { useTreesState } from '@/state/containers/trees';
 import { TopNodeMenu } from '@/Graf/Node/ActiveNode/TopNodeMenu';
 import { ChangeAllRelatedNodes, isExtensionNode } from '@/GraphQL/Resolve';
 import { ActiveArgument } from '@/Graf/Node/Argument';
+import { themed } from '@/Theming/utils';
+import { useTheme } from '@/state/containers';
 
 interface NodeProps {
   node: ParserField;
@@ -57,21 +58,23 @@ const OpenedNode: NestedCSSProperties = {
 const LibraryNodeArea: NestedCSSProperties = {
   borderStyle: 'dashed',
 };
-const MainNodeArea = style({
-  position: 'relative',
-  transition: `border-color .25s ease-in-out`,
-  borderColor: Colors.green[0],
-  flex: 1,
-  display: 'flex',
-  flexFlow: 'column nowrap',
-  animationName: fadeIn,
-  animationDuration: '0.25s',
-  overflowY: 'auto',
-  $nest: {
-    '.NodeTitle': NodeTitle,
-    '&.LibraryNodeArea': LibraryNodeArea,
-  },
-});
+const MainNodeArea = themed((theme) =>
+  style({
+    position: 'relative',
+    transition: `border-color .25s ease-in-out`,
+    borderColor: theme.colors.graf.node.selected,
+    flex: 1,
+    display: 'flex',
+    flexFlow: 'column nowrap',
+    animationName: fadeIn,
+    animationDuration: '0.25s',
+    overflowY: 'auto',
+    $nest: {
+      '.NodeTitle': NodeTitle(theme),
+      '&.LibraryNodeArea': LibraryNodeArea,
+    },
+  }),
+);
 const DescriptionPosition: NestedCSSProperties = {
   outline: 'none',
   border: `1px solid ${Colors.grey[3]}00`,
@@ -81,43 +84,58 @@ const DescriptionPosition: NestedCSSProperties = {
     },
   },
 };
-const NodeContainer = style({
-  position: 'relative',
-  breakInside: 'avoid',
-  height: '100%',
-  background: Colors.grey[9],
-  maxWidth: '100%',
-  display: 'flex',
-  flexFlow: 'column nowrap',
-  $nest: {
-    '.DescriptionPosition': DescriptionPosition,
-    '.OpenedNode': OpenedNode,
-    '&:hover': {
-      $nest: {
-        '> .ActionsMenu': {
-          opacity: 1.0,
-          pointerEvents: 'auto',
-        },
+const NodeContainer = themed(
+  ({
+    colors: {
+      backgrounds,
+      darkBackgrounds,
+      graf: {
+        node: { background },
       },
     },
-    ...Object.keys(GraphQLDarkBackgrounds).reduce((a, b) => {
-      a[`&.NodeBackground-${b}`] = {
-        background: `${mix(GraphQLDarkBackgrounds[b], Colors.grey[10], 40)}`,
-      };
-      return a;
-    }, {} as Record<string, NestedCSSProperties>),
-    ...Object.keys(GraphQLBackgrounds).reduce((a, b) => {
-      a[`.NodeType-${b}`] = {
-        $nest: {
-          '&:hover, &.Active': {
-            background: mix(GraphQLBackgrounds[b], Colors.grey[0], 80),
+  }) =>
+    style({
+      position: 'relative',
+      breakInside: 'avoid',
+      height: '100%',
+      background,
+      maxWidth: '100%',
+      display: 'flex',
+      flexFlow: 'column nowrap',
+      $nest: {
+        '.DescriptionPosition': DescriptionPosition,
+        '.OpenedNode': OpenedNode,
+        '&:hover': {
+          $nest: {
+            '> .ActionsMenu': {
+              opacity: 1.0,
+              pointerEvents: 'auto',
+            },
           },
         },
-      };
-      return a;
-    }, {} as Record<string, NestedCSSProperties>),
-  },
-});
+        ...Object.keys(darkBackgrounds).reduce((a, b) => {
+          a[`&.NodeBackground-${b}`] = {
+            background: `${mix(
+              (darkBackgrounds as any)[b],
+              Colors.grey[10],
+              40,
+            )}`,
+          };
+          return a;
+        }, {} as Record<string, NestedCSSProperties>),
+        ...Object.keys(backgrounds).reduce((a, b) => {
+          a[`.NodeType-${b}`] = {
+            $nest: {
+              '&:hover, &.Active': {
+                background: mix((backgrounds as any)[b], Colors.grey[0], 80),
+              },
+            },
+          };
+          return a;
+        }, {} as Record<string, NestedCSSProperties>),
+      },
+    }),
+);
 
 const NodeFields = style({
   flex: 1,
@@ -132,26 +150,30 @@ const NodeInterfaces = style({
   marginBottom: 5,
 });
 
-const GapBar = style({
-  width: '100%',
-  height: '100%',
-  background: `${Colors.grey[10]}99`,
-  transition: '.25s background ease-in-out',
-  $nest: {
-    '&:hover': {
-      background: `${Colors.grey[10]}11`,
+const GapBar = themed(({ colors: { graf: { node: { gapBar } } } }) =>
+  style({
+    width: '100%',
+    height: '100%',
+    background: `${gapBar}99`,
+    transition: '.25s background ease-in-out',
+    $nest: {
+      '&:hover': {
+        background: `${gapBar}11`,
+      },
     },
-  },
-});
+  }),
+);
 
-const NodeArea = style({
-  minWidth: '80%',
-  maxWidth: '50vw',
-  left: '20%',
-  position: 'absolute',
-  height: '100%',
-  boxShadow: `${Colors.grey[10]} 0 0 20px`,
-});
+const NodeArea = themed(({ colors: { graf: { node: { shadow } } } }) =>
+  style({
+    minWidth: '80%',
+    maxWidth: '50vw',
+    left: '20%',
+    position: 'absolute',
+    height: '100%',
+    boxShadow: `${shadow} 0 0 20px`,
+  }),
+);
 
 const EditableTitle: React.CSSProperties = {
   fontSize: 14,
@@ -170,6 +192,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
       | 'directiveOutput';
     index: number;
   }>();
+  const { theme } = useTheme();
 
   const {
     libraryTree,
@@ -225,7 +248,9 @@ export const ActiveNode: React.FC<NodeProps> = ({
 
   return (
     <div
-      className={`${NodeContainer} NodeBackground-${node.type.name} ${DOM.classes.node} ${DOM.classes.nodeSelected}`}
+      className={`${NodeContainer(theme)} NodeBackground-${node.type.name} ${
+        DOM.classes.node
+      } ${DOM.classes.nodeSelected}`}
     >
       <ActiveDescription
         onChange={(d) => {
@@ -255,8 +280,8 @@ export const ActiveNode: React.FC<NodeProps> = ({
       )}
       {openedNodeNode && openedNode && (
         <div className={`OpenedNode`}>
-          <div className={GapBar} onClick={inactiveClick} />
-          <div className={NodeArea}>
+          <div className={GapBar(theme)} onClick={inactiveClick} />
+          <div className={NodeArea(theme)}>
             <ActiveNode
               {...sharedProps}
               readonly={isLocked}
@@ -288,7 +313,9 @@ export const ActiveNode: React.FC<NodeProps> = ({
         </div>
       )}
       <div
-        className={`${MainNodeArea}${isLibrary ? ' LibraryNodeArea' : ''}`}
+        className={`${MainNodeArea(theme)}${
+          isLibrary ? ' LibraryNodeArea' : ''
+        }`}
         onClick={(e) => {
           e.stopPropagation();
         }}

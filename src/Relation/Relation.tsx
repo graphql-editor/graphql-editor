@@ -23,6 +23,7 @@ import { ParserField } from 'graphql-zeus';
 import { Search } from '@/Graf/icons';
 import { LevenshteinDistance } from '@/search';
 import { Lines, RelationPath } from '@/Relation/Lines';
+import { themed } from '@/Theming/utils';
 
 export interface RelationProps {}
 const Wrapper = style({
@@ -57,6 +58,9 @@ const ErrorContainer = style({
   fontSize: 12,
   fontFamily,
   letterSpacing: 1,
+  color: Colors.pink[0],
+  background: `${Colors.red[6]}ee`,
+  border: `1px solid ${Colors.red[0]}`,
 });
 const ErrorLock = style({
   width: '100%',
@@ -90,25 +94,34 @@ const SearchIcon = style({
   left: 6,
   zIndex: 200,
 });
-const SearchInput = style({
-  background: `${Colors.main[0]}52`,
-  color: Colors.grey[0],
-  border: 0,
-  width: '100%',
-  minWidth: 0,
-  height: 36,
-  padding: `0 12px`,
-  paddingLeft: 28,
-  fontSize: 14,
-  outline: 0,
-  position: 'relative',
-  userSelect: 'none',
-  $nest: {
-    '&::placeholder': {
-      color: Colors.grey[4],
+const SearchInput = themed(
+  ({
+    colors: {
+      relation: {
+        searchInput: { background, color, placeholder },
+      },
     },
-  },
-});
+  }) =>
+    style({
+      background,
+      color,
+      border: 0,
+      width: '100%',
+      minWidth: 0,
+      height: 36,
+      padding: `0 12px`,
+      paddingLeft: 28,
+      fontSize: 14,
+      outline: 0,
+      position: 'relative',
+      userSelect: 'none',
+      $nest: {
+        '&::placeholder': {
+          color: placeholder,
+        },
+      },
+    }),
+);
 function insert<T>(arr: T[], index: number, before: T[], after: T[]) {
   return [
     ...arr.slice(0, index),
@@ -127,7 +140,6 @@ export const Relation: React.FC<RelationProps> = () => {
   const { lockGraf, grafErrors } = useErrorsState();
   const { menuState, setMenuState } = useNavigationState();
   const { setActions } = useIOState();
-  const { themed } = useTheme();
   const [currentNodes, setCurrentNodes] = useState<ParserField[]>(
     sortByConnection(tree.nodes.concat(libraryTree.nodes)),
   );
@@ -140,6 +152,7 @@ export const Relation: React.FC<RelationProps> = () => {
     { to: RelationPath; from: RelationPath[] }[]
   >();
   const [searchVisible, setSearchVisible] = useState<boolean>(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
     tRefs = {};
@@ -327,7 +340,7 @@ export const Relation: React.FC<RelationProps> = () => {
           {searchVisible && (
             <input
               autoFocus={true}
-              className={SearchInput}
+              className={SearchInput(theme)}
               placeholder="Search..."
               type="text"
               onChange={(e) => handleSearch(e.target.value)}
@@ -364,11 +377,7 @@ export const Relation: React.FC<RelationProps> = () => {
           </div>
         )}
 
-        {grafErrors && (
-          <div className={themed('ErrorContainer')(ErrorContainer)}>
-            {grafErrors}
-          </div>
-        )}
+        {grafErrors && <div className={ErrorContainer}>{grafErrors}</div>}
       </div>
     </>
   );

@@ -12,6 +12,7 @@ import {
   useTheme,
 } from '@/state/containers';
 import { Colors } from '@/Colors';
+import { themed } from '@/Theming/utils';
 
 const unfold = keyframes({
   ['0%']: {
@@ -23,25 +24,29 @@ const unfold = keyframes({
 });
 export interface GrafProps {}
 
-const Wrapper = style({
-  width: '100%',
-  height: '100%',
-  overflowX: 'hidden',
-  position: 'relative',
-  flex: 1,
-  background: `#0b050d`,
-  overflowY: 'auto',
-  scrollbarColor: `${Colors.grey[8]} ${Colors.grey[10]}`,
-});
+const Wrapper = themed(({ colors: { graf: { wrapperBackground } } }) =>
+  style({
+    width: '100%',
+    height: '100%',
+    overflowX: 'hidden',
+    position: 'relative',
+    flex: 1,
+    background: wrapperBackground,
+    overflowY: 'auto',
+    scrollbarColor: `${Colors.grey[8]} ${Colors.grey[10]}`,
+  }),
+);
 const AnimatedWrapper = style({});
-const Main = style({
-  width: '100%',
-  height: '100%',
-  position: 'relative',
-  fontFamily,
-  backgroundSize: `100px 100px`,
-  backgroundImage: `linear-gradient(to right, #ffffff04 1px, transparent 1px), linear-gradient(to bottom, #ffffff04 1px, transparent 1px)`,
-});
+const Main = themed(({ colors: { graf: { background } } }) =>
+  style({
+    width: '100%',
+    height: '100%',
+    position: 'relative',
+    fontFamily,
+    backgroundSize: `100px 100px`,
+    background,
+  }),
+);
 const ErrorContainer = style({
   position: 'absolute',
   zIndex: 2,
@@ -54,6 +59,9 @@ const ErrorContainer = style({
   fontSize: 12,
   fontFamily,
   letterSpacing: 1,
+  color: Colors.pink[0],
+  background: `${Colors.red[6]}ee`,
+  border: `1px solid ${Colors.red[0]}`,
 });
 const ErrorLock = style({
   width: '100%',
@@ -75,19 +83,31 @@ const ErrorLockMessage = style({
   color: Colors.red[0],
   background: Colors.main[10],
 });
-const SubNodeContainer = style({
-  animationName: unfold,
-  animationTimingFunction: 'ease-in-out',
-  width: 'min(clamp(400px, 40%, 1280px), calc(100vw - 50px))',
-  animationDuration: '0.25s',
-  background: Colors.grey[9],
-  fontFamily,
-  right: 0,
-  top: 0,
-  bottom: 0,
-  scrollbarColor: `${Colors.grey[8]} ${Colors.grey[10]}`,
-  transition: `max-width 0.25s ease-in-out`,
-});
+const SubNodeContainer = themed(
+  ({
+    colors: {
+      graf: {
+        node: {
+          background,
+          scrollbar: { inner, outer },
+        },
+      },
+    },
+  }) =>
+    style({
+      animationName: unfold,
+      animationTimingFunction: 'ease-in-out',
+      width: 'min(clamp(400px, 40%, 1280px), calc(100vw - 50px))',
+      animationDuration: '0.25s',
+      background,
+      fontFamily,
+      right: 0,
+      top: 0,
+      bottom: 0,
+      scrollbarColor: `${inner} ${outer}`,
+      transition: `max-width 0.25s ease-in-out`,
+    }),
+);
 let snapLock = true;
 
 export const Graf: React.FC<GrafProps> = () => {
@@ -108,7 +128,7 @@ export const Graf: React.FC<GrafProps> = () => {
   const { lockGraf, grafErrors } = useErrorsState();
   const { setMenuState } = useNavigationState();
   const { setActions } = useIOState();
-  const { themed } = useTheme();
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (snapLock) {
@@ -160,7 +180,7 @@ export const Graf: React.FC<GrafProps> = () => {
   return (
     <>
       {node && wrapperRef.current && (
-        <div className={SubNodeContainer} onClick={() => {}}>
+        <div className={SubNodeContainer(theme)} onClick={() => {}}>
           <ActiveNode
             readonly={readonly}
             onDelete={(nodeToDelete) => {
@@ -190,12 +210,12 @@ export const Graf: React.FC<GrafProps> = () => {
       )}
       <div
         ref={wrapperRef}
-        className={`${Wrapper} ${node ? AnimatedWrapper : ''}`}
+        className={`${Wrapper(theme)} ${node ? AnimatedWrapper : ''}`}
         onClick={() => {
           setSelectedNode(undefined);
         }}
       >
-        <div className={Main}>{!lockGraf && <PaintNodes />}</div>
+        <div className={Main(theme)}>{!lockGraf && <PaintNodes />}</div>
         {lockGraf && (
           <div
             className={ErrorLock}
@@ -209,11 +229,7 @@ export const Graf: React.FC<GrafProps> = () => {
           </div>
         )}
 
-        {grafErrors && (
-          <div className={themed('ErrorContainer')(ErrorContainer)}>
-            {grafErrors}
-          </div>
-        )}
+        {grafErrors && <div className={ErrorContainer}>{grafErrors}</div>}
       </div>
     </>
   );

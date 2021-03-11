@@ -20,6 +20,8 @@ import {
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { DiffEditor } from '@/DiffEditor';
 import { Relation } from '@/Relation/Relation';
+import { EditorTheme } from '@/Theming/model';
+import { DarkTheme } from '@/Theming/DarkTheme';
 
 export const Main = style({
   display: 'flex',
@@ -62,6 +64,7 @@ export interface EditorProps extends Theming {
   };
   onPaneChange?: (pane: ActivePane) => void;
   setSchema: (props: PassedSchema, isInvalid?: boolean) => void;
+  theme?: EditorTheme;
 }
 
 let stopCodeFromTreeGeneration = false;
@@ -79,7 +82,9 @@ export const Editor = ({
   onPaneChange,
   setSchema,
   diffSchemas,
+  theme = DarkTheme,
 }: EditorProps) => {
+  const { theme: currentTheme, setTheme } = useTheme();
   const [sidebarSize, setSidebarSize] = useState<string | number>(
     initialSizeOfSidebar,
   );
@@ -90,7 +95,6 @@ export const Editor = ({
     setLockGraf,
     setCodeErrors,
   } = useErrorsState();
-  const { themed } = useTheme();
 
   const {
     tree,
@@ -173,6 +177,12 @@ export const Editor = ({
   };
 
   useEffect(() => {
+    if (theme) {
+      setTheme(theme);
+    }
+  }, [theme]);
+
+  useEffect(() => {
     setReadonly(!!readonly);
   }, [readonly]);
 
@@ -239,10 +249,13 @@ export const Editor = ({
           width={menuState === 'code' ? '100%' : sidebarSize}
         >
           <div
-            className={cx(themed('Sidebar')(Sidebar), {
+            className={cx(Sidebar, {
               [FullScreenContainer]: menuState === 'code',
             })}
             data-cy={GraphQLEditorDomStructure.tree.sidebar.name}
+            style={{
+              background: currentTheme.colors.menu.background,
+            }}
           >
             {(menuState === 'code' || menuState === 'code-diagram') && (
               <CodePane

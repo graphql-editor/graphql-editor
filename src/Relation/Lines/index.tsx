@@ -31,7 +31,6 @@ export const Lines: React.FC<LinesProps> = ({ relations, selectedNode }) => {
     <svg className={RelationsContainer}>
       {relations?.map((r, index) => {
         const usedToIndexes: number[] = [];
-        console.log(r.to.field);
         return r.from?.map((rf, i) => {
           const fromField = selectedNode?.name === rf.field.name;
           const toField = r.to.field.name === selectedNode?.name;
@@ -45,7 +44,6 @@ export const Lines: React.FC<LinesProps> = ({ relations, selectedNode }) => {
                     fa.type.name === rf.field.name &&
                     !usedToIndexes.includes(argIndex),
                 ) || 0;
-            console.log(rf.field.name, portNumber);
             portNumber = portNumber === -1 ? 0 : portNumber;
             usedToIndexes.push(portNumber);
           }

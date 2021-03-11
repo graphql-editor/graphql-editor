@@ -12,30 +12,34 @@ import { GraphQLColors } from '@/editor/theme';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { useTreesState } from '@/state/containers/trees';
 import { MenuSearch } from '@/Graf/Node/components';
+import { themed } from '@/Theming/utils';
+import { useTheme } from '@/state/containers';
 export interface RootNodeProps {
   node: ParserField;
   libraryNode?: ParserField;
   readonly?: boolean;
 }
-const NodeCaption = style({
-  flexBasis: '100%',
-  margin: `15px 15px`,
-  display: 'flex',
-  borderBottom: `1px solid`,
-  paddingBottom: 5,
-  alignItems: 'center',
-  userSelect: 'none',
-  '-moz-user-select': '-moz-none',
-  $nest: {
-    ...Object.keys(GraphQLColors).reduce((a, b) => {
-      a[`&.CaptionType-${b}`] = {
-        color: `${GraphQLColors[b]}`,
-        borderColor: `${GraphQLColors[b]}22`,
-      };
-      return a;
-    }, {} as Record<string, NestedCSSProperties>),
-  },
-});
+const NodeCaption = themed(({ colors: { colors } }) =>
+  style({
+    flexBasis: '100%',
+    margin: `15px 15px`,
+    display: 'flex',
+    borderBottom: `1px solid`,
+    paddingBottom: 5,
+    alignItems: 'center',
+    userSelect: 'none',
+    '-moz-user-select': '-moz-none',
+    $nest: {
+      ...Object.keys(GraphQLColors).reduce((a, b) => {
+        a[`&.CaptionType-${b}`] = {
+          color: `${(colors as any)[b]}`,
+          borderColor: `${(colors as any)[b]}22`,
+        };
+        return a;
+      }, {} as Record<string, NestedCSSProperties>),
+    },
+  }),
+);
 const CaptionTitle = style({
   marginRight: 10,
 });
@@ -53,13 +57,14 @@ export const RootNode: React.FC<RootNodeProps> = ({
   readonly,
 }) => {
   const thisNode = useRef<HTMLDivElement>(null);
+  const { theme } = useTheme();
   const { tree, setTree } = useTreesState();
 
   const [filterNodes, setFilterNodes] = useState('');
 
   return (
     <div className={NodeContainer} ref={thisNode}>
-      <div className={`${NodeCaption} CaptionType-${node.name}`}>
+      <div className={`${NodeCaption(theme)} CaptionType-${node.name}`}>
         <span className={CaptionTitle}>{node.name}</span>
         <MenuSearch
           autoFocus={false}

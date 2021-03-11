@@ -2,12 +2,13 @@ import React, { useRef, useState } from 'react';
 import { ParserField } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { Colors } from '@/Colors';
-import { GraphQLBackgrounds } from '@/editor/theme';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { NodeTitle } from './SharedNode';
 import { fontFamily } from '@/vars';
 import { useTreesState } from '@/state/containers/trees';
 import { Plus } from '@/Graf/icons';
+import { themed } from '@/Theming/utils';
+import { useTheme } from '@/state/containers';
 export interface NewNodeProps {
   node: ParserField;
   onCreate: (name: string) => void;
@@ -42,7 +43,7 @@ const NodeCreate: NestedCSSProperties = {
     '&.NameError': NameError,
   },
 };
-const MainNodeArea: NestedCSSProperties = {
+const MainNodeArea = themed<NestedCSSProperties>((theme) => ({
   position: 'relative',
   borderColor: 'transparent',
   borderWidth: 1,
@@ -52,11 +53,11 @@ const MainNodeArea: NestedCSSProperties = {
   transition: `border-color 0.25s ease-in-out`,
   $nest: {
     '.NodeTitle': {
-      ...NodeTitle,
+      ...NodeTitle(theme),
       width: 200,
       background: 'transparent',
       $nest: {
-        ...NodeTitle.$nest,
+        ...NodeTitle(theme).$nest,
         '.NodeCreate': NodeCreate,
         '.NameErrorMessage': NameErrorMessage,
       },
@@ -65,19 +66,21 @@ const MainNodeArea: NestedCSSProperties = {
       borderColor: Colors.green[0],
     },
   },
-};
-const NodeContainer = style({
-  margin: 10,
-  $nest: {
-    '.MainNodeArea': MainNodeArea,
-    ...Object.keys(GraphQLBackgrounds).reduce((a, b) => {
-      a[`.NodeType-${b}`] = {
-        borderColor: GraphQLBackgrounds[b],
-      };
-      return a;
-    }, {} as Record<string, NestedCSSProperties>),
-  },
-});
+}));
+const NodeContainer = themed((theme) =>
+  style({
+    margin: 10,
+    $nest: {
+      '.MainNodeArea': MainNodeArea(theme),
+      ...Object.keys(theme.colors.backgrounds).reduce((a, b) => {
+        a[`.NodeType-${b}`] = {
+          borderColor: (theme.colors.backgrounds as any)[b],
+        };
+        return a;
+      }, {} as Record<string, NestedCSSProperties>),
+    },
+  }),
+);
 
 const PlusButton = style({
   marginLeft: 'auto',
@@ -98,6 +101,7 @@ export const NewNode: React.FC<NewNodeProps> = ({ node, onCreate }) => {
   const [newName, setNewName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const { libraryTree, tree, setSelectedNode } = useTreesState();
+  const { theme } = useTheme();
   const isError =
     tree.nodes.map((n) => n.name).includes(newName) ||
     libraryTree.nodes.map((n) => n.name).includes(newName);
@@ -109,7 +113,7 @@ export const NewNode: React.FC<NewNodeProps> = ({ node, onCreate }) => {
     setIsCreating(false);
   };
   return (
-    <div className={`${NodeContainer}`} ref={thisNode} style={{}}>
+    <div className={NodeContainer(theme)} ref={thisNode} style={{}}>
       <div
         className={`MainNodeArea NodeType-${node.name}`}
         onClick={(e) => {

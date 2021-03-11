@@ -1,21 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import { style } from 'typestyle';
-import { Colors } from '@/Colors';
 import { fontFamily } from '@/vars';
 import { FIELD_NAME_SIZE } from '@/Graf/constants';
 import cx from 'classnames';
-const Input = style({
-  border: 0,
-  background: 'transparent',
-  color: Colors.grey[0],
-  minWidth: 'auto',
-  padding: 0,
-  fontFamily: fontFamily,
-  fontSize: FIELD_NAME_SIZE,
-});
-const InputIsError = style({
-  color: Colors.red[0],
-});
+import { themed } from '@/Theming/utils';
+import { useTheme } from '@/state/containers';
+const Input = themed(({ colors: { graf: { node: { color } } } }) =>
+  style({
+    border: 0,
+    background: 'transparent',
+    color,
+    minWidth: 'auto',
+    padding: 0,
+    fontFamily: fontFamily,
+    fontSize: FIELD_NAME_SIZE,
+  }),
+);
+const InputIsError = themed(
+  ({
+    colors: {
+      graf: {
+        node: {
+          error: { color },
+        },
+      },
+    },
+  }) =>
+    style({
+      color,
+    }),
+);
 export const EditableText: React.FC<{
   value: string;
   onChange?: (value: string) => void;
@@ -26,6 +40,7 @@ export const EditableText: React.FC<{
   const [editedValue, setEditedValue] = useState('');
   const [focus, setFocus] = useState(!!autoFocus);
   const [isError, setIsError] = useState(false);
+  const { theme } = useTheme();
   const checkEdit = () => {
     setFocus(false);
     if (isError) {
@@ -51,8 +66,8 @@ export const EditableText: React.FC<{
       {onChange ? (
         <input
           autoFocus={focus}
-          className={cx(Input, {
-            [InputIsError]: isError,
+          className={cx(Input(theme), {
+            [InputIsError(theme)]: isError,
           })}
           value={editedValue}
           pattern="[_A-Za-z][_0-9A-Za-z]*"

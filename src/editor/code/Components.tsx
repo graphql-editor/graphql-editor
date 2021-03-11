@@ -2,21 +2,26 @@ import cx from 'classnames';
 import React from 'react';
 import * as styles from './style/Components';
 import { Resizable, ResizeCallback } from 're-resizable';
+import { useTheme } from '@/state/containers';
 
 export interface TitleOfPaneProps {
   children: React.ReactNode;
 }
 
-export const TitleOfPane = ({ children }: TitleOfPaneProps) => (
-  <div className={styles.TitleOfPane}>{children}</div>
-);
-export const StatusDot = ({ status }: { status: styles.StatusDotProps }) => (
-  <div
-    className={cx(styles.StatusDot, {
-      [status]: true,
-    })}
-  />
-);
+export const TitleOfPane = ({ children }: TitleOfPaneProps) => {
+  const { theme } = useTheme();
+  return <div className={styles.TitleOfPane(theme)}>{children}</div>;
+};
+export const StatusDot = ({ status }: { status: styles.StatusDotProps }) => {
+  const { theme } = useTheme();
+  return (
+    <div
+      className={cx(styles.StatusDot(theme), {
+        [status]: true,
+      })}
+    />
+  );
+};
 
 export const DynamicResize: React.FunctionComponent<{
   width: number | string;

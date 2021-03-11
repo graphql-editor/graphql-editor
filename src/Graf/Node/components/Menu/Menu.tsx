@@ -1,23 +1,37 @@
 import { style } from 'typestyle';
-import { Colors } from '@/Colors';
 import React, { useRef, useState, useEffect } from 'react';
+import { themed } from '@/Theming/utils';
+import { useTheme } from '@/state/containers';
 
 const Wrapper = style({
   zIndex: 4,
   width: 220,
   borderRadius: 4,
 });
-const Content = style({
-  background: Colors.blue[10],
-  border: `solid 1px ${Colors.blue[0]}22`,
-  borderRadius: 4,
-  padding: 0,
-});
-const Title = style({
-  padding: 16,
-  fontSize: 14,
-  color: Colors.blue[0],
-});
+const Content = themed(
+  ({
+    colors: {
+      graf: {
+        node: {
+          menu: { background, borderColor },
+        },
+      },
+    },
+  }) =>
+    style({
+      background,
+      border: `solid 1px ${borderColor}22`,
+      borderRadius: 4,
+      padding: 0,
+    }),
+);
+const Title = themed(({ colors: { graf: { node: { menu: { color } } } } }) =>
+  style({
+    padding: 16,
+    fontSize: 14,
+    color,
+  }),
+);
 interface MenuProps
   extends React.DetailedHTMLProps<
     React.HTMLAttributes<HTMLDivElement>,
@@ -35,6 +49,7 @@ export const Menu: React.FC<MenuProps> = ({
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
   const [listener, setListener] = useState<(e: MouseEvent) => void>();
+  const { theme } = useTheme();
   useEffect(() => {
     setListener(() => {
       if (listener) {
@@ -62,8 +77,8 @@ export const Menu: React.FC<MenuProps> = ({
   }, [menuRef]);
   return (
     <div {...props} className={Wrapper} ref={menuRef}>
-      <div className={Content}>
-        <div className={Title}>{menuName}</div>
+      <div className={Content(theme)}>
+        <div className={Title(theme)}>{menuName}</div>
         {children}
       </div>
     </div>

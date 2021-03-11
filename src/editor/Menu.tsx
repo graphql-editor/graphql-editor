@@ -3,35 +3,41 @@ import * as Icons from './icons';
 import cx from 'classnames';
 import { style } from 'typestyle';
 
-import { Colors } from '@/Colors';
 import { menuWidth } from '@/vars';
 import { GraphQLEditorDomStructure } from '@/domStructure';
+import { useTheme } from '@/state/containers';
+import { themed } from '@/Theming/utils';
 
-export const HiderPanel = style({
-  width: menuWidth,
-  background: Colors.main[10],
-  color: Colors.grey[7],
-  fontSize: 12,
-  padding: 3,
-  zIndex: 3,
-});
-export const Hider = style({
-  width: 42,
-  height: 42,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  userSelect: 'none',
-  cursor: 'pointer',
-  $nest: {
-    '&:hover': {
-      background: Colors.grey[10],
+export const HiderPanel = themed(({ colors: { menu } }) =>
+  style({
+    width: menuWidth,
+    background: menu.background,
+    color: menu.icon.inactive,
+    fontSize: 12,
+    padding: 3,
+    zIndex: 3,
+  }),
+);
+
+export const Hider = themed(({ colors: { menu: { icon } } }) =>
+  style({
+    width: 42,
+    height: 42,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    userSelect: 'none',
+    cursor: 'pointer',
+    $nest: {
+      '&:hover': {
+        color: icon.hover,
+      },
+      '&.active': {
+        color: icon.active,
+      },
     },
-    '&.active': {
-      color: Colors.pink[0],
-    },
-  },
-});
+  }),
+);
 
 export type ActivePane =
   | 'code'
@@ -53,12 +59,13 @@ export const Menu = ({
   activePane,
   excludePanes = [],
 }: MenuProps) => {
+  const { theme } = useTheme();
   return (
-    <div className={HiderPanel}>
+    <div className={HiderPanel(theme)}>
       {!excludePanes.includes('diagram') && (
         <div
           data-cy={MenuChildren.diagram}
-          className={cx(Hider, {
+          className={cx(Hider(theme), {
             active: activePane === 'diagram',
           })}
           onClick={() => setActivePane('diagram')}
@@ -70,7 +77,7 @@ export const Menu = ({
       {!excludePanes.includes('code-diagram') && (
         <div
           data-cy={MenuChildren.codeDiagram}
-          className={cx(Hider, {
+          className={cx(Hider(theme), {
             active: activePane === 'code-diagram',
           })}
           onClick={() => setActivePane('code-diagram')}
@@ -82,7 +89,7 @@ export const Menu = ({
       {!excludePanes.includes('code') && (
         <div
           data-cy={MenuChildren.code}
-          className={cx(Hider, {
+          className={cx(Hider(theme), {
             active: activePane === 'code',
           })}
           onClick={() => setActivePane('code')}
@@ -94,7 +101,7 @@ export const Menu = ({
       {!excludePanes.includes('hierarchy') && (
         <div
           data-cy={MenuChildren.hierarchy}
-          className={cx(Hider, {
+          className={cx(Hider(theme), {
             active: activePane === 'hierarchy',
           })}
           onClick={() => setActivePane('hierarchy')}
@@ -106,7 +113,7 @@ export const Menu = ({
       {!excludePanes.includes('diff') && (
         <div
           data-cy={MenuChildren.diff}
-          className={cx(Hider, {
+          className={cx(Hider(theme), {
             active: activePane === 'diff',
           })}
           onClick={() => setActivePane('diff')}
@@ -118,7 +125,7 @@ export const Menu = ({
       {!excludePanes.includes('relation') && (
         <div
           data-cy={MenuChildren.relation}
-          className={cx(Hider, {
+          className={cx(Hider(theme), {
             active: activePane === 'relation',
           })}
           onClick={() => setActivePane('relation')}

@@ -18,6 +18,7 @@ import {
   KeyboardActions,
   useErrorsState,
   useIOState,
+  useTheme,
 } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 
@@ -51,6 +52,7 @@ export const CodePane = (props: CodePaneProps) => {
   const [decorationIds, setDecorationIds] = useState<string[]>([]);
   const { codeErrors, setCodeErrors } = useErrorsState();
   const { setActions } = useIOState();
+  const { theme } = useTheme();
   const generateEnabled = !readonly;
   useEffect(() => {
     if (scrollTo) {
@@ -187,7 +189,7 @@ export const CodePane = (props: CodePaneProps) => {
     <>
       <TitleOfPane>
         <div
-          className={cx(styles.Generate, {
+          className={cx(styles.Generate(theme), {
             disabled: !generateEnabled,
             ready: generateEnabled && syncStatus === StatusDotProps.nosync,
           })}

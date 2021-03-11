@@ -7,6 +7,8 @@ import { ActiveType } from '@/Graf/Node/Type';
 import { useTreesState } from '@/state/containers/trees';
 import { Title } from '@/Graf/Node/components';
 import { FieldProps as GrafFieldProps } from '@/Graf/Node/models';
+import { themed } from '@/Theming/utils';
+import { useTheme } from '@/state/containers';
 
 const Name = style({
   fontSize: FIELD_NAME_SIZE,
@@ -15,29 +17,38 @@ const Name = style({
   minWidth: 30,
 });
 
-const Main = style({
-  position: 'relative',
-  display: 'flex',
-  alignItems: 'center',
-  height: 31,
-  color: Colors.grey[0],
-  margin: `0 0`,
-  transition: 'background 0.25s ease-in-out',
-  $nest: {
-    '.NodeFieldPortPlaceholder': {
-      width: 24,
-      height: 16,
-    },
-    '&.ActiveParent': {
-      cursor: 'pointer',
-      $nest: {
-        '&:hover': {
-          background: Colors.main[3],
-        },
+const Main = themed(
+  ({
+    colors: {
+      relation: {
+        unknownField: { color, whenActiveParentBackground },
       },
     },
-  },
-});
+  }) =>
+    style({
+      position: 'relative',
+      display: 'flex',
+      alignItems: 'center',
+      height: 31,
+      color,
+      margin: `0 0`,
+      transition: 'background 0.25s ease-in-out',
+      $nest: {
+        '.NodeFieldPortPlaceholder': {
+          width: 24,
+          height: 16,
+        },
+        '&.ActiveParent': {
+          cursor: 'pointer',
+          $nest: {
+            '&:hover': {
+              background: whenActiveParentBackground,
+            },
+          },
+        },
+      },
+    }),
+);
 const Type = style({ fontSize: FIELD_TYPE_SIZE, color: Colors.green[0] });
 type FieldProps = Pick<GrafFieldProps, 'node' | 'parentNodeTypeName'> & {
   onClick: () => void;
@@ -53,6 +64,7 @@ export const Field: React.FC<FieldProps> = ({
   active,
 }) => {
   const { parentTypes } = useTreesState();
+  const { theme } = useTheme();
   return (
     <div
       onClick={(e) => {
@@ -61,7 +73,7 @@ export const Field: React.FC<FieldProps> = ({
           onClick();
         }
       }}
-      className={`NodeType-${parentNodeTypeName} ${Main} ${
+      className={`NodeType-${parentNodeTypeName} ${Main(theme)} ${
         active ? ' ActiveParent' : ''
       }`}
     >
