@@ -6,7 +6,7 @@ import { StatusDot, TitleOfPane } from './Components';
 import * as styles from './style/Code';
 import { StatusDotProps } from './style/Components';
 import {
-  theme,
+  theme as MonacoTheme,
   language,
   conf,
   settings,
@@ -38,7 +38,6 @@ export type CodePaneProps = {
 monaco.languages.register({ id: 'graphqle' });
 monaco.languages.setLanguageConfiguration('graphqle', conf);
 monaco.languages.setMonarchTokensProvider('graphqle', language);
-monaco.editor.defineTheme('graphql-editor', theme);
 
 /**
  * React compontent holding GraphQL IDE
@@ -54,6 +53,11 @@ export const CodePane = (props: CodePaneProps) => {
   const { setActions } = useIOState();
   const { theme } = useTheme();
   const generateEnabled = !readonly;
+  useEffect(() => {
+    if (theme) {
+      monaco.editor.defineTheme('graphql-editor', MonacoTheme(theme));
+    }
+  }, [theme]);
   useEffect(() => {
     if (scrollTo) {
       const items = monacoGql
@@ -217,7 +221,7 @@ export const CodePane = (props: CodePaneProps) => {
         <StatusDot status={syncStatus} />
       </TitleOfPane>
       <div
-        className={cx(styles.CodeContainer)}
+        className={cx(styles.CodeContainer(theme))}
         ref={holder}
         data-cy={GraphQLEditorDomStructure.tree.elements.CodePane.name}
       >

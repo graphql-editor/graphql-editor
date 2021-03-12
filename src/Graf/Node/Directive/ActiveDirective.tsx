@@ -12,6 +12,7 @@ import {
 } from '@/Graf/Node/components';
 import { Colors } from '@/Colors';
 import { FieldProps } from '@/Graf/Node/models';
+import { darken, toHex } from 'color2k';
 
 const Name = style({
   fontSize: 10,
@@ -21,7 +22,7 @@ const Name = style({
   whiteSpace: 'nowrap',
 });
 const DirectiveBackground = style({
-  background: Colors.pink[5],
+  background: toHex(darken(Colors.pink, 0.5)),
 });
 const OptionsMenuContainer = style({
   position: 'absolute',

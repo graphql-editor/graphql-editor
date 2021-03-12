@@ -1,5 +1,6 @@
 import { Colors } from '@/Colors';
 import * as Icons from '@/Graf/icons';
+import { darken, toHex } from 'color2k';
 import React from 'react';
 import { style } from 'typestyle';
 
@@ -24,12 +25,12 @@ const Main = style({
   alignItems: 'center',
   display: 'flex',
   justifyContent: 'center',
-  backgroundColor: `${Colors.grey[9]}00`,
+  backgroundColor: `${toHex(darken(Colors.grey, 0.9))}00`,
   cursor: 'pointer',
   transition: 'all 0.25s ease-in-out',
   $nest: {
     '&:hover': {
-      backgroundColor: `${Colors.grey[9]}ff !important`,
+      backgroundColor: `${toHex(darken(Colors.grey, 0.9))}ff !important`,
       $nest: {
         '.EditArguments': {
           display: 'block',
@@ -51,7 +52,7 @@ const Main = style({
       display: 'none',
       width: 150,
       fontSize: 10,
-      color: Colors.yellow[0],
+      color: Colors.yellow,
       $nest: {
         '&.top': {
           left: -75,

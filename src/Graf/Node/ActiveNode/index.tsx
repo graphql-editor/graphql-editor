@@ -26,6 +26,7 @@ import { ChangeAllRelatedNodes, isExtensionNode } from '@/GraphQL/Resolve';
 import { ActiveArgument } from '@/Graf/Node/Argument';
 import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
+import { darken, toHex } from 'color2k';
 
 interface NodeProps {
   node: ParserField;
@@ -77,10 +78,10 @@ const MainNodeArea = themed((theme) =>
 );
 const DescriptionPosition: NestedCSSProperties = {
   outline: 'none',
-  border: `1px solid ${Colors.grey[3]}00`,
+  border: `1px solid ${toHex(darken(Colors.grey, 0.3))}00`,
   $nest: {
     '&:focus': {
-      border: `1px solid ${Colors.grey[3]}`,
+      border: `1px solid ${toHex(darken(Colors.grey, 0.3))}`,
     },
   },
 };
@@ -115,11 +116,7 @@ const NodeContainer = themed(
         },
         ...Object.keys(darkBackgrounds).reduce((a, b) => {
           a[`&.NodeBackground-${b}`] = {
-            background: `${mix(
-              (darkBackgrounds as any)[b],
-              Colors.grey[10],
-              40,
-            )}`,
+            background: (darkBackgrounds as any)[b],
           };
           return a;
         }, {} as Record<string, NestedCSSProperties>),
@@ -127,7 +124,7 @@ const NodeContainer = themed(
           a[`.NodeType-${b}`] = {
             $nest: {
               '&:hover, &.Active': {
-                background: mix((backgrounds as any)[b], Colors.grey[0], 80),
+                background: mix((backgrounds as any)[b], Colors.grey, 80),
               },
             },
           };

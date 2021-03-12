@@ -8,7 +8,6 @@ import {
 import { style } from 'typestyle';
 import { PaintNode } from '@/Graf/Node/PaintNode';
 import { NewNode } from '@/Graf/Node/NewNode';
-import { GraphQLColors } from '@/editor/theme';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { useTreesState } from '@/state/containers/trees';
 import { MenuSearch } from '@/Graf/Node/components';
@@ -30,7 +29,7 @@ const NodeCaption = themed(({ colors: { colors } }) =>
     userSelect: 'none',
     '-moz-user-select': '-moz-none',
     $nest: {
-      ...Object.keys(GraphQLColors).reduce((a, b) => {
+      ...Object.keys(colors).reduce((a, b) => {
         a[`&.CaptionType-${b}`] = {
           color: `${(colors as any)[b]}`,
           borderColor: `${(colors as any)[b]}22`,

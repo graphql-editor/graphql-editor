@@ -1,7 +1,7 @@
 import React from 'react';
 import { ParserField } from 'graphql-zeus';
-import { GraphQLColors } from '@/editor/theme';
 import { compileTypeOptions } from '@/GraphQL/Compile';
+import { useTheme } from '@/state/containers';
 export const ActiveType: React.FC<
   Pick<ParserField, 'type'> & {
     parentTypes?: Record<string, string>;
@@ -9,13 +9,18 @@ export const ActiveType: React.FC<
   }
 > = ({ type, parentTypes, onClick }) => {
   let compiledType = compileTypeOptions({ type });
+  const {
+    theme: {
+      colors: { colors },
+    },
+  } = useTheme();
 
   const getTypeColor = () => {
-    if (type.name in GraphQLColors) {
-      return (GraphQLColors as any)[type.name] as string;
+    if (type.name in colors) {
+      return (colors as any)[type.name] as string;
     }
     if (parentTypes && type.name in parentTypes) {
-      return (GraphQLColors as any)[parentTypes[type.name]];
+      return (colors as any)[parentTypes[type.name]];
     }
     return '#fff';
   };

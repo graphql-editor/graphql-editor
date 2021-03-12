@@ -10,19 +10,20 @@ const Wrapper = style({
 });
 const Content = themed(
   ({
+    shadow,
     colors: {
       graf: {
         node: {
-          menu: { background, borderColor },
+          menu: { background },
         },
       },
     },
   }) =>
     style({
       background,
-      border: `solid 1px ${borderColor}22`,
       borderRadius: 4,
       padding: 0,
+      boxShadow: shadow,
     }),
 );
 const Title = themed(({ colors: { graf: { node: { menu: { color } } } } }) =>

@@ -13,6 +13,7 @@ import {
 } from '@/state/containers';
 import { Colors } from '@/Colors';
 import { themed } from '@/Theming/utils';
+import { darken, toHex } from 'color2k';
 
 const unfold = keyframes({
   ['0%']: {
@@ -24,17 +25,25 @@ const unfold = keyframes({
 });
 export interface GrafProps {}
 
-const Wrapper = themed(({ colors: { graf: { wrapperBackground } } }) =>
-  style({
-    width: '100%',
-    height: '100%',
-    overflowX: 'hidden',
-    position: 'relative',
-    flex: 1,
-    background: wrapperBackground,
-    overflowY: 'auto',
-    scrollbarColor: `${Colors.grey[8]} ${Colors.grey[10]}`,
-  }),
+const Wrapper = themed(
+  ({
+    colors: {
+      graf: {
+        wrapperBackground,
+        scrollbar: { inner, outer },
+      },
+    },
+  }) =>
+    style({
+      width: '100%',
+      height: '100%',
+      overflowX: 'hidden',
+      position: 'relative',
+      flex: 1,
+      background: wrapperBackground,
+      overflowY: 'auto',
+      scrollbarColor: `${inner} ${outer}`,
+    }),
 );
 const AnimatedWrapper = style({});
 const Main = themed(({ colors: { graf: { background } } }) =>
@@ -59,9 +68,9 @@ const ErrorContainer = style({
   fontSize: 12,
   fontFamily,
   letterSpacing: 1,
-  color: Colors.pink[0],
-  background: `${Colors.red[6]}ee`,
-  border: `1px solid ${Colors.red[0]}`,
+  color: Colors.pink,
+  background: `${toHex(darken(Colors.red, 0.6))}ee`,
+  border: `1px solid ${Colors.red}`,
 });
 const ErrorLock = style({
   width: '100%',
@@ -69,7 +78,7 @@ const ErrorLock = style({
   position: 'absolute',
   top: 0,
   left: 0,
-  background: `${Colors.main[9]}99`,
+  background: `${toHex(darken(Colors.main, 0.9))}99`,
   cursor: 'pointer',
   display: 'flex',
   justifyContent: 'center',
@@ -80,8 +89,8 @@ const ErrorLockMessage = style({
   fontFamily,
   fontSize: 14,
   padding: 30,
-  color: Colors.red[0],
-  background: Colors.main[10],
+  color: Colors.red,
+  background: toHex(darken(Colors.main, 0.95)),
 });
 const SubNodeContainer = themed(
   ({

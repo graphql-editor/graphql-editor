@@ -62,7 +62,7 @@ export const TopNodeMenu: React.FC<{
             title="Click to add field"
           >
             <Plus
-              fill={menuOpen === 'field' ? Colors.green[0] : Colors.grey[0]}
+              fill={menuOpen === 'field' ? Colors.green : Colors.grey}
               height={ICON_SIZE}
               width={ICON_SIZE}
             />
@@ -109,7 +109,7 @@ export const TopNodeMenu: React.FC<{
             title="Click to implement interface"
           >
             <Interface
-              fill={menuOpen === 'interface' ? Colors.green[0] : Colors.grey[0]}
+              fill={menuOpen === 'interface' ? Colors.green : Colors.grey}
               height={ICON_SIZE}
               width={ICON_SIZE}
             />
@@ -130,7 +130,7 @@ export const TopNodeMenu: React.FC<{
           title="Click to add directive"
         >
           <Monkey
-            fill={menuOpen === 'directive' ? Colors.green[0] : Colors.grey[0]}
+            fill={menuOpen === 'directive' ? Colors.green : Colors.grey}
             height={ICON_SIZE}
             width={ICON_SIZE}
           />
@@ -161,9 +161,7 @@ export const TopNodeMenu: React.FC<{
             <Tick
               height={ICON_SIZE}
               width={ICON_SIZE}
-              fill={
-                menuOpen === 'operations' ? Colors.green[0] : Colors.grey[0]
-              }
+              fill={menuOpen === 'operations' ? Colors.green : Colors.grey}
             />
             {menuOpen === 'operations' && (
               <div className={NodeMenuContainer}>
@@ -181,7 +179,7 @@ export const TopNodeMenu: React.FC<{
         title="Click to see node actions"
       >
         <More
-          fill={menuOpen === 'options' ? Colors.green[0] : Colors.grey[0]}
+          fill={menuOpen === 'options' ? Colors.green : Colors.grey}
           height={ICON_SIZE}
           width={ICON_SIZE}
         />

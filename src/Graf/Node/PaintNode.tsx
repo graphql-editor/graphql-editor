@@ -25,7 +25,7 @@ const MainNodeArea = themed(
       transition: `border-color 0.25s ease-in-out`,
       display: 'flex',
       alignItems: 'stretch',
-      color: Colors.grey[0],
+      color: Colors.grey,
       fontSize: 12,
       padding: `10px 15px`,
       userSelect: 'none',

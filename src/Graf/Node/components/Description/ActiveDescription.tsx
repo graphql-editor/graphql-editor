@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { style } from 'typestyle';
 import { Colors } from '@/Colors';
+import { darken, toHex } from 'color2k';
 
 const Main = style({
-  background: `${Colors.grey[10]}44`,
-  color: Colors.grey[3],
+  background: `${toHex(darken(Colors.grey, 0.95))}44`,
+  color: toHex(darken(Colors.grey, 0.3)),
   padding: 10,
   fontSize: 12,
   width: '100%',
@@ -15,10 +16,10 @@ const Main = style({
   $nest: {
     '&:focus': {
       cursor: 'auto',
-      borderBottom: `1px solid ${Colors.grey[0]}11`,
+      borderBottom: `1px solid ${Colors.grey}11`,
     },
     '&::placeholder': {
-      color: `${Colors.grey[0]}99`,
+      color: `${Colors.grey}99`,
     },
   },
 });

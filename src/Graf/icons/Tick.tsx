@@ -1,7 +1,7 @@
 import React from 'react';
 import { Colors } from '@/Colors';
 export const Tick: React.FC<React.SVGProps<SVGSVGElement>> = ({
-  fill = Colors.green[0],
+  fill = Colors.green,
   ...props
 }) => {
   return (

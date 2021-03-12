@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { render } from 'react-dom';
 import { GraphQLEditor } from '../src/index';
 import { PassedSchema } from '../src/Models';
-import { LightTheme } from '../src/Theming/LightTheme';
+import { DarkTheme } from '../src/Theming/DarkTheme';
 import * as schemas from './schema';
 
 export const App = () => {
@@ -21,7 +21,7 @@ export const App = () => {
       }}
     >
       <GraphQLEditor
-        theme={LightTheme}
+        theme={DarkTheme}
         setSchema={(props) => {
           setMySchema(props);
         }}

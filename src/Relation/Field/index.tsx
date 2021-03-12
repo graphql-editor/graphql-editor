@@ -49,7 +49,7 @@ const Main = themed(
       },
     }),
 );
-const Type = style({ fontSize: FIELD_TYPE_SIZE, color: Colors.green[0] });
+const Type = style({ fontSize: FIELD_TYPE_SIZE, color: Colors.green });
 type FieldProps = Pick<GrafFieldProps, 'node' | 'parentNodeTypeName'> & {
   onClick: () => void;
   active?: boolean;

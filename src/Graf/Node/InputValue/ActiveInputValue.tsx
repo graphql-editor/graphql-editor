@@ -27,7 +27,7 @@ import { FieldProps } from '@/Graf/Node/models';
 import { FIELD_TYPE_SIZE } from '@/Graf/constants';
 
 const Name = style({ marginRight: 4, overflow: 'hidden' });
-const Type = style({ fontSize: FIELD_TYPE_SIZE, color: Colors.green[0] });
+const Type = style({ fontSize: FIELD_TYPE_SIZE, color: Colors.green });
 const OptionsMenuContainer = style({
   position: 'absolute',
   top: 32,

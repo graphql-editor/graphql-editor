@@ -2,6 +2,9 @@ import React, { useRef } from 'react';
 import { style } from 'typestyle';
 import { Colors } from '@/Colors';
 import { Search, X } from '@/Graf/icons';
+import { darken, toHex } from 'color2k';
+import { themed } from '@/Theming/utils';
+import { useTheme } from '@/state/containers';
 
 interface MenuSearchProps {
   value: string;
@@ -11,24 +14,35 @@ interface MenuSearchProps {
   autoFocus?: boolean;
 }
 
-const Main = style({
-  background: `${Colors.main[0]}22`,
-  color: Colors.grey[0],
-  border: 0,
-  width: '100%',
-  minWidth: 0,
-  height: 36,
-  padding: `0 12px`,
-  paddingLeft: 28,
-  fontSize: 14,
-  outline: 0,
-  position: 'relative',
-  $nest: {
-    '&::placeholder': {
-      color: Colors.grey[4],
+const Main = themed(
+  ({
+    colors: {
+      graf: {
+        root: {
+          search: { background },
+        },
+      },
     },
-  },
-});
+  }) =>
+    style({
+      background,
+      color: Colors.grey,
+      border: 0,
+      width: '100%',
+      minWidth: 0,
+      height: 36,
+      padding: `0 12px`,
+      paddingLeft: 28,
+      fontSize: 14,
+      outline: 0,
+      position: 'relative',
+      $nest: {
+        '&::placeholder': {
+          color: toHex(darken(Colors.grey, 0.4)),
+        },
+      },
+    }),
+);
 
 const SearchIconContainer = style({
   position: 'absolute',
@@ -55,7 +69,7 @@ const Wrapper = style({
   maxWidth: '100%',
   padding: 16,
   paddingTop: 0,
-  paddingBottom: 6,
+  paddingBottom: 0,
 });
 
 export const MenuSearch: React.FC<MenuSearchProps> = ({
@@ -66,6 +80,7 @@ export const MenuSearch: React.FC<MenuSearchProps> = ({
   autoFocus = true,
 }) => {
   const ref = useRef<HTMLInputElement>(null);
+  const { theme } = useTheme();
   return (
     <div className={Wrapper}>
       <span className={SearchIconContainer}>
@@ -79,7 +94,7 @@ export const MenuSearch: React.FC<MenuSearchProps> = ({
       <input
         ref={ref}
         autoFocus={autoFocus}
-        className={Main}
+        className={Main(theme)}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
             onSubmit();

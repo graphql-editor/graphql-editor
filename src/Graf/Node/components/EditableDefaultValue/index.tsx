@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { style } from 'typestyle';
 import { Colors } from '@/Colors';
 import { fontFamily } from '@/vars';
+import { darken, toHex } from 'color2k';
 const Input = style({
   border: 0,
-  background: `${Colors.grey[10]}44`,
+  background: `${toHex(darken(Colors.grey, 0.95))}44`,
   borderRadius: 4,
-  color: Colors.grey[0],
+  color: Colors.grey,
   minWidth: 30,
   fontFamily: fontFamily,
   fontSize: 10,

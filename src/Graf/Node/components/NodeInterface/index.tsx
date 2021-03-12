@@ -1,5 +1,4 @@
 import React from 'react';
-import { GraphQLBackgrounds } from '@/editor/theme';
 import { style } from 'typestyle';
 import { Colors } from '@/Colors';
 import { X } from '@/Graf/icons';
@@ -14,6 +13,7 @@ interface NodeInterfaceProps {
 const NodeInterfaceBlock = themed(
   ({
     colors: {
+      backgrounds,
       graf: {
         node: {
           interface: { color },
@@ -23,7 +23,7 @@ const NodeInterfaceBlock = themed(
   }) =>
     style({
       padding: `3px 6px`,
-      background: GraphQLBackgrounds.interface,
+      background: backgrounds.interface,
       color,
       fontSize: 10,
       borderRadius: 4,
@@ -54,7 +54,7 @@ const NodeInterfaceBlock = themed(
         svg: {
           display: 'none',
           marginLeft: 5,
-          fill: Colors.red[0],
+          fill: Colors.red,
         },
         '&:hover': {
           $nest: {
@@ -90,7 +90,7 @@ export const NodeInterface: React.FC<NodeInterfaceProps> = ({
       {!isLocked && <div className={'DeleteInterface'}>Click to delete</div>}
       <span>
         {children}
-        {!isLocked && <X fill={Colors.red[0]} />}
+        {!isLocked && <X fill={Colors.red} />}
       </span>
     </div>
   );

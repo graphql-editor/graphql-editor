@@ -14,13 +14,13 @@ export interface NewNodeProps {
   onCreate: (name: string) => void;
 }
 const NameError: NestedCSSProperties = {
-  color: Colors.red[0],
+  color: Colors.red,
 };
 const NameErrorMessage: NestedCSSProperties = {
   position: 'absolute',
   height: 30,
   top: -30,
-  color: Colors.red[0],
+  color: Colors.red,
   width: 600,
   fontSize: 10,
   marginLeft: -10,
@@ -28,7 +28,7 @@ const NameErrorMessage: NestedCSSProperties = {
   alignItems: 'center',
 };
 const NodeCreate: NestedCSSProperties = {
-  color: Colors.grey[0],
+  color: Colors.grey,
   background: 'transparent',
   fontSize: 12,
   padding: `5px 0 5px 10px`,
@@ -63,7 +63,7 @@ const MainNodeArea = themed<NestedCSSProperties>((theme) => ({
       },
     },
     '&:hover': {
-      borderColor: Colors.green[0],
+      borderColor: Colors.green,
     },
   },
 }));
@@ -88,8 +88,8 @@ const PlusButton = style({
   justifyContent: 'center',
   alignItems: 'center',
   alignSelf: 'center',
-  color: Colors.grey[0],
-  border: `1px solid ${Colors.grey[0]}11`,
+  color: Colors.grey,
+  border: `1px solid ${Colors.grey}11`,
   width: 20,
   height: 20,
   borderRadius: 10,

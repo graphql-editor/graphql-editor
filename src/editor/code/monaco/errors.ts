@@ -8,7 +8,7 @@ export const mapEditorErrorToMonacoDecoration = (e: EditorError) =>
       className: 'monacoError',
       isWholeLine: true,
       minimap: {
-        color: Colors.red[0],
+        color: Colors.red,
         position: 1,
       },
       hoverMessage: [

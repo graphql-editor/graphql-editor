@@ -28,7 +28,7 @@ const Name = style({
   textOverflow: 'ellipsis',
   minWidth: 30,
 });
-const Type = style({ fontSize: FIELD_TYPE_SIZE, color: Colors.green[0] });
+const Type = style({ fontSize: FIELD_TYPE_SIZE, color: Colors.green });
 const OptionsMenuContainer = style({
   position: 'absolute',
   top: 32,

@@ -17,7 +17,7 @@ const Main = themed(
     },
   }) =>
     style({
-      color: Colors.grey[0],
+      color: Colors.grey,
       maxHeight: 200,
       overflowY: 'auto',
       scrollbarColor: `${inner} ${outer}`,

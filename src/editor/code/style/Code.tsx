@@ -15,13 +15,37 @@ const animationName = keyframes({
 export const Editor = style({
   flex: 1,
 });
-export const CodeContainer = style({
-  flex: 1,
-  overflowY: 'hidden',
-  overflowX: 'hidden',
-  display: 'flex',
-  flexFlow: 'column',
-});
+export const CodeContainer = themed(
+  ({
+    colors: {
+      code: {
+        editor: {
+          scrollbar: { inner, outer },
+        },
+      },
+    },
+  }) =>
+    style({
+      flex: 1,
+      overflowY: 'hidden',
+      overflowX: 'hidden',
+      display: 'flex',
+      flexFlow: 'column',
+      $nest: {
+        '.vs-dark .monaco-scrollable-element > .scrollbar': {
+          background: outer,
+          $nest: {
+            '&.invisible': {
+              opacity: 0.5,
+            },
+          },
+        },
+        '.vs-dark .monaco-scrollable-element > .scrollbar > .slider': {
+          background: inner,
+        },
+      },
+    }),
+);
 
 export const Generate = themed(
   ({
@@ -69,10 +93,10 @@ export const Generate = themed(
 
 cssRaw(`
 .monacoError{
-  background:${Colors.red[0]}33
+  background:${Colors.red}33
 }
 .monacoMarginError{
-  background:${Colors.red[0]};
+  background:${Colors.red};
   border-radius:50%;
   margin-left:5px;
   width:12px !important;
