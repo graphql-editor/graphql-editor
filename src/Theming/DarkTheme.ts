@@ -72,7 +72,6 @@ const BaseTheme = {
         outer: toHex(darken(Colors.grey, 0.95)),
       },
       wrapperBackground: darken(Colors.main, 0.66),
-      background: `linear-gradient(to right, #ffffff04 1px, transparent 1px), linear-gradient(to bottom, #ffffff04 1px, transparent 1px)`,
       rootExtendNode: {
         color: Colors.grey,
         borderColor: Colors.orange,

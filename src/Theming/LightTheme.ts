@@ -73,7 +73,6 @@ export const LightTheme: EditorTheme = {
         outer: toHex(darken(Colors.grey, 0.95)),
       },
       wrapperBackground: toHex(darken(Colors.grey, 0.1)),
-      background: toHex(darken(Colors.grey, 0.1)),
       rootExtendNode: {
         color: toHex(darken(Colors.grey, 0.95)),
         borderColor: toHex(darken(Colors.orange, 0.3)),

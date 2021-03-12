@@ -46,14 +46,12 @@ const Wrapper = themed(
     }),
 );
 const AnimatedWrapper = style({});
-const Main = themed(({ colors: { graf: { background } } }) =>
+const Main = themed(() =>
   style({
     width: '100%',
     height: '100%',
     position: 'relative',
     fontFamily,
-    backgroundSize: `100px 100px`,
-    background,
   }),
 );
 const ErrorContainer = style({
