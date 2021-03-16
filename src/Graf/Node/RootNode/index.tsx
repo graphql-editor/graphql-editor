@@ -24,7 +24,7 @@ const NodeCaption = themed(({ colors: { colors } }) =>
     margin: `15px 15px`,
     display: 'flex',
     borderBottom: `1px solid`,
-    paddingBottom: 5,
+    paddingBottom: 15,
     alignItems: 'center',
     userSelect: 'none',
     '-moz-user-select': '-moz-none',

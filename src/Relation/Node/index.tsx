@@ -14,7 +14,7 @@ const Content = themed(
   ({
     shadow,
     colors: {
-      darkBackgrounds,
+      backgrounds,
       relation: {
         node: {
           color,
@@ -79,9 +79,9 @@ const Content = themed(
             '.NodeType': {
               opacity: 0.25,
             },
-            ...Object.keys(darkBackgrounds).reduce((a, b) => {
+            ...Object.keys(backgrounds).reduce((a, b) => {
               a[`&.NodeBackground-${b}`] = {
-                background: `${(darkBackgrounds as any)[b]}11`,
+                background: `${(backgrounds as any)[b]}11`,
               };
               return a;
             }, {} as Record<string, NestedCSSProperties>),
@@ -102,9 +102,9 @@ const Content = themed(
             },
           },
         },
-        ...Object.keys(darkBackgrounds).reduce((a, b) => {
+        ...Object.keys(backgrounds).reduce((a, b) => {
           a[`&.NodeBackground-${b}`] = {
-            background: (darkBackgrounds as any)[b],
+            background: (backgrounds as any)[b],
           };
           return a;
         }, {} as Record<string, NestedCSSProperties>),

@@ -5,7 +5,7 @@ const BaseTheme = {
   shadow: `${toHex(darken(Colors.grey, 0.95))} 2px 2px 10px`,
   colors: {
     backgrounds: {
-      type: toHex(darken(Colors.main, 0.6)),
+      type: toHex(darken(Colors.main, 0.53)),
       union: toHex(darken(Colors.main, 0.6)),
       input: toHex(darken(Colors.blue, 0.25)),
       scalar: toHex(darken(Colors.green, 0.5)),
@@ -36,22 +36,6 @@ const BaseTheme = {
       ID: Colors.green,
       Float: Colors.green,
     },
-    darkBackgrounds: {
-      type: toHex(darken(Colors.main, 0.6)),
-      union: toHex(darken(Colors.main, 0.8)),
-      input: toHex(darken(Colors.blue, 0.3)),
-      scalar: toHex(darken(Colors.green, 0.55)),
-      interface: toHex(darken(Colors.sky, 0.55)),
-      enum: toHex(darken(Colors.yellow, 0.55)),
-      directive: toHex(darken(Colors.pink, 0.55)),
-      extend: toHex(darken(Colors.orange, 0.55)),
-      Extend: toHex(darken(Colors.orange, 0.55)),
-      String: toHex(darken(Colors.green, 0.55)),
-      Int: toHex(darken(Colors.green, 0.55)),
-      Boolean: toHex(darken(Colors.green, 0.55)),
-      ID: toHex(darken(Colors.green, 0.55)),
-      Float: toHex(darken(Colors.green, 0.55)),
-    },
     textColor: Colors.grey,
     menu: {
       background: toHex(darken(Colors.main, 0.67)),
@@ -64,14 +48,14 @@ const BaseTheme = {
     graf: {
       root: {
         search: {
-          background: `${toHex(darken(Colors.grey, 0.95))}44`,
+          background: `${toHex(desaturate(Colors.main, 0.7))}11`,
         },
       },
       scrollbar: {
         inner: toHex(darken(Colors.main, 0.55)),
         outer: toHex(darken(Colors.grey, 0.95)),
       },
-      wrapperBackground: darken(Colors.main, 0.66),
+      wrapperBackground: darken(Colors.main, 0.65),
       rootExtendNode: {
         color: Colors.grey,
         borderColor: Colors.orange,
@@ -110,7 +94,7 @@ const BaseTheme = {
       },
     },
     relation: {
-      background: toHex(darken(Colors.main, 0.66)),
+      background: toHex(darken(Colors.main, 0.65)),
       scrollbar: {
         inner: toHex(darken(Colors.main, 0.55)),
         outer: toHex(darken(Colors.grey, 0.95)),

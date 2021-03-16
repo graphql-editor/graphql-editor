@@ -22,7 +22,7 @@ const MainNodeArea = themed(
       borderStyle: 'solid',
       borderRadius: 4,
       cursor: 'pointer',
-      transition: `border-color 0.25s ease-in-out`,
+      transition: `all 0.25s ease-in-out`,
       display: 'flex',
       alignItems: 'stretch',
       color: Colors.grey,

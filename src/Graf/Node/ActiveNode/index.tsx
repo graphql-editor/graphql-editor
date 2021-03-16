@@ -10,7 +10,7 @@ import { ActiveField } from '@/Graf/Node/Field';
 import { ActiveDirective } from '@/Graf/Node/Directive';
 import { ActiveInputValue } from '@/Graf/Node/InputValue';
 import { style, keyframes } from 'typestyle';
-import { Colors, mix } from '@/Colors';
+import { Colors } from '@/Colors';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { DOM } from '@/Graf/DOM';
 import { ActiveType } from '@/Graf/Node/Type';
@@ -26,7 +26,7 @@ import { ChangeAllRelatedNodes, isExtensionNode } from '@/GraphQL/Resolve';
 import { ActiveArgument } from '@/Graf/Node/Argument';
 import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
-import { darken, toHex } from 'color2k';
+import { darken, lighten, toHex } from 'color2k';
 
 interface NodeProps {
   node: ParserField;
@@ -89,7 +89,6 @@ const NodeContainer = themed(
   ({
     colors: {
       backgrounds,
-      darkBackgrounds,
       graf: {
         node: { background },
       },
@@ -114,9 +113,9 @@ const NodeContainer = themed(
             },
           },
         },
-        ...Object.keys(darkBackgrounds).reduce((a, b) => {
+        ...Object.keys(backgrounds).reduce((a, b) => {
           a[`&.NodeBackground-${b}`] = {
-            background: (darkBackgrounds as any)[b],
+            background: (backgrounds as any)[b],
           };
           return a;
         }, {} as Record<string, NestedCSSProperties>),
@@ -124,7 +123,7 @@ const NodeContainer = themed(
           a[`.NodeType-${b}`] = {
             $nest: {
               '&:hover, &.Active': {
-                background: mix((backgrounds as any)[b], Colors.grey, 80),
+                background: toHex(lighten((backgrounds as any)[b], 0.1)),
               },
             },
           };

@@ -26,6 +26,7 @@ const Main = themed(
   }) =>
     style({
       background,
+      borderRadius: 5,
       color: Colors.grey,
       border: 0,
       width: '100%',
