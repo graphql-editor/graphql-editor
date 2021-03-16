@@ -124,7 +124,7 @@ const EditableTitle: React.CSSProperties = {
   fontWeight: 'bold',
 };
 export const Node: React.FC<NodeProps> = ({ field, setRef, fade, focus }) => {
-  const { setSelectedNode, selectedNode, tree } = useTreesState();
+  const { setSelectedNode, selectedNode, tree, libraryTree } = useTreesState();
   const isNodeActive = field === selectedNode;
   const { theme } = useTheme();
   const RelationFields = useMemo(() => {
@@ -134,7 +134,8 @@ export const Node: React.FC<NodeProps> = ({ field, setRef, fade, focus }) => {
         {nodeFields?.map((a) => (
           <Field
             onClick={() => {
-              setSelectedNode(tree.nodes.find((tn) => tn.name === a.type.name));
+              const allNodes = tree.nodes.concat(libraryTree.nodes);
+              setSelectedNode(allNodes.find((tn) => tn.name === a.type.name));
             }}
             active={
               isNodeActive &&
