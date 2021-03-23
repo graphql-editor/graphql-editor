@@ -384,7 +384,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                 indexInParentNode={i}
                 parentNode={node}
                 parentNodeTypeName={node.type.name}
-                key={d.name}
+                key={d.name + i}
                 onInputClick={() => {
                   setOpenedNode((oN) =>
                     oN?.index === i && oN.type === 'directives'
