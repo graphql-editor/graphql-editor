@@ -130,7 +130,6 @@ export const Editor = ({
       const graphql = TreeToGraphQL.parse(tree);
       if (graphql !== schema.code || (grafErrors?.length || 0) > 0) {
         Workers.validate(graphql, schema.libraries).then((errors) => {
-          console.log(errors);
           if (errors.length > 0) {
             setGrafErrors([...new Set(errors.map((e) => e.text))].join('\n\n'));
             return;
@@ -140,7 +139,6 @@ export const Editor = ({
         });
       }
     } catch (error) {
-      console.log(error);
       setGrafErrors(error.message);
       return;
     }
@@ -169,8 +167,6 @@ export const Editor = ({
       }
       setLockGraf(false);
     } catch (error) {
-      console.log(error);
-      // TODO: Catch the error and dispaly
       Workers.validate(schema.code, schema.libraries).then((errors) => {
         setCodeErrors(errors);
         setLockGraf(!!errors.length);
