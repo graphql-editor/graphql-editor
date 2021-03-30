@@ -173,16 +173,8 @@ export const Graf: React.FC<GrafProps> = () => {
   }, [snapshots]);
 
   const node = selectedNode
-    ? tree.nodes.find(
-        (n) =>
-          n.name === selectedNode.name &&
-          n.data.type === selectedNode.data.type,
-      ) ||
-      libraryTree.nodes.find(
-        (n) =>
-          n.name === selectedNode.name &&
-          n.data.type === selectedNode.data.type,
-      )
+    ? tree.nodes.find((n) => n === selectedNode) ||
+      libraryTree.nodes.find((n) => n === selectedNode)
     : undefined;
   return (
     <>
@@ -192,7 +184,7 @@ export const Graf: React.FC<GrafProps> = () => {
             readonly={readonly}
             onDelete={(nodeToDelete) => {
               const deletedNode = tree.nodes.findIndex(
-                (n) => n.name === nodeToDelete!.name,
+                (n) => n === nodeToDelete,
               )!;
               const allNodes = [...tree.nodes];
               allNodes.splice(deletedNode, 1);

@@ -6,12 +6,11 @@ GraphQLEditor makes it easier to understand GraphQL schemas. Create a schema by 
 
 ### Cloud version
 
-Here is a [cloud version](https://graphqleditor.com) of GraphQL Editor. 
+Here is a [cloud version](https://graphqleditor.com) of GraphQL Editor.
 
-## Docs 
+## Docs
 
 Here is a [guide](https://guide.graphqleditor.com) for GraphQL Editor.
-
 
 ## How it works
 
@@ -29,8 +28,8 @@ Create GraphQL nodes and connect them to generate a database schema. You can als
 
 ![GraphQLEditor Editor](assets/browse-diagram.gif)
 
-
 ## Table of contents
+
 - [Docs](#docs)
 - [How it works](#how-it-works)
   - [GraphQL View](#graphql-view)
@@ -57,7 +56,7 @@ MIT
 
 ## Develop or use standalone
 
-To use standalone you have to use webpack right now. If you want to use it without webpack you need to handle monaco  editor workers yourself.
+To use standalone you have to use webpack right now. If you want to use it without webpack you need to handle monaco editor workers yourself.
 
 Install dependencies
 
@@ -76,20 +75,20 @@ npm i graphql-editor
 ```tsx
 import React, { useState } from 'react';
 import { render } from 'react-dom';
-import { GraphQLEditor,PassedSchema } from 'graphql-editor';
+import { GraphQLEditor, PassedSchema } from 'graphql-editor';
 
 const schemas = {
-  pizza:`
+  pizza: `
 type Query{
 	pizzas: [Pizza!]
 }
 `,
-pizzaLibrary:`
+  pizzaLibrary: `
 type Pizza{
   name:String;
 }
-`
-}
+`,
+};
 
 export const App = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
@@ -120,7 +119,7 @@ export const App = () => {
 render(<App />, document.getElementById('root'));
 ```
 
-## Support 
+## Support
 
 [Join our Discord Channel](https://discord.gg/wVcZdmd)
 
@@ -134,7 +133,7 @@ For a complete guide to contributing to GraphQL Editor, see the [Contribution Gu
 4.  Push to the branch: git push origin my-new-feature
 5.  Submit a pull request
 
-## Team 
+## Team
 
 [GraphQL Editor Website](https://graphqleditor.com)
 
@@ -147,6 +146,8 @@ Whole graphql-editor is based on underlying [diagram](https://github.com/graphql
 Whole graphql-editor parsing stuff is based on underlying [zeus](https://github.com/graphql-editor/graphql-zeus) technology.
 
 ## GraphQL Tutorials
+
+Interactive GraphQL Tutorial [here](https://app.graphqleditor.com/?step=intro)
 
 GraphQL Editor Guide [here](https://guide.graphqleditor.com/)
 

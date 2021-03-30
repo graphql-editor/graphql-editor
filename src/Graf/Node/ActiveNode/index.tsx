@@ -56,9 +56,18 @@ const OpenedNode: NestedCSSProperties = {
   display: 'flex',
 };
 
-const LibraryNodeArea: NestedCSSProperties = {
-  borderStyle: 'dashed',
-};
+const LibraryNodeArea = themed<NestedCSSProperties>(
+  ({
+    colors: {
+      graf: {
+        node: { selected },
+      },
+    },
+  }) => ({
+    borderStyle: 'dashed',
+    borderColor: `${selected}33`,
+  }),
+);
 const MainNodeArea = themed((theme) =>
   style({
     position: 'relative',
@@ -72,7 +81,7 @@ const MainNodeArea = themed((theme) =>
     overflowY: 'auto',
     $nest: {
       '.NodeTitle': NodeTitle(theme),
-      '&.LibraryNodeArea': LibraryNodeArea,
+      '&.LibraryNodeArea': LibraryNodeArea(theme),
     },
   }),
 );

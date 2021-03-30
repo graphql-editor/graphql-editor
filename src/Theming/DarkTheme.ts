@@ -160,7 +160,7 @@ const BaseTheme = {
         code: {
           annotation: toHex(darken(Colors.grey, 0.1)),
           background: toHex(darken(Colors.main, 0.66)),
-          comment: toHex(darken(Colors.blue, 0.5)),
+          comment: toHex(darken(desaturate(Colors.pink, 0.6), 0.3)),
           docs: toHex(darken(Colors.blue, 0.2)),
           text: Colors.grey,
           exclamation: toHex(lighten(Colors.yellow, 0.1)),

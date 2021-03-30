@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { style } from 'typestyle';
+import { keyframes, style } from 'typestyle';
 import { fontFamily } from '@/vars';
 import { useTreesState } from '@/state/containers/trees';
 import {
@@ -23,6 +23,18 @@ import { Search } from '@/Graf/icons';
 import { LevenshteinDistance } from '@/search';
 import { Lines, RelationPath } from '@/Relation/Lines';
 import { themed } from '@/Theming/utils';
+
+const show = keyframes({
+  ['0%']: {
+    opacity: 0.0,
+  },
+  ['50%']: {
+    opacity: 0.0,
+  },
+  ['100%']: {
+    opacity: 1.0,
+  },
+});
 
 export interface RelationProps {}
 const Wrapper = themed(
@@ -54,6 +66,11 @@ const Main = style({
   flexDirection: 'row',
   padding: 20,
   flexWrap: 'wrap',
+  animationName: show,
+  animationIterationCount: 1,
+  animationDuration: '0.5s',
+  animationTimingFunction: 'ease-in-out',
+  minHeight: '100%',
 });
 const ErrorContainer = themed(
   ({
