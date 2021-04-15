@@ -5,6 +5,7 @@ import { NestedCSSProperties } from 'typestyle/lib/types';
 import { Colors } from '@/Colors';
 import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
+import { GraphQLEditorDomStructure } from '@/domStructure';
 
 interface MenuItemProps {
   node: ParserField;
@@ -41,7 +42,14 @@ const Main = themed(({ colors: { colors } }) =>
 export const MenuItem: React.FC<MenuItemProps> = ({ node, onClick }) => {
   const { theme } = useTheme();
   return (
-    <div className={Main(theme)} onClick={onClick}>
+    <div
+      className={Main(theme)}
+      onClick={onClick}
+      data-cy={
+        GraphQLEditorDomStructure.tree.elements.Graf.ActiveNode.TopNodeMenu
+          .searchableMenu.optionToSelect
+      }
+    >
       <span className={`MenuItemText MenuItemText-${node.type.name}`}>
         {node.name}
       </span>

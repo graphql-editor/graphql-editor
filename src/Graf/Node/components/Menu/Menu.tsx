@@ -2,6 +2,7 @@ import { style } from 'typestyle';
 import React, { useRef, useState, useEffect } from 'react';
 import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
+import { GraphQLEditorDomStructure } from '@/domStructure';
 
 const Wrapper = style({
   zIndex: 4,
@@ -79,7 +80,15 @@ export const Menu: React.FC<MenuProps> = ({
   return (
     <div {...props} className={Wrapper} ref={menuRef}>
       <div className={Content(theme)}>
-        <div className={Title(theme)}>{menuName}</div>
+        <div
+          data-cy={
+            GraphQLEditorDomStructure.tree.elements.Graf.ActiveNode.TopNodeMenu
+              .searchableMenu.title
+          }
+          className={Title(theme)}
+        >
+          {menuName}
+        </div>
         {children}
       </div>
     </div>

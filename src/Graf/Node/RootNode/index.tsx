@@ -13,6 +13,7 @@ import { useTreesState } from '@/state/containers/trees';
 import { MenuSearch } from '@/Graf/Node/components';
 import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
+import { GraphQLEditorDomStructure } from '@/domStructure';
 export interface RootNodeProps {
   node: ParserField;
   libraryNode?: ParserField;
@@ -64,7 +65,12 @@ export const RootNode: React.FC<RootNodeProps> = ({
   return (
     <div className={NodeContainer} ref={thisNode}>
       <div className={`${NodeCaption(theme)} CaptionType-${node.name}`}>
-        <span className={CaptionTitle}>{node.name}</span>
+        <span
+          data-cy={GraphQLEditorDomStructure.tree.elements.Graf.categoryName}
+          className={CaptionTitle}
+        >
+          {node.name}
+        </span>
         <MenuSearch
           autoFocus={false}
           onClear={() => {

@@ -1,6 +1,6 @@
 {
   "name": "graphql-editor",
-  "version": "4.6.3",
+  "version": "4.6.4",
   "private": false,
   "license": "MIT",
   "description": "Visual node editor for GraphQL",
@@ -13,7 +13,7 @@
     "watch": "ttsc --watch",
     "domTree": "tree src/domStructure/domStructure.treelang -f ts > src/domStructure/domStructure.ts",
     "test": "jest",
-    "e2e:test": "tsc --watch --project cypress/tsconfig.json | cypress open",
+    "e2e:test": "cypress open",
     "docs": "typedoc --mode file --out docs  --theme minimal --ignoreCompilerErrors --target ES6 ",
     "updatedeps": "npm i graphql-zeus@latest graphsource@latest",
     "lint": "eslint \"./src/**/*.{ts,js}\" --quiet --fix && prettier --write \"./src/**/*.{ts,js}\" "
@@ -47,7 +47,7 @@
     "@typescript-eslint/parser": "^2.12.0",
     "babel-loader": "^8.0.4",
     "css-loader": "^3.5.3",
-    "cypress": "^4.5.0",
+    "cypress": "^7.1.0",
     "cz-conventional-changelog": "^3.2.0",
     "eslint": "^6.7.2",
     "eslint-config-prettier": "^6.7.0",

@@ -14,6 +14,7 @@ import {
 import { Colors } from '@/Colors';
 import { themed } from '@/Theming/utils';
 import { darken, toHex } from 'color2k';
+import { GraphQLEditorDomStructure } from '@/domStructure';
 
 const unfold = keyframes({
   ['0%']: {
@@ -213,6 +214,7 @@ export const Graf: React.FC<GrafProps> = () => {
         onClick={() => {
           setSelectedNode(undefined);
         }}
+        data-cy={GraphQLEditorDomStructure.tree.elements.Graf.name}
       >
         <div className={Main(theme)}>{!lockGraf && <PaintNodes />}</div>
         {lockGraf && (

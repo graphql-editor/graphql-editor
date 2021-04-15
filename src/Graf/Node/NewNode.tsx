@@ -9,6 +9,7 @@ import { useTreesState } from '@/state/containers/trees';
 import { Plus } from '@/Graf/icons';
 import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
+import { GraphQLEditorDomStructure } from '@/domStructure';
 export interface NewNodeProps {
   node: ParserField;
   onCreate: (name: string) => void;
@@ -113,7 +114,11 @@ export const NewNode: React.FC<NewNodeProps> = ({ node, onCreate }) => {
     setIsCreating(false);
   };
   return (
-    <div className={NodeContainer(theme)} ref={thisNode} style={{}}>
+    <div
+      className={NodeContainer(theme)}
+      ref={thisNode}
+      data-cy={GraphQLEditorDomStructure.tree.elements.Graf.newNode}
+    >
       <div
         className={`MainNodeArea NodeType-${node.name}`}
         onClick={(e) => {

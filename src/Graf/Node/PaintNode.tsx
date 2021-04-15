@@ -6,6 +6,7 @@ import { NestedCSSProperties } from 'typestyle/lib/types';
 import { useTreesState } from '@/state/containers/trees';
 import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
+import { GraphQLEditorDomStructure } from '@/domStructure';
 export interface NodeProps {
   node: ParserField;
   builtIn?: boolean;
@@ -89,6 +90,7 @@ export const PaintNode: React.FC<NodeProps> = ({
   const { theme } = useTheme();
   return (
     <div
+      data-cy={GraphQLEditorDomStructure.tree.elements.Graf.PaintNode}
       className={`${NodeContainer} ${
         isLibrary ? LibraryNodeContainer(theme) : MainNodeContainer(theme)
       } ${

@@ -8,11 +8,14 @@ export const tree = {
                 "synchronize": "tree-elements-CodePane-synchronize"
             },
             "Graf": {
+                "name": "tree-elements-Graf-name",
                 "categoryName": "tree-elements-Graf-categoryName",
                 "searchInput": "tree-elements-Graf-searchInput",
+                "newNode": "tree-elements-Graf-newNode",
                 "nodes": "tree-elements-Graf-nodes",
                 "PaintNode": "tree-elements-Graf-PaintNode",
                 "ActiveNode": {
+                    "name": "tree-elements-Graf-ActiveNode-name",
                     "description": "tree-elements-Graf-ActiveNode-description",
                     "title": "tree-elements-Graf-ActiveNode-title",
                     "type": "tree-elements-Graf-ActiveNode-type",
@@ -50,45 +53,16 @@ export const tree = {
                         }
                     },
                     "TopNodeMenu": {
-                        "CreateField": {
-                            "button": "tree-elements-Graf-ActiveNode-TopNodeMenu-CreateField-button",
-                            "menu": {
-                                "title": "tree-elements-Graf-ActiveNode-TopNodeMenu-CreateField-menu-title",
-                                "searchInput": "tree-elements-Graf-ActiveNode-TopNodeMenu-CreateField-menu-searchInput",
-                                "optionToSelect": "tree-elements-Graf-ActiveNode-TopNodeMenu-CreateField-menu-optionToSelect"
-                            }
+                        "searchableMenu": {
+                            "title": "tree-elements-Graf-ActiveNode-TopNodeMenu-searchableMenu-title",
+                            "searchInput": "tree-elements-Graf-ActiveNode-TopNodeMenu-searchableMenu-searchInput",
+                            "optionToSelect": "tree-elements-Graf-ActiveNode-TopNodeMenu-searchableMenu-optionToSelect"
                         },
-                        "Implement": {
-                            "button": "tree-elements-Graf-ActiveNode-TopNodeMenu-Implement-button",
-                            "menu": {
-                                "title": "tree-elements-Graf-ActiveNode-TopNodeMenu-Implement-menu-title",
-                                "searchInput": "tree-elements-Graf-ActiveNode-TopNodeMenu-Implement-menu-searchInput",
-                                "optionToSelect": "tree-elements-Graf-ActiveNode-TopNodeMenu-Implement-menu-optionToSelect"
-                            }
-                        },
-                        "Directive": {
-                            "button": "tree-elements-Graf-ActiveNode-TopNodeMenu-Directive-button",
-                            "menu": {
-                                "title": "tree-elements-Graf-ActiveNode-TopNodeMenu-Directive-menu-title",
-                                "searchInput": "tree-elements-Graf-ActiveNode-TopNodeMenu-Directive-menu-searchInput",
-                                "optionToSelect": "tree-elements-Graf-ActiveNode-TopNodeMenu-Directive-menu-optionToSelect"
-                            }
-                        },
-                        "Operations": {
-                            "button": "tree-elements-Graf-ActiveNode-TopNodeMenu-Operations-button",
-                            "menu": {
-                                "query": "tree-elements-Graf-ActiveNode-TopNodeMenu-Operations-menu-query",
-                                "mutation": "tree-elements-Graf-ActiveNode-TopNodeMenu-Operations-menu-mutation",
-                                "subscription": "tree-elements-Graf-ActiveNode-TopNodeMenu-Operations-menu-subscription"
-                            }
-                        },
-                        "Options": {
-                            "button": "tree-elements-Graf-ActiveNode-TopNodeMenu-Options-button",
-                            "menu": {
-                                "duplicate": "tree-elements-Graf-ActiveNode-TopNodeMenu-Options-menu-duplicate",
-                                "delete": "tree-elements-Graf-ActiveNode-TopNodeMenu-Options-menu-delete"
-                            }
-                        }
+                        "CreateField": "tree-elements-Graf-ActiveNode-TopNodeMenu-CreateField",
+                        "Implement": "tree-elements-Graf-ActiveNode-TopNodeMenu-Implement",
+                        "Directive": "tree-elements-Graf-ActiveNode-TopNodeMenu-Directive",
+                        "Operations": "tree-elements-Graf-ActiveNode-TopNodeMenu-Operations",
+                        "Options": "tree-elements-Graf-ActiveNode-TopNodeMenu-Options"
                     }
                 }
             },

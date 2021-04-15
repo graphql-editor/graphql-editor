@@ -60,24 +60,28 @@ export const CodePane = (props: CodePaneProps) => {
   }, [codeErrors, monacoGql]);
 
   useEffect(() => {
-    function handleResize() {
-      monacoGql?.layout();
-    }
-    monacoGql?.onDidBlurEditorText(() => {
-      const code = monacoGql.getValue();
-      Workers.validate(code, libraries).then((errors) => {
-        onChange(code);
-        setCodeErrors(errors);
+    if (monacoGql) {
+      function handleResize() {
+        monacoGql?.layout();
+      }
+
+      monacoGql?.onDidBlurEditorText(() => {
+        const code = monacoGql.getValue();
+        Workers.validate(code, libraries).then((errors) => {
+          onChange(code);
+          setCodeErrors(errors);
+        });
       });
-    });
-    setTimeout(handleResize, 400);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [monacoGql, libraries]);
+      setTimeout(handleResize, 400);
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, [monacoGql, libraries, onChange]);
 
   const syncStatus = readonly ? StatusDotProps.readonly : StatusDotProps.sync;
 
   const codeTheme = useMemo(() => MonacoTheme(theme), [theme]);
+
   const codeSettings = useMemo(
     () => ({
       ...settings,

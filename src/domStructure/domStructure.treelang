@@ -7,11 +7,14 @@ tree{
             synchronize
         }
         Graf{
+            name
             categoryName
             searchInput
+            newNode
             nodes
             PaintNode
             ActiveNode{
+                name
                 description
                 title
                 type
@@ -49,45 +52,16 @@ tree{
                     }
                 }
                 TopNodeMenu{
-                    CreateField{
-                        button
-                        menu{
-                            title
-                            searchInput
-                            optionToSelect
-                        }
+                    searchableMenu{
+                        title
+                        searchInput
+                        optionToSelect
                     }
-                    Implement{
-                        button
-                        menu{
-                            title
-                            searchInput
-                            optionToSelect
-                        }
-                    }   
-                    Directive{
-                        button
-                        menu{
-                            title
-                            searchInput
-                            optionToSelect
-                        }
-                    }   
-                    Operations{
-                        button
-                        menu{
-                            query
-                            mutation
-                            subscription
-                        }
-                    }   
-                    Options{
-                        button
-                        menu{
-                            duplicate
-                            delete
-                        }
-                    }
+                    CreateField
+                    Implement
+                    Directive
+                    Operations
+                    Options
                 }
             }
         }

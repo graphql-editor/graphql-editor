@@ -5,6 +5,7 @@ import { Search, X } from '@/Graf/icons';
 import { darken, toHex } from 'color2k';
 import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
+import { GraphQLEditorDomStructure } from '@/domStructure';
 
 interface MenuSearchProps {
   value: string;
@@ -83,7 +84,13 @@ export const MenuSearch: React.FC<MenuSearchProps> = ({
   const ref = useRef<HTMLInputElement>(null);
   const { theme } = useTheme();
   return (
-    <div className={Wrapper}>
+    <div
+      className={Wrapper}
+      data-cy={
+        GraphQLEditorDomStructure.tree.elements.Graf.ActiveNode.TopNodeMenu
+          .searchableMenu.searchInput
+      }
+    >
       <span className={SearchIconContainer}>
         <Search width={14} height={14} />
       </span>

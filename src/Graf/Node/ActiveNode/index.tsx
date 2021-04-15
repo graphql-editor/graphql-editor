@@ -27,6 +27,7 @@ import { ActiveArgument } from '@/Graf/Node/Argument';
 import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
 import { darken, lighten, toHex } from 'color2k';
+import { GraphQLEditorDomStructure } from '@/domStructure';
 
 interface NodeProps {
   node: ParserField;
@@ -256,6 +257,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
       className={`${NodeContainer(theme)} NodeBackground-${node.type.name} ${
         DOM.classes.node
       } ${DOM.classes.nodeSelected}`}
+      data-cy={GraphQLEditorDomStructure.tree.elements.Graf.ActiveNode.name}
     >
       <ActiveDescription
         onChange={(d) => {

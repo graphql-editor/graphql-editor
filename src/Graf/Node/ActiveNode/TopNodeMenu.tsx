@@ -22,6 +22,7 @@ import {
 import { style } from 'typestyle';
 import { useTreesState } from '@/state/containers/trees';
 import { Colors } from '@/Colors';
+import { GraphQLEditorDomStructure } from '@/domStructure';
 
 type PossibleMenus =
   | 'field'
@@ -37,7 +38,8 @@ const NodeMenuContainer = style({
   right: 5,
 });
 const ICON_SIZE = 14;
-
+const cyMenu =
+  GraphQLEditorDomStructure.tree.elements.Graf.ActiveNode.TopNodeMenu;
 export const TopNodeMenu: React.FC<{
   node: ParserField;
   onDelete: () => void;
@@ -56,6 +58,7 @@ export const TopNodeMenu: React.FC<{
         node.data.type !== ValueDefinition.EnumValueDefinition && (
           <div
             className={'NodeIconArea'}
+            data-cy={cyMenu.CreateField}
             onClick={() => {
               setMenuOpen('field');
             }}
@@ -76,6 +79,7 @@ export const TopNodeMenu: React.FC<{
       {node.data.type === TypeDefinition.EnumTypeDefinition && (
         <div
           className={'NodeIconArea'}
+          data-cy={cyMenu.CreateField}
           onClick={() => {
             node.args = [
               ...(node.args || []),
@@ -106,6 +110,7 @@ export const TopNodeMenu: React.FC<{
             onClick={() => {
               setMenuOpen('interface');
             }}
+            data-cy={cyMenu.Implement}
             title="Click to implement interface"
           >
             <Interface
@@ -127,6 +132,7 @@ export const TopNodeMenu: React.FC<{
           onClick={() => {
             setMenuOpen('directive');
           }}
+          data-cy={cyMenu.Directive}
           title="Click to add directive"
         >
           <Monkey
@@ -156,6 +162,7 @@ export const TopNodeMenu: React.FC<{
             onClick={() => {
               setMenuOpen('operations');
             }}
+            data-cy={cyMenu.Operations}
             title="Click set schema query, mutation, subscription"
           >
             <Tick
@@ -176,6 +183,7 @@ export const TopNodeMenu: React.FC<{
         onClick={() => {
           setMenuOpen('options');
         }}
+        data-cy={cyMenu.Options}
         title="Click to see node actions"
       >
         <More
