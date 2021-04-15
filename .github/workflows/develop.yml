@@ -21,7 +21,7 @@ jobs:
         timeout-minutes: 10
         with:
           build: npm run build
-          start: npm start-ci
+          start: npm run start-ci
       - name: Upload videos
         uses: actions/upload-artifact@v1
         if: always()
