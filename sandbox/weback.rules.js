@@ -2,7 +2,8 @@ module.exports = [
   {
     test: /\.tsx?$/,
     loader: 'ts-loader',
-    options: { configFile: 'sandbox/tsconfig.json' },
+    exclude: '/node_modules/',
+    options: { configFile: 'sandbox/tsconfig.json', transpileOnly: true },
   },
   { test: /\.(png|svg)$/, use: 'url-loader?limit=10000' },
   { test: /\.(jpg|gif)$/, use: 'file-loader' },
