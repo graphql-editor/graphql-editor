@@ -1,26 +1,17 @@
 import cx from 'classnames';
 import * as monaco from 'monaco-editor';
-import React, { useEffect, useRef, useState, useLayoutEffect } from 'react';
-import * as Icon from '@/editor/icons';
+import React, { useEffect, useState, useMemo } from 'react';
 import { StatusDot, TitleOfPane } from './Components';
 import * as styles from './style/Code';
 import { StatusDotProps } from './style/Components';
-import {
-  theme as MonacoTheme,
-  language,
-  conf,
-  settings,
-  mapEditorErrorToMonacoDecoration,
-} from './monaco';
+import { theme as MonacoTheme, language, conf, settings } from './monaco';
 import { Workers } from '@/worker';
 import { fontFamily } from '@/vars';
-import {
-  KeyboardActions,
-  useErrorsState,
-  useIOState,
-  useTheme,
-} from '@/state/containers';
+import { useErrorsState, useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
+import HydraIDE from 'hydra-ide';
+import { monacoSetDecorations } from '@/editor/code/monaco/setDecorations';
+import { monacoScrollTo } from '@/editor/code/monaco/scrollTo';
 
 export interface CodePaneOuterProps {
   readonly?: boolean;
@@ -44,188 +35,88 @@ monaco.languages.setMonarchTokensProvider('graphqle', language);
  */
 export const CodePane = (props: CodePaneProps) => {
   const { schema, libraries = '', onChange, readonly, size, scrollTo } = props;
-  const editor = useRef<HTMLDivElement>(null);
   const [monacoGql, setMonacoGql] = useState<
     monaco.editor.IStandaloneCodeEditor
   >();
   const [decorationIds, setDecorationIds] = useState<string[]>([]);
   const { codeErrors, setCodeErrors } = useErrorsState();
-  const { setActions } = useIOState();
   const { theme } = useTheme();
-  const generateEnabled = !readonly;
-  useEffect(() => {
-    if (theme) {
-      monaco.editor.defineTheme('graphql-editor', MonacoTheme(theme));
-    }
-  }, [theme]);
-  useEffect(() => {
-    if (scrollTo) {
-      const items = monacoGql
-        ?.getModel()
-        ?.findNextMatch(
-          `${scrollTo}[ |\{]`,
-          { column: 0, lineNumber: 0 },
-          true,
-          false,
-          null,
-          true,
-        );
 
-      if (items) {
-        const {
-          range: { startLineNumber, endLineNumber, startColumn, endColumn },
-        } = items;
-        monacoGql?.setPosition({
-          column: 0,
-          lineNumber: startLineNumber,
-        });
-        monacoGql?.setPosition({ column: 0, lineNumber: startLineNumber });
-        monacoGql?.revealPositionInCenter(
-          { column: 0, lineNumber: startLineNumber },
-          monaco.editor.ScrollType.Smooth,
-        );
-        monacoGql?.setSelection({
-          startLineNumber,
-          endLineNumber,
-          startColumn,
-          endColumn,
-        });
-      }
+  useEffect(() => {
+    if (scrollTo && monacoGql) {
+      monacoScrollTo(monacoGql, scrollTo);
     }
   }, [scrollTo]);
-  useEffect(() => {
-    if (editor.current) {
-      monacoGql?.dispose();
-      const model = monacoGql?.getModel();
-      if (model) {
-        model.dispose();
-      }
-      const m = monaco.editor.create(editor.current, settings());
-      m.updateOptions({
-        readOnly: readonly,
-        fontFamily,
-      });
-      monaco.editor.remeasureFonts();
-      m.setValue(schema);
-      m.onDidChangeModelContent((e) => {
-        const value = m!.getModel()!.getValue();
-        Workers.validate(value, libraries).then((errors) => {
-          setCodeErrors(errors);
-        });
-      });
-      m.onDidBlurEditorText(() => {
-        const value = m!.getModel()!.getValue();
-        if (value.length === 0) {
-          onChange(value);
-          return;
-        }
-        Workers.validate(value, libraries).then((errors) => {
-          const isInvalid = errors.length > 0;
-          onChange(value, isInvalid);
-        });
-      });
-      setMonacoGql(m);
-      setTimeout(() => m.layout(), 100);
-    }
-    return () => monacoGql?.dispose();
-  }, [libraries, readonly]);
+
   useEffect(() => {
     if (monacoGql) {
-      const monacoDecorations = codeErrors.map(
-        mapEditorErrorToMonacoDecoration,
-      );
-      const newDecorationIds = monacoGql.deltaDecorations(
+      monacoSetDecorations(
+        codeErrors,
+        monacoGql,
         decorationIds,
-        monacoDecorations,
+        setDecorationIds,
       );
-      setDecorationIds(newDecorationIds);
     }
-  }, [JSON.stringify(codeErrors), monacoGql]);
+  }, [codeErrors, monacoGql]);
+
   useEffect(() => {
     function handleResize() {
       monacoGql?.layout();
     }
+    monacoGql?.onDidBlurEditorText(() => {
+      const code = monacoGql.getValue();
+      Workers.validate(code, libraries).then((errors) => {
+        onChange(code);
+        setCodeErrors(errors);
+      });
+    });
+    setTimeout(handleResize, 400);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [monacoGql]);
-  useEffect(() => {
-    monacoGql?.layout();
-  }, [size]);
-  useEffect(() => {
-    const v = monacoGql?.getModel()?.getValue();
-    if (v !== schema) {
-      const cursorPos = monacoGql?.getPosition();
-      monacoGql?.setValue(schema);
-      if (cursorPos) {
-        monacoGql?.setPosition(cursorPos);
-      }
-    }
-  }, [schema, monacoGql]);
-  useLayoutEffect(() => {
-    monaco.editor.remeasureFonts();
-  }, [schema]);
+  }, [monacoGql, libraries]);
 
-  const monacoEditorModel = monacoGql?.getModel();
-  const monacoEditorValue = monacoEditorModel && monacoEditorModel.getValue();
-  useEffect(() => {
-    setActions((acts) => ({
-      ...acts,
-      [KeyboardActions.Save]: () => {
-        const v = monacoGql?.getModel()?.getValue();
-        if (v && generateEnabled) {
-          Workers.validate(v, libraries).then((errors) => {
-            const isInvalid = errors.length > 0;
-            onChange(v, isInvalid);
-            return;
-          });
-        }
-      },
-    }));
-  }, [monacoGql, codeErrors]);
+  const syncStatus = readonly ? StatusDotProps.readonly : StatusDotProps.sync;
 
-  const holder = useRef<HTMLDivElement>(null);
-  const syncStatus = readonly
-    ? StatusDotProps.readonly
-    : monacoEditorValue !== schema
-    ? StatusDotProps.nosync
-    : StatusDotProps.sync;
+  const codeTheme = useMemo(() => MonacoTheme(theme), [theme]);
+  const codeSettings = useMemo(
+    () => ({
+      ...settings,
+      fontFamily,
+      readOnly: readonly,
+    }),
+    [readonly],
+  );
+
   return (
     <>
       <TitleOfPane>
         <div
           className={cx(styles.Generate(theme), {
-            disabled: !generateEnabled,
-            ready: generateEnabled && syncStatus === StatusDotProps.nosync,
+            disabled: !readonly,
           })}
-          onClick={() => {
-            if (generateEnabled && monacoEditorValue) {
-              onChange(monacoEditorValue);
-            }
-          }}
         >
-          {generateEnabled ? (
-            syncStatus === StatusDotProps.sync ? (
-              ''
-            ) : (
-              <>
-                <span style={{ marginRight: 5 }}>synchronize</span>
-                <Icon.Settings size={14} />
-              </>
-            )
-          ) : readonly ? (
-            'readonly'
-          ) : (
-            ''
-          )}
+          {readonly ? 'readonly' : ''}
         </div>
         <StatusDot status={syncStatus} />
       </TitleOfPane>
       <div
         className={cx(styles.CodeContainer(theme))}
-        ref={holder}
         data-cy={GraphQLEditorDomStructure.tree.elements.CodePane.name}
       >
-        <div ref={editor} className={styles.Editor} />
+        <HydraIDE
+          value={schema}
+          setValue={(v) => {
+            Workers.validate(v, libraries).then((errors) => {
+              setCodeErrors(errors);
+            });
+          }}
+          editorOptions={codeSettings}
+          theme={codeTheme}
+          depsToObserveForResize={[size]}
+          onMonaco={(m) => {
+            setMonacoGql(m);
+          }}
+        />
       </div>
     </>
   );

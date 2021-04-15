@@ -1,6 +1,6 @@
 {
   "name": "graphql-editor",
-  "version": "4.6.2",
+  "version": "4.6.3",
   "private": false,
   "license": "MIT",
   "description": "Visual node editor for GraphQL",
@@ -57,6 +57,7 @@
     "html-loader": "^1.0.0-alpha.0",
     "html-webpack-plugin": "^4.3.0",
     "husky": "^4.2.5",
+    "hydra-ide": "^0.1.2",
     "jest": "^26.0.1",
     "mini-css-extract-plugin": "^0.9.0",
     "mocha": "^7.1.2",
@@ -86,16 +87,17 @@
   "peerDependencies": {
     "react": ">=16.12.0",
     "react-dom": ">=16.12.0",
-    "monaco-editor": ">=0.19.1",
-    "monaco-editor-webpack-plugin": ">=1.8.1",
     "worker-loader": ">=2.0.0",
     "file-loader": ">=5.0.2",
-    "css-loader": ">=2.1.1"
+    "css-loader": ">=2.1.1",
+    "monaco-editor": ">=0.23.0",
+    "monaco-editor-webpack-plugin": ">=3.0.1",
+    "hydra-ide": ">=0.1.2"
   },
   "dependencies": {
     "classnames": "^2.2.5",
     "color2k": "^1.2.4",
-    "graphql-zeus": "^3.0.0-18",
+    "graphql-zeus": "^3.0.5",
     "graphsource": "^2.0.2",
     "re-resizable": "^6.1.1",
     "typestyle": "^2.0.1",
