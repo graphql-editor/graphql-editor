@@ -25,8 +25,6 @@ export const TitleOfPane = themed(
 );
 export enum StatusDotProps {
   sync = 'sync',
-  nosync = 'nosync',
-  syncing = 'syncing',
   readonly = 'readonly',
 }
 
@@ -37,14 +35,8 @@ export const StatusDot = themed(({ colors: { code: { syncStatus } } }) =>
     height: 8,
     background: syncStatus.background,
     $nest: {
-      [`&.${StatusDotProps.nosync}`]: {
-        background: syncStatus.nosync,
-      },
       [`&.${StatusDotProps.sync}`]: {
         background: syncStatus.sync,
-      },
-      [`&.${StatusDotProps.syncing}`]: {
-        background: syncStatus.syncing,
       },
       [`&.${StatusDotProps.readonly}`]: {
         background: syncStatus.readonly,
