@@ -1,39 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { render } from 'react-dom';
-import { GraphQLEditor } from '../src/index';
-import { PassedSchema } from '../src/Models';
-import { DarkTheme } from '../src/Theming/DarkTheme';
-import * as schemas from './schema';
+import * as apps from './apps';
+import { Pure } from './apps';
 
+export type AppType = keyof typeof apps;
 export const App = () => {
-  const [mySchema, setMySchema] = useState<PassedSchema>({
-    code: '',
-    libraries: '',
-  });
-  return (
-    <div
-      style={{
-        flex: 1,
-        width: '100%',
-        height: '100%',
-        alignSelf: 'stretch',
-        display: 'flex',
-        position: 'relative',
-      }}
-    >
-      <GraphQLEditor
-        theme={DarkTheme}
-        setSchema={(props) => {
-          setMySchema(props);
-        }}
-        diffSchemas={{
-          newSchema: { code: schemas.versionedUsersLibraryLatest },
-          oldSchema: { code: schemas.versionedUsersLibrary01 },
-        }}
-        schema={mySchema}
-      />
-    </div>
-  );
+  const [, ls] = window.location.search.split('?');
+  if (!ls) {
+    return <Pure />;
+  }
+  const [, appType] = ls.split('=');
+  if (!appType) {
+    return <Pure />;
+  }
+  return <>{apps[appType]()}</>;
 };
 
 render(<App />, document.getElementById('root'));

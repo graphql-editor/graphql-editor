@@ -64,14 +64,6 @@ export const CodePane = (props: CodePaneProps) => {
       function handleResize() {
         monacoGql?.layout();
       }
-
-      monacoGql?.onDidBlurEditorText(() => {
-        const code = monacoGql.getValue();
-        Workers.validate(code, libraries).then((errors) => {
-          onChange(code);
-          setCodeErrors(errors);
-        });
-      });
       setTimeout(handleResize, 400);
       window.addEventListener('resize', handleResize);
       return () => window.removeEventListener('resize', handleResize);
@@ -112,6 +104,11 @@ export const CodePane = (props: CodePaneProps) => {
           setValue={(v) => {
             Workers.validate(v, libraries).then((errors) => {
               setCodeErrors(errors);
+            });
+          }}
+          setValueOnBlur={(v) => {
+            Workers.validate(v, libraries).then((errors) => {
+              onChange(v);
             });
           }}
           editorOptions={codeSettings}
