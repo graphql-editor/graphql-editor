@@ -362,10 +362,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                   node.name = v;
                   setTree({ ...tree });
                   if (reselect && selectedNode) {
-                    setSelectedNode({
-                      ...node,
-                      name: v,
-                    });
+                    setSelectedNode(node);
                   }
                 }}
               />
