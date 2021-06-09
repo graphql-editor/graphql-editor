@@ -53,6 +53,7 @@ const Type = style({ fontSize: FIELD_TYPE_SIZE, color: Colors.green });
 type FieldProps = Pick<GrafFieldProps, 'node' | 'parentNodeTypeName'> & {
   onClick: () => void;
   active?: boolean;
+  isScalar?: boolean;
 };
 const ChangeTitle = style({
   marginRight: 0,
@@ -62,13 +63,14 @@ export const Field: React.FC<FieldProps> = ({
   parentNodeTypeName,
   onClick,
   active,
+  isScalar,
 }) => {
   const { parentTypes } = useTreesState();
   const { theme } = useTheme();
   return (
     <div
       onClick={(e) => {
-        if (active) {
+        if (active || isScalar) {
           e.stopPropagation();
           onClick();
         }

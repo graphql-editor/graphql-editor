@@ -135,6 +135,9 @@ export const LightTheme: EditorTheme = {
           background: toHex(darken(Colors.grey, 0.9)),
           title: toHex(darken(Colors.grey, 0.7)),
         },
+        scalarTitle: {
+          color: toHex(darken(Colors.grey, 0.1)),
+        },
       },
     },
     hierarchy: {
