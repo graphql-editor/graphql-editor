@@ -117,6 +117,9 @@ const BaseTheme = {
           background: toHex(darken(Colors.grey, 0.9)),
           title: toHex(darken(Colors.grey, 0.7)),
         },
+        scalarTitle: {
+          color: Colors.main,
+        },
       },
       searchInput: {
         background: `${Colors.main}52`,

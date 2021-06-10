@@ -3,7 +3,7 @@ import { ActiveType } from '@/Graf/Node/Type';
 import { isScalarArgument } from '@/GraphQL/Resolve';
 import { useTheme, useTreesState } from '@/state/containers';
 import { ParserField, TypeDefinition } from 'graphql-zeus';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { style } from 'typestyle';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { Field } from '../Field';
@@ -21,6 +21,7 @@ const Content = themed(
           selected: { border },
           fade,
           focus,
+          scalarTitle,
         },
       },
     },
@@ -37,6 +38,21 @@ const Content = themed(
       cursor: 'pointer',
       maxWidth: '50%',
       $nest: {
+        '.NodeShowScalarsWrapper': {
+          padding: '10px 5px',
+          color: scalarTitle.color,
+          $nest: {
+            '.NodeShowScalars': {
+              display: 'flex',
+              alignItems: 'center',
+              $nest: {
+                '.NodeShowScalarsTitle': {
+                  marginRight: 10,
+                },
+              },
+            },
+          },
+        },
         '.NodeTitle': {
           alignItems: 'stretch',
           color,
@@ -125,10 +141,13 @@ const EditableTitle: React.CSSProperties = {
 };
 export const Node: React.FC<NodeProps> = ({ field, setRef, fade, focus }) => {
   const { setSelectedNode, selectedNode, tree, libraryTree } = useTreesState();
+  const [showScalars, setShowScalars] = useState(false);
   const isNodeActive = field === selectedNode;
   const { theme } = useTheme();
   const RelationFields = useMemo(() => {
     const nodeFields = field.args?.filter((a) => !isScalarArgument(a));
+    const scalarFields = field.args?.filter((a) => isScalarArgument(a));
+
     return (
       <div className={'NodeRelationFields'}>
         {nodeFields?.map((a) => (
@@ -146,9 +165,37 @@ export const Node: React.FC<NodeProps> = ({ field, setRef, fade, focus }) => {
             parentNodeTypeName={field.type.name}
           />
         ))}
+        {scalarFields && scalarFields.length > 0 && (
+          <div
+            className={'NodeShowScalarsWrapper'}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowScalars((prev) => !prev);
+            }}
+          >
+            <div className={'NodeShowScalars'}>
+              <div className={'NodeShowScalarsTitle'}>Scalars</div>
+              {showScalars ? (
+                <Icons.ToggleOn size={18} />
+              ) : (
+                <Icons.ToggleOff size={18} />
+              )}
+            </div>
+            {showScalars &&
+              scalarFields.map((scal) => (
+                <Field
+                  onClick={() => {}}
+                  isScalar
+                  key={scal.name}
+                  node={scal}
+                  parentNodeTypeName={field.type.name}
+                />
+              ))}
+          </div>
+        )}
       </div>
     );
-  }, [field, isNodeActive, theme]);
+  }, [field, isNodeActive, theme, showScalars]);
   const NodeContent = useMemo(
     () => (
       <div className={'NodeTitle'}>
