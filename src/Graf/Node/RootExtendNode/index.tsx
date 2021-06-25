@@ -10,6 +10,7 @@ import { useTheme } from '@/state/containers';
 export interface RootExtendNodeProps {
   node: ParserField;
   libraryNode?: ParserField;
+  readonly?: boolean;
 }
 const NodeCaption = themed(
   ({
@@ -117,6 +118,7 @@ const PlusButton = themed(
 export const RootExtendNode: React.FC<RootExtendNodeProps> = ({
   node,
   libraryNode,
+  readonly,
 }) => {
   const thisNode = useRef<HTMLDivElement>(null);
 
@@ -137,26 +139,28 @@ export const RootExtendNode: React.FC<RootExtendNodeProps> = ({
           onChange={setFilterNodes}
         />
       </div>
-      <div
-        className={ExtendButton(theme)}
-        onClick={() => {
-          setMenuOpen(true);
-        }}
-      >
-        <span className={ExtendButtonTitle(theme)}>Extend node</span>
-        <span className={`${PlusButton(theme)}`}>
-          <Plus width={10} height={10} />
-        </span>
-        {menuOpen && (
-          <div className={ExtendMenuContainer}>
-            <ExtendNodeMenu
-              hideMenu={() => {
-                setMenuOpen(false);
-              }}
-            />
-          </div>
-        )}
-      </div>
+      {!readonly && (
+        <div
+          className={ExtendButton(theme)}
+          onClick={() => {
+            setMenuOpen(true);
+          }}
+        >
+          <span className={ExtendButtonTitle(theme)}>Extend node</span>
+          <span className={`${PlusButton(theme)}`}>
+            <Plus width={10} height={10} />
+          </span>
+          {menuOpen && (
+            <div className={ExtendMenuContainer}>
+              <ExtendNodeMenu
+                hideMenu={() => {
+                  setMenuOpen(false);
+                }}
+              />
+            </div>
+          )}
+        </div>
+      )}
       {node.args?.map((a, i) => {
         return (
           <PaintNode

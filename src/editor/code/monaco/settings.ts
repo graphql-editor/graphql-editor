@@ -1,6 +1,5 @@
-import * as monaco from 'monaco-editor';
+import type * as monaco from 'monaco-editor';
 export const settings: monaco.editor.IStandaloneEditorConstructionOptions = {
-  language: 'graphqle',
   glyphMargin: true,
   theme: 'graphql-editor',
   smoothScrolling: true,
@@ -11,7 +10,6 @@ export const diffEditorSettings = (
   glyphMargin: true,
   theme: 'graphql-editor',
   renderSideBySide: true,
-  extraEditorClassName: 'Dupa',
   smoothScrolling: true,
   ...override,
 });

@@ -54,7 +54,7 @@ export const ActiveField: React.FC<FieldProps> = ({
   isLocked,
   onDelete,
 }) => {
-  const { tree, setTree, parentTypes } = useTreesState();
+  const { tree, setTree, parentTypes, readonly } = useTreesState();
   const [menuOpen, setMenuOpen] = useState<'options' | 'details' | 'type'>();
   const isEnumValue = node.data.type === ValueDefinition.EnumValueDefinition;
   return (
@@ -91,13 +91,17 @@ export const ActiveField: React.FC<FieldProps> = ({
           />
         </div>
         <div className={Type}>
-          <ActiveType
-            onClick={() =>
-              setMenuOpen(menuOpen === 'type' ? undefined : 'type')
-            }
-            type={node.type}
-            parentTypes={parentTypes}
-          />
+          {!isEnumValue && (
+            <ActiveType
+              onClick={
+                !readonly
+                  ? () => setMenuOpen(menuOpen === 'type' ? undefined : 'type')
+                  : undefined
+              }
+              type={node.type}
+              parentTypes={parentTypes}
+            />
+          )}
           {menuOpen === 'type' && (
             <div className={TypeMenuContainer}>
               <NodeChangeFieldTypeMenu

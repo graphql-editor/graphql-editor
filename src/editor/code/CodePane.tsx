@@ -1,17 +1,14 @@
 import cx from 'classnames';
-import * as monaco from 'monaco-editor';
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { StatusDot, TitleOfPane } from './Components';
 import * as styles from './style/Code';
 import { StatusDotProps } from './style/Components';
-import { theme as MonacoTheme, language, conf, settings } from './monaco';
-import { Workers } from '@/worker';
+import { settings } from './monaco';
 import { fontFamily } from '@/vars';
-import { useErrorsState, useTheme } from '@/state/containers';
+import { useTheme, useTreesState } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
-import HydraIDE from 'hydra-ide';
-import { monacoSetDecorations } from '@/editor/code/monaco/setDecorations';
-import { monacoScrollTo } from '@/editor/code/monaco/scrollTo';
+import { SchemaEditorApi, SchemaEditor } from '@/editor/code/guild';
+import { theme as MonacoTheme } from '@/editor/code/monaco';
 
 export interface CodePaneOuterProps {
   readonly?: boolean;
@@ -25,55 +22,18 @@ export type CodePaneProps = {
   libraries?: string;
   scrollTo?: string;
 } & CodePaneOuterProps;
-
-monaco.languages.register({ id: 'graphqle' });
-monaco.languages.setLanguageConfiguration('graphqle', conf);
-monaco.languages.setMonarchTokensProvider('graphqle', language);
+let hoveredNode: ReturnType<typeof useTreesState>['selectedNode'];
 
 /**
  * React compontent holding GraphQL IDE
  */
 export const CodePane = (props: CodePaneProps) => {
-  const { schema, libraries = '', onChange, readonly, size, scrollTo } = props;
-  const [monacoGql, setMonacoGql] = useState<
-    monaco.editor.IStandaloneCodeEditor
-  >();
-  const [decorationIds, setDecorationIds] = useState<string[]>([]);
-  const { codeErrors, setCodeErrors } = useErrorsState();
+  const { schema, readonly, onChange } = props;
   const { theme } = useTheme();
+  const { setSelectedNode, tree, selectedNode } = useTreesState();
 
-  useEffect(() => {
-    if (scrollTo && monacoGql) {
-      monacoScrollTo(monacoGql, scrollTo);
-    }
-  }, [scrollTo]);
-
-  useEffect(() => {
-    if (monacoGql) {
-      monacoSetDecorations(
-        codeErrors,
-        monacoGql,
-        decorationIds,
-        setDecorationIds,
-      );
-    }
-  }, [codeErrors, monacoGql]);
-
-  useEffect(() => {
-    if (monacoGql) {
-      function handleResize() {
-        monacoGql?.layout();
-      }
-      setTimeout(handleResize, 400);
-      window.addEventListener('resize', handleResize);
-      return () => window.removeEventListener('resize', handleResize);
-    }
-  }, [monacoGql, libraries, onChange]);
-
+  const ref: React.ForwardedRef<SchemaEditorApi> = React.createRef();
   const syncStatus = readonly ? StatusDotProps.readonly : StatusDotProps.sync;
-
-  const codeTheme = useMemo(() => MonacoTheme(theme), [theme]);
-
   const codeSettings = useMemo(
     () => ({
       ...settings,
@@ -82,6 +42,14 @@ export const CodePane = (props: CodePaneProps) => {
     }),
     [readonly],
   );
+
+  useEffect(() => {
+    if (ref.current) {
+      selectedNode
+        ? ref.current.jumpToType(selectedNode.name)
+        : ref.current.deselect();
+    }
+  }, [selectedNode]);
 
   return (
     <>
@@ -99,25 +67,30 @@ export const CodePane = (props: CodePaneProps) => {
         className={cx(styles.CodeContainer(theme))}
         data-cy={GraphQLEditorDomStructure.tree.elements.CodePane.name}
       >
-        <HydraIDE
-          value={schema}
-          setValue={(v) => {
-            Workers.validate(v, libraries).then((errors) => {
-              setCodeErrors(errors);
-            });
-          }}
-          setValueOnBlur={(v) => {
-            Workers.validate(v, libraries).then((errors) => {
-              onChange(v);
-            });
-          }}
-          editorOptions={codeSettings}
-          theme={codeTheme}
-          depsToObserveForResize={[size]}
-          onMonaco={(m) => {
-            setMonacoGql(m);
-          }}
-        />
+        {theme && (
+          <SchemaEditor
+            height="100%"
+            definitionProviders={[
+              {
+                forNode: ({ token }) => {
+                  if (token.state.kind === 'NamedType') {
+                    hoveredNode = tree.nodes.find(
+                      (n) => n.name === token.string,
+                    );
+                  }
+                  return [];
+                },
+              },
+            ]}
+            ref={ref}
+            beforeMount={(monaco) =>
+              monaco.editor.defineTheme('graphql-editor', MonacoTheme(theme))
+            }
+            onBlur={(v) => onChange(v)}
+            schema={schema}
+            options={codeSettings}
+          />
+        )}
       </div>
     </>
   );

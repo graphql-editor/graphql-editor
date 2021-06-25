@@ -1,8 +1,9 @@
 import { style } from 'typestyle';
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
+import { useOnClickOutside } from '@/Graf/Node/hooks';
 
 const Wrapper = style({
   zIndex: 4,
@@ -50,33 +51,8 @@ export const Menu: React.FC<MenuProps> = ({
   ...props
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
-  const [listener, setListener] = useState<(e: MouseEvent) => void>();
   const { theme } = useTheme();
-  useEffect(() => {
-    setListener(() => {
-      if (listener) {
-        document.removeEventListener('click', listener);
-      }
-      const l = (e: MouseEvent) => {
-        if (
-          menuRef.current &&
-          e.target &&
-          !menuRef.current.contains(e.target as any)
-        ) {
-          document.removeEventListener('click', l);
-          hideMenu();
-          return;
-        }
-      };
-      document.addEventListener('click', l);
-      return l;
-    });
-    return () => {
-      if (listener) {
-        document.removeEventListener('click', listener);
-      }
-    };
-  }, [menuRef]);
+  useOnClickOutside(menuRef, () => hideMenu());
   return (
     <div {...props} className={Wrapper} ref={menuRef}>
       <div className={Content(theme)}>
