@@ -22,7 +22,6 @@ export type CodePaneProps = {
   libraries?: string;
   scrollTo?: string;
 } & CodePaneOuterProps;
-let hoveredNode: ReturnType<typeof useTreesState>['selectedNode'];
 
 /**
  * React compontent holding GraphQL IDE
@@ -30,7 +29,7 @@ let hoveredNode: ReturnType<typeof useTreesState>['selectedNode'];
 export const CodePane = (props: CodePaneProps) => {
   const { schema, readonly, onChange } = props;
   const { theme } = useTheme();
-  const { setSelectedNode, tree, selectedNode } = useTreesState();
+  const { selectedNode } = useTreesState();
 
   const ref: React.ForwardedRef<SchemaEditorApi> = React.createRef();
   const syncStatus = readonly ? StatusDotProps.readonly : StatusDotProps.sync;
@@ -70,18 +69,6 @@ export const CodePane = (props: CodePaneProps) => {
         {theme && (
           <SchemaEditor
             height="100%"
-            definitionProviders={[
-              {
-                forNode: ({ token }) => {
-                  if (token.state.kind === 'NamedType') {
-                    hoveredNode = tree.nodes.find(
-                      (n) => n.name === token.string,
-                    );
-                  }
-                  return [];
-                },
-              },
-            ]}
             ref={ref}
             beforeMount={(monaco) =>
               monaco.editor.defineTheme('graphql-editor', MonacoTheme(theme))
