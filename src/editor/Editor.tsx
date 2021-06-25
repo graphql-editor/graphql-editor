@@ -271,10 +271,7 @@ export const Editor = ({
                 libraries={schema.libraries}
                 placeholder={placeholder}
                 readonly={readonly}
-                scrollTo={
-                  selectedNode &&
-                  `${selectedNode.type.name} ${selectedNode.name}`
-                }
+                scrollTo={selectedNode && `${selectedNode.name}`}
               />
             )}
           </div>

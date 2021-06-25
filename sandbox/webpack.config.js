@@ -3,7 +3,7 @@ var path = require('path');
 var sourcePath = path.join(__dirname, './');
 var outPath = path.join(__dirname, './');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
-var MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
+
 const baseRules = require('./weback.rules');
 const TsConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
@@ -43,9 +43,6 @@ module.exports = {
     ],
   },
   plugins: [
-    new MonacoWebpackPlugin({
-      languages: ['markdown'],
-    }),
     new HtmlWebpackPlugin({
       template: 'assets/index.html',
     }),

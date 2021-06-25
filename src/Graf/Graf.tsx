@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { keyframes, style } from 'typestyle';
+import { style } from 'typestyle';
 import { fontFamily } from '@/vars';
 import { PaintNodes } from './PaintNodes';
 import { ActiveNode } from '@/Graf/Node';
@@ -16,14 +16,6 @@ import { themed } from '@/Theming/utils';
 import { darken, toHex } from 'color2k';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 
-const unfold = keyframes({
-  ['0%']: {
-    maxWidth: '0%',
-  },
-  ['100%']: {
-    maxWidth: '60%',
-  },
-});
 export interface GrafProps {}
 
 const Wrapper = themed(
@@ -104,10 +96,7 @@ const SubNodeContainer = themed(
     },
   }) =>
     style({
-      animationName: unfold,
-      animationTimingFunction: 'ease-in-out',
       width: 'min(clamp(400px, 40%, 1280px), calc(100vw - 50px))',
-      animationDuration: '0.25s',
       background,
       fontFamily,
       right: 0,

@@ -99,6 +99,7 @@ export const PaintNodes: React.FC = () => {
         }}
       />
       <RootExtendNode
+        readonly={readonly}
         node={{
           name: TypeSystemExtension.TypeExtension,
           data: {

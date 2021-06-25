@@ -1,4 +1,4 @@
-import * as monaco from 'monaco-editor';
+import type * as monaco from 'monaco-editor';
 import { themed } from '@/Theming/utils';
 
 const rules = themed<monaco.editor.ITokenThemeRule[]>(
@@ -7,36 +7,19 @@ const rules = themed<monaco.editor.ITokenThemeRule[]>(
       colors,
       code: {
         editor: {
-          code: {
-            comment,
-            docs,
-            exclamation,
-            text,
-            keyword,
-            gql,
-            annotation,
-            md,
-          },
+          code: { comment, exclamation, text, keyword, gql, annotation },
         },
       },
     },
   }) => [
-    { token: '', foreground: docs },
-    { token: 'identifier.gql', foreground: text },
-    { token: 'type', foreground: colors.type },
+    { token: 'keyword.gql', foreground: colors.interface },
+    { token: 'type.identifier.gql', foreground: colors.Int },
+    { token: 'key.identifier.gql', foreground: text },
     { token: 'keyword', foreground: keyword },
-    { token: 'input', foreground: colors.input },
-    { token: 'interface', foreground: colors.interface },
-    { token: 'enum', foreground: colors.enum },
-    { token: 'extend', foreground: colors.extend },
-    { token: 'input', foreground: colors.input },
-    { token: 'directive', foreground: colors.directive },
-    { token: 'scalar', foreground: colors.scalar },
-    { token: 'union', foreground: colors.union },
     { token: 'annotation', foreground: annotation },
-    { token: 'md', foreground: md },
-    { token: 'string.md', foreground: docs },
-    { token: 'string.doc', foreground: docs },
+    { token: '', foreground: gql },
+    { token: 'string.md', foreground: gql },
+    { token: 'keyword.md', foreground: gql, fontStyle: 'bold' },
     { token: 'string.gql', foreground: gql },
     {
       token: 'string.quote.gql',
@@ -44,9 +27,9 @@ const rules = themed<monaco.editor.ITokenThemeRule[]>(
     },
     { token: 'comment.gql', foreground: comment },
     {
-      token: 'exclamation',
+      token: 'operator.gql',
       fontStyle: 'bold',
-      foreground: exclamation,
+      foreground: colors.directive,
     },
   ],
 );
