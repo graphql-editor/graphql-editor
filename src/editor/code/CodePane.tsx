@@ -50,8 +50,6 @@ export const CodePane = (props: CodePaneProps) => {
     }
   }, [selectedNode]);
 
-  console.log(schema);
-
   return (
     <>
       <TitleOfPane>

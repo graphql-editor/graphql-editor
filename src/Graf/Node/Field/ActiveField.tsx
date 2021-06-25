@@ -147,7 +147,6 @@ export const ActiveField: React.FC<FieldProps> = ({
             <div className={OptionsMenuContainer}>
               <NodeTypeOptionsMenu
                 hideMenu={() => {
-                  console.log('HIDE');
                   setMenuOpen(undefined);
                 }}
                 node={node}

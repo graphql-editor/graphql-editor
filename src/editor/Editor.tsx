@@ -114,7 +114,6 @@ export const Editor = ({
   };
 
   const generateSchemaFromTree = () => {
-    console.log(tree);
     if (!tree) {
       return;
     }
