@@ -98,7 +98,6 @@ export class EnrichedLanguageService extends LanguageService {
 
   getHoverProvider(rawSources: HoverSource[]): monaco.languages.HoverProvider {
     const sources = [...rawSources, coreHoverSource];
-
     return {
       provideHover: async (model, position) => {
         const info = await this.buildBridgeForProviders(model, position);

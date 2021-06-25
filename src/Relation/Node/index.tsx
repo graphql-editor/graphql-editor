@@ -44,6 +44,8 @@ const Content = themed(
           $nest: {
             '.NodeShowScalars': {
               display: 'flex',
+              cursor: 'pointer',
+              userSelect: 'none',
               alignItems: 'center',
               $nest: {
                 '.NodeShowScalarsTitle': {
@@ -166,14 +168,15 @@ export const Node: React.FC<NodeProps> = ({ field, setRef, fade, focus }) => {
           />
         ))}
         {scalarFields && scalarFields.length > 0 && (
-          <div
-            className={'NodeShowScalarsWrapper'}
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowScalars((prev) => !prev);
-            }}
-          >
-            <div className={'NodeShowScalars'}>
+          <div className={'NodeShowScalarsWrapper'}>
+            <div
+              className={'NodeShowScalars'}
+              onClick={(e) => {
+                if (!isNodeActive) return;
+                e.stopPropagation();
+                setShowScalars((prev) => !prev);
+              }}
+            >
               <div className={'NodeShowScalarsTitle'}>Scalars</div>
               {showScalars ? (
                 <Icons.ToggleOn size={18} />
@@ -185,7 +188,7 @@ export const Node: React.FC<NodeProps> = ({ field, setRef, fade, focus }) => {
               scalarFields.map((scal) => (
                 <Field
                   onClick={() => {}}
-                  isScalar
+                  isPrimitive
                   key={scal.name}
                   node={scal}
                   parentNodeTypeName={field.type.name}

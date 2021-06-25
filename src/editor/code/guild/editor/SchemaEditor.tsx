@@ -59,7 +59,7 @@ function BaseSchemaEditor(
 
   return (
     <MonacoEditor
-      height={'70vh'}
+      height={'auto'}
       {...props}
       beforeMount={(monaco) => {
         setMonaco(monaco);
@@ -105,7 +105,7 @@ function BaseSchemaEditor(
       }}
       options={{ glyphMargin: true, ...(props.options || {}) }}
       language="graphql"
-      defaultValue={props.defaultValue || props.schema}
+      value={props.schema}
     />
   );
 }

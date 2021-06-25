@@ -114,6 +114,7 @@ export const Editor = ({
   };
 
   const generateSchemaFromTree = () => {
+    console.log(tree);
     if (!tree) {
       return;
     }
@@ -217,7 +218,6 @@ export const Editor = ({
     stopCodeFromTreeGeneration = true;
     generateSchemaFromTree();
   }, [tree]);
-
   return (
     <div
       data-cy={GraphQLEditorDomStructure.tree.editor}
