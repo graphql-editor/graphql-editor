@@ -27,7 +27,7 @@ export type CodePaneProps = {
  * React compontent holding GraphQL IDE
  */
 export const CodePane = (props: CodePaneProps) => {
-  const { schema, readonly, onChange } = props;
+  const { schema, readonly, onChange, libraries } = props;
   const { theme } = useTheme();
   const { selectedNode } = useTreesState();
 
@@ -75,6 +75,7 @@ export const CodePane = (props: CodePaneProps) => {
             }
             onBlur={(v) => onChange(v)}
             schema={schema}
+            libraries={libraries}
             options={codeSettings}
           />
         )}

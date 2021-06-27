@@ -7,7 +7,7 @@ import {
 } from './use-schema-services';
 
 export type SchemaDiffEditorProps = SchemaServicesOptions &
-  Omit<DiffEditorProps, 'language'>;
+  Omit<DiffEditorProps, 'language'> & { libraries?: string };
 
 function BaseSchemaDiffEditor(
   props: SchemaDiffEditorProps,

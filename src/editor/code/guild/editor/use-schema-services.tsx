@@ -1,9 +1,20 @@
-import React from "react";
+import React from 'react';
 import type * as monaco from 'monaco-editor';
-import { DecorationsSource, DefinitionSource, DiagnosticsSource, EditorAction, HoverSource } from "./utils";
+import {
+  DecorationsSource,
+  DefinitionSource,
+  DiagnosticsSource,
+  EditorAction,
+  HoverSource,
+} from './utils';
 import { EnrichedLanguageService } from './EnrichedLanguageService';
-import { GraphQLError, GraphQLSchema, isInterfaceType, isObjectType } from "graphql";
-import { emptyLocation, locToRange } from "./utils";
+import {
+  GraphQLError,
+  GraphQLSchema,
+  isInterfaceType,
+  isObjectType,
+} from 'graphql';
+import { emptyLocation, locToRange } from './utils';
 
 export type SchemaEditorApi = {
   jumpToType(typeName: string): void;
@@ -24,22 +35,24 @@ export type SchemaServicesOptions = {
   onSchemaError?: (
     errors: [GraphQLError],
     sdl: string,
-    languageService: EnrichedLanguageService
+    languageService: EnrichedLanguageService,
   ) => void;
   sharedLanguageService?: EnrichedLanguageService;
   keyboardShortcuts?: (
     editorInstance: monaco.editor.IStandaloneCodeEditor,
-    monacoInstance: typeof monaco
+    monacoInstance: typeof monaco,
   ) => monaco.editor.IActionDescriptor[];
 };
 
 export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
-  const [editorRef, setEditor] =
-    React.useState<monaco.editor.IStandaloneCodeEditor | null>(null);
+  const [
+    editorRef,
+    setEditor,
+  ] = React.useState<monaco.editor.IStandaloneCodeEditor | null>(null);
   const [monacoRef, setMonaco] = React.useState<typeof monaco | null>(null);
   const languageService = React.useMemo(
     () =>
-    options.sharedLanguageService ||
+      options.sharedLanguageService ||
       new EnrichedLanguageService({
         schemaString: options.schema,
         schemaConfig: {
@@ -49,7 +62,7 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
           },
         },
       }),
-    [options.sharedLanguageService]
+    [options.sharedLanguageService],
   );
 
   React.useEffect(() => {
@@ -74,7 +87,7 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
             if (model && position) {
               const bridge = await languageService.buildBridgeForProviders(
                 model,
-                position
+                position,
               );
 
               if (bridge) {
@@ -86,26 +99,32 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
       }
 
       const handler = languageService.getModelChangeHandler();
-      handler(editorRef, monacoRef, options.diagnosticsProviders || [], options.decorationsProviders || []);
+      handler(
+        editorRef,
+        monacoRef,
+        options.diagnosticsProviders || [],
+        options.decorationsProviders || [],
+      );
 
       const onChangeDisposable = editorRef.onDidChangeModelContent(() =>
         handler(
           editorRef,
           monacoRef,
           options.diagnosticsProviders || [],
-          options.decorationsProviders || []
-        )
+          options.decorationsProviders || [],
+        ),
       );
 
-      const definitionProviderDisposable =
-        monacoRef.languages.registerDefinitionProvider(
-          'graphql',
-          languageService.getDefinitionProvider(options.definitionProviders || [])
-        );
+      const definitionProviderDisposable = monacoRef.languages.registerDefinitionProvider(
+        'graphql',
+        languageService.getDefinitionProvider(
+          options.definitionProviders || [],
+        ),
+      );
 
       const hoverDisposable = monacoRef.languages.registerHoverProvider(
         'graphql',
-        languageService.getHoverProvider(options.hoverProviders || [])
+        languageService.getHoverProvider(options.hoverProviders || []),
       );
 
       return () => {
@@ -137,7 +156,7 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
               editorRef?.setSelection(range);
               editorRef?.revealPositionInCenter(
                 { column: 0, lineNumber: range.startLineNumber },
-                0
+                0,
               );
             }
           }
@@ -156,7 +175,7 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
                 editorRef?.setSelection(range);
                 editorRef?.revealPositionInCenter(
                   { column: 0, lineNumber: range.startLineNumber },
-                  0
+                  0,
                 );
               }
             }
@@ -164,6 +183,6 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
         });
       },
       deselect: () => editorRef?.setSelection(emptyLocation),
-    } as SchemaEditorApi
+    } as SchemaEditorApi,
   };
-} 
+};

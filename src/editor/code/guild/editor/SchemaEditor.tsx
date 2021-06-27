@@ -18,7 +18,7 @@ export type SchemaEditorProps = SchemaServicesOptions & {
     sdl: string,
     languageService: EnrichedLanguageService,
   ) => void;
-} & Omit<EditorProps, 'language'>;
+} & Omit<EditorProps, 'language'> & { libraries?: string };
 
 function BaseSchemaEditor(
   props: SchemaEditorProps,
@@ -31,7 +31,10 @@ function BaseSchemaEditor(
     editorApi,
     editorRef,
     setSchema,
-  } = useSchemaServices(props);
+  } = useSchemaServices({
+    ...props,
+    schema: [props.schema, props.libraries].join('\n'),
+  });
   React.useImperativeHandle(ref, () => editorApi, [editorRef, languageService]);
 
   React.useEffect(() => {
@@ -73,7 +76,7 @@ function BaseSchemaEditor(
         props.onChange && props.onChange(newValue, ev);
 
         if (newValue) {
-          setSchema(newValue)
+          setSchema([newValue, props.libraries].join('\n'))
             .then((schema) => {
               if (schema) {
                 props.onSchemaChange && props.onSchemaChange(schema, newValue);
