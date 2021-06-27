@@ -31,10 +31,7 @@ function BaseSchemaEditor(
     editorApi,
     editorRef,
     setSchema,
-  } = useSchemaServices({
-    ...props,
-    schema: [props.schema, props.libraries].join('\n'),
-  });
+  } = useSchemaServices(props);
   React.useImperativeHandle(ref, () => editorApi, [editorRef, languageService]);
 
   React.useEffect(() => {
@@ -76,7 +73,7 @@ function BaseSchemaEditor(
         props.onChange && props.onChange(newValue, ev);
 
         if (newValue) {
-          setSchema([newValue, props.libraries].join('\n'))
+          setSchema(newValue)
             .then((schema) => {
               if (schema) {
                 props.onSchemaChange && props.onSchemaChange(schema, newValue);

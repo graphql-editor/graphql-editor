@@ -24,6 +24,7 @@ export type SchemaEditorApi = {
 
 export type SchemaServicesOptions = {
   schema?: string;
+  libraries?: string;
   hoverProviders?: HoverSource[];
   definitionProviders?: DefinitionSource[];
   diagnosticsProviders?: DiagnosticsSource[];
@@ -44,17 +45,30 @@ export type SchemaServicesOptions = {
   ) => monaco.editor.IActionDescriptor[];
 };
 
+const compileSchema = ({
+  schema,
+  libraries,
+}: {
+  schema: string;
+  libraries?: string;
+}) => {
+  return [schema, libraries || ''].join('\n');
+};
+
 export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
   const [
     editorRef,
     setEditor,
   ] = React.useState<monaco.editor.IStandaloneCodeEditor | null>(null);
   const [monacoRef, setMonaco] = React.useState<typeof monaco | null>(null);
+
   const languageService = React.useMemo(
     () =>
       options.sharedLanguageService ||
       new EnrichedLanguageService({
-        schemaString: options.schema,
+        schemaString: options.schema
+          ? compileSchema({ ...options, schema: options.schema })
+          : undefined,
         schemaConfig: {
           buildSchemaOptions: {
             assumeValid: true,
@@ -144,7 +158,10 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
     editorRef,
     monacoRef,
     languageService,
-    setSchema: (newValue: string) => languageService.trySchema(newValue),
+    setSchema: (newValue: string) =>
+      languageService.trySchema(
+        compileSchema({ ...options, schema: newValue }),
+      ),
     editorApi: {
       jumpToType: (typeName: string) => {
         languageService.getSchema().then((schema) => {
