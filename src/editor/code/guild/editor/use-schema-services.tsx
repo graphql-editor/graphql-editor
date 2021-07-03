@@ -15,6 +15,9 @@ import {
   isObjectType,
 } from 'graphql';
 import { emptyLocation, locToRange } from './utils';
+import { Workers } from '@/worker';
+import { EditorError } from '@/validation';
+import { monacoSetDecorations } from '@/editor/code/monaco/decorations';
 
 export type SchemaEditorApi = {
   jumpToType(typeName: string): void;
@@ -60,8 +63,9 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
     editorRef,
     setEditor,
   ] = React.useState<monaco.editor.IStandaloneCodeEditor | null>(null);
+  const [codeErrors, setCodeErrors] = React.useState<EditorError[]>([]);
+  const [decorationIds, setDecorationIds] = React.useState<string[]>([]);
   const [monacoRef, setMonaco] = React.useState<typeof monaco | null>(null);
-
   const languageService = React.useMemo(
     () =>
       options.sharedLanguageService ||
@@ -152,16 +156,40 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
     return () => {};
   }, [editorRef, monacoRef]);
 
+  React.useEffect(() => {
+    if (codeErrors && editorRef && monacoRef) {
+      setDecorationIds(
+        monacoSetDecorations({
+          codeErrors,
+          decorationIds,
+          m: monacoRef,
+          monacoGql: editorRef,
+        }),
+      );
+    }
+  }, [editorRef, monacoRef, codeErrors]);
+
   return {
+    codeErrors,
     setEditor,
     setMonaco,
     editorRef,
     monacoRef,
     languageService,
-    setSchema: (newValue: string) =>
-      languageService.trySchema(
-        compileSchema({ ...options, schema: newValue }),
-      ),
+    setSchema: (newValue: string) => {
+      const fullSchema = compileSchema({ ...options, schema: newValue });
+      return languageService.trySchema(fullSchema);
+    },
+    onValidate: () => {
+      const currentValue = editorRef?.getModel()?.getValue();
+      console.log('VALIDATING');
+      if (currentValue) {
+        Workers.validate(currentValue, options.libraries).then((errors) => {
+          console.log(errors);
+          setCodeErrors(errors);
+        });
+      }
+    },
     editorApi: {
       jumpToType: (typeName: string) => {
         languageService.getSchema().then((schema) => {

@@ -31,6 +31,7 @@ function BaseSchemaEditor(
     editorApi,
     editorRef,
     setSchema,
+    onValidate,
   } = useSchemaServices(props);
   React.useImperativeHandle(ref, () => editorApi, [editorRef, languageService]);
 
@@ -69,9 +70,9 @@ function BaseSchemaEditor(
         setEditor(editor);
         props.onMount && props.onMount(editor, monaco);
       }}
+      onValidate={onValidate}
       onChange={(newValue, ev) => {
         props.onChange && props.onChange(newValue, ev);
-
         if (newValue) {
           setSchema(newValue)
             .then((schema) => {
