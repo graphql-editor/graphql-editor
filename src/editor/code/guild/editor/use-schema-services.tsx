@@ -182,10 +182,8 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
     },
     onValidate: () => {
       const currentValue = editorRef?.getModel()?.getValue();
-      console.log('VALIDATING');
       if (currentValue) {
         Workers.validate(currentValue, options.libraries).then((errors) => {
-          console.log(errors);
           setCodeErrors(errors);
         });
       }
