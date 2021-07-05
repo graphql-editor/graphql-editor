@@ -88,12 +88,8 @@ export const Editor = ({
     initialSizeOfSidebar,
   );
   const { menuState, setMenuState } = useNavigationState();
-  const {
-    grafErrors,
-    setGrafErrors,
-    setLockGraf,
-    setCodeErrors,
-  } = useErrorsState();
+  const { grafErrors, setGrafErrors, setLockGraf, setCodeErrors } =
+    useErrorsState();
 
   const {
     tree,
@@ -104,7 +100,6 @@ export const Editor = ({
     setReadonly,
     isTreeInitial,
     setIsTreeInitial,
-    selectedNode,
   } = useTreesState();
 
   const reset = () => {
@@ -131,7 +126,12 @@ export const Editor = ({
       if (graphql !== schema.code || (grafErrors?.length || 0) > 0) {
         Workers.validate(graphql, schema.libraries).then((errors) => {
           if (errors.length > 0) {
-            setGrafErrors([...new Set(errors.map((e) => e.text))].join('\n\n'));
+            const mapErrors = errors.map((e) => e.text);
+            setGrafErrors(
+              [...mapErrors.filter((e, i) => mapErrors.indexOf(e) === i)].join(
+                '\n\n',
+              ),
+            );
             return;
           }
           setGrafErrors(undefined);
@@ -270,7 +270,6 @@ export const Editor = ({
                 libraries={schema.libraries}
                 placeholder={placeholder}
                 readonly={readonly}
-                scrollTo={selectedNode && `${selectedNode.name}`}
               />
             )}
           </div>

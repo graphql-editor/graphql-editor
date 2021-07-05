@@ -20,7 +20,6 @@ export type CodePaneProps = {
   schema: string;
   onChange: (v: string, isInvalid?: boolean) => void;
   libraries?: string;
-  scrollTo?: string;
 } & CodePaneOuterProps;
 
 /**
