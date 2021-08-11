@@ -15,7 +15,6 @@
     "domTree": "tree src/domStructure/domStructure.treelang -f ts > src/domStructure/domStructure.ts",
     "test": "jest",
     "e2e:test": "cypress open",
-    "docs": "typedoc --mode file --out docs  --theme minimal --ignoreCompilerErrors --target ES6 ",
     "updatedeps": "npm i graphql-zeus@latest graphsource@latest",
     "lint": "eslint \"./src/**/*.{ts,js}\" --quiet --fix && prettier --write \"./src/**/*.{ts,js}\" "
   },

@@ -1,5 +1,6 @@
 export * from './musk';
 export * from './google';
+export * from './googleDiff';
 export * from './github';
 export * from './builtInDirectives';
 export * from './nullInput';

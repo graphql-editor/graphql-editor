@@ -16,39 +16,19 @@ Here is a [guide](https://guide.graphqleditor.com) for GraphQL Editor.
 
 Create GraphQL nodes and connect them to generate a database schema. You can also use builtin text IDE with GraphQL syntax validation
 
-### GraphQL View
-
-![GraphQLEditor Editor](assets/browse-graf.gif)
-
-### Code Editor View
-
-![GraphQLEditor Editor](assets/browse-code.gif)
-
-### Hierarchy View
-
-![GraphQLEditor Editor](assets/browse-diagram.gif)
+![demo](assets/demo.gif)
 
 ## Table of contents
 
 - [Docs](#docs)
 - [How it works](#how-it-works)
-  - [GraphQL View](#graphql-view)
-  - [Code Editor View](#code-editor-view)
-  - [Hierarchy View](#hierarchy-view)
 - [Table of contents](#table-of-contents)
-- [Developer Docs](#developer-docs)
 - [License](#license)
 - [Develop or use standalone](#develop-or-use-standalone)
 - [Support](#support)
-- [Contribute](#contribute)
 - [Team](#team)
-- [Underlying Diagram technology](#underlying-diagram-technology)
 - [Underlying Parsing technology](#underlying-parsing-technology)
 - [GraphQL Tutorials](#graphql-tutorials)
-
-## Developer Docs
-
-If you wish to contribute docs from `typedoc` are availble on [https://graphql-editor.github.io/graphql-editor/](https://graphql-editor.github.io/graphql-editor/)
 
 ## License
 
@@ -65,7 +45,7 @@ npm i react react-dom monaco-editor
 ```
 
 ```
-npm i -D monaco-editor-webpack-plugin worker-loader css-loader file-loader
+npm i -D worker-loader css-loader file-loader
 ```
 
 ```
@@ -123,23 +103,9 @@ render(<App />, document.getElementById('root'));
 
 [Join our Discord Channel](https://discord.gg/wVcZdmd)
 
-## Contribute
-
-For a complete guide to contributing to GraphQL Editor, see the [Contribution Guide](CONTRIBUTING.md).
-
-1.  Fork this repo
-2.  Create your feature branch: git checkout -b feature-name
-3.  Commit your changes: git commit -am 'Add some feature'
-4.  Push to the branch: git push origin my-new-feature
-5.  Submit a pull request
-
 ## Team
 
 [GraphQL Editor Website](https://graphqleditor.com)
-
-## Underlying Diagram technology
-
-Whole graphql-editor is based on underlying [diagram](https://github.com/graphql-editor/diagram) technology.
 
 ## Underlying Parsing technology
 
@@ -152,5 +118,3 @@ Interactive GraphQL Tutorial [here](https://app.graphqleditor.com/?step=intro)
 GraphQL Editor Guide [here](https://guide.graphqleditor.com/)
 
 GraphQL Blog [here](https://blog.graphqleditor.com/)
-
-My Video Blog Tutorials [here](https://stackofthefuture.com)
