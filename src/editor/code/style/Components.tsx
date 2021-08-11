@@ -18,6 +18,7 @@ export const TitleOfPane = themed(
       color,
       display: 'flex',
       alignItems: 'center',
+      pointerEvents: 'none',
       width: '100%',
       zIndex: 3,
       position: 'absolute',
@@ -28,19 +29,24 @@ export enum StatusDotProps {
   readonly = 'readonly',
 }
 
-export const StatusDot = themed(({ colors: { code: { syncStatus } } }) =>
-  style({
-    borderRadius: '50%',
-    width: 8,
-    height: 8,
-    background: syncStatus.background,
-    $nest: {
-      [`&.${StatusDotProps.sync}`]: {
-        background: syncStatus.sync,
-      },
-      [`&.${StatusDotProps.readonly}`]: {
-        background: syncStatus.readonly,
-      },
+export const StatusDot = themed(
+  ({
+    colors: {
+      code: { syncStatus },
     },
-  }),
+  }) =>
+    style({
+      borderRadius: '50%',
+      width: 8,
+      height: 8,
+      background: syncStatus.background,
+      $nest: {
+        [`&.${StatusDotProps.sync}`]: {
+          background: syncStatus.sync,
+        },
+        [`&.${StatusDotProps.readonly}`]: {
+          background: syncStatus.readonly,
+        },
+      },
+    }),
 );
