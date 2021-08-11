@@ -1,43 +1,52 @@
 import { style } from 'typestyle';
-import { Colors } from '@/Colors';
 import { fontFamily } from '@/vars';
+import { themed } from '@/Theming/utils';
 
-export const TitleOfPane = style({
-  padding: `10px 15px`,
-  fontFamily,
-  fontSize: 12,
-  textTransform: 'uppercase',
-  color: Colors.grey[4],
-  display: 'flex',
-  alignItems: 'center',
-  width: '100%',
-  zIndex: 3,
-  position: 'absolute',
-});
+export const TitleOfPane = themed(
+  ({
+    colors: {
+      code: {
+        titleOfPane: { color },
+      },
+    },
+  }) =>
+    style({
+      padding: `10px 15px`,
+      fontFamily,
+      fontSize: 12,
+      textTransform: 'uppercase',
+      color,
+      display: 'flex',
+      alignItems: 'center',
+      pointerEvents: 'none',
+      width: '100%',
+      zIndex: 3,
+      position: 'absolute',
+    }),
+);
 export enum StatusDotProps {
   sync = 'sync',
-  nosync = 'nosync',
-  syncing = 'syncing',
   readonly = 'readonly',
 }
 
-export const StatusDot = style({
-  borderRadius: '50%',
-  width: 8,
-  height: 8,
-  background: Colors.grey[9],
-  $nest: {
-    [`&.${StatusDotProps.nosync}`]: {
-      background: Colors.red[0],
+export const StatusDot = themed(
+  ({
+    colors: {
+      code: { syncStatus },
     },
-    [`&.${StatusDotProps.sync}`]: {
-      background: Colors.green[0],
-    },
-    [`&.${StatusDotProps.syncing}`]: {
-      background: Colors.main[0],
-    },
-    [`&.${StatusDotProps.readonly}`]: {
-      background: Colors.blue[0],
-    },
-  },
-});
+  }) =>
+    style({
+      borderRadius: '50%',
+      width: 8,
+      height: 8,
+      background: syncStatus.background,
+      $nest: {
+        [`&.${StatusDotProps.sync}`]: {
+          background: syncStatus.sync,
+        },
+        [`&.${StatusDotProps.readonly}`]: {
+          background: syncStatus.readonly,
+        },
+      },
+    }),
+);

@@ -1,30 +1,52 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { style } from 'typestyle';
-import { Colors } from '@/Colors';
 import { fontFamily } from '@/vars';
-import { DOM } from '@/Graf/DOM';
 import { FIELD_NAME_SIZE } from '@/Graf/constants';
-const Input = style({
-  border: 0,
-  background: 'transparent',
-  color: Colors.grey[0],
-  minWidth: 'auto',
-  padding: 0,
-  fontFamily: fontFamily,
-  fontSize: FIELD_NAME_SIZE,
-});
+import cx from 'classnames';
+import { themed } from '@/Theming/utils';
+import { useTheme } from '@/state/containers';
+const Input = themed(({ colors: { graf: { node: { color } } } }) =>
+  style({
+    border: 0,
+    background: 'transparent',
+    color,
+    minWidth: 'auto',
+    padding: 0,
+    fontFamily: fontFamily,
+    fontSize: FIELD_NAME_SIZE,
+  }),
+);
+const InputIsError = themed(
+  ({
+    colors: {
+      graf: {
+        node: {
+          error: { color },
+        },
+      },
+    },
+  }) =>
+    style({
+      color,
+    }),
+);
 export const EditableText: React.FC<{
   value: string;
   onChange?: (value: string) => void;
   autoFocus?: boolean;
-  fontSize?: number;
-}> = ({ value, onChange, autoFocus, fontSize }) => {
-  const [editedValue, setEditedValue] = useState(value);
+  style?: React.CSSProperties;
+  exclude?: string[];
+}> = ({ value, onChange, autoFocus, style = {}, exclude = [] }) => {
+  const [editedValue, setEditedValue] = useState('');
   const [focus, setFocus] = useState(!!autoFocus);
+  const [isError, setIsError] = useState(false);
+  const { theme } = useTheme();
   const checkEdit = () => {
     setFocus(false);
-    DOM.panLock = false;
-    DOM.keyLock = false;
+    if (isError) {
+      setEditedValue(value);
+      return;
+    }
     if (editedValue && onChange) {
       if (editedValue !== value) {
         onChange(editedValue);
@@ -33,19 +55,24 @@ export const EditableText: React.FC<{
       setEditedValue(value);
     }
   };
+  useEffect(() => {
+    setIsError(exclude.includes(editedValue));
+  }, [editedValue]);
+  useEffect(() => {
+    setEditedValue(value);
+  }, [value]);
   return (
     <>
       {onChange ? (
         <input
           autoFocus={focus}
-          className={Input}
+          className={cx(Input(theme), {
+            [InputIsError(theme)]: isError,
+          })}
           value={editedValue}
           pattern="[_A-Za-z][_0-9A-Za-z]*"
-          style={{ width: `${editedValue.length}ch`, fontSize }}
-          onFocus={() => {
-            DOM.panLock = true;
-            DOM.keyLock = true;
-          }}
+          style={{ width: `${editedValue.length}ch`, ...style }}
+          title={isError ? 'Name already exists' : 'rename'}
           onBlur={checkEdit}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
@@ -55,7 +82,7 @@ export const EditableText: React.FC<{
           onChange={(e) => setEditedValue(e.target.value)}
         />
       ) : (
-        <span>{editedValue}</span>
+        <span style={{ ...style }}>{editedValue}</span>
       )}
     </>
   );

@@ -16,7 +16,10 @@ const configureOpts = (node: ParserField) => {
   }
   return opts;
 };
-export const NodeTypeOptionsMenu: React.FC<NodeTypeOptionsMenuProps> = ({ node, hideMenu }) => {
+export const NodeTypeOptionsMenu: React.FC<NodeTypeOptionsMenuProps> = ({
+  node,
+  hideMenu,
+}) => {
   const { tree, setTree } = useTreesState();
   const [opts, setOpts] = useState(configureOpts(node));
   useEffect(() => {
@@ -24,6 +27,7 @@ export const NodeTypeOptionsMenu: React.FC<NodeTypeOptionsMenuProps> = ({ node, 
   }, [node.type.options]);
   return (
     <OptionsMenu
+      menuName={'Node kind'}
       hideMenu={hideMenu}
       options={opts}
       onCheck={(o) => {

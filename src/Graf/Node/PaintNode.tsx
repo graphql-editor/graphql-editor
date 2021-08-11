@@ -2,62 +2,73 @@ import React, { useRef } from 'react';
 import { ParserField } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { Colors } from '@/Colors';
-import { GraphQLBackgrounds } from '@/editor/theme';
 import { NestedCSSProperties } from 'typestyle/lib/types';
-import { NodeTitle } from './SharedNode';
 import { useTreesState } from '@/state/containers/trees';
-import { DOM } from '../DOM';
+import { themed } from '@/Theming/utils';
+import { useTheme } from '@/state/containers';
+import { GraphQLEditorDomStructure } from '@/domStructure';
 export interface NodeProps {
   node: ParserField;
   builtIn?: boolean;
   isLibrary?: boolean;
   isMatchedToSearch?: boolean;
+  subNode?: boolean;
 }
-const MainNodeArea: NestedCSSProperties = {
-  position: 'relative',
-  borderColor: 'transparent',
-  borderWidth: 1,
-  borderStyle: 'solid',
-  borderRadius: 4,
-  cursor: 'pointer',
-  transition: `border-color 0.25s ease-in-out`,
-  $nest: {
-    '.NodeTitle': {
-      ...NodeTitle,
-      borderBottomLeftRadius: 4,
-      borderBottomRightRadius: 4,
-      background: 'transparent',
+const MainNodeArea = themed(
+  ({ colors: { textColor } }) =>
+    ({
+      position: 'relative',
+      borderColor: 'transparent',
+      borderWidth: 1,
+      borderStyle: 'solid',
+      borderRadius: 4,
+      cursor: 'pointer',
+      transition: `all 0.25s ease-in-out`,
+      display: 'flex',
+      alignItems: 'stretch',
+      color: Colors.grey,
+      fontSize: 12,
+      padding: `10px 15px`,
+      userSelect: 'none',
+      '-moz-user-select': '-moz-none',
+      $nest: {
+        '&:hover': {
+          borderColor: textColor,
+        },
+      },
+    } as NestedCSSProperties),
+);
+const LibraryNodeContainer = themed((theme) =>
+  style({
+    ...MainNodeArea(theme),
+    $nest: {
+      ...MainNodeArea(theme).$nest,
+      ...Object.keys(theme.colors.backgrounds).reduce((a, b) => {
+        a[`&.NodeType-${b}`] = {
+          borderColor: `${(theme.colors.backgrounds as any)[b]}`,
+          borderStyle: 'dashed',
+        };
+        return a;
+      }, {} as Record<string, NestedCSSProperties>),
     },
-    '&:hover': {
-      borderColor: Colors.green[0],
+  }),
+);
+const MainNodeContainer = themed((theme) =>
+  style({
+    ...MainNodeArea(theme),
+    $nest: {
+      ...MainNodeArea(theme).$nest,
+      ...Object.keys(theme.colors.backgrounds).reduce((a, b) => {
+        a[`&.NodeType-${b}`] = {
+          background: `${(theme.colors.backgrounds as any)[b]}`,
+        };
+        return a;
+      }, {} as Record<string, NestedCSSProperties>),
     },
-  },
-};
-const LibraryNodeContainer = style({
-  $nest: {
-    '.MainNodeArea': MainNodeArea,
-    ...Object.keys(GraphQLBackgrounds).reduce((a, b) => {
-      a[`.NodeType-${b}`] = {
-        borderColor: `${GraphQLBackgrounds[b]}`,
-        borderStyle: 'dashed',
-      };
-      return a;
-    }, {} as Record<string, NestedCSSProperties>),
-  },
-});
-const MainNodeContainer = style({
-  $nest: {
-    '.MainNodeArea': MainNodeArea,
-    ...Object.keys(GraphQLBackgrounds).reduce((a, b) => {
-      a[`.NodeType-${b}`] = {
-        background: `${GraphQLBackgrounds[b]}`,
-      };
-      return a;
-    }, {} as Record<string, NestedCSSProperties>),
-  },
-});
+  }),
+);
 const NodeContainer = style({
-  margin: 15,
+  margin: 10,
 });
 const MatchedSearchContainer = style({
   opacity: 1,
@@ -65,59 +76,35 @@ const MatchedSearchContainer = style({
 const NoMatchedSearchContainer = style({
   opacity: 0.2,
 });
-const UnRelatedNode = style({
-  opacity: 0.2,
+const NotSelected = style({
+  opacity: 0.4,
 });
-const RelatedNode = style({
-  opacity: 1.0,
-});
-export const PaintNode: React.FC<NodeProps> = ({ node, isLibrary, isMatchedToSearch }) => {
+export const PaintNode: React.FC<NodeProps> = ({
+  node,
+  isLibrary,
+  isMatchedToSearch,
+  subNode,
+}) => {
   const thisNode = useRef<HTMLDivElement>(null);
-  const { setSelectedNode, setPosition, relatedToSelected } = useTreesState();
-  const relatedNodes = relatedToSelected();
-  let relationClass = '';
-  if (relatedNodes) {
-    if (relatedNodes.includes(node.name)) {
-      relationClass = RelatedNode;
-    } else {
-      relationClass = UnRelatedNode;
-    }
-  }
+  const { setSelectedNode, selectedNode } = useTreesState();
+  const { theme } = useTheme();
   return (
     <div
-      className={`${NodeContainer} ${relationClass} ${isLibrary ? LibraryNodeContainer : MainNodeContainer} ${
+      data-cy={GraphQLEditorDomStructure.tree.elements.Graf.PaintNode}
+      className={`${NodeContainer} ${
+        isLibrary ? LibraryNodeContainer(theme) : MainNodeContainer(theme)
+      } ${
         isMatchedToSearch ? MatchedSearchContainer : NoMatchedSearchContainer
-      }`}
+      } ${
+        selectedNode ? (selectedNode !== node ? NotSelected : '') : ''
+      } NodeType-${node.type.name}`}
       ref={thisNode}
-      style={{}}
+      onClick={(e) => {
+        e.stopPropagation();
+        setSelectedNode(node);
+      }}
     >
-      <div
-        className={`MainNodeArea NodeType-${node.type.name}`}
-        onClick={(e) => {
-          e.stopPropagation();
-          if (DOM.panLock) return;
-          setSelectedNode(undefined);
-          setTimeout(() => {
-            setSelectedNode({
-              data: node.data,
-              name: node.name,
-              type: node.type,
-            });
-            const rect = thisNode.current;
-            if (rect) {
-              setPosition({
-                offsetLeft: rect.offsetLeft,
-                offsetTop: rect.offsetTop,
-                width: rect.offsetWidth,
-              });
-            }
-          }, 1);
-        }}
-      >
-        <div className={`NodeTitle`}>
-          <div className={`NodeName`}>{node.name}</div>
-        </div>
-      </div>
+      {node.name}
     </div>
   );
 };

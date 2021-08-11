@@ -1,31 +1,39 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { style } from 'typestyle';
 import { Colors } from '@/Colors';
-import { DOM } from '@/Graf/DOM';
+import { darken, toHex } from 'color2k';
 
 const Main = style({
-  background: Colors.grey[9],
-  color: Colors.grey[3],
+  background: `${toHex(darken(Colors.grey, 0.95))}44`,
+  color: toHex(darken(Colors.grey, 0.3)),
   padding: 10,
   fontSize: 12,
-  overflowY: 'hidden',
+  width: '100%',
+  border: 0,
   resize: 'none',
-  border: `1px solid ${Colors.grey[8]}`,
-  borderRadius: 4,
+  outline: 'none',
+  cursor: 'pointer',
+  $nest: {
+    '&:focus': {
+      cursor: 'auto',
+      borderBottom: `1px solid ${Colors.grey}11`,
+    },
+    '&::placeholder': {
+      color: `${Colors.grey}99`,
+    },
+  },
 });
 
 export const ActiveDescription: React.FC<{
   value: string;
   onChange: (changedValue: string) => void;
-  className: string;
   isLocked?: boolean;
-}> = ({ onChange, value, className, isLocked }) => {
+}> = ({ onChange, value, isLocked }) => {
+  const [text, setText] = useState(value);
   const DescriptionRef = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
-    if (DescriptionRef.current) {
-      DescriptionRef.current.style.height = `${DescriptionRef.current.scrollHeight}px`;
-    }
-  }, [DescriptionRef.current]);
+    setText(value);
+  }, [value]);
   if (isLocked) {
     if (!value) {
       return <></>;
@@ -36,8 +44,8 @@ export const ActiveDescription: React.FC<{
         rows={1}
         data-gramm_editor="false"
         ref={DescriptionRef}
-        className={`${Main} ${className}`}
-        defaultValue={value}
+        className={`${Main} `}
+        value={text}
       ></textarea>
     );
   }
@@ -49,27 +57,23 @@ export const ActiveDescription: React.FC<{
       placeholder="Put your description here"
       onClick={(e) => e.stopPropagation()}
       onMouseMove={(e) => e.stopPropagation()}
-      onMouseDown={(e) => {
-        DOM.panLock = true;
-      }}
       onFocus={(e) => {
         e.currentTarget.style.height = 'auto';
         e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
-        DOM.panLock = true;
       }}
-      onBlur={() => {
-        DOM.panLock = false;
+      onBlur={(e) => {
+        e.currentTarget.style.height = 'auto';
         if (DescriptionRef.current) {
-          onChange(DescriptionRef.current.value);
+          onChange(text);
         }
       }}
-      onInput={(e) => {
-        DOM.panLock = true;
+      onChange={(e) => {
+        setText(e.target.value);
         e.currentTarget.style.height = 'auto';
         e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
       }}
-      className={`${Main} ${className}`}
-      defaultValue={value}
+      className={`${Main} `}
+      value={text}
     ></textarea>
   );
 };

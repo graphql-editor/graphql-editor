@@ -47,13 +47,21 @@ const moveErrorsByLibraryPadding = (libraries: string) => {
   };
 };
 
-export const catchSchemaErrors = (schema: string, libraries: string = ''): EditorError[] => {
+const allowMultipleDirectivesAtLocation = (s: string) => {
+  return !s.match(new RegExp(/directive(.*)can only be used once/));
+};
+export const catchSchemaErrors = (
+  schema: string,
+  libraries: string = '',
+): EditorError[] => {
   const s = libraries + '\n' + schema;
   const paddingFunction = moveErrorsByLibraryPadding(libraries);
   try {
     const errors = validateSDLErrors(s);
     if (errors.length > 0) {
-      return errors.map(paddingFunction);
+      return errors
+        .filter((e) => allowMultipleDirectivesAtLocation(e.text))
+        .map(paddingFunction);
     }
     try {
       return validateTypes(s).map(paddingFunction);

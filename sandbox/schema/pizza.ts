@@ -63,6 +63,9 @@ input CreateIngredient{
 extend type DataInfo {
 	name:String
 }
+extend type DataInfo {
+	sku:String
+}
 enum Spod{
 	bialy @enumas
 	czerwony

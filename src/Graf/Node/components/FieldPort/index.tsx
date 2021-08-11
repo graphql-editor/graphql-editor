@@ -1,5 +1,6 @@
 import { Colors } from '@/Colors';
 import * as Icons from '@/Graf/icons';
+import { darken, toHex } from 'color2k';
 import React from 'react';
 import { style } from 'typestyle';
 
@@ -18,20 +19,18 @@ interface FieldPortProps {
 
 const Main = style({
   position: 'relative',
-  width: 18,
-  height: 18,
-  borderRadius: 2,
+  width: 30,
+  height: 30,
   fontSize: 7,
-  margin: `0 4px`,
   alignItems: 'center',
   display: 'flex',
   justifyContent: 'center',
-  backgroundColor: `${Colors.grey[9]}00`,
+  backgroundColor: `${toHex(darken(Colors.grey, 0.9))}00`,
   cursor: 'pointer',
   transition: 'all 0.25s ease-in-out',
   $nest: {
     '&:hover': {
-      backgroundColor: `${Colors.grey[9]}ff !important`,
+      backgroundColor: `${toHex(darken(Colors.grey, 0.9))}ff !important`,
       $nest: {
         '.EditArguments': {
           display: 'block',
@@ -53,7 +52,7 @@ const Main = style({
       display: 'none',
       width: 150,
       fontSize: 10,
-      color: Colors.yellow[0],
+      color: Colors.yellow,
       $nest: {
         '&.top': {
           left: -75,
@@ -88,12 +87,15 @@ export const FieldPort: React.FC<FieldPortProps> = ({
   const OpenComponent = Icons[icons.open];
   const ClosedComponent = Icons[icons.closed];
   return (
-    <div className={`${Main} NodeFieldPort`} onClick={onClick}>
-      {!open && info && <div className={`EditArguments ${info.placement}`}>{info.message}</div>}
+    <div
+      title={info?.message}
+      className={`${Main} NodeFieldPort`}
+      onClick={onClick}
+    >
       {open ? (
-        <OpenComponent className={'OpenerIcon'} height={6} width={6} />
+        <OpenComponent className={'OpenerIcon'} height={10} width={10} />
       ) : (
-        <ClosedComponent className={'OpenerIcon'} height={8} width={8} />
+        <ClosedComponent className={'OpenerIcon'} height={12} width={12} />
       )}
       {children}
     </div>

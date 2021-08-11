@@ -29,5 +29,14 @@
     ],
     "skipLibCheck": true
   },
-  "exclude": ["lib", "sandbox", "cloud", "docs", "cypress", "__mocks__", "**/*.spec.ts"]
+  "exclude": [
+    "lib",
+    "sandbox",
+    "cloud",
+    "docs",
+    "cypress",
+    "__mocks__",
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ]
 }

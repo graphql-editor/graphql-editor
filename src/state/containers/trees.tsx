@@ -1,21 +1,14 @@
 import { createContainer } from 'unstated-next';
-import { useState, useRef, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { ParserTree, ParserField } from 'graphql-zeus';
 const useTreesStateContainer = createContainer(() => {
   const [tree, setTree] = useState<ParserTree>({ nodes: [] });
   const [libraryTree, setLibraryTree] = useState<ParserTree>({ nodes: [] });
   const [snapshots, setSnapshots] = useState<string[]>([]);
   const [undos, setUndos] = useState<string[]>([]);
-  const [selectedNode, setSelectedNode] = useState<Pick<ParserField, 'name' | 'type' | 'data'>>();
-  const selectedNodeRef = useRef<HTMLDivElement>(null);
+  const [selectedNode, setSelectedNode] = useState<ParserField>();
   const [readonly, setReadonly] = useState(false);
   const [isTreeInitial, setIsTreeInitial] = useState(true);
-
-  const [position, setPosition] = useState<{
-    offsetLeft: number;
-    offsetTop: number;
-    width: number;
-  }>();
 
   const past = () => {
     const p = snapshots.pop();
@@ -37,12 +30,33 @@ const useTreesStateContainer = createContainer(() => {
 
   const relatedToSelected = useCallback(() => {
     const node =
-      tree.nodes.find((n) => n.name === selectedNode?.name && n.data.type === selectedNode.data.type) ||
-      libraryTree.nodes.find((n) => n.name === selectedNode?.name && n.data.type === selectedNode.data.type);
+      tree.nodes.find(
+        (n) =>
+          n.name === selectedNode?.name &&
+          n.data.type === selectedNode.data.type,
+      ) ||
+      libraryTree.nodes.find(
+        (n) =>
+          n.name === selectedNode?.name &&
+          n.data.type === selectedNode.data.type,
+      );
     if (node) {
       return node.args?.map((a) => a.type.name);
     }
   }, [selectedNode]);
+
+  const parentTypes = {
+    ...tree.nodes.reduce(
+      (obj: Record<string, string>, item: ParserField) =>
+        Object.assign(obj, { [item.name]: item.type.name }),
+      {},
+    ),
+    ...libraryTree.nodes.reduce(
+      (obj: Record<string, string>, item: ParserField) =>
+        Object.assign(obj, { [item.name]: item.type.name }),
+      {},
+    ),
+  };
 
   return {
     tree,
@@ -53,9 +67,6 @@ const useTreesStateContainer = createContainer(() => {
     setSnapshots,
     selectedNode,
     setSelectedNode,
-    selectedNodeRef,
-    position,
-    setPosition,
     past,
     undos,
     setUndos,
@@ -65,6 +76,7 @@ const useTreesStateContainer = createContainer(() => {
     setReadonly,
     isTreeInitial,
     setIsTreeInitial,
+    parentTypes,
   };
 });
 

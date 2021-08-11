@@ -1,44 +1,58 @@
 import React from 'react';
 import { ParserField } from 'graphql-zeus';
 import { style } from 'typestyle';
-import { GraphQLColors } from '@/editor/theme';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { Colors } from '@/Colors';
+import { themed } from '@/Theming/utils';
+import { useTheme } from '@/state/containers';
+import { GraphQLEditorDomStructure } from '@/domStructure';
 
 interface MenuItemProps {
   node: ParserField;
   onClick: () => void;
 }
 
-const Main = style({
-  display: 'flex',
-  padding: `6px 12px`,
-  fontSize: 12,
-  cursor: 'pointer',
-  scrollSnapAlign: 'end',
-  $nest: {
-    ...Object.keys(GraphQLColors).reduce((a, b) => {
-      a[`.MenuItemText-${b}`] = {
-        color: `${GraphQLColors[b]}dd`,
-      };
-      return a;
-    }, {} as Record<string, NestedCSSProperties>),
-    '.MenuItemText': {
-      transition: 'color .25s ease-in-out',
-      width: '100%',
-      $nest: {
-        '&:hover': {
-          color: Colors.grey[0],
+const Main = themed(({ colors: { colors } }) =>
+  style({
+    display: 'flex',
+    padding: `8px 16px`,
+    fontSize: 14,
+    cursor: 'pointer',
+    scrollSnapAlign: 'end',
+    $nest: {
+      ...Object.keys(colors).reduce((a, b) => {
+        a[`.MenuItemText-${b}`] = {
+          color: `${(colors as any)[b]}dd`,
+        };
+        return a;
+      }, {} as Record<string, NestedCSSProperties>),
+      '.MenuItemText': {
+        transition: 'color .25s ease-in-out',
+        width: '100%',
+        $nest: {
+          '&:hover': {
+            color: Colors.grey,
+          },
         },
       },
     },
-  },
-});
+  }),
+);
 
 export const MenuItem: React.FC<MenuItemProps> = ({ node, onClick }) => {
+  const { theme } = useTheme();
   return (
-    <div className={Main} onClick={onClick}>
-      <span className={`MenuItemText MenuItemText-${node.type.name}`}>{node.name}</span>
+    <div
+      className={Main(theme)}
+      onClick={onClick}
+      data-cy={
+        GraphQLEditorDomStructure.tree.elements.Graf.ActiveNode.TopNodeMenu
+          .searchableMenu.optionToSelect
+      }
+    >
+      <span className={`MenuItemText MenuItemText-${node.type.name}`}>
+        {node.name}
+      </span>
     </div>
   );
 };

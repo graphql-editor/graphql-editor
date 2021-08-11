@@ -5,16 +5,18 @@ export enum KeyboardActions {
   Undo = 'Undo',
   Redo = 'Redo',
   Save = 'Save',
+  FindRelation = 'FindRelation',
 }
 
 const useIOStateContainer = createContainer(() => {
-  const [actions, setActions] = useState<Partial<Record<KeyboardActions, Function>>>({});
+  const [actions, setActions] = useState<
+    Partial<Record<KeyboardActions, Function>>
+  >({});
   const on = (action: KeyboardActions) => {
     actions[action]?.();
   };
   useEffect(() => {
     const handleKeyboard = (event: KeyboardEvent) => {
-      //   if (DOM.panLock) return;
       const ctrl = event.ctrlKey || event.metaKey;
       if (event.key === 'm') {
       }
@@ -33,6 +35,10 @@ const useIOStateContainer = createContainer(() => {
       if (event.key === 's' && ctrl) {
         event.preventDefault();
         on(KeyboardActions.Save);
+      }
+      if (event.key === 'f' && ctrl) {
+        event.preventDefault();
+        on(KeyboardActions.FindRelation);
       }
     };
     document.addEventListener('keydown', handleKeyboard);

@@ -1,9 +1,5 @@
 {
-    "baseUrl": "http://localhost:1568/",
-    "fixturesFolder": "cypress/fixtures",
-    "integrationFolder": "cypress/lib/",
-    "testFiles": "**/**/*.spec.js",
-    "chromeWebSecurity": false,
-    "modifyObstructiveCode": false
-  }
-  
+  "testFiles": "**/*.spec.ts",
+  "chromeWebSecurity": false,
+  "modifyObstructiveCode": false
+}

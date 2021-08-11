@@ -1,28 +1,19 @@
 import React, { useState } from 'react';
-import { ParserField, ValueDefinition } from 'graphql-zeus';
+import { ValueDefinition } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { ConvertValueToEditableString } from '@/GraphQL/Convert';
-import { DetailMenuItem, FieldPort, Menu, MenuScrollingArea, NodeFieldContainer, Title } from '@/Graf/Node/components';
+import {
+  DetailMenuItem,
+  FieldPort,
+  Menu,
+  MenuScrollingArea,
+  NodeFieldContainer,
+  Title,
+} from '@/Graf/Node/components';
 import { Colors } from '@/Colors';
+import { FieldProps } from '@/Graf/Node/models';
+import { darken, toHex } from 'color2k';
 
-interface FieldProps {
-  node: ParserField;
-  inputOpen: boolean;
-  outputOpen: boolean;
-  onInputClick: () => void;
-  onOutputClick: () => void;
-  inputDisabled?: boolean;
-  outputDisabled?: boolean;
-  last?: boolean;
-  isLocked?: boolean;
-  parentNodeTypeName: string;
-  onDelete: () => void;
-}
-
-const LastField = style({
-  borderBottomLeftRadius: 4,
-  borderBottomRightRadius: 4,
-});
 const Name = style({
   fontSize: 10,
   marginRight: 4,
@@ -31,12 +22,13 @@ const Name = style({
   whiteSpace: 'nowrap',
 });
 const DirectiveBackground = style({
-  background: Colors.pink[5],
+  background: toHex(darken(Colors.pink, 0.5)),
 });
 const OptionsMenuContainer = style({
   position: 'absolute',
-  top: 20,
+  top: 32,
   zIndex: 2,
+  right: 5,
 });
 
 export const ActiveDirective: React.FC<FieldProps> = ({
@@ -47,7 +39,6 @@ export const ActiveDirective: React.FC<FieldProps> = ({
   outputDisabled,
   onInputClick,
   onOutputClick,
-  last,
   isLocked,
   onDelete,
 }) => {
@@ -55,7 +46,9 @@ export const ActiveDirective: React.FC<FieldProps> = ({
   const isEnumValue = node.data.type === ValueDefinition.EnumValueDefinition;
   return (
     <NodeFieldContainer
-      className={`${DirectiveBackground} ${last ? LastField : ''} ${inputOpen || outputOpen ? 'Active' : ''}`}
+      className={`${DirectiveBackground} ${
+        inputOpen || outputOpen ? 'Active' : ''
+      }`}
     >
       {!inputDisabled && !isLocked && !isEnumValue ? (
         <FieldPort
@@ -81,7 +74,10 @@ export const ActiveDirective: React.FC<FieldProps> = ({
         >
           {detailsMenuOpen && (
             <div className={OptionsMenuContainer}>
-              <Menu hideMenu={() => setDetailsMenuOpen(false)}>
+              <Menu
+                menuName={'Node options'}
+                hideMenu={() => setDetailsMenuOpen(false)}
+              >
                 <MenuScrollingArea>
                   <DetailMenuItem onClick={onDelete}>Delete</DetailMenuItem>
                 </MenuScrollingArea>
@@ -100,7 +96,9 @@ export const ActiveDirective: React.FC<FieldProps> = ({
           }}
         />
       )}
-      {outputDisabled && isLocked && <div className={'NodeFieldPortPlaceholder'} />}
+      {outputDisabled && isLocked && (
+        <div className={'NodeFieldPortPlaceholder'} />
+      )}
     </NodeFieldContainer>
   );
 };

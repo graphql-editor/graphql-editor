@@ -13,7 +13,10 @@
     "lib": ["es6", "es7", "esnext", "dom"],
     "outDir": "./lib",
     "baseUrl": "./",
-    "rootDir": "../"
+    "rootDir": "../",
+    "paths": {
+      "@/*": ["../src/*"]
+    }
   },
   "exclude": ["../dist", "../build", "../node_modules"]
 }

@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "sourceMap": true,
-    "target": "es6",
+    "target": "es5",
     "jsx": "react",
     "module": "commonjs",
     "moduleResolution": "node",
@@ -14,7 +14,7 @@
     "strict": true,
     "outDir": "./lib",
     "lib": ["es6", "es7", "esnext", "dom"],
-    "rootDir": "./src",
+    "rootDir": "./",
     "baseUrl": "./src/",
     "paths": {
       "@/*": ["./*"]
@@ -30,5 +30,5 @@
     ],
     "skipLibCheck": true
   },
-  "exclude": ["lib", "sandbox", "cloud", "docs", "cypress", "__test__", "__mocks__"]
+  "exclude": ["lib", "sandbox", "docs", "__mocks__"]
 }

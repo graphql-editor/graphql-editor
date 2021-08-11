@@ -10,16 +10,16 @@ import {
 
 export const GraphQLEditor = (props: EditorProps) => {
   return (
-    <TreesStateProvider>
-      <ErrorsStateProvider>
-        <NavigationStateProvider>
-          <IOStateProvider>
-            <ThemeProvider>
+    <ThemeProvider>
+      <TreesStateProvider>
+        <ErrorsStateProvider>
+          <NavigationStateProvider>
+            <IOStateProvider>
               <Editor {...props} />
-            </ThemeProvider>
-          </IOStateProvider>
-        </NavigationStateProvider>
-      </ErrorsStateProvider>
-    </TreesStateProvider>
+            </IOStateProvider>
+          </NavigationStateProvider>
+        </ErrorsStateProvider>
+      </TreesStateProvider>
+    </ThemeProvider>
   );
 };

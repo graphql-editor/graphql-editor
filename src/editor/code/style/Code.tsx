@@ -1,6 +1,7 @@
 import { keyframes, style, cssRaw } from 'typestyle';
 import { Colors } from '@/Colors';
 import * as vars from '@/vars';
+import { themed } from '@/Theming/utils';
 
 const animationName = keyframes({
   ['0%']: {
@@ -14,83 +15,88 @@ const animationName = keyframes({
 export const Editor = style({
   flex: 1,
 });
-export const CodeContainer = style({
-  flex: 1,
-  overflowY: 'hidden',
-  overflowX: 'hidden',
-  display: 'flex',
-  flexFlow: 'column',
-});
-export const Marker = style({
-  background: 'red',
-});
-export const ErrorLonger = style({
-  position: 'absolute',
-  background: Colors.red[0],
-  color: Colors.grey[0],
-  padding: 10,
-  fontSize: 10,
-  maxWidth: 200,
-  margin: 5,
-  borderRadius: 5,
-  right: 0,
-  letterSpacing: 1,
-  zIndex: 3,
-});
-export const FullScreenIcon = style({
-  cursor: 'pointer',
-  display: 'flex',
-  color: Colors.grey[0],
-  transition: vars.transition,
-  padding: `0 10px`,
-  $nest: {
-    '&:hover,&.active': {
-      color: Colors.green[0],
+export const CodeContainer = themed(
+  ({
+    colors: {
+      code: {
+        editor: {
+          scrollbar: { inner, outer },
+        },
+      },
     },
-  },
-});
-
-export const Generate = style({
-  marginLeft: 'auto',
-  color: Colors.green[3],
-  padding: `2px 6px`,
-  cursor: 'pointer',
-  display: 'flex',
-  alignItems: 'center',
-  fontSize: 10,
-  textTransform: 'lowercase',
-  borderRadius: 3,
-  fontWeight: 'bold',
-  transition: vars.transition,
-  $nest: {
-    '&.disabled': {
-      color: Colors.grey[6],
-    },
-    '&.ready': {
-      color: Colors.grey[0],
+  }) =>
+    style({
+      flex: 1,
+      overflowY: 'hidden',
+      overflowX: 'hidden',
+      display: 'flex',
+      flexFlow: 'column',
       $nest: {
-        '&:hover': {
-          color: Colors.green[0],
+        '.vs-dark .monaco-scrollable-element > .scrollbar': {
+          background: outer,
           $nest: {
-            svg: {
-              animationName,
-              animationDuration: '1s',
-              animationIterationCount: 'infinite',
-              animationTimingFunction: 'linear',
+            '&.invisible': {
+              opacity: 0.5,
+            },
+          },
+        },
+        '.vs-dark .monaco-scrollable-element > .scrollbar > .slider': {
+          background: inner,
+        },
+      },
+    }),
+);
+
+export const Generate = themed(
+  ({
+    colors: {
+      code: {
+        synchronize: { color, disabled, ready, readyHover },
+      },
+    },
+  }) =>
+    style({
+      marginLeft: 'auto',
+      color,
+      padding: `2px 6px`,
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      fontSize: 10,
+      textTransform: 'lowercase',
+      borderRadius: 3,
+      fontWeight: 'bold',
+      transition: vars.transition,
+      $nest: {
+        '&.disabled': {
+          color: disabled,
+        },
+        '&.ready': {
+          color: ready,
+          $nest: {
+            '&:hover': {
+              color: readyHover,
+              $nest: {
+                svg: {
+                  animationName,
+                  animationDuration: '1s',
+                  animationIterationCount: 'infinite',
+                  animationTimingFunction: 'linear',
+                },
+              },
             },
           },
         },
       },
-    },
-  },
-});
+    }),
+);
 
 cssRaw(`
 .monacoError{
-  background:${Colors.red[0]}33
+  background:${Colors.red}33
 }
 .monacoMarginError{
-  background:${Colors.red[0]};
+  background:${Colors.red};
   border-radius:50%;
   margin-left:5px;
   width:12px !important;

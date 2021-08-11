@@ -13,12 +13,11 @@ describe('Convertion of string to nodes test', () => {
         type: { name: 'ObjectValue' },
       },
     ];
-    expect(JSON.stringify(result)).toEqual(JSON.stringify(expected));
+    expect(JSON.stringify(result)).equal(JSON.stringify(expected));
   });
   it('Converts array of empty objects properly', () => {
     const v = '[{},{}]';
     const result = ConvertStringToObject(v);
-    console.log(result);
     const expected: ParserField[] = [
       {
         name: 'ObjectValue',
@@ -33,6 +32,6 @@ describe('Convertion of string to nodes test', () => {
         type: { name: 'ObjectValue' },
       },
     ];
-    expect(JSON.stringify(result)).toEqual(JSON.stringify(expected));
+    expect(JSON.stringify(result)).equal(JSON.stringify(expected));
   });
 });

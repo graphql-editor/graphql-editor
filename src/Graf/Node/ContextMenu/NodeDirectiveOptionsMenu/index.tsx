@@ -15,7 +15,10 @@ const configureOpts = (node: ParserField) => {
   });
   return opts;
 };
-export const NodeDirectiveOptionsMenu: React.FC<NodeDirectiveOptionsMenuProps> = ({ node, hideMenu }) => {
+export const NodeDirectiveOptionsMenu: React.FC<NodeDirectiveOptionsMenuProps> = ({
+  node,
+  hideMenu,
+}) => {
   const { tree, setTree } = useTreesState();
   const [opts, setOpts] = useState(configureOpts(node));
   useEffect(() => {
@@ -25,12 +28,18 @@ export const NodeDirectiveOptionsMenu: React.FC<NodeDirectiveOptionsMenuProps> =
     <OptionsMenu
       hideMenu={hideMenu}
       options={opts}
+      menuName={'Add directive'}
       onCheck={(o) => {
         const turnOff = !!node.type.directiveOptions?.includes(o as Directive);
         if (turnOff) {
-          node.type.directiveOptions = node.type.directiveOptions?.filter((opt) => opt !== o);
+          node.type.directiveOptions = node.type.directiveOptions?.filter(
+            (opt) => opt !== o,
+          );
         } else {
-          node.type.directiveOptions = [...(node.type.directiveOptions || []), o as Directive];
+          node.type.directiveOptions = [
+            ...(node.type.directiveOptions || []),
+            o as Directive,
+          ];
         }
         setTree({ ...tree });
       }}

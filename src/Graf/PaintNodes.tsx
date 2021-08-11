@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   TypeDefinition,
   TypeDefinitionDisplayMap,
@@ -16,9 +16,10 @@ const Main = style({
   position: 'relative',
   fontFamily,
   transition: `opacity 0.25s ease-in-out`,
+  paddingBottom: 300,
 });
 export const PaintNodes: React.FC = () => {
-  const { libraryTree, tree } = useTreesState();
+  const { libraryTree, tree, readonly } = useTreesState();
   const baseTypes = [
     TypeDefinition.ObjectTypeDefinition,
     TypeDefinition.InterfaceTypeDefinition,
@@ -26,35 +27,48 @@ export const PaintNodes: React.FC = () => {
     TypeDefinition.EnumTypeDefinition,
     TypeDefinition.ScalarTypeDefinition,
     TypeDefinition.InputObjectTypeDefinition,
-  ];
+  ].map((d) => ({
+    node: {
+      name: TypeDefinitionDisplayMap[d],
+      data: {
+        type: d,
+      },
+      type: {
+        name: `root-${d}`,
+      },
+      args: tree.nodes
+        .filter((n) => n.data.type === d)
+        .sort((a, b) => (a.name > b.name ? 1 : -1)),
+    },
+    libraryNode: {
+      name: TypeDefinitionDisplayMap[d],
+      data: {
+        type: d,
+      },
+      type: {
+        name: `library-${d}`,
+      },
+      args: libraryTree.nodes
+        .filter((n) => n.data.type === d)
+        .sort((a, b) => (a.name > b.name ? 1 : -1)),
+    },
+  }));
+  const RootBaseTypes = useMemo(() => {
+    return baseTypes.map((d) => (
+      <RootNode
+        readonly={readonly}
+        key={d.node.type.name}
+        node={d.node}
+        libraryNode={d.libraryNode}
+      />
+    ));
+  }, [baseTypes]);
+
   return (
     <div className={Main}>
-      {baseTypes.map((d) => (
-        <RootNode
-          key={d}
-          node={{
-            name: TypeDefinitionDisplayMap[d],
-            data: {
-              type: d,
-            },
-            type: {
-              name: 'root',
-            },
-            args: tree.nodes.filter((n) => n.data.type === d).sort((a, b) => (a.name > b.name ? 1 : -1)),
-          }}
-          libraryNode={{
-            name: TypeDefinitionDisplayMap[d],
-            data: {
-              type: d,
-            },
-            type: {
-              name: 'root',
-            },
-            args: libraryTree.nodes.filter((n) => n.data.type === d).sort((a, b) => (a.name > b.name ? 1 : -1)),
-          }}
-        />
-      ))}
+      {RootBaseTypes}
       <RootNode
+        readonly={readonly}
         node={{
           name: TypeDefinitionDisplayMap.DirectiveDefinition,
           data: {
@@ -64,7 +78,9 @@ export const PaintNodes: React.FC = () => {
             name: 'root',
           },
           args: tree.nodes
-            .filter((n) => n.data.type === TypeSystemDefinition.DirectiveDefinition)
+            .filter(
+              (n) => n.data.type === TypeSystemDefinition.DirectiveDefinition,
+            )
             .sort((a, b) => (a.name > b.name ? 1 : -1)),
         }}
         libraryNode={{
@@ -76,11 +92,14 @@ export const PaintNodes: React.FC = () => {
             name: 'root',
           },
           args: libraryTree.nodes
-            .filter((n) => n.data.type === TypeSystemDefinition.DirectiveDefinition)
+            .filter(
+              (n) => n.data.type === TypeSystemDefinition.DirectiveDefinition,
+            )
             .sort((a, b) => (a.name > b.name ? 1 : -1)),
         }}
       />
       <RootExtendNode
+        readonly={readonly}
         node={{
           name: TypeSystemExtension.TypeExtension,
           data: {

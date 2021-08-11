@@ -1,0 +1,45 @@
+on:
+  push:
+    branches:
+      - develop
+jobs:
+  cypress:
+    name: Test with cyprees
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Install node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install packages
+        run: npm install
+      - name: Cypress run
+        uses: cypress-io/github-action@v2
+        timeout-minutes: 10
+        with:
+          build: npm run build
+          start: npm run start-ci
+      - name: Upload videos
+        uses: actions/upload-artifact@v1
+        if: always()
+        with:
+          name: cypress-videos
+          path: cypress/videos
+  build:
+    runs-on: ubuntu-latest
+    needs: cypress
+    steps:
+      - uses: actions/checkout@v2
+      # Setup .npmrc file to publish to npm
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm install
+      - run: npm run build
+      - run: npm publish --access public --tag beta
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}

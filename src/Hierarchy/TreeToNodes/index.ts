@@ -1,4 +1,12 @@
-import { GraphQLNodeParams, Helpers, Instances, ParserField, ParserTree, TypeExtension, Value } from 'graphql-zeus';
+import {
+  GraphQLNodeParams,
+  Helpers,
+  Instances,
+  ParserField,
+  ParserTree,
+  TypeExtension,
+  Value,
+} from 'graphql-zeus';
 import { NodeUtils, InputNode as Node } from 'graphsource';
 
 /**
@@ -14,7 +22,10 @@ export class TreeToNodes {
    * @returns {boolean} params match
    * @memberof TreeToNodes
    */
-  static compareData(d1: GraphQLNodeParams | undefined, d2: GraphQLNodeParams | undefined): boolean {
+  static compareData(
+    d1: GraphQLNodeParams | undefined,
+    d2: GraphQLNodeParams | undefined,
+  ): boolean {
     if (!d1 && d2) {
       return false;
     }
@@ -36,7 +47,11 @@ export class TreeToNodes {
    * @param nodes already existing nodes
    * @returns
    */
-  static connectAndCreate = (n: ParserField, rootNode: Node, nodes: Array<Node>): Node => {
+  static connectAndCreate = (
+    n: ParserField,
+    rootNode: Node,
+    nodes: Array<Node>,
+  ): Node => {
     const createdNode = TreeToNodes.resolveField(n, nodes);
     rootNode.inputs!.push(createdNode.id);
     createdNode.outputs!.push(rootNode.id);
@@ -52,7 +67,11 @@ export class TreeToNodes {
    * @param links already existing links
    * @param  nodes already existing nodes
    */
-  static createInterfaces = (interfaces: string[], rootNode: Node, nodes: Array<Node>) => {
+  static createInterfaces = (
+    interfaces: string[],
+    rootNode: Node,
+    nodes: Array<Node>,
+  ) => {
     const createdNode = TreeToNodes.connectAndCreate(
       {
         name: Helpers.Implements,
@@ -92,7 +111,10 @@ export class TreeToNodes {
    * @returns {Node} 'graphsource' ready Node
    * @memberof TreeToNodes
    */
-  static createDirectivesHelper = (rootNode: Node, nodes: Array<Node>): Node => {
+  static createDirectivesHelper = (
+    rootNode: Node,
+    nodes: Array<Node>,
+  ): Node => {
     return TreeToNodes.connectAndCreate(
       {
         name: Helpers.Directives,
@@ -130,14 +152,22 @@ export class TreeToNodes {
    * @param [rootNode] node to be connected with
    * @memberof TreeToNodes
    */
-  static resolveField(root: ParserField, nodes: Array<Node>, rootNode?: Node): Node {
+  static resolveField(
+    root: ParserField,
+    nodes: Array<Node>,
+    rootNode?: Node,
+  ): Node {
     const nodeCreated = NodeUtils.createBasicNode(
       { x: 0, y: 0 },
       {
         name: root.data.type === Value.NullValue ? 'null' : root.name,
         type: root.type.name,
         description: root.description,
-        options: root.type.options || root.type.directiveOptions || root.type.operations || [],
+        options:
+          root.type.options ||
+          root.type.directiveOptions ||
+          root.type.operations ||
+          [],
       },
     );
     nodes.push(nodeCreated);
@@ -178,9 +208,15 @@ export class TreeToNodes {
         };
       });
       rootNodes
-        .filter((pf) => pf.parserField.interfaces && pf.parserField.interfaces.length)
+        .filter(
+          (pf) => pf.parserField.interfaces && pf.parserField.interfaces.length,
+        )
         .forEach((f) => {
-          TreeToNodes.createInterfaces(f.parserField.interfaces!, f.node, nodes);
+          TreeToNodes.createInterfaces(
+            f.parserField.interfaces!,
+            f.node,
+            nodes,
+          );
         });
 
       const returnRootNodes = rootNodes
@@ -196,9 +232,14 @@ export class TreeToNodes {
         resolveAllFields(returnRootNodes);
       }
       const returnDirectives = rootNodes
-        .filter((rn) => rn.parserField.directives && rn.parserField.directives.length)
+        .filter(
+          (rn) => rn.parserField.directives && rn.parserField.directives.length,
+        )
         .map((rn) => {
-          const directiveHelper = TreeToNodes.createDirectivesHelper(rn.node, nodes);
+          const directiveHelper = TreeToNodes.createDirectivesHelper(
+            rn.node,
+            nodes,
+          );
           return rn.parserField.directives!.map((a) => ({
             parserField: a,
             node: directiveHelper,
@@ -214,7 +255,9 @@ export class TreeToNodes {
     resolveAllFields(
       tree.nodes
         .map((parserField) =>
-          parserField.data!.type! in TypeExtension ? TreeToNodes.createExtendHelper(parserField) : parserField,
+          parserField.data!.type! in TypeExtension
+            ? TreeToNodes.createExtendHelper(parserField)
+            : parserField,
         )
         .map((parserField) => ({
           parserField,

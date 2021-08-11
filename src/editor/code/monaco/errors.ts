@@ -1,14 +1,16 @@
-import * as monaco from 'monaco-editor';
 import { Colors } from '@/Colors';
 import { EditorError } from '@/validation';
-export const mapEditorErrorToMonacoDecoration = (e: EditorError) =>
+import type * as monaco from 'monaco-editor';
+export const mapEditorErrorToMonacoDecoration = (m: typeof monaco) => (
+  e: EditorError,
+) =>
   ({
-    range: new monaco.Range(e.row + 1, 1, e.row + 1, 1000),
+    range: new m.Range(e.row + 1, 1, e.row + 1, 1000),
     options: {
       className: 'monacoError',
       isWholeLine: true,
       minimap: {
-        color: Colors.red[0],
+        color: Colors.red,
         position: 1,
       },
       hoverMessage: [

@@ -1,27 +1,40 @@
-import React, { useState } from 'react';
-import { ParserField, TypeSystemDefinition, Instances, TypeDefinition, TypeExtension } from 'graphql-zeus';
+import React, { useEffect, useState } from 'react';
+import {
+  ParserField,
+  TypeSystemDefinition,
+  Instances,
+  TypeDefinition,
+  TypeExtension,
+} from 'graphql-zeus';
 import { ActiveField } from '@/Graf/Node/Field';
 import { ActiveDirective } from '@/Graf/Node/Directive';
 import { ActiveInputValue } from '@/Graf/Node/InputValue';
 import { style, keyframes } from 'typestyle';
-import { Colors, mix } from '@/Colors';
-import { FIELD_HEIGHT } from '@/Graf/constants';
-import { GraphQLBackgrounds } from '@/editor/theme';
+import { Colors } from '@/Colors';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { DOM } from '@/Graf/DOM';
 import { ActiveType } from '@/Graf/Node/Type';
-import { NodeFields, NodeTitle } from '@/Graf/Node/SharedNode';
-import { ActiveDescription, NodeInterface, EditableText } from '@/Graf/Node/components';
+import { NodeTitle } from '@/Graf/Node/SharedNode';
+import {
+  ActiveDescription,
+  NodeInterface,
+  EditableText,
+} from '@/Graf/Node/components';
 import { useTreesState } from '@/state/containers/trees';
 import { TopNodeMenu } from '@/Graf/Node/ActiveNode/TopNodeMenu';
 import { ChangeAllRelatedNodes, isExtensionNode } from '@/GraphQL/Resolve';
 import { ActiveArgument } from '@/Graf/Node/Argument';
+import { themed } from '@/Theming/utils';
+import { useTheme } from '@/state/containers';
+import { darken, lighten, toHex } from 'color2k';
+import { GraphQLEditorDomStructure } from '@/domStructure';
 
 interface NodeProps {
   node: ParserField;
-  onDelete: () => void;
-  onDuplicate?: () => void;
+  onDelete: (node: ParserField) => void;
+  onDuplicate?: (node: ParserField) => void;
   readonly?: boolean;
+  parentNode?: ParserField;
 }
 
 const fadeIn = keyframes({
@@ -32,90 +45,107 @@ const fadeIn = keyframes({
     opacity: 1.0,
   },
 });
-const LeftNodeArea: NestedCSSProperties = {
-  position: 'absolute',
-  left: -300,
-  width: 300,
-  zIndex: 4,
-  display: 'flex',
-  alignItems: 'flex-end',
-  flexDirection: 'column',
-};
-const LeftNodeAreaNode: NestedCSSProperties = { position: 'relative' };
-const RightNodeArea: NestedCSSProperties = { position: 'absolute', right: -300, width: 300, zIndex: 4 };
-const RightNodeAreaNode: NestedCSSProperties = { position: 'absolute' };
 
-const LibraryNodeArea: NestedCSSProperties = {
-  borderStyle: 'dashed',
-};
-const MainNodeArea: NestedCSSProperties = {
-  position: 'relative',
-  borderWidth: 1,
-  borderStyle: 'solid',
-  borderRadius: 4,
-  maxWidth: 600,
-  transition: `border-color .25s ease-in-out`,
-  borderColor: Colors.green[0],
-  $nest: {
-    '.NodeTitle': NodeTitle,
-    '.NodeFields': NodeFields,
-    '&.LibraryNodeArea': LibraryNodeArea,
-  },
-};
-const DescriptionPosition: NestedCSSProperties = {
+const OpenedNode: NestedCSSProperties = {
   position: 'absolute',
-  transformOrigin: 'center bottom',
-  transform: 'translate(0px, calc(-100% - 10px))',
-  width: '100%',
-  outline: 'none',
-  $nest: {
-    '&:focus': {
-      border: `1px solid ${Colors.grey[3]}`,
-    },
-  },
+  zIndex: 4,
+  left: 0,
+  top: 0,
+  bottom: 0,
+  height: '100%',
+  width: `100%`,
+  display: 'flex',
 };
-const NodeContainer = style({
-  position: 'relative',
-  breakInside: 'avoid',
-  maxWidth: '100%',
-  margin: 10,
-  $nest: {
-    '.DescriptionPosition': DescriptionPosition,
-    '.LeftNodeArea': LeftNodeArea,
-    '.RightNodeArea': RightNodeArea,
-    '.MainNodeArea': {
-      ...MainNodeArea,
-      animationName: fadeIn,
-      animationDuration: '0.25s',
-    },
-    '.RightNodeAreaNode': RightNodeAreaNode,
-    '.LeftNodeAreaNode': LeftNodeAreaNode,
-    '&:hover': {
-      $nest: {
-        '> .ActionsMenu': {
-          opacity: 1.0,
-          pointerEvents: 'auto',
-        },
+
+const LibraryNodeArea = themed<NestedCSSProperties>(
+  ({
+    colors: {
+      graf: {
+        node: { selected },
       },
     },
-    ...Object.keys(GraphQLBackgrounds).reduce((a, b) => {
-      a[`.NodeBackground-${b}`] = {
-        background: GraphQLBackgrounds[b],
-      };
-      return a;
-    }, {} as Record<string, NestedCSSProperties>),
-    ...Object.keys(GraphQLBackgrounds).reduce((a, b) => {
-      a[`.NodeType-${b}`] = {
-        background: GraphQLBackgrounds[b],
-        $nest: {
-          '&:hover, &.Active': {
-            background: mix(GraphQLBackgrounds[b], Colors.grey[0], 80),
+  }) => ({
+    borderStyle: 'dashed',
+    borderColor: `${selected}33`,
+  }),
+);
+const MainNodeArea = themed((theme) =>
+  style({
+    position: 'relative',
+    transition: `border-color .25s ease-in-out`,
+    borderColor: theme.colors.graf.node.selected,
+    flex: 1,
+    display: 'flex',
+    flexFlow: 'column nowrap',
+    animationName: fadeIn,
+    animationDuration: '0.25s',
+    overflowY: 'auto',
+    $nest: {
+      '.NodeTitle': NodeTitle(theme),
+      '&.LibraryNodeArea': LibraryNodeArea(theme),
+    },
+  }),
+);
+const DescriptionPosition: NestedCSSProperties = {
+  outline: 'none',
+  border: `1px solid ${toHex(darken(Colors.grey, 0.3))}00`,
+  $nest: {
+    '&:focus': {
+      border: `1px solid ${toHex(darken(Colors.grey, 0.3))}`,
+    },
+  },
+};
+const NodeContainer = themed(
+  ({
+    colors: {
+      backgrounds,
+      graf: {
+        node: { background },
+      },
+    },
+  }) =>
+    style({
+      position: 'relative',
+      breakInside: 'avoid',
+      height: '100%',
+      background,
+      maxWidth: '100%',
+      display: 'flex',
+      flexFlow: 'column nowrap',
+      $nest: {
+        '.DescriptionPosition': DescriptionPosition,
+        '.OpenedNode': OpenedNode,
+        '&:hover': {
+          $nest: {
+            '> .ActionsMenu': {
+              opacity: 1.0,
+              pointerEvents: 'auto',
+            },
           },
         },
-      };
-      return a;
-    }, {} as Record<string, NestedCSSProperties>),
-  },
+        ...Object.keys(backgrounds).reduce((a, b) => {
+          a[`&.NodeBackground-${b}`] = {
+            background: (backgrounds as any)[b],
+          };
+          return a;
+        }, {} as Record<string, NestedCSSProperties>),
+        ...Object.keys(backgrounds).reduce((a, b) => {
+          a[`.NodeType-${b}`] = {
+            $nest: {
+              '&:hover, &.Active': {
+                background: toHex(lighten((backgrounds as any)[b], 0.1)),
+              },
+            },
+          };
+          return a;
+        }, {} as Record<string, NestedCSSProperties>),
+      },
+    }),
+);
+
+const NodeFields = style({
+  flex: 1,
+  overflowY: 'auto',
 });
 
 const NodeInterfaces = style({
@@ -126,16 +156,62 @@ const NodeInterfaces = style({
   marginBottom: 5,
 });
 
-export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
-  const [openedInputs, setOpenedInputs] = useState<number[]>([]);
-  const [openedOutputs, setOpenedOutputs] = useState<number[]>([]);
+const GapBar = themed(({ colors: { graf: { node: { gapBar } } } }) =>
+  style({
+    width: '100%',
+    height: '100%',
+    background: `${gapBar}99`,
+    transition: '.25s background ease-in-out',
+    $nest: {
+      '&:hover': {
+        background: `${gapBar}11`,
+      },
+    },
+  }),
+);
 
-  const [openedDirectiveInputs, setOpenedDirectiveInputs] = useState<number[]>([]);
-  const [openedDirectiveOutputs, setOpenedDirectiveOutputs] = useState<number[]>([]);
+const NodeArea = themed(({ colors: { graf: { node: { shadow } } } }) =>
+  style({
+    minWidth: '80%',
+    maxWidth: '50vw',
+    left: '20%',
+    position: 'absolute',
+    height: '100%',
+    boxShadow: `${shadow} 0 0 20px`,
+  }),
+);
 
-  const { libraryTree, tree, setTree, setSelectedNode, selectedNode, selectedNodeRef } = useTreesState();
+const EditableTitle: React.CSSProperties = {
+  fontSize: 14,
+  fontWeight: 'bold',
+};
 
-  const isLibrary = !!libraryTree.nodes.find((lN) => lN.name === node.name && lN.data.type === node.data.type);
+export const ActiveNode: React.FC<NodeProps> = ({
+  node,
+  parentNode,
+  ...sharedProps
+}) => {
+  const [openedNode, setOpenedNode] = useState<{
+    type:
+      | keyof Pick<ParserField, 'args' | 'directives'>
+      | 'output'
+      | 'directiveOutput';
+    index: number;
+  }>();
+  const { theme } = useTheme();
+
+  const {
+    libraryTree,
+    tree,
+    setTree,
+    setSelectedNode,
+    selectedNode,
+    parentTypes,
+  } = useTreesState();
+
+  const isLibrary = !!libraryTree.nodes.find(
+    (lN) => lN.name === node.name && lN.data.type === node.data.type,
+  );
   const isInputNode = [
     TypeSystemDefinition.FieldDefinition,
     TypeSystemDefinition.DirectiveDefinition,
@@ -145,18 +221,45 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
   ].includes(node.data.type as any);
 
   const isArgumentNode = [Instances.Directive].includes(node.data.type as any);
-  const parentNode = tree.nodes.find((n) => n.name === node.type.name);
   const isLocked = !!sharedProps.readonly || isLibrary;
 
-  const findNodeByField = (field: ParserField) => {
-    return (tree.nodes.find((n) => n.name === field.type.name && !isExtensionNode(n.data.type!)) ||
-      libraryTree.nodes.find((n) => n.name === field.type.name && !isExtensionNode(n.data.type!)))!;
+  const findNodeByField = (field?: ParserField) => {
+    return field
+      ? (tree.nodes.find(
+          (n) => n.name === field.type.name && !isExtensionNode(n.data.type!),
+        ) ||
+          libraryTree.nodes.find(
+            (n) => n.name === field.type.name && !isExtensionNode(n.data.type!),
+          ))!
+      : undefined;
   };
+  useEffect(() => {
+    setOpenedNode(undefined);
+  }, [node]);
+
+  const inactiveClick = () => {
+    if (openedNode) {
+      setOpenedNode(undefined);
+    }
+  };
+  const openedNodeNode = openedNode
+    ? openedNode.type === 'directives'
+      ? node.directives![openedNode.index]
+      : openedNode.type === 'args'
+      ? node.args![openedNode.index]
+      : openedNode.type === 'directiveOutput'
+      ? findNodeByField(node.directives![openedNode.index])
+      : findNodeByField(node.args![openedNode.index])
+    : undefined;
 
   return (
-    <div className={`${NodeContainer} ${DOM.classes.node} ${DOM.classes.nodeSelected}`} ref={selectedNodeRef}>
+    <div
+      className={`${NodeContainer(theme)} NodeBackground-${node.type.name} ${
+        DOM.classes.node
+      } ${DOM.classes.nodeSelected}`}
+      data-cy={GraphQLEditorDomStructure.tree.elements.Graf.ActiveNode.name}
+    >
       <ActiveDescription
-        className={'DescriptionPosition'}
         onChange={(d) => {
           node.description = d;
           setTree({ ...tree });
@@ -171,7 +274,9 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
               key={i}
               isLocked={isLocked}
               onDelete={() => {
-                node.interfaces = node.interfaces?.filter((oldInterface) => oldInterface !== i);
+                node.interfaces = node.interfaces?.filter(
+                  (oldInterface) => oldInterface !== i,
+                );
                 setTree({ ...tree });
               }}
             >
@@ -180,74 +285,73 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
           ))}
         </div>
       )}
-      <div className={`LeftNodeArea`}>
-        {openedDirectiveInputs.sort().map((o) => (
-          <div key={o} className={`LeftNodeAreaNode`} style={{ top: FIELD_HEIGHT * (o + 1) }}>
+      {openedNodeNode && openedNode && (
+        <div className={`OpenedNode`}>
+          <div className={GapBar(theme)} onClick={inactiveClick} />
+          <div className={NodeArea(theme)}>
             <ActiveNode
               {...sharedProps}
               readonly={isLocked}
-              node={node.directives![o]}
+              parentNode={
+                openedNode.type === 'args' || openedNode.type === 'directives'
+                  ? node
+                  : undefined
+              }
+              node={openedNodeNode}
+              onDuplicate={undefined}
               onDelete={() => {
-                setOpenedDirectiveInputs([]);
-                setOpenedDirectiveOutputs([]);
-                node.directives!.splice(o, 1);
-                DOM.panLock = false;
+                if (openedNode.type === 'directives') {
+                  node.directives!.splice(openedNode.index, 1);
+                }
+                if (openedNode.type === 'args') {
+                  node.args!.splice(openedNode.index, 1);
+                }
+                if (
+                  openedNode.type === 'output' ||
+                  openedNode.type === 'directiveOutput'
+                ) {
+                  sharedProps.onDelete(openedNodeNode);
+                  return;
+                }
                 setTree({ ...tree });
               }}
             />
           </div>
-        ))}
-        {openedInputs.sort().map((o) => (
-          <div
-            key={o}
-            className={`LeftNodeAreaNode`}
-            style={{ top: FIELD_HEIGHT * (o + (node.directives?.length || 0) + 1) }}
-          >
-            <ActiveNode
-              {...sharedProps}
-              readonly={isLocked}
-              node={node.args![o]}
-              onDelete={() => {
-                setOpenedInputs([]);
-                setOpenedOutputs([]);
-                node.args!.splice(o, 1);
-                DOM.panLock = false;
-                setTree({ ...tree });
-              }}
-            />
-          </div>
-        ))}
-      </div>
-      <div className={`RightNodeArea`}>
-        {openedDirectiveOutputs.sort().map((o) => (
-          <div key={o} className={`RightNodeAreaNode`} style={{ top: FIELD_HEIGHT * (o + 1) }}>
-            <ActiveNode {...sharedProps} readonly={isLocked} node={findNodeByField(node.directives![o])} />
-          </div>
-        ))}
-        {openedOutputs.sort().map((o) => (
-          <div
-            key={o}
-            className={`RightNodeAreaNode`}
-            style={{ top: FIELD_HEIGHT * (o + (node.directives?.length || 0) + 1) }}
-          >
-            <ActiveNode {...sharedProps} readonly={isLocked} node={findNodeByField(node.args![o])} />
-          </div>
-        ))}
-      </div>
+        </div>
+      )}
       <div
-        className={`MainNodeArea${isLibrary ? ' LibraryNodeArea' : ''}`}
+        className={`${MainNodeArea(theme)}${
+          isLibrary ? ' LibraryNodeArea' : ''
+        }`}
         onClick={(e) => {
           e.stopPropagation();
         }}
       >
         <div className={`NodeTitle`}>
           <div className={`NodeName`}>
-            {isLocked && <EditableText value={node.name} />}
+            {parentNode && (
+              <EditableText
+                style={EditableTitle}
+                value={`${parentNode.name}.`}
+              />
+            )}
+            {isLocked && (
+              <EditableText style={EditableTitle} value={node.name} />
+            )}
             {!isLocked && (
               <EditableText
-                fontSize={12}
+                style={EditableTitle}
                 value={node.name}
+                exclude={Object.keys(parentTypes).filter(
+                  (pt) => pt !== node.name,
+                )}
                 onChange={(v) => {
+                  const isError =
+                    tree.nodes.map((n) => n.name).includes(v) ||
+                    libraryTree.nodes.map((n) => n.name).includes(v);
+                  if (isError) {
+                    return;
+                  }
                   //TODO: Change the node name
                   ChangeAllRelatedNodes({
                     newName: v,
@@ -258,11 +362,7 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
                   node.name = v;
                   setTree({ ...tree });
                   if (reselect && selectedNode) {
-                    setSelectedNode({
-                      name: v,
-                      data: node.data,
-                      type: node.type,
-                    });
+                    setSelectedNode(node);
                   }
                 }}
               />
@@ -271,34 +371,54 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
           <div className={`NodeType`}>
             <ActiveType type={node.type} />
           </div>
-          {!isLocked && <TopNodeMenu {...sharedProps} node={node} />}
+          {!isLocked && (
+            <TopNodeMenu
+              {...sharedProps}
+              onDelete={() => sharedProps.onDelete(node)}
+              onDuplicate={() => sharedProps.onDuplicate?.(node)}
+              node={node}
+            />
+          )}
         </div>
-        <div className={`NodeFields NodeBackground-${parentNode ? parentNode.type.name : node.type.name}`}>
+        <div className={NodeFields}>
           {node.directives?.map((d, i) => {
             const outputDisabled = !(
-              tree.nodes.find((n) => n.name === d.type.name) || libraryTree.nodes.find((n) => n.name === d.type.name)
+              tree.nodes.find((n) => n.name === d.type.name) ||
+              libraryTree.nodes.find((n) => n.name === d.type.name)
             );
             return (
               <ActiveDirective
                 isLocked={isLocked}
+                indexInParentNode={i}
+                parentNode={node}
                 parentNodeTypeName={node.type.name}
-                last={i === (node.args?.length || 0) - 1}
-                key={d.name}
+                key={d.name + i}
                 onInputClick={() => {
-                  setOpenedDirectiveInputs((oI) => (oI.includes(i) ? oI.filter((o) => o !== i) : [...oI, i]));
+                  setOpenedNode((oN) =>
+                    oN?.index === i && oN.type === 'directives'
+                      ? undefined
+                      : { type: 'directives', index: i },
+                  );
                 }}
                 onOutputClick={() => {
-                  setOpenedDirectiveOutputs((oO) => (oO.includes(i) ? oO.filter((o) => o !== i) : [...oO, i]));
+                  setOpenedNode((oN) =>
+                    oN?.index === i && oN.type === 'directiveOutput'
+                      ? undefined
+                      : { type: 'directiveOutput', index: i },
+                  );
                 }}
                 node={d}
-                inputOpen={openedDirectiveInputs.includes(i)}
+                inputOpen={
+                  openedNode?.type === 'directives' && openedNode?.index === i
+                }
                 outputDisabled={outputDisabled}
-                outputOpen={openedDirectiveOutputs.includes(i)}
+                outputOpen={
+                  openedNode?.type === 'directiveOutput' &&
+                  openedNode?.index === i
+                }
                 onDelete={() => {
-                  setOpenedDirectiveInputs([]);
-                  setOpenedDirectiveOutputs([]);
+                  setOpenedNode(undefined);
                   node.directives!.splice(i, 1);
-                  DOM.panLock = false;
                   setTree({ ...tree });
                 }}
               />
@@ -306,84 +426,51 @@ export const ActiveNode: React.FC<NodeProps> = ({ node, ...sharedProps }) => {
           })}
           {node.args?.map((a, i) => {
             const outputDisabled = !(
-              tree.nodes.find((n) => n.name === a.type.name) || libraryTree.nodes.find((n) => n.name === a.type.name)
+              tree.nodes.find((n) => n.name === a.type.name) ||
+              libraryTree.nodes.find((n) => n.name === a.type.name)
             );
-            if (isArgumentNode) {
-              return (
-                <ActiveArgument
-                  parentNode={node}
-                  isLocked={isLocked}
-                  parentNodeTypeName={node.type.name}
-                  last={i === node.args!.length - 1}
-                  key={a.name}
-                  onInputClick={() => {
-                    setOpenedInputs((oI) => (oI.includes(i) ? oI.filter((o) => o !== i) : [...oI, i]));
-                  }}
-                  onOutputClick={() => {
-                    setOpenedOutputs((oO) => (oO.includes(i) ? oO.filter((o) => o !== i) : [...oO, i]));
-                  }}
-                  node={a}
-                  inputOpen={openedInputs.includes(i)}
-                  outputDisabled={outputDisabled}
-                  outputOpen={openedOutputs.includes(i)}
-                  onDelete={() => {
-                    node.args!.splice(i, 1);
-                    DOM.panLock = false;
-                    setTree({ ...tree });
-                  }}
-                />
-              );
-            }
-            if (isInputNode) {
-              return (
-                <ActiveInputValue
-                  isLocked={isLocked}
-                  parentNodeTypeName={node.type.name}
-                  last={i === node.args!.length - 1}
-                  key={a.name}
-                  onInputClick={() => {
-                    setOpenedInputs((oI) => (oI.includes(i) ? oI.filter((o) => o !== i) : [...oI, i]));
-                  }}
-                  onOutputClick={() => {
-                    setOpenedOutputs((oO) => (oO.includes(i) ? oO.filter((o) => o !== i) : [...oO, i]));
-                  }}
-                  node={a}
-                  inputOpen={openedInputs.includes(i)}
-                  outputDisabled={outputDisabled}
-                  outputOpen={openedOutputs.includes(i)}
-                  onDelete={() => {
-                    node.args!.splice(i, 1);
-                    DOM.panLock = false;
-                    setTree({ ...tree });
-                  }}
-                />
-              );
-            }
-
+            const Component = isArgumentNode
+              ? ActiveArgument
+              : isInputNode
+              ? ActiveInputValue
+              : ActiveField;
             return (
-              <ActiveField
+              <Component
+                indexInParentNode={i}
+                parentNode={node}
                 isLocked={isLocked}
                 parentNodeTypeName={node.type.name}
-                last={i === node.args!.length - 1}
                 key={a.name}
                 onInputClick={() => {
-                  setOpenedInputs((oI) => (oI.includes(i) ? oI.filter((o) => o !== i) : [...oI, i]));
+                  setOpenedNode((oN) =>
+                    oN?.index === i && oN.type === 'args'
+                      ? undefined
+                      : { type: 'args', index: i },
+                  );
                 }}
                 onOutputClick={() => {
-                  setOpenedOutputs((oO) => (oO.includes(i) ? oO.filter((o) => o !== i) : [...oO, i]));
+                  setOpenedNode((oN) =>
+                    oN?.index === i && oN.type === 'output'
+                      ? undefined
+                      : { type: 'output', index: i },
+                  );
                 }}
                 node={a}
-                inputOpen={openedInputs.includes(i)}
+                inputOpen={
+                  openedNode?.type === 'args' && openedNode?.index === i
+                }
                 outputDisabled={outputDisabled}
-                outputOpen={openedOutputs.includes(i)}
+                outputOpen={
+                  openedNode?.type === 'output' && openedNode?.index === i
+                }
                 onDelete={() => {
                   node.args!.splice(i, 1);
-                  DOM.panLock = false;
                   setTree({ ...tree });
                 }}
               />
             );
           })}
+          <div style={{ marginBottom: 400 }} />
         </div>
       </div>
     </div>

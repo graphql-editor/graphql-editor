@@ -1,58 +1,72 @@
 import { style } from 'typestyle';
-import { Colors } from '@/Colors';
-import React, { useRef, useState, useEffect } from 'react';
-const Triangle = style({
-  width: 0,
-  height: 0,
-  borderLeft: `10px solid transparent`,
-  borderRight: `10px solid transparent`,
-  borderBottom: `15px solid ${Colors.pink[10]}`,
-  margin: 'auto',
-  marginBottom: -1,
-});
+import React, { useRef } from 'react';
+import { themed } from '@/Theming/utils';
+import { useTheme } from '@/state/containers';
+import { GraphQLEditorDomStructure } from '@/domStructure';
+import { useOnClickOutside } from '@/Graf/Node/hooks';
 
 const Wrapper = style({
   zIndex: 4,
-  width: 180,
+  width: 220,
   borderRadius: 4,
 });
-const Content = style({
-  background: Colors.pink[10],
-  borderRadius: 4,
-});
-
-interface MenuProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+const Content = themed(
+  ({
+    shadow,
+    colors: {
+      graf: {
+        node: {
+          menu: { background },
+        },
+      },
+    },
+  }) =>
+    style({
+      background,
+      borderRadius: 4,
+      padding: 0,
+      boxShadow: shadow,
+    }),
+);
+const Title = themed(({ colors: { graf: { node: { menu: { color } } } } }) =>
+  style({
+    padding: 16,
+    fontSize: 14,
+    color,
+  }),
+);
+interface MenuProps
+  extends React.DetailedHTMLProps<
+    React.HTMLAttributes<HTMLDivElement>,
+    HTMLDivElement
+  > {
   hideMenu: () => void;
+  menuName: string;
 }
 
-export const Menu: React.FC<MenuProps> = ({ children, hideMenu, ...props }) => {
+export const Menu: React.FC<MenuProps> = ({
+  children,
+  hideMenu,
+  menuName,
+  ...props
+}) => {
   const menuRef = useRef<HTMLDivElement>(null);
-  const [listener, setListener] = useState<(e: MouseEvent) => void>();
-  useEffect(() => {
-    setListener(() => {
-      if (listener) {
-        document.removeEventListener('click', listener);
-      }
-      const l = (e: MouseEvent) => {
-        if (menuRef.current && e.target && !menuRef.current.contains(e.target as any)) {
-          document.removeEventListener('click', l);
-          hideMenu();
-          return;
-        }
-      };
-      document.addEventListener('click', l);
-      return l;
-    });
-    return () => {
-      if (listener) {
-        document.removeEventListener('click', listener);
-      }
-    };
-  }, [menuRef]);
+  const { theme } = useTheme();
+  useOnClickOutside(menuRef, () => hideMenu());
   return (
     <div {...props} className={Wrapper} ref={menuRef}>
-      <div className={Triangle} />
-      <div className={Content}>{children}</div>
+      <div className={Content(theme)}>
+        <div
+          data-cy={
+            GraphQLEditorDomStructure.tree.elements.Graf.ActiveNode.TopNodeMenu
+              .searchableMenu.title
+          }
+          className={Title(theme)}
+        >
+          {menuName}
+        </div>
+        {children}
+      </div>
     </div>
   );
 };

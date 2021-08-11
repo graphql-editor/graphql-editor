@@ -1,10 +1,9 @@
 import cx from 'classnames';
 import React, { useEffect, useState } from 'react';
-import { sizeSidebar, fontFamily } from '@/vars';
+import { sizeSidebar } from '@/vars';
 import { Menu, ActivePane } from './Menu';
 import { CodePane } from './code';
 
-import { GraphQLEditorCypress, cypressGet } from '@/cypress_constants';
 import { PassedSchema, Theming } from '@/Models';
 import { DynamicResize } from './code/Components';
 import { Graf } from '@/Graf/Graf';
@@ -13,7 +12,15 @@ import { Parser, TreeToGraphQL } from 'graphql-zeus';
 import { Workers } from '@/worker';
 import { style } from 'typestyle';
 import { useTreesState } from '@/state/containers/trees';
-import { useErrorsState, useNavigationState, useTheme } from '@/state/containers';
+import {
+  useErrorsState,
+  useNavigationState,
+  useTheme,
+} from '@/state/containers';
+import { GraphQLEditorDomStructure } from '@/domStructure';
+import { DiffEditor } from '@/DiffEditor';
+import { Relation } from '@/Relation/Relation';
+import { DarkTheme, EditorTheme } from '@/Theming/DarkTheme';
 
 export const Main = style({
   display: 'flex',
@@ -27,19 +34,6 @@ export const FullScreenContainer = style({
   flex: 1,
   alignSelf: 'stretch',
   height: '100%',
-});
-export const ErrorContainer = style({
-  position: 'absolute',
-  zIndex: 2,
-  top: 0,
-  right: 0,
-  width: `calc(100% - 40px)`,
-  padding: 20,
-  margin: 20,
-  borderRadius: 4,
-  fontSize: 12,
-  fontFamily,
-  letterSpacing: 1,
 });
 
 export const Sidebar = style({
@@ -55,6 +49,7 @@ export const Sidebar = style({
 export const ErrorOuterContainer = style({
   width: '100%',
   position: 'relative',
+  display: 'flex',
 });
 
 export interface EditorProps extends Theming {
@@ -62,8 +57,13 @@ export interface EditorProps extends Theming {
   readonly?: boolean;
   placeholder?: string;
   schema: PassedSchema;
+  diffSchemas?: {
+    oldSchema: PassedSchema;
+    newSchema: PassedSchema;
+  };
   onPaneChange?: (pane: ActivePane) => void;
-  setSchema: (props: PassedSchema) => void;
+  setSchema: (props: PassedSchema, isInvalid?: boolean) => void;
+  theme?: EditorTheme;
 }
 
 let stopCodeFromTreeGeneration = false;
@@ -80,11 +80,16 @@ export const Editor = ({
   activePane = 'code-diagram',
   onPaneChange,
   setSchema,
+  diffSchemas,
+  theme = DarkTheme,
 }: EditorProps) => {
-  const [sidebarSize, setSidebarSize] = useState<string | number>(initialSizeOfSidebar);
+  const { theme: currentTheme, setTheme } = useTheme();
+  const [sidebarSize, setSidebarSize] = useState<string | number>(
+    initialSizeOfSidebar,
+  );
   const { menuState, setMenuState } = useNavigationState();
-  const { grafErrors, setGrafErrors, setLockGraf, setCodeErrors } = useErrorsState();
-  const { themed } = useTheme();
+  const { grafErrors, setGrafErrors, setLockGraf, setCodeErrors } =
+    useErrorsState();
 
   const {
     tree,
@@ -95,7 +100,6 @@ export const Editor = ({
     setReadonly,
     isTreeInitial,
     setIsTreeInitial,
-    selectedNode,
   } = useTreesState();
 
   const reset = () => {
@@ -122,7 +126,12 @@ export const Editor = ({
       if (graphql !== schema.code || (grafErrors?.length || 0) > 0) {
         Workers.validate(graphql, schema.libraries).then((errors) => {
           if (errors.length > 0) {
-            setGrafErrors([...new Set(errors.map((e) => e.text))].join('\n\n'));
+            const mapErrors = errors.map((e) => e.text);
+            setGrafErrors(
+              [...mapErrors.filter((e, i) => mapErrors.indexOf(e) === i)].join(
+                '\n\n',
+              ),
+            );
             return;
           }
           setGrafErrors(undefined);
@@ -147,20 +156,29 @@ export const Editor = ({
         setTree({
           nodes: parsedResult.nodes.filter(
             (n) =>
-              !excludeLibraryNodesFromDiagram.nodes.find((eln) => eln.name === n.name && eln.data.type === n.data.type),
+              !excludeLibraryNodesFromDiagram.nodes.find(
+                (eln) => eln.name === n.name && eln.data.type === n.data.type,
+              ),
           ),
         });
       } else {
-        setTree(Parser.parse(schema.code));
+        const parsedCode = Parser.parse(schema.code);
+        setTree(parsedCode);
       }
+      setLockGraf(false);
     } catch (error) {
-      // TODO: Catch the error and dispaly
       Workers.validate(schema.code, schema.libraries).then((errors) => {
         setCodeErrors(errors);
         setLockGraf(!!errors.length);
       });
     }
   };
+
+  useEffect(() => {
+    if (theme) {
+      setTheme(theme);
+    }
+  }, [theme]);
 
   useEffect(() => {
     setReadonly(!!readonly);
@@ -180,11 +198,11 @@ export const Editor = ({
   }, [activePane]);
 
   useEffect(() => {
-    if (stopTreeFromCodeGeneration) {
-      stopTreeFromCodeGeneration = false;
+    if (stopCodeFromTreeGeneration) {
+      stopCodeFromTreeGeneration = false;
       return;
     }
-    stopCodeFromTreeGeneration = true;
+    stopTreeFromCodeGeneration = true;
     generateTreeFromSchema();
   }, [schema.code]);
   useEffect(() => {
@@ -192,17 +210,16 @@ export const Editor = ({
       setIsTreeInitial(false);
       return;
     }
-    if (stopCodeFromTreeGeneration) {
-      stopCodeFromTreeGeneration = false;
+    if (stopTreeFromCodeGeneration) {
+      stopTreeFromCodeGeneration = false;
       return;
     }
-    stopTreeFromCodeGeneration = true;
+    stopCodeFromTreeGeneration = true;
     generateSchemaFromTree();
   }, [tree]);
-
   return (
     <div
-      data-cy={cypressGet(GraphQLEditorCypress, 'name')}
+      data-cy={GraphQLEditorDomStructure.tree.editor}
       className={Main}
       onKeyDown={(e) => {
         if (e.key.toLowerCase() === 'f' && (e.metaKey || e.ctrlKey)) {
@@ -212,6 +229,7 @@ export const Editor = ({
     >
       <Menu
         activePane={menuState}
+        excludePanes={diffSchemas ? undefined : ['diff']}
         setActivePane={(pane) => {
           setMenuState(pane);
           if (onPaneChange) {
@@ -228,20 +246,30 @@ export const Editor = ({
           width={menuState === 'code' ? '100%' : sidebarSize}
         >
           <div
-            className={cx(themed('Sidebar')(Sidebar), {
+            className={cx(Sidebar, {
               [FullScreenContainer]: menuState === 'code',
             })}
-            data-cy={cypressGet(GraphQLEditorCypress, 'sidebar', 'name')}
+            data-cy={GraphQLEditorDomStructure.tree.sidebar.name}
+            style={{
+              background: currentTheme.colors.menu.background,
+            }}
           >
             {(menuState === 'code' || menuState === 'code-diagram') && (
               <CodePane
                 size={menuState === 'code' ? 100000 : sidebarSize}
-                onChange={(v) => setSchema({ ...schema, code: v })}
+                onChange={(v, isInvalid) => {
+                  if (isInvalid) {
+                    stopCodeFromTreeGeneration = true;
+                    setLockGraf(true);
+                  } else {
+                    stopCodeFromTreeGeneration = false;
+                  }
+                  setSchema({ ...schema, code: v }, isInvalid);
+                }}
                 schema={schema.code}
                 libraries={schema.libraries}
                 placeholder={placeholder}
                 readonly={readonly}
-                scrollTo={selectedNode && `${selectedNode.type.name} ${selectedNode.name}`}
               />
             )}
           </div>
@@ -249,11 +277,21 @@ export const Editor = ({
       )}
       {(menuState === 'diagram' || menuState === 'code-diagram') && (
         <div className={ErrorOuterContainer}>
-          {grafErrors && <div className={themed('ErrorContainer')(ErrorContainer)}>{grafErrors}</div>}
           <Graf />
         </div>
       )}
+      {menuState === 'relation' && (
+        <div className={ErrorOuterContainer}>
+          <Relation />
+        </div>
+      )}
       {menuState === 'hierarchy' && <Hierarchy />}
+      {menuState === 'diff' && diffSchemas && (
+        <DiffEditor
+          schema={diffSchemas.oldSchema.code}
+          newSchema={diffSchemas.newSchema.code}
+        />
+      )}
     </div>
   );
 };
