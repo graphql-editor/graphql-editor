@@ -18,15 +18,11 @@ interface MenuSearchProps {
 const Main = themed(
   ({
     colors: {
-      graf: {
-        root: {
-          search: { background },
-        },
-      },
+      background: { mainFurther },
     },
   }) =>
     style({
-      background,
+      background: mainFurther,
       borderRadius: 5,
       color: Colors.grey,
       border: 0,

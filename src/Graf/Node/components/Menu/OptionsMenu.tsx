@@ -16,69 +16,47 @@ interface OptionsMenuProps
   menuName: string;
 }
 
-const Main = themed(
-  ({
-    colors: {
-      graf: {
-        node: {
-          menu: {
-            radio: { activeColor },
+const Main = themed(({ colors: { success } }) =>
+  style({
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    $nest: {
+      '&.Selected': {
+        color: success,
+      },
+      '&:hover': {
+        color: success,
+        $nest: {
+          '.Circle': {
+            background: success,
+            borderColor: success,
           },
         },
       },
     },
-  }) =>
-    style({
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      width: '100%',
-      $nest: {
-        '&.Selected': {
-          color: activeColor,
-        },
-        '&:hover': {
-          color: activeColor,
-          $nest: {
-            '.Circle': {
-              background: activeColor,
-              borderColor: activeColor,
-            },
-          },
-        },
-      },
-    }),
+  }),
 );
-const Circle = themed(
-  ({
-    colors: {
-      graf: {
-        node: {
-          menu: {
-            radio: { color, activeColor },
-          },
-        },
+const Circle = themed(({ colors: { text, success } }) =>
+  style({
+    borderRadius: 6,
+    width: 12,
+    height: 12,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    border: `solid 1px`,
+    position: 'relative',
+    borderColor: text,
+    transition: '.25s background ease-in-out',
+    $nest: {
+      '&.Selected': {
+        borderColor: success,
+        background: success,
       },
     },
-  }) =>
-    style({
-      borderRadius: 6,
-      width: 12,
-      height: 12,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      border: `solid 1px`,
-      position: 'relative',
-      borderColor: color,
-      transition: '.25s background ease-in-out',
-      $nest: {
-        '&.Selected': {
-          borderColor: activeColor,
-          background: activeColor,
-        },
-      },
-    }),
+  }),
 );
 export const OptionsMenu: React.FC<OptionsMenuProps> = ({
   children,

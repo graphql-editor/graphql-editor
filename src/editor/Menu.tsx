@@ -8,18 +8,18 @@ import { GraphQLEditorDomStructure } from '@/domStructure';
 import { useTheme } from '@/state/containers';
 import { themed } from '@/Theming/utils';
 
-export const HiderPanel = themed(({ colors: { menu } }) =>
+export const HiderPanel = themed(({ colors: { background, disabled } }) =>
   style({
     width: menuWidth,
-    background: menu.background,
-    color: menu.icon.inactive,
+    background: background.mainFurthest,
+    color: disabled,
     fontSize: 12,
     padding: 3,
     zIndex: 3,
   }),
 );
 
-export const Hider = themed(({ colors: { menu: { icon } } }) =>
+export const Hider = themed(({ colors: { text, hover } }) =>
   style({
     width: 42,
     height: 42,
@@ -30,10 +30,10 @@ export const Hider = themed(({ colors: { menu: { icon } } }) =>
     cursor: 'pointer',
     $nest: {
       '&:hover': {
-        color: icon.hover,
+        color: hover,
       },
       '&.active': {
-        color: icon.active,
+        color: hover,
       },
     },
   }),

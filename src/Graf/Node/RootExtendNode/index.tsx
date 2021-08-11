@@ -15,16 +15,14 @@ export interface RootExtendNodeProps {
 const NodeCaption = themed(
   ({
     colors: {
-      graf: {
-        rootExtendNode: { borderColor },
-      },
+      colors: { Extend },
     },
   }) =>
     style({
       flexBasis: '100%',
       margin: `15px 15px`,
       display: 'flex',
-      borderBottom: `1px solid ${borderColor}22`,
+      borderBottom: `1px solid ${Extend}22`,
       paddingBottom: 5,
       alignItems: 'center',
     }),
@@ -32,14 +30,12 @@ const NodeCaption = themed(
 const CaptionTitle = themed(
   ({
     colors: {
-      graf: {
-        rootExtendNode: { borderColor },
-      },
+      colors: { Extend },
     },
   }) =>
     style({
       marginRight: 10,
-      color: borderColor,
+      color: Extend,
     }),
 );
 const NodeContainer = style({
@@ -53,14 +49,12 @@ const NodeContainer = style({
 const ExtendButton = themed(
   ({
     colors: {
-      graf: {
-        rootExtendNode: { borderColor },
-      },
+      colors: { Extend },
     },
   }) =>
     style({
       position: 'relative',
-      borderColor,
+      borderColor: Extend,
       borderWidth: 1,
       borderStyle: 'solid',
       padding: `5px 10px`,
@@ -73,19 +67,12 @@ const ExtendButton = themed(
       transition: `border-color 0.25s ease-in-out`,
     }),
 );
-const ExtendButtonTitle = themed(
-  ({
-    colors: {
-      graf: {
-        rootExtendNode: { color },
-      },
-    },
-  }) =>
-    style({
-      padding: `0 5px`,
-      fontSize: 12,
-      color,
-    }),
+const ExtendButtonTitle = themed(({ colors: { text } }) =>
+  style({
+    padding: `0 5px`,
+    fontSize: 12,
+    color: text,
+  }),
 );
 
 const ExtendMenuContainer = style({
@@ -93,26 +80,19 @@ const ExtendMenuContainer = style({
   top: 30,
   right: -70,
 });
-const PlusButton = themed(
-  ({
-    colors: {
-      graf: {
-        rootExtendNode: { color },
-      },
-    },
-  }) =>
-    style({
-      marginLeft: 'auto',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      alignSelf: 'center',
-      color,
-      border: `1px solid ${color}11`,
-      width: 20,
-      height: 20,
-      borderRadius: 10,
-    }),
+const PlusButton = themed(({ colors: { text, colors } }) =>
+  style({
+    marginLeft: 'auto',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    color: text,
+    border: `1px solid ${colors.Extend}11`,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+  }),
 );
 
 export const RootExtendNode: React.FC<RootExtendNodeProps> = ({

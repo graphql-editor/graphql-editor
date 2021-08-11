@@ -1,16 +1,6 @@
-import { keyframes, style, cssRaw } from 'typestyle';
+import { style, cssRaw } from 'typestyle';
 import { Colors } from '@/Colors';
-import * as vars from '@/vars';
 import { themed } from '@/Theming/utils';
-
-const animationName = keyframes({
-  ['0%']: {
-    transform: `rotate(0deg)`,
-  },
-  ['100%']: {
-    transform: `rotate(360deg)`,
-  },
-});
 
 export const Editor = style({
   flex: 1,
@@ -18,11 +8,7 @@ export const Editor = style({
 export const CodeContainer = themed(
   ({
     colors: {
-      code: {
-        editor: {
-          scrollbar: { inner, outer },
-        },
-      },
+      background: { mainClosest, mainFurthest },
     },
   }) =>
     style({
@@ -33,7 +19,7 @@ export const CodeContainer = themed(
       flexFlow: 'column',
       $nest: {
         '.vs-dark .monaco-scrollable-element > .scrollbar': {
-          background: outer,
+          background: mainFurthest,
           $nest: {
             '&.invisible': {
               opacity: 0.5,
@@ -41,54 +27,19 @@ export const CodeContainer = themed(
           },
         },
         '.vs-dark .monaco-scrollable-element > .scrollbar > .slider': {
-          background: inner,
+          background: mainClosest,
         },
       },
     }),
 );
 
-export const Generate = themed(
-  ({
-    colors: {
-      code: {
-        synchronize: { color, disabled, ready, readyHover },
-      },
-    },
-  }) =>
-    style({
-      marginLeft: 'auto',
-      color,
-      padding: `2px 6px`,
-      cursor: 'pointer',
-      display: 'flex',
-      alignItems: 'center',
-      fontSize: 10,
-      textTransform: 'lowercase',
-      borderRadius: 3,
-      fontWeight: 'bold',
-      transition: vars.transition,
-      $nest: {
-        '&.disabled': {
-          color: disabled,
-        },
-        '&.ready': {
-          color: ready,
-          $nest: {
-            '&:hover': {
-              color: readyHover,
-              $nest: {
-                svg: {
-                  animationName,
-                  animationDuration: '1s',
-                  animationIterationCount: 'infinite',
-                  animationTimingFunction: 'linear',
-                },
-              },
-            },
-          },
-        },
-      },
-    }),
+export const Generate = themed(({}) =>
+  style({
+    marginLeft: 'auto',
+    padding: `2px 6px`,
+    display: 'flex',
+    alignItems: 'center',
+  }),
 );
 
 cssRaw(`

@@ -1,36 +1,20 @@
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { themed } from '@/Theming/utils';
 
-const NodeName = themed<NestedCSSProperties>(
-  ({
-    colors: {
-      graf: {
-        node: { color },
-      },
-    },
-  }) => ({
-    marginRight: 10,
-    color,
-    fontSize: 12,
-    padding: `5px 0 5px 10px`,
-    userSelect: 'none',
-    '-moz-user-select': '-moz-none',
-  }),
-);
-const NodeType = themed<NestedCSSProperties>(
-  ({
-    colors: {
-      graf: {
-        node: { color },
-      },
-    },
-  }) => ({
-    color,
-    fontSize: 12,
-    marginRight: 'auto',
-    padding: `5px 30px 5px 0`,
-  }),
-);
+const NodeName = themed<NestedCSSProperties>(({ colors: { text } }) => ({
+  marginRight: 10,
+  color: text,
+  fontSize: 12,
+  padding: `5px 0 5px 10px`,
+  userSelect: 'none',
+  '-moz-user-select': '-moz-none',
+}));
+const NodeType = themed<NestedCSSProperties>(({ colors: { text } }) => ({
+  color: text,
+  fontSize: 12,
+  marginRight: 'auto',
+  padding: `5px 30px 5px 0`,
+}));
 const NodeIconArea = themed<NestedCSSProperties>(
   ({
     colors: {
@@ -59,7 +43,7 @@ const NodeIconArea = themed<NestedCSSProperties>(
 export const NodeTitle = themed<NestedCSSProperties>((theme) => ({
   display: 'flex',
   alignItems: 'stretch',
-  color: theme.colors.graf.node.color,
+  color: theme.colors.text,
   fontSize: 14,
   padding: `5px 0 5px 10px`,
   userSelect: 'none',

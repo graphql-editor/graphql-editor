@@ -36,145 +36,45 @@ const BaseTheme = {
       ID: Colors.green,
       Float: Colors.green,
     },
-    textColor: Colors.grey,
-    menu: {
-      background: toHex(darken(Colors.main, 0.67)),
-      icon: {
-        inactive: toHex(darken(Colors.grey, 0.55)),
-        active: Colors.pink,
-        hover: Colors.grey,
-      },
+    text: Colors.grey,
+    info: Colors.blue,
+    success: Colors.green,
+    error: Colors.red,
+    disabled: toHex(darken(Colors.grey, 0.55)),
+    hover: Colors.pink,
+    background: {
+      mainClosest: toHex(darken(Colors.main, 0.55)),
+      mainFar: darken(Colors.main, 0.65),
+      mainFurther: toHex(darken(Colors.main, 0.66)),
+      mainFurthest: toHex(darken(Colors.main, 0.67)),
+    },
+    grey: {
+      greyFar: toHex(darken(Colors.grey, 0.7)),
+      greyFurther: toHex(darken(Colors.grey, 0.9)),
+      greyFurthest: toHex(darken(Colors.grey, 0.95)),
     },
     graf: {
-      root: {
-        search: {
-          background: `${toHex(desaturate(Colors.main, 0.7))}11`,
-        },
-      },
-      scrollbar: {
-        inner: toHex(darken(Colors.main, 0.55)),
-        outer: toHex(darken(Colors.grey, 0.95)),
-      },
-      wrapperBackground: darken(Colors.main, 0.65),
-      rootExtendNode: {
-        color: Colors.grey,
-        borderColor: Colors.orange,
-      },
       node: {
-        color: Colors.grey,
-        error: { color: Colors.red },
-        background: toHex(darken(Colors.grey, 0.9)),
-        scrollbar: {
-          inner: toHex(darken(Colors.grey, 0.55)),
-          outer: toHex(darken(Colors.grey, 0.95)),
-        },
-        interface: {
-          color: toHex(darken(Colors.grey, 0.1)),
-        },
-        selected: Colors.green,
         gapBar: `${toHex(darken(Colors.grey, 0.95))}99`,
-        shadow: toHex(darken(Colors.grey, 0.95)),
         iconAreaHoverBackground: `#0003`,
-        menu: {
-          background: toHex(darken(Colors.grey, 0.9)),
-          color: Colors.blue,
-          item: {
-            color: Colors.grey,
-            hover: toHex(darken(Colors.green, 0.3)),
-          },
-          scrollbar: {
-            inner: toHex(darken(Colors.grey, 0.55)),
-            outer: toHex(darken(Colors.grey, 0.95)),
-          },
-          radio: {
-            color: Colors.grey,
-            activeColor: Colors.green,
-          },
-        },
       },
     },
     relation: {
-      background: toHex(darken(Colors.main, 0.65)),
-      scrollbar: {
-        inner: toHex(darken(Colors.main, 0.55)),
-        outer: toHex(darken(Colors.grey, 0.95)),
-      },
       unknownField: {
-        color: Colors.grey,
         whenActiveParentBackground: toHex(darken(Colors.main, 0.3)),
-        whenActiveFieldPortBackground: toHex(darken(Colors.grey, 0.9)),
       },
-      node: {
-        color: toHex(darken(Colors.grey, 0.1)),
-        selected: {
-          border: Colors.blue,
-        },
-        focus: {
-          color: toHex(darken(Colors.grey, 0.2)),
-          hover: Colors.grey,
-        },
-        fade: {
-          background: toHex(darken(Colors.grey, 0.9)),
-          title: toHex(darken(Colors.grey, 0.7)),
-        },
-        scalarTitle: {
-          color: Colors.main,
-        },
-      },
-      searchInput: {
-        background: `${Colors.main}52`,
-        color: Colors.grey,
-        placeholder: toHex(darken(Colors.grey, 0.4)),
-      },
-      error: {
-        color: Colors.pink,
-        background: `${toHex(darken(Colors.red, 0.5))}ee`,
-        border: Colors.red,
-        lock: {
-          background: `${toHex(darken(Colors.main, 0.9))}99`,
-          message: {
-            background: toHex(darken(Colors.main, 0.95)),
-            color: Colors.red,
-          },
-        },
-      },
-    },
-    hierarchy: {
-      background: toHex(darken(Colors.main, 0.66)),
     },
     code: {
-      synchronize: {
-        color: toHex(darken(Colors.green, 0.3)),
-        disabled: toHex(darken(Colors.grey, 0.5)),
-        ready: Colors.grey,
-        readyHover: Colors.green,
-      },
-      titleOfPane: {
-        color: toHex(darken(Colors.grey, 0.4)),
-      },
-      syncStatus: {
-        background: toHex(darken(Colors.grey, 0.9)),
-        nosync: Colors.red,
-        readonly: Colors.blue,
-        sync: Colors.green,
-        syncing: Colors.main,
-      },
       editor: {
         code: {
           annotation: toHex(darken(Colors.grey, 0.1)),
-          background: toHex(darken(Colors.main, 0.66)),
           comment: toHex(darken(desaturate(Colors.pink, 0.6), 0.3)),
-          text: Colors.grey,
           exclamation: toHex(lighten(Colors.yellow, 0.1)),
           keyword: Colors.green,
           gql: toHex(darken(desaturate(Colors.sky, 0.8), 0.3)),
           insertedTextBackground: toHex(darken(Colors.green, 0.65)),
           removedTextBackground: toHex(darken(Colors.red, 0.3)),
           quote: toHex(desaturate(Colors.yellow, 0.1)),
-        },
-        scrollbar: {
-          inner: toHex(darken(Colors.main, 0.55)),
-          outer: toHex(darken(Colors.main, 0.67)),
         },
       },
     },

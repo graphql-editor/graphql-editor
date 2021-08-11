@@ -6,12 +6,10 @@ import { style } from 'typestyle';
 const Main = themed(
   ({
     colors: {
+      text,
+      grey: { greyFurther },
       relation: {
-        unknownField: {
-          color,
-          whenActiveParentBackground,
-          whenActiveFieldPortBackground,
-        },
+        unknownField: { whenActiveParentBackground },
       },
     },
   }) =>
@@ -19,7 +17,7 @@ const Main = themed(
       position: 'relative',
       display: 'flex',
       alignItems: 'center',
-      color,
+      color: text,
       margin: `0 0`,
       transition: 'background 0.25s ease-in-out',
       $nest: {
@@ -27,7 +25,7 @@ const Main = themed(
           background: whenActiveParentBackground,
           $nest: {
             '.NodeFieldPort': {
-              backgroundColor: whenActiveFieldPortBackground,
+              backgroundColor: greyFurther,
               $nest: {
                 '.OpenerIcon': {
                   opacity: 1,
@@ -44,7 +42,7 @@ const Main = themed(
           background: whenActiveParentBackground,
           $nest: {
             '.NodeFieldPort': {
-              backgroundColor: `${whenActiveFieldPortBackground}88`,
+              backgroundColor: `${greyFurther}88`,
               $nest: {
                 '.OpenerIcon': {
                   opacity: 0.5,
@@ -57,10 +55,9 @@ const Main = themed(
     }),
 );
 
-export const NodeFieldContainer: React.FC<React.DetailedHTMLProps<
-  React.HTMLAttributes<HTMLDivElement>,
-  HTMLDivElement
->> = ({ children, className = '', ...props }) => {
+export const NodeFieldContainer: React.FC<
+  React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>
+> = ({ children, className = '', ...props }) => {
   const { theme } = useTheme();
   return (
     <div className={[Main(theme), className].join(' ')} {...props}>

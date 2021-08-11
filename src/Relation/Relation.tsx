@@ -40,10 +40,7 @@ export interface RelationProps {}
 const Wrapper = themed(
   ({
     colors: {
-      relation: {
-        background,
-        scrollbar: { inner, outer },
-      },
+      background: { mainFar, mainClosest, mainFurthest },
     },
   }) =>
     style({
@@ -52,9 +49,9 @@ const Wrapper = themed(
       overflowX: 'hidden',
       position: 'relative',
       flex: 1,
-      background,
+      background: mainFar,
       overflowY: 'auto',
-      scrollbarColor: `${inner} ${outer}`,
+      scrollbarColor: `${mainClosest} ${mainFurthest}`,
     }),
 );
 const Main = style({
@@ -75,9 +72,9 @@ const Main = style({
 const ErrorContainer = themed(
   ({
     colors: {
-      relation: {
-        error: { background, color, border },
-      },
+      error,
+      text,
+      grey: { greyFurthest },
     },
   }) =>
     style({
@@ -92,19 +89,15 @@ const ErrorContainer = themed(
       fontSize: 12,
       fontFamily,
       letterSpacing: 1,
-      color,
-      background,
-      border: `1px solid ${border}`,
+      color: text,
+      background: greyFurthest,
+      border: `1px solid ${error}`,
     }),
 );
 const ErrorLock = themed(
   ({
     colors: {
-      relation: {
-        error: {
-          lock: { background },
-        },
-      },
+      background: { mainFurthest },
     },
   }) =>
     style({
@@ -113,7 +106,7 @@ const ErrorLock = themed(
       position: 'absolute',
       top: 0,
       left: 0,
-      background,
+      background: mainFurthest,
       cursor: 'pointer',
       display: 'flex',
       justifyContent: 'center',
@@ -123,13 +116,8 @@ const ErrorLock = themed(
 const ErrorLockMessage = themed(
   ({
     colors: {
-      relation: {
-        error: {
-          lock: {
-            message: { background, color },
-          },
-        },
-      },
+      error,
+      grey: { greyFurthest },
     },
   }) =>
     style({
@@ -137,8 +125,8 @@ const ErrorLockMessage = themed(
       fontFamily,
       fontSize: 14,
       padding: 30,
-      color,
-      background,
+      color: error,
+      background: greyFurthest,
     }),
 );
 const SearchContainer = style({
@@ -156,14 +144,14 @@ const SearchIcon = style({
 const SearchInput = themed(
   ({
     colors: {
-      relation: {
-        searchInput: { background, color, placeholder },
-      },
+      text,
+      disabled,
+      background: { mainClosest },
     },
   }) =>
     style({
-      background,
-      color,
+      background: mainClosest,
+      color: text,
       border: 0,
       width: '100%',
       minWidth: 0,
@@ -176,7 +164,7 @@ const SearchInput = themed(
       userSelect: 'none',
       $nest: {
         '&::placeholder': {
-          color: placeholder,
+          color: disabled,
         },
       },
     }),
@@ -207,9 +195,8 @@ export const Relation: React.FC<RelationProps> = () => {
   >([]);
 
   const [refs, setRefs] = useState<Record<string, HTMLDivElement>>({});
-  const [relations, setRelations] = useState<
-    { to: RelationPath; from: RelationPath[] }[]
-  >();
+  const [relations, setRelations] =
+    useState<{ to: RelationPath; from: RelationPath[] }[]>();
   const [searchVisible, setSearchVisible] = useState<boolean>(false);
   const { theme } = useTheme();
 

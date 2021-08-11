@@ -14,25 +14,21 @@ const Content = themed(
   ({
     shadow,
     colors: {
-      graf: {
-        node: {
-          menu: { background },
-        },
-      },
+      background: { mainFurthest },
     },
   }) =>
     style({
-      background,
+      background: mainFurthest,
       borderRadius: 4,
       padding: 0,
       boxShadow: shadow,
     }),
 );
-const Title = themed(({ colors: { graf: { node: { menu: { color } } } } }) =>
+const Title = themed(({ colors: { info } }) =>
   style({
     padding: 16,
     fontSize: 14,
-    color,
+    color: info,
   }),
 );
 interface MenuProps

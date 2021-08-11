@@ -8,7 +8,8 @@ export const theme = themed<DiagramTheme>(
     colors: {
       colors,
       backgrounds,
-      hierarchy: { background },
+
+      background,
     },
   }) => ({
     ...DefaultDiagramTheme,
@@ -29,7 +30,7 @@ export const theme = themed<DiagramTheme>(
       ...DefaultDiagramTheme.help,
     },
     colors: {
-      background,
+      background: background.mainFurther,
       description: {
         background: toHex(darken(Colors.main, 0.9)),
         text: Colors.pink,

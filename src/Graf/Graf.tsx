@@ -21,10 +21,7 @@ export interface GrafProps {}
 const Wrapper = themed(
   ({
     colors: {
-      graf: {
-        wrapperBackground,
-        scrollbar: { inner, outer },
-      },
+      background: { mainClosest, mainFurthest, mainFar },
     },
   }) =>
     style({
@@ -33,9 +30,9 @@ const Wrapper = themed(
       overflowX: 'hidden',
       position: 'relative',
       flex: 1,
-      background: wrapperBackground,
+      background: mainFar,
       overflowY: 'auto',
-      scrollbarColor: `${inner} ${outer}`,
+      scrollbarColor: `${mainClosest} ${mainFurthest}`,
     }),
 );
 const AnimatedWrapper = style({});
@@ -87,22 +84,17 @@ const ErrorLockMessage = style({
 const SubNodeContainer = themed(
   ({
     colors: {
-      graf: {
-        node: {
-          background,
-          scrollbar: { inner, outer },
-        },
-      },
+      background: { mainClosest, mainFurther, mainFurthest },
     },
   }) =>
     style({
       width: 'min(clamp(400px, 40%, 1280px), calc(100vw - 50px))',
-      background,
+      background: mainFurther,
       fontFamily,
       right: 0,
       top: 0,
       bottom: 0,
-      scrollbarColor: `${inner} ${outer}`,
+      scrollbarColor: `${mainClosest} ${mainFurthest}`,
       transition: `max-width 0.25s ease-in-out`,
     }),
 );

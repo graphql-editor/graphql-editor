@@ -58,22 +58,16 @@ const OpenedNode: NestedCSSProperties = {
 };
 
 const LibraryNodeArea = themed<NestedCSSProperties>(
-  ({
-    colors: {
-      graf: {
-        node: { selected },
-      },
-    },
-  }) => ({
+  ({ colors: { success } }) => ({
     borderStyle: 'dashed',
-    borderColor: `${selected}33`,
+    borderColor: `${success}33`,
   }),
 );
 const MainNodeArea = themed((theme) =>
   style({
     position: 'relative',
     transition: `border-color .25s ease-in-out`,
-    borderColor: theme.colors.graf.node.selected,
+    borderColor: theme.colors.success,
     flex: 1,
     display: 'flex',
     flexFlow: 'column nowrap',
@@ -99,16 +93,14 @@ const NodeContainer = themed(
   ({
     colors: {
       backgrounds,
-      graf: {
-        node: { background },
-      },
+      background: { mainFurther },
     },
   }) =>
     style({
       position: 'relative',
       breakInside: 'avoid',
       height: '100%',
-      background,
+      background: mainFurther,
       maxWidth: '100%',
       display: 'flex',
       flexFlow: 'column nowrap',
@@ -156,29 +148,41 @@ const NodeInterfaces = style({
   marginBottom: 5,
 });
 
-const GapBar = themed(({ colors: { graf: { node: { gapBar } } } }) =>
-  style({
-    width: '100%',
-    height: '100%',
-    background: `${gapBar}99`,
-    transition: '.25s background ease-in-out',
-    $nest: {
-      '&:hover': {
-        background: `${gapBar}11`,
+const GapBar = themed(
+  ({
+    colors: {
+      graf: {
+        node: { gapBar },
       },
     },
-  }),
+  }) =>
+    style({
+      width: '100%',
+      height: '100%',
+      background: `${gapBar}99`,
+      transition: '.25s background ease-in-out',
+      $nest: {
+        '&:hover': {
+          background: `${gapBar}11`,
+        },
+      },
+    }),
 );
 
-const NodeArea = themed(({ colors: { graf: { node: { shadow } } } }) =>
-  style({
-    minWidth: '80%',
-    maxWidth: '50vw',
-    left: '20%',
-    position: 'absolute',
-    height: '100%',
-    boxShadow: `${shadow} 0 0 20px`,
-  }),
+const NodeArea = themed(
+  ({
+    colors: {
+      grey: { greyFurthest },
+    },
+  }) =>
+    style({
+      minWidth: '80%',
+      maxWidth: '50vw',
+      left: '20%',
+      position: 'absolute',
+      height: '100%',
+      boxShadow: `${greyFurthest} 0 0 20px`,
+    }),
 );
 
 const EditableTitle: React.CSSProperties = {

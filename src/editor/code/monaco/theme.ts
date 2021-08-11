@@ -5,9 +5,10 @@ const rules = themed<monaco.editor.ITokenThemeRule[]>(
   ({
     colors: {
       colors,
+      text,
       code: {
         editor: {
-          code: { comment, exclamation, text, keyword, gql, annotation },
+          code: { comment, exclamation, keyword, gql, annotation },
         },
       },
     },
@@ -37,21 +38,18 @@ const rules = themed<monaco.editor.ITokenThemeRule[]>(
 const colors = themed<monaco.editor.IColors>(
   ({
     colors: {
+      background: { mainFurther },
+      text,
       code: {
         editor: {
-          code: {
-            text,
-            background,
-            insertedTextBackground,
-            removedTextBackground,
-          },
+          code: { insertedTextBackground, removedTextBackground },
         },
       },
     },
   }) => ({
     'editor.foreground': text,
-    'editor.background': background,
-    'minimap.background': background,
+    'editor.background': mainFurther,
+    'minimap.background': mainFurther,
     'diffEditor.insertedTextBackground': insertedTextBackground,
     'diffEditor.removedTextBackground': removedTextBackground,
   }),

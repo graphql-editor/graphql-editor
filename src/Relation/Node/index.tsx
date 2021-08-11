@@ -14,16 +14,11 @@ const Content = themed(
   ({
     shadow,
     colors: {
+      text,
+      info,
       backgrounds,
-      relation: {
-        node: {
-          color,
-          selected: { border },
-          fade,
-          focus,
-          scalarTitle,
-        },
-      },
+      hover,
+      grey: { greyFurther, greyFar },
     },
   }) =>
     style({
@@ -31,7 +26,7 @@ const Content = themed(
       margin: 20,
       textOverflow: 'elipssis',
       overflowY: 'hidden',
-      border: `solid 1px ${border}00`,
+      border: `solid 1px ${hover}00`,
       transition: '.25s all ease-in-out',
       zIndex: 1,
       flex: '1 0 auto',
@@ -40,7 +35,7 @@ const Content = themed(
       $nest: {
         '.NodeShowScalarsWrapper': {
           padding: '10px 5px',
-          color: scalarTitle.color,
+          color: info,
           $nest: {
             '.NodeShowScalars': {
               display: 'flex',
@@ -57,7 +52,7 @@ const Content = themed(
         },
         '.NodeTitle': {
           alignItems: 'stretch',
-          color,
+          color: text,
           fontSize: 14,
           padding: `10px 5px`,
           display: 'flex',
@@ -71,11 +66,11 @@ const Content = themed(
               fontSize: 12,
               opacity: 0.0,
               pointerEvents: 'none',
-              color: focus.color,
+              color: text,
               display: 'flex',
               alignItems: 'center',
               $nest: {
-                '&:hover': { color: focus.hover },
+                '&:hover': { color: text },
                 span: { marginRight: 5 },
               },
               fontWeight: 'bold',
@@ -83,16 +78,16 @@ const Content = themed(
           },
         },
         '&:hover': {
-          border: `solid 1px ${border}`,
+          border: `solid 1px ${hover}`,
         },
         '&.Fade': {
-          background: fade.background,
+          background: greyFurther,
           $nest: {
             '.NodeRelationFields': {
               opacity: 0.25,
             },
             '.NodeTitle': {
-              color: fade.title,
+              color: greyFar,
             },
             '.NodeType': {
               opacity: 0.25,
@@ -110,7 +105,7 @@ const Content = themed(
         },
 
         '&.Selected': {
-          border: `solid 1px ${border}`,
+          border: `solid 1px ${hover}`,
           cursor: 'auto',
           $nest: {
             '.NodeFocus': {

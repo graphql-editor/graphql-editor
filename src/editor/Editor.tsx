@@ -251,7 +251,7 @@ export const Editor = ({
             })}
             data-cy={GraphQLEditorDomStructure.tree.sidebar.name}
             style={{
-              background: currentTheme.colors.menu.background,
+              background: currentTheme.colors.background.mainFurthest,
             }}
           >
             {(menuState === 'code' || menuState === 'code-diagram') && (

@@ -5,30 +5,21 @@ import { FIELD_NAME_SIZE } from '@/Graf/constants';
 import cx from 'classnames';
 import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
-const Input = themed(({ colors: { graf: { node: { color } } } }) =>
+const Input = themed(({ colors: { text } }) =>
   style({
     border: 0,
     background: 'transparent',
-    color,
+    color: text,
     minWidth: 'auto',
     padding: 0,
     fontFamily: fontFamily,
     fontSize: FIELD_NAME_SIZE,
   }),
 );
-const InputIsError = themed(
-  ({
-    colors: {
-      graf: {
-        node: {
-          error: { color },
-        },
-      },
-    },
-  }) =>
-    style({
-      color,
-    }),
+const InputIsError = themed(({ colors: { error } }) =>
+  style({
+    color: error,
+  }),
 );
 export const EditableText: React.FC<{
   value: string;

@@ -1,8 +1,6 @@
 import cx from 'classnames';
 import React, { useEffect, useMemo } from 'react';
-import { StatusDot, TitleOfPane } from './Components';
 import * as styles from './style/Code';
-import { StatusDotProps } from './style/Components';
 import { settings } from './monaco';
 import { fontFamily } from '@/vars';
 import { useTheme, useTreesState } from '@/state/containers';
@@ -31,7 +29,6 @@ export const CodePane = (props: CodePaneProps) => {
   const { selectedNode } = useTreesState();
 
   const ref: React.ForwardedRef<SchemaEditorApi> = React.createRef();
-  const syncStatus = readonly ? StatusDotProps.readonly : StatusDotProps.sync;
   const codeSettings = useMemo(
     () => ({
       ...settings,
@@ -50,35 +47,23 @@ export const CodePane = (props: CodePaneProps) => {
   }, [selectedNode]);
 
   return (
-    <>
-      <TitleOfPane>
-        <div
-          className={cx(styles.Generate(theme), {
-            disabled: !readonly,
-          })}
-        >
-          {readonly ? 'readonly' : ''}
-        </div>
-        <StatusDot status={syncStatus} />
-      </TitleOfPane>
-      <div
-        className={cx(styles.CodeContainer(theme))}
-        data-cy={GraphQLEditorDomStructure.tree.elements.CodePane.name}
-      >
-        {theme && (
-          <SchemaEditor
-            height="100%"
-            ref={ref}
-            beforeMount={(monaco) =>
-              monaco.editor.defineTheme('graphql-editor', MonacoTheme(theme))
-            }
-            onBlur={(v) => onChange(v)}
-            schema={schema}
-            libraries={libraries}
-            options={codeSettings}
-          />
-        )}
-      </div>
-    </>
+    <div
+      className={cx(styles.CodeContainer(theme))}
+      data-cy={GraphQLEditorDomStructure.tree.elements.CodePane.name}
+    >
+      {theme && (
+        <SchemaEditor
+          height="100%"
+          ref={ref}
+          beforeMount={(monaco) =>
+            monaco.editor.defineTheme('graphql-editor', MonacoTheme(theme))
+          }
+          onBlur={(v) => onChange(v)}
+          schema={schema}
+          libraries={libraries}
+          options={codeSettings}
+        />
+      )}
+    </div>
   );
 };

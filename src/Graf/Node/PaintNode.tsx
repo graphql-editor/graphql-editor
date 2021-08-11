@@ -15,7 +15,7 @@ export interface NodeProps {
   subNode?: boolean;
 }
 const MainNodeArea = themed(
-  ({ colors: { textColor } }) =>
+  ({ colors: { text } }) =>
     ({
       position: 'relative',
       borderColor: 'transparent',
@@ -33,7 +33,7 @@ const MainNodeArea = themed(
       '-moz-user-select': '-moz-none',
       $nest: {
         '&:hover': {
-          borderColor: textColor,
+          borderColor: text,
         },
       },
     } as NestedCSSProperties),

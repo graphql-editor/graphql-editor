@@ -7,37 +7,26 @@ interface MenuItemProps {
   onClick: () => void;
 }
 
-const Main = themed(
-  ({
-    colors: {
-      graf: {
-        node: {
-          menu: {
-            item: { color, hover },
+const Main = themed(({ colors: { text, success } }) =>
+  style({
+    display: 'flex',
+    padding: `6px 12px`,
+    fontSize: 14,
+    cursor: 'pointer',
+    scrollSnapAlign: 'end',
+    $nest: {
+      '.MenuItemText': {
+        transition: 'color .25s ease-in-out',
+        color: text,
+        width: '100%',
+        $nest: {
+          '&:hover': {
+            color: success,
           },
         },
       },
     },
-  }) =>
-    style({
-      display: 'flex',
-      padding: `6px 12px`,
-      fontSize: 14,
-      cursor: 'pointer',
-      scrollSnapAlign: 'end',
-      $nest: {
-        '.MenuItemText': {
-          transition: 'color .25s ease-in-out',
-          color,
-          width: '100%',
-          $nest: {
-            '&:hover': {
-              color: hover,
-            },
-          },
-        },
-      },
-    }),
+  }),
 );
 
 export const DetailMenuItem: React.FC<MenuItemProps> = ({

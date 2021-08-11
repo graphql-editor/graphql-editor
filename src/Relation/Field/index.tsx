@@ -20,8 +20,9 @@ const Name = style({
 const Main = themed(
   ({
     colors: {
+      text,
       relation: {
-        unknownField: { color, whenActiveParentBackground },
+        unknownField: { whenActiveParentBackground },
       },
     },
   }) =>
@@ -30,7 +31,7 @@ const Main = themed(
       display: 'flex',
       alignItems: 'center',
       height: 31,
-      color,
+      color: text,
       margin: `0 0`,
       transition: 'background 0.25s ease-in-out',
       $nest: {
