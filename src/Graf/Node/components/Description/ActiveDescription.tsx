@@ -1,28 +1,36 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { style } from 'typestyle';
-import { Colors } from '@/Colors';
-import { darken, toHex } from 'color2k';
+import { themed } from '@/Theming/utils';
+import { useTheme } from '@/state/containers';
 
-const Main = style({
-  background: `${toHex(darken(Colors.grey, 0.95))}44`,
-  color: toHex(darken(Colors.grey, 0.3)),
-  padding: 10,
-  fontSize: 12,
-  width: '100%',
-  border: 0,
-  resize: 'none',
-  outline: 'none',
-  cursor: 'pointer',
-  $nest: {
-    '&:focus': {
-      cursor: 'auto',
-      borderBottom: `1px solid ${Colors.grey}11`,
+const Main = themed(
+  ({
+    colors: {
+      text,
+      disabled,
+      grey: { greyFurthest },
     },
-    '&::placeholder': {
-      color: `${Colors.grey}99`,
-    },
-  },
-});
+  }) =>
+    style({
+      background: greyFurthest,
+      color: text,
+      padding: 10,
+      fontSize: 12,
+      width: '100%',
+      border: 0,
+      resize: 'none',
+      outline: 'none',
+      cursor: 'pointer',
+      $nest: {
+        '&:focus': {
+          cursor: 'auto',
+        },
+        '&::placeholder': {
+          color: disabled,
+        },
+      },
+    }),
+);
 
 export const ActiveDescription: React.FC<{
   value: string;
@@ -30,6 +38,7 @@ export const ActiveDescription: React.FC<{
   isLocked?: boolean;
 }> = ({ onChange, value, isLocked }) => {
   const [text, setText] = useState(value);
+  const { theme } = useTheme();
   const DescriptionRef = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
     setText(value);
@@ -44,7 +53,7 @@ export const ActiveDescription: React.FC<{
         rows={1}
         data-gramm_editor="false"
         ref={DescriptionRef}
-        className={`${Main} `}
+        className={`${Main(theme)} `}
         value={text}
       ></textarea>
     );
@@ -72,7 +81,7 @@ export const ActiveDescription: React.FC<{
         e.currentTarget.style.height = 'auto';
         e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
       }}
-      className={`${Main} `}
+      className={`${Main(theme)} `}
       value={text}
     ></textarea>
   );

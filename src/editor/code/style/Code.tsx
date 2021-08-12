@@ -1,5 +1,4 @@
-import { style, cssRaw } from 'typestyle';
-import { Colors } from '@/Colors';
+import { style } from 'typestyle';
 import { themed } from '@/Theming/utils';
 
 export const Editor = style({
@@ -8,7 +7,7 @@ export const Editor = style({
 export const CodeContainer = themed(
   ({
     colors: {
-      background: { mainClosest, mainFurthest },
+      grey: { greyFurthest, greyFar },
     },
   }) =>
     style({
@@ -18,8 +17,11 @@ export const CodeContainer = themed(
       display: 'flex',
       flexFlow: 'column',
       $nest: {
+        '.monaco-scrollable-element': {
+          padding: 8,
+        },
         '.vs-dark .monaco-scrollable-element > .scrollbar': {
-          background: mainFurthest,
+          background: greyFurthest,
           $nest: {
             '&.invisible': {
               opacity: 0.5,
@@ -27,7 +29,7 @@ export const CodeContainer = themed(
           },
         },
         '.vs-dark .monaco-scrollable-element > .scrollbar > .slider': {
-          background: mainClosest,
+          background: greyFar,
         },
       },
     }),
@@ -41,25 +43,3 @@ export const Generate = themed(({}) =>
     alignItems: 'center',
   }),
 );
-
-cssRaw(`
-.monacoError{
-  background:${Colors.red}33
-}
-.monacoMarginError{
-  background:${Colors.red};
-  border-radius:50%;
-  margin-left:5px;
-  width:12px !important;
-  height:12px !important;
-}
-.monaco-editor .monaco-editor-hover {
-  border: 1px solid 
-  #454545;
-  padding: 4px 8px;
-  font-size: 12px;
-}
-.monaco-editor-hover .hover-contents {
-  padding: 0px;
-}
-`);

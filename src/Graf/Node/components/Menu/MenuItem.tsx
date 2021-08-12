@@ -2,7 +2,6 @@ import React from 'react';
 import { ParserField } from 'graphql-zeus';
 import { style } from 'typestyle';
 import { NestedCSSProperties } from 'typestyle/lib/types';
-import { Colors } from '@/Colors';
 import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
@@ -12,7 +11,7 @@ interface MenuItemProps {
   onClick: () => void;
 }
 
-const Main = themed(({ colors: { colors } }) =>
+const Main = themed(({ colors: { colors, hover } }) =>
   style({
     display: 'flex',
     padding: `8px 16px`,
@@ -31,7 +30,7 @@ const Main = themed(({ colors: { colors } }) =>
         width: '100%',
         $nest: {
           '&:hover': {
-            color: Colors.grey,
+            color: hover,
           },
         },
       },

@@ -4,4 +4,5 @@ export * from './withSchema';
 export * from './diff';
 export * from './googlediff';
 export * from './libraries';
+export * from './Light';
 export * from './readonly';

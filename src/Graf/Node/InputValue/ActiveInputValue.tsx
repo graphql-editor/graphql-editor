@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { ParserField, Options, ValueDefinition, Value } from 'graphql-zeus';
 import { style } from 'typestyle';
-import { Colors } from '@/Colors';
 import { ActiveType } from '@/Graf/Node/Type';
 import {
   NodeChangeFieldTypeMenu,
@@ -27,7 +26,7 @@ import { FieldProps } from '@/Graf/Node/models';
 import { FIELD_TYPE_SIZE } from '@/Graf/constants';
 
 const Name = style({ marginRight: 4, overflow: 'hidden' });
-const Type = style({ fontSize: FIELD_TYPE_SIZE, color: Colors.green });
+const Type = style({ fontSize: FIELD_TYPE_SIZE });
 const OptionsMenuContainer = style({
   position: 'absolute',
   top: 32,

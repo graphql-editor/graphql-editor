@@ -1,22 +1,28 @@
-import { Colors } from '@/Colors';
 import { Draw } from './Draw';
 import { ParserField } from 'graphql-zeus';
 import React from 'react';
 import { style } from 'typestyle';
 import { isScalarArgument } from '@/GraphQL/Resolve';
 import { useTheme } from '@/state/containers';
-import { darken, toHex } from 'color2k';
+import { themed } from '@/Theming/utils';
 
-const RelationsContainer = style({
-  width: '100%',
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  stroke: toHex(darken(Colors.main, 0.6)),
-  fill: 'transparent',
-  strokeWidth: 2,
-  margin: -20,
-});
+const RelationsContainer = themed(
+  ({
+    colors: {
+      background: { mainClosest },
+    },
+  }) =>
+    style({
+      width: '100%',
+      height: '100%',
+      position: 'absolute',
+      pointerEvents: 'none',
+      stroke: mainClosest,
+      fill: 'transparent',
+      strokeWidth: 2,
+      margin: -20,
+    }),
+);
 
 export interface RelationPath {
   htmlNode: HTMLDivElement;
@@ -30,7 +36,7 @@ interface LinesProps {
 export const Lines: React.FC<LinesProps> = ({ relations, selectedNode }) => {
   const { theme } = useTheme();
   return (
-    <svg className={RelationsContainer}>
+    <svg className={RelationsContainer(theme)}>
       {relations?.map((r, index) => {
         const usedToIndexes: number[] = [];
         return r.from?.map((rf, i) => {

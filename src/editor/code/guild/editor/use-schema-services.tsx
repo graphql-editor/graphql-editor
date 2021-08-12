@@ -18,6 +18,7 @@ import { emptyLocation, locToRange } from './utils';
 import { Workers } from '@/worker';
 import { EditorError } from '@/validation';
 import { monacoSetDecorations } from '@/editor/code/monaco/decorations';
+import { useTheme } from '@/state/containers';
 
 export type SchemaEditorApi = {
   jumpToType(typeName: string): void;
@@ -59,13 +60,12 @@ const compileSchema = ({
 };
 
 export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
-  const [
-    editorRef,
-    setEditor,
-  ] = React.useState<monaco.editor.IStandaloneCodeEditor | null>(null);
+  const [editorRef, setEditor] =
+    React.useState<monaco.editor.IStandaloneCodeEditor | null>(null);
   const [codeErrors, setCodeErrors] = React.useState<EditorError[]>([]);
   const [decorationIds, setDecorationIds] = React.useState<string[]>([]);
   const [monacoRef, setMonaco] = React.useState<typeof monaco | null>(null);
+  const { theme } = useTheme();
   const languageService = React.useMemo(
     () =>
       options.sharedLanguageService ||
@@ -133,12 +133,13 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
         ),
       );
 
-      const definitionProviderDisposable = monacoRef.languages.registerDefinitionProvider(
-        'graphql',
-        languageService.getDefinitionProvider(
-          options.definitionProviders || [],
-        ),
-      );
+      const definitionProviderDisposable =
+        monacoRef.languages.registerDefinitionProvider(
+          'graphql',
+          languageService.getDefinitionProvider(
+            options.definitionProviders || [],
+          ),
+        );
 
       const hoverDisposable = monacoRef.languages.registerHoverProvider(
         'graphql',
@@ -159,7 +160,7 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
   React.useEffect(() => {
     if (codeErrors && editorRef && monacoRef) {
       setDecorationIds(
-        monacoSetDecorations({
+        monacoSetDecorations(theme)({
           codeErrors,
           decorationIds,
           m: monacoRef,

@@ -14,7 +14,7 @@ const Content = themed(
   ({
     shadow,
     colors: {
-      text,
+      backgroundedText,
       info,
       backgrounds,
       hover,
@@ -52,7 +52,7 @@ const Content = themed(
         },
         '.NodeTitle': {
           alignItems: 'stretch',
-          color: text,
+          color: backgroundedText,
           fontSize: 14,
           padding: `10px 5px`,
           display: 'flex',
@@ -66,11 +66,11 @@ const Content = themed(
               fontSize: 12,
               opacity: 0.0,
               pointerEvents: 'none',
-              color: text,
+              color: backgroundedText,
               display: 'flex',
               alignItems: 'center',
               $nest: {
-                '&:hover': { color: text },
+                '&:hover': { color: backgroundedText },
                 span: { marginRight: 5 },
               },
               fontWeight: 'bold',

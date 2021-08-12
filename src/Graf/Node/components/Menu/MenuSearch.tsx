@@ -1,8 +1,6 @@
 import React, { useRef } from 'react';
 import { style } from 'typestyle';
-import { Colors } from '@/Colors';
 import { Search, X } from '@/Graf/icons';
-import { darken, toHex } from 'color2k';
 import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
@@ -18,13 +16,15 @@ interface MenuSearchProps {
 const Main = themed(
   ({
     colors: {
+      text,
+      disabled,
       background: { mainFurther },
     },
   }) =>
     style({
       background: mainFurther,
       borderRadius: 5,
-      color: Colors.grey,
+      color: text,
       border: 0,
       width: '100%',
       minWidth: 0,
@@ -36,7 +36,7 @@ const Main = themed(
       position: 'relative',
       $nest: {
         '&::placeholder': {
-          color: toHex(darken(Colors.grey, 0.4)),
+          color: disabled,
         },
       },
     }),

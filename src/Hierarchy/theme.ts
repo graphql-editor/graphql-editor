@@ -1,15 +1,19 @@
 import { DefaultDiagramTheme, DiagramTheme } from 'graphsource';
-import { Colors } from '@/Colors';
 import { fontFamily } from '@/vars';
-import { darken, toHex } from 'color2k';
 import { themed } from '@/Theming/utils';
+import { enrichWithScalarColors } from '@/GraphQL/Compile';
 export const theme = themed<DiagramTheme>(
   ({
     colors: {
       colors,
       backgrounds,
-
-      background,
+      background: { mainFurthest, mainFar, mainFurther, mainClose, mainCloser },
+      backgroundedText,
+      text,
+      info,
+      success,
+      grey: { greyFurther, greyFurthest, greyCloser },
+      hover,
     },
   }) => ({
     ...DefaultDiagramTheme,
@@ -30,38 +34,39 @@ export const theme = themed<DiagramTheme>(
       ...DefaultDiagramTheme.help,
     },
     colors: {
-      background: background.mainFurther,
+      background: mainFurthest,
       description: {
-        background: toHex(darken(Colors.main, 0.9)),
-        text: Colors.pink,
+        background: mainClose,
+        text,
       },
       minimap: {
-        background: toHex(darken(Colors.main, 0.9)),
-        borders: toHex(darken(Colors.pink, 0.2)),
-        node: toHex(darken(Colors.pink, 0.4)),
-        visibleArea: toHex(darken(Colors.main, 0.8)),
+        background: mainFurther,
+        borders: hover,
+        node: hover,
+        visibleArea: mainFar,
       },
       help: {
         ...DefaultDiagramTheme.colors.help,
       },
       link: {
-        main: toHex(darken(Colors.pink, 0.6)),
-        active: Colors.pink,
-        hover: Colors.pink,
+        main: greyCloser,
+        active: hover,
+        hover: hover,
       },
       node: {
         ...DefaultDiagramTheme.colors.node,
-        background: toHex(darken(Colors.main, 0.5)),
-        type: toHex(darken(Colors.grey, 0.2)),
+        background: mainCloser,
+        type: text,
+        name: backgroundedText,
         hover: {
-          type: Colors.grey,
+          type: hover,
         },
-        selected: Colors.pink,
-        types: colors,
-        backgrounds: backgrounds,
+        selected: hover,
+        types: enrichWithScalarColors(colors),
+        backgrounds: enrichWithScalarColors(backgrounds),
         options: {
-          required: Colors.red,
-          array: Colors.yellow,
+          required: success,
+          array: info,
         },
       },
     },

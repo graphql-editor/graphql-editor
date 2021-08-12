@@ -6,27 +6,25 @@ const rules = themed<monaco.editor.ITokenThemeRule[]>(
     colors: {
       colors,
       text,
-      code: {
-        editor: {
-          code: { comment, exclamation, keyword, gql, annotation },
-        },
-      },
+      info,
+      success,
+      grey: { greyClose },
     },
   }) => [
-    { token: 'keyword.gql', foreground: colors.interface },
-    { token: 'type.identifier.gql', foreground: colors.Int },
+    { token: 'keyword.gql', foreground: info },
+    { token: 'type.identifier.gql', foreground: success },
     { token: 'key.identifier.gql', foreground: text },
-    { token: 'keyword', foreground: keyword },
-    { token: 'annotation', foreground: annotation },
-    { token: '', foreground: gql },
-    { token: 'string.md', foreground: gql },
-    { token: 'keyword.md', foreground: gql, fontStyle: 'bold' },
-    { token: 'string.gql', foreground: gql },
+    { token: 'keyword', foreground: success },
+    { token: 'annotation', foreground: text },
+    { token: '', foreground: greyClose },
+    { token: 'string.md', foreground: greyClose },
+    { token: 'keyword.md', foreground: info, fontStyle: 'bold' },
+    { token: 'string.gql', foreground: greyClose },
     {
       token: 'string.quote.gql',
-      foreground: gql,
+      foreground: info,
     },
-    { token: 'comment.gql', foreground: comment },
+    { token: 'comment.gql', foreground: greyClose },
     {
       token: 'operator.gql',
       fontStyle: 'bold',
@@ -38,20 +36,15 @@ const rules = themed<monaco.editor.ITokenThemeRule[]>(
 const colors = themed<monaco.editor.IColors>(
   ({
     colors: {
-      background: { mainFurther },
+      background: { mainFurther, mainFurthest, success, error },
       text,
-      code: {
-        editor: {
-          code: { insertedTextBackground, removedTextBackground },
-        },
-      },
     },
   }) => ({
     'editor.foreground': text,
-    'editor.background': mainFurther,
+    'editor.background': mainFurthest,
     'minimap.background': mainFurther,
-    'diffEditor.insertedTextBackground': insertedTextBackground,
-    'diffEditor.removedTextBackground': removedTextBackground,
+    'diffEditor.insertedTextBackground': success,
+    'diffEditor.removedTextBackground': error,
   }),
 );
 

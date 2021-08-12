@@ -18,9 +18,7 @@ const NodeType = themed<NestedCSSProperties>(({ colors: { text } }) => ({
 const NodeIconArea = themed<NestedCSSProperties>(
   ({
     colors: {
-      graf: {
-        node: { iconAreaHoverBackground },
-      },
+      grey: { greyFurthest },
     },
   }) => ({
     display: 'flex',
@@ -35,7 +33,7 @@ const NodeIconArea = themed<NestedCSSProperties>(
     borderRadius: 12,
     $nest: {
       '&:hover': {
-        background: iconAreaHoverBackground,
+        background: greyFurthest,
       },
     },
   }),

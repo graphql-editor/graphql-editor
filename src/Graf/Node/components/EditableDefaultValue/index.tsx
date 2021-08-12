@@ -1,19 +1,27 @@
 import React, { useState } from 'react';
 import { style } from 'typestyle';
-import { Colors } from '@/Colors';
 import { fontFamily } from '@/vars';
-import { darken, toHex } from 'color2k';
-const Input = style({
-  border: 0,
-  background: `${toHex(darken(Colors.grey, 0.95))}44`,
-  borderRadius: 4,
-  color: Colors.grey,
-  minWidth: 30,
-  fontFamily: fontFamily,
-  fontSize: 10,
-  textAlign: 'center',
-  padding: `2px 0`,
-});
+import { themed } from '@/Theming/utils';
+import { useTheme } from '@/state/containers';
+const Input = themed(
+  ({
+    colors: {
+      grey: { greyFurthest },
+      text,
+    },
+  }) =>
+    style({
+      border: 0,
+      background: `${greyFurthest}44`,
+      borderRadius: 4,
+      color: text,
+      minWidth: 30,
+      fontFamily: fontFamily,
+      fontSize: 10,
+      textAlign: 'center',
+      padding: `2px 0`,
+    }),
+);
 interface EditableDefaultValueProps {
   value: string;
   onChange?: (value: string) => void;
@@ -26,6 +34,7 @@ export const EditableDefaultValue: React.FC<EditableDefaultValueProps> = ({
   autoFocus,
   style = {},
 }) => {
+  const { theme } = useTheme();
   const [editedValue, setEditedValue] = useState(value);
   const [focus, setFocus] = useState(!!autoFocus);
   const checkEdit = () => {
@@ -40,7 +49,7 @@ export const EditableDefaultValue: React.FC<EditableDefaultValueProps> = ({
     <>
       <input
         autoFocus={focus}
-        className={Input}
+        className={Input(theme)}
         disabled={!onChange}
         value={editedValue}
         style={{ width: `${editedValue.length + 3}ch`, ...style }}

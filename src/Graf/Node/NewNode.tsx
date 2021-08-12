@@ -1,7 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { ParserField } from 'graphql-zeus';
 import { style } from 'typestyle';
-import { Colors } from '@/Colors';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { NodeTitle } from './SharedNode';
 import { fontFamily } from '@/vars';
@@ -14,22 +13,24 @@ export interface NewNodeProps {
   node: ParserField;
   onCreate: (name: string) => void;
 }
-const NameError: NestedCSSProperties = {
-  color: Colors.red,
-};
-const NameErrorMessage: NestedCSSProperties = {
-  position: 'absolute',
-  height: 30,
-  top: -30,
-  color: Colors.red,
-  width: 600,
-  fontSize: 10,
-  marginLeft: -10,
-  display: 'flex',
-  alignItems: 'center',
-};
-const NodeCreate: NestedCSSProperties = {
-  color: Colors.grey,
+const NameError = themed<NestedCSSProperties>(({ colors: { error } }) => ({
+  color: error,
+}));
+const NameErrorMessage = themed<NestedCSSProperties>(
+  ({ colors: { error } }) => ({
+    position: 'absolute',
+    height: 30,
+    top: -30,
+    color: error,
+    width: 600,
+    fontSize: 10,
+    marginLeft: -10,
+    display: 'flex',
+    alignItems: 'center',
+  }),
+);
+const NodeCreate = themed<NestedCSSProperties>((theme) => ({
+  color: theme.colors.text,
   background: 'transparent',
   fontSize: 12,
   padding: `5px 0 5px 10px`,
@@ -41,9 +42,9 @@ const NodeCreate: NestedCSSProperties = {
     '&::placeholder': {
       fontFamily,
     },
-    '&.NameError': NameError,
+    '&.NameError': NameError(theme),
   },
-};
+}));
 const MainNodeArea = themed<NestedCSSProperties>((theme) => ({
   position: 'relative',
   borderColor: 'transparent',
@@ -59,12 +60,12 @@ const MainNodeArea = themed<NestedCSSProperties>((theme) => ({
       background: 'transparent',
       $nest: {
         ...NodeTitle(theme).$nest,
-        '.NodeCreate': NodeCreate,
-        '.NameErrorMessage': NameErrorMessage,
+        '.NodeCreate': NodeCreate(theme),
+        '.NameErrorMessage': NameErrorMessage(theme),
       },
     },
     '&:hover': {
-      borderColor: Colors.green,
+      borderColor: theme.colors.hover,
     },
   },
 }));
@@ -83,19 +84,19 @@ const NodeContainer = themed((theme) =>
   }),
 );
 
-const PlusButton = style({
-  marginLeft: 'auto',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  alignSelf: 'center',
-  color: Colors.grey,
-  border: `1px solid ${Colors.grey}11`,
-  width: 20,
-  height: 20,
-  borderRadius: 10,
-  marginRight: 5,
-});
+const PlusButton = themed(({ colors: { text } }) =>
+  style({
+    marginLeft: 'auto',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    color: text,
+    width: 20,
+    height: 20,
+    marginRight: 5,
+  }),
+);
 
 export const NewNode: React.FC<NewNodeProps> = ({ node, onCreate }) => {
   const thisNode = useRef<HTMLDivElement>(null);
@@ -152,8 +153,8 @@ export const NewNode: React.FC<NewNodeProps> = ({ node, onCreate }) => {
             />
           )}
           {!isCreating && (
-            <span className={`${PlusButton}`}>
-              <Plus width={10} height={10} />
+            <span className={`${PlusButton(theme)}`}>
+              <Plus width={10} height={10} fill={theme.colors.text} />
             </span>
           )}
         </div>

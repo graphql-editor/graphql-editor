@@ -10,9 +10,8 @@ import {
   NodeFieldContainer,
   Title,
 } from '@/Graf/Node/components';
-import { Colors } from '@/Colors';
 import { FieldProps } from '@/Graf/Node/models';
-import { darken, toHex } from 'color2k';
+import { themed } from '@/Theming/utils';
 
 const Name = style({
   fontSize: 10,
@@ -21,9 +20,13 @@ const Name = style({
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
 });
-const DirectiveBackground = style({
-  background: toHex(darken(Colors.pink, 0.5)),
-});
+const DirectiveBackground = themed(
+  ({
+    colors: {
+      backgrounds: { directive },
+    },
+  }) => style({ background: directive }),
+);
 const OptionsMenuContainer = style({
   position: 'absolute',
   top: 32,

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { ValueDefinition } from 'graphql-zeus';
 import { style } from 'typestyle';
-import { Colors } from '@/Colors';
 import { FIELD_NAME_SIZE, FIELD_TYPE_SIZE } from '@/Graf/constants';
 import { ActiveFieldName } from './FieldName';
 import { ActiveType } from '@/Graf/Node/Type';
@@ -28,7 +27,7 @@ const Name = style({
   textOverflow: 'ellipsis',
   minWidth: 30,
 });
-const Type = style({ fontSize: FIELD_TYPE_SIZE, color: Colors.green });
+const Type = style({ fontSize: FIELD_TYPE_SIZE });
 const OptionsMenuContainer = style({
   position: 'absolute',
   top: 32,

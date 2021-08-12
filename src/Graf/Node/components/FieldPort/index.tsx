@@ -1,6 +1,4 @@
-import { Colors } from '@/Colors';
 import * as Icons from '@/Graf/icons';
-import { darken, toHex } from 'color2k';
 import React from 'react';
 import { style } from 'typestyle';
 
@@ -25,19 +23,11 @@ const Main = style({
   alignItems: 'center',
   display: 'flex',
   justifyContent: 'center',
-  backgroundColor: `${toHex(darken(Colors.grey, 0.9))}00`,
   cursor: 'pointer',
   transition: 'all 0.25s ease-in-out',
   $nest: {
     '&:hover': {
-      backgroundColor: `${toHex(darken(Colors.grey, 0.9))}ff !important`,
       $nest: {
-        '.EditArguments': {
-          display: 'block',
-        },
-        '.ExpandDetails': {
-          display: 'block',
-        },
         '.OpenerIcon': {
           opacity: `1.0 !important`,
         },
@@ -46,33 +36,6 @@ const Main = style({
     '.OpenerIcon': {
       opacity: 0.0,
       transition: 'all 0.25s ease-in-out',
-    },
-    '.EditArguments': {
-      position: 'absolute',
-      display: 'none',
-      width: 150,
-      fontSize: 10,
-      color: Colors.yellow,
-      $nest: {
-        '&.top': {
-          left: -75,
-          top: -30,
-          textAlign: 'center',
-        },
-        '&.left': {
-          left: -160,
-          textAlign: 'right',
-        },
-        '&.bottom': {
-          left: -75,
-          bottom: -30,
-          textAlign: 'center',
-        },
-        '&.right': {
-          textAlign: 'left',
-          right: -160,
-        },
-      },
     },
   },
 });

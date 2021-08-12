@@ -1,6 +1,6 @@
 import React from 'react';
 import { ParserField } from 'graphql-zeus';
-import { compileTypeOptions } from '@/GraphQL/Compile';
+import { compileScalarTypes, compileTypeOptions } from '@/GraphQL/Compile';
 import { useTheme } from '@/state/containers';
 export const ActiveType: React.FC<
   Pick<ParserField, 'type'> & {
@@ -16,11 +16,12 @@ export const ActiveType: React.FC<
   } = useTheme();
 
   const getTypeColor = () => {
-    if (type.name in colors) {
-      return (colors as any)[type.name] as string;
+    const t = compileScalarTypes(type);
+    if (t in colors) {
+      return (colors as any)[t] as string;
     }
-    if (parentTypes && type.name in parentTypes) {
-      return (colors as any)[parentTypes[type.name]];
+    if (parentTypes && t in parentTypes) {
+      return (colors as any)[parentTypes[t]];
     }
     return '#fff';
   };
@@ -28,7 +29,6 @@ export const ActiveType: React.FC<
   return (
     <a
       onClick={onClick}
-      className={`TypeColor-${type.name}`}
       style={{ color: getTypeColor(), cursor: onClick ? 'pointer' : 'auto' }}
     >
       {compiledType}

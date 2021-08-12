@@ -1,6 +1,5 @@
 import React from 'react';
 import { style } from 'typestyle';
-import { Colors } from '@/Colors';
 import { X } from '@/Graf/icons';
 import { useTheme } from '@/state/containers';
 import { themed } from '@/Theming/utils';
@@ -10,7 +9,7 @@ interface NodeInterfaceProps {
   isLocked?: boolean;
 }
 
-const NodeInterfaceBlock = themed(({ colors: { backgrounds, text } }) =>
+const NodeInterfaceBlock = themed(({ colors: { backgrounds, text, error } }) =>
   style({
     padding: `3px 6px`,
     background: backgrounds.interface,
@@ -44,7 +43,7 @@ const NodeInterfaceBlock = themed(({ colors: { backgrounds, text } }) =>
       svg: {
         display: 'none',
         marginLeft: 5,
-        fill: Colors.red,
+        fill: error,
       },
       '&:hover': {
         $nest: {
@@ -80,7 +79,7 @@ export const NodeInterface: React.FC<NodeInterfaceProps> = ({
       {!isLocked && <div className={'DeleteInterface'}>Click to delete</div>}
       <span>
         {children}
-        {!isLocked && <X fill={Colors.red} />}
+        {!isLocked && <X fill={theme.colors.error} />}
       </span>
     </div>
   );

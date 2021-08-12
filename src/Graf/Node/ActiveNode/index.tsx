@@ -10,7 +10,6 @@ import { ActiveField } from '@/Graf/Node/Field';
 import { ActiveDirective } from '@/Graf/Node/Directive';
 import { ActiveInputValue } from '@/Graf/Node/InputValue';
 import { style, keyframes } from 'typestyle';
-import { Colors } from '@/Colors';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { DOM } from '@/Graf/DOM';
 import { ActiveType } from '@/Graf/Node/Type';
@@ -26,7 +25,6 @@ import { ChangeAllRelatedNodes, isExtensionNode } from '@/GraphQL/Resolve';
 import { ActiveArgument } from '@/Graf/Node/Argument';
 import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
-import { darken, lighten, toHex } from 'color2k';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 
 interface NodeProps {
@@ -80,32 +78,21 @@ const MainNodeArea = themed((theme) =>
     },
   }),
 );
-const DescriptionPosition: NestedCSSProperties = {
-  outline: 'none',
-  border: `1px solid ${toHex(darken(Colors.grey, 0.3))}00`,
-  $nest: {
-    '&:focus': {
-      border: `1px solid ${toHex(darken(Colors.grey, 0.3))}`,
-    },
-  },
-};
 const NodeContainer = themed(
   ({
     colors: {
-      backgrounds,
-      background: { mainFurther },
+      grey: { greyFurther },
     },
   }) =>
     style({
       position: 'relative',
       breakInside: 'avoid',
       height: '100%',
-      background: mainFurther,
+      background: greyFurther,
       maxWidth: '100%',
       display: 'flex',
       flexFlow: 'column nowrap',
       $nest: {
-        '.DescriptionPosition': DescriptionPosition,
         '.OpenedNode': OpenedNode,
         '&:hover': {
           $nest: {
@@ -115,22 +102,6 @@ const NodeContainer = themed(
             },
           },
         },
-        ...Object.keys(backgrounds).reduce((a, b) => {
-          a[`&.NodeBackground-${b}`] = {
-            background: (backgrounds as any)[b],
-          };
-          return a;
-        }, {} as Record<string, NestedCSSProperties>),
-        ...Object.keys(backgrounds).reduce((a, b) => {
-          a[`.NodeType-${b}`] = {
-            $nest: {
-              '&:hover, &.Active': {
-                background: toHex(lighten((backgrounds as any)[b], 0.1)),
-              },
-            },
-          };
-          return a;
-        }, {} as Record<string, NestedCSSProperties>),
       },
     }),
 );
@@ -151,19 +122,17 @@ const NodeInterfaces = style({
 const GapBar = themed(
   ({
     colors: {
-      graf: {
-        node: { gapBar },
-      },
+      grey: { greyFurthest },
     },
   }) =>
     style({
       width: '100%',
       height: '100%',
-      background: `${gapBar}99`,
+      background: `${greyFurthest}99`,
       transition: '.25s background ease-in-out',
       $nest: {
         '&:hover': {
-          background: `${gapBar}11`,
+          background: `${greyFurthest}11`,
         },
       },
     }),

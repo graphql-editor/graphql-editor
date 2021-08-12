@@ -1,5 +1,4 @@
 import { style } from 'typestyle';
-import { Colors } from '@/Colors';
 import React from 'react';
 import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
@@ -7,14 +6,15 @@ import { useTheme } from '@/state/containers';
 const Main = themed(
   ({
     colors: {
-      background: { mainFurthest, mainClosest },
+      text,
+      background: { mainFurthest, mainClose },
     },
   }) =>
     style({
-      color: Colors.grey,
+      color: text,
       maxHeight: 200,
       overflowY: 'auto',
-      scrollbarColor: `${mainClosest} ${mainFurthest}`,
+      scrollbarColor: `${mainClose} ${mainFurthest}`,
       scrollSnapType: 'y mandatory',
     }),
 );

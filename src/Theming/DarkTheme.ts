@@ -1,7 +1,9 @@
-import { darken, desaturate, lighten, toHex } from 'color2k';
+import { darken, toHex } from 'color2k';
 import { Colors } from '../Colors';
+import type * as monaco from 'monaco-editor';
 
 const BaseTheme = {
+  base: 'vs-dark' as monaco.editor.IStandaloneThemeData['base'],
   shadow: `${toHex(darken(Colors.grey, 0.95))} 2px 2px 10px`,
   colors: {
     backgrounds: {
@@ -14,11 +16,6 @@ const BaseTheme = {
       directive: toHex(darken(Colors.pink, 0.5)),
       extend: toHex(darken(Colors.orange, 0.5)),
       Extend: toHex(darken(Colors.orange, 0.5)),
-      String: toHex(darken(Colors.green, 0.5)),
-      Int: toHex(darken(Colors.green, 0.5)),
-      Boolean: toHex(darken(Colors.green, 0.5)),
-      ID: toHex(darken(Colors.green, 0.5)),
-      Float: toHex(darken(Colors.green, 0.5)),
     },
     colors: {
       type: Colors.main,
@@ -30,53 +27,31 @@ const BaseTheme = {
       directive: Colors.pink,
       extend: Colors.orange,
       Extend: Colors.orange,
-      String: Colors.green,
-      Int: Colors.green,
-      Boolean: Colors.green,
-      ID: Colors.green,
-      Float: Colors.green,
     },
+    backgroundedText: Colors.grey,
     text: Colors.grey,
-    info: Colors.blue,
+    info: Colors.sky,
     success: Colors.green,
     error: Colors.red,
     disabled: toHex(darken(Colors.grey, 0.55)),
     hover: Colors.pink,
     background: {
-      mainClosest: toHex(darken(Colors.main, 0.55)),
+      mainClosest: toHex(darken(Colors.main, 0.3)),
+      mainCloser: toHex(darken(Colors.main, 0.4)),
+      mainClose: toHex(darken(Colors.main, 0.55)),
       mainFar: darken(Colors.main, 0.65),
       mainFurther: toHex(darken(Colors.main, 0.66)),
       mainFurthest: toHex(darken(Colors.main, 0.67)),
+      success: toHex(darken(Colors.green, 0.6)),
+      error: toHex(darken(Colors.red, 0.25)),
     },
     grey: {
+      greyClosest: toHex(darken(Colors.grey, 0.3)),
+      greyCloser: toHex(darken(Colors.grey, 0.4)),
+      greyClose: toHex(darken(Colors.grey, 0.5)),
       greyFar: toHex(darken(Colors.grey, 0.7)),
       greyFurther: toHex(darken(Colors.grey, 0.9)),
       greyFurthest: toHex(darken(Colors.grey, 0.95)),
-    },
-    graf: {
-      node: {
-        gapBar: `${toHex(darken(Colors.grey, 0.95))}99`,
-        iconAreaHoverBackground: `#0003`,
-      },
-    },
-    relation: {
-      unknownField: {
-        whenActiveParentBackground: toHex(darken(Colors.main, 0.3)),
-      },
-    },
-    code: {
-      editor: {
-        code: {
-          annotation: toHex(darken(Colors.grey, 0.1)),
-          comment: toHex(darken(desaturate(Colors.pink, 0.6), 0.3)),
-          exclamation: toHex(lighten(Colors.yellow, 0.1)),
-          keyword: Colors.green,
-          gql: toHex(darken(desaturate(Colors.sky, 0.8), 0.3)),
-          insertedTextBackground: toHex(darken(Colors.green, 0.65)),
-          removedTextBackground: toHex(darken(Colors.red, 0.3)),
-          quote: toHex(desaturate(Colors.yellow, 0.1)),
-        },
-      },
     },
   },
 };

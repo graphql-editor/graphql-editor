@@ -8,9 +8,7 @@ const Main = themed(
     colors: {
       text,
       grey: { greyFurther },
-      relation: {
-        unknownField: { whenActiveParentBackground },
-      },
+      background: { mainClose },
     },
   }) =>
     style({
@@ -22,7 +20,7 @@ const Main = themed(
       transition: 'background 0.25s ease-in-out',
       $nest: {
         '&.Active': {
-          background: whenActiveParentBackground,
+          background: mainClose,
           $nest: {
             '.NodeFieldPort': {
               backgroundColor: greyFurther,
@@ -39,7 +37,7 @@ const Main = themed(
           height: 16,
         },
         '&:hover': {
-          background: whenActiveParentBackground,
+          background: mainClose,
           $nest: {
             '.NodeFieldPort': {
               backgroundColor: `${greyFurther}88`,

@@ -1,6 +1,5 @@
 import React from 'react';
 import { style } from 'typestyle';
-import { Colors } from '@/Colors';
 import { FIELD_NAME_SIZE, FIELD_TYPE_SIZE } from '@/Graf/constants';
 import { ActiveFieldName } from '@/Graf/Node/Field/FieldName';
 import { ActiveType } from '@/Graf/Node/Type';
@@ -20,10 +19,8 @@ const Name = style({
 const Main = themed(
   ({
     colors: {
-      text,
-      relation: {
-        unknownField: { whenActiveParentBackground },
-      },
+      backgroundedText,
+      background: { mainClose },
     },
   }) =>
     style({
@@ -31,7 +28,7 @@ const Main = themed(
       display: 'flex',
       alignItems: 'center',
       height: 31,
-      color: text,
+      color: backgroundedText,
       margin: `0 0`,
       transition: 'background 0.25s ease-in-out',
       $nest: {
@@ -43,14 +40,14 @@ const Main = themed(
           cursor: 'pointer',
           $nest: {
             '&:hover': {
-              background: whenActiveParentBackground,
+              background: mainClose,
             },
           },
         },
       },
     }),
 );
-const Type = style({ fontSize: FIELD_TYPE_SIZE, color: Colors.green });
+const Type = style({ fontSize: FIELD_TYPE_SIZE });
 type FieldProps = Pick<GrafFieldProps, 'node' | 'parentNodeTypeName'> & {
   onClick: () => void;
   active?: boolean;

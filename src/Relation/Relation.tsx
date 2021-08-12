@@ -40,7 +40,7 @@ export interface RelationProps {}
 const Wrapper = themed(
   ({
     colors: {
-      background: { mainFar, mainClosest, mainFurthest },
+      background: { mainFar, mainClose, mainFurthest },
     },
   }) =>
     style({
@@ -51,7 +51,7 @@ const Wrapper = themed(
       flex: 1,
       background: mainFar,
       overflowY: 'auto',
-      scrollbarColor: `${mainClosest} ${mainFurthest}`,
+      scrollbarColor: `${mainClose} ${mainFurthest}`,
     }),
 );
 const Main = style({
@@ -146,11 +146,11 @@ const SearchInput = themed(
     colors: {
       text,
       disabled,
-      background: { mainClosest },
+      background: { mainClose },
     },
   }) =>
     style({
-      background: mainClosest,
+      background: mainClose,
       color: text,
       border: 0,
       width: '100%',

@@ -1,7 +1,6 @@
 import React, { useRef } from 'react';
 import { ParserField } from 'graphql-zeus';
 import { style } from 'typestyle';
-import { Colors } from '@/Colors';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { useTreesState } from '@/state/containers/trees';
 import { themed } from '@/Theming/utils';
@@ -15,7 +14,7 @@ export interface NodeProps {
   subNode?: boolean;
 }
 const MainNodeArea = themed(
-  ({ colors: { text } }) =>
+  ({ colors: { backgroundedText } }) =>
     ({
       position: 'relative',
       borderColor: 'transparent',
@@ -26,14 +25,14 @@ const MainNodeArea = themed(
       transition: `all 0.25s ease-in-out`,
       display: 'flex',
       alignItems: 'stretch',
-      color: Colors.grey,
+      color: backgroundedText,
       fontSize: 12,
       padding: `10px 15px`,
       userSelect: 'none',
       '-moz-user-select': '-moz-none',
       $nest: {
         '&:hover': {
-          borderColor: text,
+          borderColor: backgroundedText,
         },
       },
     } as NestedCSSProperties),

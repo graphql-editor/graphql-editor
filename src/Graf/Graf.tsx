@@ -11,7 +11,6 @@ import {
   useNavigationState,
   useTheme,
 } from '@/state/containers';
-import { Colors } from '@/Colors';
 import { themed } from '@/Theming/utils';
 import { darken, toHex } from 'color2k';
 import { GraphQLEditorDomStructure } from '@/domStructure';
@@ -21,7 +20,7 @@ export interface GrafProps {}
 const Wrapper = themed(
   ({
     colors: {
-      background: { mainClosest, mainFurthest, mainFar },
+      background: { mainClose, mainFurthest, mainFar },
     },
   }) =>
     style({
@@ -32,7 +31,7 @@ const Wrapper = themed(
       flex: 1,
       background: mainFar,
       overflowY: 'auto',
-      scrollbarColor: `${mainClosest} ${mainFurthest}`,
+      scrollbarColor: `${mainClose} ${mainFurthest}`,
     }),
 );
 const AnimatedWrapper = style({});
@@ -45,46 +44,63 @@ const Main = themed(() =>
     fontFamily,
   }),
 );
-const ErrorContainer = style({
-  position: 'absolute',
-  zIndex: 2,
-  top: 0,
-  right: 0,
-  width: `calc(100% - 40px)`,
-  padding: 20,
-  margin: 20,
-  borderRadius: 4,
-  fontSize: 12,
-  fontFamily,
-  letterSpacing: 1,
-  color: Colors.pink,
-  background: `${toHex(darken(Colors.red, 0.6))}ee`,
-  border: `1px solid ${Colors.red}`,
-});
-const ErrorLock = style({
-  width: '100%',
-  height: '100%',
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  background: `${toHex(darken(Colors.main, 0.9))}99`,
-  cursor: 'pointer',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-});
-const ErrorLockMessage = style({
-  width: `clamp(200px, 50vw, 500px)`,
-  fontFamily,
-  fontSize: 14,
-  padding: 30,
-  color: Colors.red,
-  background: toHex(darken(Colors.main, 0.95)),
-});
+const ErrorContainer = themed(({ colors: { error, hover } }) =>
+  style({
+    position: 'absolute',
+    zIndex: 2,
+    top: 0,
+    right: 0,
+    width: `calc(100% - 40px)`,
+    padding: 20,
+    margin: 20,
+    borderRadius: 4,
+    fontSize: 12,
+    fontFamily,
+    letterSpacing: 1,
+    color: hover,
+    background: `${toHex(darken(error, 0.6))}ee`,
+    border: `1px solid ${error}`,
+  }),
+);
+const ErrorLock = themed(
+  ({
+    colors: {
+      background: { mainFurthest },
+    },
+  }) =>
+    style({
+      width: '100%',
+      height: '100%',
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      background: `${toHex(darken(mainFurthest, 0.9))}99`,
+      cursor: 'pointer',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    }),
+);
+const ErrorLockMessage = themed(
+  ({
+    colors: {
+      error,
+      background: { mainFurthest },
+    },
+  }) =>
+    style({
+      width: `clamp(200px, 50vw, 500px)`,
+      fontFamily,
+      fontSize: 14,
+      padding: 30,
+      color: error,
+      background: mainFurthest,
+    }),
+);
 const SubNodeContainer = themed(
   ({
     colors: {
-      background: { mainClosest, mainFurther, mainFurthest },
+      background: { mainClose, mainFurther, mainCloser },
     },
   }) =>
     style({
@@ -94,7 +110,7 @@ const SubNodeContainer = themed(
       right: 0,
       top: 0,
       bottom: 0,
-      scrollbarColor: `${mainClosest} ${mainFurthest}`,
+      scrollbarColor: `${mainCloser} ${mainClose}`,
       transition: `max-width 0.25s ease-in-out`,
     }),
 );
@@ -201,18 +217,20 @@ export const Graf: React.FC<GrafProps> = () => {
         <div className={Main(theme)}>{!lockGraf && <PaintNodes />}</div>
         {lockGraf && (
           <div
-            className={ErrorLock}
+            className={ErrorLock(theme)}
             onClick={() => {
               setMenuState('code-diagram');
             }}
           >
             <div
-              className={ErrorLockMessage}
+              className={ErrorLockMessage(theme)}
             >{`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema`}</div>
           </div>
         )}
 
-        {grafErrors && <div className={ErrorContainer}>{grafErrors}</div>}
+        {grafErrors && (
+          <div className={ErrorContainer(theme)}>{grafErrors}</div>
+        )}
       </div>
     </>
   );

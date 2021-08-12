@@ -21,8 +21,8 @@ import {
 } from '@/Graf/Node/ContextMenu';
 import { style } from 'typestyle';
 import { useTreesState } from '@/state/containers/trees';
-import { Colors } from '@/Colors';
 import { GraphQLEditorDomStructure } from '@/domStructure';
+import { useTheme } from '@/state/containers';
 
 type PossibleMenus =
   | 'field'
@@ -47,6 +47,9 @@ export const TopNodeMenu: React.FC<{
 }> = ({ node, onDelete, onDuplicate }) => {
   const { tree, setTree, setSelectedNode } = useTreesState();
   const [menuOpen, setMenuOpen] = useState<PossibleMenus>();
+  const {
+    theme: { colors },
+  } = useTheme();
 
   const hideMenu = () => {
     setMenuOpen(undefined);
@@ -65,7 +68,7 @@ export const TopNodeMenu: React.FC<{
             title="Click to add field"
           >
             <Plus
-              fill={menuOpen === 'field' ? Colors.green : Colors.grey}
+              fill={menuOpen === 'field' ? colors.success : colors.text}
               height={ICON_SIZE}
               width={ICON_SIZE}
             />
@@ -114,7 +117,7 @@ export const TopNodeMenu: React.FC<{
             title="Click to implement interface"
           >
             <Interface
-              fill={menuOpen === 'interface' ? Colors.green : Colors.grey}
+              fill={menuOpen === 'interface' ? colors.success : colors.text}
               height={ICON_SIZE}
               width={ICON_SIZE}
             />
@@ -136,7 +139,7 @@ export const TopNodeMenu: React.FC<{
           title="Click to add directive"
         >
           <Monkey
-            fill={menuOpen === 'directive' ? Colors.green : Colors.grey}
+            fill={menuOpen === 'directive' ? colors.success : colors.text}
             height={ICON_SIZE}
             width={ICON_SIZE}
           />
@@ -168,7 +171,7 @@ export const TopNodeMenu: React.FC<{
             <Tick
               height={ICON_SIZE}
               width={ICON_SIZE}
-              fill={menuOpen === 'operations' ? Colors.green : Colors.grey}
+              fill={menuOpen === 'operations' ? colors.success : colors.text}
             />
             {menuOpen === 'operations' && (
               <div className={NodeMenuContainer}>
@@ -187,7 +190,7 @@ export const TopNodeMenu: React.FC<{
         title="Click to see node actions"
       >
         <More
-          fill={menuOpen === 'options' ? Colors.green : Colors.grey}
+          fill={menuOpen === 'options' ? colors.success : colors.text}
           height={ICON_SIZE}
           width={ICON_SIZE}
         />
