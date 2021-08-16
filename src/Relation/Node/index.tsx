@@ -18,7 +18,7 @@ const Content = themed(
       info,
       backgrounds,
       hover,
-      grey: { greyFurther, greyFar },
+      background: { mainFurther, mainFar },
     },
   }) =>
     style({
@@ -81,13 +81,13 @@ const Content = themed(
           border: `solid 1px ${hover}`,
         },
         '&.Fade': {
-          background: greyFurther,
+          background: mainFurther,
           $nest: {
             '.NodeRelationFields': {
               opacity: 0.25,
             },
             '.NodeTitle': {
-              color: greyFar,
+              color: mainFar,
             },
             '.NodeType': {
               opacity: 0.25,

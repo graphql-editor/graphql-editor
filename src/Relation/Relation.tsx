@@ -74,7 +74,7 @@ const ErrorContainer = themed(
     colors: {
       error,
       text,
-      grey: { greyFurthest },
+      background: { mainFurthest },
     },
   }) =>
     style({
@@ -90,7 +90,7 @@ const ErrorContainer = themed(
       fontFamily,
       letterSpacing: 1,
       color: text,
-      background: greyFurthest,
+      background: mainFurthest,
       border: `1px solid ${error}`,
     }),
 );
@@ -117,7 +117,7 @@ const ErrorLockMessage = themed(
   ({
     colors: {
       error,
-      grey: { greyFurthest },
+      background: { mainFurthest },
     },
   }) =>
     style({
@@ -126,7 +126,7 @@ const ErrorLockMessage = themed(
       fontSize: 14,
       padding: 30,
       color: error,
-      background: greyFurthest,
+      background: mainFurthest,
     }),
 );
 const SearchContainer = style({

@@ -8,11 +8,11 @@ const Main = themed(
     colors: {
       text,
       disabled,
-      grey: { greyFurthest },
+      background: { mainFurthest },
     },
   }) =>
     style({
-      background: greyFurthest,
+      background: mainFurthest,
       color: text,
       padding: 10,
       fontSize: 12,

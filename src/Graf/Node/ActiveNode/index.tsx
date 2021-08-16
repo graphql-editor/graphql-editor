@@ -78,32 +78,27 @@ const MainNodeArea = themed((theme) =>
     },
   }),
 );
-const NodeContainer = themed(
-  ({
-    colors: {
-      grey: { greyFurther },
-    },
-  }) =>
-    style({
-      position: 'relative',
-      breakInside: 'avoid',
-      height: '100%',
-      background: greyFurther,
-      maxWidth: '100%',
-      display: 'flex',
-      flexFlow: 'column nowrap',
-      $nest: {
-        '.OpenedNode': OpenedNode,
-        '&:hover': {
-          $nest: {
-            '> .ActionsMenu': {
-              opacity: 1.0,
-              pointerEvents: 'auto',
-            },
+const NodeContainer = themed(({ colors }) =>
+  style({
+    position: 'relative',
+    breakInside: 'avoid',
+    height: '100%',
+    background: colors.background.mainFurthest,
+    maxWidth: '100%',
+    display: 'flex',
+    flexFlow: 'column nowrap',
+    $nest: {
+      '.OpenedNode': OpenedNode,
+      '&:hover': {
+        $nest: {
+          '> .ActionsMenu': {
+            opacity: 1.0,
+            pointerEvents: 'auto',
           },
         },
       },
-    }),
+    },
+  }),
 );
 
 const NodeFields = style({
@@ -122,17 +117,17 @@ const NodeInterfaces = style({
 const GapBar = themed(
   ({
     colors: {
-      grey: { greyFurthest },
+      background: { mainFurthest },
     },
   }) =>
     style({
       width: '100%',
       height: '100%',
-      background: `${greyFurthest}99`,
+      background: `${mainFurthest}99`,
       transition: '.25s background ease-in-out',
       $nest: {
         '&:hover': {
-          background: `${greyFurthest}11`,
+          background: `${mainFurthest}11`,
         },
       },
     }),
@@ -141,7 +136,7 @@ const GapBar = themed(
 const NodeArea = themed(
   ({
     colors: {
-      grey: { greyFurthest },
+      background: { mainFurthest },
     },
   }) =>
     style({
@@ -150,7 +145,7 @@ const NodeArea = themed(
       left: '20%',
       position: 'absolute',
       height: '100%',
-      boxShadow: `${greyFurthest} 0 0 20px`,
+      boxShadow: `${mainFurthest} 0 0 20px`,
     }),
 );
 

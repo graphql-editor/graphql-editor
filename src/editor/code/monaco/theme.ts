@@ -2,29 +2,21 @@ import type * as monaco from 'monaco-editor';
 import { themed } from '@/Theming/utils';
 
 const rules = themed<monaco.editor.ITokenThemeRule[]>(
-  ({
-    colors: {
-      colors,
-      text,
-      info,
-      success,
-      grey: { greyClose },
-    },
-  }) => [
+  ({ colors: { colors, text, info, success, dimmed } }) => [
     { token: 'keyword.gql', foreground: info },
     { token: 'type.identifier.gql', foreground: success },
     { token: 'key.identifier.gql', foreground: text },
     { token: 'keyword', foreground: success },
     { token: 'annotation', foreground: text },
-    { token: '', foreground: greyClose },
-    { token: 'string.md', foreground: greyClose },
+    { token: '', foreground: dimmed },
+    { token: 'string.md', foreground: dimmed },
     { token: 'keyword.md', foreground: info, fontStyle: 'bold' },
-    { token: 'string.gql', foreground: greyClose },
+    { token: 'string.gql', foreground: dimmed },
     {
       token: 'string.quote.gql',
       foreground: info,
     },
-    { token: 'comment.gql', foreground: greyClose },
+    { token: 'comment.gql', foreground: dimmed },
     {
       token: 'operator.gql',
       fontStyle: 'bold',

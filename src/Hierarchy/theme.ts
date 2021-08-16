@@ -12,8 +12,8 @@ export const theme = themed<DiagramTheme>(
       text,
       info,
       success,
-      grey: { greyFurther, greyFurthest, greyCloser },
       hover,
+      dimmed,
     },
   }) => ({
     ...DefaultDiagramTheme,
@@ -49,7 +49,7 @@ export const theme = themed<DiagramTheme>(
         ...DefaultDiagramTheme.colors.help,
       },
       link: {
-        main: greyCloser,
+        main: dimmed,
         active: hover,
         hover: hover,
       },

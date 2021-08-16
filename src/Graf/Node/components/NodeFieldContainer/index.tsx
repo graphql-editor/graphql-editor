@@ -7,7 +7,7 @@ const Main = themed(
   ({
     colors: {
       text,
-      grey: { greyFurther },
+      background: { mainFurther },
       background: { mainClose },
     },
   }) =>
@@ -23,7 +23,7 @@ const Main = themed(
           background: mainClose,
           $nest: {
             '.NodeFieldPort': {
-              backgroundColor: greyFurther,
+              backgroundColor: mainFurther,
               $nest: {
                 '.OpenerIcon': {
                   opacity: 1,
@@ -40,7 +40,7 @@ const Main = themed(
           background: mainClose,
           $nest: {
             '.NodeFieldPort': {
-              backgroundColor: `${greyFurther}88`,
+              backgroundColor: `${mainFurther}88`,
               $nest: {
                 '.OpenerIcon': {
                   opacity: 0.5,

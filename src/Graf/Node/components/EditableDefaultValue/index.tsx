@@ -6,13 +6,13 @@ import { useTheme } from '@/state/containers';
 const Input = themed(
   ({
     colors: {
-      grey: { greyFurthest },
+      background: { mainFurthest },
       text,
     },
   }) =>
     style({
       border: 0,
-      background: `${greyFurthest}44`,
+      background: `${mainFurthest}44`,
       borderRadius: 4,
       color: text,
       minWidth: 30,

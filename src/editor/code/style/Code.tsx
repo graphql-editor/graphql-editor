@@ -7,7 +7,7 @@ export const Editor = style({
 export const CodeContainer = themed(
   ({
     colors: {
-      grey: { greyFurthest, greyFar },
+      background: { mainFurthest, mainFar },
     },
   }) =>
     style({
@@ -21,7 +21,7 @@ export const CodeContainer = themed(
           padding: 8,
         },
         '.vs-dark .monaco-scrollable-element > .scrollbar': {
-          background: greyFurthest,
+          background: mainFurthest,
           $nest: {
             '&.invisible': {
               opacity: 0.5,
@@ -29,7 +29,7 @@ export const CodeContainer = themed(
           },
         },
         '.vs-dark .monaco-scrollable-element > .scrollbar > .slider': {
-          background: greyFar,
+          background: mainFar,
         },
       },
     }),
