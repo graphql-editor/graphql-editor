@@ -4,7 +4,7 @@ import {
   ScalarTypes,
   TypeDefinition,
   TypeDefinitionDisplayMap,
-} from 'graphql-zeus';
+} from 'graphql-js-tree';
 
 export const compileTypeOptions = ({ type }: Pick<ParserField, 'type'>) => {
   let compiledType = type.name;

@@ -6,7 +6,7 @@ import {
   MenuItem,
 } from '@/Graf/Node/components';
 import { ResolveDirectives } from '@/GraphQL/Resolve';
-import { ParserField, Instances } from 'graphql-zeus';
+import { ParserField, Instances } from 'graphql-js-tree';
 import { useTreesState } from '@/state/containers/trees';
 
 interface NodeAddDirectiveMenuProps {

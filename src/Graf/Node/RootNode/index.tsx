@@ -4,7 +4,7 @@ import {
   TypeDefinitionDisplayMap,
   TypeSystemDefinition,
   Directive,
-} from 'graphql-zeus';
+} from 'graphql-js-tree';
 import { style } from 'typestyle';
 import { PaintNode } from '@/Graf/Node/PaintNode';
 import { NewNode } from '@/Graf/Node/NewNode';

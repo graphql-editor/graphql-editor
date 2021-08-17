@@ -8,7 +8,7 @@ import {
   Value,
   Instances,
   TypeExtension,
-} from 'graphql-zeus';
+} from 'graphql-js-tree';
 import { BuiltInScalars } from '@/GraphQL/Resolve/BuiltInNodes';
 
 export const ResolveCreateField = (

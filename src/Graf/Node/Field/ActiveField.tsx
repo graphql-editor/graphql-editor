@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ValueDefinition } from 'graphql-zeus';
+import { ValueDefinition } from 'graphql-js-tree';
 import { style } from 'typestyle';
 import { FIELD_NAME_SIZE, FIELD_TYPE_SIZE } from '@/Graf/constants';
 import { ActiveFieldName } from './FieldName';

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { OptionsMenu } from '@/Graf/Node/components';
-import { ParserField, OperationType } from 'graphql-zeus';
+import { ParserField, OperationType } from 'graphql-js-tree';
 import { useTreesState } from '@/state/containers/trees';
 interface NodeOperationsMenuProps {
   node: ParserField;

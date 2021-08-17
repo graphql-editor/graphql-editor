@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { ParserField } from 'graphql-zeus';
+import { ParserField } from 'graphql-js-tree';
 import { style } from 'typestyle';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { NodeTitle } from './SharedNode';

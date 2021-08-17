@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { GraphQLEditor } from '@/index';
 import { PassedSchema } from '@/Models';
 import { DarkTheme } from '@/Theming/DarkTheme';
-import * as schemas from '../schema';
 
 export const Pure = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
@@ -24,10 +23,6 @@ export const Pure = () => {
         theme={DarkTheme}
         setSchema={(props) => {
           setMySchema(props);
-        }}
-        diffSchemas={{
-          newSchema: { code: schemas.versionedUsersLibraryLatest },
-          oldSchema: { code: schemas.versionedUsersLibrary01 },
         }}
         schema={mySchema}
       />

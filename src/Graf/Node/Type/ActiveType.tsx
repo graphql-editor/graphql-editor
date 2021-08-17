@@ -1,5 +1,5 @@
 import React from 'react';
-import { ParserField } from 'graphql-zeus';
+import { ParserField } from 'graphql-js-tree';
 import { compileScalarTypes, compileTypeOptions } from '@/GraphQL/Compile';
 import { useTheme } from '@/state/containers';
 export const ActiveType: React.FC<

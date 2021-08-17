@@ -1,6 +1,6 @@
 import { createContainer } from 'unstated-next';
 import { useState, useCallback } from 'react';
-import { ParserTree, ParserField } from 'graphql-zeus';
+import { ParserTree, ParserField } from 'graphql-js-tree';
 const useTreesStateContainer = createContainer(() => {
   const [tree, setTree] = useState<ParserTree>({ nodes: [] });
   const [libraryTree, setLibraryTree] = useState<ParserTree>({ nodes: [] });

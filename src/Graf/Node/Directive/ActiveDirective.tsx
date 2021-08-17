@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ValueDefinition } from 'graphql-zeus';
+import { ValueDefinition } from 'graphql-js-tree';
 import { style } from 'typestyle';
 import { ConvertValueToEditableString } from '@/GraphQL/Convert';
 import {

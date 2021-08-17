@@ -1,5 +1,5 @@
 import { Draw } from './Draw';
-import { ParserField } from 'graphql-zeus';
+import { ParserField } from 'graphql-js-tree';
 import React from 'react';
 import { style } from 'typestyle';
 import { isScalarArgument } from '@/GraphQL/Resolve';

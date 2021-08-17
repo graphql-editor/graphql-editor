@@ -18,7 +18,7 @@ import {
 import { sortByConnection } from './Algorithm';
 import { Node } from './Node';
 import { isScalarArgument } from '@/GraphQL/Resolve';
-import { ParserField } from 'graphql-zeus';
+import { ParserField } from 'graphql-js-tree';
 import { Search } from '@/Graf/icons';
 import { LevenshteinDistance } from '@/search';
 import { Lines, RelationPath } from '@/Relation/Lines';

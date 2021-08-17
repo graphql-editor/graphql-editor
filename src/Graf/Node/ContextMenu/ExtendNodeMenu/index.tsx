@@ -5,7 +5,7 @@ import {
   TypeSystemDefinition,
   TypeDefinitionDisplayMap,
   ParserField,
-} from 'graphql-zeus';
+} from 'graphql-js-tree';
 import { useTreesState } from '@/state/containers/trees';
 import {
   Menu,

@@ -5,7 +5,7 @@ import {
   ParserField,
   TypeSystemDefinition,
   Instances,
-} from 'graphql-zeus';
+} from 'graphql-js-tree';
 import {
   MenuScrollingArea,
   DetailMenuItem,

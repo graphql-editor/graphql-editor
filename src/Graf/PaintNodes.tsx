@@ -5,7 +5,7 @@ import {
   TypeSystemDefinition,
   TypeSystemExtension,
   TypeExtension,
-} from 'graphql-zeus';
+} from 'graphql-js-tree';
 import { style } from 'typestyle';
 import { fontFamily } from '@/vars';
 import { RootNode } from '@/Graf/Node';

@@ -5,7 +5,7 @@ import {
   Instances,
   TypeDefinition,
   TypeExtension,
-} from 'graphql-zeus';
+} from 'graphql-js-tree';
 import { ActiveField } from '@/Graf/Node/Field';
 import { ActiveDirective } from '@/Graf/Node/Directive';
 import { ActiveInputValue } from '@/Graf/Node/InputValue';

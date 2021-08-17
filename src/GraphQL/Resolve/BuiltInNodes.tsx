@@ -1,4 +1,4 @@
-import { ScalarTypes, ParserField, TypeDefinition } from 'graphql-zeus';
+import { ScalarTypes, ParserField, TypeDefinition } from 'graphql-js-tree';
 export const BuiltInScalars = [
   ScalarTypes.Boolean,
   ScalarTypes.Float,

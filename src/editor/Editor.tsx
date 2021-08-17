@@ -8,7 +8,7 @@ import { PassedSchema, Theming } from '@/Models';
 import { DynamicResize } from './code/Components';
 import { Graf } from '@/Graf/Graf';
 import { Hierarchy } from '@/Hierarchy';
-import { Parser, TreeToGraphQL } from 'graphql-zeus';
+import { Parser, TreeToGraphQL } from 'graphql-js-tree';
 import { Workers } from '@/worker';
 import { style } from 'typestyle';
 import { useTreesState } from '@/state/containers/trees';

@@ -2,7 +2,7 @@ import { EditableText } from '@/Graf/Node/components';
 import { ActiveType } from '@/Graf/Node/Type';
 import { isScalarArgument } from '@/GraphQL/Resolve';
 import { useTheme, useTreesState } from '@/state/containers';
-import { ParserField, TypeDefinition } from 'graphql-zeus';
+import { ParserField, TypeDefinition } from 'graphql-js-tree';
 import React, { useMemo, useState } from 'react';
 import { style } from 'typestyle';
 import { NestedCSSProperties } from 'typestyle/lib/types';

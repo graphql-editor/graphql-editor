@@ -1,5 +1,5 @@
 import React from 'react';
-import { ParserField } from 'graphql-zeus';
+import { ParserField } from 'graphql-js-tree';
 import { ActiveType } from '@/Graf/Node/Type';
 import { style } from 'typestyle';
 import { EditableText } from '@/Graf/Node/components';

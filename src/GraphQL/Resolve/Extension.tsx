@@ -1,4 +1,4 @@
-import { AllTypes, TypeDefinition, TypeExtension } from 'graphql-zeus';
+import { AllTypes, TypeDefinition, TypeExtension } from 'graphql-js-tree';
 
 export const ResolveExtension = (t: AllTypes) => {
   switch (t) {

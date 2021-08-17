@@ -1,5 +1,5 @@
-import { Parser, ParserField, Options } from 'graphql-zeus';
-import { TemplateUtils } from 'graphql-zeus/lib/TreeToGraphQL/templates/TemplateUtils';
+import { Parser, ParserField, Options } from 'graphql-js-tree';
+import { TemplateUtils } from 'graphql-js-tree/lib/TreeToGraphQL/templates/TemplateUtils';
 export const ConvertStringToObject = (value: string) => {
   const computeString = `
     scalar Translatable

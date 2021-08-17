@@ -1,4 +1,4 @@
-import { ParserField } from 'graphql-zeus';
+import { ParserField } from 'graphql-js-tree';
 
 export const ChangeRelatedNode = ({
   newName,

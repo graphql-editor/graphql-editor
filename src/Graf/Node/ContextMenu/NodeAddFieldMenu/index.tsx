@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ResolveCreateField } from '@/GraphQL/Resolve';
-import { ParserField } from 'graphql-zeus';
+import { ParserField } from 'graphql-js-tree';
 import { useTreesState } from '@/state/containers/trees';
 import {
   Menu,

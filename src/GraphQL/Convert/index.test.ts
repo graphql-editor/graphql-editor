@@ -1,4 +1,4 @@
-import { ParserField, Value } from 'graphql-zeus';
+import { ParserField, Value } from 'graphql-js-tree';
 import { ConvertStringToObject } from '.';
 
 describe('Convertion of string to nodes test', () => {

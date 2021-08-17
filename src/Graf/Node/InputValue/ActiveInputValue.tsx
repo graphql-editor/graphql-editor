@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ParserField, Options, ValueDefinition, Value } from 'graphql-zeus';
+import { ParserField, Options, ValueDefinition, Value } from 'graphql-js-tree';
 import { style } from 'typestyle';
 import { ActiveType } from '@/Graf/Node/Type';
 import {
