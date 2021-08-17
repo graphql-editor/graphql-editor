@@ -83,7 +83,7 @@ const NodeContainer = themed(({ colors }) =>
     position: 'relative',
     breakInside: 'avoid',
     height: '100%',
-    background: colors.background.mainFurthest,
+    background: colors.background.mainMiddle,
     maxWidth: '100%',
     display: 'flex',
     flexFlow: 'column nowrap',

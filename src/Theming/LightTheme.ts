@@ -46,6 +46,7 @@ export const LightTheme: EditorTheme = {
       mainClosest: toHex(darken(Colors.grey, 0.5)),
       mainCloser: toHex(darken(Colors.grey, 0.4)),
       mainClose: toHex(darken(Colors.grey, 0.3)),
+      mainMiddle: toHex(darken(Colors.grey, 0.1)),
       mainFar: toHex(darken(Colors.grey, 0.05)),
       mainFurther: toHex(darken(Colors.grey, 0.03)),
       mainFurthest: toHex(Colors.grey),
