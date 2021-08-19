@@ -19,7 +19,7 @@ export interface RootNodeProps {
   libraryNode?: ParserField;
   readonly?: boolean;
 }
-const NodeCaption = themed(({ colors: { colors } }) =>
+const NodeCaption = themed(({ colors }) =>
   style({
     flexBasis: '100%',
     margin: `15px 15px`,

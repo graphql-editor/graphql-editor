@@ -3,33 +3,26 @@ import { style } from 'typestyle';
 import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
 
-const Main = themed(
-  ({
-    colors: {
-      text,
-      disabled,
-      background: { mainFurthest },
-    },
-  }) =>
-    style({
-      background: mainFurthest,
-      color: text,
-      padding: 10,
-      fontSize: 12,
-      width: '100%',
-      border: 0,
-      resize: 'none',
-      outline: 'none',
-      cursor: 'pointer',
-      $nest: {
-        '&:focus': {
-          cursor: 'auto',
-        },
-        '&::placeholder': {
-          color: disabled,
-        },
+const Main = themed(({ text, disabled, background: { mainFurthest } }) =>
+  style({
+    background: mainFurthest,
+    color: text,
+    padding: 10,
+    fontSize: 12,
+    width: '100%',
+    border: 0,
+    resize: 'none',
+    outline: 'none',
+    cursor: 'pointer',
+    $nest: {
+      '&:focus': {
+        cursor: 'auto',
       },
-    }),
+      '&::placeholder': {
+        color: disabled,
+      },
+    },
+  }),
 );
 
 export const ActiveDescription: React.FC<{

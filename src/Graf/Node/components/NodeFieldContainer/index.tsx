@@ -4,13 +4,7 @@ import React from 'react';
 import { style } from 'typestyle';
 
 const Main = themed(
-  ({
-    colors: {
-      text,
-      background: { mainFurther },
-      background: { mainClose },
-    },
-  }) =>
+  ({ text, background: { mainFurther }, background: { mainClose } }) =>
     style({
       position: 'relative',
       display: 'flex',

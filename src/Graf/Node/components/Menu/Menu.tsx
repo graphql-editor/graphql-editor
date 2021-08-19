@@ -10,21 +10,15 @@ const Wrapper = style({
   width: 220,
   borderRadius: 4,
 });
-const Content = themed(
-  ({
-    shadow,
-    colors: {
-      background: { mainFurthest },
-    },
-  }) =>
-    style({
-      background: mainFurthest,
-      borderRadius: 4,
-      padding: 0,
-      boxShadow: shadow,
-    }),
+const Content = themed(({ shadow, background: { mainFurthest } }) =>
+  style({
+    background: mainFurthest,
+    borderRadius: 4,
+    padding: 0,
+    boxShadow: shadow,
+  }),
 );
-const Title = themed(({ colors: { info } }) =>
+const Title = themed(({ info }) =>
   style({
     padding: 16,
     fontSize: 14,

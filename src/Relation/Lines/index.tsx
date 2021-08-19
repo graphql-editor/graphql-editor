@@ -6,22 +6,17 @@ import { isScalarArgument } from '@/GraphQL/Resolve';
 import { useTheme } from '@/state/containers';
 import { themed } from '@/Theming/utils';
 
-const RelationsContainer = themed(
-  ({
-    colors: {
-      background: { mainClosest },
-    },
-  }) =>
-    style({
-      width: '100%',
-      height: '100%',
-      position: 'absolute',
-      pointerEvents: 'none',
-      stroke: mainClosest,
-      fill: 'transparent',
-      strokeWidth: 2,
-      margin: -20,
-    }),
+const RelationsContainer = themed(({ background: { mainClosest } }) =>
+  style({
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    stroke: mainClosest,
+    fill: 'transparent',
+    strokeWidth: 2,
+    margin: -20,
+  }),
 );
 
 export interface RelationPath {
@@ -59,10 +54,8 @@ export const Lines: React.FC<LinesProps> = ({ relations, selectedNode }) => {
             <Draw
               active={fromField || toField}
               inverse={fromField}
-              color={(theme.colors.colors as any)[rf.field.type.name]}
-              inActiveColor={
-                (theme.colors.backgrounds as any)[rf.field.type.name]
-              }
+              color={(theme.colors as any)[rf.field.type.name]}
+              inActiveColor={(theme.backgrounds as any)[rf.field.type.name]}
               key={`${index}-${i}-${rf.field.name}`}
               from={rf.htmlNode}
               to={r.to.htmlNode}

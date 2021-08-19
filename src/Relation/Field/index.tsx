@@ -16,36 +16,30 @@ const Name = style({
   minWidth: 30,
 });
 
-const Main = themed(
-  ({
-    colors: {
-      backgroundedText,
-      background: { mainClose },
-    },
-  }) =>
-    style({
-      position: 'relative',
-      display: 'flex',
-      alignItems: 'center',
-      height: 31,
-      color: backgroundedText,
-      margin: `0 0`,
-      transition: 'background 0.25s ease-in-out',
-      $nest: {
-        '.NodeFieldPortPlaceholder': {
-          width: 24,
-          height: 16,
-        },
-        '&.ActiveParent': {
-          cursor: 'pointer',
-          $nest: {
-            '&:hover': {
-              background: mainClose,
-            },
+const Main = themed(({ backgroundedText, background: { mainClose } }) =>
+  style({
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    height: 31,
+    color: backgroundedText,
+    margin: `0 0`,
+    transition: 'background 0.25s ease-in-out',
+    $nest: {
+      '.NodeFieldPortPlaceholder': {
+        width: 24,
+        height: 16,
+      },
+      '&.ActiveParent': {
+        cursor: 'pointer',
+        $nest: {
+          '&:hover': {
+            background: mainClose,
           },
         },
       },
-    }),
+    },
+  }),
 );
 const Type = style({ fontSize: FIELD_TYPE_SIZE });
 type FieldProps = Pick<GrafFieldProps, 'node' | 'parentNodeTypeName'> & {

@@ -9,7 +9,7 @@ interface NodeInterfaceProps {
   isLocked?: boolean;
 }
 
-const NodeInterfaceBlock = themed(({ colors: { backgrounds, text, error } }) =>
+const NodeInterfaceBlock = themed(({ backgrounds, text, error }) =>
   style({
     padding: `3px 6px`,
     background: backgrounds.interface,
@@ -79,7 +79,7 @@ export const NodeInterface: React.FC<NodeInterfaceProps> = ({
       {!isLocked && <div className={'DeleteInterface'}>Click to delete</div>}
       <span>
         {children}
-        {!isLocked && <X fill={theme.colors.error} />}
+        {!isLocked && <X fill={theme.error} />}
       </span>
     </div>
   );

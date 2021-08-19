@@ -20,12 +20,8 @@ const Name = style({
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
 });
-const DirectiveBackground = themed(
-  ({
-    colors: {
-      backgrounds: { directive },
-    },
-  }) => style({ background: directive }),
+const DirectiveBackground = themed(({ backgrounds: { directive } }) =>
+  style({ background: directive }),
 );
 const OptionsMenuContainer = style({
   position: 'absolute',

@@ -17,22 +17,17 @@ import { GraphQLEditorDomStructure } from '@/domStructure';
 
 export interface GrafProps {}
 
-const Wrapper = themed(
-  ({
-    colors: {
-      background: { mainClose, mainFurthest, mainFar },
-    },
-  }) =>
-    style({
-      width: '100%',
-      height: '100%',
-      overflowX: 'hidden',
-      position: 'relative',
-      flex: 1,
-      background: mainFar,
-      overflowY: 'auto',
-      scrollbarColor: `${mainClose} ${mainFurthest}`,
-    }),
+const Wrapper = themed(({ background: { mainClose, mainFurthest, mainFar } }) =>
+  style({
+    width: '100%',
+    height: '100%',
+    overflowX: 'hidden',
+    position: 'relative',
+    flex: 1,
+    background: mainFar,
+    overflowY: 'auto',
+    scrollbarColor: `${mainClose} ${mainFurthest}`,
+  }),
 );
 const AnimatedWrapper = style({});
 const Main = themed(() =>
@@ -44,7 +39,7 @@ const Main = themed(() =>
     fontFamily,
   }),
 );
-const ErrorContainer = themed(({ colors: { error, hover } }) =>
+const ErrorContainer = themed(({ error, hover }) =>
   style({
     position: 'absolute',
     zIndex: 2,
@@ -62,47 +57,32 @@ const ErrorContainer = themed(({ colors: { error, hover } }) =>
     border: `1px solid ${error}`,
   }),
 );
-const ErrorLock = themed(
-  ({
-    colors: {
-      background: { mainFurthest },
-    },
-  }) =>
-    style({
-      width: '100%',
-      height: '100%',
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      background: `${toHex(darken(mainFurthest, 0.9))}99`,
-      cursor: 'pointer',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-    }),
+const ErrorLock = themed(({ background: { mainFurthest } }) =>
+  style({
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    background: `${toHex(darken(mainFurthest, 0.9))}99`,
+    cursor: 'pointer',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  }),
 );
-const ErrorLockMessage = themed(
-  ({
-    colors: {
-      error,
-      background: { mainFurthest },
-    },
-  }) =>
-    style({
-      width: `clamp(200px, 50vw, 500px)`,
-      fontFamily,
-      fontSize: 14,
-      padding: 30,
-      color: error,
-      background: mainFurthest,
-    }),
+const ErrorLockMessage = themed(({ error, background: { mainFurthest } }) =>
+  style({
+    width: `clamp(200px, 50vw, 500px)`,
+    fontFamily,
+    fontSize: 14,
+    padding: 30,
+    color: error,
+    background: mainFurthest,
+  }),
 );
 const SubNodeContainer = themed(
-  ({
-    colors: {
-      background: { mainClose, mainFurther, mainCloser },
-    },
-  }) =>
+  ({ background: { mainClose, mainFurther, mainCloser } }) =>
     style({
       width: 'min(clamp(400px, 40%, 1280px), calc(100vw - 50px))',
       background: mainFurther,

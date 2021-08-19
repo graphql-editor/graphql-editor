@@ -4,17 +4,15 @@ import { themed } from '@/Theming/utils';
 import { enrichWithScalarColors } from '@/GraphQL/Compile';
 export const theme = themed<DiagramTheme>(
   ({
-    colors: {
-      colors,
-      backgrounds,
-      background: { mainFurthest, mainFar, mainFurther, mainClose, mainCloser },
-      backgroundedText,
-      text,
-      info,
-      success,
-      hover,
-      dimmed,
-    },
+    colors,
+    backgrounds,
+    background: { mainFurthest, mainFar, mainFurther, mainClose, mainCloser },
+    backgroundedText,
+    text,
+    info,
+    success,
+    hover,
+    dimmed,
   }) => ({
     ...DefaultDiagramTheme,
     fontFamily,

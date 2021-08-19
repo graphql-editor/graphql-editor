@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import MonacoEditor, { EditorProps } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
 import { EnrichedLanguageService } from './EnrichedLanguageService';
@@ -8,6 +8,8 @@ import {
   SchemaServicesOptions,
   useSchemaServices,
 } from './use-schema-services';
+import { useTheme } from '@/state/containers';
+import { theme as MonacoTheme } from '@/editor/code/monaco';
 
 export type SchemaEditorProps = SchemaServicesOptions & {
   onBlur?: (value: string) => void;
@@ -27,12 +29,16 @@ function BaseSchemaEditor(
   const {
     languageService,
     setMonaco,
+    monacoRef,
     setEditor,
     editorApi,
     editorRef,
     setSchema,
     onValidate,
   } = useSchemaServices(props);
+
+  const { theme } = useTheme();
+
   React.useImperativeHandle(ref, () => editorApi, [editorRef, languageService]);
 
   React.useEffect(() => {
@@ -41,10 +47,8 @@ function BaseSchemaEditor(
     }
   }, [languageService, props.onLanguageServiceReady]);
 
-  const [
-    onBlurHandler,
-    setOnBlurSubscription,
-  ] = React.useState<monaco.IDisposable>();
+  const [onBlurHandler, setOnBlurSubscription] =
+    React.useState<monaco.IDisposable>();
 
   React.useEffect(() => {
     if (editorRef && props.onBlur) {
@@ -58,6 +62,11 @@ function BaseSchemaEditor(
     }
   }, [props.onBlur, editorRef]);
 
+  useEffect(() => {
+    if (theme && props.options?.theme) {
+      monacoRef?.editor.defineTheme(props.options?.theme, MonacoTheme(theme));
+    }
+  }, [theme, monacoRef]);
   return (
     <MonacoEditor
       height={'auto'}

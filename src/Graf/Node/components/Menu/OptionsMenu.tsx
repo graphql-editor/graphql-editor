@@ -16,7 +16,7 @@ interface OptionsMenuProps
   menuName: string;
 }
 
-const Main = themed(({ colors: { success } }) =>
+const Main = themed(({ success }) =>
   style({
     display: 'flex',
     justifyContent: 'space-between',
@@ -38,7 +38,7 @@ const Main = themed(({ colors: { success } }) =>
     },
   }),
 );
-const Circle = themed(({ colors: { text, success } }) =>
+const Circle = themed(({ text, success }) =>
   style({
     borderRadius: 6,
     width: 12,

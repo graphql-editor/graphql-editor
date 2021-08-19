@@ -10,9 +10,7 @@ export const ActiveType: React.FC<
 > = ({ type, parentTypes, onClick }) => {
   let compiledType = compileTypeOptions({ type });
   const {
-    theme: {
-      colors: { colors },
-    },
+    theme: { colors },
   } = useTheme();
 
   const getTypeColor = () => {

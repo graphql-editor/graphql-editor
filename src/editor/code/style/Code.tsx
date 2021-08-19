@@ -5,11 +5,7 @@ export const Editor = style({
   flex: 1,
 });
 export const CodeContainer = themed(
-  ({
-    colors: {
-      background: { mainFurthest, mainFar },
-    },
-  }) =>
+  ({ background: { mainFurthest, mainFar } }) =>
     style({
       flex: 1,
       overflowY: 'hidden',

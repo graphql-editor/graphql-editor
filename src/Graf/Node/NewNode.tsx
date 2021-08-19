@@ -13,24 +13,22 @@ export interface NewNodeProps {
   node: ParserField;
   onCreate: (name: string) => void;
 }
-const NameError = themed<NestedCSSProperties>(({ colors: { error } }) => ({
+const NameError = themed<NestedCSSProperties>(({ error }) => ({
   color: error,
 }));
-const NameErrorMessage = themed<NestedCSSProperties>(
-  ({ colors: { error } }) => ({
-    position: 'absolute',
-    height: 30,
-    top: -30,
-    color: error,
-    width: 600,
-    fontSize: 10,
-    marginLeft: -10,
-    display: 'flex',
-    alignItems: 'center',
-  }),
-);
+const NameErrorMessage = themed<NestedCSSProperties>(({ error }) => ({
+  position: 'absolute',
+  height: 30,
+  top: -30,
+  color: error,
+  width: 600,
+  fontSize: 10,
+  marginLeft: -10,
+  display: 'flex',
+  alignItems: 'center',
+}));
 const NodeCreate = themed<NestedCSSProperties>((theme) => ({
-  color: theme.colors.text,
+  color: theme.text,
   background: 'transparent',
   fontSize: 12,
   padding: `5px 0 5px 10px`,
@@ -65,7 +63,7 @@ const MainNodeArea = themed<NestedCSSProperties>((theme) => ({
       },
     },
     '&:hover': {
-      borderColor: theme.colors.hover,
+      borderColor: theme.hover,
     },
   },
 }));
@@ -74,9 +72,9 @@ const NodeContainer = themed((theme) =>
     margin: 10,
     $nest: {
       '.MainNodeArea': MainNodeArea(theme),
-      ...Object.keys(theme.colors.backgrounds).reduce((a, b) => {
+      ...Object.keys(theme.backgrounds).reduce((a, b) => {
         a[`.NodeType-${b}`] = {
-          borderColor: (theme.colors.backgrounds as any)[b],
+          borderColor: (theme.backgrounds as any)[b],
         };
         return a;
       }, {} as Record<string, NestedCSSProperties>),
@@ -84,7 +82,7 @@ const NodeContainer = themed((theme) =>
   }),
 );
 
-const PlusButton = themed(({ colors: { text } }) =>
+const PlusButton = themed(({ text }) =>
   style({
     marginLeft: 'auto',
     display: 'flex',
@@ -154,7 +152,7 @@ export const NewNode: React.FC<NewNodeProps> = ({ node, onCreate }) => {
           )}
           {!isCreating && (
             <span className={`${PlusButton(theme)}`}>
-              <Plus width={10} height={10} fill={theme.colors.text} />
+              <Plus width={10} height={10} fill={theme.text} />
             </span>
           )}
         </div>

@@ -2,7 +2,7 @@ import { themed } from '@/Theming/utils';
 import { EditorError } from '@/validation';
 import type * as monaco from 'monaco-editor';
 export const mapEditorErrorToMonacoDecoration = themed(
-  ({ colors: { error } }) =>
+  ({ error }) =>
     (m: typeof monaco) =>
     (e: EditorError) =>
       ({

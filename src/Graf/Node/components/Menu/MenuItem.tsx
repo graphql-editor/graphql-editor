@@ -11,7 +11,7 @@ interface MenuItemProps {
   onClick: () => void;
 }
 
-const Main = themed(({ colors: { colors, hover } }) =>
+const Main = themed(({ colors, hover }) =>
   style({
     display: 'flex',
     padding: `8px 16px`,

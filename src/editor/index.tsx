@@ -8,9 +8,9 @@ import {
   ThemeProvider,
 } from '@/state/containers';
 
-export const GraphQLEditor = (props: EditorProps) => {
+export const GraphQLEditor = ({ ...props }: EditorProps) => {
   return (
-    <ThemeProvider>
+    <ThemeProvider initialState={props.theme}>
       <TreesStateProvider>
         <ErrorsStateProvider>
           <NavigationStateProvider>

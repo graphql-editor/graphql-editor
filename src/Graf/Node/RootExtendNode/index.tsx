@@ -12,31 +12,21 @@ export interface RootExtendNodeProps {
   libraryNode?: ParserField;
   readonly?: boolean;
 }
-const NodeCaption = themed(
-  ({
-    colors: {
-      colors: { Extend },
-    },
-  }) =>
-    style({
-      flexBasis: '100%',
-      margin: `15px 15px`,
-      display: 'flex',
-      borderBottom: `1px solid ${Extend}22`,
-      paddingBottom: 5,
-      alignItems: 'center',
-    }),
+const NodeCaption = themed(({ colors: { Extend } }) =>
+  style({
+    flexBasis: '100%',
+    margin: `15px 15px`,
+    display: 'flex',
+    borderBottom: `1px solid ${Extend}22`,
+    paddingBottom: 5,
+    alignItems: 'center',
+  }),
 );
-const CaptionTitle = themed(
-  ({
-    colors: {
-      colors: { Extend },
-    },
-  }) =>
-    style({
-      marginRight: 10,
-      color: Extend,
-    }),
+const CaptionTitle = themed(({ colors: { Extend } }) =>
+  style({
+    marginRight: 10,
+    color: Extend,
+  }),
 );
 const NodeContainer = style({
   padding: 10,
@@ -46,28 +36,23 @@ const NodeContainer = style({
   height: '100%',
 });
 
-const ExtendButton = themed(
-  ({
-    colors: {
-      colors: { Extend },
-    },
-  }) =>
-    style({
-      position: 'relative',
-      borderColor: Extend,
-      borderWidth: 1,
-      borderStyle: 'solid',
-      padding: `5px 10px`,
-      borderRadius: 4,
-      width: 200,
-      cursor: 'pointer',
-      margin: 15,
-      display: 'flex',
-      alignItems: 'center',
-      transition: `border-color 0.25s ease-in-out`,
-    }),
+const ExtendButton = themed(({ colors: { Extend } }) =>
+  style({
+    position: 'relative',
+    borderColor: Extend,
+    borderWidth: 1,
+    borderStyle: 'solid',
+    padding: `5px 10px`,
+    borderRadius: 4,
+    width: 200,
+    cursor: 'pointer',
+    margin: 15,
+    display: 'flex',
+    alignItems: 'center',
+    transition: `border-color 0.25s ease-in-out`,
+  }),
 );
-const ExtendButtonTitle = themed(({ colors: { text } }) =>
+const ExtendButtonTitle = themed(({ text }) =>
   style({
     padding: `0 5px`,
     fontSize: 12,
@@ -80,7 +65,7 @@ const ExtendMenuContainer = style({
   top: 30,
   right: -70,
 });
-const PlusButton = themed(({ colors: { text, colors } }) =>
+const PlusButton = themed(({ text, colors }) =>
   style({
     marginLeft: 'auto',
     display: 'flex',

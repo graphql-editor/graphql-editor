@@ -37,22 +37,17 @@ const show = keyframes({
 });
 
 export interface RelationProps {}
-const Wrapper = themed(
-  ({
-    colors: {
-      background: { mainFar, mainClose, mainFurthest },
-    },
-  }) =>
-    style({
-      width: '100%',
-      height: '100%',
-      overflowX: 'hidden',
-      position: 'relative',
-      flex: 1,
-      background: mainFar,
-      overflowY: 'auto',
-      scrollbarColor: `${mainClose} ${mainFurthest}`,
-    }),
+const Wrapper = themed(({ background: { mainFar, mainClose, mainFurthest } }) =>
+  style({
+    width: '100%',
+    height: '100%',
+    overflowX: 'hidden',
+    position: 'relative',
+    flex: 1,
+    background: mainFar,
+    overflowY: 'auto',
+    scrollbarColor: `${mainClose} ${mainFurthest}`,
+  }),
 );
 const Main = style({
   width: '100%',
@@ -69,65 +64,47 @@ const Main = style({
   animationTimingFunction: 'ease-in-out',
   minHeight: '100%',
 });
-const ErrorContainer = themed(
-  ({
-    colors: {
-      error,
-      text,
-      background: { mainFurthest },
-    },
-  }) =>
-    style({
-      position: 'absolute',
-      zIndex: 2,
-      top: 0,
-      right: 0,
-      width: `calc(100% - 40px)`,
-      padding: 20,
-      margin: 20,
-      borderRadius: 4,
-      fontSize: 12,
-      fontFamily,
-      letterSpacing: 1,
-      color: text,
-      background: mainFurthest,
-      border: `1px solid ${error}`,
-    }),
+const ErrorContainer = themed(({ error, text, background: { mainFurthest } }) =>
+  style({
+    position: 'absolute',
+    zIndex: 2,
+    top: 0,
+    right: 0,
+    width: `calc(100% - 40px)`,
+    padding: 20,
+    margin: 20,
+    borderRadius: 4,
+    fontSize: 12,
+    fontFamily,
+    letterSpacing: 1,
+    color: text,
+    background: mainFurthest,
+    border: `1px solid ${error}`,
+  }),
 );
-const ErrorLock = themed(
-  ({
-    colors: {
-      background: { mainFurthest },
-    },
-  }) =>
-    style({
-      width: '100%',
-      height: '100%',
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      background: mainFurthest,
-      cursor: 'pointer',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-    }),
+const ErrorLock = themed(({ background: { mainFurthest } }) =>
+  style({
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    background: mainFurthest,
+    cursor: 'pointer',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  }),
 );
-const ErrorLockMessage = themed(
-  ({
-    colors: {
-      error,
-      background: { mainFurthest },
-    },
-  }) =>
-    style({
-      width: `clamp(200px, 50vw, 500px)`,
-      fontFamily,
-      fontSize: 14,
-      padding: 30,
-      color: error,
-      background: mainFurthest,
-    }),
+const ErrorLockMessage = themed(({ error, background: { mainFurthest } }) =>
+  style({
+    width: `clamp(200px, 50vw, 500px)`,
+    fontFamily,
+    fontSize: 14,
+    padding: 30,
+    color: error,
+    background: mainFurthest,
+  }),
 );
 const SearchContainer = style({
   position: 'fixed',
@@ -141,33 +118,26 @@ const SearchIcon = style({
   left: 6,
   zIndex: 200,
 });
-const SearchInput = themed(
-  ({
-    colors: {
-      text,
-      disabled,
-      background: { mainClose },
-    },
-  }) =>
-    style({
-      background: mainClose,
-      color: text,
-      border: 0,
-      width: '100%',
-      minWidth: 0,
-      height: 36,
-      padding: `0 12px`,
-      paddingLeft: 28,
-      fontSize: 14,
-      outline: 0,
-      position: 'relative',
-      userSelect: 'none',
-      $nest: {
-        '&::placeholder': {
-          color: disabled,
-        },
+const SearchInput = themed(({ text, disabled, background: { mainClose } }) =>
+  style({
+    background: mainClose,
+    color: text,
+    border: 0,
+    width: '100%',
+    minWidth: 0,
+    height: 36,
+    padding: `0 12px`,
+    paddingLeft: 28,
+    fontSize: 14,
+    outline: 0,
+    position: 'relative',
+    userSelect: 'none',
+    $nest: {
+      '&::placeholder': {
+        color: disabled,
       },
-    }),
+    },
+  }),
 );
 function insert<T>(arr: T[], index: number, before: T[], after: T[]) {
   return [

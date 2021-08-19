@@ -3,24 +3,18 @@ import { style } from 'typestyle';
 import { fontFamily } from '@/vars';
 import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
-const Input = themed(
-  ({
-    colors: {
-      background: { mainFurthest },
-      text,
-    },
-  }) =>
-    style({
-      border: 0,
-      background: `${mainFurthest}44`,
-      borderRadius: 4,
-      color: text,
-      minWidth: 30,
-      fontFamily: fontFamily,
-      fontSize: 10,
-      textAlign: 'center',
-      padding: `2px 0`,
-    }),
+const Input = themed(({ background: { mainFurthest }, text }) =>
+  style({
+    border: 0,
+    background: `${mainFurthest}44`,
+    borderRadius: 4,
+    color: text,
+    minWidth: 30,
+    fontFamily: fontFamily,
+    fontSize: 10,
+    textAlign: 'center',
+    padding: `2px 0`,
+  }),
 );
 interface EditableDefaultValueProps {
   value: string;

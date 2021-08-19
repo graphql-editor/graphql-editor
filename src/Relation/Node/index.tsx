@@ -13,13 +13,11 @@ import { themed } from '@/Theming/utils';
 const Content = themed(
   ({
     shadow,
-    colors: {
-      backgroundedText,
-      info,
-      backgrounds,
-      hover,
-      background: { mainFurther, mainFar },
-    },
+    backgroundedText,
+    info,
+    backgrounds,
+    hover,
+    background: { mainFurther, mainFar },
   }) =>
     style({
       padding: 20,

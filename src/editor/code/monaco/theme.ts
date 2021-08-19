@@ -2,7 +2,7 @@ import type * as monaco from 'monaco-editor';
 import { themed } from '@/Theming/utils';
 
 const rules = themed<monaco.editor.ITokenThemeRule[]>(
-  ({ colors: { colors, text, info, success, inactive } }) => [
+  ({ colors, text, info, success, inactive }) => [
     { token: 'keyword.gql', foreground: info },
     { token: 'type.identifier.gql', foreground: success },
     { token: 'key.identifier.gql', foreground: text },
@@ -26,12 +26,7 @@ const rules = themed<monaco.editor.ITokenThemeRule[]>(
 );
 
 const colors = themed<monaco.editor.IColors>(
-  ({
-    colors: {
-      background: { mainFurther, mainFurthest, success, error },
-      text,
-    },
-  }) => ({
+  ({ background: { mainFurther, mainFurthest, success, error }, text }) => ({
     'editor.foreground': text,
     'editor.background': mainFurthest,
     'minimap.background': mainFurther,

@@ -3,20 +3,14 @@ import React from 'react';
 import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
 
-const Main = themed(
-  ({
-    colors: {
-      text,
-      background: { mainFurthest, mainClose },
-    },
-  }) =>
-    style({
-      color: text,
-      maxHeight: 200,
-      overflowY: 'auto',
-      scrollbarColor: `${mainClose} ${mainFurthest}`,
-      scrollSnapType: 'y mandatory',
-    }),
+const Main = themed(({ text, background: { mainFurthest, mainClose } }) =>
+  style({
+    color: text,
+    maxHeight: 200,
+    overflowY: 'auto',
+    scrollbarColor: `${mainClose} ${mainFurthest}`,
+    scrollSnapType: 'y mandatory',
+  }),
 );
 
 export const MenuScrollingArea: React.FC<

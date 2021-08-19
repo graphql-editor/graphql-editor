@@ -8,7 +8,7 @@ import { GraphQLEditorDomStructure } from '@/domStructure';
 import { useTheme } from '@/state/containers';
 import { themed } from '@/Theming/utils';
 
-export const HiderPanel = themed(({ colors: { background, disabled } }) =>
+export const HiderPanel = themed(({ background, disabled }) =>
   style({
     width: menuWidth,
     background: background.mainFurthest,
@@ -19,7 +19,7 @@ export const HiderPanel = themed(({ colors: { background, disabled } }) =>
   }),
 );
 
-export const Hider = themed(({ colors: { text, hover } }) =>
+export const Hider = themed(({ text, hover }) =>
   style({
     width: 42,
     height: 42,

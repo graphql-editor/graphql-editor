@@ -5,7 +5,7 @@ import { FIELD_NAME_SIZE } from '@/Graf/constants';
 import cx from 'classnames';
 import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
-const Input = themed(({ colors: { text } }) =>
+const Input = themed(({ text }) =>
   style({
     border: 0,
     background: 'transparent',
@@ -16,7 +16,7 @@ const Input = themed(({ colors: { text } }) =>
     fontSize: FIELD_NAME_SIZE,
   }),
 );
-const InputIsError = themed(({ colors: { error } }) =>
+const InputIsError = themed(({ error }) =>
   style({
     color: error,
   }),

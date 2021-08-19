@@ -1,19 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { GraphQLEditor } from '@/index';
+import { DarkTheme, GraphQLEditor } from '@/index';
 import { PassedSchema } from '@/Models';
-import { DarkTheme } from '@/Theming/DarkTheme';
+import { LightTheme } from '@/Theming/LightTheme';
 import * as schemas from '../schema';
 
-export const SetSchema = () => {
+export const ThemeChange = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
-    code: '',
+    code: schemas.food,
     libraries: '',
   });
-  const [magicNumber, setMagicNumber] = useState(0);
+  const [t, setT] = useState(LightTheme);
   useEffect(() => {
-    setTimeout(() => {
-      setMagicNumber(100);
-    }, 2000);
+    setTimeout(() => setT(DarkTheme), 2000);
   }, []);
   return (
     <div
@@ -27,14 +25,9 @@ export const SetSchema = () => {
       }}
     >
       <GraphQLEditor
-        theme={DarkTheme}
+        theme={t}
         setSchema={(props) => {
-          console.log(props.code);
-          console.log(magicNumber);
-          setMySchema({
-            code: props.code,
-            libraries: props.libraries,
-          });
+          setMySchema(props);
         }}
         diffSchemas={{
           newSchema: { code: schemas.versionedUsersLibraryLatest },

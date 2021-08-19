@@ -13,33 +13,26 @@ interface MenuSearchProps {
   autoFocus?: boolean;
 }
 
-const Main = themed(
-  ({
-    colors: {
-      text,
-      disabled,
-      background: { mainFurther },
-    },
-  }) =>
-    style({
-      background: mainFurther,
-      borderRadius: 5,
-      color: text,
-      border: 0,
-      width: '100%',
-      minWidth: 0,
-      height: 36,
-      padding: `0 12px`,
-      paddingLeft: 28,
-      fontSize: 14,
-      outline: 0,
-      position: 'relative',
-      $nest: {
-        '&::placeholder': {
-          color: disabled,
-        },
+const Main = themed(({ text, disabled, background: { mainFurther } }) =>
+  style({
+    background: mainFurther,
+    borderRadius: 5,
+    color: text,
+    border: 0,
+    width: '100%',
+    minWidth: 0,
+    height: 36,
+    padding: `0 12px`,
+    paddingLeft: 28,
+    fontSize: 14,
+    outline: 0,
+    position: 'relative',
+    $nest: {
+      '&::placeholder': {
+        color: disabled,
       },
-    }),
+    },
+  }),
 );
 
 const SearchIconContainer = style({

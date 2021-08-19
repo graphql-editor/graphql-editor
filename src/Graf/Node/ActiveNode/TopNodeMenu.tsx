@@ -47,9 +47,7 @@ export const TopNodeMenu: React.FC<{
 }> = ({ node, onDelete, onDuplicate }) => {
   const { tree, setTree, setSelectedNode } = useTreesState();
   const [menuOpen, setMenuOpen] = useState<PossibleMenus>();
-  const {
-    theme: { colors },
-  } = useTheme();
+  const { theme } = useTheme();
 
   const hideMenu = () => {
     setMenuOpen(undefined);
@@ -68,7 +66,7 @@ export const TopNodeMenu: React.FC<{
             title="Click to add field"
           >
             <Plus
-              fill={menuOpen === 'field' ? colors.success : colors.text}
+              fill={menuOpen === 'field' ? theme.success : theme.text}
               height={ICON_SIZE}
               width={ICON_SIZE}
             />
@@ -117,7 +115,7 @@ export const TopNodeMenu: React.FC<{
             title="Click to implement interface"
           >
             <Interface
-              fill={menuOpen === 'interface' ? colors.success : colors.text}
+              fill={menuOpen === 'interface' ? theme.success : theme.text}
               height={ICON_SIZE}
               width={ICON_SIZE}
             />
@@ -139,7 +137,7 @@ export const TopNodeMenu: React.FC<{
           title="Click to add directive"
         >
           <Monkey
-            fill={menuOpen === 'directive' ? colors.success : colors.text}
+            fill={menuOpen === 'directive' ? theme.success : theme.text}
             height={ICON_SIZE}
             width={ICON_SIZE}
           />
@@ -171,7 +169,7 @@ export const TopNodeMenu: React.FC<{
             <Tick
               height={ICON_SIZE}
               width={ICON_SIZE}
-              fill={menuOpen === 'operations' ? colors.success : colors.text}
+              fill={menuOpen === 'operations' ? theme.success : theme.text}
             />
             {menuOpen === 'operations' && (
               <div className={NodeMenuContainer}>
@@ -190,7 +188,7 @@ export const TopNodeMenu: React.FC<{
         title="Click to see node actions"
       >
         <More
-          fill={menuOpen === 'options' ? colors.success : colors.text}
+          fill={menuOpen === 'options' ? theme.success : theme.text}
           height={ICON_SIZE}
           width={ICON_SIZE}
         />

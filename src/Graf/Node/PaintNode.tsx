@@ -14,7 +14,7 @@ export interface NodeProps {
   subNode?: boolean;
 }
 const MainNodeArea = themed(
-  ({ colors: { backgroundedText } }) =>
+  ({ backgroundedText }) =>
     ({
       position: 'relative',
       borderColor: 'transparent',
@@ -42,9 +42,9 @@ const LibraryNodeContainer = themed((theme) =>
     ...MainNodeArea(theme),
     $nest: {
       ...MainNodeArea(theme).$nest,
-      ...Object.keys(theme.colors.backgrounds).reduce((a, b) => {
+      ...Object.keys(theme.backgrounds).reduce((a, b) => {
         a[`&.NodeType-${b}`] = {
-          borderColor: `${(theme.colors.backgrounds as any)[b]}`,
+          borderColor: `${(theme.backgrounds as any)[b]}`,
           borderStyle: 'dashed',
         };
         return a;
@@ -57,9 +57,9 @@ const MainNodeContainer = themed((theme) =>
     ...MainNodeArea(theme),
     $nest: {
       ...MainNodeArea(theme).$nest,
-      ...Object.keys(theme.colors.backgrounds).reduce((a, b) => {
+      ...Object.keys(theme.backgrounds).reduce((a, b) => {
         a[`&.NodeType-${b}`] = {
-          background: `${(theme.colors.backgrounds as any)[b]}`,
+          background: `${(theme.backgrounds as any)[b]}`,
         };
         return a;
       }, {} as Record<string, NestedCSSProperties>),
