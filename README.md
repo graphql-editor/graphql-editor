@@ -41,7 +41,7 @@ To use standalone you have to use webpack right now. If you want to use it witho
 Install dependencies
 
 ```
-npm i react react-dom monaco-editor
+npm i react react-dom monaco-editor @monaco-editor/react
 ```
 
 ```

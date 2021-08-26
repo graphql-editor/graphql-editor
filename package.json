@@ -1,6 +1,6 @@
 {
   "name": "graphql-editor",
-  "version": "5.0.5",
+  "version": "5.0.6",
   "private": false,
   "license": "MIT",
   "description": "Visual node editor for GraphQL",
@@ -88,7 +88,8 @@
     "worker-loader": ">=2.0.0",
     "file-loader": ">=5.0.2",
     "css-loader": ">=2.1.1",
-    "monaco-editor": ">=0.25.0"
+    "monaco-editor": ">=0.25.0",
+    "@monaco-editor/react": ">=4.2.2"
   },
   "dependencies": {
     "classnames": "^2.2.5",
