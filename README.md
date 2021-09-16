@@ -45,7 +45,7 @@ npm i react react-dom monaco-editor @monaco-editor/react
 ```
 
 ```
-npm i -D worker-loader css-loader file-loader
+npm i -D worker-loader css-loader file-loader webpack
 ```
 
 ```

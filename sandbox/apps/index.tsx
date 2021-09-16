@@ -1,3 +1,4 @@
+export * from './error';
 export * from './Pure';
 export * from './SetSchema';
 export * from './withSchema';

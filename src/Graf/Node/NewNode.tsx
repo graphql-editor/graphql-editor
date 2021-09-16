@@ -11,7 +11,7 @@ import { useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 export interface NewNodeProps {
   node: ParserField;
-  onCreate: (name: string) => void;
+  onCreate: (name: string) => ParserField;
 }
 const NameError = themed<NestedCSSProperties>(({ error }) => ({
   color: error,
@@ -107,7 +107,7 @@ export const NewNode: React.FC<NewNodeProps> = ({ node, onCreate }) => {
     libraryTree.nodes.map((n) => n.name).includes(newName);
   const submit = () => {
     if (newName && !isError) {
-      onCreate(newName);
+      setSelectedNode(onCreate(newName));
     }
     setNewName('');
     setIsCreating(false);

@@ -88,7 +88,7 @@ export const Editor = ({
     initialSizeOfSidebar,
   );
   const { menuState, setMenuState } = useNavigationState();
-  const { grafErrors, setGrafErrors, setLockGraf, setCodeErrors } =
+  const { grafErrors, setGrafErrors, setLockGraf, setCodeErrors, setLockCode } =
     useErrorsState();
 
   const {
@@ -126,6 +126,7 @@ export const Editor = ({
       if (graphql !== schema.code || (grafErrors?.length || 0) > 0) {
         Workers.validate(graphql, schema.libraries).then((errors) => {
           if (errors.length > 0) {
+            setLockCode(true);
             const mapErrors = errors.map((e) => e.text);
             setGrafErrors(
               [...mapErrors.filter((e, i) => mapErrors.indexOf(e) === i)].join(
@@ -134,12 +135,14 @@ export const Editor = ({
             );
             return;
           }
+          setLockCode(false);
           setGrafErrors(undefined);
           setSchema({ ...schema, code: graphql });
         });
       }
     } catch (error) {
-      setGrafErrors(error.message);
+      setLockCode(true);
+      setGrafErrors((error as any).message);
       return;
     }
   };
@@ -165,6 +168,10 @@ export const Editor = ({
         const parsedCode = Parser.parse(schema.code);
         setTree(parsedCode);
       }
+      Workers.validate(schema.code, schema.libraries).then((errors) => {
+        setCodeErrors(errors);
+        setLockGraf(!!errors.length);
+      });
       setLockGraf(false);
     } catch (error) {
       Workers.validate(schema.code, schema.libraries).then((errors) => {

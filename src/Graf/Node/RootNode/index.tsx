@@ -85,29 +85,30 @@ export const RootNode: React.FC<RootNodeProps> = ({
         <NewNode
           node={node}
           onCreate={(name) => {
-            if (node.data.type === TypeSystemDefinition.DirectiveDefinition) {
-              tree.nodes.push({
-                ...node,
-                name,
-                args: [],
-                type: {
-                  name: TypeDefinitionDisplayMap[node.data.type],
-                  directiveOptions: [Directive.OBJECT],
-                },
-              });
-            } else {
-              tree.nodes.push({
-                ...node,
-                name,
-                args: [],
-                type: {
-                  name: (TypeDefinitionDisplayMap as any)[
-                    node.data.type as any
-                  ],
-                },
-              });
-            }
+            const createdNode =
+              node.data.type === TypeSystemDefinition.DirectiveDefinition
+                ? {
+                    ...node,
+                    name,
+                    args: [],
+                    type: {
+                      name: TypeDefinitionDisplayMap[node.data.type],
+                      directiveOptions: [Directive.OBJECT],
+                    },
+                  }
+                : {
+                    ...node,
+                    name,
+                    args: [],
+                    type: {
+                      name: (TypeDefinitionDisplayMap as any)[
+                        node.data.type as any
+                      ],
+                    },
+                  };
+            tree.nodes.push(createdNode);
             setTree({ ...tree });
+            return createdNode;
           }}
         />
       )}
