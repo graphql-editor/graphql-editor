@@ -8,7 +8,7 @@ import { PassedSchema, Theming } from '@/Models';
 import { DynamicResize } from './code/Components';
 import { Graf } from '@/Graf/Graf';
 import { Hierarchy } from '@/Hierarchy';
-import { Parser, TreeToGraphQL } from 'graphql-js-tree';
+import { Parser, ParserTree, TreeToGraphQL } from 'graphql-js-tree';
 import { Workers } from '@/worker';
 import { style } from 'typestyle';
 import { useTreesState } from '@/state/containers/trees';
@@ -63,6 +63,7 @@ export interface EditorProps extends Theming {
   };
   onPaneChange?: (pane: ActivePane) => void;
   setSchema: (props: PassedSchema, isInvalid?: boolean) => void;
+  onTreeChange?: (tree: ParserTree) => void;
   theme?: EditorTheme;
 }
 
@@ -81,6 +82,7 @@ export const Editor = ({
   onPaneChange,
   setSchema,
   diffSchemas,
+  onTreeChange,
   theme = DarkTheme,
 }: EditorProps) => {
   const { theme: currentTheme, setTheme } = useTheme();
@@ -214,6 +216,7 @@ export const Editor = ({
     generateTreeFromSchema();
   }, [schema.code]);
   useEffect(() => {
+    onTreeChange?.(tree);
     if (isTreeInitial) {
       setIsTreeInitial(false);
       return;
