@@ -23,6 +23,7 @@ import { Search } from '@/Graf/icons';
 import { LevenshteinDistance } from '@/search';
 import { Lines, RelationPath } from '@/Relation/Lines';
 import { themed } from '@/Theming/utils';
+import { ErrorLock } from '@/shared/components';
 
 const show = keyframes({
   ['0%']: {
@@ -80,30 +81,6 @@ const ErrorContainer = themed(({ error, text, background: { mainFurthest } }) =>
     color: text,
     background: mainFurthest,
     border: `1px solid ${error}`,
-  }),
-);
-const ErrorLock = themed(({ background: { mainFurthest } }) =>
-  style({
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    background: mainFurthest,
-    cursor: 'pointer',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  }),
-);
-const ErrorLockMessage = themed(({ error, background: { mainFurthest } }) =>
-  style({
-    width: `clamp(200px, 50vw, 500px)`,
-    fontFamily,
-    fontSize: 14,
-    padding: 30,
-    color: error,
-    background: mainFurthest,
   }),
 );
 const SearchContainer = style({
@@ -381,16 +358,13 @@ export const Relation: React.FC<RelationProps> = () => {
           {!lockGraf && NodesContainer}
         </div>
         {lockGraf && (
-          <div
-            className={ErrorLock(theme)}
+          <ErrorLock
             onClick={() => {
               setMenuState('code-diagram');
             }}
           >
-            <div
-              className={ErrorLockMessage(theme)}
-            >{`Unable to parse GraphQL code. Relation editor is locked. Open "<>" code editor to correct errors in GraphQL Schema`}</div>
-          </div>
+            {`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:\n${lockGraf}`}
+          </ErrorLock>
         )}
 
         {grafErrors && (

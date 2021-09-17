@@ -13,7 +13,6 @@ import { GraphQLEditorDomStructure } from '@/domStructure';
 import { SchemaEditorApi, SchemaEditor } from '@/editor/code/guild';
 import { theme as MonacoTheme } from '@/editor/code/monaco';
 import { themed } from '@/Theming/utils';
-import { darken, toHex } from 'color2k';
 import { style } from 'typestyle';
 
 export interface CodePaneOuterProps {
@@ -24,32 +23,23 @@ export interface CodePaneOuterProps {
 export type CodePaneProps = {
   size: number | string;
   schema: string;
-  onChange: (v: string, isInvalid?: boolean) => void;
+  onChange: (v: string, isInvalid?: string) => void;
   libraries?: string;
 } & CodePaneOuterProps;
 
-const ErrorLock = themed(({ background: { mainFurthest } }) =>
+const ErrorLock = themed(({ error, background: { mainFurthest } }) =>
   style({
     width: '100%',
     height: '100%',
     position: 'absolute',
     top: 0,
     left: 0,
-    background: `${toHex(darken(mainFurthest, 0.9))}99`,
+    background: mainFurthest,
     cursor: 'pointer',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  }),
-);
-const ErrorLockMessage = themed(({ error, background: { mainFurthest } }) =>
-  style({
-    width: `clamp(200px, 50vw, 500px)`,
+    color: error,
     fontFamily,
     fontSize: 14,
     padding: 30,
-    color: error,
-    background: mainFurthest,
   }),
 );
 /**
@@ -105,11 +95,7 @@ export const CodePane = (props: CodePaneProps) => {
           onClick={() => {
             setMenuState('code-diagram');
           }}
-        >
-          <div
-            className={ErrorLockMessage(theme)}
-          >{`Unable to parse GraphQL graph. Code editor is locked. Open graph editor to correct errors in GraphQL Schema`}</div>
-        </div>
+        >{`Unable to parse GraphQL graph. Code editor is locked. Open graph editor to correct errors in GraphQL Schema. Message:\n${lockCode}`}</div>
       )}
     </div>
   );

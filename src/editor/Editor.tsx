@@ -126,23 +126,23 @@ export const Editor = ({
       if (graphql !== schema.code || (grafErrors?.length || 0) > 0) {
         Workers.validate(graphql, schema.libraries).then((errors) => {
           if (errors.length > 0) {
-            setLockCode(true);
             const mapErrors = errors.map((e) => e.text);
-            setGrafErrors(
-              [...mapErrors.filter((e, i) => mapErrors.indexOf(e) === i)].join(
-                '\n\n',
-              ),
-            );
+            const msg = [
+              ...mapErrors.filter((e, i) => mapErrors.indexOf(e) === i),
+            ].join('\n\n');
+            setGrafErrors(msg);
+            setLockCode(msg);
             return;
           }
-          setLockCode(false);
+          setLockCode(undefined);
           setGrafErrors(undefined);
           setSchema({ ...schema, code: graphql });
         });
       }
     } catch (error) {
-      setLockCode(true);
-      setGrafErrors((error as any).message);
+      const msg = (error as any).message;
+      setLockCode(msg);
+      setGrafErrors(msg);
       return;
     }
   };
@@ -169,14 +169,15 @@ export const Editor = ({
         setTree(parsedCode);
       }
       Workers.validate(schema.code, schema.libraries).then((errors) => {
+        console.log(errors);
         setCodeErrors(errors);
-        setLockGraf(!!errors.length);
+        setLockGraf(errors.map((e) => JSON.stringify(e, null, 4)).join('\n'));
       });
-      setLockGraf(false);
+      setLockGraf(undefined);
     } catch (error) {
       Workers.validate(schema.code, schema.libraries).then((errors) => {
         setCodeErrors(errors);
-        setLockGraf(!!errors.length);
+        setLockGraf(errors.map((e) => JSON.stringify(e, null, 4)).join('\n'));
       });
     }
   };
@@ -267,11 +268,11 @@ export const Editor = ({
                 onChange={(v, isInvalid) => {
                   if (isInvalid) {
                     stopCodeFromTreeGeneration = true;
-                    setLockGraf(true);
+                    setLockGraf(isInvalid);
                   } else {
                     stopCodeFromTreeGeneration = false;
                   }
-                  setSchema({ ...schema, code: v }, isInvalid);
+                  setSchema({ ...schema, code: v }, !!isInvalid);
                 }}
                 schema={schema.code}
                 libraries={schema.libraries}

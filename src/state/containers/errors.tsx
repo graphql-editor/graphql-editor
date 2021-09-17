@@ -4,8 +4,8 @@ import { EditorError } from '@/validation';
 const useErrorsStateContainer = createContainer(() => {
   const [codeErrors, setCodeErrors] = useState<EditorError[]>([]);
   const [grafErrors, setGrafErrors] = useState<string>();
-  const [lockGraf, setLockGraf] = useState<boolean>(false);
-  const [lockCode, setLockCode] = useState<boolean>(false);
+  const [lockGraf, setLockGraf] = useState<string>();
+  const [lockCode, setLockCode] = useState<string>();
   return {
     codeErrors,
     setCodeErrors,

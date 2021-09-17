@@ -14,6 +14,7 @@ import {
 import { themed } from '@/Theming/utils';
 import { darken, toHex } from 'color2k';
 import { GraphQLEditorDomStructure } from '@/domStructure';
+import { ErrorLock } from '@/shared/components';
 
 export interface GrafProps {}
 
@@ -55,30 +56,6 @@ const ErrorContainer = themed(({ error, hover }) =>
     color: hover,
     background: `${toHex(darken(error, 0.6))}ee`,
     border: `1px solid ${error}`,
-  }),
-);
-const ErrorLock = themed(({ background: { mainFurthest } }) =>
-  style({
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    background: `${toHex(darken(mainFurthest, 0.9))}99`,
-    cursor: 'pointer',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  }),
-);
-const ErrorLockMessage = themed(({ error, background: { mainFurthest } }) =>
-  style({
-    width: `clamp(200px, 50vw, 500px)`,
-    fontFamily,
-    fontSize: 14,
-    padding: 30,
-    color: error,
-    background: mainFurthest,
   }),
 );
 const SubNodeContainer = themed(
@@ -196,16 +173,13 @@ export const Graf: React.FC<GrafProps> = () => {
       >
         <div className={Main(theme)}>{!lockGraf && <PaintNodes />}</div>
         {lockGraf && (
-          <div
-            className={ErrorLock(theme)}
+          <ErrorLock
             onClick={() => {
               setMenuState('code-diagram');
             }}
           >
-            <div
-              className={ErrorLockMessage(theme)}
-            >{`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema`}</div>
-          </div>
+            {`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:\n${lockGraf}`}
+          </ErrorLock>
         )}
 
         {grafErrors && (
