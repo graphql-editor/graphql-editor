@@ -20,7 +20,7 @@ import {
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { DiffEditor } from '@/DiffEditor';
 import { Relation } from '@/Relation/Relation';
-import { DarkTheme, EditorTheme } from '@/Theming/DarkTheme';
+import { DarkTheme, EditorTheme } from '@/gshared/theme/DarkTheme';
 
 export const Main = style({
   display: 'flex',

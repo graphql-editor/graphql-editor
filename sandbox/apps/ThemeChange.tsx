@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { DarkTheme, GraphQLEditor } from '@/index';
+import { DarkTheme, GraphQLEditor, LightTheme } from '@/index';
 import { PassedSchema } from '@/Models';
-import { LightTheme } from '@/Theming/LightTheme';
 import * as schemas from '../schema';
 
 export const ThemeChange = () => {

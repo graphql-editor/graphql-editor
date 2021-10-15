@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { GraphQLEditor } from '@/index';
+import { GraphQLEditor, DarkTheme } from '@/index';
 import { PassedSchema } from '@/Models';
-import { DarkTheme } from '@/Theming/DarkTheme';
 import * as schemas from '../schema';
 
 export const error = () => {

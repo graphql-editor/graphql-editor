@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { GraphQLEditor } from '@/index';
+import { GraphQLEditor, LightTheme } from '@/index';
 import { PassedSchema } from '@/Models';
-import { LightTheme } from '@/Theming/LightTheme';
 import * as schemas from '../schema';
 
 export const Light = () => {

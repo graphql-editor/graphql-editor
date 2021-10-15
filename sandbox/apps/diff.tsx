@@ -1,6 +1,5 @@
 import React from 'react';
-import { GraphQLEditor } from '@/index';
-import { DarkTheme } from '@/Theming/DarkTheme';
+import { GraphQLEditor, DarkTheme } from '@/index';
 import * as schemas from '../schema';
 
 export const diff = () => {

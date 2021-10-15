@@ -19,7 +19,7 @@ export const HiderPanel = themed(({ background, disabled }) =>
   }),
 );
 
-export const Hider = themed(({ text, hover }) =>
+export const Hider = themed(({ active }) =>
   style({
     width: 42,
     height: 42,
@@ -30,10 +30,10 @@ export const Hider = themed(({ text, hover }) =>
     cursor: 'pointer',
     $nest: {
       '&:hover': {
-        color: hover,
+        color: active,
       },
       '&.active': {
-        color: hover,
+        color: active,
       },
     },
   }),

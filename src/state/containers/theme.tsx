@@ -1,6 +1,7 @@
 import { createContainer } from 'unstated-next';
 import { useState } from 'react';
-import { DarkTheme, EditorTheme } from '@/Theming/DarkTheme';
+import { EditorTheme } from '@/gshared/theme/DarkTheme';
+import { DarkTheme } from '@/index';
 const useThemeContainer = createContainer((theme: EditorTheme = DarkTheme) => {
   const [currentTheme, setCurrentTheme] = useState(theme);
   return {

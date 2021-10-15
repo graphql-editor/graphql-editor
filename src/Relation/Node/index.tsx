@@ -5,7 +5,6 @@ import { useTheme, useTreesState } from '@/state/containers';
 import { ParserField, TypeDefinition } from 'graphql-js-tree';
 import React, { useMemo, useState } from 'react';
 import { style } from 'typestyle';
-import { NestedCSSProperties } from 'typestyle/lib/types';
 import { Field } from '../Field';
 import * as Icons from '@/editor/icons';
 import { themed } from '@/Theming/utils';
@@ -15,14 +14,15 @@ const Content = themed(
     shadow,
     backgroundedText,
     info,
-    backgrounds,
     hover,
-    background: { mainFurther, mainFar },
+    background: { mainFurther, mainFar, mainMiddle },
   }) =>
     style({
+      background: mainMiddle,
       padding: 20,
       margin: 20,
       textOverflow: 'elipssis',
+      borderRadius: 10,
       overflowY: 'hidden',
       border: `solid 1px ${hover}00`,
       transition: '.25s all ease-in-out',
@@ -90,12 +90,6 @@ const Content = themed(
             '.NodeType': {
               opacity: 0.25,
             },
-            ...Object.keys(backgrounds).reduce((a, b) => {
-              a[`&.NodeBackground-${b}`] = {
-                background: `${(backgrounds as any)[b]}11`,
-              };
-              return a;
-            }, {} as Record<string, NestedCSSProperties>),
           },
         },
         '&.Active': {
@@ -113,12 +107,6 @@ const Content = themed(
             },
           },
         },
-        ...Object.keys(backgrounds).reduce((a, b) => {
-          a[`&.NodeBackground-${b}`] = {
-            background: (backgrounds as any)[b],
-          };
-          return a;
-        }, {} as Record<string, NestedCSSProperties>),
       },
     }),
 );
@@ -227,10 +215,8 @@ export const Node: React.FC<NodeProps> = ({ field, setRef, fade, focus }) => {
         setSelectedNode(field);
       }}
       className={
-        Content(theme) +
-        ` NodeBackground-${field.type.name} ${
-          fade ? 'Fade' : typeof fade === 'undefined' ? '' : 'Active'
-        }` +
+        `${Content(theme)} ` +
+        `${fade ? 'Fade' : typeof fade === 'undefined' ? '' : 'Active'}` +
         (selectedNode === field ? ` Selected` : '')
       }
     >

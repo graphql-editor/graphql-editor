@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { GraphQLEditor } from '@/index';
 import { PassedSchema } from '@/Models';
-import { DarkTheme } from '@/Theming/DarkTheme';
 import * as schemas from '../schema';
+import { GraphQLEditor, DarkTheme } from '@/index';
 
 export const withSchema = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
