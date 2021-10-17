@@ -3,12 +3,7 @@ import React, { useEffect, useMemo } from 'react';
 import * as styles from './style/Code';
 import { settings } from './monaco';
 import { fontFamily } from '@/vars';
-import {
-  useErrorsState,
-  useNavigationState,
-  useTheme,
-  useTreesState,
-} from '@/state/containers';
+import { useErrorsState, useTheme, useTreesState } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { SchemaEditorApi, SchemaEditor } from '@/editor/code/guild';
 import { theme as MonacoTheme } from '@/editor/code/monaco';
@@ -49,7 +44,6 @@ export const CodePane = (props: CodePaneProps) => {
   const { schema, readonly, onChange, libraries } = props;
   const { theme } = useTheme();
   const { selectedNode } = useTreesState();
-  const { setMenuState } = useNavigationState();
   const { lockCode } = useErrorsState();
 
   const ref: React.ForwardedRef<SchemaEditorApi> = React.createRef();
@@ -92,9 +86,7 @@ export const CodePane = (props: CodePaneProps) => {
       {lockCode && (
         <div
           className={ErrorLock(theme)}
-          onClick={() => {
-            setMenuState('code-diagram');
-          }}
+          onClick={() => {}}
         >{`Unable to parse GraphQL graph. Code editor is locked. Open graph editor to correct errors in GraphQL Schema. Message:\n${lockCode}`}</div>
       )}
     </div>

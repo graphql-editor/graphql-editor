@@ -85,7 +85,8 @@ const Content = themed(
               opacity: 0.25,
             },
             '.NodeTitle': {
-              color: mainFar,
+              color: backgroundedText,
+              opacity: 0.5,
             },
             '.NodeType': {
               opacity: 0.25,

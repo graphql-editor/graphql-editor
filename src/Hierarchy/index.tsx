@@ -11,7 +11,7 @@ const Main = style({
 });
 
 export const Hierarchy = () => {
-  const { tree, libraryTree } = useTreesState();
+  const { tree, libraryTree, selectedNode, setSelectedNode } = useTreesState();
   const [hierarchy, setHierarchy] = useState<DiagramEngine>();
 
   const diagramRef = useRef<HTMLDivElement>(null);
@@ -24,11 +24,26 @@ export const Hierarchy = () => {
   }, []);
 
   useEffect(() => {
+    if (hierarchy && selectedNode) {
+      hierarchy.eventBus.publish('RequestNodeSelect', {
+        fn: (n) => n.name === selectedNode.name,
+      });
+    }
+  }, [selectedNode, hierarchy]);
+
+  useEffect(() => {
     if (hierarchy && tree && libraryTree) {
       const tr = TreeToNodes.resolveTree({
         nodes: [...tree.nodes, ...libraryTree.nodes],
       });
       hierarchy.setNodes(tr.nodes);
+      hierarchy.eventBus.subscribe('NodeSelected', (e) => {
+        setSelectedNode(
+          e.selectedNodes.length > 0
+            ? tree.nodes.find((tn) => tn.name === e.selectedNodes[0].name)
+            : undefined,
+        );
+      });
     }
   }, [tree, hierarchy, libraryTree]);
 

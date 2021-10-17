@@ -89,7 +89,7 @@ export const Graf: React.FC<GrafProps> = () => {
     readonly,
   } = useTreesState();
   const { lockGraf, grafErrors } = useErrorsState();
-  const { setMenuState } = useNavigationState();
+  const { setToggleCode } = useNavigationState();
   const { setActions } = useIOState();
   const { theme } = useTheme();
 
@@ -175,7 +175,7 @@ export const Graf: React.FC<GrafProps> = () => {
         {lockGraf && (
           <ErrorLock
             onClick={() => {
-              setMenuState('code-diagram');
+              setToggleCode(true);
             }}
           >
             {`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:\n${lockGraf}`}

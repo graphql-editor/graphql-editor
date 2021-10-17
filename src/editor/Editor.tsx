@@ -61,7 +61,7 @@ export interface EditorProps extends Theming {
     oldSchema: PassedSchema;
     newSchema: PassedSchema;
   };
-  onPaneChange?: (pane: ActivePane) => void;
+  onPaneChange?: (pane?: ActivePane) => void;
   setSchema: (props: PassedSchema, isInvalid?: boolean) => void;
   onTreeChange?: (tree: ParserTree) => void;
   theme?: EditorTheme;
@@ -78,7 +78,7 @@ export const Editor = ({
     libraries: '',
   },
   initialSizeOfSidebar = sizeSidebar,
-  activePane = 'code-diagram',
+  activePane = 'relation',
   onPaneChange,
   setSchema,
   diffSchemas,
@@ -89,7 +89,8 @@ export const Editor = ({
   const [sidebarSize, setSidebarSize] = useState<string | number>(
     initialSizeOfSidebar,
   );
-  const { menuState, setMenuState } = useNavigationState();
+  const { menuState, setMenuState, setToggleCode, toggleCode } =
+    useNavigationState();
   const { grafErrors, setGrafErrors, setLockGraf, setCodeErrors, setLockCode } =
     useErrorsState();
 
@@ -239,35 +240,38 @@ export const Editor = ({
       }}
     >
       <Menu
+        toggleCode={toggleCode}
+        setToggleCode={(e) => setToggleCode(!menuState ? true : e)}
         activePane={menuState}
         excludePanes={diffSchemas ? undefined : ['diff']}
-        setActivePane={(pane) => {
+        setActivePane={(p) => {
+          const pane = p === menuState ? (toggleCode ? undefined : p) : p;
           setMenuState(pane);
           if (onPaneChange) {
             onPaneChange(pane);
           }
         }}
       />
-      {(menuState === 'code' || menuState === 'code-diagram') && (
+      {toggleCode && menuState !== 'diff' && (
         <DynamicResize
-          disabledClass={menuState === 'code' ? FullScreenContainer : undefined}
+          disabledClass={!menuState ? FullScreenContainer : undefined}
           resizeCallback={(e, r, c, w) => {
             setSidebarSize(c.getBoundingClientRect().width);
           }}
-          width={menuState === 'code' ? '100%' : sidebarSize}
+          width={!menuState ? '100%' : sidebarSize}
         >
           <div
             className={cx(Sidebar, {
-              [FullScreenContainer]: menuState === 'code',
+              [FullScreenContainer]: !menuState,
             })}
             data-cy={GraphQLEditorDomStructure.tree.sidebar.name}
             style={{
               background: currentTheme.background.mainFurthest,
             }}
           >
-            {(menuState === 'code' || menuState === 'code-diagram') && (
+            {toggleCode && (
               <CodePane
-                size={menuState === 'code' ? 100000 : sidebarSize}
+                size={!menuState ? 100000 : sidebarSize}
                 onChange={(v, isInvalid) => {
                   if (isInvalid) {
                     stopCodeFromTreeGeneration = true;
@@ -286,7 +290,7 @@ export const Editor = ({
           </div>
         </DynamicResize>
       )}
-      {(menuState === 'diagram' || menuState === 'code-diagram') && (
+      {menuState === 'diagram' && (
         <div className={ErrorOuterContainer}>
           <Graf />
         </div>

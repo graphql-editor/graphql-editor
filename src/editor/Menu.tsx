@@ -39,15 +39,11 @@ export const Hider = themed(({ active }) =>
   }),
 );
 
-export type ActivePane =
-  | 'code'
-  | 'diagram'
-  | 'code-diagram'
-  | 'hierarchy'
-  | 'diff'
-  | 'relation';
+export type ActivePane = 'diagram' | 'hierarchy' | 'diff' | 'relation';
 export interface MenuProps {
-  activePane: ActivePane;
+  setToggleCode: (v: boolean) => void;
+  toggleCode: boolean;
+  activePane?: ActivePane;
   excludePanes?: ActivePane[];
   setActivePane: (pane: ActivePane) => void;
 }
@@ -55,6 +51,8 @@ export interface MenuProps {
 const MenuChildren = GraphQLEditorDomStructure.tree.sidebar.menu.children;
 
 export const Menu = ({
+  toggleCode,
+  setToggleCode,
   setActivePane,
   activePane,
   excludePanes = [],
@@ -62,6 +60,28 @@ export const Menu = ({
   const { theme } = useTheme();
   return (
     <div className={HiderPanel(theme)}>
+      <div
+        data-cy={MenuChildren.code}
+        className={cx(Hider(theme), {
+          active: toggleCode,
+        })}
+        onClick={() => setToggleCode(!toggleCode)}
+        title="Toggle Code"
+      >
+        <Icons.Code size={18} />
+      </div>
+      {!excludePanes.includes('relation') && (
+        <div
+          data-cy={MenuChildren.relation}
+          className={cx(Hider(theme), {
+            active: activePane === 'relation',
+          })}
+          onClick={() => setActivePane('relation')}
+          title="Relation View"
+        >
+          <Icons.CPU size={18} />
+        </div>
+      )}
       {!excludePanes.includes('diagram') && (
         <div
           data-cy={MenuChildren.diagram}
@@ -71,31 +91,7 @@ export const Menu = ({
           onClick={() => setActivePane('diagram')}
           title="Diagram View"
         >
-          <Icons.Eye size={18} />
-        </div>
-      )}
-      {!excludePanes.includes('code-diagram') && (
-        <div
-          data-cy={MenuChildren.codeDiagram}
-          className={cx(Hider(theme), {
-            active: activePane === 'code-diagram',
-          })}
-          onClick={() => setActivePane('code-diagram')}
-          title="Code and Diagram View"
-        >
-          <Icons.Code size={18} />
-        </div>
-      )}
-      {!excludePanes.includes('code') && (
-        <div
-          data-cy={MenuChildren.code}
-          className={cx(Hider(theme), {
-            active: activePane === 'code',
-          })}
-          onClick={() => setActivePane('code')}
-          title="Code View"
-        >
-          <Icons.FullScreen size={18} />
+          <Icons.Grid size={18} />
         </div>
       )}
       {!excludePanes.includes('hierarchy') && (
@@ -120,18 +116,6 @@ export const Menu = ({
           title="Diff View"
         >
           <Icons.Filter size={18} />
-        </div>
-      )}
-      {!excludePanes.includes('relation') && (
-        <div
-          data-cy={MenuChildren.relation}
-          className={cx(Hider(theme), {
-            active: activePane === 'relation',
-          })}
-          onClick={() => setActivePane('relation')}
-          title="Relation View"
-        >
-          <Icons.Play size={18} />
         </div>
       )}
     </div>
