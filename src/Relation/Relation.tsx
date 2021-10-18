@@ -132,7 +132,7 @@ export const Relation: React.FC<RelationProps> = () => {
   const [focusedNode, setFocusedNode] = useState<ParserField>();
   const { libraryTree, tree, selectedNode, setSelectedNode } = useTreesState();
   const { lockGraf, grafErrors } = useErrorsState();
-  const { menuState, setToggleCode } = useNavigationState();
+  const { menuState, setMenuState } = useNavigationState();
   const { setActions } = useIOState();
   const [currentNodes, setCurrentNodes] = useState<ParserField[]>(
     sortByConnection(tree.nodes.concat(libraryTree.nodes)),
@@ -149,7 +149,6 @@ export const Relation: React.FC<RelationProps> = () => {
 
   useEffect(() => {
     tRefs = {};
-    setSelectedNode(undefined);
     setFocusedNode(undefined);
     const current = sortByConnection(tree.nodes.concat(libraryTree.nodes));
     setCurrentNodes(current);
@@ -360,7 +359,7 @@ export const Relation: React.FC<RelationProps> = () => {
         {lockGraf && (
           <ErrorLock
             onClick={() => {
-              setToggleCode(true);
+              setMenuState((ms) => ({ ...ms, code: true }));
             }}
           >
             {`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:\n${lockGraf}`}

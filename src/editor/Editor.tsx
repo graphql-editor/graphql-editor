@@ -1,7 +1,7 @@
 import cx from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { sizeSidebar } from '@/vars';
-import { Menu, ActivePane } from './Menu';
+import { Menu } from './Menu';
 import { CodePane } from './code';
 
 import { PassedSchema, Theming } from '@/Models';
@@ -53,7 +53,7 @@ export const ErrorOuterContainer = style({
 });
 
 export interface EditorProps extends Theming {
-  activePane?: ActivePane;
+  state?: ReturnType<typeof useNavigationState>['menuState'];
   readonly?: boolean;
   placeholder?: string;
   schema: PassedSchema;
@@ -61,7 +61,9 @@ export interface EditorProps extends Theming {
     oldSchema: PassedSchema;
     newSchema: PassedSchema;
   };
-  onPaneChange?: (pane?: ActivePane) => void;
+  onStateChange?: (
+    state?: ReturnType<typeof useNavigationState>['menuState'],
+  ) => void;
   setSchema: (props: PassedSchema, isInvalid?: boolean) => void;
   onTreeChange?: (tree: ParserTree) => void;
   theme?: EditorTheme;
@@ -78,8 +80,8 @@ export const Editor = ({
     libraries: '',
   },
   initialSizeOfSidebar = sizeSidebar,
-  activePane = 'relation',
-  onPaneChange,
+  state,
+  onStateChange,
   setSchema,
   diffSchemas,
   onTreeChange,
@@ -89,8 +91,7 @@ export const Editor = ({
   const [sidebarSize, setSidebarSize] = useState<string | number>(
     initialSizeOfSidebar,
   );
-  const { menuState, setMenuState, setToggleCode, toggleCode } =
-    useNavigationState();
+  const { menuState, setMenuState } = useNavigationState();
   const { grafErrors, setGrafErrors, setLockGraf, setCodeErrors, setLockCode } =
     useErrorsState();
 
@@ -205,8 +206,10 @@ export const Editor = ({
   }, [schema.libraries]);
 
   useEffect(() => {
-    setMenuState(activePane);
-  }, [activePane]);
+    if (state) {
+      setMenuState(state);
+    }
+  }, [state]);
 
   useEffect(() => {
     if (stopCodeFromTreeGeneration) {
@@ -240,68 +243,73 @@ export const Editor = ({
       }}
     >
       <Menu
-        toggleCode={toggleCode}
-        setToggleCode={(e) => setToggleCode(!menuState ? true : e)}
-        activePane={menuState}
+        toggleCode={!!menuState.code}
+        setToggleCode={(e) =>
+          setMenuState({
+            ...menuState,
+            code: !menuState.pane ? true : e,
+          })
+        }
+        activePane={menuState.pane}
         excludePanes={diffSchemas ? undefined : ['diff']}
         setActivePane={(p) => {
-          const pane = p === menuState ? (toggleCode ? undefined : p) : p;
-          setMenuState(pane);
-          if (onPaneChange) {
-            onPaneChange(pane);
+          const pane =
+            p === menuState.pane ? (menuState.code ? undefined : p) : p;
+          const newState = { ...menuState, pane };
+          setMenuState(newState);
+          if (onStateChange) {
+            onStateChange(newState);
           }
         }}
       />
-      {toggleCode && menuState !== 'diff' && (
+      {menuState.code && menuState.pane !== 'diff' && (
         <DynamicResize
-          disabledClass={!menuState ? FullScreenContainer : undefined}
+          disabledClass={!menuState.pane ? FullScreenContainer : undefined}
           resizeCallback={(e, r, c, w) => {
             setSidebarSize(c.getBoundingClientRect().width);
           }}
-          width={!menuState ? '100%' : sidebarSize}
+          width={!menuState.pane ? '100%' : sidebarSize}
         >
           <div
             className={cx(Sidebar, {
-              [FullScreenContainer]: !menuState,
+              [FullScreenContainer]: !menuState.pane,
             })}
             data-cy={GraphQLEditorDomStructure.tree.sidebar.name}
             style={{
               background: currentTheme.background.mainFurthest,
             }}
           >
-            {toggleCode && (
-              <CodePane
-                size={!menuState ? 100000 : sidebarSize}
-                onChange={(v, isInvalid) => {
-                  if (isInvalid) {
-                    stopCodeFromTreeGeneration = true;
-                    setLockGraf(isInvalid);
-                  } else {
-                    stopCodeFromTreeGeneration = false;
-                  }
-                  setSchema({ ...schema, code: v }, !!isInvalid);
-                }}
-                schema={schema.code}
-                libraries={schema.libraries}
-                placeholder={placeholder}
-                readonly={readonly}
-              />
-            )}
+            <CodePane
+              size={!menuState.pane ? 100000 : sidebarSize}
+              onChange={(v, isInvalid) => {
+                if (isInvalid) {
+                  stopCodeFromTreeGeneration = true;
+                  setLockGraf(isInvalid);
+                } else {
+                  stopCodeFromTreeGeneration = false;
+                }
+                setSchema({ ...schema, code: v }, !!isInvalid);
+              }}
+              schema={schema.code}
+              libraries={schema.libraries}
+              placeholder={placeholder}
+              readonly={readonly}
+            />
           </div>
         </DynamicResize>
       )}
-      {menuState === 'diagram' && (
+      {menuState.pane === 'diagram' && (
         <div className={ErrorOuterContainer}>
           <Graf />
         </div>
       )}
-      {menuState === 'relation' && (
+      {menuState.pane === 'relation' && (
         <div className={ErrorOuterContainer}>
           <Relation />
         </div>
       )}
-      {menuState === 'hierarchy' && <Hierarchy />}
-      {menuState === 'diff' && diffSchemas && (
+      {menuState.pane === 'hierarchy' && <Hierarchy />}
+      {menuState.pane === 'diff' && diffSchemas && (
         <DiffEditor
           schema={diffSchemas.oldSchema.code}
           newSchema={diffSchemas.newSchema.code}

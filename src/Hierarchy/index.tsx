@@ -44,6 +44,11 @@ export const Hierarchy = () => {
             : undefined,
         );
       });
+      if (selectedNode) {
+        hierarchy.eventBus.publish('RequestNodeSelect', {
+          fn: (n) => n.name === selectedNode.name,
+        });
+      }
     }
   }, [tree, hierarchy, libraryTree]);
 
