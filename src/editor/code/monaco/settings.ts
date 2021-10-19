@@ -8,7 +8,6 @@ export const diffEditorSettings = (
   override: monaco.editor.IDiffEditorConstructionOptions = {},
 ): monaco.editor.IDiffEditorConstructionOptions => ({
   glyphMargin: true,
-  theme: 'graphql-editor',
   renderSideBySide: true,
   smoothScrolling: true,
   ...override,

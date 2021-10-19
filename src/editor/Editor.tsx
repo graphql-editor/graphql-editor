@@ -28,6 +28,7 @@ export const Main = style({
   height: '100%',
   width: '100%',
   alignItems: 'stretch',
+  overflowY: 'clip' as any,
 });
 
 export const FullScreenContainer = style({
