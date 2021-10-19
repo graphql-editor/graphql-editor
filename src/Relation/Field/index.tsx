@@ -81,7 +81,11 @@ export const Field: React.FC<FieldProps> = ({
           />
         </div>
         <div className={Type}>
-          <ActiveType type={node.type} parentTypes={parentTypes} />
+          <ActiveType
+            onClick={() => {}}
+            type={node.type}
+            parentTypes={parentTypes}
+          />
         </div>
       </Title>
     </div>

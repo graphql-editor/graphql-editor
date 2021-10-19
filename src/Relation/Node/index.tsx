@@ -24,7 +24,9 @@ const Content = themed(
       textOverflow: 'elipssis',
       borderRadius: 10,
       overflowY: 'hidden',
-      border: `solid 1px ${hover}00`,
+      borderStyle: 'solid',
+      borderWidth: 1,
+      borderColor: `${hover}00`,
       transition: '.25s all ease-in-out',
       zIndex: 1,
       flex: '1 0 auto',
@@ -76,10 +78,14 @@ const Content = themed(
           },
         },
         '&:hover': {
-          border: `solid 1px ${hover}`,
+          borderColor: hover,
+        },
+        '&.Library': {
+          borderStyle: 'dashed',
         },
         '&.Fade': {
           background: mainFurther,
+          opacity: 0.9,
           $nest: {
             '.NodeRelationFields': {
               opacity: 0.25,
@@ -98,7 +104,7 @@ const Content = themed(
         },
 
         '&.Selected': {
-          border: `solid 1px ${hover}`,
+          borderColor: hover,
           cursor: 'auto',
           $nest: {
             '.NodeFocus': {
@@ -115,6 +121,7 @@ const Content = themed(
 interface NodeProps {
   field: ParserField;
   focus: () => void;
+  isLibrary?: boolean;
   fade?: boolean;
   setRef: (instance: HTMLDivElement) => void;
 }
@@ -123,7 +130,13 @@ const EditableTitle: React.CSSProperties = {
   fontSize: 14,
   fontWeight: 'bold',
 };
-export const Node: React.FC<NodeProps> = ({ field, setRef, fade, focus }) => {
+export const Node: React.FC<NodeProps> = ({
+  field,
+  setRef,
+  fade,
+  focus,
+  isLibrary,
+}) => {
   const { setSelectedNode, selectedNode, tree, libraryTree } = useTreesState();
   const [showScalars, setShowScalars] = useState(false);
   const isNodeActive = field === selectedNode;
@@ -218,6 +231,7 @@ export const Node: React.FC<NodeProps> = ({ field, setRef, fade, focus }) => {
       className={
         `${Content(theme)} ` +
         `${fade ? 'Fade' : typeof fade === 'undefined' ? '' : 'Active'}` +
+        `${isLibrary ? ' Library' : ''}` +
         (selectedNode === field ? ` Selected` : '')
       }
     >

@@ -174,7 +174,6 @@ export const Editor = ({
         setTree(parsedCode);
       }
       Workers.validate(schema.code, schema.libraries).then((errors) => {
-        console.log(errors);
         setCodeErrors(errors);
         setLockGraf(errors.map((e) => JSON.stringify(e, null, 4)).join('\n'));
       });

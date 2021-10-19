@@ -137,6 +137,7 @@ export const Relation: React.FC<RelationProps> = () => {
   const [currentNodes, setCurrentNodes] = useState<ParserField[]>(
     sortByConnection(tree.nodes.concat(libraryTree.nodes)),
   );
+
   const [relationDrawingNodes, setRelationDrawingNodes] = useState<
     ParserField[]
   >([]);
@@ -290,11 +291,13 @@ export const Relation: React.FC<RelationProps> = () => {
     return <Lines relations={relations} selectedNode={selectedNode} />;
   }, [relations, selectedNode]);
   const NodesContainer = useMemo(() => {
+    const libraryNodeNames = libraryTree.nodes.map((l) => l.name);
     return currentNodes.map((n, i) => (
       <Node
         focus={() => {
           setFocusedNode(n);
         }}
+        isLibrary={libraryNodeNames.includes(n.name)}
         fade={
           selectedNode
             ? selectedNode.name === n.name

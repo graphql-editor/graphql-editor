@@ -83,9 +83,9 @@ export class EnrichedLanguageService extends LanguageService {
           return [];
         }
 
-        const nestedArrays = ((
+        const nestedArrays = (
           await Promise.all(sources.map((source) => source.forNode(bridge)))
-        ).filter(Boolean) as any) as monaco.languages.Location[][];
+        ).filter(Boolean) as any as monaco.languages.Location[][];
 
         const items = ([] as monaco.languages.Location[]).concat(
           ...nestedArrays,
