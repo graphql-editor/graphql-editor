@@ -8,6 +8,7 @@ import { style } from 'typestyle';
 import { Field } from '../Field';
 import * as Icons from '@/editor/icons';
 import { themed } from '@/Theming/utils';
+import { NestedCSSProperties } from 'typestyle/lib/types';
 
 const Content = themed(
   ({
@@ -16,6 +17,7 @@ const Content = themed(
     info,
     hover,
     background: { mainFurther, mainFar, mainMiddle },
+    colors,
   }) =>
     style({
       background: mainMiddle,
@@ -78,7 +80,12 @@ const Content = themed(
           },
         },
         '&:hover': {
-          borderColor: hover,
+          ...Object.keys(colors).reduce((a, b) => {
+            a[`&.NodeBackground-${b}`] = {
+              borderColor: `${(colors as any)[b]}`,
+            };
+            return a;
+          }, {} as Record<string, NestedCSSProperties>),
         },
         '&.Library': {
           borderStyle: 'dashed',
@@ -113,6 +120,12 @@ const Content = themed(
               cursor: 'pointer',
             },
           },
+          ...Object.keys(colors).reduce((a, b) => {
+            a[`&.NodeBackground-${b}`] = {
+              borderColor: `${(colors as any)[b]}`,
+            };
+            return a;
+          }, {} as Record<string, NestedCSSProperties>),
         },
       },
     }),
@@ -229,7 +242,7 @@ export const Node: React.FC<NodeProps> = ({
         setSelectedNode(field);
       }}
       className={
-        `${Content(theme)} ` +
+        `NodeBackground-${field.type.name} ${Content(theme)} ` +
         `${fade ? 'Fade' : typeof fade === 'undefined' ? '' : 'Active'}` +
         `${isLibrary ? ' Library' : ''}` +
         (selectedNode === field ? ` Selected` : '')
