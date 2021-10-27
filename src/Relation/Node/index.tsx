@@ -9,6 +9,7 @@ import { Field } from '../Field';
 import * as Icons from '@/editor/icons';
 import { themed } from '@/Theming/utils';
 import { NestedCSSProperties } from 'typestyle/lib/types';
+import { maxFieldsInRelationNode } from '@/vars';
 
 const Content = themed(
   ({
@@ -155,8 +156,14 @@ export const Node: React.FC<NodeProps> = ({
   const isNodeActive = field === selectedNode;
   const { theme } = useTheme();
   const RelationFields = useMemo(() => {
-    const nodeFields = field.args?.filter((a) => !isScalarArgument(a));
-    const scalarFields = field.args?.filter((a) => isScalarArgument(a));
+    const isShrinkedNode =
+      (field.args?.length || 100) > maxFieldsInRelationNode;
+    const nodeFields = isShrinkedNode
+      ? field.args?.filter((a) => !isScalarArgument(a))
+      : field.args;
+    const scalarFields = isShrinkedNode
+      ? field.args?.filter((a) => isScalarArgument(a))
+      : [];
 
     return (
       <div className={'NodeRelationFields'}>
