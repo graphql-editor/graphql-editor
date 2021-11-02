@@ -2,7 +2,9 @@
 
 [![npm](https://img.shields.io/npm/v/graphql-editor.svg?style=flat-square)](https://www.npmjs.com/package/graphql-editor) [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?style=flat-square)](http://commitizen.github.io/cz-cli/) [![npm downloads](https://img.shields.io/npm/dt/graphql-editor.svg?style=flat-square)](https://www.npmjs.com/package/graphql-editor)
 
-GraphQLEditor makes it easier to understand GraphQL schemas. Create a schema by using visual blocks system. GraphQL Editor will transform them into code. With GraphQL Editor you can create visual diagrams without writing any code or present your schema in a nice way!
+GraphQLEditor makes it easier to understand GraphQL schemas. Create a schema by using visual blocks system. GraphQL Editor will transform them into code.
+
+With GraphQL Editor you can create visual diagrams without writing any code or present your schema in a nice way!
 
 ### Cloud version
 
@@ -24,7 +26,9 @@ Create GraphQL nodes and connect them to generate a database schema. You can als
 - [How it works](#how-it-works)
 - [Table of contents](#table-of-contents)
 - [License](#license)
-- [Develop or use standalone](#develop-or-use-standalone)
+  - [Installation](#installation)
+  - [Usage](#usage)
+  - [GraphQLEditor component props](#graphqleditor-component-props)
 - [Support](#support)
 - [Team](#team)
 - [Underlying Parsing technology](#underlying-parsing-technology)
@@ -34,23 +38,17 @@ Create GraphQL nodes and connect them to generate a database schema. You can als
 
 MIT
 
-## Develop or use standalone
-
-To use standalone you have to use webpack right now. If you want to use it without webpack you need to handle monaco editor workers yourself.
-
-Install dependencies
-
-```
-npm i react react-dom monaco-editor @monaco-editor/react
-```
+### Installation
 
 ```
 npm i -D worker-loader css-loader file-loader webpack
 ```
 
 ```
-npm i graphql-editor
+npm i  graphql-editor react react-dom monaco-editor @monaco-editor/react
 ```
+
+### Usage
 
 ```tsx
 import React, { useState } from 'react';
@@ -98,6 +96,32 @@ export const App = () => {
 
 render(<App />, document.getElementById('root'));
 ```
+
+### GraphQLEditor component props
+
+**GraphQLEditor**
+
+| property      | type                                                      | description             |
+| ------------- | --------------------------------------------------------- | ----------------------- |
+| schema        | `PassedSchema`                                            | value of the schema     |
+| setSchema     | `(props: PassedSchema, isInvalid?: boolean) => void;`     | set value of the schema |
+| readonly      | `boolean`                                                 | lock editing            |
+| diffSchemas   | `{ oldSchema: PassedSchema; newSchema: PassedSchema}`     | view state              |
+| theme         | `EditorTheme`                                             | current theme           |
+| state         | `{ pane: ActivePane, code: boolean }`                     | view state              |
+| onStateChange | `( state?:{ pane: ActivePane, code: boolean } ) => void;` | on state changed        |
+| onTreeChange  | `(tree: ParserTree) => void`                              | on tree state changed   |
+
+**PassedSchema**
+
+| property  | type     | description                    |
+| --------- | -------- | ------------------------------ |
+| code      | `string` | value of the schema code       |
+| libraries | `string` | value of the current libraries |
+
+**ActivePane**
+
+`"relation" | "diagram" | "hierarchy"`
 
 ## Support
 
