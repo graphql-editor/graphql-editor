@@ -9,6 +9,7 @@ import { GraphQLEditorDomStructure } from '@/domStructure';
 interface MenuItemProps {
   node: ParserField;
   onClick: () => void;
+  name?: string;
 }
 
 const Main = themed(({ colors, hover }) =>
@@ -38,7 +39,7 @@ const Main = themed(({ colors, hover }) =>
   }),
 );
 
-export const MenuItem: React.FC<MenuItemProps> = ({ node, onClick }) => {
+export const MenuItem: React.FC<MenuItemProps> = ({ node, onClick, name }) => {
   const { theme } = useTheme();
   return (
     <div
@@ -50,7 +51,7 @@ export const MenuItem: React.FC<MenuItemProps> = ({ node, onClick }) => {
       }
     >
       <span className={`MenuItemText MenuItemText-${node.type.name}`}>
-        {node.name}
+        {name || node.name}
       </span>
     </div>
   );

@@ -20,16 +20,17 @@ export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({
 }) => {
   const { tree, setTree, libraryTree } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
-  const filteredNodes = ResolveCreateField(
-    node,
-    tree.nodes.concat(libraryTree.nodes),
-  )
-    ?.sort((a, b) => (a.name > b.name ? 1 : -1))
-    .filter((a) =>
-      a.name.toLowerCase().includes(menuSearchValue.toLowerCase()),
-    );
-  const onNodeClick = (f: ParserField) => {
-    let newName = f.name[0].toLowerCase() + f.name.slice(1);
+  const filteredNodes = menuSearchValue
+    ? ResolveCreateField(node, tree.nodes.concat(libraryTree.nodes))?.sort(
+        (a, b) =>
+          a.name.toLowerCase().includes(menuSearchValue.toLowerCase()) >
+          b.name.toLowerCase().includes(menuSearchValue.toLowerCase())
+            ? -1
+            : 1,
+      )
+    : [];
+  const onNodeClick = (f: ParserField, name?: string) => {
+    let newName = name || f.name[0].toLowerCase() + f.name.slice(1);
     const existingNodes =
       node.args?.filter((a) => a.name.match(`${newName}\d?`)) || [];
     if (existingNodes.length > 0) {
@@ -46,9 +47,9 @@ export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({
       name: newName,
       args: [],
     });
-    hideMenu();
     setTree({ ...tree });
   };
+
   return (
     <Menu
       menuName={'Create Field'}
@@ -58,7 +59,9 @@ export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({
       <MenuSearch
         onSubmit={() => {
           if (filteredNodes && filteredNodes.length > 0) {
-            onNodeClick(filteredNodes[0]);
+            onNodeClick(filteredNodes[0], menuSearchValue);
+            setMenuSearchValue('');
+            return;
           }
         }}
         value={menuSearchValue}
@@ -68,10 +71,11 @@ export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({
       <MenuScrollingArea>
         {filteredNodes?.map((f) => (
           <MenuItem
-            key={f.name}
+            key={f.name + menuSearchValue}
+            name={`${menuSearchValue} - ${f.name}`}
             node={f}
             onClick={() => {
-              onNodeClick(f);
+              onNodeClick(f, menuSearchValue);
             }}
           />
         ))}

@@ -51,6 +51,9 @@ context('Main Split IDE functions', () => {
       `[data-cy=${GraphQLEditorDomStructure.tree.elements.Graf.ActiveNode.TopNodeMenu.CreateField}]`,
     ).click();
     cy.get(
+      `[data-cy=${GraphQLEditorDomStructure.tree.elements.Graf.ActiveNode.TopNodeMenu.searchableMenu.searchInput}]`,
+    ).type('string', { force: true, parseSpecialCharSequences: false });
+    cy.get(
       `[data-cy=${GraphQLEditorDomStructure.tree.elements.Graf.ActiveNode.TopNodeMenu.searchableMenu.optionToSelect}]`,
     )
       .contains('String')
