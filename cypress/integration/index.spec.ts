@@ -52,7 +52,9 @@ context('Main Split IDE functions', () => {
     ).click();
     cy.get(
       `[data-cy=${GraphQLEditorDomStructure.tree.elements.Graf.ActiveNode.TopNodeMenu.searchableMenu.searchInput}]`,
-    ).type('string', { force: true, parseSpecialCharSequences: false });
+    )
+      .find('input')
+      .type('string', { force: true, parseSpecialCharSequences: false });
     cy.get(
       `[data-cy=${GraphQLEditorDomStructure.tree.elements.Graf.ActiveNode.TopNodeMenu.searchableMenu.optionToSelect}]`,
     )

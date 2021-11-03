@@ -7,6 +7,7 @@ import { ExtendNodeMenu } from '@/Graf/Node/ContextMenu';
 import { Plus } from '@/Graf/icons';
 import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
+import { GraphQLEditorDomStructure } from '@/domStructure';
 export interface RootExtendNodeProps {
   node: ParserField;
   libraryNode?: ParserField;
@@ -95,6 +96,7 @@ export const RootExtendNode: React.FC<RootExtendNodeProps> = ({
       <div className={`${NodeCaption(theme)}`}>
         <span className={CaptionTitle(theme)}>extend</span>
         <MenuSearch
+          cypressName={GraphQLEditorDomStructure.tree.elements.Graf.searchInput}
           onSubmit={() => {}}
           autoFocus={false}
           onClear={() => {

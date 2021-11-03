@@ -11,6 +11,7 @@ interface MenuSearchProps {
   onClear: () => void;
   onSubmit: () => void;
   autoFocus?: boolean;
+  cypressName?: string;
 }
 
 const Main = themed(({ text, disabled, background: { mainFurther } }) =>
@@ -64,6 +65,7 @@ const Wrapper = style({
 });
 
 export const MenuSearch: React.FC<MenuSearchProps> = ({
+  cypressName,
   value,
   onChange,
   onClear,
@@ -76,6 +78,7 @@ export const MenuSearch: React.FC<MenuSearchProps> = ({
     <div
       className={Wrapper}
       data-cy={
+        cypressName ||
         GraphQLEditorDomStructure.tree.elements.Graf.ActiveNode.TopNodeMenu
           .searchableMenu.searchInput
       }

@@ -72,6 +72,7 @@ export const RootNode: React.FC<RootNodeProps> = ({
           {node.name}
         </span>
         <MenuSearch
+          cypressName={GraphQLEditorDomStructure.tree.elements.Graf.searchInput}
           autoFocus={false}
           onClear={() => {
             setFilterNodes('');
