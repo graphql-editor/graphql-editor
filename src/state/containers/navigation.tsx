@@ -7,7 +7,7 @@ const useNavigationStateContainer = createContainer(() => {
     code?: boolean;
   }>({
     code: true,
-    pane: 'relation',
+    pane: 'diagram',
   });
   return { menuState, setMenuState };
 });

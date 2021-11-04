@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Menu,
   MenuScrollingArea,
   MenuSearch,
-  MenuItem,
+  TypedMenuItem,
 } from '@/Graf/Node/components';
 import { ResolveDirectives } from '@/GraphQL/Resolve';
 import { ParserField, Instances } from 'graphql-js-tree';
@@ -20,6 +20,8 @@ export const NodeAddDirectiveMenu: React.FC<NodeAddDirectiveMenuProps> = ({
 }) => {
   const { tree, libraryTree, setTree } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
   const filteredNodes = ResolveDirectives(
     node,
     tree.nodes.concat(libraryTree.nodes),
@@ -28,6 +30,13 @@ export const NodeAddDirectiveMenu: React.FC<NodeAddDirectiveMenuProps> = ({
     .filter((a) =>
       a.name.toLowerCase().includes(menuSearchValue.toLowerCase()),
     );
+  useEffect(() => {
+    if (!menuSearchValue) {
+      setSelectedIndex(0);
+    }
+  }, [menuSearchValue]);
+  const selectedNodeIndex = selectedIndex % (filteredNodes?.length || 1);
+
   const onNodeClick = (f: ParserField) => {
     if (!node.directives) {
       node.directives = [];
@@ -55,18 +64,25 @@ export const NodeAddDirectiveMenu: React.FC<NodeAddDirectiveMenuProps> = ({
       <MenuSearch
         onSubmit={() => {
           if (filteredNodes && filteredNodes.length > 0) {
-            onNodeClick(filteredNodes[0]);
+            onNodeClick(filteredNodes[selectedNodeIndex]);
           }
         }}
         value={menuSearchValue}
         onChange={setMenuSearchValue}
         onClear={() => setMenuSearchValue('')}
       />
-      <MenuScrollingArea>
-        {filteredNodes.map((f) => (
-          <MenuItem
+      <MenuScrollingArea
+        controls={{
+          arrowDown: () => setSelectedIndex((s) => s + 1),
+          arrowUp: () => setSelectedIndex((s) => s - 1),
+        }}
+      >
+        {filteredNodes.map((f, i) => (
+          <TypedMenuItem
             key={f.name}
-            node={f}
+            type={f.name}
+            dataType={f.type.name}
+            selected={i === selectedNodeIndex}
             onClick={() => {
               onNodeClick(f);
             }}

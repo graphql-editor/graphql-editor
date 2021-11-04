@@ -16,10 +16,9 @@ const NodeInterfaceBlock = themed(({ backgrounds, text, error }) =>
     color: text,
     fontSize: 10,
     borderRadius: 4,
-    marginLeft: 10,
     position: 'relative',
     cursor: 'pointer',
-    marginBottom: 5,
+    margin: 5,
     $nest: {
       '.DeleteInterface': {
         opacity: 0.0,

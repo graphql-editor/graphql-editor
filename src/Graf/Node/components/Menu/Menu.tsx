@@ -10,9 +10,9 @@ const Wrapper = style({
   width: 220,
   borderRadius: 4,
 });
-const Content = themed(({ shadow, background: { mainFurthest } }) =>
+const Content = themed(({ shadow, background: { mainFurther } }) =>
   style({
-    background: mainFurthest,
+    background: mainFurther,
     borderRadius: 4,
     padding: 0,
     boxShadow: shadow,

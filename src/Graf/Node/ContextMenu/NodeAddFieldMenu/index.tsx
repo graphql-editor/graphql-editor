@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ResolveCreateField } from '@/GraphQL/Resolve';
 import { ParserField } from 'graphql-js-tree';
 import { useTreesState } from '@/state/containers/trees';
@@ -6,7 +6,7 @@ import {
   Menu,
   MenuScrollingArea,
   MenuSearch,
-  MenuItem,
+  TypedMenuItem,
 } from '@/Graf/Node/components';
 
 interface NodeAddFieldMenuProps {
@@ -20,6 +20,8 @@ export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({
 }) => {
   const { tree, setTree, libraryTree } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
   const filteredNodes = menuSearchValue
     ? ResolveCreateField(node, tree.nodes.concat(libraryTree.nodes))?.sort(
         (a, b) =>
@@ -29,6 +31,15 @@ export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({
             : 1,
       )
     : [];
+
+  useEffect(() => {
+    if (!menuSearchValue) {
+      setSelectedIndex(0);
+    }
+  }, [menuSearchValue]);
+
+  const selectedNodeIndex = selectedIndex % (filteredNodes?.length || 1);
+
   const onNodeClick = (f: ParserField, name?: string) => {
     let newName = name || f.name[0].toLowerCase() + f.name.slice(1);
     const existingNodes =
@@ -59,21 +70,32 @@ export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({
       <MenuSearch
         onSubmit={() => {
           if (filteredNodes && filteredNodes.length > 0) {
-            onNodeClick(filteredNodes[0], menuSearchValue);
+            onNodeClick(filteredNodes[selectedNodeIndex], menuSearchValue);
             setMenuSearchValue('');
             return;
           }
         }}
+        placeholder="Field name..."
+        icon="add"
         value={menuSearchValue}
         onChange={setMenuSearchValue}
-        onClear={() => setMenuSearchValue('')}
+        onClear={() => {
+          setMenuSearchValue('');
+        }}
       />
-      <MenuScrollingArea>
-        {filteredNodes?.map((f) => (
-          <MenuItem
+      <MenuScrollingArea
+        controls={{
+          arrowDown: () => setSelectedIndex((s) => s + 1),
+          arrowUp: () => setSelectedIndex((s) => s - 1),
+        }}
+      >
+        {filteredNodes?.map((f, i) => (
+          <TypedMenuItem
             key={f.name + menuSearchValue}
-            name={`${menuSearchValue} - ${f.name}`}
-            node={f}
+            name={`${menuSearchValue}`}
+            type={f.name}
+            dataType={f.type.name}
+            selected={i === selectedNodeIndex}
             onClick={() => {
               onNodeClick(f, menuSearchValue);
             }}

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { GraphQLEditor, DarkTheme } from '@/index';
+import { GraphQLEditor } from '@/index';
 import { PassedSchema } from '@/Models';
+import { MainTheme } from '@/gshared/theme/MainTheme';
 
 export const Pure = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
@@ -19,7 +20,7 @@ export const Pure = () => {
       }}
     >
       <GraphQLEditor
-        theme={DarkTheme}
+        theme={MainTheme}
         setSchema={(props) => {
           setMySchema(props);
         }}

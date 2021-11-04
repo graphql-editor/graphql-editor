@@ -5,9 +5,6 @@ import { GraphQLEditorDomStructure } from '@/domStructure';
 context('Main Split IDE functions', () => {
   beforeEach(() => {
     cy.visit('http://localhost:1568/');
-    cy.get(
-      `[data-cy=${GraphQLEditorDomStructure.tree.sidebar.menu.children.diagram}]`,
-    ).click();
   });
   it('Generates the Query in Graf after typing', () => {
     cy.wait(100);

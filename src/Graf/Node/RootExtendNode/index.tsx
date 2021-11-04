@@ -2,12 +2,12 @@ import React, { useRef, useState } from 'react';
 import { ParserField } from 'graphql-js-tree';
 import { style } from 'typestyle';
 import { PaintNode } from '@/Graf/Node/PaintNode';
-import { MenuSearch } from '@/Graf/Node/components';
 import { ExtendNodeMenu } from '@/Graf/Node/ContextMenu';
 import { Plus } from '@/Graf/icons';
 import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
+import { SearchInput } from '@/Graf/Node/components/SearchInput';
 export interface RootExtendNodeProps {
   node: ParserField;
   libraryNode?: ParserField;
@@ -95,7 +95,7 @@ export const RootExtendNode: React.FC<RootExtendNodeProps> = ({
     <div className={NodeContainer} ref={thisNode}>
       <div className={`${NodeCaption(theme)}`}>
         <span className={CaptionTitle(theme)}>extend</span>
-        <MenuSearch
+        <SearchInput
           cypressName={GraphQLEditorDomStructure.tree.elements.Graf.searchInput}
           onSubmit={() => {}}
           autoFocus={false}

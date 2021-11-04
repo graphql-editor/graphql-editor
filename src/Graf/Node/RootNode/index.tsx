@@ -10,10 +10,10 @@ import { PaintNode } from '@/Graf/Node/PaintNode';
 import { NewNode } from '@/Graf/Node/NewNode';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { useTreesState } from '@/state/containers/trees';
-import { MenuSearch } from '@/Graf/Node/components';
 import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
+import { SearchInput } from '@/Graf/Node/components/SearchInput';
 export interface RootNodeProps {
   node: ParserField;
   libraryNode?: ParserField;
@@ -71,7 +71,7 @@ export const RootNode: React.FC<RootNodeProps> = ({
         >
           {node.name}
         </span>
-        <MenuSearch
+        <SearchInput
           cypressName={GraphQLEditorDomStructure.tree.elements.Graf.searchInput}
           autoFocus={false}
           onClear={() => {

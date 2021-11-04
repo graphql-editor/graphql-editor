@@ -3,7 +3,6 @@ import { style } from 'typestyle';
 import { Plus, Search, X } from '@/Graf/icons';
 import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
-import { GraphQLEditorDomStructure } from '@/domStructure';
 
 interface MenuSearchProps {
   value: string;
@@ -11,14 +10,14 @@ interface MenuSearchProps {
   onClear: () => void;
   onSubmit: () => void;
   autoFocus?: boolean;
-  cypressName?: string;
+  cypressName: string;
   placeholder?: string;
   icon?: 'search' | 'add';
 }
 
-const Main = themed(({ text, disabled, background }) =>
+const Main = themed(({ text, disabled, background: { mainFurther } }) =>
   style({
-    background: background.mainFurther,
+    background: mainFurther,
     borderRadius: 5,
     color: text,
     border: 0,
@@ -30,16 +29,9 @@ const Main = themed(({ text, disabled, background }) =>
     fontSize: 14,
     outline: 0,
     position: 'relative',
-    marginBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomStyle: 'solid',
-    borderBottomColor: background.mainClose,
     $nest: {
       '&::placeholder': {
         color: disabled,
-      },
-      '&:focus': {
-        borderBottomColor: background.mainCloser,
       },
     },
   }),
@@ -51,7 +43,7 @@ const SearchIconContainer = style({
   width: 30,
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'flex-start',
+  justifyContent: 'center',
   zIndex: 1,
 });
 const XIconContainer = style({
@@ -61,7 +53,7 @@ const XIconContainer = style({
   right: 12,
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'flex-end',
+  justifyContent: 'center',
   cursor: 'pointer',
   zIndex: 1,
 });
@@ -73,7 +65,7 @@ const Wrapper = style({
   paddingBottom: 0,
 });
 
-export const MenuSearch: React.FC<MenuSearchProps> = ({
+export const SearchInput: React.FC<MenuSearchProps> = ({
   cypressName,
   value,
   onChange,
@@ -86,14 +78,7 @@ export const MenuSearch: React.FC<MenuSearchProps> = ({
   const ref = useRef<HTMLInputElement>(null);
   const { theme } = useTheme();
   return (
-    <div
-      className={Wrapper}
-      data-cy={
-        cypressName ||
-        GraphQLEditorDomStructure.tree.elements.Graf.ActiveNode.TopNodeMenu
-          .searchableMenu.searchInput
-      }
-    >
+    <div className={Wrapper} data-cy={cypressName}>
       <span className={SearchIconContainer}>
         {icon === 'search' && <Search width={14} height={14} />}
         {icon === 'add' && <Plus width={14} height={14} />}

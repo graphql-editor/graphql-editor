@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ResolveImplementInterface } from '@/GraphQL/Resolve';
 import { ParserField, TypeDefinition } from 'graphql-js-tree';
 import { useTreesState } from '@/state/containers/trees';
@@ -6,7 +6,7 @@ import {
   Menu,
   MenuScrollingArea,
   MenuSearch,
-  MenuItem,
+  TypedMenuItem,
 } from '@/Graf/Node/components';
 
 interface NodeImplementInterfacesMenuProps {
@@ -18,12 +18,22 @@ export const NodeImplementInterfacesMenu: React.FC<NodeImplementInterfacesMenuPr
   ({ node, hideMenu }) => {
     const { tree, setTree } = useTreesState();
     const [menuSearchValue, setMenuSearchValue] = useState('');
+    const [selectedIndex, setSelectedIndex] = useState(0);
+
     const filteredNodes = ResolveImplementInterface(node, tree.nodes)
       ?.sort((a, b) => (a.name > b.name ? 1 : -1))
       .filter((a) => !node.interfaces?.includes(a.name))
       .filter((a) =>
         a.name.toLowerCase().includes(menuSearchValue.toLowerCase()),
       );
+
+    useEffect(() => {
+      if (!menuSearchValue) {
+        setSelectedIndex(0);
+      }
+    }, [menuSearchValue]);
+    const selectedNodeIndex = selectedIndex % (filteredNodes?.length || 1);
+
     const onNodeClick = (f: ParserField) => {
       if (!node.interfaces) {
         node.interfaces = [];
@@ -63,18 +73,25 @@ export const NodeImplementInterfacesMenu: React.FC<NodeImplementInterfacesMenuPr
         <MenuSearch
           onSubmit={() => {
             if (filteredNodes && filteredNodes.length > 0) {
-              onNodeClick(filteredNodes[0]);
+              onNodeClick(filteredNodes[selectedNodeIndex]);
             }
           }}
           value={menuSearchValue}
           onChange={setMenuSearchValue}
           onClear={() => setMenuSearchValue('')}
         />
-        <MenuScrollingArea>
-          {filteredNodes?.map((f) => (
-            <MenuItem
+        <MenuScrollingArea
+          controls={{
+            arrowDown: () => setSelectedIndex((s) => s + 1),
+            arrowUp: () => setSelectedIndex((s) => s - 1),
+          }}
+        >
+          {filteredNodes?.map((f, i) => (
+            <TypedMenuItem
               key={f.name}
-              node={f}
+              type={f.name}
+              dataType={f.type.name}
+              selected={i === selectedNodeIndex}
               onClick={() => {
                 onNodeClick(f);
               }}
