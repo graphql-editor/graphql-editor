@@ -1,15 +1,13 @@
 import { EditableText } from '@/Graf/Node/components';
 import { ActiveType } from '@/Graf/Node/Type';
-import { isScalarArgument } from '@/GraphQL/Resolve';
 import { useTheme, useTreesState } from '@/state/containers';
 import { ParserField, TypeDefinition } from 'graphql-js-tree';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { style } from 'typestyle';
 import { Field } from '../Field';
 import * as Icons from '@/editor/icons';
 import { themed } from '@/Theming/utils';
 import { NestedCSSProperties } from 'typestyle/lib/types';
-import { maxFieldsInRelationNode } from '@/vars';
 
 const Content = themed(
   ({
@@ -36,23 +34,6 @@ const Content = themed(
       cursor: 'pointer',
       maxWidth: '50%',
       $nest: {
-        '.NodeShowScalarsWrapper': {
-          padding: '10px 5px',
-          color: info,
-          $nest: {
-            '.NodeShowScalars': {
-              display: 'flex',
-              cursor: 'pointer',
-              userSelect: 'none',
-              alignItems: 'center',
-              $nest: {
-                '.NodeShowScalarsTitle': {
-                  marginRight: 10,
-                },
-              },
-            },
-          },
-        },
         '.NodeTitle': {
           alignItems: 'stretch',
           color: backgroundedText,
@@ -152,18 +133,10 @@ export const Node: React.FC<NodeProps> = ({
   isLibrary,
 }) => {
   const { setSelectedNode, selectedNode, tree, libraryTree } = useTreesState();
-  const [showScalars, setShowScalars] = useState(false);
   const isNodeActive = field === selectedNode;
   const { theme } = useTheme();
   const RelationFields = useMemo(() => {
-    const isShrinkedNode =
-      (field.args?.length || 100) > maxFieldsInRelationNode;
-    const nodeFields = isShrinkedNode
-      ? field.args?.filter((a) => !isScalarArgument(a))
-      : field.args;
-    const scalarFields = isShrinkedNode
-      ? field.args?.filter((a) => isScalarArgument(a))
-      : [];
+    const nodeFields = field.args;
 
     return (
       <div className={'NodeRelationFields'}>
@@ -182,38 +155,9 @@ export const Node: React.FC<NodeProps> = ({
             parentNodeTypeName={field.type.name}
           />
         ))}
-        {scalarFields && scalarFields.length > 0 && (
-          <div className={'NodeShowScalarsWrapper'}>
-            <div
-              className={'NodeShowScalars'}
-              onClick={(e) => {
-                if (!isNodeActive) return;
-                e.stopPropagation();
-                setShowScalars((prev) => !prev);
-              }}
-            >
-              <div className={'NodeShowScalarsTitle'}>Scalars</div>
-              {showScalars ? (
-                <Icons.ToggleOn size={18} />
-              ) : (
-                <Icons.ToggleOff size={18} />
-              )}
-            </div>
-            {showScalars &&
-              scalarFields.map((scal) => (
-                <Field
-                  onClick={() => {}}
-                  isPrimitive
-                  key={scal.name}
-                  node={scal}
-                  parentNodeTypeName={field.type.name}
-                />
-              ))}
-          </div>
-        )}
       </div>
     );
-  }, [field, isNodeActive, theme, showScalars]);
+  }, [field, isNodeActive, theme]);
   const NodeContent = useMemo(
     () => (
       <div className={'NodeTitle'}>

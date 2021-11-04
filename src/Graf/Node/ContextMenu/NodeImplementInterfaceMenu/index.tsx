@@ -32,7 +32,10 @@ export const NodeImplementInterfacesMenu: React.FC<NodeImplementInterfacesMenuPr
         setSelectedIndex(0);
       }
     }, [menuSearchValue]);
-    const selectedNodeIndex = selectedIndex % (filteredNodes?.length || 1);
+
+    const fNLength = filteredNodes?.length || 1;
+    const selectedNodeIndex =
+      (selectedIndex < 0 ? fNLength - selectedIndex : selectedIndex) % fNLength;
 
     const onNodeClick = (f: ParserField) => {
       if (!node.interfaces) {

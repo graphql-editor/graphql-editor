@@ -47,9 +47,21 @@ type FieldProps = Pick<GrafFieldProps, 'node' | 'parentNodeTypeName'> & {
   active?: boolean;
   isPrimitive?: boolean;
 };
-const ChangeTitle = style({
-  marginRight: 0,
-});
+const ChangeTitle = themed((theme) =>
+  style({
+    marginRight: 0,
+  }),
+);
+const ChangeTitleActive = themed((theme) =>
+  style({
+    margin: `0 -20px`,
+    padding: `5px 25px`,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.background.mainClose,
+    borderBottomStyle: 'solid',
+    marginBottom: -1,
+  }),
+);
 export const Field: React.FC<FieldProps> = ({
   node,
   parentNodeTypeName,
@@ -71,7 +83,11 @@ export const Field: React.FC<FieldProps> = ({
         active ? ' ActiveParent' : ''
       }`}
     >
-      <Title className={ChangeTitle}>
+      <Title
+        className={`${ChangeTitle(theme)}${
+          active ? ' ' + ChangeTitleActive(theme) : ''
+        }`}
+      >
         <div className={Name}>
           <ActiveFieldName
             data={node.data}

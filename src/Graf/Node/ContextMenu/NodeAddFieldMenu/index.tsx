@@ -38,7 +38,9 @@ export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({
     }
   }, [menuSearchValue]);
 
-  const selectedNodeIndex = selectedIndex % (filteredNodes?.length || 1);
+  const fNLength = filteredNodes?.length || 1;
+  const selectedNodeIndex =
+    (selectedIndex < 0 ? fNLength - selectedIndex : selectedIndex) % fNLength;
 
   const onNodeClick = (f: ParserField, name?: string) => {
     let newName = name || f.name[0].toLowerCase() + f.name.slice(1);

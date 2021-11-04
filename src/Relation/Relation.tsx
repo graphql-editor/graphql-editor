@@ -17,7 +17,6 @@ import {
 } from '@/state/containers';
 import { sortByConnection } from './Algorithm';
 import { Node } from './Node';
-import { isScalarArgument } from '@/GraphQL/Resolve';
 import { ParserField } from 'graphql-js-tree';
 import { Search } from '@/Graf/icons';
 import { LevenshteinDistance } from '@/search';
@@ -210,15 +209,18 @@ export const Relation: React.FC<RelationProps> = () => {
           .map((n) => ({
             to: { htmlNode: refs[n.name + n.data.type], field: n },
             from: n.args
-              ?.filter((a) => !isScalarArgument(a))
-              .map((a) => {
+              ?.map((a, index) => {
                 const pn = relationDrawingNodes.find(
                   (nf) => nf.name === a.type.name,
                 );
                 if (!pn) {
                   return;
                 }
-                return { htmlNode: refs[pn.name + pn.data.type], field: pn };
+                return {
+                  htmlNode: refs[pn.name + pn.data.type],
+                  field: pn,
+                  index,
+                } as RelationPath;
               })
               .filter((o) => !!o),
           }))

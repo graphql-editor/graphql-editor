@@ -36,7 +36,10 @@ export const NodeChangeFieldTypeMenu: React.FC<NodeChangeFieldTypeMenuProps> =
       }
     }, [menuSearchValue]);
 
-    const selectedNodeIndex = selectedIndex % (filteredNodes?.length || 1);
+    const fNLength = filteredNodes?.length || 1;
+    const selectedNodeIndex =
+      (selectedIndex < 0 ? fNLength - selectedIndex : selectedIndex) % fNLength;
+
     const onNodeClick = (f: ParserField) => {
       if (node.args) {
         node.args[fieldIndex].data.type = f.data.type;

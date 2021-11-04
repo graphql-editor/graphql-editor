@@ -45,7 +45,7 @@ export const TopNodeMenu: React.FC<{
   onDelete: () => void;
   onDuplicate?: () => void;
 }> = ({ node, onDelete, onDuplicate }) => {
-  const { tree, setTree, setSelectedNode } = useTreesState();
+  const { setSelectedNode } = useTreesState();
   const [menuOpen, setMenuOpen] = useState<PossibleMenus>();
   const { theme } = useTheme();
 
@@ -55,7 +55,6 @@ export const TopNodeMenu: React.FC<{
   return (
     <>
       {node.data.type !== TypeDefinition.ScalarTypeDefinition &&
-        node.data.type !== TypeDefinition.EnumTypeDefinition &&
         node.data.type !== ValueDefinition.EnumValueDefinition && (
           <div
             className={'NodeIconArea'}
@@ -77,30 +76,6 @@ export const TopNodeMenu: React.FC<{
             )}
           </div>
         )}
-      {node.data.type === TypeDefinition.EnumTypeDefinition && (
-        <div
-          className={'NodeIconArea'}
-          data-cy={cyMenu.CreateField}
-          onClick={() => {
-            node.args = [
-              ...(node.args || []),
-              {
-                data: {
-                  type: ValueDefinition.EnumValueDefinition,
-                },
-                name: 'enumValue' + ((node.args?.length || 0) + 1),
-                type: {
-                  name: ValueDefinition.EnumValueDefinition,
-                },
-              },
-            ];
-            setTree({ ...tree });
-          }}
-          title="Click to add field"
-        >
-          <Plus height={ICON_SIZE} width={ICON_SIZE} />
-        </div>
-      )}
 
       {(node.data.type === TypeDefinition.ObjectTypeDefinition ||
         node.data.type === TypeDefinition.InterfaceTypeDefinition) && (

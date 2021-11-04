@@ -60,7 +60,17 @@ export const ResolveCreateField = (
       }));
   }
   if (field.data.type === TypeDefinition.EnumTypeDefinition) {
-    return [];
+    return [
+      {
+        data: {
+          type: ValueDefinition.EnumValueDefinition,
+        },
+        type: {
+          name: ValueDefinition.EnumValueDefinition,
+        },
+        name: '',
+      },
+    ];
   }
   if (
     field.data.type === TypeDefinition.UnionTypeDefinition ||
