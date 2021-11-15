@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ResolveImplementInterface } from '@/GraphQL/Resolve';
 import { ParserField, TypeDefinition } from 'graphql-js-tree';
 import { useTreesState } from '@/state/containers/trees';
@@ -8,6 +8,7 @@ import {
   MenuSearch,
   TypedMenuItem,
 } from '@/Graf/Node/components';
+import { sortNodes } from '@/Graf/Node/ContextMenu/sort';
 
 interface NodeImplementInterfacesMenuProps {
   node: ParserField;
@@ -16,16 +17,23 @@ interface NodeImplementInterfacesMenuProps {
 
 export const NodeImplementInterfacesMenu: React.FC<NodeImplementInterfacesMenuProps> =
   ({ node, hideMenu }) => {
-    const { tree, setTree } = useTreesState();
+    const { tree, setTree, libraryTree } = useTreesState();
     const [menuSearchValue, setMenuSearchValue] = useState('');
     const [selectedIndex, setSelectedIndex] = useState(0);
 
-    const filteredNodes = ResolveImplementInterface(node, tree.nodes)
-      ?.sort((a, b) => (a.name > b.name ? 1 : -1))
-      .filter((a) => !node.interfaces?.includes(a.name))
-      .filter((a) =>
-        a.name.toLowerCase().includes(menuSearchValue.toLowerCase()),
-      );
+    const creationNodes = useMemo(
+      () =>
+        ResolveImplementInterface(
+          node,
+          tree.nodes.concat(libraryTree.nodes),
+        )?.filter((a) => !node.interfaces?.includes(a.name)) || [],
+      [tree.nodes, libraryTree.nodes],
+    );
+
+    const filteredNodes = useMemo(
+      () => sortNodes(menuSearchValue, creationNodes),
+      [tree.nodes, libraryTree.nodes, menuSearchValue],
+    );
 
     useEffect(() => {
       if (!menuSearchValue) {

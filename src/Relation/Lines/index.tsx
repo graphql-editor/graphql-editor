@@ -30,7 +30,6 @@ interface LinesProps {
 
 export const Lines: React.FC<LinesProps> = ({ relations, selectedNode }) => {
   const { theme } = useTheme();
-  console.log(relations);
   return (
     <svg className={RelationsContainer(theme)}>
       {relations?.map((r, index) => {
@@ -49,7 +48,6 @@ export const Lines: React.FC<LinesProps> = ({ relations, selectedNode }) => {
             portNumber = portNumber === -1 ? 0 : portNumber;
             usedToIndexes.push(portNumber);
           }
-          console.log(rf.field.name, portNumber);
           return (
             <Draw
               active={fromField || toField}

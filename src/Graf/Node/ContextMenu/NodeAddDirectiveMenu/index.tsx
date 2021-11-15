@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Menu,
   MenuScrollingArea,
@@ -8,6 +8,7 @@ import {
 import { ResolveDirectives } from '@/GraphQL/Resolve';
 import { ParserField, Instances } from 'graphql-js-tree';
 import { useTreesState } from '@/state/containers/trees';
+import { sortNodes } from '@/Graf/Node/ContextMenu/sort';
 
 interface NodeAddDirectiveMenuProps {
   node: ParserField;
@@ -21,15 +22,14 @@ export const NodeAddDirectiveMenu: React.FC<NodeAddDirectiveMenuProps> = ({
   const { tree, libraryTree, setTree } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
-
-  const filteredNodes = ResolveDirectives(
-    node,
-    tree.nodes.concat(libraryTree.nodes),
-  )
-    .sort((a, b) => (a.name > b.name ? 1 : -1))
-    .filter((a) =>
-      a.name.toLowerCase().includes(menuSearchValue.toLowerCase()),
-    );
+  const creationNodes = useMemo(
+    () => ResolveDirectives(node, tree.nodes.concat(libraryTree.nodes)) || [],
+    [tree.nodes, libraryTree.nodes],
+  );
+  const filteredNodes = useMemo(
+    () => sortNodes(menuSearchValue, creationNodes),
+    [tree.nodes, libraryTree.nodes, menuSearchValue],
+  );
   useEffect(() => {
     if (!menuSearchValue) {
       setSelectedIndex(0);

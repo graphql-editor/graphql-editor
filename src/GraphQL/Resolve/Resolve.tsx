@@ -21,7 +21,7 @@ export const ResolveCreateField = (
     field.data.type === TypeExtension.InterfaceTypeExtension ||
     field.data.type === TypeExtension.ObjectTypeExtension
   ) {
-    return actualFields
+    return BuiltInScalars.concat(actualFields)
       .filter(
         (f) =>
           f.data.type === TypeDefinition.ObjectTypeDefinition ||
@@ -30,7 +30,6 @@ export const ResolveCreateField = (
           f.data.type === TypeDefinition.UnionTypeDefinition ||
           f.data.type === TypeDefinition.InterfaceTypeDefinition,
       )
-      .concat(BuiltInScalars)
       .map((n) => ({
         ...n,
         data: {

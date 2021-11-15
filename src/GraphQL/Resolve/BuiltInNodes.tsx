@@ -5,17 +5,15 @@ export const BuiltInScalars = [
   ScalarTypes.Float,
   ScalarTypes.ID,
   ScalarTypes.Int,
-]
-  .reverse()
-  .map(
-    (t) =>
-      ({
-        data: {
-          type: TypeDefinition.ScalarTypeDefinition,
-        },
-        type: {
-          name: 'scalar',
-        },
-        name: t,
-      } as ParserField),
-  );
+].map(
+  (t) =>
+    ({
+      data: {
+        type: TypeDefinition.ScalarTypeDefinition,
+      },
+      type: {
+        name: 'scalar',
+      },
+      name: t,
+    } as ParserField),
+);

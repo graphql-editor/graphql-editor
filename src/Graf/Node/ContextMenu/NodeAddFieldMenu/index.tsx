@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ResolveCreateField } from '@/GraphQL/Resolve';
 import { ParserField } from 'graphql-js-tree';
 import { useTreesState } from '@/state/containers/trees';
@@ -8,7 +8,7 @@ import {
   MenuSearch,
   TypedMenuItem,
 } from '@/Graf/Node/components';
-
+import { sortNodes } from '@/Graf/Node/ContextMenu/sort';
 interface NodeAddFieldMenuProps {
   node: ParserField;
   hideMenu: () => void;
@@ -22,21 +22,20 @@ export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({
   const [menuSearchValue, setMenuSearchValue] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const filteredNodes = menuSearchValue
-    ? ResolveCreateField(node, tree.nodes.concat(libraryTree.nodes))?.sort(
-        (a, b) =>
-          a.name.toLowerCase().includes(menuSearchValue.toLowerCase()) >
-          b.name.toLowerCase().includes(menuSearchValue.toLowerCase())
-            ? -1
-            : 1,
-      )
-    : [];
-
   useEffect(() => {
     if (!menuSearchValue) {
       setSelectedIndex(0);
     }
   }, [menuSearchValue]);
+
+  const creationNodes = useMemo(
+    () => ResolveCreateField(node, tree.nodes.concat(libraryTree.nodes)) || [],
+    [tree.nodes, libraryTree.nodes],
+  );
+  const filteredNodes = useMemo(
+    () => sortNodes(menuSearchValue, creationNodes),
+    [tree.nodes, libraryTree.nodes, menuSearchValue],
+  );
 
   const fNLength = filteredNodes?.length || 1;
   const selectedNodeIndex =
