@@ -88,6 +88,7 @@
     "worker-loader": ">=3.0.8",
     "file-loader": ">=6.2.0",
     "css-loader": ">=6.2.0",
+    "webpack": ">=5.53.0",
     "monaco-editor": ">=0.27.0",
     "@monaco-editor/react": ">=4.2.2"
   },

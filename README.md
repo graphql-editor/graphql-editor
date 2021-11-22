@@ -18,12 +18,20 @@ Here is a [guide](https://guide.graphqleditor.com) for GraphQL Editor.
 
 Create GraphQL nodes and connect them to generate a database schema. You can also use builtin text IDE with GraphQL syntax validation
 
-![demo](assets/demo.gif)
+### Creator/Editor
+
+![GraphQL Editor](assets/graphql-editor.png)
+
+### Relations
+
+![GraphQL Editor](assets/graph-relation.png)
 
 ## Table of contents
 
 - [Docs](#docs)
 - [How it works](#how-it-works)
+  - [Creator/Editor](#creatoreditor)
+  - [Relations](#relations)
 - [Table of contents](#table-of-contents)
 - [License](#license)
   - [Installation](#installation)
