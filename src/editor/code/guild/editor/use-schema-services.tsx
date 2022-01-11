@@ -80,7 +80,7 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
           },
         },
       }),
-    [options.sharedLanguageService],
+    [options],
   );
 
   React.useEffect(() => {
