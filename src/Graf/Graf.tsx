@@ -15,6 +15,7 @@ import { themed } from '@/Theming/utils';
 import { darken, toHex } from 'color2k';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { ErrorLock } from '@/shared/components';
+import { getScalarFields } from '@/Graf/utils/getScalarFields';
 
 export interface GrafProps {}
 
@@ -154,6 +155,23 @@ export const Graf: React.FC<GrafProps> = () => {
                   JSON.stringify({
                     ...node,
                     name: nodeToDuplicate?.name + 'Copy',
+                  }),
+                ),
+              );
+              setTree({ nodes: allNodes });
+            }}
+            onInputCreate={(nodeToCreateInput) => {
+              const allNodes = [...tree.nodes];
+              allNodes.push(
+                JSON.parse(
+                  JSON.stringify({
+                    ...node,
+                    args: getScalarFields(node),
+                    interfaces: [],
+                    directives: [],
+                    type: { name: 'input' },
+                    data: { type: 'InputObjectTypeDefinition' },
+                    name: nodeToCreateInput.name + 'Input',
                   }),
                 ),
               );
