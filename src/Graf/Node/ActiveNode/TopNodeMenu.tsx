@@ -47,7 +47,7 @@ export const TopNodeMenu: React.FC<{
   onDuplicate?: () => void;
   onInputCreate?: () => void;
 }> = ({ node, onDelete, onDuplicate, onInputCreate }) => {
-  const { setSelectedNode } = useTreesState();
+  const { setSelectedNode, scalars } = useTreesState();
   const [menuOpen, setMenuOpen] = useState<PossibleMenus>();
   const { theme } = useTheme();
 
@@ -56,7 +56,7 @@ export const TopNodeMenu: React.FC<{
   };
 
   const isCreateInputValid = () =>
-    getScalarFields(node)?.length > 0 &&
+    getScalarFields(node, scalars)?.length > 0 &&
     node.data.type === 'ObjectTypeDefinition';
 
   return (

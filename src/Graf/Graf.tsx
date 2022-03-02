@@ -88,6 +88,7 @@ export const Graf: React.FC<GrafProps> = () => {
     past,
     future,
     readonly,
+    scalars,
   } = useTreesState();
   const { lockGraf, grafErrors } = useErrorsState();
   const { setMenuState } = useNavigationState();
@@ -166,7 +167,7 @@ export const Graf: React.FC<GrafProps> = () => {
                 JSON.parse(
                   JSON.stringify({
                     ...node,
-                    args: getScalarFields(node),
+                    args: getScalarFields(node, scalars),
                     interfaces: [],
                     directives: [],
                     type: { name: 'input' },
