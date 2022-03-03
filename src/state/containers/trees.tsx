@@ -20,7 +20,9 @@ const useTreesStateContainer = createContainer(() => {
     const ownScalars = tree.nodes
       .filter(
         (node) =>
-          node.data.type === TypeDefinition.ScalarTypeDefinition && node.name,
+          (node.data.type === TypeDefinition.ScalarTypeDefinition ||
+            node.data.type === TypeDefinition.EnumTypeDefinition) &&
+          node.name,
       )
       .map((scalar) => scalar.name);
     setScalars((prevValue) => [...prevValue, ...ownScalars]);
