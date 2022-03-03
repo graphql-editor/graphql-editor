@@ -26,6 +26,12 @@ import { ActiveArgument } from '@/Graf/Node/Argument';
 import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
+import {
+  DragDropContext,
+  Draggable,
+  Droppable,
+  DropResult,
+} from 'react-beautiful-dnd';
 
 interface NodeProps {
   node: ParserField;
@@ -190,6 +196,26 @@ export const ActiveNode: React.FC<NodeProps> = ({
           ))!
       : undefined;
   };
+  const onDragEnd = ({ destination, source }: DropResult) => {
+    // dropped outside the list or dropped to same index
+    if (!destination || destination.index === source.index) {
+      return;
+    }
+    //jesli ostatni to usun element i dodaj na koniec
+    if (destination.index === node.args?.length) {
+    }
+    //jesli nie to zamien
+    if (node.args) {
+      const end = node.args[destination.index];
+      const start = node.args[source.index];
+      node.args[destination.index] = start;
+      node.args[source.index] = end;
+      const idx = tree.nodes.findIndex((a) => node.name === a.name);
+      tree.nodes.splice(idx, 1, node);
+      setTree({ nodes: tree.nodes });
+    }
+  };
+
   useEffect(() => {
     setOpenedNode(undefined);
   }, [node]);
@@ -383,52 +409,78 @@ export const ActiveNode: React.FC<NodeProps> = ({
               />
             );
           })}
-          {node.args?.map((a, i) => {
-            const outputDisabled = !(
-              tree.nodes.find((n) => n.name === a.type.name) ||
-              libraryTree.nodes.find((n) => n.name === a.type.name)
-            );
-            const Component = isArgumentNode
-              ? ActiveArgument
-              : isInputNode
-              ? ActiveInputValue
-              : ActiveField;
-            return (
-              <Component
-                indexInParentNode={i}
-                parentNode={node}
-                isLocked={isLocked}
-                parentNodeTypeName={node.type.name}
-                key={a.name}
-                onInputClick={() => {
-                  setOpenedNode((oN) =>
-                    oN?.index === i && oN.type === 'args'
-                      ? undefined
-                      : { type: 'args', index: i },
-                  );
-                }}
-                onOutputClick={() => {
-                  setOpenedNode((oN) =>
-                    oN?.index === i && oN.type === 'output'
-                      ? undefined
-                      : { type: 'output', index: i },
-                  );
-                }}
-                node={a}
-                inputOpen={
-                  openedNode?.type === 'args' && openedNode?.index === i
-                }
-                outputDisabled={outputDisabled}
-                outputOpen={
-                  openedNode?.type === 'output' && openedNode?.index === i
-                }
-                onDelete={() => {
-                  node.args!.splice(i, 1);
-                  setTree({ ...tree });
-                }}
-              />
-            );
-          })}
+          <DragDropContext onDragEnd={onDragEnd}>
+            {node.args?.map((a, i) => {
+              const outputDisabled = !(
+                tree.nodes.find((n) => n.name === a.type.name) ||
+                libraryTree.nodes.find((n) => n.name === a.type.name)
+              );
+              const Component = isArgumentNode
+                ? ActiveArgument
+                : isInputNode
+                ? ActiveInputValue
+                : ActiveField;
+              return (
+                <Droppable droppableId={a.name} key={i}>
+                  {(provied) => (
+                    <div ref={provied.innerRef} {...provied.droppableProps}>
+                      <Draggable
+                        {...provied.innerRef}
+                        draggableId={a.name}
+                        index={i}
+                      >
+                        {(provied) => (
+                          <div
+                            key={a.name}
+                            ref={provied.innerRef}
+                            {...provied.dragHandleProps}
+                            {...provied.draggableProps}
+                          >
+                            <Component
+                              indexInParentNode={i}
+                              parentNode={node}
+                              isLocked={isLocked}
+                              parentNodeTypeName={node.type.name}
+                              key={a.name}
+                              onInputClick={() => {
+                                setOpenedNode((oN) =>
+                                  oN?.index === i && oN.type === 'args'
+                                    ? undefined
+                                    : { type: 'args', index: i },
+                                );
+                              }}
+                              onOutputClick={() => {
+                                setOpenedNode((oN) =>
+                                  oN?.index === i && oN.type === 'output'
+                                    ? undefined
+                                    : { type: 'output', index: i },
+                                );
+                              }}
+                              node={a}
+                              inputOpen={
+                                openedNode?.type === 'args' &&
+                                openedNode?.index === i
+                              }
+                              outputDisabled={outputDisabled}
+                              outputOpen={
+                                openedNode?.type === 'output' &&
+                                openedNode?.index === i
+                              }
+                              onDelete={() => {
+                                node.args!.splice(i, 1);
+                                setTree({ ...tree });
+                              }}
+                            />
+                          </div>
+                        )}
+                      </Draggable>
+                      {provied.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              );
+            })}
+          </DragDropContext>
           <div style={{ marginBottom: 400 }} />
         </div>
       </div>
