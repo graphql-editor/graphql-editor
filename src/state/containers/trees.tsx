@@ -1,6 +1,7 @@
 import { createContainer } from 'unstated-next';
 import { useState, useCallback, useEffect } from 'react';
-import { ParserTree, ParserField } from 'graphql-js-tree';
+import { ParserTree, ParserField, TypeDefinition } from 'graphql-js-tree';
+import { BuiltInScalars } from '@/GraphQL/Resolve';
 const useTreesStateContainer = createContainer(() => {
   const [tree, setTree] = useState<ParserTree>({ nodes: [] });
   const [libraryTree, setLibraryTree] = useState<ParserTree>({ nodes: [] });
@@ -9,14 +10,7 @@ const useTreesStateContainer = createContainer(() => {
   const [selectedNode, setSelectedNode] = useState<ParserField>();
   const [readonly, setReadonly] = useState(false);
   const [isTreeInitial, setIsTreeInitial] = useState(true);
-  const [scalars, setScalars] = useState([
-    'String',
-    'ID',
-    'Float',
-    'ID',
-    'Int',
-    'Boolean',
-  ]);
+  const [scalars, setScalars] = useState(BuiltInScalars.map((a) => a.name));
 
   useEffect(() => {
     updateScallars();
@@ -24,7 +18,10 @@ const useTreesStateContainer = createContainer(() => {
 
   const updateScallars = () => {
     const ownScalars = tree.nodes
-      .filter((node) => node.type.name === 'scalar' && node.name)
+      .filter(
+        (node) =>
+          node.data.type === TypeDefinition.ScalarTypeDefinition && node.name,
+      )
       .map((scalar) => scalar.name);
     setScalars((prevValue) => [...prevValue, ...ownScalars]);
   };
