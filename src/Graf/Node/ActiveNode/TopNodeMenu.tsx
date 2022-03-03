@@ -23,6 +23,7 @@ import { style } from 'typestyle';
 import { useTreesState } from '@/state/containers/trees';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { useTheme } from '@/state/containers';
+import { getScalarFields } from '@/Graf/utils/getScalarFields';
 
 type PossibleMenus =
   | 'field'
@@ -44,14 +45,20 @@ export const TopNodeMenu: React.FC<{
   node: ParserField;
   onDelete: () => void;
   onDuplicate?: () => void;
-}> = ({ node, onDelete, onDuplicate }) => {
-  const { setSelectedNode } = useTreesState();
+  onInputCreate?: () => void;
+}> = ({ node, onDelete, onDuplicate, onInputCreate }) => {
+  const { setSelectedNode, scalars } = useTreesState();
   const [menuOpen, setMenuOpen] = useState<PossibleMenus>();
   const { theme } = useTheme();
 
   const hideMenu = () => {
     setMenuOpen(undefined);
   };
+
+  const isCreateInputValid = () =>
+    getScalarFields(node, scalars)?.length > 0 &&
+    node.data.type === 'ObjectTypeDefinition';
+
   return (
     <>
       {node.data.type !== TypeDefinition.ScalarTypeDefinition &&
@@ -175,6 +182,11 @@ export const TopNodeMenu: React.FC<{
                 {onDuplicate && (
                   <DetailMenuItem onClick={onDuplicate}>
                     Duplicate node
+                  </DetailMenuItem>
+                )}
+                {onInputCreate && isCreateInputValid() && (
+                  <DetailMenuItem onClick={onInputCreate}>
+                    Create node input
                   </DetailMenuItem>
                 )}
                 <DetailMenuItem

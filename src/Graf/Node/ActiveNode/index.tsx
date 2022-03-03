@@ -31,6 +31,7 @@ interface NodeProps {
   node: ParserField;
   onDelete: (node: ParserField) => void;
   onDuplicate?: (node: ParserField) => void;
+  onInputCreate?: (node: ParserField) => void;
   readonly?: boolean;
   parentNode?: ParserField;
 }
@@ -255,6 +256,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
               }
               node={openedNodeNode}
               onDuplicate={undefined}
+              onInputCreate={undefined}
               onDelete={() => {
                 if (openedNode.type === 'directives') {
                   node.directives!.splice(openedNode.index, 1);
@@ -332,6 +334,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
               {...sharedProps}
               onDelete={() => sharedProps.onDelete(node)}
               onDuplicate={() => sharedProps.onDuplicate?.(node)}
+              onInputCreate={() => sharedProps.onInputCreate?.(node)}
               node={node}
             />
           )}
