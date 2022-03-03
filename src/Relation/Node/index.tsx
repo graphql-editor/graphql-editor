@@ -132,12 +132,17 @@ export const Node: React.FC<NodeProps> = ({
   focus,
   isLibrary,
 }) => {
-  const { setSelectedNode, selectedNode, tree, libraryTree } = useTreesState();
+  const {
+    setSelectedNode,
+    selectedNode,
+    tree,
+    libraryTree,
+    checkRelatedNodes,
+  } = useTreesState();
   const isNodeActive = field === selectedNode;
   const { theme } = useTheme();
   const RelationFields = useMemo(() => {
     const nodeFields = field.args;
-
     return (
       <div className={'NodeRelationFields'}>
         {nodeFields?.map((a) => (
@@ -190,6 +195,7 @@ export const Node: React.FC<NodeProps> = ({
       }}
       onClick={(e) => {
         e.stopPropagation();
+        checkRelatedNodes(field);
         setSelectedNode(field);
       }}
       className={
