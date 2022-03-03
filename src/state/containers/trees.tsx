@@ -11,6 +11,9 @@ const useTreesStateContainer = createContainer(() => {
   const [readonly, setReadonly] = useState(false);
   const [isTreeInitial, setIsTreeInitial] = useState(true);
   const [scalars, setScalars] = useState(BuiltInScalars.map((a) => a.name));
+  const [nodesImplementsInterface, setNodesImplementsInterface] = useState<
+    ParserField[]
+  >([]);
 
   useEffect(() => {
     updateScallars();
@@ -74,6 +77,16 @@ const useTreesStateContainer = createContainer(() => {
     ),
   };
 
+  const checkRelatedNodes = (node: ParserField) => {
+    if (node.data.type === TypeDefinition.InterfaceTypeDefinition) {
+      setNodesImplementsInterface(
+        tree.nodes.filter((a) => a.interfaces?.includes(node.name)),
+      );
+    } else {
+      setNodesImplementsInterface([]);
+    }
+  };
+
   return {
     tree,
     setTree,
@@ -94,6 +107,8 @@ const useTreesStateContainer = createContainer(() => {
     setIsTreeInitial,
     parentTypes,
     scalars,
+    nodesImplementsInterface,
+    checkRelatedNodes,
   };
 });
 

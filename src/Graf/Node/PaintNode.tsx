@@ -78,6 +78,9 @@ const NoMatchedSearchContainer = style({
 const NotSelected = style({
   opacity: 0.4,
 });
+const RelatedNode = style({
+  opacity: 0.9,
+});
 export const PaintNode: React.FC<NodeProps> = ({
   node,
   isLibrary,
@@ -85,8 +88,14 @@ export const PaintNode: React.FC<NodeProps> = ({
   subNode,
 }) => {
   const thisNode = useRef<HTMLDivElement>(null);
-  const { setSelectedNode, selectedNode } = useTreesState();
+  const {
+    setSelectedNode,
+    selectedNode,
+    nodesImplementsInterface,
+    checkRelatedNodes,
+  } = useTreesState();
   const { theme } = useTheme();
+
   return (
     <div
       data-cy={GraphQLEditorDomStructure.tree.elements.Graf.PaintNode}
@@ -94,12 +103,17 @@ export const PaintNode: React.FC<NodeProps> = ({
         isLibrary ? LibraryNodeContainer(theme) : MainNodeContainer(theme)
       } ${
         isMatchedToSearch ? MatchedSearchContainer : NoMatchedSearchContainer
-      } ${
-        selectedNode ? (selectedNode !== node ? NotSelected : '') : ''
-      } NodeType-${node.type.name}`}
+      } ${selectedNode ? (selectedNode !== node ? NotSelected : '') : ''} 
+      ${
+        nodesImplementsInterface.find((a) => a.name === node.name)
+          ? RelatedNode
+          : ''
+      } 
+      NodeType-${node.type.name}`}
       ref={thisNode}
       onClick={(e) => {
         e.stopPropagation();
+        checkRelatedNodes(node);
         setSelectedNode(node);
       }}
     >

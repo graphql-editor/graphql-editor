@@ -129,7 +129,13 @@ let tRefs: Record<string, HTMLDivElement> = {};
 export const Relation: React.FC<RelationProps> = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [focusedNode, setFocusedNode] = useState<ParserField>();
-  const { libraryTree, tree, selectedNode, setSelectedNode } = useTreesState();
+  const {
+    libraryTree,
+    tree,
+    selectedNode,
+    setSelectedNode,
+    nodesImplementsInterface,
+  } = useTreesState();
   const { lockGraf, grafErrors } = useErrorsState();
   const { menuState, setMenuState } = useNavigationState();
   const { setActions } = useIOState();
@@ -307,6 +313,8 @@ export const Relation: React.FC<RelationProps> = () => {
               : selectedNode.args?.find((a) => a.type.name === n.name)
               ? false
               : n.args?.find((na) => na.type.name === selectedNode.name)
+              ? false
+              : nodesImplementsInterface.find((a) => a.name === n.name)
               ? false
               : true
             : undefined
