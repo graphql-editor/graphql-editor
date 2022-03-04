@@ -163,19 +163,19 @@ export const Graf: React.FC<GrafProps> = () => {
             }}
             onInputCreate={(nodeToCreateInput) => {
               const allNodes = [...tree.nodes];
-              allNodes.push(
-                JSON.parse(
-                  JSON.stringify({
-                    ...node,
-                    args: getScalarFields(node, scalars),
-                    interfaces: [],
-                    directives: [],
-                    type: { name: 'input' },
-                    data: { type: 'InputObjectTypeDefinition' },
-                    name: nodeToCreateInput.name + 'Input',
-                  }),
-                ),
+              const createdInput = JSON.parse(
+                JSON.stringify({
+                  ...node,
+                  args: getScalarFields(node, scalars),
+                  interfaces: [],
+                  directives: [],
+                  type: { name: 'input' },
+                  data: { type: 'InputObjectTypeDefinition' },
+                  name: nodeToCreateInput.name + 'Input',
+                }),
               );
+              allNodes.push(createdInput);
+              setSelectedNode(createdInput);
               setTree({ nodes: allNodes });
             }}
             node={node}
