@@ -6,6 +6,19 @@ const useErrorsStateContainer = createContainer(() => {
   const [grafErrors, setGrafErrors] = useState<string>();
   const [lockGraf, setLockGraf] = useState<string>();
   const [lockCode, setLockCode] = useState<string>();
+
+  const transformCodeError = (errors: EditorError[]) => {
+    errors.forEach((a) => {
+      if (a.row && a.row < 0) {
+        a.row = undefined;
+        a.column = undefined;
+        a.position = undefined;
+        a.libraryError = 'Already defined in library.';
+      }
+    });
+    return errors;
+  };
+
   return {
     codeErrors,
     setCodeErrors,
@@ -15,6 +28,7 @@ const useErrorsStateContainer = createContainer(() => {
     lockCode,
     setLockGraf,
     setLockCode,
+    transformCodeError,
   };
 });
 

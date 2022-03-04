@@ -93,8 +93,14 @@ export const Editor = ({
     initialSizeOfSidebar,
   );
   const { menuState, setMenuState } = useNavigationState();
-  const { grafErrors, setGrafErrors, setLockGraf, setCodeErrors, setLockCode } =
-    useErrorsState();
+  const {
+    grafErrors,
+    setGrafErrors,
+    setLockGraf,
+    setCodeErrors,
+    setLockCode,
+    transformCodeError,
+  } = useErrorsState();
 
   const {
     tree,
@@ -174,14 +180,20 @@ export const Editor = ({
         setTree(parsedCode);
       }
       Workers.validate(schema.code, schema.libraries).then((errors) => {
-        setCodeErrors(errors);
-        setLockGraf(errors.map((e) => JSON.stringify(e, null, 4)).join('\n'));
+        const tranformedErrors = transformCodeError(errors);
+        setCodeErrors(tranformedErrors);
+        setLockGraf(
+          tranformedErrors.map((e) => JSON.stringify(e, null, 4)).join('\n'),
+        );
       });
       setLockGraf(undefined);
     } catch (error) {
       Workers.validate(schema.code, schema.libraries).then((errors) => {
-        setCodeErrors(errors);
-        setLockGraf(errors.map((e) => JSON.stringify(e, null, 4)).join('\n'));
+        const tranformedErrors = transformCodeError(errors);
+        setCodeErrors(tranformedErrors);
+        setLockGraf(
+          tranformedErrors.map((e) => JSON.stringify(e, null, 4)).join('\n'),
+        );
       });
     }
   };
