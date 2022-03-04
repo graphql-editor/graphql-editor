@@ -119,6 +119,10 @@ const NodeInterfaces = style({
   marginBottom: 5,
 });
 
+const DragDropZone = style({
+  overflowY: 'auto',
+});
+
 const GapBar = themed(({ background: { mainFurthest } }) =>
   style({
     width: '100%',
@@ -197,23 +201,24 @@ export const ActiveNode: React.FC<NodeProps> = ({
       : undefined;
   };
   const onDragEnd = ({ destination, source }: DropResult) => {
-    // dropped outside the list or dropped to same index
-    if (!destination || destination.index === source.index) {
+    if (destination && destination.index === source.index) {
       return;
     }
-    //jesli ostatni to usun element i dodaj na koniec
-    if (destination.index === node.args?.length) {
-    }
-    //jesli nie to zamien
     if (node.args) {
-      const end = node.args[destination.index];
-      const start = node.args[source.index];
-      node.args[destination.index] = start;
-      node.args[source.index] = end;
-      const idx = tree.nodes.findIndex((a) => node.name === a.name);
-      tree.nodes.splice(idx, 1, node);
-      setTree({ nodes: tree.nodes });
+      if (!destination || destination.index === node.args?.length) {
+        const start = node.args[source.index];
+        node.args.push(start);
+        node.args.splice(source.index, 1);
+      } else {
+        const end = node.args[destination.index];
+        const start = node.args[source.index];
+        node.args[destination.index] = start;
+        node.args[source.index] = end;
+      }
     }
+    const idx = tree.nodes.findIndex((a) => node.name === a.name);
+    tree.nodes.splice(idx, 1, node);
+    setTree({ nodes: tree.nodes });
   };
 
   useEffect(() => {
@@ -427,6 +432,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                       <Draggable
                         {...provied.innerRef}
                         draggableId={a.name}
+                        key={a.name}
                         index={i}
                       >
                         {(provied) => (
