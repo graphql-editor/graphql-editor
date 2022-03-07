@@ -128,7 +128,6 @@ function insert<T>(arr: T[], index: number, before: T[], after: T[]) {
 let tRefs: Record<string, HTMLDivElement> = {};
 export const Relation: React.FC<RelationProps> = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const [focusedNode, setFocusedNode] = useState<ParserField>();
   const {
     libraryTree,
     tree,
@@ -136,6 +135,9 @@ export const Relation: React.FC<RelationProps> = () => {
     setSelectedNode,
     nodesImplementsInterface,
   } = useTreesState();
+  const [focusedNode, setFocusedNode] = useState<ParserField | undefined>(
+    selectedNode,
+  );
   const { lockGraf, grafErrors } = useErrorsState();
   const { menuState, setMenuState } = useNavigationState();
   const { setActions } = useIOState();
