@@ -214,8 +214,6 @@ export const ActiveNode: React.FC<NodeProps> = ({
       node.args[startIdx] = node.args[endIdx];
       node.args[endIdx] = startNode;
     }
-    const idx = tree.nodes.findIndex((a) => node.name === a.name);
-    tree.nodes.splice(idx, 1, node);
     setTree({ nodes: tree.nodes });
   };
 
