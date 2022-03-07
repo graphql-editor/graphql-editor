@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, DragEvent } from 'react';
 import {
   ParserField,
   TypeSystemDefinition,
@@ -26,6 +26,12 @@ import { ActiveArgument } from '@/Graf/Node/Argument';
 import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
+import {
+  dragLeaveHandler,
+  dragOverHandler,
+  dragStartHandler,
+} from '@/Graf/Node/ActiveNode/dnd';
+import { useVisualState } from '@/Graf/state/visual';
 
 interface NodeProps {
   node: ParserField;
@@ -113,6 +119,12 @@ const NodeInterfaces = style({
   marginBottom: 5,
 });
 
+const DragOverStyle = themed(({ dimmed }) =>
+  style({
+    paddingTop: 30,
+  }),
+);
+
 const GapBar = themed(({ background: { mainFurthest } }) =>
   style({
     width: '100%',
@@ -155,6 +167,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
       | 'directiveOutput';
     index: number;
   }>();
+  const [dragOverName, setDragOverName] = useState('');
   const { theme } = useTheme();
 
   const {
@@ -165,6 +178,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
     selectedNode,
     parentTypes,
   } = useTreesState();
+  const { draggingAllowed } = useVisualState();
 
   const isLibrary = !!libraryTree.nodes.find(
     (lN) => lN.name === node.name && lN.data.type === node.data.type,
@@ -190,6 +204,21 @@ export const ActiveNode: React.FC<NodeProps> = ({
           ))!
       : undefined;
   };
+
+  const dropHandler = (e: DragEvent, endNodeName: string) => {
+    e.stopPropagation();
+    const startNodeName = e.dataTransfer.getData('startNodeName');
+    if (endNodeName === startNodeName) return;
+    if (node.args) {
+      const startIdx = node.args.findIndex((a) => a.name === startNodeName);
+      const endIdx = node.args.findIndex((a) => a.name === endNodeName);
+      const startNode = node.args[startIdx];
+      node.args[startIdx] = node.args[endIdx];
+      node.args[endIdx] = startNode;
+    }
+    setTree({ nodes: tree.nodes });
+  };
+
   useEffect(() => {
     setOpenedNode(undefined);
   }, [node]);
@@ -394,39 +423,66 @@ export const ActiveNode: React.FC<NodeProps> = ({
               ? ActiveInputValue
               : ActiveField;
             return (
-              <Component
-                indexInParentNode={i}
-                parentNode={node}
-                isLocked={isLocked}
-                parentNodeTypeName={node.type.name}
+              <div
                 key={a.name}
-                onInputClick={() => {
-                  setOpenedNode((oN) =>
-                    oN?.index === i && oN.type === 'args'
-                      ? undefined
-                      : { type: 'args', index: i },
-                  );
+                id={a.name}
+                onDrop={(e) => {
+                  setDragOverName('');
+                  dropHandler(e, a.name);
                 }}
-                onOutputClick={() => {
-                  setOpenedNode((oN) =>
-                    oN?.index === i && oN.type === 'output'
-                      ? undefined
-                      : { type: 'output', index: i },
-                  );
+                onDragEnd={() => setDragOverName('')}
+                onDragLeave={(e) => {
+                  dragLeaveHandler(e);
                 }}
-                node={a}
-                inputOpen={
-                  openedNode?.type === 'args' && openedNode?.index === i
+                onDragOver={(e) => {
+                  setDragOverName(a.name);
+                  dragOverHandler(e);
+                }}
+                className={
+                  a.name === dragOverName ? `${DragOverStyle(theme)}` : ''
                 }
-                outputDisabled={outputDisabled}
-                outputOpen={
-                  openedNode?.type === 'output' && openedNode?.index === i
-                }
-                onDelete={() => {
-                  node.args!.splice(i, 1);
-                  setTree({ ...tree });
-                }}
-              />
+              >
+                <div
+                  draggable={draggingAllowed}
+                  onDragStart={(e) => {
+                    dragStartHandler(e, a.name);
+                  }}
+                >
+                  <Component
+                    indexInParentNode={i}
+                    parentNode={node}
+                    isLocked={isLocked}
+                    parentNodeTypeName={node.type.name}
+                    key={a.name}
+                    onInputClick={() => {
+                      setOpenedNode((oN) =>
+                        oN?.index === i && oN.type === 'args'
+                          ? undefined
+                          : { type: 'args', index: i },
+                      );
+                    }}
+                    onOutputClick={() => {
+                      setOpenedNode((oN) =>
+                        oN?.index === i && oN.type === 'output'
+                          ? undefined
+                          : { type: 'output', index: i },
+                      );
+                    }}
+                    node={a}
+                    inputOpen={
+                      openedNode?.type === 'args' && openedNode?.index === i
+                    }
+                    outputDisabled={outputDisabled}
+                    outputOpen={
+                      openedNode?.type === 'output' && openedNode?.index === i
+                    }
+                    onDelete={() => {
+                      node.args!.splice(i, 1);
+                      setTree({ ...tree });
+                    }}
+                  />
+                </div>
+              </div>
             );
           })}
           <div style={{ marginBottom: 400 }} />

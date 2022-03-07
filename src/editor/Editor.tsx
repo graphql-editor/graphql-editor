@@ -21,6 +21,7 @@ import { GraphQLEditorDomStructure } from '@/domStructure';
 import { DiffEditor } from '@/DiffEditor';
 import { Relation } from '@/Relation/Relation';
 import { DarkTheme, EditorTheme } from '@/gshared/theme/DarkTheme';
+import { VisualStateProvider } from '@/Graf/state/visual';
 
 export const Main = style({
   display: 'flex',
@@ -312,7 +313,9 @@ export const Editor = ({
       )}
       {menuState.pane === 'diagram' && (
         <div className={ErrorOuterContainer}>
-          <Graf />
+          <VisualStateProvider>
+            <Graf />
+          </VisualStateProvider>
         </div>
       )}
       {menuState.pane === 'relation' && (
