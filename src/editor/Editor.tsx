@@ -11,11 +11,12 @@ import { Hierarchy } from '@/Hierarchy';
 import { Parser, ParserTree, TreeToGraphQL } from 'graphql-js-tree';
 import { Workers } from '@/worker';
 import { style } from 'typestyle';
-import { useTreesState } from '@/state/containers/trees';
 import {
   useErrorsState,
   useNavigationState,
+  useTreesState,
   useTheme,
+  VisualStateProvider,
 } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { DiffEditor } from '@/DiffEditor';
@@ -93,8 +94,14 @@ export const Editor = ({
     initialSizeOfSidebar,
   );
   const { menuState, setMenuState } = useNavigationState();
-  const { grafErrors, setGrafErrors, setLockGraf, setCodeErrors, setLockCode } =
-    useErrorsState();
+  const {
+    grafErrors,
+    setGrafErrors,
+    setLockGraf,
+    setCodeErrors,
+    setLockCode,
+    transformCodeError,
+  } = useErrorsState();
 
   const {
     tree,
@@ -174,14 +181,20 @@ export const Editor = ({
         setTree(parsedCode);
       }
       Workers.validate(schema.code, schema.libraries).then((errors) => {
-        setCodeErrors(errors);
-        setLockGraf(errors.map((e) => JSON.stringify(e, null, 4)).join('\n'));
+        const tranformedErrors = transformCodeError(errors);
+        setCodeErrors(tranformedErrors);
+        setLockGraf(
+          tranformedErrors.map((e) => JSON.stringify(e, null, 4)).join('\n'),
+        );
       });
       setLockGraf(undefined);
     } catch (error) {
       Workers.validate(schema.code, schema.libraries).then((errors) => {
-        setCodeErrors(errors);
-        setLockGraf(errors.map((e) => JSON.stringify(e, null, 4)).join('\n'));
+        const tranformedErrors = transformCodeError(errors);
+        setCodeErrors(tranformedErrors);
+        setLockGraf(
+          tranformedErrors.map((e) => JSON.stringify(e, null, 4)).join('\n'),
+        );
       });
     }
   };
@@ -300,12 +313,16 @@ export const Editor = ({
       )}
       {menuState.pane === 'diagram' && (
         <div className={ErrorOuterContainer}>
-          <Graf />
+          <VisualStateProvider>
+            <Graf />
+          </VisualStateProvider>
         </div>
       )}
       {menuState.pane === 'relation' && (
         <div className={ErrorOuterContainer}>
-          <Relation />
+          <VisualStateProvider>
+            <Relation />
+          </VisualStateProvider>
         </div>
       )}
       {menuState.pane === 'hierarchy' && <Hierarchy />}

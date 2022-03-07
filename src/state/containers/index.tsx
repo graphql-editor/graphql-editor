@@ -3,3 +3,4 @@ export * from './io';
 export * from './navigation';
 export * from './theme';
 export * from './trees';
+export * from './visual';

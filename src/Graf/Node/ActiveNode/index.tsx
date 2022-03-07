@@ -24,7 +24,7 @@ import { TopNodeMenu } from '@/Graf/Node/ActiveNode/TopNodeMenu';
 import { ChangeAllRelatedNodes, isExtensionNode } from '@/GraphQL/Resolve';
 import { ActiveArgument } from '@/Graf/Node/Argument';
 import { themed } from '@/Theming/utils';
-import { useTheme } from '@/state/containers';
+import { useTheme, useVisualState } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import {
   dragLeaveHandler,
@@ -177,6 +177,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
     selectedNode,
     parentTypes,
   } = useTreesState();
+  const { draggingAllowed } = useVisualState();
 
   const isLibrary = !!libraryTree.nodes.find(
     (lN) => lN.name === node.name && lN.data.type === node.data.type,
@@ -214,8 +215,6 @@ export const ActiveNode: React.FC<NodeProps> = ({
       node.args[startIdx] = node.args[endIdx];
       node.args[endIdx] = startNode;
     }
-    const idx = tree.nodes.findIndex((a) => node.name === a.name);
-    tree.nodes.splice(idx, 1, node);
     setTree({ nodes: tree.nodes });
   };
 
@@ -443,7 +442,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                 }
               >
                 <div
-                  draggable
+                  draggable={draggingAllowed}
                   onDragStart={(e) => {
                     dragStartHandler(e, a.name);
                   }}

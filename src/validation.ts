@@ -2,11 +2,12 @@ import { buildSchema, validateSchema, parse, GraphQLError } from 'graphql';
 import { validateSDL } from 'graphql/validation/validate';
 
 export interface EditorError {
-  row: number;
-  column: number;
   type: 'error';
   text: string;
-  position: number;
+  row?: number;
+  column?: number;
+  position?: number;
+  libraryError?: string;
 }
 
 const GraphQLErrorToEditorErrors = (e: GraphQLError): EditorError[] => [
