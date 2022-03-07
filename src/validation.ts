@@ -43,7 +43,7 @@ const moveErrorsByLibraryPadding = (libraries: string) => {
   return (error: EditorError): EditorError => {
     return {
       ...error,
-      row: error.row - libraryPadding,
+      row: (error.row || 0) - libraryPadding,
     };
   };
 };
