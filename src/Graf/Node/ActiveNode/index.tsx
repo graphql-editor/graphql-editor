@@ -31,6 +31,7 @@ import {
   dragOverHandler,
   dragStartHandler,
 } from '@/Graf/Node/ActiveNode/dnd';
+import { useVisualState } from '@/Graf/state/visual';
 
 interface NodeProps {
   node: ParserField;
@@ -177,6 +178,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
     selectedNode,
     parentTypes,
   } = useTreesState();
+  const { draggingAllowed } = useVisualState();
 
   const isLibrary = !!libraryTree.nodes.find(
     (lN) => lN.name === node.name && lN.data.type === node.data.type,
@@ -441,7 +443,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                 }
               >
                 <div
-                  draggable
+                  draggable={draggingAllowed}
                   onDragStart={(e) => {
                     dragStartHandler(e, a.name);
                   }}

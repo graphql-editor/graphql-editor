@@ -56,6 +56,7 @@ export const ActiveField: React.FC<FieldProps> = ({
   const { tree, setTree, parentTypes, readonly } = useTreesState();
   const [menuOpen, setMenuOpen] = useState<'options' | 'details' | 'type'>();
   const isEnumValue = node.data.type === ValueDefinition.EnumValueDefinition;
+  console.log('RERERE');
   return (
     <NodeFieldContainer
       className={`NodeType-${parentNodeTypeName} ${
