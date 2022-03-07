@@ -11,17 +11,17 @@ import { Hierarchy } from '@/Hierarchy';
 import { Parser, ParserTree, TreeToGraphQL } from 'graphql-js-tree';
 import { Workers } from '@/worker';
 import { style } from 'typestyle';
-import { useTreesState } from '@/state/containers/trees';
 import {
   useErrorsState,
   useNavigationState,
+  useTreesState,
   useTheme,
+  VisualStateProvider,
 } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { DiffEditor } from '@/DiffEditor';
 import { Relation } from '@/Relation/Relation';
 import { DarkTheme, EditorTheme } from '@/gshared/theme/DarkTheme';
-import { VisualStateProvider } from '@/Graf/state/visual';
 
 export const Main = style({
   display: 'flex',
@@ -320,7 +320,9 @@ export const Editor = ({
       )}
       {menuState.pane === 'relation' && (
         <div className={ErrorOuterContainer}>
-          <Relation />
+          <VisualStateProvider>
+            <Relation />
+          </VisualStateProvider>
         </div>
       )}
       {menuState.pane === 'hierarchy' && <Hierarchy />}

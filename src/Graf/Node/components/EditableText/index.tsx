@@ -4,8 +4,7 @@ import { fontFamily } from '@/vars';
 import { FIELD_NAME_SIZE } from '@/Graf/constants';
 import cx from 'classnames';
 import { themed } from '@/Theming/utils';
-import { useTheme } from '@/state/containers';
-import { useVisualState } from '@/Graf/state/visual';
+import { useTheme, useVisualState } from '@/state/containers';
 const Input = themed(({ text }) =>
   style({
     border: 0,

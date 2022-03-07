@@ -1,4 +1,3 @@
-import { EditableText } from '@/Graf/Node/components';
 import { ActiveType } from '@/Graf/Node/Type';
 import { useTheme, useTreesState } from '@/state/containers';
 import { ParserField, TypeDefinition } from 'graphql-js-tree';
@@ -8,6 +7,8 @@ import { Field } from '../Field';
 import * as Icons from '@/editor/icons';
 import { themed } from '@/Theming/utils';
 import { NestedCSSProperties } from 'typestyle/lib/types';
+import { FIELD_NAME_SIZE } from '@/Graf/constants';
+import { fontFamily } from '@/vars';
 
 const Content = themed(
   ({
@@ -113,6 +114,18 @@ const Content = themed(
     }),
 );
 
+const NameInRelation = themed(({ text }) =>
+  style({
+    border: 0,
+    background: 'transparent',
+    color: text,
+    minWidth: 'auto',
+    padding: 0,
+    fontFamily: fontFamily,
+    fontSize: FIELD_NAME_SIZE,
+  }),
+);
+
 interface NodeProps {
   field: ParserField;
   focus: () => void;
@@ -121,10 +134,6 @@ interface NodeProps {
   setRef: (instance: HTMLDivElement) => void;
 }
 
-const EditableTitle: React.CSSProperties = {
-  fontSize: 14,
-  fontWeight: 'bold',
-};
 export const Node: React.FC<NodeProps> = ({
   field,
   setRef,
@@ -167,7 +176,7 @@ export const Node: React.FC<NodeProps> = ({
     () => (
       <div className={'NodeTitle'}>
         <div className={`NodeName`}>
-          <EditableText style={EditableTitle} value={field.name} />
+          <span className={NameInRelation(theme)}>{field.name}</span>
         </div>
         <div className={`NodeType`}>
           <ActiveType type={field.type} />

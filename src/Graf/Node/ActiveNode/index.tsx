@@ -24,14 +24,13 @@ import { TopNodeMenu } from '@/Graf/Node/ActiveNode/TopNodeMenu';
 import { ChangeAllRelatedNodes, isExtensionNode } from '@/GraphQL/Resolve';
 import { ActiveArgument } from '@/Graf/Node/Argument';
 import { themed } from '@/Theming/utils';
-import { useTheme } from '@/state/containers';
+import { useTheme, useVisualState } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import {
   dragLeaveHandler,
   dragOverHandler,
   dragStartHandler,
 } from '@/Graf/Node/ActiveNode/dnd';
-import { useVisualState } from '@/Graf/state/visual';
 
 interface NodeProps {
   node: ParserField;
