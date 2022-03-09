@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { sizeSidebar } from '@/vars';
 import { Menu } from './Menu';
 import { CodePane } from './code';
-
 import { PassedSchema, Theming } from '@/Models';
 import { DynamicResize } from './code/Components';
 import { Graf } from '@/Graf/Graf';
@@ -112,6 +111,7 @@ export const Editor = ({
     setReadonly,
     isTreeInitial,
     setIsTreeInitial,
+    schemaType,
   } = useTreesState();
 
   const reset = () => {
@@ -180,13 +180,15 @@ export const Editor = ({
         const parsedCode = Parser.parse(schema.code);
         setTree(parsedCode);
       }
-      Workers.validate(schema.code, schema.libraries).then((errors) => {
-        const tranformedErrors = transformCodeError(errors);
-        setCodeErrors(tranformedErrors);
-        setLockGraf(
-          tranformedErrors.map((e) => JSON.stringify(e, null, 4)).join('\n'),
-        );
-      });
+      if (schemaType === 'user') {
+        Workers.validate(schema.code, schema.libraries).then((errors) => {
+          const tranformedErrors = transformCodeError(errors);
+          setCodeErrors(tranformedErrors);
+          setLockGraf(
+            tranformedErrors.map((e) => JSON.stringify(e, null, 4)).join('\n'),
+          );
+        });
+      }
       setLockGraf(undefined);
     } catch (error) {
       Workers.validate(schema.code, schema.libraries).then((errors) => {
@@ -303,10 +305,14 @@ export const Editor = ({
                 }
                 setSchema({ ...schema, code: v }, !!isInvalid);
               }}
-              schema={schema.code}
-              libraries={schema.libraries}
+              schema={
+                schema.libraries && schemaType === 'library'
+                  ? schema.libraries
+                  : schema.code
+              }
+              libraries={schemaType === 'library' ? '' : schema.libraries}
               placeholder={placeholder}
-              readonly={readonly}
+              readonly={schemaType === 'library' ? true : readonly}
             />
           </div>
         </DynamicResize>
