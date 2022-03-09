@@ -22,6 +22,7 @@ export const allApps = () => {
           width: '40%',
           display: 'flex',
           flexWrap: 'wrap',
+          justifyContent: 'center',
         }}
       >
         {Object.keys(apps).map((app) => (
