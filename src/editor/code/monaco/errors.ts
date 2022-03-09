@@ -6,7 +6,7 @@ export const mapEditorErrorToMonacoDecoration = themed(
     (m: typeof monaco) =>
     (e: EditorError) =>
       ({
-        range: new m.Range(e.row + 1, 1, e.row + 1, 1000),
+        range: new m.Range((e.row || 0) + 1, 1, (e.row || 0) + 1, 1000),
         options: {
           className: 'monacoError',
           isWholeLine: true,
