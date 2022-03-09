@@ -6,7 +6,7 @@ import * as schemas from '../schema';
 export const libraries = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
     code: schemas.finance,
-    libraries: schemas.usersLibrary,
+    libraries: schemas.usersLibraryNew,
   });
   return (
     <div
@@ -23,6 +23,16 @@ export const libraries = () => {
         theme={DarkTheme}
         setSchema={(props) => {
           setMySchema(props);
+        }}
+        diffSchemas={{
+          newSchema: {
+            code: schemas.finance,
+            libraries: schemas.usersLibraryNew,
+          },
+          oldSchema: {
+            code: schemas.finance,
+            libraries: schemas.usersLibraryOld,
+          },
         }}
         schema={mySchema}
       />

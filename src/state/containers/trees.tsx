@@ -1,14 +1,20 @@
 import { createContainer } from 'unstated-next';
 import { useState, useCallback, useEffect } from 'react';
-import { ParserTree, ParserField, TypeDefinition } from 'graphql-js-tree';
+import {
+  ParserTree,
+  ParserField,
+  TypeDefinition,
+  Parser,
+} from 'graphql-js-tree';
+import { Workers } from '@/worker';
 import { BuiltInScalars } from '@/GraphQL/Resolve';
+import { PassedSchema } from '@/Models';
+import { useErrorsState } from '@/state/containers';
 
 type SchemaType = 'user' | 'library';
 
 const useTreesStateContainer = createContainer(() => {
   const [tree, setTree] = useState<ParserTree>({ nodes: [] });
-  const [treeCopy, setTreeCopy] = useState<ParserTree>({ nodes: [] });
-
   const [libraryTree, setLibraryTree] = useState<ParserTree>({ nodes: [] });
   const [snapshots, setSnapshots] = useState<string[]>([]);
   const [undos, setUndos] = useState<string[]>([]);
@@ -20,6 +26,8 @@ const useTreesStateContainer = createContainer(() => {
     ParserField[]
   >([]);
   const [schemaType, setSchemaType] = useState<SchemaType>('user');
+
+  const { setLockGraf, setCodeErrors, transformCodeError } = useErrorsState();
 
   useEffect(() => {
     updateScallars();
@@ -37,14 +45,12 @@ const useTreesStateContainer = createContainer(() => {
     setScalars((prevValue) => [...prevValue, ...ownScalars]);
   };
 
-  const switchSchema = (schemaType: SchemaType) => {
-    setSchemaType(schemaType);
-    if (schemaType === 'library') {
-      setTreeCopy(tree);
+  const switchSchema = () => {
+    setSchemaType(schemaType === 'library' ? 'user' : 'library');
+    if (schemaType === 'user') {
       setTree({ nodes: [] });
       setReadonly(true);
-    } else if (schemaType === 'user') {
-      setTree(treeCopy);
+    } else if (schemaType === 'library') {
       setReadonly(false);
     }
   };
@@ -107,6 +113,48 @@ const useTreesStateContainer = createContainer(() => {
     }
   };
 
+  const generateTreeFromSchema = (schema: PassedSchema) => {
+    if (!schema.code) {
+      setTree({ nodes: [] });
+      return;
+    }
+    try {
+      if (schema.libraries) {
+        const excludeLibraryNodesFromDiagram = Parser.parse(schema.libraries);
+        const parsedResult = Parser.parse(schema.code, [], schema.libraries);
+        setTree({
+          nodes: parsedResult.nodes.filter(
+            (n) =>
+              !excludeLibraryNodesFromDiagram.nodes.find(
+                (eln) => eln.name === n.name && eln.data.type === n.data.type,
+              ),
+          ),
+        });
+      } else {
+        const parsedCode = Parser.parse(schema.code);
+        setTree(parsedCode);
+      }
+      if (schemaType === 'user') {
+        Workers.validate(schema.code, schema.libraries).then((errors) => {
+          const tranformedErrors = transformCodeError(errors);
+          setCodeErrors(tranformedErrors);
+          setLockGraf(
+            tranformedErrors.map((e) => JSON.stringify(e, null, 4)).join('\n'),
+          );
+        });
+      }
+      setLockGraf(undefined);
+    } catch (error) {
+      Workers.validate(schema.code, schema.libraries).then((errors) => {
+        const tranformedErrors = transformCodeError(errors);
+        setCodeErrors(tranformedErrors);
+        setLockGraf(
+          tranformedErrors.map((e) => JSON.stringify(e, null, 4)).join('\n'),
+        );
+      });
+    }
+  };
+
   return {
     tree,
     setTree,
@@ -131,6 +179,7 @@ const useTreesStateContainer = createContainer(() => {
     checkRelatedNodes,
     schemaType,
     switchSchema,
+    generateTreeFromSchema,
   };
 });
 

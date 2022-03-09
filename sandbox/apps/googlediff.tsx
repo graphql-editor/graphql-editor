@@ -6,8 +6,8 @@ import { PassedSchema } from '@/Models';
 
 export const googlediff = () => {
   const [currentSchema, setCurrentSchema] = useState<PassedSchema>({
-    code: schemas.finance,
-    libraries: schemas.usersLibrary,
+    code: schemas.googleDirectionsNew,
+    libraries: '',
   });
   return (
     <div
