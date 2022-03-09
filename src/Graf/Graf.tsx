@@ -151,14 +151,14 @@ export const Graf: React.FC<GrafProps> = () => {
             }}
             onDuplicate={(nodeToDuplicate) => {
               const allNodes = [...tree.nodes];
-              allNodes.push(
-                JSON.parse(
-                  JSON.stringify({
-                    ...node,
-                    name: nodeToDuplicate?.name + 'Copy',
-                  }),
-                ),
+              const duplicatedNode = JSON.parse(
+                JSON.stringify({
+                  ...node,
+                  name: nodeToDuplicate?.name + 'Copy',
+                }),
               );
+              allNodes.push(duplicatedNode);
+              setSelectedNode(duplicatedNode);
               setTree({ nodes: allNodes });
             }}
             onInputCreate={(nodeToCreateInput) => {

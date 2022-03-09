@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   TypeDefinition,
   ValueDefinition,
@@ -11,13 +11,14 @@ import {
   DetailMenuItem,
   Menu,
 } from '@/Graf/Node/components';
-import { More, Interface, Monkey, Plus, Tick } from '@/Graf/icons';
+import { More, Interface, Monkey, Plus, Tick, Arrq } from '@/Graf/icons';
 import {
   NodeAddDirectiveMenu,
   NodeDirectiveOptionsMenu,
   NodeImplementInterfacesMenu,
   NodeAddFieldMenu,
   NodeOperationsMenu,
+  NodeFieldsRequiredMenu,
 } from '@/Graf/Node/ContextMenu';
 import { style } from 'typestyle';
 import { useTreesState } from '@/state/containers/trees';
@@ -30,7 +31,8 @@ type PossibleMenus =
   | 'interface'
   | 'directive'
   | 'options'
-  | 'operations';
+  | 'operations'
+  | 'required';
 
 const NodeMenuContainer = style({
   position: 'absolute',
@@ -55,9 +57,19 @@ export const TopNodeMenu: React.FC<{
     setMenuOpen(undefined);
   };
 
+  useEffect(() => {
+    hideMenu();
+  }, [node]);
+
   const isCreateInputValid = () =>
     getScalarFields(node, scalars)?.length > 0 &&
     node.data.type === 'ObjectTypeDefinition';
+
+  const isRequiredMenuValid = () =>
+    node.data.type === TypeDefinition.InterfaceTypeDefinition ||
+    node.data.type === TypeDefinition.InputObjectTypeDefinition ||
+    (node.data.type === TypeDefinition.ObjectTypeDefinition &&
+      node.interfaces?.length === 0);
 
   return (
     <>
@@ -135,6 +147,27 @@ export const TopNodeMenu: React.FC<{
                 <NodeDirectiveOptionsMenu node={node} hideMenu={hideMenu} />
               </div>
             )}
+        </div>
+      )}
+      {isRequiredMenuValid() && (
+        <div
+          className={'NodeIconArea'}
+          onClick={() => {
+            setMenuOpen('required');
+          }}
+          data-cy={cyMenu.Required}
+          title="Click to mark all fields as required/non-required"
+        >
+          <Arrq
+            fill={menuOpen === 'required' ? theme.success : theme.text}
+            height={ICON_SIZE}
+            width={ICON_SIZE}
+          />
+          {menuOpen === 'required' && (
+            <div className={NodeMenuContainer}>
+              <NodeFieldsRequiredMenu hideMenu={hideMenu} node={node} />
+            </div>
+          )}
         </div>
       )}
       {node.data.type === TypeDefinition.ObjectTypeDefinition && (
