@@ -16,16 +16,16 @@ export interface RootExtendNodeProps {
 const NodeCaption = themed(({ colors: { Extend } }) =>
   style({
     flexBasis: '100%',
-    margin: `15px 15px`,
+    margin: 15,
     display: 'flex',
     borderBottom: `1px solid ${Extend}22`,
-    paddingBottom: 5,
+    paddingBottom: 15,
     alignItems: 'center',
   }),
 );
 const CaptionTitle = themed(({ colors: { Extend } }) =>
   style({
-    marginRight: 10,
+    margin: 10,
     color: Extend,
   }),
 );
@@ -33,8 +33,9 @@ const NodeContainer = style({
   padding: 10,
   display: 'flex',
   flexWrap: 'wrap',
+  alignItems: 'flex-start',
   width: '100%',
-  height: '100%',
+  paddingBottom: 15,
 });
 
 const ExtendButton = themed(({ colors: { Extend } }) =>
@@ -43,11 +44,11 @@ const ExtendButton = themed(({ colors: { Extend } }) =>
     borderColor: Extend,
     borderWidth: 1,
     borderStyle: 'solid',
-    padding: `5px 10px`,
+    padding: `7.5px 0 7.5px 10px`,
+    margin: 10,
     borderRadius: 4,
     width: 200,
     cursor: 'pointer',
-    margin: 15,
     display: 'flex',
     alignItems: 'center',
     transition: `border-color 0.25s ease-in-out`,
@@ -74,10 +75,10 @@ const PlusButton = themed(({ text, colors }) =>
     alignItems: 'center',
     alignSelf: 'center',
     color: text,
-    border: `1px solid ${colors.Extend}11`,
     width: 20,
     height: 20,
     borderRadius: 10,
+    marginRight: 5,
   }),
 );
 
