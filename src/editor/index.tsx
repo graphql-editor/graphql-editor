@@ -11,15 +11,15 @@ import {
 export const GraphQLEditor = ({ ...props }: EditorProps) => {
   return (
     <ThemeProvider initialState={props.theme}>
-      <TreesStateProvider>
-        <ErrorsStateProvider>
+      <ErrorsStateProvider>
+        <TreesStateProvider>
           <NavigationStateProvider>
             <IOStateProvider>
               <Editor {...props} />
             </IOStateProvider>
           </NavigationStateProvider>
-        </ErrorsStateProvider>
-      </TreesStateProvider>
+        </TreesStateProvider>
+      </ErrorsStateProvider>
     </ThemeProvider>
   );
 };

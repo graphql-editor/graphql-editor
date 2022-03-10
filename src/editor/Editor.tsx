@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { sizeSidebar } from '@/vars';
 import { Menu } from './Menu';
 import { CodePane } from './code';
-
 import { PassedSchema, Theming } from '@/Models';
 import { DynamicResize } from './code/Components';
 import { Graf } from '@/Graf/Graf';
@@ -75,7 +74,6 @@ let stopCodeFromTreeGeneration = false;
 let stopTreeFromCodeGeneration = false;
 
 export const Editor = ({
-  readonly,
   placeholder,
   schema = {
     code: '',
@@ -94,24 +92,20 @@ export const Editor = ({
     initialSizeOfSidebar,
   );
   const { menuState, setMenuState } = useNavigationState();
-  const {
-    grafErrors,
-    setGrafErrors,
-    setLockGraf,
-    setCodeErrors,
-    setLockCode,
-    transformCodeError,
-  } = useErrorsState();
+  const { grafErrors, setGrafErrors, setLockGraf, setLockCode } =
+    useErrorsState();
 
   const {
     tree,
     setSnapshots,
     setUndos,
-    setTree,
     setLibraryTree,
     setReadonly,
     isTreeInitial,
     setIsTreeInitial,
+    schemaType,
+    generateTreeFromSchema,
+    readonly,
   } = useTreesState();
 
   const reset = () => {
@@ -120,17 +114,11 @@ export const Editor = ({
     setGrafErrors(undefined);
   };
 
-  const generateSchemaFromTree = () => {
+  const generateSchemaFromTree = (schema: PassedSchema) => {
     if (!tree) {
       return;
     }
     if (tree.nodes.length === 0) {
-      if (schema.code !== '') {
-        setSchema({
-          ...schema,
-          code: '',
-        });
-      }
       return;
     }
     try {
@@ -156,46 +144,6 @@ export const Editor = ({
       setLockCode(msg);
       setGrafErrors(msg);
       return;
-    }
-  };
-
-  const generateTreeFromSchema = () => {
-    if (!schema.code) {
-      setTree({ nodes: [] });
-      return;
-    }
-    try {
-      if (schema.libraries) {
-        const excludeLibraryNodesFromDiagram = Parser.parse(schema.libraries);
-        const parsedResult = Parser.parse(schema.code, [], schema.libraries);
-        setTree({
-          nodes: parsedResult.nodes.filter(
-            (n) =>
-              !excludeLibraryNodesFromDiagram.nodes.find(
-                (eln) => eln.name === n.name && eln.data.type === n.data.type,
-              ),
-          ),
-        });
-      } else {
-        const parsedCode = Parser.parse(schema.code);
-        setTree(parsedCode);
-      }
-      Workers.validate(schema.code, schema.libraries).then((errors) => {
-        const tranformedErrors = transformCodeError(errors);
-        setCodeErrors(tranformedErrors);
-        setLockGraf(
-          tranformedErrors.map((e) => JSON.stringify(e, null, 4)).join('\n'),
-        );
-      });
-      setLockGraf(undefined);
-    } catch (error) {
-      Workers.validate(schema.code, schema.libraries).then((errors) => {
-        const tranformedErrors = transformCodeError(errors);
-        setCodeErrors(tranformedErrors);
-        setLockGraf(
-          tranformedErrors.map((e) => JSON.stringify(e, null, 4)).join('\n'),
-        );
-      });
     }
   };
 
@@ -230,7 +178,7 @@ export const Editor = ({
       return;
     }
     stopTreeFromCodeGeneration = true;
-    generateTreeFromSchema();
+    generateTreeFromSchema(schema);
   }, [schema.code]);
   useEffect(() => {
     onTreeChange?.(tree);
@@ -243,7 +191,7 @@ export const Editor = ({
       return;
     }
     stopCodeFromTreeGeneration = true;
-    generateSchemaFromTree();
+    generateSchemaFromTree(schema);
   }, [tree]);
   return (
     <div
@@ -257,6 +205,7 @@ export const Editor = ({
     >
       <Menu
         toggleCode={!!menuState.code}
+        schema={schema}
         setToggleCode={(e) =>
           setMenuState({
             ...menuState,
@@ -303,8 +252,12 @@ export const Editor = ({
                 }
                 setSchema({ ...schema, code: v }, !!isInvalid);
               }}
-              schema={schema.code}
-              libraries={schema.libraries}
+              schema={
+                schema.libraries && schemaType === 'library'
+                  ? schema.libraries
+                  : schema.code
+              }
+              libraries={schemaType === 'library' ? '' : schema.libraries}
               placeholder={placeholder}
               readonly={readonly}
             />
@@ -328,8 +281,16 @@ export const Editor = ({
       {menuState.pane === 'hierarchy' && <Hierarchy />}
       {menuState.pane === 'diff' && diffSchemas && (
         <DiffEditor
-          schema={diffSchemas.oldSchema.code}
-          newSchema={diffSchemas.newSchema.code}
+          schema={
+            schemaType === 'library' && diffSchemas.oldSchema.libraries
+              ? diffSchemas.oldSchema.libraries
+              : diffSchemas.oldSchema.code
+          }
+          newSchema={
+            schemaType === 'library' && diffSchemas.newSchema.libraries
+              ? diffSchemas.newSchema.libraries
+              : diffSchemas.newSchema.code
+          }
         />
       )}
     </div>

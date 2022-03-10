@@ -8,7 +8,7 @@ import {
   SchemaServicesOptions,
   useSchemaServices,
 } from './use-schema-services';
-import { useTheme } from '@/state/containers';
+import { useTheme, useTreesState } from '@/state/containers';
 import { theme as MonacoTheme } from '@/editor/code/monaco';
 
 export type SchemaEditorProps = SchemaServicesOptions & {
@@ -36,6 +36,12 @@ function BaseSchemaEditor(
     setSchema,
     onValidate,
   } = useSchemaServices(props);
+  const { schemaType } = useTreesState();
+
+  useEffect(() => {
+    if (editorRef)
+      editorRef?.revealPositionInCenter({ column: 0, lineNumber: 0 });
+  }, [editorRef, schemaType]);
 
   const { theme } = useTheme();
 

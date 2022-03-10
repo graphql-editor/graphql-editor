@@ -200,7 +200,6 @@ export const Graf: React.FC<GrafProps> = () => {
             {`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:\n${lockGraf}`}
           </ErrorLock>
         )}
-
         {grafErrors && (
           <div className={ErrorContainer(theme)}>{grafErrors}</div>
         )}

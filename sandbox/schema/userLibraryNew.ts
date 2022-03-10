@@ -1,4 +1,4 @@
-export const usersLibrary = `
+export const usersLibraryNew = `
 """
 All queries of users system
 """
@@ -47,5 +47,10 @@ type LoggedInData{
 input UserBasicData{
 	username: String!
 	password: String!
+}
+
+input new {
+hello: String!
+bye: String!
 }
 `;
