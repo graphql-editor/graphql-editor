@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ParserField, Options, Value } from 'graphql-js-tree';
+import { ParserField, Options, Value, TypeDefinition } from 'graphql-js-tree';
 import { style } from 'typestyle';
 import { NodeTypeOptionsMenu } from '@/Graf/Node/ContextMenu';
 import { ActiveArgumentName } from './ActiveArgumentName';
@@ -144,7 +144,7 @@ export const ActiveArgument: React.FC<FieldProps> = ({
           }}
         />
       </Title>
-      {!isLocked && (
+      {!isLocked && node.data.type === TypeDefinition.InterfaceTypeDefinition && (
         <FieldPort
           icons={{ closed: 'More', open: 'More' }}
           onClick={() => {
