@@ -74,7 +74,6 @@ let stopCodeFromTreeGeneration = false;
 let stopTreeFromCodeGeneration = false;
 
 export const Editor = ({
-  readonly,
   placeholder,
   schema = {
     code: '',
@@ -106,6 +105,7 @@ export const Editor = ({
     setIsTreeInitial,
     schemaType,
     generateTreeFromSchema,
+    readonly,
   } = useTreesState();
 
   const reset = () => {
@@ -259,7 +259,7 @@ export const Editor = ({
               }
               libraries={schemaType === 'library' ? '' : schema.libraries}
               placeholder={placeholder}
-              readonly={schemaType === 'library' ? true : readonly}
+              readonly={readonly}
             />
           </div>
         </DynamicResize>

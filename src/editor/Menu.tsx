@@ -61,8 +61,7 @@ export const Menu = ({
   schema,
 }: MenuProps) => {
   const { theme } = useTheme();
-  const { libraryTree, switchSchema, schemaType, generateTreeFromSchema } =
-    useTreesState();
+  const { libraryTree, switchSchema, schemaType } = useTreesState();
   return (
     <div className={HiderPanel(theme)}>
       <div
@@ -130,10 +129,7 @@ export const Menu = ({
             active: schemaType === 'library',
           })}
           onClick={() => {
-            if (schemaType === 'library') {
-              generateTreeFromSchema(schema);
-            }
-            switchSchema();
+            switchSchema(schema);
           }}
           title="library schema"
         >

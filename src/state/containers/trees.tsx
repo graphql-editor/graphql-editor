@@ -45,13 +45,15 @@ const useTreesStateContainer = createContainer(() => {
     setScalars((prevValue) => [...prevValue, ...ownScalars]);
   };
 
-  const switchSchema = () => {
+  const switchSchema = (schema: PassedSchema) => {
     setSchemaType(schemaType === 'library' ? 'user' : 'library');
     if (schemaType === 'user') {
-      setTree({ nodes: [] });
       setReadonly(true);
+      setTree({ nodes: [] });
     } else if (schemaType === 'library') {
+      setSelectedNode(undefined);
       setReadonly(false);
+      generateTreeFromSchema(schema);
     }
   };
 

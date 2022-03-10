@@ -176,6 +176,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
     setSelectedNode,
     selectedNode,
     parentTypes,
+    readonly,
   } = useTreesState();
   const { draggingAllowed } = useVisualState();
 
@@ -442,7 +443,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                 }
               >
                 <div
-                  draggable={draggingAllowed}
+                  draggable={draggingAllowed && !readonly}
                   onDragStart={(e) => {
                     dragStartHandler(e, a.name);
                   }}
