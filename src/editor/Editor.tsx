@@ -21,6 +21,7 @@ import { GraphQLEditorDomStructure } from '@/domStructure';
 import { DiffEditor } from '@/DiffEditor';
 import { Relation } from '@/Relation/Relation';
 import { DarkTheme, EditorTheme } from '@/gshared/theme/DarkTheme';
+import { Docs } from '@/Docs/Docs';
 
 export const Main = style({
   display: 'flex',
@@ -276,6 +277,11 @@ export const Editor = ({
           <VisualStateProvider>
             <Relation />
           </VisualStateProvider>
+        </div>
+      )}
+      {menuState.pane === 'docs' && (
+        <div className={ErrorOuterContainer}>
+          <Docs />
         </div>
       )}
       {menuState.pane === 'hierarchy' && <Hierarchy />}
