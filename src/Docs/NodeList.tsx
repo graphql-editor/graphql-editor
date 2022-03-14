@@ -6,26 +6,22 @@ import React from 'react';
 import { style } from 'typestyle';
 import cx from 'classnames';
 
-const List = themed(({ background: { mainFar } }) =>
-  style({
-    textAlign: 'right',
-    width: '100%',
-  }),
-);
+const List = style({
+  textAlign: 'right',
+  width: '100%',
+  paddingRight: 16,
+});
 
 const ListElement = themed(({ colors }) =>
   style({
     width: '100%',
     cursor: 'pointer',
-    borderBottom: `1px solid transparent`,
     $nest: {
       '&:hover': {
         color: colors.type,
-        borderBottomColor: colors.type,
       },
       '&.active': {
         color: colors.type,
-        borderBottomColor: colors.type,
       },
     },
   }),
@@ -41,7 +37,6 @@ const NodeText = themed(({ colors, backgroundedText }) =>
       },
       '&.active': {
         color: colors.type,
-        borderBottomColor: colors.type,
       },
     },
   }),
@@ -64,15 +59,13 @@ interface NodeListI {
 export const NodeList: React.FC<NodeListI> = ({ nodeList, listTitle }) => {
   const { theme } = useTheme();
   const { selectedNode, setSelectedNode } = useTreesState();
-
-  console.log(selectedNode);
-
   return (
-    <div className={`${List(theme)}`}>
+    <div className={`${List}`}>
       <p className={`${Title(theme)}`}>{listTitle}</p>
       {nodeList &&
-        nodeList.map((node) => (
+        nodeList.map((node, i) => (
           <div
+            key={i}
             className={cx(ListElement(theme), {
               active: node.name === selectedNode?.name,
             })}

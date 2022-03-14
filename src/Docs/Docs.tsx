@@ -10,25 +10,24 @@ const Wrapper = themed(({ background: { mainFar } }) =>
   style({
     width: '100%',
     height: '100%',
-    overflowX: 'hidden',
+    display: 'flex',
     flex: 1,
     background: mainFar,
-    overflowY: 'auto',
-    display: 'flex',
     flexDirection: 'row',
   }),
 );
 
-const SelectedNodeWrapper = themed(({ background: { mainFar } }) =>
-  style({
-    width: '80%',
-    height: '100%',
-  }),
-);
+const SelectedNodeWrapper = style({
+  width: '70%',
+  height: '100%',
+});
 
 const ListWrapper = style({
   display: 'flex',
   flexDirection: 'column',
+  overflowY: 'scroll',
+  overflowX: 'hidden',
+  width: '30%',
 });
 
 interface SplitedNodesI {
@@ -100,7 +99,7 @@ export const Docs = () => {
 
   return (
     <div className={`${Wrapper(theme)}`}>
-      <div className={`${SelectedNodeWrapper(theme)}`}>
+      <div className={`${SelectedNodeWrapper}`}>
         {selectedNode && <DocsElement node={selectedNode} />}
       </div>
       <div className={`${ListWrapper}`}>
