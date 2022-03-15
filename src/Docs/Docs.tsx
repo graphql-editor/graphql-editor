@@ -28,6 +28,7 @@ const ListWrapper = style({
   overflowY: 'scroll',
   overflowX: 'hidden',
   width: '30%',
+  padding: '12px 32px',
 });
 
 interface SplitedNodesI {

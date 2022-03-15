@@ -9,7 +9,6 @@ import cx from 'classnames';
 const List = style({
   textAlign: 'right',
   width: '100%',
-  paddingRight: 16,
 });
 
 const ListElement = themed(({ colors }) =>
@@ -31,6 +30,7 @@ const NodeText = themed(({ colors, backgroundedText }) =>
   style({
     fontFamily,
     color: backgroundedText,
+    fontSize: 14,
     $nest: {
       '&:hover': {
         color: colors.type,
@@ -48,6 +48,7 @@ const Title = themed(({ colors }) =>
     lineHeight: 2,
     textTransform: 'uppercase',
     color: colors.type,
+    fontSize: 16,
   }),
 );
 
