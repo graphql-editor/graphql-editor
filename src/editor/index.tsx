@@ -7,17 +7,20 @@ import {
   IOStateProvider,
   ThemeProvider,
 } from '@/state/containers';
+import { LayoutStateProvider } from '@/state/containers/layout';
 
 export const GraphQLEditor = ({ ...props }: EditorProps) => {
   return (
     <ThemeProvider initialState={props.theme}>
       <ErrorsStateProvider>
         <TreesStateProvider>
-          <NavigationStateProvider>
-            <IOStateProvider>
-              <Editor {...props} />
-            </IOStateProvider>
-          </NavigationStateProvider>
+          <LayoutStateProvider>
+            <NavigationStateProvider>
+              <IOStateProvider>
+                <Editor {...props} />
+              </IOStateProvider>
+            </NavigationStateProvider>
+          </LayoutStateProvider>
         </TreesStateProvider>
       </ErrorsStateProvider>
     </ThemeProvider>

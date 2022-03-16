@@ -8,7 +8,16 @@ export const DynamicResize: React.FunctionComponent<{
   width: number | string;
   resizeCallback: ResizeCallback;
   disabledClass?: string;
-}> = ({ children, width, resizeCallback, disabledClass }) => {
+  maxWidth?: string | number;
+  minWidth?: string | number;
+}> = ({
+  children,
+  width,
+  resizeCallback,
+  disabledClass,
+  maxWidth = '94%',
+  minWidth = '90',
+}) => {
   if (disabledClass) {
     return <div className={disabledClass}>{children}</div>;
   }
@@ -24,8 +33,8 @@ export const DynamicResize: React.FunctionComponent<{
         zIndex: 3,
       }}
       onResize={resizeCallback}
-      maxWidth="100%"
-      minWidth="1"
+      maxWidth={maxWidth}
+      minWidth={minWidth}
     >
       {children}
     </Resizable>

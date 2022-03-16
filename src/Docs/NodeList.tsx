@@ -8,7 +8,6 @@ import cx from 'classnames';
 
 const List = style({
   textAlign: 'right',
-  width: '100%',
 });
 
 const ListElement = themed(({ colors }) =>
@@ -31,6 +30,7 @@ const NodeText = themed(({ colors, backgroundedText }) =>
     fontFamily,
     color: backgroundedText,
     fontSize: 14,
+    lineHeight: 1,
     $nest: {
       '&:hover': {
         color: colors.type,
@@ -45,15 +45,24 @@ const NodeText = themed(({ colors, backgroundedText }) =>
 const Title = themed(({ colors }) =>
   style({
     fontFamily,
-    lineHeight: 2,
+    lineHeight: 1,
     textTransform: 'uppercase',
     color: colors.type,
     fontSize: 16,
   }),
 );
 
+type ListTitle =
+  | 'Schema'
+  | 'Types'
+  | 'Interface'
+  | 'Inputs'
+  | 'Enums'
+  | 'Scalars'
+  | 'Unions';
+
 interface NodeListI {
-  listTitle: string;
+  listTitle: ListTitle;
   nodeList?: ParserField[];
 }
 

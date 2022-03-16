@@ -1,6 +1,8 @@
 import { DocsElement } from '@/Docs/DocsElement';
 import { NodeList } from '@/Docs/NodeList';
+import { DynamicResize } from '@/editor/code/Components';
 import { useTheme, useTreesState } from '@/state/containers';
+import { useLayoutState } from '@/state/containers/layout';
 import { themed } from '@/Theming/utils';
 import { ParserField, TypeDefinition } from 'graphql-js-tree';
 import React, { useEffect, useState } from 'react';
@@ -11,23 +13,25 @@ const Wrapper = themed(({ background: { mainFar } }) =>
     width: '100%',
     height: '100%',
     display: 'flex',
-    flex: 1,
     background: mainFar,
+    position: 'relative',
     flexDirection: 'row',
+    justifyContent: 'space-between',
   }),
 );
 
-const SelectedNodeWrapper = style({
-  width: '70%',
-  height: '100%',
-});
+const SelectedNodeWrapper = (width: number) =>
+  style({
+    height: '100%',
+    width: `${width}px`,
+    minWidth: '90px',
+  });
 
 const ListWrapper = style({
   display: 'flex',
   flexDirection: 'column',
+  width: '100%',
   overflowY: 'scroll',
-  overflowX: 'hidden',
-  width: '30%',
   padding: '12px 32px',
 });
 
@@ -44,6 +48,8 @@ interface SplitedNodesI {
 export const Docs = () => {
   const { theme } = useTheme();
   const { tree, selectedNode } = useTreesState();
+  const { setDocumentationWidth, documentationWidth, calcWidth } =
+    useLayoutState();
 
   const [splitedNodes, setSplitedNodes] = useState<SplitedNodesI>();
 
@@ -100,21 +106,28 @@ export const Docs = () => {
 
   return (
     <div className={`${Wrapper(theme)}`}>
-      <div className={`${SelectedNodeWrapper}`}>
+      <div className={`${SelectedNodeWrapper(calcWidth())}`}>
         {selectedNode && <DocsElement node={selectedNode} />}
       </div>
-      <div className={`${ListWrapper}`}>
-        <NodeList nodeList={splitedNodes?.schemaNodes} listTitle="Schema" />
-        <NodeList nodeList={splitedNodes?.typeNodes} listTitle="Types" />
-        <NodeList
-          nodeList={splitedNodes?.interfaceNodes}
-          listTitle="Interface"
-        />
-        <NodeList nodeList={splitedNodes?.inputNodes} listTitle="Inputs" />
-        <NodeList nodeList={splitedNodes?.enumNodes} listTitle="Enums" />
-        <NodeList nodeList={splitedNodes?.scalarNodes} listTitle="Scalars" />
-        <NodeList nodeList={splitedNodes?.unionNodes} listTitle="Unions" />
-      </div>
+      <DynamicResize
+        resizeCallback={(e, r, c, w) => {
+          setDocumentationWidth(c.getBoundingClientRect().width);
+        }}
+        width={documentationWidth}
+      >
+        <div className={`${ListWrapper}`}>
+          <NodeList nodeList={splitedNodes?.schemaNodes} listTitle="Schema" />
+          <NodeList nodeList={splitedNodes?.typeNodes} listTitle="Types" />
+          <NodeList
+            nodeList={splitedNodes?.interfaceNodes}
+            listTitle="Interface"
+          />
+          <NodeList nodeList={splitedNodes?.inputNodes} listTitle="Inputs" />
+          <NodeList nodeList={splitedNodes?.enumNodes} listTitle="Enums" />
+          <NodeList nodeList={splitedNodes?.scalarNodes} listTitle="Scalars" />
+          <NodeList nodeList={splitedNodes?.unionNodes} listTitle="Unions" />
+        </div>
+      </DynamicResize>
     </div>
   );
 };
