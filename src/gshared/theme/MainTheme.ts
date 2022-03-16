@@ -32,7 +32,7 @@ export const MainTheme: EditorTheme = {
     type: '#1885f2',
     union: '#7a5be5',
     input: '#d86b35',
-    scalar: '#09591f',
+    scalar: '#3d9972',
     interface: '#bf376c',
     enum: '#a1d835',
     directive: '#cc493d',

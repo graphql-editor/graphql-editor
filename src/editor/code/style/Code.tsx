@@ -27,6 +27,14 @@ export const CodeContainer = themed(
         '.vs-dark .monaco-scrollable-element > .scrollbar > .slider': {
           background: mainFar,
         },
+        '.vs-dark .monaco-editor .char-delete, .vs-dark .monaco-editor .line-delete':
+          {
+            background: '#c12f1f39',
+          },
+        '.vs-dark .monaco-editor .char-insert, .vs-dark .monaco-editor .line-insert':
+          {
+            background: '#3d997340',
+          },
       },
     }),
 );

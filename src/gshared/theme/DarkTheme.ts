@@ -31,7 +31,7 @@ const BaseTheme = {
     type: '#410057',
     union: '#260033',
     input: '#0a4d4c',
-    scalar: '#09591f',
+    scalar: '#0f9535',
     interface: '#057799',
     enum: '#537915',
     directive: '#772c4a',
