@@ -29,7 +29,7 @@ const NodeText = themed(({ colors, backgroundedText }) =>
   style({
     fontFamily,
     color: backgroundedText,
-    fontSize: 14,
+    fontSize: 12,
     lineHeight: 1,
     $nest: {
       '&:hover': {
@@ -59,7 +59,8 @@ type ListTitle =
   | 'Inputs'
   | 'Enums'
   | 'Scalars'
-  | 'Unions';
+  | 'Unions'
+  | 'Directives';
 
 interface NodeListI {
   listTitle: ListTitle;

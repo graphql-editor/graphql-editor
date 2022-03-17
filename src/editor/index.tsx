@@ -14,13 +14,13 @@ export const GraphQLEditor = ({ ...props }: EditorProps) => {
     <ThemeProvider initialState={props.theme}>
       <ErrorsStateProvider>
         <TreesStateProvider>
-          <LayoutStateProvider>
-            <NavigationStateProvider>
+          <NavigationStateProvider>
+            <LayoutStateProvider>
               <IOStateProvider>
                 <Editor {...props} />
               </IOStateProvider>
-            </NavigationStateProvider>
-          </LayoutStateProvider>
+            </LayoutStateProvider>
+          </NavigationStateProvider>
         </TreesStateProvider>
       </ErrorsStateProvider>
     </ThemeProvider>

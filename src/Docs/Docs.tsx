@@ -4,7 +4,11 @@ import { DynamicResize } from '@/editor/code/Components';
 import { useTheme, useTreesState } from '@/state/containers';
 import { useLayoutState } from '@/state/containers/layout';
 import { themed } from '@/Theming/utils';
-import { ParserField, TypeDefinition } from 'graphql-js-tree';
+import {
+  ParserField,
+  TypeDefinition,
+  TypeSystemDefinition,
+} from 'graphql-js-tree';
 import React, { useEffect, useState } from 'react';
 import { style } from 'typestyle';
 
@@ -23,17 +27,24 @@ const Wrapper = themed(({ background: { mainFar } }) =>
 const SelectedNodeWrapper = (width: number) =>
   style({
     height: '100%',
-    width: `${width}px`,
+    width: `${width - 64}px`,
     minWidth: '90px',
+    margin: 32,
+    overflow: 'hidden',
   });
 
-const ListWrapper = style({
-  display: 'flex',
-  flexDirection: 'column',
-  width: '100%',
-  overflowY: 'scroll',
-  padding: '12px 32px',
-});
+const ListWrapper = themed(({ background }) =>
+  style({
+    display: 'flex',
+    flexDirection: 'column',
+    overflowY: 'scroll',
+    overflowX: 'hidden',
+    padding: '12px 12px 12px 0px',
+    width: '100%',
+    border: `0px solid ${background.mainClose}`,
+    borderLeftWidth: 4,
+  }),
+);
 
 interface SplitedNodesI {
   enumNodes: ParserField[];
@@ -43,6 +54,7 @@ interface SplitedNodesI {
   typeNodes: ParserField[];
   interfaceNodes: ParserField[];
   schemaNodes: ParserField[];
+  directivesNodes: ParserField[];
 }
 
 export const Docs = () => {
@@ -61,7 +73,9 @@ export const Docs = () => {
     const typeNodes: ParserField[] = [];
     const interfaceNodes: ParserField[] = [];
     const schemaNodes: ParserField[] = [];
+    const directivesNodes: ParserField[] = [];
 
+    tree.nodes.sort((a, b) => a.name.localeCompare(b.name));
     tree.nodes.forEach((node) => {
       switch (node.data.type) {
         case TypeDefinition.EnumTypeDefinition:
@@ -78,6 +92,9 @@ export const Docs = () => {
           break;
         case TypeDefinition.InterfaceTypeDefinition:
           interfaceNodes.push(node);
+          break;
+        case TypeSystemDefinition.DirectiveDefinition:
+          directivesNodes.push(node);
           break;
         case TypeDefinition.ObjectTypeDefinition:
           if (node.type.operations && node.type.operations.length > 0) {
@@ -97,6 +114,7 @@ export const Docs = () => {
       typeNodes,
       interfaceNodes,
       schemaNodes,
+      directivesNodes,
     };
   };
 
@@ -114,8 +132,9 @@ export const Docs = () => {
           setDocumentationWidth(c.getBoundingClientRect().width);
         }}
         width={documentationWidth}
+        maxWidth={500}
       >
-        <div className={`${ListWrapper}`}>
+        <div className={`${ListWrapper(theme)}`}>
           <NodeList nodeList={splitedNodes?.schemaNodes} listTitle="Schema" />
           <NodeList nodeList={splitedNodes?.typeNodes} listTitle="Types" />
           <NodeList
@@ -126,6 +145,10 @@ export const Docs = () => {
           <NodeList nodeList={splitedNodes?.enumNodes} listTitle="Enums" />
           <NodeList nodeList={splitedNodes?.scalarNodes} listTitle="Scalars" />
           <NodeList nodeList={splitedNodes?.unionNodes} listTitle="Unions" />
+          <NodeList
+            nodeList={splitedNodes?.directivesNodes}
+            listTitle="Directives"
+          />
         </div>
       </DynamicResize>
     </div>
