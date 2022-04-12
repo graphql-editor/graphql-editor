@@ -7,33 +7,21 @@ import { style } from 'typestyle';
 import cx from 'classnames';
 
 const List = style({
-  textAlign: 'right',
+  textAlign: 'left',
+  padding: 10,
 });
 
-const ListElement = themed(({ colors }) =>
-  style({
-    width: '100%',
-    cursor: 'pointer',
-    $nest: {
-      '&:hover': {
-        color: colors.type,
-      },
-      '&.active': {
-        color: colors.type,
-      },
-    },
-  }),
-);
-
-const NodeText = themed(({ colors, backgroundedText }) =>
+const NodeText = themed(({ colors, backgroundedText, background }) =>
   style({
     fontFamily,
     color: backgroundedText,
-    fontSize: 12,
-    lineHeight: 1,
+    cursor: 'pointer',
+    display: 'block',
+    fontSize: 14,
     $nest: {
       '&:hover': {
         color: colors.type,
+        background: background.mainClose,
       },
       '&.active': {
         color: colors.type,
@@ -45,10 +33,11 @@ const NodeText = themed(({ colors, backgroundedText }) =>
 const Title = themed(({ colors }) =>
   style({
     fontFamily,
-    lineHeight: 1,
     textTransform: 'uppercase',
     color: colors.type,
-    fontSize: 16,
+    margin: 0,
+    fontSize: 14,
+    marginBottom: 5,
   }),
 );
 
@@ -75,23 +64,17 @@ export const NodeList: React.FC<NodeListI> = ({ nodeList, listTitle }) => {
       <p className={`${Title(theme)}`}>{listTitle}</p>
       {nodeList &&
         nodeList.map((node, i) => (
-          <div
+          <a
             key={i}
-            className={cx(ListElement(theme), {
-              active: node.name === selectedNode?.name,
-            })}
             onClick={() => {
               setSelectedNode(node);
             }}
+            className={cx(NodeText(theme), {
+              active: node.name === selectedNode?.name,
+            })}
           >
-            <p
-              className={cx(NodeText(theme), {
-                active: node.name === selectedNode?.name,
-              })}
-            >
-              {node.name}
-            </p>
-          </div>
+            {node.name}
+          </a>
         ))}
     </div>
   );
