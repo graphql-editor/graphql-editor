@@ -1,6 +1,5 @@
 import cx from 'classnames';
-import React, { useEffect, useState } from 'react';
-import { sizeSidebar } from '@/vars';
+import React, { useEffect } from 'react';
 import { Menu } from './Menu';
 import { CodePane } from './code';
 import { PassedSchema, Theming } from '@/Models';
@@ -16,11 +15,13 @@ import {
   useTreesState,
   useTheme,
   VisualStateProvider,
+  useLayoutState,
 } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { DiffEditor } from '@/DiffEditor';
 import { Relation } from '@/Relation/Relation';
 import { DarkTheme, EditorTheme } from '@/gshared/theme/DarkTheme';
+import { Docs } from '@/Docs/Docs';
 
 export const Main = style({
   display: 'flex',
@@ -79,7 +80,6 @@ export const Editor = ({
     code: '',
     libraries: '',
   },
-  initialSizeOfSidebar = sizeSidebar,
   state,
   onStateChange,
   setSchema,
@@ -88,9 +88,7 @@ export const Editor = ({
   theme = DarkTheme,
 }: EditorProps) => {
   const { theme: currentTheme, setTheme } = useTheme();
-  const [sidebarSize, setSidebarSize] = useState<string | number>(
-    initialSizeOfSidebar,
-  );
+
   const { menuState, setMenuState } = useNavigationState();
   const { grafErrors, setGrafErrors, setLockGraf, setLockCode } =
     useErrorsState();
@@ -107,6 +105,7 @@ export const Editor = ({
     generateTreeFromSchema,
     readonly,
   } = useTreesState();
+  const { setSidebarSize, sidebarSize } = useLayoutState();
 
   const reset = () => {
     setSnapshots([]);
@@ -276,6 +275,11 @@ export const Editor = ({
           <VisualStateProvider>
             <Relation />
           </VisualStateProvider>
+        </div>
+      )}
+      {menuState.pane === 'docs' && (
+        <div className={ErrorOuterContainer}>
+          <Docs />
         </div>
       )}
       {menuState.pane === 'hierarchy' && <Hierarchy />}

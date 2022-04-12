@@ -40,7 +40,7 @@ export const Hider = themed(({ active }) =>
   }),
 );
 
-export type ActivePane = 'diagram' | 'hierarchy' | 'diff' | 'relation';
+export type ActivePane = 'diagram' | 'hierarchy' | 'diff' | 'relation' | 'docs';
 export interface MenuProps {
   setToggleCode: (v: boolean) => void;
   toggleCode: boolean;
@@ -108,6 +108,18 @@ export const Menu = ({
           title="Hierarchy View"
         >
           <Icons.Layers size={18} />
+        </div>
+      )}
+      {!excludePanes.includes('docs') && (
+        <div
+          data-cy={MenuChildren.hierarchy}
+          className={cx(Hider(theme), {
+            active: activePane === 'docs',
+          })}
+          onClick={() => setActivePane('docs')}
+          title="Documentation View"
+        >
+          <Icons.Docs size={18} />
         </div>
       )}
       {!excludePanes.includes('diff') && (
