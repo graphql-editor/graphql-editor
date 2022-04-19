@@ -9,7 +9,7 @@ import {
   TypeDefinition,
   TypeSystemDefinition,
 } from 'graphql-js-tree';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { style } from 'typestyle';
 
 const Wrapper = themed(({ background: { mainFar } }) =>
@@ -46,26 +46,13 @@ const ListWrapper = themed(({ background }) =>
   }),
 );
 
-interface SplitedNodesI {
-  enumNodes: ParserField[];
-  unionNodes: ParserField[];
-  inputNodes: ParserField[];
-  scalarNodes: ParserField[];
-  typeNodes: ParserField[];
-  interfaceNodes: ParserField[];
-  schemaNodes: ParserField[];
-  directivesNodes: ParserField[];
-}
-
 export const Docs = () => {
   const { theme } = useTheme();
-  const { tree, selectedNode } = useTreesState();
+  const { tree, selectedNode, libraryTree } = useTreesState();
   const { setDocumentationWidth, documentationWidth, calcWidth } =
     useLayoutState();
 
-  const [splitedNodes, setSplitedNodes] = useState<SplitedNodesI>();
-
-  const splitTreeByType = () => {
+  const splittedNodes = useMemo(() => {
     const enumNodes: ParserField[] = [];
     const unionNodes: ParserField[] = [];
     const inputNodes: ParserField[] = [];
@@ -74,9 +61,9 @@ export const Docs = () => {
     const interfaceNodes: ParserField[] = [];
     const schemaNodes: ParserField[] = [];
     const directivesNodes: ParserField[] = [];
-
-    tree.nodes.sort((a, b) => a.name.localeCompare(b.name));
-    tree.nodes.forEach((node) => {
+    const allNodes = tree.nodes.concat(libraryTree.nodes);
+    allNodes.sort((a, b) => a.name.localeCompare(b.name));
+    allNodes.forEach((node) => {
       switch (node.data.type) {
         case TypeDefinition.EnumTypeDefinition:
           enumNodes.push(node);
@@ -116,11 +103,7 @@ export const Docs = () => {
       schemaNodes,
       directivesNodes,
     };
-  };
-
-  useEffect(() => {
-    setSplitedNodes(splitTreeByType());
-  }, [tree]);
+  }, [tree, libraryTree]);
 
   return (
     <div className={`${Wrapper(theme)}`}>
@@ -135,18 +118,18 @@ export const Docs = () => {
         maxWidth={500}
       >
         <div className={`${ListWrapper(theme)}`}>
-          <NodeList nodeList={splitedNodes?.schemaNodes} listTitle="Schema" />
-          <NodeList nodeList={splitedNodes?.typeNodes} listTitle="Types" />
+          <NodeList nodeList={splittedNodes?.schemaNodes} listTitle="Schema" />
+          <NodeList nodeList={splittedNodes?.typeNodes} listTitle="Types" />
           <NodeList
-            nodeList={splitedNodes?.interfaceNodes}
+            nodeList={splittedNodes?.interfaceNodes}
             listTitle="Interface"
           />
-          <NodeList nodeList={splitedNodes?.inputNodes} listTitle="Inputs" />
-          <NodeList nodeList={splitedNodes?.enumNodes} listTitle="Enums" />
-          <NodeList nodeList={splitedNodes?.scalarNodes} listTitle="Scalars" />
-          <NodeList nodeList={splitedNodes?.unionNodes} listTitle="Unions" />
+          <NodeList nodeList={splittedNodes?.inputNodes} listTitle="Inputs" />
+          <NodeList nodeList={splittedNodes?.enumNodes} listTitle="Enums" />
+          <NodeList nodeList={splittedNodes?.scalarNodes} listTitle="Scalars" />
+          <NodeList nodeList={splittedNodes?.unionNodes} listTitle="Unions" />
           <NodeList
-            nodeList={splitedNodes?.directivesNodes}
+            nodeList={splittedNodes?.directivesNodes}
             listTitle="Directives"
           />
         </div>

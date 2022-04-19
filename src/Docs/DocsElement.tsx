@@ -47,6 +47,7 @@ const Top = themed(({ backgroundedText }) =>
 export const Title = themed(({ backgroundedText }) =>
   style({
     color: backgroundedText,
+    fontSize: 16,
   }),
 );
 

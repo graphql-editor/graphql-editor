@@ -28,7 +28,7 @@ export const ArgumentsList: React.FC<ArgumentsListI> = ({
         argument.args.map((a, i) => (
           <React.Fragment key={i}>
             {i === 0 && <p className={`${FieldText(theme)}`}>(</p>}
-            <p className={`${FieldText(theme)}`} style={{ display: 'flex' }}>
+            <div className={`${FieldText(theme)}`} style={{ display: 'flex' }}>
               {a.name}:
               <p
                 className={`${TypeText(
@@ -38,7 +38,7 @@ export const ArgumentsList: React.FC<ArgumentsListI> = ({
               >
                 {tranfromOptions(a.type.name, a.type.options)}
               </p>
-            </p>
+            </div>
 
             {i === argument.args?.length! - 1 ? (
               <>
