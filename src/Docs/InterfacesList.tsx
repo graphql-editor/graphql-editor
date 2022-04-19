@@ -1,16 +1,26 @@
 import React from 'react';
 import { style } from 'typestyle';
 import { themed } from '@/Theming/utils';
-import { fontFamily } from '@/vars';
+import { fontFamily, transition } from '@/vars';
 import { useTheme } from '@/state/containers';
 
-const Interfaces = themed(({ colors }) =>
+const Interfaces = themed(({ colors, text }) =>
   style({
     color: colors.interface,
     fontFamily,
     fontSize: 14,
-    paddingLeft: 4,
+    padding: `4px 12px`,
+    margin: 0,
+    marginRight: 4,
     cursor: 'pointer',
+    border: `1px solid`,
+    borderRadius: 4,
+    transition: transition,
+    $nest: {
+      '&:hover': {
+        color: text,
+      },
+    },
   }),
 );
 

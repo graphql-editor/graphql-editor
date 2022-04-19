@@ -2,14 +2,23 @@ import { FieldsList } from '@/Docs/FieldsList';
 import { InterfacesList } from '@/Docs/InterfacesList';
 import { useTheme, useTreesState } from '@/state/containers';
 import { themed } from '@/Theming/utils';
-import { fontFamily } from '@/vars';
+import { fontFamilySans } from '@/vars';
 import { ParserField } from 'graphql-js-tree';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { style } from 'typestyle';
+// @ts-ignore
+import { Remarkable } from 'remarkable';
+
+const Wrapper = style({
+  display: 'flex',
+  flexDirection: 'column',
+  fontFamily: fontFamilySans,
+  fontSize: 14,
+  height: '100%',
+});
 
 export const FieldText = themed(({ backgroundedText }) =>
   style({
-    fontFamily,
     color: backgroundedText,
     fontSize: 14,
     margin: 0,
@@ -21,7 +30,6 @@ export const FieldText = themed(({ backgroundedText }) =>
 export const TypeText = (isScalar: boolean) =>
   themed(({ colors }) =>
     style({
-      fontFamily,
       color: isScalar ? colors.String : colors.type,
       fontSize: 14,
       paddingLeft: 8,
@@ -30,34 +38,30 @@ export const TypeText = (isScalar: boolean) =>
     }),
   );
 
+const Top = themed(({ backgroundedText }) =>
+  style({
+    display: 'flex',
+    alignItems: 'start',
+  }),
+);
 export const Title = themed(({ backgroundedText }) =>
   style({
     color: backgroundedText,
-    fontFamily,
-    fontSize: '1vw',
   }),
 );
 
 export const DescText = themed(({ backgroundedText }) =>
   style({
-    fontFamily,
     color: backgroundedText,
-    fontSize: 12,
-    paddingLeft: 16,
     marginTop: 8,
   }),
 );
 
-const Wrapper = style({
-  display: 'flex',
-  flexDirection: 'column',
-  height: '96vh',
-});
-
 const Type = themed(({ colors }) =>
   style({
     color: colors.type,
-    fontFamily,
+    marginLeft: 4,
+    fontSize: 10,
   }),
 );
 
@@ -74,14 +78,25 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
     if (newSelectedNode.length > 0) setSelectedNode(newSelectedNode[0]);
   };
 
+  const description = useMemo(() => {
+    return node.description ? new Remarkable().render(node.description) : '';
+  }, [node.description]);
+
   return (
     <div className={`${Wrapper}`}>
-      <h1 className={`${Title(theme)}`}>{node.name}</h1>
-      <p className={`${Type(theme)}`}>{node.type.name}</p>
+      <div className={Top(theme)}>
+        <div className={`${Title(theme)}`}>{node.name}</div>
+        <div className={`${Type(theme)}`}>{node.type.name}</div>
+      </div>
       {node.interfaces && node.interfaces.length > 0 && (
         <InterfacesList setNode={setNode} interfacesList={node.interfaces} />
       )}
-      <p className={`${DescText(theme)}`}>{node.description}</p>
+      <p
+        className={`${DescText(theme)}`}
+        dangerouslySetInnerHTML={{
+          __html: description,
+        }}
+      ></p>
       {node.args && node.args.length > 0 && (
         <FieldsList node={node} setNode={setNode} />
       )}

@@ -7,6 +7,9 @@ import { themed } from '@/Theming/utils';
 import { ParserField } from 'graphql-js-tree';
 import React from 'react';
 import { style } from 'typestyle';
+import { Remarkable } from 'remarkable';
+
+const md = new Remarkable();
 
 const ListWrapper = style({
   marginBottom: 12,
@@ -68,7 +71,12 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
               )}
             </div>
             {arg.description && (
-              <p className={`${DescText(theme)}`}>{arg.description}</p>
+              <p
+                className={`${DescText(theme)}`}
+                dangerouslySetInnerHTML={{
+                  __html: md.render(arg.description),
+                }}
+              ></p>
             )}
           </div>
         ))}

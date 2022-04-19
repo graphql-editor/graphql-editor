@@ -1,6 +1,6 @@
 {
   "name": "graphql-editor",
-  "version": "5.3.1",
+  "version": "5.3.2",
   "private": false,
   "license": "MIT",
   "description": "Visual node editor for GraphQL",
@@ -42,6 +42,7 @@
     "@types/query-string": "^6.2.0",
     "@types/react": "^17.0.21",
     "@types/react-dom": "^17.0.9",
+    "@types/remarkable": "^2.0.3",
     "@types/webpack": "5.28.0",
     "@types/webpack-env": "^1.16.2",
     "@typescript-eslint/eslint-plugin": "^4.31.1",
@@ -100,6 +101,7 @@
     "graphql-language-service": "^3.1.4",
     "graphsource": "^2.0.5",
     "re-resizable": "^6.9.1",
+    "remarkable": "^2.0.1",
     "typestyle": "^2.1.0",
     "unstated-next": "^1.1.0"
   },
