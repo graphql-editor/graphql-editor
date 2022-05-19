@@ -48,11 +48,9 @@ const useTreesStateContainer = createContainer(() => {
   const switchSchema = (schema: PassedSchema) => {
     setSchemaType(schemaType === 'library' ? 'user' : 'library');
     if (schemaType === 'user') {
-      setReadonly(true);
       setTree({ nodes: [] });
     } else if (schemaType === 'library') {
       setSelectedNode(undefined);
-      setReadonly(false);
       generateTreeFromSchema(schema);
     }
   };
@@ -171,8 +169,6 @@ const useTreesStateContainer = createContainer(() => {
     setUndos,
     future,
     relatedToSelected,
-    readonly,
-    setReadonly,
     isTreeInitial,
     setIsTreeInitial,
     parentTypes,
@@ -182,6 +178,8 @@ const useTreesStateContainer = createContainer(() => {
     schemaType,
     switchSchema,
     generateTreeFromSchema,
+    readonly,
+    setReadonly,
   };
 });
 

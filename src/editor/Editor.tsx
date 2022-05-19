@@ -85,6 +85,7 @@ export const Editor = ({
   setSchema,
   diffSchemas,
   onTreeChange,
+  readonly: editorReadOnly,
   theme = DarkTheme,
 }: EditorProps) => {
   const { theme: currentTheme, setTheme } = useTheme();
@@ -153,8 +154,12 @@ export const Editor = ({
   }, [theme]);
 
   useEffect(() => {
-    setReadonly(!!readonly);
-  }, [readonly]);
+    if (schemaType === 'library') {
+      setReadonly(true);
+      return;
+    }
+    setReadonly(!!editorReadOnly);
+  }, [editorReadOnly, schemaType]);
 
   useEffect(() => {
     if (schema.libraries) {
