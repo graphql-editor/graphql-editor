@@ -49,8 +49,8 @@ input UserBasicData{
 	password: String!
 }
 
-input new {
-hello: String!
-bye: String!
+input NewInput {
+	hello: String!
+	bye: String!
 }
 `;

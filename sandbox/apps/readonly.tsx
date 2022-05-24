@@ -23,7 +23,6 @@ export const readonly = () => {
         theme={DarkTheme}
         readonly
         setSchema={(props) => {
-          console.log('Setting schema');
           setMySchema(props);
         }}
         schema={mySchema}

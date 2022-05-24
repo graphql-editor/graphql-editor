@@ -50,16 +50,9 @@ export const TopNodeMenu: React.FC<{
   onInputCreate?: () => void;
 }> = ({ node, onDelete, onDuplicate, onInputCreate }) => {
   const { setSelectedNode, scalars } = useTreesState();
-  const [menuOpen, setMenuOpen] = useState<PossibleMenus>();
   const { theme } = useTheme();
 
-  const hideMenu = () => {
-    setMenuOpen(undefined);
-  };
-
-  useEffect(() => {
-    hideMenu();
-  }, [node]);
+  const [menuOpen, setMenuOpen] = useState<PossibleMenus>();
 
   const isCreateInputValid = () =>
     getScalarFields(node, scalars)?.length > 0 &&
@@ -71,6 +64,14 @@ export const TopNodeMenu: React.FC<{
     (node.data.type === TypeDefinition.ObjectTypeDefinition &&
       (node.interfaces?.length === 0 ||
         (!node.interfaces && !!node.args?.length)));
+
+  useEffect(() => {
+    hideMenu();
+  }, [node]);
+
+  const hideMenu = () => {
+    setMenuOpen(undefined);
+  };
 
   return (
     <>
