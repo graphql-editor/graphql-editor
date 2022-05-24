@@ -69,7 +69,8 @@ export const TopNodeMenu: React.FC<{
     node.data.type === TypeDefinition.InterfaceTypeDefinition ||
     node.data.type === TypeDefinition.InputObjectTypeDefinition ||
     (node.data.type === TypeDefinition.ObjectTypeDefinition &&
-      node.interfaces?.length === 0);
+      (node.interfaces?.length === 0 ||
+        (!node.interfaces && !!node.args?.length)));
 
   return (
     <>
