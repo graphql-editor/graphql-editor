@@ -59,12 +59,11 @@ export const TopNodeMenu: React.FC<{
     node.data.type === 'ObjectTypeDefinition';
 
   const isRequiredMenuValid = () =>
-    node.args &&
-    node.args?.length > 0 &&
-    (node.data.type === TypeDefinition.InterfaceTypeDefinition ||
-      node.data.type === TypeDefinition.InputObjectTypeDefinition ||
-      (node.data.type === TypeDefinition.ObjectTypeDefinition &&
-        (node.interfaces === undefined || node.interfaces?.length === 0)));
+    node.data.type === TypeDefinition.InterfaceTypeDefinition ||
+    node.data.type === TypeDefinition.InputObjectTypeDefinition ||
+    (node.data.type === TypeDefinition.ObjectTypeDefinition &&
+      (node.interfaces?.length === 0 ||
+        (!node.interfaces && !!node.args?.length)));
 
   useEffect(() => {
     hideMenu();
