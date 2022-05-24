@@ -5,6 +5,7 @@ import {
   ParserField,
   TypeDefinition,
   Parser,
+  OperationType,
 } from 'graphql-js-tree';
 import { Workers } from '@/worker';
 import { BuiltInScalars } from '@/GraphQL/Resolve';
@@ -155,6 +156,11 @@ const useTreesStateContainer = createContainer(() => {
     }
   };
 
+  const isNodeBaseType = (nodeName: string) =>
+    nodeName === OperationType.mutation ||
+    nodeName === OperationType.query ||
+    nodeName === OperationType.subscription;
+
   return {
     tree,
     setTree,
@@ -180,6 +186,7 @@ const useTreesStateContainer = createContainer(() => {
     generateTreeFromSchema,
     readonly,
     setReadonly,
+    isNodeBaseType,
   };
 });
 
