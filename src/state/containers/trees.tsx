@@ -156,10 +156,11 @@ const useTreesStateContainer = createContainer(() => {
     }
   };
 
-  const isNodeBaseType = (nodeName: string) =>
-    nodeName === OperationType.mutation ||
-    nodeName === OperationType.query ||
-    nodeName === OperationType.subscription;
+  const isNodeBaseType = (nodeOperations: OperationType[] | undefined) =>
+    nodeOperations &&
+    (nodeOperations.includes(OperationType.mutation) ||
+      nodeOperations.includes(OperationType.query) ||
+      nodeOperations.includes(OperationType.subscription));
 
   return {
     tree,

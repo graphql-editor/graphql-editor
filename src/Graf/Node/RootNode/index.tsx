@@ -64,10 +64,8 @@ export const RootNode: React.FC<RootNodeProps> = ({
 
   const sortNodes = () =>
     node.args
-      ?.filter((a) => isNodeBaseType(a.name.toLocaleLowerCase()))
-      .concat(
-        node.args.filter((a) => !isNodeBaseType(a.name.toLocaleLowerCase())),
-      );
+      ?.filter((a) => isNodeBaseType(a.type.operations))
+      .concat(node.args.filter((a) => !isNodeBaseType(a.type.operations)));
 
   return (
     <div className={NodeContainer} ref={thisNode}>

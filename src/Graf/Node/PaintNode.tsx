@@ -83,7 +83,6 @@ const RelatedNode = style({
 });
 const BaseNode = themed((theme) =>
   style({
-    textTransform: 'uppercase',
     color: `${theme.backgroundedText} !important`,
     borderColor: `${theme.backgroundedText} !important`,
   }),
@@ -108,7 +107,7 @@ export const PaintNode: React.FC<NodeProps> = ({
     <div
       data-cy={GraphQLEditorDomStructure.tree.elements.Graf.PaintNode}
       className={`
-      ${isNodeBaseType(node.name.toLocaleLowerCase()) ? BaseNode(theme) : null}
+      ${isNodeBaseType(node.type.operations) ? BaseNode(theme) : null}
       ${NodeContainer} 
       ${isLibrary ? LibraryNodeContainer(theme) : MainNodeContainer(theme)} ${
         isMatchedToSearch ? MatchedSearchContainer : NoMatchedSearchContainer
