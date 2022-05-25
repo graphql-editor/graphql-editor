@@ -14,6 +14,8 @@ import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { SearchInput } from '@/Graf/Node/components/SearchInput';
+import { SortAlphabeticallyButton } from '@/Graf/Node/components/SortAlphabeticallyButton';
+
 export interface RootNodeProps {
   node: ParserField;
   libraryNode?: ParserField;
@@ -61,6 +63,7 @@ export const RootNode: React.FC<RootNodeProps> = ({
   const { tree, setTree, isNodeBaseType } = useTreesState();
 
   const [filterNodes, setFilterNodes] = useState('');
+  console.log(node.name);
 
   const sortNodes = () =>
     node.args
@@ -86,6 +89,7 @@ export const RootNode: React.FC<RootNodeProps> = ({
           value={filterNodes}
           onChange={setFilterNodes}
         />
+        {node.name === 'type' && <SortAlphabeticallyButton />}
       </div>
       {!readonly && (
         <NewNode

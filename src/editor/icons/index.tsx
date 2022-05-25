@@ -390,3 +390,18 @@ export const Docs = (props: IconProps) => (
     <polyline points="10 9 9 9 8 9"></polyline>
   </svg>
 );
+
+export const SortAz = (props: IconProps & { fill?: string }) => (
+  <svg
+    width={32}
+    height={32}
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path
+      d="M26.276 19.61a1.333 1.333 0 0 0-.942-2.277H16V20h6.115l-5.724 5.724A1.333 1.333 0 0 0 17.334 28h9.333v-2.667h-6.115l5.724-5.724ZM9.334 5.32H6.667v16h-4L8 26.653l5.334-5.333h-4v-16ZM22.667 4H20c-.556 0-1.053.345-1.249.865l-3.667 9.778h2.85l.99-2.643h4.818l.99 2.641h2.85l-3.667-9.777A1.334 1.334 0 0 0 22.667 4Zm-2.743 5.333 1-2.666h.818l1 2.666h-2.818Z"
+      fill={props.fill || '#4D4D4D'}
+    />
+  </svg>
+);
