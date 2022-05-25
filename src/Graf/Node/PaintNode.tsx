@@ -81,11 +81,17 @@ const NotSelected = style({
 const RelatedNode = style({
   opacity: 0.9,
 });
+const BaseNode = themed((theme) =>
+  style({
+    color: `${theme.backgroundedText} !important`,
+    borderColor: `${theme.backgroundedText} !important`,
+  }),
+);
+
 export const PaintNode: React.FC<NodeProps> = ({
   node,
   isLibrary,
   isMatchedToSearch,
-  subNode,
 }) => {
   const thisNode = useRef<HTMLDivElement>(null);
   const {
@@ -93,23 +99,25 @@ export const PaintNode: React.FC<NodeProps> = ({
     selectedNode,
     nodesImplementsInterface,
     checkRelatedNodes,
+    isNodeBaseType,
   } = useTreesState();
   const { theme } = useTheme();
 
   return (
     <div
       data-cy={GraphQLEditorDomStructure.tree.elements.Graf.PaintNode}
-      className={`${NodeContainer} ${
-        isLibrary ? LibraryNodeContainer(theme) : MainNodeContainer(theme)
-      } ${
+      className={`
+      ${isNodeBaseType(node.type.operations) ? BaseNode(theme) : null}
+      ${NodeContainer} 
+      ${isLibrary ? LibraryNodeContainer(theme) : MainNodeContainer(theme)} ${
         isMatchedToSearch ? MatchedSearchContainer : NoMatchedSearchContainer
-      } ${selectedNode ? (selectedNode !== node ? NotSelected : '') : ''} 
+      } ${selectedNode ? (selectedNode !== node ? NotSelected : '') : ''}
       ${
         nodesImplementsInterface.find((a) => a.name === node.name)
           ? RelatedNode
           : ''
-      } 
-      NodeType-${node.type.name}`}
+      }NodeType-${node.type.name} 
+      `}
       ref={thisNode}
       onClick={(e) => {
         e.stopPropagation();
