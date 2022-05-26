@@ -15,6 +15,7 @@ import { useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { SearchInput } from '@/Graf/Node/components/SearchInput';
 import { SortAlphabeticallyButton } from '@/Graf/Node/components/SortAlphabeticallyButton';
+import { useSortState } from '@/state/containers/sort';
 
 export interface RootNodeProps {
   node: ParserField;
@@ -60,15 +61,24 @@ export const RootNode: React.FC<RootNodeProps> = ({
 }) => {
   const thisNode = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
-  const { tree, setTree, isNodeBaseType } = useTreesState();
+  const { tree, setTree } = useTreesState();
+  const { sortAlphabetically, isSortAlphabetically, isNodeBaseType } =
+    useSortState();
 
   const [filterNodes, setFilterNodes] = useState('');
-  console.log(node.name);
 
   const sortNodes = () =>
-    node.args
-      ?.filter((a) => isNodeBaseType(a.type.operations))
-      .concat(node.args.filter((a) => !isNodeBaseType(a.type.operations)));
+    isSortAlphabetically
+      ? node.args
+          ?.filter((a) => isNodeBaseType(a.type.operations))
+          .concat(
+            node.args
+              .filter((a) => !isNodeBaseType(a.type.operations))
+              .sort(sortAlphabetically),
+          )
+      : node.args
+          ?.filter((a) => isNodeBaseType(a.type.operations))
+          .concat(node.args.filter((a) => !isNodeBaseType(a.type.operations)));
 
   return (
     <div className={NodeContainer} ref={thisNode}>

@@ -1,7 +1,7 @@
 import { DragEvent } from 'react';
 
 export const dragStartHandler = (e: DragEvent, startNodeName: string) => {
-  e.dataTransfer.setData('startNodeName', startNodeName);
+  e.dataTransfer.setData('startName', startNodeName);
 };
 
 export const dragOverHandler = (e: DragEvent) => {

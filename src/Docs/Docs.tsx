@@ -3,7 +3,9 @@ import { NodeList } from '@/Docs/NodeList';
 import { DynamicResize } from '@/editor/code/Components';
 import { useTheme, useTreesState } from '@/state/containers';
 import { useLayoutState } from '@/state/containers/layout';
+import { useSortState } from '@/state/containers/sort';
 import { themed } from '@/Theming/utils';
+
 import {
   ParserField,
   TypeDefinition,
@@ -51,6 +53,7 @@ export const Docs = () => {
   const { tree, selectedNode, libraryTree } = useTreesState();
   const { setDocumentationWidth, documentationWidth, calcWidth } =
     useLayoutState();
+  const { sortAlphabetically } = useSortState();
 
   const splittedNodes = useMemo(() => {
     const enumNodes: ParserField[] = [];
@@ -62,7 +65,7 @@ export const Docs = () => {
     const schemaNodes: ParserField[] = [];
     const directivesNodes: ParserField[] = [];
     const allNodes = tree.nodes.concat(libraryTree.nodes);
-    allNodes.sort((a, b) => a.name.localeCompare(b.name));
+    allNodes.sort(sortAlphabetically);
     allNodes.forEach((node) => {
       switch (node.data.type) {
         case TypeDefinition.EnumTypeDefinition:

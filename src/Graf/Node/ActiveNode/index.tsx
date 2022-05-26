@@ -118,11 +118,9 @@ const NodeInterfaces = style({
   marginBottom: 5,
 });
 
-const DragOverStyle = themed(({ dimmed }) =>
-  style({
-    paddingTop: 30,
-  }),
-);
+const DragOverStyle = style({
+  paddingTop: 30,
+});
 
 const GapBar = themed(({ background: { mainFurthest } }) =>
   style({
@@ -207,7 +205,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
 
   const dropHandler = (e: DragEvent, endNodeName: string) => {
     e.stopPropagation();
-    const startNodeName = e.dataTransfer.getData('startNodeName');
+    const startNodeName = e.dataTransfer.getData('startName');
     if (endNodeName === startNodeName) return;
     if (node.args) {
       const startIdx = node.args.findIndex((a) => a.name === startNodeName);
@@ -438,9 +436,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                   setDragOverName(a.name);
                   dragOverHandler(e);
                 }}
-                className={
-                  a.name === dragOverName ? `${DragOverStyle(theme)}` : ''
-                }
+                className={a.name === dragOverName ? `${DragOverStyle}` : ''}
               >
                 <div
                   draggable={draggingAllowed && !readonly}
