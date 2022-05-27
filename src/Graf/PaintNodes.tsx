@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import {
   TypeDefinitionDisplayMap,
-  TypeSystemDefinition,
   TypeSystemExtension,
   TypeExtension,
 } from 'graphql-js-tree';
@@ -36,11 +35,7 @@ export const PaintNodes: React.FC = () => {
   const { libraryTree, tree, readonly } = useTreesState();
   const { orderTypes } = useSortState();
   const { theme } = useTheme();
-  const baseTypes = [
-    ...orderTypes
-      .filter((ot) => ot.name !== TypeSystemDefinition.DirectiveDefinition)
-      .map((t) => t.name),
-  ].map((d) => ({
+  const baseTypes = [...orderTypes.map((t) => t.name)].map((d) => ({
     node: {
       name: TypeDefinitionDisplayMap[d],
       data: {
@@ -83,37 +78,6 @@ export const PaintNodes: React.FC = () => {
         <SortAlphabeticallyButton />
       </div>
       {RootBaseTypes}
-      <RootNode
-        readonly={readonly}
-        node={{
-          name: TypeDefinitionDisplayMap.DirectiveDefinition,
-          data: {
-            type: TypeSystemDefinition.DirectiveDefinition,
-          },
-          type: {
-            name: 'root',
-          },
-          args: tree.nodes
-            .filter(
-              (n) => n.data.type === TypeSystemDefinition.DirectiveDefinition,
-            )
-            .sort((a, b) => (a.name > b.name ? 1 : -1)),
-        }}
-        libraryNode={{
-          name: TypeDefinitionDisplayMap.DirectiveDefinition,
-          data: {
-            type: TypeSystemDefinition.DirectiveDefinition,
-          },
-          type: {
-            name: 'root',
-          },
-          args: libraryTree.nodes
-            .filter(
-              (n) => n.data.type === TypeSystemDefinition.DirectiveDefinition,
-            )
-            .sort((a, b) => (a.name > b.name ? 1 : -1)),
-        }}
-      />
       <RootExtendNode
         readonly={readonly}
         node={{
