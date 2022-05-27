@@ -14,6 +14,9 @@ import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { SearchInput } from '@/Graf/Node/components/SearchInput';
+import { SortAlphabeticallyButton } from '@/Graf/Node/components/SortAlphabeticallyButton';
+import { useSortState } from '@/state/containers/sort';
+
 export interface RootNodeProps {
   node: ParserField;
   libraryNode?: ParserField;
@@ -51,6 +54,11 @@ const NodeContainer = style({
   width: '100%',
 });
 
+const SortContainer = style({
+  position: 'absolute',
+  right: 20,
+});
+
 export const RootNode: React.FC<RootNodeProps> = ({
   node,
   libraryNode,
@@ -58,14 +66,24 @@ export const RootNode: React.FC<RootNodeProps> = ({
 }) => {
   const thisNode = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
-  const { tree, setTree, isNodeBaseType } = useTreesState();
+  const { tree, setTree } = useTreesState();
+  const { sortAlphabetically, isSortAlphabetically, isNodeBaseType } =
+    useSortState();
 
   const [filterNodes, setFilterNodes] = useState('');
 
   const sortNodes = () =>
-    node.args
-      ?.filter((a) => isNodeBaseType(a.type.operations))
-      .concat(node.args.filter((a) => !isNodeBaseType(a.type.operations)));
+    isSortAlphabetically
+      ? node.args
+          ?.filter((a) => isNodeBaseType(a.type.operations))
+          .concat(
+            node.args
+              .filter((a) => !isNodeBaseType(a.type.operations))
+              .sort(sortAlphabetically),
+          )
+      : node.args
+          ?.filter((a) => isNodeBaseType(a.type.operations))
+          .concat(node.args.filter((a) => !isNodeBaseType(a.type.operations)));
 
   return (
     <div className={NodeContainer} ref={thisNode}>
@@ -86,6 +104,9 @@ export const RootNode: React.FC<RootNodeProps> = ({
           value={filterNodes}
           onChange={setFilterNodes}
         />
+        <div className={SortContainer}>
+          {node.name === 'type' && <SortAlphabeticallyButton />}
+        </div>
       </div>
       {!readonly && (
         <NewNode

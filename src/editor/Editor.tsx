@@ -22,6 +22,7 @@ import { DiffEditor } from '@/DiffEditor';
 import { Relation } from '@/Relation/Relation';
 import { DarkTheme, EditorTheme } from '@/gshared/theme/DarkTheme';
 import { Docs } from '@/Docs/Docs';
+import { useSortState } from '@/state/containers/sort';
 
 export const Main = style({
   display: 'flex',
@@ -93,9 +94,9 @@ export const Editor = ({
   const { menuState, setMenuState } = useNavigationState();
   const { grafErrors, setGrafErrors, setLockGraf, setLockCode } =
     useErrorsState();
-
   const {
     tree,
+    setTree,
     setSnapshots,
     setUndos,
     setLibraryTree,
@@ -106,6 +107,7 @@ export const Editor = ({
     generateTreeFromSchema,
     readonly,
   } = useTreesState();
+  const { isSortAlphabetically, sortByTypes, orderTypes } = useSortState();
   const { setSidebarSize, sidebarSize } = useLayoutState();
 
   const reset = () => {
@@ -146,6 +148,13 @@ export const Editor = ({
       return;
     }
   };
+
+  useEffect(() => {
+    isSortAlphabetically &&
+      setTree({
+        nodes: tree.nodes.sort(sortByTypes),
+      });
+  }, [isSortAlphabetically, orderTypes]);
 
   useEffect(() => {
     if (theme) {

@@ -6,6 +6,7 @@ import { useTreesState } from '@/state/containers/trees';
 import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
+import { useSortState } from '@/state/containers/sort';
 export interface NodeProps {
   node: ParserField;
   builtIn?: boolean;
@@ -99,8 +100,8 @@ export const PaintNode: React.FC<NodeProps> = ({
     selectedNode,
     nodesImplementsInterface,
     checkRelatedNodes,
-    isNodeBaseType,
   } = useTreesState();
+  const { isNodeBaseType } = useSortState();
   const { theme } = useTheme();
 
   return (
