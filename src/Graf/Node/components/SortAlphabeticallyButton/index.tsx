@@ -8,6 +8,7 @@ import {
   dragOverHandler,
   dragStartHandler,
 } from '@/Graf/Node/ActiveNode/dnd';
+import { themed } from '@/Theming/utils';
 
 const IconWrapper = style({
   cursor: 'pointer',
@@ -16,18 +17,32 @@ const IconWrapper = style({
   alignItems: 'center',
 });
 
-const DragOverStyle = style({
-  paddingTop: 22,
-});
+const DragOverStyle = themed((theme) =>
+  style({
+    paddingTop: 22,
+    color: theme.backgrounds.type,
+  }),
+);
 
 const ListWrapper = style({
   position: 'relative',
   marginLeft: 16,
 });
 
-const TypeColor = style({
-  marginLeft: 16,
+const ListHeader = style({
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  width: 200,
 });
+
+const TypeColor = themed((theme) =>
+  style({
+    marginLeft: 16,
+    color: theme.text,
+  }),
+);
 
 const List = (backgroundColor: string) =>
   style({
@@ -55,6 +70,7 @@ export const SortAlphabeticallyButton = () => {
     e.stopPropagation();
     const startName = e.dataTransfer?.getData('startName');
     if (endNodeName === startName) return;
+    setIsSortAlphabetically(true);
     let newOrderTypes = [...orderTypes];
     const startIdx = newOrderTypes.findIndex((a) => a.name === startName);
     const endIdx = newOrderTypes.findIndex((a) => a.name === endNodeName);
@@ -67,7 +83,6 @@ export const SortAlphabeticallyButton = () => {
     }));
     setOrderTypes(newOrderTypes);
   };
-  console.log(isListVisible);
 
   return (
     <div className={IconWrapper}>
@@ -82,8 +97,10 @@ export const SortAlphabeticallyButton = () => {
         onClick={() => setIsListVisible((prev) => !prev)}
         className={ListWrapper}
       >
-        <p>Nodes order</p>
-        <X size={24} />
+        <div className={ListHeader}>
+          <p>Nodes order</p>
+          {isListVisible && <X size={20} />}
+        </div>
         <div className={List(theme.background.mainMiddle)}>
           {isListVisible &&
             orderTypes.map((type) => (
@@ -102,7 +119,9 @@ export const SortAlphabeticallyButton = () => {
                   setDragOverName(type.name);
                   dragOverHandler(e);
                 }}
-                className={type.name === dragOverName ? `${DragOverStyle}` : ''}
+                className={
+                  type.name === dragOverName ? `${DragOverStyle(theme)}` : ''
+                }
               >
                 <div
                   draggable={true}
@@ -110,7 +129,7 @@ export const SortAlphabeticallyButton = () => {
                     dragStartHandler(e, type.name);
                   }}
                 >
-                  <p className={TypeColor}>{type.name}</p>
+                  <p className={TypeColor(theme)}>{type.name}</p>
                 </div>
               </div>
             ))}

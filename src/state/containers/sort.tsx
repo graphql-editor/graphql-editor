@@ -22,19 +22,10 @@ const useSortStateContainer = createContainer(() => {
   const [isSortAlphabetically, setIsSortAlphabetically] = useState(false);
   const [orderTypes, setOrderTypes] = useState<OrderType[]>(defaultOrderTypes);
 
-  const sortByTypes = (a: ParserField, b: ParserField) => {
-    const aValue = orderTypes.find((t) => t.name === a.type.name)!.value;
-    const bValue = orderTypes.find((t) => t.name === b.type.name)!.value;
-
-    if (aValue === bValue) {
-      return sortAlphabetically(a, b);
-    } else {
-      return orderTypes.find((t) => t.name === a.type.name)!.value >
-        orderTypes.find((t) => t.name === b.type.name)!.value
-        ? 1
-        : -1;
-    }
-  };
+  const sortByTypes = (a: ParserField, b: ParserField) =>
+    orderTypes.find((t) => t.name === b.type.name)!.value -
+      orderTypes.find((t) => t.name === a.type.name)!.value ||
+    a.name.localeCompare(b.name);
 
   const sortAlphabetically = (a: ParserField, b: ParserField) =>
     a.name.localeCompare(b.name);
