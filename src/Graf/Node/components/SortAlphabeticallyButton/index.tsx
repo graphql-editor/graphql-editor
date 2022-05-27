@@ -1,5 +1,5 @@
 import React, { useState, DragEvent } from 'react';
-import { SortAz, X } from '@/editor/icons';
+import { SortAz, X, UpDownArrow } from '@/editor/icons';
 import { useTheme } from '@/state/containers';
 import { style } from 'typestyle';
 import { useSortState } from '@/state/containers/sort';
@@ -40,7 +40,6 @@ const ListHeader = style({
 
 const TypeColor = themed((theme) =>
   style({
-    marginLeft: 16,
     color: theme.text,
   }),
 );
@@ -55,6 +54,15 @@ const List = (backgroundColor: string) =>
     zIndex: 2,
     backgroundColor: backgroundColor,
   });
+
+const ListItem = style({
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  paddingRight: 16,
+  paddingLeft: 16,
+});
 
 export const SortAlphabeticallyButton = () => {
   const {
@@ -148,8 +156,10 @@ export const SortAlphabeticallyButton = () => {
                   onDragStart={(e) => {
                     dragStartHandler(e, type.name);
                   }}
+                  className={ListItem}
                 >
                   <p className={TypeColor(theme)}>{displayTypes(type.name)}</p>
+                  <UpDownArrow size={24} />
                 </div>
               </div>
             ))}
