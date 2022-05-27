@@ -54,6 +54,11 @@ const NodeContainer = style({
   width: '100%',
 });
 
+const SortContainer = style({
+  position: 'absolute',
+  right: 20,
+});
+
 export const RootNode: React.FC<RootNodeProps> = ({
   node,
   libraryNode,
@@ -99,7 +104,9 @@ export const RootNode: React.FC<RootNodeProps> = ({
           value={filterNodes}
           onChange={setFilterNodes}
         />
-        {node.name === 'type' && <SortAlphabeticallyButton />}
+        <div className={SortContainer}>
+          {node.name === 'type' && <SortAlphabeticallyButton />}
+        </div>
       </div>
       {!readonly && (
         <NewNode

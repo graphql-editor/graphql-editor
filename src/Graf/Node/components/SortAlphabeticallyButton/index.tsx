@@ -47,8 +47,8 @@ const TypeColor = themed((theme) =>
 const List = (backgroundColor: string) =>
   style({
     position: 'absolute',
-    top: 40,
-    left: 0,
+    top: 50,
+    right: 0,
     width: 200,
     borderRadius: 10,
     zIndex: 2,
