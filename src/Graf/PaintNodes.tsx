@@ -27,6 +27,7 @@ const SortContainer = themed((theme) =>
   style({
     position: 'absolute',
     right: 20,
+    top: 20,
     color: theme.backgrounds.type,
   }),
 );
