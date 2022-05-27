@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import {
-  TypeDefinition,
   TypeDefinitionDisplayMap,
   TypeSystemDefinition,
   TypeSystemExtension,
@@ -11,6 +10,11 @@ import { fontFamily } from '@/vars';
 import { RootNode } from '@/Graf/Node';
 import { useTreesState } from '@/state/containers/trees';
 import { RootExtendNode } from './Node/RootExtendNode';
+import { useSortState } from '@/state/containers/sort';
+import { SortAlphabeticallyButton } from './Node/components/SortAlphabeticallyButton';
+import { themed } from '@/Theming/utils';
+import { useTheme } from '@/state/containers';
+
 const Main = style({
   width: '100%',
   position: 'relative',
@@ -18,15 +22,23 @@ const Main = style({
   transition: `opacity 0.25s ease-in-out`,
   paddingBottom: 300,
 });
+
+const SortContainer = themed((theme) =>
+  style({
+    position: 'absolute',
+    right: 20,
+    color: theme.backgrounds.type,
+  }),
+);
+
 export const PaintNodes: React.FC = () => {
   const { libraryTree, tree, readonly } = useTreesState();
+  const { orderTypes } = useSortState();
+  const { theme } = useTheme();
   const baseTypes = [
-    TypeDefinition.ObjectTypeDefinition,
-    TypeDefinition.InterfaceTypeDefinition,
-    TypeDefinition.UnionTypeDefinition,
-    TypeDefinition.EnumTypeDefinition,
-    TypeDefinition.ScalarTypeDefinition,
-    TypeDefinition.InputObjectTypeDefinition,
+    ...orderTypes
+      .filter((ot) => ot.name !== TypeSystemDefinition.DirectiveDefinition)
+      .map((t) => t.name),
   ].map((d) => ({
     node: {
       name: TypeDefinitionDisplayMap[d],
@@ -66,6 +78,9 @@ export const PaintNodes: React.FC = () => {
 
   return (
     <div className={Main}>
+      <div className={SortContainer(theme)}>
+        <SortAlphabeticallyButton />
+      </div>
       {RootBaseTypes}
       <RootNode
         readonly={readonly}

@@ -14,7 +14,6 @@ import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { SearchInput } from '@/Graf/Node/components/SearchInput';
-import { SortAlphabeticallyButton } from '@/Graf/Node/components/SortAlphabeticallyButton';
 import { useSortState } from '@/state/containers/sort';
 
 export interface RootNodeProps {
@@ -52,11 +51,6 @@ const NodeContainer = style({
   flexWrap: 'wrap',
   alignItems: 'flex-start',
   width: '100%',
-});
-
-const SortContainer = style({
-  position: 'absolute',
-  right: 20,
 });
 
 export const RootNode: React.FC<RootNodeProps> = ({
@@ -104,9 +98,6 @@ export const RootNode: React.FC<RootNodeProps> = ({
           value={filterNodes}
           onChange={setFilterNodes}
         />
-        <div className={SortContainer}>
-          {node.name === 'type' && <SortAlphabeticallyButton />}
-        </div>
       </div>
       {!readonly && (
         <NewNode
