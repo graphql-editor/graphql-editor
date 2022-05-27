@@ -9,6 +9,7 @@ import {
   dragStartHandler,
 } from '@/Graf/Node/ActiveNode/dnd';
 import { themed } from '@/Theming/utils';
+import { TypeDefinition, TypeSystemDefinition } from 'graphql-js-tree';
 
 const IconWrapper = style({
   cursor: 'pointer',
@@ -84,6 +85,25 @@ export const SortAlphabeticallyButton = () => {
     setOrderTypes(newOrderTypes);
   };
 
+  const displayTypes = (type: string) => {
+    switch (type) {
+      case TypeDefinition.ObjectTypeDefinition:
+        return 'type';
+      case TypeDefinition.InterfaceTypeDefinition:
+        return 'interface';
+      case TypeDefinition.UnionTypeDefinition:
+        return 'union';
+      case TypeDefinition.EnumTypeDefinition:
+        return 'enum';
+      case TypeDefinition.ScalarTypeDefinition:
+        return 'scalar';
+      case TypeDefinition.InputObjectTypeDefinition:
+        return 'input';
+      case TypeSystemDefinition.DirectiveDefinition:
+        return 'directive';
+    }
+  };
+
   return (
     <div className={IconWrapper}>
       <div onClick={() => setIsSortAlphabetically((prev) => !prev)}>
@@ -129,7 +149,7 @@ export const SortAlphabeticallyButton = () => {
                     dragStartHandler(e, type.name);
                   }}
                 >
-                  <p className={TypeColor(theme)}>{type.name}</p>
+                  <p className={TypeColor(theme)}>{displayTypes(type.name)}</p>
                 </div>
               </div>
             ))}
