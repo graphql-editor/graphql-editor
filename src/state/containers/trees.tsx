@@ -39,6 +39,10 @@ const useTreesStateContainer = createContainer(() => {
     codeErrors.length && setSelectedNode(undefined);
   }, [codeErrors]);
 
+  useEffect(() => {
+    if (!selectedNode) setNodesImplementsInterface([]);
+  }, [selectedNode]);
+
   const updateScallars = () => {
     const ownScalars = tree.nodes
       .filter(
