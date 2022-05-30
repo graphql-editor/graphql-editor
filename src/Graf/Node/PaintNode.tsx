@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ParserField } from 'graphql-js-tree';
 import { style } from 'typestyle';
 import { NestedCSSProperties } from 'typestyle/lib/types';
@@ -105,6 +105,20 @@ export const PaintNode: React.FC<NodeProps> = ({
   } = useTreesState();
   const { isNodeBaseType } = useSortState();
   const { theme } = useTheme();
+
+  useEffect(() => {
+    if (
+      thisNode &&
+      thisNode.current &&
+      compareNodesWithData(selectedNode, node)
+    ) {
+      thisNode.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'center',
+      });
+    }
+  }, [selectedNode]);
 
   return (
     <div
