@@ -26,12 +26,18 @@ const useTreesStateContainer = createContainer(() => {
     ParserField[]
   >([]);
   const [schemaType, setSchemaType] = useState<SchemaType>('user');
+  const [isSelectedFromCode, setIsSelectedFromCode] = useState(true);
 
-  const { setLockGraf, setCodeErrors, transformCodeError } = useErrorsState();
+  const { setLockGraf, setCodeErrors, transformCodeError, codeErrors } =
+    useErrorsState();
 
   useEffect(() => {
     updateScallars();
   }, [tree]);
+
+  useEffect(() => {
+    codeErrors.length && setSelectedNode(undefined);
+  }, [codeErrors]);
 
   const updateScallars = () => {
     const ownScalars = tree.nodes
@@ -170,6 +176,8 @@ const useTreesStateContainer = createContainer(() => {
     generateTreeFromSchema,
     readonly,
     setReadonly,
+    isSelectedFromCode,
+    setIsSelectedFromCode,
   };
 });
 
