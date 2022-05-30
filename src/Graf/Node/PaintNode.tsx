@@ -101,6 +101,7 @@ export const PaintNode: React.FC<NodeProps> = ({
     selectedNode,
     nodesImplementsInterface,
     checkRelatedNodes,
+    setIsSelectedFromCode,
   } = useTreesState();
   const { isNodeBaseType } = useSortState();
   const { theme } = useTheme();
@@ -120,15 +121,14 @@ export const PaintNode: React.FC<NodeProps> = ({
             : NotSelected
           : ''
       }
-      ${
-        nodesImplementsInterface.find((a) => a.name === node.name)
-          ? RelatedNode
-          : ''
-      }NodeType-${node.type.name} 
+      ${nodesImplementsInterface.includes(node) ? RelatedNode : ''}NodeType-${
+        node.type.name
+      } 
       `}
       ref={thisNode}
       onClick={(e) => {
         e.stopPropagation();
+        setIsSelectedFromCode(false);
         checkRelatedNodes(node);
         setSelectedNode(node);
       }}
