@@ -8,7 +8,7 @@ import {
 } from 'graphql-js-tree';
 
 type OrderType = {
-  name: string;
+  name: TypeDefinition | TypeSystemDefinition.DirectiveDefinition;
   value: number;
 };
 

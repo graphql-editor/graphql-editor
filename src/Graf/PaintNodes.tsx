@@ -1,8 +1,6 @@
 import React, { useMemo } from 'react';
 import {
-  TypeDefinition,
   TypeDefinitionDisplayMap,
-  TypeSystemDefinition,
   TypeSystemExtension,
   TypeExtension,
 } from 'graphql-js-tree';
@@ -11,6 +9,11 @@ import { fontFamily } from '@/vars';
 import { RootNode } from '@/Graf/Node';
 import { useTreesState } from '@/state/containers/trees';
 import { RootExtendNode } from './Node/RootExtendNode';
+import { useSortState } from '@/state/containers/sort';
+import { SortAlphabeticallyButton } from './Node/components/SortAlphabeticallyButton';
+import { themed } from '@/Theming/utils';
+import { useTheme } from '@/state/containers';
+
 const Main = style({
   width: '100%',
   position: 'relative',
@@ -18,16 +21,21 @@ const Main = style({
   transition: `opacity 0.25s ease-in-out`,
   paddingBottom: 300,
 });
+
+const SortContainer = themed((theme) =>
+  style({
+    position: 'absolute',
+    right: 20,
+    top: 20,
+    color: theme.backgrounds.type,
+  }),
+);
+
 export const PaintNodes: React.FC = () => {
   const { libraryTree, tree, readonly } = useTreesState();
-  const baseTypes = [
-    TypeDefinition.ObjectTypeDefinition,
-    TypeDefinition.InterfaceTypeDefinition,
-    TypeDefinition.UnionTypeDefinition,
-    TypeDefinition.EnumTypeDefinition,
-    TypeDefinition.ScalarTypeDefinition,
-    TypeDefinition.InputObjectTypeDefinition,
-  ].map((d) => ({
+  const { orderTypes } = useSortState();
+  const { theme } = useTheme();
+  const baseTypes = [...orderTypes.map((t) => t.name)].map((d) => ({
     node: {
       name: TypeDefinitionDisplayMap[d],
       data: {
@@ -66,38 +74,10 @@ export const PaintNodes: React.FC = () => {
 
   return (
     <div className={Main}>
+      <div className={SortContainer(theme)}>
+        <SortAlphabeticallyButton />
+      </div>
       {RootBaseTypes}
-      <RootNode
-        readonly={readonly}
-        node={{
-          name: TypeDefinitionDisplayMap.DirectiveDefinition,
-          data: {
-            type: TypeSystemDefinition.DirectiveDefinition,
-          },
-          type: {
-            name: 'root',
-          },
-          args: tree.nodes
-            .filter(
-              (n) => n.data.type === TypeSystemDefinition.DirectiveDefinition,
-            )
-            .sort((a, b) => (a.name > b.name ? 1 : -1)),
-        }}
-        libraryNode={{
-          name: TypeDefinitionDisplayMap.DirectiveDefinition,
-          data: {
-            type: TypeSystemDefinition.DirectiveDefinition,
-          },
-          type: {
-            name: 'root',
-          },
-          args: libraryTree.nodes
-            .filter(
-              (n) => n.data.type === TypeSystemDefinition.DirectiveDefinition,
-            )
-            .sort((a, b) => (a.name > b.name ? 1 : -1)),
-        }}
-      />
       <RootExtendNode
         readonly={readonly}
         node={{
