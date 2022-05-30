@@ -101,8 +101,8 @@ const useTreesStateContainer = createContainer(() => {
     ),
   };
 
-  const checkRelatedNodes = (node: ParserField) => {
-    if (node.data.type === TypeDefinition.InterfaceTypeDefinition) {
+  const checkRelatedNodes = (node?: ParserField) => {
+    if (node && node.data.type === TypeDefinition.InterfaceTypeDefinition) {
       setNodesImplementsInterface(
         tree.nodes.filter((a) => a.interfaces?.includes(node.name)),
       );

@@ -47,6 +47,7 @@ export const CodePane = (props: CodePaneProps) => {
   const {
     selectedNode,
     setSelectedNode,
+    checkRelatedNodes,
     tree,
     libraryTree,
     isSelectedFromCode,
@@ -98,6 +99,7 @@ export const CodePane = (props: CodePaneProps) => {
               const allNodes = tree.nodes.concat(libraryTree.nodes);
               const n = allNodes.find((an) => an.name === e);
               setIsSelectedFromCode(true);
+              checkRelatedNodes(n);
               setSelectedNode(n);
             }
           }}

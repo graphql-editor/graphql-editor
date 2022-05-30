@@ -181,9 +181,7 @@ export const Editor = ({
   }, [state]);
 
   useEffect(() => {
-    console.log('tree changed');
     onTreeChange?.(tree);
-    console.log('generating schema from tree');
     generateSchemaFromTree(schema);
   }, [tree]);
 
@@ -245,7 +243,6 @@ export const Editor = ({
                   setLockGraf(isInvalid);
                   return;
                 }
-                console.log('Generation');
                 generateTreeFromSchema({ ...schema, code: v });
               }}
               schema={
