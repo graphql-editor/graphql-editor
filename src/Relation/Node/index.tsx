@@ -9,6 +9,7 @@ import { themed } from '@/Theming/utils';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { FIELD_NAME_SIZE } from '@/Graf/constants';
 import { fontFamily } from '@/vars';
+import { compareNodesWithData } from '@/compare/compareNodes';
 
 const Content = themed(
   ({
@@ -148,7 +149,7 @@ export const Node: React.FC<NodeProps> = ({
     libraryTree,
     checkRelatedNodes,
   } = useTreesState();
-  const isNodeActive = field === selectedNode;
+  const isNodeActive = compareNodesWithData(field, selectedNode);
   const { theme } = useTheme();
   const RelationFields = useMemo(() => {
     const nodeFields = field.args;

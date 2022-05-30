@@ -37,13 +37,15 @@ const ErrorLock = themed(({ error, background: { mainFurthest } }) =>
     padding: 30,
   }),
 );
+
+let lockScrollToSelected = true;
 /**
  * React compontent holding GraphQL IDE
  */
 export const CodePane = (props: CodePaneProps) => {
   const { schema, readonly, onChange, libraries } = props;
   const { theme } = useTheme();
-  const { selectedNode } = useTreesState();
+  const { selectedNode, setSelectedNode, tree, libraryTree } = useTreesState();
   const { lockCode } = useErrorsState();
 
   const ref: React.ForwardedRef<SchemaEditorApi> = React.createRef();
@@ -58,6 +60,9 @@ export const CodePane = (props: CodePaneProps) => {
 
   useEffect(() => {
     if (ref.current) {
+      if (lockScrollToSelected) {
+        return;
+      }
       selectedNode
         ? ref.current.jumpToType(selectedNode.name)
         : ref.current.deselect();
@@ -82,6 +87,15 @@ export const CodePane = (props: CodePaneProps) => {
           schema={schema}
           libraries={libraries}
           options={codeSettings}
+          select={(e) => {
+            if (e) {
+              const allNodes = tree.nodes.concat(libraryTree.nodes);
+              const n = allNodes.find((an) => an.name === e);
+              setSelectedNode(n);
+            } else {
+              setSelectedNode(undefined);
+            }
+          }}
         />
       )}
 

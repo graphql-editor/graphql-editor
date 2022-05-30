@@ -16,6 +16,7 @@ import { darken, toHex } from 'color2k';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { ErrorLock } from '@/shared/components';
 import { getScalarFields } from '@/Graf/utils/getScalarFields';
+import { findInNodes } from '@/compare/compareNodes';
 
 export interface GrafProps {}
 
@@ -131,9 +132,10 @@ export const Graf: React.FC<GrafProps> = () => {
   }, [snapshots]);
 
   const node = selectedNode
-    ? tree.nodes.find((n) => n === selectedNode) ||
-      libraryTree.nodes.find((n) => n === selectedNode)
+    ? findInNodes(tree.nodes, selectedNode) ||
+      findInNodes(libraryTree.nodes, selectedNode)
     : undefined;
+
   return (
     <>
       {node && wrapperRef.current && (

@@ -4,6 +4,7 @@ import React from 'react';
 import { style } from 'typestyle';
 import { useTheme } from '@/state/containers';
 import { themed } from '@/Theming/utils';
+import { compareNodesWithData } from '@/compare/compareNodes';
 
 const RelationsContainer = themed(({ background: { mainClosest } }) =>
   style({
@@ -35,8 +36,11 @@ export const Lines: React.FC<LinesProps> = ({ relations, selectedNode }) => {
       {relations?.map((r, index) => {
         const usedToIndexes: number[] = [];
         return r.from?.map((rf) => {
-          const fromField = selectedNode?.name === rf.field.name;
-          const toField = r.to.field.name === selectedNode?.name;
+          if (!selectedNode) {
+            return null;
+          }
+          const fromField = compareNodesWithData(selectedNode, rf.field);
+          const toField = compareNodesWithData(selectedNode, r.to.field);
           let portNumber = rf.index;
           if (fromField) {
             portNumber =

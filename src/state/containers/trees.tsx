@@ -10,6 +10,7 @@ import { Workers } from '@/worker';
 import { BuiltInScalars } from '@/GraphQL/Resolve';
 import { PassedSchema } from '@/Models';
 import { useErrorsState } from '@/state/containers';
+import { compareNodesWithData } from '@/compare/compareNodes';
 
 type SchemaType = 'user' | 'library';
 
@@ -20,7 +21,6 @@ const useTreesStateContainer = createContainer(() => {
   const [undos, setUndos] = useState<string[]>([]);
   const [selectedNode, setSelectedNode] = useState<ParserField>();
   const [readonly, setReadonly] = useState(false);
-  const [isTreeInitial, setIsTreeInitial] = useState(true);
   const [scalars, setScalars] = useState(BuiltInScalars.map((a) => a.name));
   const [nodesImplementsInterface, setNodesImplementsInterface] = useState<
     ParserField[]
@@ -75,16 +75,8 @@ const useTreesStateContainer = createContainer(() => {
 
   const relatedToSelected = useCallback(() => {
     const node =
-      tree.nodes.find(
-        (n) =>
-          n.name === selectedNode?.name &&
-          n.data.type === selectedNode.data.type,
-      ) ||
-      libraryTree.nodes.find(
-        (n) =>
-          n.name === selectedNode?.name &&
-          n.data.type === selectedNode.data.type,
-      );
+      tree.nodes.find((n) => compareNodesWithData(n, selectedNode)) ||
+      libraryTree.nodes.find((n) => compareNodesWithData(n, selectedNode));
     if (node) {
       return node.args?.map((a) => a.type.name);
     }
@@ -169,8 +161,6 @@ const useTreesStateContainer = createContainer(() => {
     setUndos,
     future,
     relatedToSelected,
-    isTreeInitial,
-    setIsTreeInitial,
     parentTypes,
     scalars,
     nodesImplementsInterface,

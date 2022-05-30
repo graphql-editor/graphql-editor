@@ -5,6 +5,7 @@ import { ParserField } from 'graphql-js-tree';
 import React from 'react';
 import { style } from 'typestyle';
 import cx from 'classnames';
+import { compareNodesWithData } from '@/compare/compareNodes';
 
 const List = style({
   textAlign: 'left',
@@ -70,7 +71,8 @@ export const NodeList: React.FC<NodeListI> = ({ nodeList, listTitle }) => {
               setSelectedNode(node);
             }}
             className={cx(NodeText(theme), {
-              active: node.name === selectedNode?.name,
+              active:
+                selectedNode && !!compareNodesWithData(node, selectedNode),
             })}
           >
             {node.name}

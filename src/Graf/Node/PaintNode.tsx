@@ -7,6 +7,7 @@ import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { useSortState } from '@/state/containers/sort';
+import { compareNodesWithData } from '@/compare/compareNodes';
 export interface NodeProps {
   node: ParserField;
   builtIn?: boolean;
@@ -112,7 +113,13 @@ export const PaintNode: React.FC<NodeProps> = ({
       ${NodeContainer} 
       ${isLibrary ? LibraryNodeContainer(theme) : MainNodeContainer(theme)} ${
         isMatchedToSearch ? MatchedSearchContainer : NoMatchedSearchContainer
-      } ${selectedNode ? (selectedNode !== node ? NotSelected : '') : ''}
+      } ${
+        selectedNode
+          ? compareNodesWithData(node, selectedNode)
+            ? ''
+            : NotSelected
+          : ''
+      }
       ${
         nodesImplementsInterface.find((a) => a.name === node.name)
           ? RelatedNode

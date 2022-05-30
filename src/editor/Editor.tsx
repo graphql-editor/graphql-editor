@@ -72,9 +72,6 @@ export interface EditorProps extends Theming {
   theme?: EditorTheme;
 }
 
-let stopCodeFromTreeGeneration = false;
-let stopTreeFromCodeGeneration = false;
-
 export const Editor = ({
   placeholder,
   schema = {
@@ -101,8 +98,6 @@ export const Editor = ({
     setUndos,
     setLibraryTree,
     setReadonly,
-    isTreeInitial,
-    setIsTreeInitial,
     schemaType,
     generateTreeFromSchema,
     readonly,
@@ -186,26 +181,15 @@ export const Editor = ({
   }, [state]);
 
   useEffect(() => {
-    if (stopCodeFromTreeGeneration) {
-      stopCodeFromTreeGeneration = false;
-      return;
-    }
-    stopTreeFromCodeGeneration = true;
-    generateTreeFromSchema(schema);
-  }, [schema.code]);
-  useEffect(() => {
+    console.log('tree changed');
     onTreeChange?.(tree);
-    if (isTreeInitial) {
-      setIsTreeInitial(false);
-      return;
-    }
-    if (stopTreeFromCodeGeneration) {
-      stopTreeFromCodeGeneration = false;
-      return;
-    }
-    stopCodeFromTreeGeneration = true;
+    console.log('generating schema from tree');
     generateSchemaFromTree(schema);
   }, [tree]);
+
+  useEffect(() => {
+    generateTreeFromSchema(schema);
+  }, [schema]);
   return (
     <div
       data-cy={GraphQLEditorDomStructure.tree.editor}
@@ -258,12 +242,11 @@ export const Editor = ({
               size={!menuState.pane ? 100000 : sidebarSize}
               onChange={(v, isInvalid) => {
                 if (isInvalid) {
-                  stopCodeFromTreeGeneration = true;
                   setLockGraf(isInvalid);
-                } else {
-                  stopCodeFromTreeGeneration = false;
+                  return;
                 }
-                setSchema({ ...schema, code: v }, !!isInvalid);
+                console.log('Generation');
+                generateTreeFromSchema({ ...schema, code: v });
               }}
               schema={
                 schema.libraries && schemaType === 'library'

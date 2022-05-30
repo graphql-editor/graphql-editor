@@ -19,6 +19,8 @@ import { Workers } from '@/worker';
 import { EditorError } from '@/validation';
 import { monacoSetDecorations } from '@/editor/code/monaco/decorations';
 import { useTheme } from '@/state/containers';
+import { findCurrentNodeName } from '@/editor/code/guild/editor/onCursor';
+import { Maybe } from 'graphql-language-service';
 
 export type SchemaEditorApi = {
   jumpToType(typeName: string): void;
@@ -34,6 +36,7 @@ export type SchemaServicesOptions = {
   diagnosticsProviders?: DiagnosticsSource[];
   decorationsProviders?: DecorationsSource[];
   actions?: EditorAction[];
+  select?: (name?: Maybe<string>) => void;
   onBlur?: (value: string) => void;
   onLanguageServiceReady?: (languageService: EnrichedLanguageService) => void;
   onSchemaChange?: (schema: GraphQLSchema, sdl: string) => void;
@@ -80,7 +83,7 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
           },
         },
       }),
-    [options],
+    [options, options.schema],
   );
 
   React.useEffect(() => {
@@ -124,6 +127,24 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
         options.decorationsProviders || [],
       );
 
+      const onCursorChangeDisposable = editorRef.onDidChangeCursorPosition(
+        (e) => {
+          const model = editorRef.getModel();
+          if (model) {
+            languageService
+              .buildBridgeForProviders(model, e.position)
+              .then((bridge) => {
+                if (bridge && options.select) {
+                  const {
+                    token: { state },
+                  } = bridge;
+                  options.select(findCurrentNodeName(state));
+                }
+              });
+          }
+        },
+      );
+
       const onChangeDisposable = editorRef.onDidChangeModelContent(() =>
         handler(
           editorRef,
@@ -147,6 +168,7 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
       );
 
       return () => {
+        onCursorChangeDisposable && onCursorChangeDisposable.dispose();
         hoverDisposable && hoverDisposable.dispose();
         definitionProviderDisposable && definitionProviderDisposable.dispose();
         onChangeDisposable && onChangeDisposable.dispose();
@@ -155,7 +177,7 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     return () => {};
-  }, [editorRef, monacoRef]);
+  }, [editorRef, monacoRef, options]);
 
   React.useEffect(() => {
     if (codeErrors && editorRef && monacoRef) {

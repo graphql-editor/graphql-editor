@@ -31,6 +31,7 @@ import {
   dragOverHandler,
   dragStartHandler,
 } from '@/Graf/Node/ActiveNode/dnd';
+import { compareNodesWithData } from '@/compare/compareNodes';
 
 interface NodeProps {
   node: ParserField;
@@ -343,7 +344,9 @@ export const ActiveNode: React.FC<NodeProps> = ({
                     nodes: tree.nodes,
                     oldName: node.name,
                   });
-                  const reselect = node.name === selectedNode?.name;
+                  const reselect = selectedNode
+                    ? compareNodesWithData(node, selectedNode)
+                    : false;
                   node.name = v;
                   setTree({ ...tree });
                   if (reselect && selectedNode) {

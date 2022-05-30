@@ -23,6 +23,7 @@ import { LevenshteinDistance } from '@/search';
 import { Lines, RelationPath } from '@/Relation/Lines';
 import { themed } from '@/Theming/utils';
 import { ErrorLock } from '@/shared/components';
+import { compareNodesWithData } from '@/compare/compareNodes';
 
 const show = keyframes({
   ['0%']: {
@@ -244,7 +245,7 @@ export const Relation: React.FC<RelationProps> = () => {
       const relatedNodes = currentNodes.filter(
         (n) =>
           n.args?.find((a) => a.type.name === selectedNode.name) ||
-          n === selectedNode ||
+          compareNodesWithData(n, selectedNode) ||
           selectedNode.args?.find((a) => a.type.name === n.name),
       );
       setRelationDrawingNodes(relatedNodes);
@@ -318,13 +319,13 @@ export const Relation: React.FC<RelationProps> = () => {
         isLibrary={libraryNodeNames.includes(n.name)}
         fade={
           selectedNode
-            ? selectedNode.name === n.name
+            ? compareNodesWithData(selectedNode, n)
               ? false
               : selectedNode.args?.find((a) => a.type.name === n.name)
               ? false
               : n.args?.find((na) => na.type.name === selectedNode.name)
               ? false
-              : nodesImplementsInterface.find((a) => a.name === n.name)
+              : nodesImplementsInterface.find((a) => compareNodesWithData(a, n))
               ? false
               : true
             : undefined
