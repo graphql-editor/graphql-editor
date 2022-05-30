@@ -26,31 +26,12 @@ const useTreesStateContainer = createContainer(() => {
     ParserField[]
   >([]);
   const [schemaType, setSchemaType] = useState<SchemaType>('user');
-  const [selectedText, setSelectedText] = useState('');
 
   const { setLockGraf, setCodeErrors, transformCodeError } = useErrorsState();
 
   useEffect(() => {
     updateScallars();
   }, [tree]);
-
-  useEffect(() => {
-    const newSelectedNode = tree.nodes.find(
-      (node) => node.name === selectedText,
-    );
-    newSelectedNode && setSelectedNode(newSelectedNode);
-  }, [selectedText]);
-
-  const selectionListener = () => {
-    const newSelectedText = document.getSelection()?.toString();
-    newSelectedText && setSelectedText(newSelectedText);
-  };
-
-  useEffect(() => {
-    document.addEventListener('selectionchange', selectionListener);
-    return () =>
-      document.removeEventListener('selectionchange', selectionListener);
-  }, []);
 
   const updateScallars = () => {
     const ownScalars = tree.nodes
