@@ -241,12 +241,12 @@ export const Relation: React.FC<RelationProps> = () => {
     if (focusedNode) {
       setFocusedNode(undefined);
     }
-    if (selectedNode) {
+    if (selectedNode?.field) {
       const relatedNodes = currentNodes.filter(
         (n) =>
-          n.args?.find((a) => a.type.name === selectedNode.name) ||
-          compareNodesWithData(n, selectedNode) ||
-          selectedNode.args?.find((a) => a.type.name === n.name),
+          n.args?.find((a) => a.type.name === selectedNode.field.name) ||
+          compareNodesWithData(n, selectedNode.field) ||
+          selectedNode.field.args?.find((a) => a.type.name === n.name),
       );
       setRelationDrawingNodes(relatedNodes);
       return;
@@ -254,9 +254,10 @@ export const Relation: React.FC<RelationProps> = () => {
   }, [selectedNode]);
 
   useEffect(() => {
-    if (selectedNode) {
+    if (selectedNode?.field) {
       const scrollToRef = (): unknown => {
-        const ref = tRefs[selectedNode.name + selectedNode.data.type];
+        const ref =
+          tRefs[selectedNode.field.name + selectedNode.field.data.type];
         if (!ref) {
           return setTimeout(scrollToRef, 10);
         }
@@ -270,6 +271,13 @@ export const Relation: React.FC<RelationProps> = () => {
     }
   }, [selectedNode]);
 
+  const selectNode = (n: ParserField) => {
+    setSelectedNode({
+      field: n,
+      source: 'relation',
+    });
+  };
+
   const handleSearch = (searchValue: string) => {
     if (searchValue.length) {
       const [node] = currentNodes
@@ -282,7 +290,7 @@ export const Relation: React.FC<RelationProps> = () => {
         }))
         .sort((a, b) => (a.distance > b.distance ? 1 : -1))
         .map(({ n }) => n);
-      setSelectedNode(node);
+      selectNode(node);
     } else {
       setSelectedNode(undefined);
     }
@@ -307,7 +315,7 @@ export const Relation: React.FC<RelationProps> = () => {
   }, [searchVisible]);
 
   const SvgLinesContainer = useMemo(() => {
-    return <Lines relations={relations} selectedNode={selectedNode} />;
+    return <Lines relations={relations} selectedNode={selectedNode?.field} />;
   }, [relations, selectedNode]);
   const NodesContainer = useMemo(() => {
     const libraryNodeNames = libraryTree.nodes.map((l) => l.name);
@@ -318,12 +326,12 @@ export const Relation: React.FC<RelationProps> = () => {
         }}
         isLibrary={libraryNodeNames.includes(n.name)}
         fade={
-          selectedNode
-            ? compareNodesWithData(selectedNode, n)
+          selectedNode?.field
+            ? compareNodesWithData(selectedNode.field, n)
               ? false
-              : selectedNode.args?.find((a) => a.type.name === n.name)
+              : selectedNode.field.args?.find((a) => a.type.name === n.name)
               ? false
-              : n.args?.find((na) => na.type.name === selectedNode.name)
+              : n.args?.find((na) => na.type.name === selectedNode.field.name)
               ? false
               : nodesImplementsInterface.find((a) => compareNodesWithData(a, n))
               ? false

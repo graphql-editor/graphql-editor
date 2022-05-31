@@ -11,22 +11,27 @@ import { BuiltInScalars } from '@/GraphQL/Resolve';
 import { PassedSchema } from '@/Models';
 import { useErrorsState } from '@/state/containers';
 import { compareNodesWithData } from '@/compare/compareNodes';
+import { ActiveSource } from '@/editor/Menu';
 
 type SchemaType = 'user' | 'library';
+
+type SelectedNode = {
+  field: ParserField;
+  source: ActiveSource;
+};
 
 const useTreesStateContainer = createContainer(() => {
   const [tree, setTree] = useState<ParserTree>({ nodes: [] });
   const [libraryTree, setLibraryTree] = useState<ParserTree>({ nodes: [] });
   const [snapshots, setSnapshots] = useState<string[]>([]);
   const [undos, setUndos] = useState<string[]>([]);
-  const [selectedNode, setSelectedNode] = useState<ParserField>();
+  const [selectedNode, setSelectedNode] = useState<SelectedNode>();
   const [readonly, setReadonly] = useState(false);
   const [scalars, setScalars] = useState(BuiltInScalars.map((a) => a.name));
   const [nodesImplementsInterface, setNodesImplementsInterface] = useState<
     ParserField[]
   >([]);
   const [schemaType, setSchemaType] = useState<SchemaType>('user');
-  const [isSelectedFromCode, setIsSelectedFromCode] = useState(true);
 
   const { setLockGraf, setCodeErrors, transformCodeError, codeErrors } =
     useErrorsState();
@@ -85,8 +90,10 @@ const useTreesStateContainer = createContainer(() => {
 
   const relatedToSelected = useCallback(() => {
     const node =
-      tree.nodes.find((n) => compareNodesWithData(n, selectedNode)) ||
-      libraryTree.nodes.find((n) => compareNodesWithData(n, selectedNode));
+      tree.nodes.find((n) => compareNodesWithData(n, selectedNode?.field)) ||
+      libraryTree.nodes.find((n) =>
+        compareNodesWithData(n, selectedNode?.field),
+      );
     if (node) {
       return node.args?.map((a) => a.type.name);
     }
@@ -180,8 +187,6 @@ const useTreesStateContainer = createContainer(() => {
     generateTreeFromSchema,
     readonly,
     setReadonly,
-    isSelectedFromCode,
-    setIsSelectedFromCode,
   };
 });
 

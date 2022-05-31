@@ -101,7 +101,6 @@ export const PaintNode: React.FC<NodeProps> = ({
     selectedNode,
     nodesImplementsInterface,
     checkRelatedNodes,
-    setIsSelectedFromCode,
   } = useTreesState();
   const { isNodeBaseType } = useSortState();
   const { theme } = useTheme();
@@ -110,7 +109,7 @@ export const PaintNode: React.FC<NodeProps> = ({
     if (
       thisNode &&
       thisNode.current &&
-      compareNodesWithData(selectedNode, node)
+      compareNodesWithData(selectedNode?.field, node)
     ) {
       thisNode.current.scrollIntoView({
         behavior: 'smooth',
@@ -130,7 +129,7 @@ export const PaintNode: React.FC<NodeProps> = ({
         isMatchedToSearch ? MatchedSearchContainer : NoMatchedSearchContainer
       } ${
         selectedNode
-          ? compareNodesWithData(node, selectedNode)
+          ? compareNodesWithData(node, selectedNode.field)
             ? ''
             : NotSelected
           : ''
@@ -142,9 +141,11 @@ export const PaintNode: React.FC<NodeProps> = ({
       ref={thisNode}
       onClick={(e) => {
         e.stopPropagation();
-        setIsSelectedFromCode(false);
         checkRelatedNodes(node);
-        setSelectedNode(node);
+        setSelectedNode({
+          field: node,
+          source: 'diagram',
+        });
       }}
     >
       {node.name}

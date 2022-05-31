@@ -24,10 +24,11 @@ export const Hierarchy = () => {
   }, []);
 
   useEffect(() => {
-    if (hierarchy && selectedNode) {
+    if (hierarchy && selectedNode?.field) {
       hierarchy.eventBus.publish('RequestNodeSelect', {
         fn: (n) =>
-          n.name === selectedNode.name && n.type === selectedNode.type.name,
+          n.name === selectedNode.field.name &&
+          n.type === selectedNode.field.type.name,
       });
     }
   }, [selectedNode, hierarchy]);
@@ -39,20 +40,25 @@ export const Hierarchy = () => {
       });
       hierarchy.setNodes(tr.nodes);
       hierarchy.eventBus.subscribe('NodeSelected', (e) => {
+        const n = tree.nodes.find(
+          (tn) =>
+            tn.name === e.selectedNodes[0].name &&
+            e.selectedNodes[0].type === tn.type.name,
+        );
         setSelectedNode(
           e.selectedNodes.length > 0
-            ? tree.nodes.find(
-                (tn) =>
-                  tn.name === e.selectedNodes[0].name &&
-                  e.selectedNodes[0].type === tn.type.name,
-              )
+            ? n && {
+                field: n,
+                source: 'hierarchy',
+              }
             : undefined,
         );
       });
       if (selectedNode) {
         hierarchy.eventBus.publish('RequestNodeSelect', {
           fn: (n) =>
-            n.name === selectedNode.name && n.type === selectedNode.type.name,
+            n.name === selectedNode.field.name &&
+            n.type === selectedNode.field.type.name,
         });
       }
     }

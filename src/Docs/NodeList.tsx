@@ -68,11 +68,15 @@ export const NodeList: React.FC<NodeListI> = ({ nodeList, listTitle }) => {
           <a
             key={i}
             onClick={() => {
-              setSelectedNode(node);
+              setSelectedNode({
+                field: node,
+                source: 'docs',
+              });
             }}
             className={cx(NodeText(theme), {
               active:
-                selectedNode && !!compareNodesWithData(node, selectedNode),
+                selectedNode &&
+                !!compareNodesWithData(node, selectedNode.field),
             })}
           >
             {node.name}

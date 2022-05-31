@@ -132,8 +132,8 @@ export const Graf: React.FC<GrafProps> = () => {
   }, [snapshots]);
 
   const node = selectedNode
-    ? findInNodes(tree.nodes, selectedNode) ||
-      findInNodes(libraryTree.nodes, selectedNode)
+    ? findInNodes(tree.nodes, selectedNode.field) ||
+      findInNodes(libraryTree.nodes, selectedNode.field)
     : undefined;
 
   return (

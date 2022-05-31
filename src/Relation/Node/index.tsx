@@ -149,7 +149,7 @@ export const Node: React.FC<NodeProps> = ({
     libraryTree,
     checkRelatedNodes,
   } = useTreesState();
-  const isNodeActive = compareNodesWithData(field, selectedNode);
+  const isNodeActive = compareNodesWithData(field, selectedNode?.field);
   const { theme } = useTheme();
   const RelationFields = useMemo(() => {
     const nodeFields = field.args;
@@ -159,7 +159,13 @@ export const Node: React.FC<NodeProps> = ({
           <Field
             onClick={() => {
               const allNodes = tree.nodes.concat(libraryTree.nodes);
-              setSelectedNode(allNodes.find((tn) => tn.name === a.type.name));
+              const n = allNodes.find((tn) => tn.name === a.type.name);
+              setSelectedNode(
+                n && {
+                  field: n,
+                  source: 'relation',
+                },
+              );
             }}
             active={
               isNodeActive &&
@@ -206,13 +212,16 @@ export const Node: React.FC<NodeProps> = ({
       onClick={(e) => {
         e.stopPropagation();
         checkRelatedNodes(field);
-        setSelectedNode(field);
+        setSelectedNode({
+          field,
+          source: 'relation',
+        });
       }}
       className={
         `NodeBackground-${field.type.name} ${Content(theme)} ` +
         `${fade ? 'Fade' : typeof fade === 'undefined' ? '' : 'Active'}` +
         `${isLibrary ? ' Library' : ''}` +
-        (selectedNode === field ? ` Selected` : '')
+        (selectedNode?.field === field ? ` Selected` : '')
       }
     >
       {NodeContent}

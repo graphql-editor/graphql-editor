@@ -76,7 +76,11 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
 
   const setNode = (nodeName: string) => {
     const newSelectedNode = tree.nodes.filter((node) => node.name === nodeName);
-    if (newSelectedNode.length > 0) setSelectedNode(newSelectedNode[0]);
+    if (newSelectedNode.length > 0)
+      setSelectedNode({
+        field: newSelectedNode[0],
+        source: 'docs',
+      });
   };
 
   const description = useMemo(() => {

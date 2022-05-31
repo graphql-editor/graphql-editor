@@ -6,7 +6,7 @@ import { PassedSchema, Theming } from '@/Models';
 import { DynamicResize } from './code/Components';
 import { Graf } from '@/Graf/Graf';
 import { Hierarchy } from '@/Hierarchy';
-import { Parser, ParserTree, TreeToGraphQL } from 'graphql-js-tree';
+import { Parser, ParserTree } from 'graphql-js-tree';
 import { Workers } from '@/worker';
 import { style } from 'typestyle';
 import {
@@ -119,23 +119,24 @@ export const Editor = ({
       return;
     }
     try {
-      const graphql = TreeToGraphQL.parse(tree);
-      if (graphql !== schema.code || (grafErrors?.length || 0) > 0) {
-        Workers.validate(graphql, schema.libraries).then((errors) => {
-          if (errors.length > 0) {
-            const mapErrors = errors.map((e) => e.text);
-            const msg = [
-              ...mapErrors.filter((e, i) => mapErrors.indexOf(e) === i),
-            ].join('\n\n');
-            setGrafErrors(msg);
-            setLockCode(msg);
-            return;
-          }
-          setLockCode(undefined);
-          setGrafErrors(undefined);
-          setSchema({ ...schema, code: graphql });
-        });
-      }
+      Workers.generateCode(tree).then((graphql) => {
+        if (graphql !== schema.code || (grafErrors?.length || 0) > 0) {
+          Workers.validate(graphql, schema.libraries).then((errors) => {
+            if (errors.length > 0) {
+              const mapErrors = errors.map((e) => e.text);
+              const msg = [
+                ...mapErrors.filter((e, i) => mapErrors.indexOf(e) === i),
+              ].join('\n\n');
+              setGrafErrors(msg);
+              setLockCode(msg);
+              return;
+            }
+            setLockCode(undefined);
+            setGrafErrors(undefined);
+            setSchema({ ...schema, code: graphql });
+          });
+        }
+      });
     } catch (error) {
       const msg = (error as any).message;
       setLockCode(msg);
@@ -243,7 +244,7 @@ export const Editor = ({
                   setLockGraf(isInvalid);
                   return;
                 }
-                generateTreeFromSchema({ ...schema, code: v });
+                setSchema({ ...schema, code: v }, !!isInvalid);
               }}
               schema={
                 schema.libraries && schemaType === 'library'

@@ -345,12 +345,15 @@ export const ActiveNode: React.FC<NodeProps> = ({
                     oldName: node.name,
                   });
                   const reselect = selectedNode
-                    ? compareNodesWithData(node, selectedNode)
+                    ? compareNodesWithData(node, selectedNode.field)
                     : false;
                   node.name = v;
                   setTree({ ...tree });
                   if (reselect && selectedNode) {
-                    setSelectedNode(node);
+                    setSelectedNode({
+                      field: node,
+                      source: 'diagram',
+                    });
                   }
                 }}
               />

@@ -50,8 +50,6 @@ export const CodePane = (props: CodePaneProps) => {
     checkRelatedNodes,
     tree,
     libraryTree,
-    isSelectedFromCode,
-    setIsSelectedFromCode,
   } = useTreesState();
   const { lockCode } = useErrorsState();
 
@@ -67,14 +65,14 @@ export const CodePane = (props: CodePaneProps) => {
 
   useEffect(() => {
     if (ref.current) {
-      if (isSelectedFromCode) {
+      if (selectedNode?.source === 'code') {
         return;
       }
       selectedNode
-        ? ref.current.jumpToType(selectedNode.name)
+        ? ref.current.jumpToType(selectedNode.field.name)
         : ref.current.deselect();
     }
-  }, [selectedNode, isSelectedFromCode]);
+  }, [selectedNode]);
 
   return (
     <div
@@ -91,6 +89,7 @@ export const CodePane = (props: CodePaneProps) => {
           onBlur={(v) => {
             if (!props.readonly) onChange(v);
           }}
+          onChange={(v) => onChange(v || '')}
           schema={schema}
           libraries={libraries}
           options={codeSettings}
@@ -98,9 +97,13 @@ export const CodePane = (props: CodePaneProps) => {
             if (e) {
               const allNodes = tree.nodes.concat(libraryTree.nodes);
               const n = allNodes.find((an) => an.name === e);
-              setIsSelectedFromCode(true);
               checkRelatedNodes(n);
-              setSelectedNode(n);
+              setSelectedNode(
+                n && {
+                  source: 'code',
+                  field: n,
+                },
+              );
             }
           }}
         />

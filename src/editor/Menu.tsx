@@ -40,6 +40,12 @@ export const Hider = themed(({ active }) =>
   }),
 );
 
+export type ActiveSource =
+  | 'diagram'
+  | 'hierarchy'
+  | 'relation'
+  | 'docs'
+  | 'code';
 export type ActivePane = 'diagram' | 'hierarchy' | 'diff' | 'relation' | 'docs';
 export interface MenuProps {
   setToggleCode: (v: boolean) => void;
