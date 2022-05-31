@@ -1,5 +1,5 @@
 import { createContainer } from 'unstated-next';
-import { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   ParserTree,
   ParserField,
@@ -23,7 +23,7 @@ type SelectedNode = {
 type TreeWithSource = ParserTree & { schema: boolean };
 
 const useTreesStateContainer = createContainer(() => {
-  const [tree, setTree] = useState<TreeWithSource>({
+  const [tree, _setTree] = useState<TreeWithSource>({
     nodes: [],
     schema: false,
   });
@@ -53,6 +53,26 @@ const useTreesStateContainer = createContainer(() => {
     if (!selectedNode) setNodesImplementsInterface([]);
   }, [selectedNode]);
 
+  const setTree = (
+    v: React.SetStateAction<Omit<TreeWithSource, 'schema'>>,
+    blockSchemaUpdate?: boolean,
+  ) => {
+    if (typeof v === 'function') {
+      _setTree((prevState) => {
+        const result = v(prevState);
+        return {
+          ...result,
+          schema: !!blockSchemaUpdate,
+        };
+      });
+      return;
+    }
+    _setTree({
+      ...v,
+      schema: !!blockSchemaUpdate,
+    });
+  };
+
   const updateScallars = () => {
     const ownScalars = tree.nodes
       .filter(
@@ -68,7 +88,7 @@ const useTreesStateContainer = createContainer(() => {
   const switchSchema = (schema: PassedSchema) => {
     setSchemaType(schemaType === 'library' ? 'user' : 'library');
     if (schemaType === 'user') {
-      setTree({ nodes: [], schema: false });
+      setTree({ nodes: [] });
     } else if (schemaType === 'library') {
       setSelectedNode(undefined);
       generateTreeFromSchema(schema);
@@ -128,26 +148,29 @@ const useTreesStateContainer = createContainer(() => {
   };
 
   const generateTreeFromSchema = (schema: PassedSchema) => {
+    console.log('generatingtree');
     if (!schema.code) {
-      setTree({ nodes: [], schema: true });
+      setTree({ nodes: [] }, true);
       return;
     }
     try {
       if (schema.libraries) {
         const excludeLibraryNodesFromDiagram = Parser.parse(schema.libraries);
         const parsedResult = Parser.parse(schema.code, [], schema.libraries);
-        setTree({
-          nodes: parsedResult.nodes.filter(
-            (n) =>
-              !excludeLibraryNodesFromDiagram.nodes.find(
-                (eln) => eln.name === n.name && eln.data.type === n.data.type,
-              ),
-          ),
-          schema: true,
-        });
+        setTree(
+          {
+            nodes: parsedResult.nodes.filter(
+              (n) =>
+                !excludeLibraryNodesFromDiagram.nodes.find(
+                  (eln) => eln.name === n.name && eln.data.type === n.data.type,
+                ),
+            ),
+          },
+          true,
+        );
       } else {
         const parsedCode = Parser.parse(schema.code);
-        setTree({ nodes: parsedCode.nodes, schema: true });
+        setTree({ nodes: parsedCode.nodes }, true);
       }
       if (schemaType === 'user') {
         Workers.validate(schema.code, schema.libraries).then((errors) => {

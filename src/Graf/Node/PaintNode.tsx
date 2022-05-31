@@ -119,8 +119,6 @@ export const PaintNode: React.FC<NodeProps> = ({
     }
   }, [selectedNode]);
 
-  console.log(nodesImplementsInterface);
-
   return (
     <div
       data-cy={GraphQLEditorDomStructure.tree.elements.Graf.PaintNode}

@@ -8,7 +8,9 @@ export class Workers {
     return new Promise((resolve) => {
       ValidationWorker.postMessage({ code, libraries, event: 'validate' });
       ValidationWorker.addEventListener('message', (message: any) => {
-        resolve(message.data as EditorError[]);
+        if (message.data.event === 'validate') {
+          resolve(message.data.data as EditorError[]);
+        }
       });
     });
   }
@@ -16,7 +18,9 @@ export class Workers {
     return new Promise((resolve) => {
       ValidationWorker.postMessage({ tree, event: 'parse' });
       ValidationWorker.addEventListener('message', (message: any) => {
-        resolve(message.data as string);
+        if (message.data.event === 'parse') {
+          resolve(message.data.data as string);
+        }
       });
     });
   }

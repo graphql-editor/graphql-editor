@@ -149,7 +149,7 @@ export const Graf: React.FC<GrafProps> = () => {
               const allNodes = [...tree.nodes];
               allNodes.splice(deletedNode, 1);
               setSelectedNode(undefined);
-              setTree({ nodes: allNodes, schema: false });
+              setTree({ nodes: allNodes });
             }}
             onDuplicate={(nodeToDuplicate) => {
               const allNodes = [...tree.nodes];
@@ -161,7 +161,7 @@ export const Graf: React.FC<GrafProps> = () => {
               );
               allNodes.push(duplicatedNode);
               setSelectedNode(duplicatedNode);
-              setTree({ nodes: allNodes, schema: false });
+              setTree({ nodes: allNodes });
             }}
             onInputCreate={(nodeToCreateInput) => {
               const allNodes = [...tree.nodes];
@@ -178,7 +178,7 @@ export const Graf: React.FC<GrafProps> = () => {
               );
               allNodes.push(createdInput);
               setSelectedNode(createdInput);
-              setTree({ nodes: allNodes, schema: false });
+              setTree({ nodes: allNodes });
             }}
             node={node}
           />
