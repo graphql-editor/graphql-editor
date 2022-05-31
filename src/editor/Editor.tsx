@@ -149,6 +149,7 @@ export const Editor = ({
     isSortAlphabetically &&
       setTree({
         nodes: tree.nodes.sort(sortByTypes),
+        schema: false,
       });
   }, [isSortAlphabetically, orderTypes]);
 

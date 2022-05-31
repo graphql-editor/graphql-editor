@@ -215,7 +215,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
       node.args[startIdx] = node.args[endIdx];
       node.args[endIdx] = startNode;
     }
-    setTree({ nodes: tree.nodes });
+    setTree({ nodes: tree.nodes, schema: false });
   };
 
   useEffect(() => {

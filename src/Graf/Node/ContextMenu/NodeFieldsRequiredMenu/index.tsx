@@ -47,7 +47,7 @@ export const NodeFieldsRequiredMenu: React.FC<NodeChangeFieldTypeMenuProps> = ({
         setOpts(checkOptions(node));
         const idx = tree.nodes.findIndex((n) => n.name === node.name);
         tree.nodes.splice(idx, 1, node);
-        setTree({ nodes: tree.nodes });
+        setTree({ nodes: tree.nodes, schema: false });
       }}
       hideMenu={hideMenu}
       menuName={'Mark all fields'}

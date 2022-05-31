@@ -89,7 +89,7 @@ export const CodePane = (props: CodePaneProps) => {
           onBlur={(v) => {
             if (!props.readonly) onChange(v);
           }}
-          onChange={(v) => onChange(v || '')}
+          // onChange={(v) => onChange(v || '')}
           schema={schema}
           libraries={libraries}
           options={codeSettings}

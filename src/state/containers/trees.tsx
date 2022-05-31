@@ -20,8 +20,13 @@ type SelectedNode = {
   source: ActiveSource;
 };
 
+type TreeWithSource = ParserTree & { schema: boolean };
+
 const useTreesStateContainer = createContainer(() => {
-  const [tree, setTree] = useState<ParserTree>({ nodes: [] });
+  const [tree, setTree] = useState<TreeWithSource>({
+    nodes: [],
+    schema: false,
+  });
   const [libraryTree, setLibraryTree] = useState<ParserTree>({ nodes: [] });
   const [snapshots, setSnapshots] = useState<string[]>([]);
   const [undos, setUndos] = useState<string[]>([]);
@@ -63,7 +68,7 @@ const useTreesStateContainer = createContainer(() => {
   const switchSchema = (schema: PassedSchema) => {
     setSchemaType(schemaType === 'library' ? 'user' : 'library');
     if (schemaType === 'user') {
-      setTree({ nodes: [] });
+      setTree({ nodes: [], schema: false });
     } else if (schemaType === 'library') {
       setSelectedNode(undefined);
       generateTreeFromSchema(schema);
@@ -90,7 +95,7 @@ const useTreesStateContainer = createContainer(() => {
 
   const relatedToSelected = useCallback(() => {
     const node =
-      tree.nodes.find((n) => compareNodesWithData(n, selectedNode?.field)) ||
+      tree?.nodes.find((n) => compareNodesWithData(n, selectedNode?.field)) ||
       libraryTree.nodes.find((n) =>
         compareNodesWithData(n, selectedNode?.field),
       );
@@ -124,7 +129,7 @@ const useTreesStateContainer = createContainer(() => {
 
   const generateTreeFromSchema = (schema: PassedSchema) => {
     if (!schema.code) {
-      setTree({ nodes: [] });
+      setTree({ nodes: [], schema: true });
       return;
     }
     try {
@@ -138,10 +143,11 @@ const useTreesStateContainer = createContainer(() => {
                 (eln) => eln.name === n.name && eln.data.type === n.data.type,
               ),
           ),
+          schema: true,
         });
       } else {
         const parsedCode = Parser.parse(schema.code);
-        setTree(parsedCode);
+        setTree({ nodes: parsedCode.nodes, schema: true });
       }
       if (schemaType === 'user') {
         Workers.validate(schema.code, schema.libraries).then((errors) => {
