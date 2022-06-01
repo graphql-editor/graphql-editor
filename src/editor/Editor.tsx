@@ -147,7 +147,6 @@ export const Editor = ({
   }, [state]);
 
   useEffect(() => {
-    console.log(tree.schema);
     if (!tree || !!tree.schema) {
       return;
     }

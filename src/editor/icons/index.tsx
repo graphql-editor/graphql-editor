@@ -2,6 +2,7 @@ import * as React from 'react';
 
 export interface IconProps {
   size: number;
+  fill?: string;
 }
 
 export const Hide = (props: IconProps) => (
@@ -391,7 +392,7 @@ export const Docs = (props: IconProps) => (
   </svg>
 );
 
-export const SortAz = (props: IconProps & { fill?: string }) => (
+export const SortAz = (props: IconProps) => (
   <svg
     width={props.size}
     height={props.size}

@@ -211,9 +211,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
     if (node.args) {
       const startIdx = node.args.findIndex((a) => a.name === startNodeName);
       const endIdx = node.args.findIndex((a) => a.name === endNodeName);
-      const startNode = node.args[startIdx];
-      node.args[startIdx] = node.args[endIdx];
-      node.args[endIdx] = startNode;
+      node.args.splice(endIdx, 0, node.args.splice(startIdx, 1)[0]);
     }
     setTree({ nodes: tree.nodes });
   };
