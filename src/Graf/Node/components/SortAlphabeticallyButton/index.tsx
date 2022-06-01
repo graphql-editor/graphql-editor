@@ -20,8 +20,7 @@ const IconWrapper = style({
 
 const DragOverStyle = themed((theme) =>
   style({
-    paddingTop: 22,
-    color: theme.backgrounds.type,
+    paddingTop: 57,
   }),
 );
 
@@ -50,18 +49,34 @@ const List = (backgroundColor: string) =>
     top: 50,
     right: 0,
     width: 200,
-    borderRadius: 10,
     zIndex: 2,
     backgroundColor: backgroundColor,
+    borderRadius: 10,
   });
 
-const ListItem = style({
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  paddingRight: 16,
-  paddingLeft: 16,
+const ListItem = (typeColor: string) =>
+  themed((theme) =>
+    style({
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingRight: 16,
+      paddingLeft: 16,
+      marginBottom: 8,
+      borderRadius: 10,
+      color: 'transparent',
+      border: `1px solid ${typeColor}`,
+      $nest: {
+        '&:hover': {
+          color: theme.disabled,
+        },
+      },
+    }),
+  );
+
+const ResetMarginBottom = style({
+  marginBottom: '0px !important',
 });
 
 export const SortAlphabeticallyButton = () => {
@@ -83,9 +98,7 @@ export const SortAlphabeticallyButton = () => {
     let newOrderTypes = [...orderTypes];
     const startIdx = newOrderTypes.findIndex((a) => a.name === startName);
     const endIdx = newOrderTypes.findIndex((a) => a.name === endNodeName);
-    const startField = newOrderTypes[startIdx];
-    newOrderTypes[startIdx] = newOrderTypes[endIdx];
-    newOrderTypes[endIdx] = startField;
+    newOrderTypes.splice(endIdx, 0, newOrderTypes.splice(startIdx, 1)[0]);
     newOrderTypes = newOrderTypes.map((nt, i) => ({
       ...nt,
       value: newOrderTypes.length - i - 1,
@@ -112,6 +125,27 @@ export const SortAlphabeticallyButton = () => {
     }
   };
 
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case TypeDefinition.ObjectTypeDefinition:
+        return theme.backgrounds.type;
+      case TypeDefinition.InterfaceTypeDefinition:
+        return theme.backgrounds.interface;
+      case TypeDefinition.UnionTypeDefinition:
+        return theme.backgrounds.union;
+      case TypeDefinition.EnumTypeDefinition:
+        return theme.backgrounds.enum;
+      case TypeDefinition.ScalarTypeDefinition:
+        return theme.backgrounds.scalar;
+      case TypeDefinition.InputObjectTypeDefinition:
+        return theme.backgrounds.input;
+      case TypeSystemDefinition.DirectiveDefinition:
+        return theme.backgrounds.directive;
+      default:
+        return theme.backgrounds.type;
+    }
+  };
+
   return (
     <div className={IconWrapper}>
       <div onClick={() => setIsSortAlphabetically((prev) => !prev)}>
@@ -131,7 +165,7 @@ export const SortAlphabeticallyButton = () => {
         </div>
         <div className={List(theme.background.mainMiddle)}>
           {isListVisible &&
-            orderTypes.map((type) => (
+            orderTypes.map((type, idx) => (
               <div
                 key={type.name}
                 id={type.name}
@@ -156,7 +190,9 @@ export const SortAlphabeticallyButton = () => {
                   onDragStart={(e) => {
                     dragStartHandler(e, type.name);
                   }}
-                  className={ListItem}
+                  className={`${ListItem(getTypeColor(type.name))(theme)} ${
+                    idx === orderTypes.length - 1 && ResetMarginBottom
+                  }`}
                 >
                   <p className={TypeColor(theme)}>{displayTypes(type.name)}</p>
                   <UpDownArrow size={24} />

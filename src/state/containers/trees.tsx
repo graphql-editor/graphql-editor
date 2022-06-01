@@ -148,7 +148,6 @@ const useTreesStateContainer = createContainer(() => {
   };
 
   const generateTreeFromSchema = (schema: PassedSchema) => {
-    console.log('generatingtree');
     if (!schema.code) {
       setTree({ nodes: [] }, true);
       return;
