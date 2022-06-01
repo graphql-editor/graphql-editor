@@ -17,6 +17,7 @@ import { GraphQLEditorDomStructure } from '@/domStructure';
 import { ErrorLock } from '@/shared/components';
 import { getScalarFields } from '@/Graf/utils/getScalarFields';
 import { findInNodes } from '@/compare/compareNodes';
+import { ErrorItem } from './ErrorItem';
 
 export interface GrafProps {}
 
@@ -136,6 +137,17 @@ export const Graf: React.FC<GrafProps> = () => {
       findInNodes(libraryTree.nodes, selectedNode.field)
     : undefined;
 
+  const generateErrorsText = () => {
+    if (lockGraf) {
+      const lockGrafArray = lockGraf.split('}');
+      return lockGrafArray
+        .filter((ee) => ee !== '')
+        .map((e) => <ErrorItem error={e} />);
+    }
+
+    return '';
+  };
+
   return (
     <>
       {node && wrapperRef.current && (
@@ -199,7 +211,7 @@ export const Graf: React.FC<GrafProps> = () => {
               setMenuState((ms) => ({ ...ms, code: true }));
             }}
           >
-            {`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:\n${lockGraf}`}
+            {`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:\n${generateErrorsText()}`}
           </ErrorLock>
         )}
         {grafErrors && (
