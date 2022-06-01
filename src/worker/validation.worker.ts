@@ -13,10 +13,16 @@ ctx.addEventListener('message', (message) => {
         tree: ParserTree;
       };
   if (m.event === 'validate') {
-    postMessage(catchSchemaErrors(m.code, m.libraries));
+    postMessage({
+      data: catchSchemaErrors(m.code, m.libraries),
+      event: m.event,
+    });
   }
   if (m.event === 'parse') {
-    postMessage(TreeToGraphQL.parse(m.tree));
+    postMessage({
+      data: TreeToGraphQL.parse(m.tree),
+      event: m.event,
+    });
   }
   //@ts-ignore
 });

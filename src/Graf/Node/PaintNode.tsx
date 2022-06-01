@@ -134,9 +134,8 @@ export const PaintNode: React.FC<NodeProps> = ({
             : NotSelected
           : ''
       }
-      ${nodesImplementsInterface.includes(node) ? RelatedNode : ''}NodeType-${
-        node.type.name
-      } 
+      ${nodesImplementsInterface.includes(node) ? RelatedNode : ''}
+      NodeType-${node.type.name} 
       `}
       ref={thisNode}
       onClick={(e) => {

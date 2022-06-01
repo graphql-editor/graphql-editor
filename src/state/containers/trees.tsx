@@ -1,5 +1,5 @@
 import { createContainer } from 'unstated-next';
-import { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   ParserTree,
   ParserField,
@@ -20,8 +20,13 @@ type SelectedNode = {
   source: ActiveSource;
 };
 
+type TreeWithSource = ParserTree & { schema: boolean };
+
 const useTreesStateContainer = createContainer(() => {
-  const [tree, setTree] = useState<ParserTree>({ nodes: [] });
+  const [tree, _setTree] = useState<TreeWithSource>({
+    nodes: [],
+    schema: false,
+  });
   const [libraryTree, setLibraryTree] = useState<ParserTree>({ nodes: [] });
   const [snapshots, setSnapshots] = useState<string[]>([]);
   const [undos, setUndos] = useState<string[]>([]);
@@ -47,6 +52,26 @@ const useTreesStateContainer = createContainer(() => {
   useEffect(() => {
     if (!selectedNode) setNodesImplementsInterface([]);
   }, [selectedNode]);
+
+  const setTree = (
+    v: React.SetStateAction<Omit<TreeWithSource, 'schema'>>,
+    blockSchemaUpdate?: boolean,
+  ) => {
+    if (typeof v === 'function') {
+      _setTree((prevState) => {
+        const result = v(prevState);
+        return {
+          ...result,
+          schema: !!blockSchemaUpdate,
+        };
+      });
+      return;
+    }
+    _setTree({
+      ...v,
+      schema: !!blockSchemaUpdate,
+    });
+  };
 
   const updateScallars = () => {
     const ownScalars = tree.nodes
@@ -90,7 +115,7 @@ const useTreesStateContainer = createContainer(() => {
 
   const relatedToSelected = useCallback(() => {
     const node =
-      tree.nodes.find((n) => compareNodesWithData(n, selectedNode?.field)) ||
+      tree?.nodes.find((n) => compareNodesWithData(n, selectedNode?.field)) ||
       libraryTree.nodes.find((n) =>
         compareNodesWithData(n, selectedNode?.field),
       );
@@ -123,25 +148,29 @@ const useTreesStateContainer = createContainer(() => {
   };
 
   const generateTreeFromSchema = (schema: PassedSchema) => {
+    console.log('generatingtree');
     if (!schema.code) {
-      setTree({ nodes: [] });
+      setTree({ nodes: [] }, true);
       return;
     }
     try {
       if (schema.libraries) {
         const excludeLibraryNodesFromDiagram = Parser.parse(schema.libraries);
         const parsedResult = Parser.parse(schema.code, [], schema.libraries);
-        setTree({
-          nodes: parsedResult.nodes.filter(
-            (n) =>
-              !excludeLibraryNodesFromDiagram.nodes.find(
-                (eln) => eln.name === n.name && eln.data.type === n.data.type,
-              ),
-          ),
-        });
+        setTree(
+          {
+            nodes: parsedResult.nodes.filter(
+              (n) =>
+                !excludeLibraryNodesFromDiagram.nodes.find(
+                  (eln) => eln.name === n.name && eln.data.type === n.data.type,
+                ),
+            ),
+          },
+          true,
+        );
       } else {
         const parsedCode = Parser.parse(schema.code);
-        setTree(parsedCode);
+        setTree({ nodes: parsedCode.nodes }, true);
       }
       if (schemaType === 'user') {
         Workers.validate(schema.code, schema.libraries).then((errors) => {

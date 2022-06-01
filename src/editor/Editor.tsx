@@ -110,41 +110,6 @@ export const Editor = ({
     setUndos([]);
     setGrafErrors(undefined);
   };
-
-  const generateSchemaFromTree = (schema: PassedSchema) => {
-    if (!tree) {
-      return;
-    }
-    if (tree.nodes.length === 0) {
-      return;
-    }
-    try {
-      Workers.generateCode(tree).then((graphql) => {
-        if (graphql !== schema.code || (grafErrors?.length || 0) > 0) {
-          Workers.validate(graphql, schema.libraries).then((errors) => {
-            if (errors.length > 0) {
-              const mapErrors = errors.map((e) => e.text);
-              const msg = [
-                ...mapErrors.filter((e, i) => mapErrors.indexOf(e) === i),
-              ].join('\n\n');
-              setGrafErrors(msg);
-              setLockCode(msg);
-              return;
-            }
-            setLockCode(undefined);
-            setGrafErrors(undefined);
-            setSchema({ ...schema, code: graphql });
-          });
-        }
-      });
-    } catch (error) {
-      const msg = (error as any).message;
-      setLockCode(msg);
-      setGrafErrors(msg);
-      return;
-    }
-  };
-
   useEffect(() => {
     isSortAlphabetically &&
       setTree({
@@ -182,11 +147,46 @@ export const Editor = ({
   }, [state]);
 
   useEffect(() => {
+    console.log(tree.schema);
+    if (!tree || !!tree.schema) {
+      return;
+    }
+    if (tree.nodes.length === 0) {
+      return;
+    }
+    try {
+      Workers.generateCode(tree).then((graphql) => {
+        if (graphql !== schema.code || (grafErrors?.length || 0) > 0) {
+          Workers.validate(graphql, schema.libraries).then((errors) => {
+            if (errors.length > 0) {
+              console.log(errors);
+              const mapErrors = errors.map((e) => e.text);
+              const msg = [
+                ...mapErrors.filter((e, i) => mapErrors.indexOf(e) === i),
+              ].join('\n\n');
+              setGrafErrors(msg);
+              setLockCode(msg);
+              return;
+            }
+            setLockCode(undefined);
+            setGrafErrors(undefined);
+            setSchema({ ...schema, code: graphql, isTree: true });
+          });
+        }
+      });
+    } catch (error) {
+      const msg = (error as any).message;
+      setLockCode(msg);
+      setGrafErrors(msg);
+      return;
+    }
     onTreeChange?.(tree);
-    generateSchemaFromTree(schema);
   }, [tree]);
 
   useEffect(() => {
+    if (schema.isTree) {
+      return;
+    }
     generateTreeFromSchema(schema);
   }, [schema]);
   return (
