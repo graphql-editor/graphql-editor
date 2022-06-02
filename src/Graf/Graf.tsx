@@ -17,9 +17,7 @@ import { GraphQLEditorDomStructure } from '@/domStructure';
 import { ErrorLock } from '@/shared/components';
 import { getScalarFields } from '@/Graf/utils/getScalarFields';
 import { findInNodes } from '@/compare/compareNodes';
-import { ErrorItem } from './ErrorItem';
-
-export interface GrafProps {}
+// import { ErrorItem } from './ErrorItem';
 
 const Wrapper = themed(({ background: { mainClose, mainFurthest, mainFar } }) =>
   style({
@@ -76,7 +74,7 @@ const SubNodeContainer = themed(
 );
 let snapLock = true;
 
-export const Graf: React.FC<GrafProps> = () => {
+export const Graf: React.FC = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -140,12 +138,8 @@ export const Graf: React.FC<GrafProps> = () => {
   const generateErrorsText = () => {
     if (lockGraf) {
       const lockGrafArray = lockGraf.split('}');
-      return lockGrafArray
-        .filter((ee) => ee !== '')
-        .map((e) => <ErrorItem error={e} />);
+      return lockGrafArray.filter((ee) => ee !== '').map((e) => e + '}');
     }
-
-    return '';
   };
 
   return (
@@ -210,9 +204,8 @@ export const Graf: React.FC<GrafProps> = () => {
             onClick={() => {
               setMenuState((ms) => ({ ...ms, code: true }));
             }}
-          >
-            {`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:\n${generateErrorsText()}`}
-          </ErrorLock>
+            value={`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:\n${generateErrorsText()}`}
+          />
         )}
         {grafErrors && (
           <div className={ErrorContainer(theme)}>{grafErrors}</div>
