@@ -140,7 +140,8 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
                   } = bridge;
                   options.select(findCurrentNodeName(state));
                 }
-              });
+              })
+              .catch((e) => {});
           }
         },
       );
