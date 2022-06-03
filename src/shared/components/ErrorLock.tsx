@@ -29,16 +29,14 @@ const Message = themed(({ error, background: { mainFurthest } }) =>
   }),
 );
 
-export const ErrorLock: React.FC<{ onClick: () => void }> = ({
+export const ErrorLock: React.FC<{ onClick: () => void; value: string }> = ({
   onClick,
-  children,
+  value,
 }) => {
   const { theme } = useTheme();
   return (
     <div className={Main(theme)} onClick={onClick}>
-      <textarea disabled className={Message(theme)}>
-        {children}
-      </textarea>
+      <textarea disabled className={Message(theme)} value={value} />
     </div>
   );
 };

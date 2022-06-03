@@ -396,9 +396,8 @@ export const Relation: React.FC<RelationProps> = () => {
             onClick={() => {
               setMenuState((ms) => ({ ...ms, code: true }));
             }}
-          >
-            {`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:\n${lockGraf}`}
-          </ErrorLock>
+            value={`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:\n${lockGraf}`}
+          />
         )}
 
         {grafErrors && (

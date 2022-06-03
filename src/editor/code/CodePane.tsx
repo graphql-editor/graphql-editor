@@ -74,6 +74,10 @@ export const CodePane = (props: CodePaneProps) => {
     }
   }, [selectedNode]);
 
+  useEffect(() => {
+    ref.current && ref.current.jumpToError(90);
+  }, [ref.current]);
+
   return (
     <div
       className={cx(styles.CodeContainer(theme))}
@@ -89,7 +93,6 @@ export const CodePane = (props: CodePaneProps) => {
           onBlur={(v) => {
             if (!props.readonly) onChange(v);
           }}
-          // onChange={(v) => onChange(v || '')}
           schema={schema}
           libraries={libraries}
           options={codeSettings}
@@ -108,7 +111,6 @@ export const CodePane = (props: CodePaneProps) => {
           }}
         />
       )}
-
       {lockCode && (
         <div
           className={ErrorLock(theme)}

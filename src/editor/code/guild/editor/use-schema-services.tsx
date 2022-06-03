@@ -26,6 +26,7 @@ export type SchemaEditorApi = {
   jumpToType(typeName: string): void;
   jumpToField(typeName: string, fieldName: string): void;
   deselect(): void;
+  jumpToError(rowNumber: number): void;
 };
 
 export type SchemaServicesOptions = {
@@ -217,7 +218,6 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
         languageService.getSchema().then((schema) => {
           if (schema) {
             const type = schema.getType(typeName);
-
             if (type?.astNode?.loc) {
               const range = locToRange(type.astNode.loc);
               editorRef?.setSelection(range);
@@ -250,6 +250,15 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
         });
       },
       deselect: () => editorRef?.setSelection(emptyLocation),
+      jumpToError: (lineNumber: number) => {
+        console.log(editorRef);
+
+        editorRef?.getScrolledVisiblePosition({ lineNumber, column: 0 });
+        editorRef?.revealPositionInCenter(
+          { column: 0, lineNumber: lineNumber },
+          0,
+        );
+      },
     } as SchemaEditorApi,
   };
 };
