@@ -158,7 +158,6 @@ export const Editor = ({
         if (graphql !== schema.code || (grafErrors?.length || 0) > 0) {
           Workers.validate(graphql, schema.libraries).then((errors) => {
             if (errors.length > 0) {
-              console.log(errors);
               const mapErrors = errors.map((e) => e.text);
               const msg = [
                 ...mapErrors.filter((e, i) => mapErrors.indexOf(e) === i),

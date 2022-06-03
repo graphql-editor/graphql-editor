@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { style } from 'typestyle';
 import { fontFamily } from '@/vars';
 import { PaintNodes } from './PaintNodes';
@@ -8,17 +8,14 @@ import {
   KeyboardActions,
   useErrorsState,
   useIOState,
-  useNavigationState,
   useTheme,
 } from '@/state/containers';
 import { themed } from '@/Theming/utils';
 import { darken, toHex } from 'color2k';
 import { GraphQLEditorDomStructure } from '@/domStructure';
-import { ErrorLock } from '@/shared/components';
 import { getScalarFields } from '@/Graf/utils/getScalarFields';
 import { findInNodes } from '@/compare/compareNodes';
-
-export interface GrafProps {}
+import { ErrorItem } from './ErrorItem';
 
 const Wrapper = themed(({ background: { mainClose, mainFurthest, mainFar } }) =>
   style({
@@ -73,9 +70,23 @@ const SubNodeContainer = themed(
       transition: `max-width 0.25s ease-in-out`,
     }),
 );
+const ErrorWrapper = themed(({ background: { mainFurthest }, error }) =>
+  style({
+    fontFamily,
+    width: '80%',
+    height: '100%',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    background: mainFurthest,
+    cursor: 'pointer',
+    color: error,
+  }),
+);
+
 let snapLock = true;
 
-export const Graf: React.FC<GrafProps> = () => {
+export const Graf: React.FC = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -92,9 +103,24 @@ export const Graf: React.FC<GrafProps> = () => {
     scalars,
   } = useTreesState();
   const { lockGraf, grafErrors } = useErrorsState();
-  const { setMenuState } = useNavigationState();
   const { setActions } = useIOState();
   const { theme } = useTheme();
+
+  const [errorsItems, setErrorsItems] = useState<JSX.Element[]>();
+
+  const generateErrorsText = () => {
+    if (lockGraf) {
+      const lockGrafArray = lockGraf.split('}').filter((ee) => ee);
+      const errors = lockGrafArray.map((e, i) => (
+        <ErrorItem key={i} error={e} />
+      ));
+      setErrorsItems(errors);
+    }
+  };
+
+  useEffect(() => {
+    generateErrorsText();
+  }, [lockGraf]);
 
   useEffect(() => {
     if (snapLock) {
@@ -192,15 +218,13 @@ export const Graf: React.FC<GrafProps> = () => {
         }}
         data-cy={GraphQLEditorDomStructure.tree.elements.Graf.name}
       >
-        <div className={Main(theme)}>{!lockGraf && <PaintNodes />}</div>
-        {lockGraf && (
-          <ErrorLock
-            onClick={() => {
-              setMenuState((ms) => ({ ...ms, code: true }));
-            }}
-          >
-            {`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:\n${lockGraf}`}
-          </ErrorLock>
+        {lockGraf ? (
+          <div className={ErrorWrapper(theme)}>
+            <p>{`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:`}</p>
+            {errorsItems}
+          </div>
+        ) : (
+          <div className={Main(theme)}>{!lockGraf && <PaintNodes />}</div>
         )}
         {grafErrors && (
           <div className={ErrorContainer(theme)}>{grafErrors}</div>

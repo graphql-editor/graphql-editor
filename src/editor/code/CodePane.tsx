@@ -51,7 +51,7 @@ export const CodePane = (props: CodePaneProps) => {
     tree,
     libraryTree,
   } = useTreesState();
-  const { lockCode } = useErrorsState();
+  const { lockCode, errorRowNumber } = useErrorsState();
 
   const ref: React.ForwardedRef<SchemaEditorApi> = React.createRef();
   const codeSettings = useMemo(
@@ -74,6 +74,12 @@ export const CodePane = (props: CodePaneProps) => {
     }
   }, [selectedNode]);
 
+  useEffect(() => {
+    if (ref.current && errorRowNumber) {
+      ref.current.jumpToError(errorRowNumber);
+    }
+  }, [errorRowNumber]);
+
   return (
     <div
       className={cx(styles.CodeContainer(theme))}
@@ -89,7 +95,6 @@ export const CodePane = (props: CodePaneProps) => {
           onBlur={(v) => {
             if (!props.readonly) onChange(v);
           }}
-          // onChange={(v) => onChange(v || '')}
           schema={schema}
           libraries={libraries}
           options={codeSettings}
@@ -108,7 +113,6 @@ export const CodePane = (props: CodePaneProps) => {
           }}
         />
       )}
-
       {lockCode && (
         <div
           className={ErrorLock(theme)}
