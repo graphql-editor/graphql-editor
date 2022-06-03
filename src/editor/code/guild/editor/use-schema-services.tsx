@@ -251,6 +251,12 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
       },
       deselect: () => editorRef?.setSelection(emptyLocation),
       jumpToError: (lineNumber: number) => {
+        editorRef?.setSelection({
+          startLineNumber: lineNumber,
+          endLineNumber: lineNumber,
+          endColumn: 1000,
+          startColumn: 0,
+        });
         editorRef?.revealPositionInCenter(
           {
             column: 0,

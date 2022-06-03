@@ -1,5 +1,6 @@
 import { useErrorsState, useTheme } from '@/state/containers';
 import { themed } from '@/Theming/utils';
+import { fontFamily } from '@/vars';
 import React from 'react';
 import { style } from 'typestyle';
 
@@ -17,10 +18,22 @@ const ButtonStyles = themed(({ background: { mainFurthest }, error }) =>
   }),
 );
 
-const ErrorItemWrapper = style({
+const Main = style({
   marginLeft: 16,
   marginRight: 16,
 });
+
+const Message = themed(({ error, background: { mainFurthest } }) =>
+  style({
+    fontFamily,
+    height: 180,
+    fontSize: 14,
+    color: error,
+    background: mainFurthest,
+    border: 0,
+    width: '100%',
+  }),
+);
 
 export const ErrorItem: React.FC<ErrorItemProps> = ({ error }) => {
   const { theme } = useTheme();
@@ -28,10 +41,13 @@ export const ErrorItem: React.FC<ErrorItemProps> = ({ error }) => {
 
   const getRowNumber = () => parseInt(error.split(',')[1].split(':')[1]) + 1;
 
-  getRowNumber();
   return (
-    <div className={ErrorItemWrapper}>
-      <p>{error + '}'}</p>
+    <div className={Main}>
+      <textarea
+        disabled
+        className={Message(theme)}
+        value={error.replaceAll('\\', '') + '}'}
+      />
       <button
         className={ButtonStyles(theme)}
         onClick={() => setErrorRowNumber(getRowNumber())}

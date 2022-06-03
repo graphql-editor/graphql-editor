@@ -72,7 +72,8 @@ const SubNodeContainer = themed(
 );
 const ErrorWrapper = themed(({ background: { mainFurthest }, error }) =>
   style({
-    width: '100%',
+    fontFamily,
+    width: '80%',
     height: '100%',
     position: 'absolute',
     top: 0,
@@ -102,7 +103,6 @@ export const Graf: React.FC = () => {
     scalars,
   } = useTreesState();
   const { lockGraf, grafErrors } = useErrorsState();
-  // const { setMenuState } = useNavigationState();
   const { setActions } = useIOState();
   const { theme } = useTheme();
 
