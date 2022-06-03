@@ -36,7 +36,11 @@ export const ErrorLock: React.FC<{ onClick: () => void; value: string }> = ({
   const { theme } = useTheme();
   return (
     <div className={Main(theme)} onClick={onClick}>
-      <textarea disabled className={Message(theme)} value={value} />
+      <textarea
+        disabled
+        className={Message(theme)}
+        value={JSON.stringify(value)}
+      />
     </div>
   );
 };

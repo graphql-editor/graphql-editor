@@ -251,11 +251,11 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
       },
       deselect: () => editorRef?.setSelection(emptyLocation),
       jumpToError: (lineNumber: number) => {
-        console.log(editorRef);
-
-        editorRef?.getScrolledVisiblePosition({ lineNumber, column: 0 });
         editorRef?.revealPositionInCenter(
-          { column: 0, lineNumber: lineNumber },
+          {
+            column: 0,
+            lineNumber: lineNumber,
+          },
           0,
         );
       },

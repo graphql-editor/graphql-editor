@@ -51,7 +51,7 @@ export const CodePane = (props: CodePaneProps) => {
     tree,
     libraryTree,
   } = useTreesState();
-  const { lockCode } = useErrorsState();
+  const { lockCode, errorRowNumber } = useErrorsState();
 
   const ref: React.ForwardedRef<SchemaEditorApi> = React.createRef();
   const codeSettings = useMemo(
@@ -75,8 +75,10 @@ export const CodePane = (props: CodePaneProps) => {
   }, [selectedNode]);
 
   useEffect(() => {
-    ref.current && ref.current.jumpToError(90);
-  }, [ref.current]);
+    if (ref.current && errorRowNumber) {
+      ref.current.jumpToError(errorRowNumber);
+    }
+  }, [errorRowNumber]);
 
   return (
     <div

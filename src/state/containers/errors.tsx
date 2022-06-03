@@ -6,6 +6,7 @@ const useErrorsStateContainer = createContainer(() => {
   const [grafErrors, setGrafErrors] = useState<string>();
   const [lockGraf, setLockGraf] = useState<string>();
   const [lockCode, setLockCode] = useState<string>();
+  const [errorRowNumber, setErrorRowNumber] = useState<number>();
 
   const transformCodeError = (errors: EditorError[]) => {
     errors.forEach((a) => {
@@ -29,6 +30,8 @@ const useErrorsStateContainer = createContainer(() => {
     setLockGraf,
     setLockCode,
     transformCodeError,
+    errorRowNumber,
+    setErrorRowNumber,
   };
 });
 
