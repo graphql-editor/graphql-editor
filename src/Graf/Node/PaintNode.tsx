@@ -8,6 +8,7 @@ import { useErrorsState, useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { useSortState } from '@/state/containers/sort';
 import { compareNodesWithData } from '@/compare/compareNodes';
+import { Error } from '../icons';
 export interface NodeProps {
   node: ParserField;
   builtIn?: boolean;
@@ -20,7 +21,7 @@ const MainNodeArea = themed(
     ({
       position: 'relative',
       borderColor: 'transparent',
-      borderWidth: 1,
+      borderWidth: 2,
       borderStyle: 'solid',
       borderRadius: 4,
       cursor: 'pointer',
@@ -29,7 +30,7 @@ const MainNodeArea = themed(
       alignItems: 'stretch',
       color: backgroundedText,
       fontSize: 12,
-      padding: `10px 15px`,
+      padding: `9.5px 15px`,
       userSelect: 'none',
       '-moz-user-select': '-moz-none',
       $nest: {
@@ -86,7 +87,9 @@ const RelatedNode = style({
 
 const ErrorNode = themed((theme) =>
   style({
-    backgroundColor: `${theme.background.error} !important`,
+    display: '',
+    borderColor: `${theme.background.error} !important`,
+    borderWidth: `2px !important`,
     opacity: 1,
   }),
 );
@@ -157,6 +160,9 @@ export const PaintNode: React.FC<NodeProps> = ({
         });
       }}
     >
+      {errorNodeName === node.name && (
+        <Error fill={theme.background.error} style={{ marginRight: 8 }} />
+      )}
       {node.name}
     </div>
   );

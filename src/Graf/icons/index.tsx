@@ -8,3 +8,4 @@ export * from './Search';
 export * from './Tick';
 export * from './X';
 export * from './Minus';
+export * from './Error';
