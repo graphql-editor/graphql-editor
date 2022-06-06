@@ -4,7 +4,7 @@ import { style } from 'typestyle';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { useTreesState } from '@/state/containers/trees';
 import { themed } from '@/Theming/utils';
-import { useTheme } from '@/state/containers';
+import { useErrorsState, useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { useSortState } from '@/state/containers/sort';
 import { compareNodesWithData } from '@/compare/compareNodes';
@@ -83,6 +83,14 @@ const NotSelected = style({
 const RelatedNode = style({
   opacity: 0.9,
 });
+
+const ErrorNode = themed((theme) =>
+  style({
+    backgroundColor: `${theme.background.error} !important`,
+    opacity: 1,
+  }),
+);
+
 const BaseNode = themed((theme) =>
   style({
     color: `${theme.backgroundedText} !important`,
@@ -104,6 +112,7 @@ export const PaintNode: React.FC<NodeProps> = ({
   } = useTreesState();
   const { isNodeBaseType } = useSortState();
   const { theme } = useTheme();
+  const { errorNodeName } = useErrorsState();
 
   useEffect(() => {
     if (
@@ -135,6 +144,7 @@ export const PaintNode: React.FC<NodeProps> = ({
           : ''
       }
       ${nodesImplementsInterface.includes(node) ? RelatedNode : ''}
+      ${errorNodeName === node.name ? ErrorNode(theme) : ''}
       NodeType-${node.type.name} 
       `}
       ref={thisNode}
