@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createContainer } from 'unstated-next';
 import {
+  AllTypes,
   OperationType,
   ParserField,
   TypeDefinition,
   TypeSystemDefinition,
 } from 'graphql-js-tree';
+import { useTreesState } from './trees';
 
 type OrderType = {
   name: TypeDefinition | TypeSystemDefinition.DirectiveDefinition;
@@ -23,8 +25,11 @@ const defaultOrderTypes: OrderType[] = [
 ];
 
 const useSortStateContainer = createContainer(() => {
+  const { tree } = useTreesState();
+
   const [isSortAlphabetically, setIsSortAlphabetically] = useState(false);
   const [orderTypes, setOrderTypes] = useState<OrderType[]>(defaultOrderTypes);
+  const [isInit, setIsInit] = useState(true);
 
   const sortByTypes = (a: ParserField, b: ParserField) => {
     const bValue = orderTypes.find((t) => t.name === b.data.type)
@@ -35,6 +40,29 @@ const useSortStateContainer = createContainer(() => {
       : 0;
     return bValue - aValue || a.name.localeCompare(b.name);
   };
+
+  const isTypeDefinition = (type?: AllTypes) =>
+    !!type &&
+    (type === TypeSystemDefinition.DirectiveDefinition ||
+      type in TypeDefinition);
+
+  useEffect(() => {
+    if (tree.nodes.length && isInit) {
+      setIsInit(false);
+      const initialOrderTypes = new Set();
+      tree.nodes.forEach((node) => {
+        isTypeDefinition(node.data.type) &&
+          initialOrderTypes.add(node.data.type);
+      });
+      const initialOrderTypesArray = Array.from(initialOrderTypes);
+      setOrderTypes(
+        initialOrderTypesArray.map((a, i) => ({
+          name: a as TypeDefinition | TypeSystemDefinition.DirectiveDefinition,
+          value: i,
+        })),
+      );
+    }
+  }, [tree]);
 
   const sortAlphabetically = (a: ParserField, b: ParserField) =>
     a.name.localeCompare(b.name);
