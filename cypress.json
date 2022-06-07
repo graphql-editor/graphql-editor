@@ -1,5 +1,0 @@
-{
-  "testFiles": "**/*.spec.ts",
-  "chromeWebSecurity": false,
-  "modifyObstructiveCode": false
-}
