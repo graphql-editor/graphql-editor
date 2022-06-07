@@ -1,17 +1,14 @@
 import { createContainer } from 'unstated-next';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { EditorError } from '@/validation';
 const useErrorsStateContainer = createContainer(() => {
   const [codeErrors, setCodeErrors] = useState<EditorError[]>([]);
+  const [grafEditorErrors, setGrafEditorErrors] = useState<EditorError[]>([]);
   const [grafErrors, setGrafErrors] = useState<string>();
   const [lockGraf, setLockGraf] = useState<string>();
   const [lockCode, setLockCode] = useState<string>();
   const [errorRowNumber, setErrorRowNumber] = useState<number>();
-  const [errorNodeName, setErrorNodeName] = useState<string>();
-
-  useEffect(() => {
-    setErrorNodeName(lockCode?.split(' ')[1]);
-  }, [lockCode]);
+  const [errorNodeNames, setErrorNodeNames] = useState<string[]>();
 
   const transformCodeError = (errors: EditorError[]) => {
     errors.forEach((a) => {
@@ -37,8 +34,10 @@ const useErrorsStateContainer = createContainer(() => {
     transformCodeError,
     errorRowNumber,
     setErrorRowNumber,
-    errorNodeName,
-    setErrorNodeName,
+    errorNodeNames,
+    setErrorNodeNames,
+    grafEditorErrors,
+    setGrafEditorErrors,
   };
 });
 

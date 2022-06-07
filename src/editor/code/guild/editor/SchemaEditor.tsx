@@ -8,8 +8,9 @@ import {
   SchemaServicesOptions,
   useSchemaServices,
 } from './use-schema-services';
-import { useTheme, useTreesState } from '@/state/containers';
+import { useErrorsState, useTheme, useTreesState } from '@/state/containers';
 import { theme as MonacoTheme } from '@/editor/code/monaco';
+import { findCurrentNodeName } from '@/editor/code/guild/editor/onCursor';
 
 export type SchemaEditorProps = SchemaServicesOptions & {
   onBlur?: (value: string) => void;
@@ -37,6 +38,30 @@ function BaseSchemaEditor(
     onValidate,
   } = useSchemaServices(props);
   const { schemaType } = useTreesState();
+  const { lockCode, grafEditorErrors, setErrorNodeNames } = useErrorsState();
+
+  useEffect(() => {
+    if (languageService && lockCode && props.schema) {
+      Promise.all(
+        grafEditorErrors.map((gee) => {
+          if (props.schema && gee.row && gee.column) {
+            return languageService
+              .getNodeFromErrorSchema(props.schema, gee.row, gee.column)
+              .then((e) => {
+                if (e?.token) {
+                  const node = findCurrentNodeName(e.token.state);
+                  if (node) {
+                    return node;
+                  }
+                }
+              });
+          }
+        }),
+      ).then((erroringNodes) => {
+        setErrorNodeNames(erroringNodes.filter(Boolean) as string[]);
+      });
+    }
+  }, [lockCode, props.schema, grafEditorErrors]);
 
   useEffect(() => {
     if (editorRef)

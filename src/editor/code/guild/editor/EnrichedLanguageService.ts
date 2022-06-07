@@ -5,6 +5,7 @@ import {
   IPosition as GraphQLPosition,
   ContextToken,
   getTokenAtPosition,
+  Position,
 } from 'graphql-language-service';
 import type * as monaco from 'monaco-editor';
 import {
@@ -36,6 +37,32 @@ export class EnrichedLanguageService extends LanguageService {
     }
 
     return null;
+  }
+  public async getNodeFromErrorSchema(
+    document: string,
+    row: number,
+    column: number,
+  ) {
+    const graphQLPosition = new Position(row, column);
+    const schema = await this.getSchema();
+
+    if (!schema) {
+      return null;
+    }
+
+    const tokenAtPosition = await this.getNodeAtPosition(
+      schema,
+      document,
+      graphQLPosition,
+    );
+
+    if (!tokenAtPosition) {
+      return null;
+    }
+
+    return {
+      token: tokenAtPosition,
+    };
   }
 
   public async buildBridgeForProviders(

@@ -115,7 +115,7 @@ export const PaintNode: React.FC<NodeProps> = ({
   } = useTreesState();
   const { isNodeBaseType } = useSortState();
   const { theme } = useTheme();
-  const { errorNodeName } = useErrorsState();
+  const { errorNodeNames } = useErrorsState();
 
   useEffect(() => {
     if (
@@ -147,7 +147,7 @@ export const PaintNode: React.FC<NodeProps> = ({
           : ''
       }
       ${nodesImplementsInterface.includes(node) ? RelatedNode : ''}
-      ${errorNodeName === node.name ? ErrorNode(theme) : ''}
+      ${errorNodeNames?.includes(node.name) ? ErrorNode(theme) : ''}
       NodeType-${node.type.name} 
       `}
       ref={thisNode}
@@ -160,7 +160,7 @@ export const PaintNode: React.FC<NodeProps> = ({
         });
       }}
     >
-      {errorNodeName === node.name && (
+      {errorNodeNames?.includes(node.name) && (
         <Error fill={theme.background.error} style={{ marginRight: 8 }} />
       )}
       {node.name}

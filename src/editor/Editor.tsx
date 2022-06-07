@@ -89,8 +89,13 @@ export const Editor = ({
   const { theme: currentTheme, setTheme } = useTheme();
 
   const { menuState, setMenuState } = useNavigationState();
-  const { grafErrors, setGrafErrors, setLockGraf, setLockCode } =
-    useErrorsState();
+  const {
+    grafErrors,
+    setGrafErrors,
+    setLockGraf,
+    setLockCode,
+    setGrafEditorErrors,
+  } = useErrorsState();
   const {
     tree,
     setTree,
@@ -163,6 +168,7 @@ export const Editor = ({
                 ...mapErrors.filter((e, i) => mapErrors.indexOf(e) === i),
               ].join('\n\n');
               setGrafErrors(msg);
+              setGrafEditorErrors(errors);
               setLockCode(msg);
               return;
             }
