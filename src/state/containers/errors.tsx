@@ -1,5 +1,5 @@
 import { createContainer } from 'unstated-next';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { EditorError } from '@/validation';
 const useErrorsStateContainer = createContainer(() => {
   const [codeErrors, setCodeErrors] = useState<EditorError[]>([]);
@@ -7,6 +7,11 @@ const useErrorsStateContainer = createContainer(() => {
   const [lockGraf, setLockGraf] = useState<string>();
   const [lockCode, setLockCode] = useState<string>();
   const [errorRowNumber, setErrorRowNumber] = useState<number>();
+  const [errorNodeName, setErrorNodeName] = useState<string>();
+
+  useEffect(() => {
+    setErrorNodeName(lockCode?.split(' ')[1]);
+  }, [lockCode]);
 
   const transformCodeError = (errors: EditorError[]) => {
     errors.forEach((a) => {
@@ -32,6 +37,8 @@ const useErrorsStateContainer = createContainer(() => {
     transformCodeError,
     errorRowNumber,
     setErrorRowNumber,
+    errorNodeName,
+    setErrorNodeName,
   };
 });
 

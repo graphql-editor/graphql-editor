@@ -4,10 +4,11 @@ import { style } from 'typestyle';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { useTreesState } from '@/state/containers/trees';
 import { themed } from '@/Theming/utils';
-import { useTheme } from '@/state/containers';
+import { useErrorsState, useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { useSortState } from '@/state/containers/sort';
 import { compareNodesWithData } from '@/compare/compareNodes';
+import { Error } from '../icons';
 export interface NodeProps {
   node: ParserField;
   builtIn?: boolean;
@@ -20,7 +21,7 @@ const MainNodeArea = themed(
     ({
       position: 'relative',
       borderColor: 'transparent',
-      borderWidth: 1,
+      borderWidth: 2,
       borderStyle: 'solid',
       borderRadius: 4,
       cursor: 'pointer',
@@ -29,7 +30,7 @@ const MainNodeArea = themed(
       alignItems: 'stretch',
       color: backgroundedText,
       fontSize: 12,
-      padding: `10px 15px`,
+      padding: `9.5px 15px`,
       userSelect: 'none',
       '-moz-user-select': '-moz-none',
       $nest: {
@@ -83,6 +84,16 @@ const NotSelected = style({
 const RelatedNode = style({
   opacity: 0.9,
 });
+
+const ErrorNode = themed((theme) =>
+  style({
+    display: '',
+    borderColor: `${theme.background.error} !important`,
+    borderWidth: `2px !important`,
+    opacity: 1,
+  }),
+);
+
 const BaseNode = themed((theme) =>
   style({
     color: `${theme.backgroundedText} !important`,
@@ -104,6 +115,7 @@ export const PaintNode: React.FC<NodeProps> = ({
   } = useTreesState();
   const { isNodeBaseType } = useSortState();
   const { theme } = useTheme();
+  const { errorNodeName } = useErrorsState();
 
   useEffect(() => {
     if (
@@ -135,6 +147,7 @@ export const PaintNode: React.FC<NodeProps> = ({
           : ''
       }
       ${nodesImplementsInterface.includes(node) ? RelatedNode : ''}
+      ${errorNodeName === node.name ? ErrorNode(theme) : ''}
       NodeType-${node.type.name} 
       `}
       ref={thisNode}
@@ -147,6 +160,9 @@ export const PaintNode: React.FC<NodeProps> = ({
         });
       }}
     >
+      {errorNodeName === node.name && (
+        <Error fill={theme.background.error} style={{ marginRight: 8 }} />
+      )}
       {node.name}
     </div>
   );
