@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Install node
         uses: actions/setup-node@v1
         with:
@@ -17,13 +17,13 @@ jobs:
       - name: Install packages
         run: npm install
       - name: Cypress run
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@v4
         timeout-minutes: 10
         with:
           build: npm run build
           start: npm run start-ci
       - name: Upload videos
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         if: always()
         with:
           name: cypress-videos
