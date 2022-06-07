@@ -95,6 +95,7 @@ export const Editor = ({
     setLockGraf,
     setLockCode,
     setGrafEditorErrors,
+    setGrafErrorSchema,
   } = useErrorsState();
   const {
     tree,
@@ -169,11 +170,13 @@ export const Editor = ({
               ].join('\n\n');
               setGrafErrors(msg);
               setGrafEditorErrors(errors);
+              setGrafErrorSchema(graphql);
               setLockCode(msg);
               return;
             }
             setLockCode(undefined);
             setGrafErrors(undefined);
+            setGrafEditorErrors([]);
             setSchema({ ...schema, code: graphql, isTree: true });
           });
         }

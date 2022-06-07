@@ -49,11 +49,20 @@ const useSortStateContainer = createContainer(() => {
   useEffect(() => {
     if (tree.nodes.length && isInit) {
       setIsInit(false);
-      const initialOrderTypes = new Set();
+      const initialOrderTypes = new Set<AllTypes | undefined>();
       tree.nodes.forEach((node) => {
         isTypeDefinition(node.data.type) &&
           initialOrderTypes.add(node.data.type);
       });
+
+      initialOrderTypes.add(TypeDefinition.ObjectTypeDefinition);
+      initialOrderTypes.add(TypeDefinition.InterfaceTypeDefinition);
+      initialOrderTypes.add(TypeDefinition.UnionTypeDefinition);
+      initialOrderTypes.add(TypeDefinition.EnumTypeDefinition);
+      initialOrderTypes.add(TypeDefinition.ScalarTypeDefinition);
+      initialOrderTypes.add(TypeDefinition.InputObjectTypeDefinition);
+      initialOrderTypes.add(TypeSystemDefinition.DirectiveDefinition);
+
       const initialOrderTypesArray = Array.from(initialOrderTypes);
       setOrderTypes(
         initialOrderTypesArray.map((a, i) => ({

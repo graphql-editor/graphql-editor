@@ -38,15 +38,16 @@ function BaseSchemaEditor(
     onValidate,
   } = useSchemaServices(props);
   const { schemaType } = useTreesState();
-  const { lockCode, grafEditorErrors, setErrorNodeNames } = useErrorsState();
+  const { lockCode, grafEditorErrors, setErrorNodeNames, grafErrorSchema } =
+    useErrorsState();
 
   useEffect(() => {
     if (languageService && lockCode && props.schema) {
       Promise.all(
         grafEditorErrors.map((gee) => {
-          if (props.schema && gee.row && gee.column) {
+          if (grafErrorSchema && gee.row && gee.column) {
             return languageService
-              .getNodeFromErrorSchema(props.schema, gee.row, gee.column)
+              .getNodeFromErrorSchema(grafErrorSchema, gee.row, gee.column)
               .then((e) => {
                 if (e?.token) {
                   const node = findCurrentNodeName(e.token.state);
@@ -61,7 +62,7 @@ function BaseSchemaEditor(
         setErrorNodeNames(erroringNodes.filter(Boolean) as string[]);
       });
     }
-  }, [lockCode, props.schema, grafEditorErrors]);
+  }, [lockCode, grafEditorErrors, grafErrorSchema]);
 
   useEffect(() => {
     if (editorRef)

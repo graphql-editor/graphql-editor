@@ -5,6 +5,7 @@ const useErrorsStateContainer = createContainer(() => {
   const [codeErrors, setCodeErrors] = useState<EditorError[]>([]);
   const [grafEditorErrors, setGrafEditorErrors] = useState<EditorError[]>([]);
   const [grafErrors, setGrafErrors] = useState<string>();
+  const [grafErrorSchema, setGrafErrorSchema] = useState<string>();
   const [lockGraf, setLockGraf] = useState<string>();
   const [lockCode, setLockCode] = useState<string>();
   const [errorRowNumber, setErrorRowNumber] = useState<number>();
@@ -38,6 +39,8 @@ const useErrorsStateContainer = createContainer(() => {
     setErrorNodeNames,
     grafEditorErrors,
     setGrafEditorErrors,
+    grafErrorSchema,
+    setGrafErrorSchema,
   };
 });
 
