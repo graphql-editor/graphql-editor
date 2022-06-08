@@ -5,6 +5,7 @@ export default defineConfig({
     baseUrl: 'http://localhost:1568',
     supportFile: false,
     specPattern: 'cypress/integration/**/*.spec.{js,jsx,ts,tsx}',
+    chromeWebSecurity: false,
   },
   chromeWebSecurity: false,
 });
