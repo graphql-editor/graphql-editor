@@ -35,6 +35,7 @@
     "cloud",
     "docs",
     "cypress",
+    "cypress.config.ts",
     "__mocks__",
     "**/*.spec.ts",
     "**/*.test.ts"
