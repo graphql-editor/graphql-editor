@@ -9,6 +9,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Install node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install packages
+        run: npm install
       - name: Cypress run
         uses: cypress-io/github-action@v4
         timeout-minutes: 10
