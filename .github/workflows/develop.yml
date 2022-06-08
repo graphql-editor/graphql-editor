@@ -20,6 +20,7 @@ jobs:
         uses: cypress-io/github-action@v4
         timeout-minutes: 10
         with:
+          browser: chrome
           build: npm run build
           start: npm run start-ci
       - name: Upload videos
