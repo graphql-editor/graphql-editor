@@ -57,6 +57,7 @@ context('Main Split IDE functions', () => {
     )
       .contains('String')
       .click();
+    cy.wait(100);
 
     cy.get(`[data-cy=${GraphQLEditorDomStructure.tree.elements.CodePane.name}]`)
       .find('textarea')
