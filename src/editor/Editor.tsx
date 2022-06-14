@@ -53,6 +53,7 @@ export const ErrorOuterContainer = style({
   width: '100%',
   position: 'relative',
   display: 'flex',
+  overflow: 'auto',
 });
 
 export interface EditorProps extends Theming {
