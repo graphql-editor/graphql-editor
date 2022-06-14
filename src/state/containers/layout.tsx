@@ -19,7 +19,7 @@ const useLayoutStateContainer = createContainer(() => {
     return () => window.removeEventListener('resize', updateWindowDimensions);
   }, []);
 
-  const calcWidth = () =>
+  const calcDocumentationWidth = () =>
     windowWidth -
     documentationWidth -
     menuWidth -
@@ -31,7 +31,7 @@ const useLayoutStateContainer = createContainer(() => {
     setSidebarSize,
     documentationWidth,
     setDocumentationWidth,
-    calcWidth,
+    calcDocumentationWidth,
   };
 });
 

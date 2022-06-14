@@ -51,7 +51,7 @@ const ListWrapper = themed(({ background }) =>
 export const Docs = () => {
   const { theme } = useTheme();
   const { tree, selectedNode, libraryTree } = useTreesState();
-  const { setDocumentationWidth, documentationWidth, calcWidth } =
+  const { setDocumentationWidth, documentationWidth, calcDocumentationWidth } =
     useLayoutState();
   const { sortAlphabetically } = useSortState();
 
@@ -110,7 +110,7 @@ export const Docs = () => {
 
   return (
     <div className={`${Wrapper(theme)}`}>
-      <div className={`${SelectedNodeWrapper(calcWidth())}`}>
+      <div className={`${SelectedNodeWrapper(calcDocumentationWidth())}`}>
         {selectedNode && <DocsElement node={selectedNode.field} />}
       </div>
       <DynamicResize
