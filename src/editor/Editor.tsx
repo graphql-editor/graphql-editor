@@ -154,10 +154,6 @@ export const Editor = ({
   }, [state]);
 
   useEffect(() => {
-    console.log('SETTING SCHEMA');
-  }, [schema]);
-
-  useEffect(() => {
     if (!tree || !!tree.schema) {
       return;
     }
