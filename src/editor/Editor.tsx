@@ -158,6 +158,10 @@ export const Editor = ({
       return;
     }
     if (tree.nodes.length === 0) {
+      setLockCode(undefined);
+      setGrafErrors(undefined);
+      setGrafEditorErrors([]);
+      setSchema({ ...schema, code: '', isTree: true });
       return;
     }
     try {
