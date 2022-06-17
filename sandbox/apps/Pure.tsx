@@ -22,7 +22,10 @@ export const Pure = () => {
       <GraphQLEditor
         theme={MainTheme}
         setSchema={(props) => {
-          setMySchema(props);
+          setMySchema({
+            code: props.code,
+            libraries: props.libraries,
+          });
         }}
         schema={mySchema}
       />

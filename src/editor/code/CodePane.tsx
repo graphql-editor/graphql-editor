@@ -68,7 +68,8 @@ export const CodePane = (props: CodePaneProps) => {
       if (selectedNode?.source === 'code') {
         return;
       }
-      selectedNode
+      console.log(selectedNode);
+      selectedNode?.field.name
         ? ref.current.jumpToType(selectedNode.field.name)
         : ref.current.deselect();
     }

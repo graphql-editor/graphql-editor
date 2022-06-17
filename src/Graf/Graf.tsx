@@ -16,6 +16,7 @@ import { GraphQLEditorDomStructure } from '@/domStructure';
 import { getScalarFields } from '@/Graf/utils/getScalarFields';
 import { findInNodes } from '@/compare/compareNodes';
 import { ErrorItem } from './ErrorItem';
+import { ParserField } from 'graphql-js-tree';
 
 const Wrapper = themed(({ background: { mainClose, mainFurthest, mainFar } }) =>
   style({
@@ -184,9 +185,12 @@ export const Graf: React.FC = () => {
                   ...node,
                   name: nodeToDuplicate?.name + 'Copy',
                 }),
-              );
+              ) as ParserField;
               allNodes.push(duplicatedNode);
-              setSelectedNode(duplicatedNode);
+              setSelectedNode({
+                field: duplicatedNode,
+                source: 'diagram',
+              });
               setTree({ nodes: allNodes });
             }}
             onInputCreate={(nodeToCreateInput) => {
@@ -201,9 +205,12 @@ export const Graf: React.FC = () => {
                   data: { type: 'InputObjectTypeDefinition' },
                   name: nodeToCreateInput.name + 'Input',
                 }),
-              );
+              ) as ParserField;
               allNodes.push(createdInput);
-              setSelectedNode(createdInput);
+              setSelectedNode({
+                field: createdInput,
+                source: 'diagram',
+              });
               setTree({ nodes: allNodes });
             }}
             node={node}

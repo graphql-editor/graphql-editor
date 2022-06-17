@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   TypeDefinition,
   ValueDefinition,
@@ -64,10 +64,6 @@ export const TopNodeMenu: React.FC<{
     (node.data.type === TypeDefinition.ObjectTypeDefinition &&
       (node.interfaces?.length === 0 ||
         (!node.interfaces && !!node.args?.length)));
-
-  useEffect(() => {
-    hideMenu();
-  }, [node]);
 
   const hideMenu = () => {
     setMenuOpen(undefined);
