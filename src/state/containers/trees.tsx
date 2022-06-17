@@ -20,12 +20,13 @@ type SelectedNode = {
   source: ActiveSource;
 };
 
-type TreeWithSource = ParserTree & { schema: boolean };
+type TreeWithSource = ParserTree & { schema: boolean; initial: boolean };
 
 const useTreesStateContainer = createContainer(() => {
   const [tree, _setTree] = useState<TreeWithSource>({
     nodes: [],
     schema: false,
+    initial: true,
   });
   const [libraryTree, setLibraryTree] = useState<ParserTree>({ nodes: [] });
   const [snapshots, setSnapshots] = useState<string[]>([]);
@@ -54,7 +55,7 @@ const useTreesStateContainer = createContainer(() => {
   }, [selectedNode]);
 
   const setTree = (
-    v: React.SetStateAction<Omit<TreeWithSource, 'schema'>>,
+    v: React.SetStateAction<Omit<TreeWithSource, 'schema' | 'initial'>>,
     blockSchemaUpdate?: boolean,
   ) => {
     if (typeof v === 'function') {
@@ -63,6 +64,7 @@ const useTreesStateContainer = createContainer(() => {
         return {
           ...result,
           schema: !!blockSchemaUpdate,
+          initial: false,
         };
       });
       return;
@@ -70,6 +72,7 @@ const useTreesStateContainer = createContainer(() => {
     _setTree({
       ...v,
       schema: !!blockSchemaUpdate,
+      initial: false,
     });
   };
 
