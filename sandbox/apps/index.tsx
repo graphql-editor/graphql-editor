@@ -4,6 +4,7 @@ export * from './SetSchema';
 export * from './withSchema';
 export * from './github';
 export * from './diff';
+export * from './Gql';
 export * from './googlediff';
 export * from './libraries';
 export * from './Light';
