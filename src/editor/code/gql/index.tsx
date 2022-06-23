@@ -43,7 +43,7 @@ const ErrorLock = themed(({ error, background: { mainFurthest } }) =>
  * React compontent holding GraphQL IDE
  */
 export const GqlCodePane = (props: GqlCodePaneProps) => {
-  const { schema, readonly, onChange, libraries, gql } = props;
+  const { schema, readonly, onChange, gql } = props;
   const { theme } = useTheme();
   const {
     selectedNode,
@@ -97,11 +97,10 @@ export const GqlCodePane = (props: GqlCodePaneProps) => {
           beforeMount={(monaco) =>
             monaco.editor.defineTheme('graphql-editor', MonacoTheme(theme))
           }
-          onBlur={(v) => {
-            if (!props.readonly) onChange(v);
+          onChange={(v) => {
+            if (!props.readonly) onChange(v || '');
           }}
           schema={schema}
-          libraries={libraries}
           options={codeSettings}
           select={(e) => {
             if (e) {

@@ -43,10 +43,6 @@ export interface GqlEditorProps extends Theming {
   placeholder?: string;
   schema: PassedSchema;
   gql: string;
-  diffSchemas?: {
-    oldSchema: PassedSchema;
-    newSchema: PassedSchema;
-  };
   setGql: (gql: string) => void;
   theme?: EditorTheme;
 }
@@ -93,12 +89,7 @@ export const GqlEditor = ({
         onChange={(v, isInvalid) => {
           setGql(v);
         }}
-        schema={
-          schema.libraries && schemaType === 'library'
-            ? schema.libraries
-            : schema.code
-        }
-        libraries={schemaType === 'library' ? '' : schema.libraries}
+        schema={[schema.libraries || '', schema.code].join('\n')}
         placeholder={placeholder}
         readonly={readonly}
       />

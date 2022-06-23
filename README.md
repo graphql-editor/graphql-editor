@@ -34,9 +34,13 @@ Create GraphQL nodes and connect them to generate a database schema. You can als
   - [Relations](#relations)
 - [Table of contents](#table-of-contents)
 - [License](#license)
-  - [Installation](#installation)
+- [Installation](#installation)
+- [GraphQL SDL Editor](#graphql-sdl-editor)
   - [Usage](#usage)
   - [GraphQLEditor component props](#graphqleditor-component-props)
+- [GraphQL Gql Editor](#graphql-gql-editor)
+  - [Usage](#usage-1)
+  - [GraphQLGqlEditor component props](#graphqlgqleditor-component-props)
 - [Support](#support)
 - [Team](#team)
 - [Underlying Parsing technology](#underlying-parsing-technology)
@@ -46,7 +50,7 @@ Create GraphQL nodes and connect them to generate a database schema. You can als
 
 MIT
 
-### Installation
+## Installation
 
 ```
 npm i -D worker-loader css-loader file-loader webpack
@@ -55,6 +59,8 @@ npm i -D worker-loader css-loader file-loader webpack
 ```
 npm i  graphql-editor react react-dom monaco-editor @monaco-editor/react
 ```
+
+## GraphQL SDL Editor
 
 ### Usage
 
@@ -109,16 +115,17 @@ render(<App />, document.getElementById('root'));
 
 **GraphQLEditor**
 
-| property      | type                                                      | description             |
-| ------------- | --------------------------------------------------------- | ----------------------- |
-| schema        | `PassedSchema`                                            | value of the schema     |
-| setSchema     | `(props: PassedSchema, isInvalid?: boolean) => void;`     | set value of the schema |
-| readonly      | `boolean`                                                 | lock editing            |
-| diffSchemas   | `{ oldSchema: PassedSchema; newSchema: PassedSchema}`     | view state              |
-| theme         | `EditorTheme`                                             | current theme           |
-| state         | `{ pane: ActivePane, code: boolean }`                     | view state              |
-| onStateChange | `( state?:{ pane: ActivePane, code: boolean } ) => void;` | on state changed        |
-| onTreeChange  | `(tree: ParserTree) => void`                              | on tree state changed   |
+| property      | type                                                      | description                |
+| ------------- | --------------------------------------------------------- | -------------------------- |
+| schema        | `PassedSchema`                                            | value of the schema        |
+| setSchema     | `(props: PassedSchema, isInvalid?: boolean) => void;`     | set value of the schema    |
+| readonly      | `boolean`                                                 | lock editing               |
+| diffSchemas   | `{ oldSchema: PassedSchema; newSchema: PassedSchema}`     | view state                 |
+| theme         | `EditorTheme`                                             | current theme              |
+| state         | `{ pane: ActivePane, code: boolean }`                     | view state                 |
+| onStateChange | `( state?:{ pane: ActivePane, code: boolean } ) => void;` | on state changed           |
+| onTreeChange  | `(tree: ParserTree) => void`                              | on tree state changed      |
+| placeholder   | `string`                                                  | placeholder - empty editor |
 
 **PassedSchema**
 
@@ -130,6 +137,59 @@ render(<App />, document.getElementById('root'));
 **ActivePane**
 
 `"relation" | "diagram" | "hierarchy"`
+
+## GraphQL Gql Editor
+
+### Usage
+
+```tsx
+import React, { useState } from 'react';
+import { render } from 'react-dom';
+import { GraphQLEditor, PassedSchema } from 'graphql-editor';
+
+const schema = `
+type Query{
+	pizzas: [Pizza!]
+}
+`;
+
+export const App = () => {
+  const [gql, setGql] = useState('');
+  return (
+    <div
+      style={{
+        flex: 1,
+        width: '100%',
+        height: '100%',
+        alignSelf: 'stretch',
+        display: 'flex',
+        position: 'relative',
+      }}
+    >
+      <GraphQLGqlEditor
+        gql={gql}
+        setGql={(gqlString) => setGql(gqlString)}
+        schema={{ code: schema }}
+      />
+    </div>
+  );
+};
+
+render(<App />, document.getElementById('root'));
+```
+
+### GraphQLGqlEditor component props
+
+**GraphQLEditor**
+
+| property    | type                                                  | description                |
+| ----------- | ----------------------------------------------------- | -------------------------- |
+| schema      | `PassedSchema`                                        | value of the schema        |
+| gql         | `string`                                              | value of the gql           |
+| placeholder | `string`                                              | placeholder - empty editor |
+| setGql      | `(props: PassedSchema, isInvalid?: boolean) => void;` | set value of the gql       |
+| readonly    | `boolean`                                             | lock editing               |
+| theme       | `EditorTheme`                                         | current theme              |
 
 ## Support
 

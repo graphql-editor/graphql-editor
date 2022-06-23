@@ -19,7 +19,6 @@ export type GqlSchemaEditorProps = SchemaServicesOptions & {
     languageService: EnrichedLanguageService,
   ) => void;
 } & Omit<EditorProps, 'language'> & {
-    libraries?: string;
     gql?: string;
     setGql: (gql: string) => void;
   };
