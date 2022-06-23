@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PassedSchema } from '@/Models';
 import * as schemas from '../schema';
-import { GraphQLEditor, DarkTheme } from '@/index';
+import { GraphQLEditor, FrozenTheme } from '@/index';
 
 export const github = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
@@ -20,7 +20,7 @@ export const github = () => {
       }}
     >
       <GraphQLEditor
-        theme={DarkTheme}
+        theme={FrozenTheme}
         setSchema={(props) => {
           setMySchema(props);
         }}

@@ -1,26 +1,28 @@
 import cx from 'classnames';
-import React, { useEffect, useState } from 'react';
-import { sizeSidebar } from '@/vars';
+import React, { useEffect } from 'react';
 import { Menu } from './Menu';
 import { CodePane } from './code';
-
 import { PassedSchema, Theming } from '@/Models';
 import { DynamicResize } from './code/Components';
 import { Graf } from '@/Graf/Graf';
 import { Hierarchy } from '@/Hierarchy';
-import { Parser, ParserTree, TreeToGraphQL } from 'graphql-js-tree';
+import { Parser, ParserTree } from 'graphql-js-tree';
 import { Workers } from '@/worker';
 import { style } from 'typestyle';
-import { useTreesState } from '@/state/containers/trees';
 import {
   useErrorsState,
   useNavigationState,
+  useTreesState,
   useTheme,
+  VisualStateProvider,
+  useLayoutState,
 } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { DiffEditor } from '@/DiffEditor';
 import { Relation } from '@/Relation/Relation';
 import { DarkTheme, EditorTheme } from '@/gshared/theme/DarkTheme';
+import { Docs } from '@/Docs/Docs';
+import { useSortState } from '@/state/containers/sort';
 
 export const Main = style({
   display: 'flex',
@@ -51,6 +53,7 @@ export const ErrorOuterContainer = style({
   width: '100%',
   position: 'relative',
   display: 'flex',
+  overflow: 'auto',
 });
 
 export interface EditorProps extends Theming {
@@ -70,121 +73,56 @@ export interface EditorProps extends Theming {
   theme?: EditorTheme;
 }
 
-let stopCodeFromTreeGeneration = false;
-let stopTreeFromCodeGeneration = false;
-
 export const Editor = ({
-  readonly,
   placeholder,
   schema = {
     code: '',
     libraries: '',
   },
-  initialSizeOfSidebar = sizeSidebar,
   state,
   onStateChange,
   setSchema,
   diffSchemas,
   onTreeChange,
+  readonly: editorReadOnly,
   theme = DarkTheme,
 }: EditorProps) => {
   const { theme: currentTheme, setTheme } = useTheme();
-  const [sidebarSize, setSidebarSize] = useState<string | number>(
-    initialSizeOfSidebar,
-  );
-  const { menuState, setMenuState } = useNavigationState();
-  const { grafErrors, setGrafErrors, setLockGraf, setCodeErrors, setLockCode } =
-    useErrorsState();
 
+  const { menuState, setMenuState } = useNavigationState();
+  const {
+    grafErrors,
+    setGrafErrors,
+    setLockGraf,
+    setLockCode,
+    setGrafEditorErrors,
+    setGrafErrorSchema,
+  } = useErrorsState();
   const {
     tree,
+    setTree,
     setSnapshots,
     setUndos,
-    setTree,
     setLibraryTree,
     setReadonly,
-    isTreeInitial,
-    setIsTreeInitial,
+    schemaType,
+    generateTreeFromSchema,
+    readonly,
   } = useTreesState();
+  const { isSortAlphabetically, sortByTypes, orderTypes } = useSortState();
+  const { setSidebarSize, sidebarSize } = useLayoutState();
 
   const reset = () => {
     setSnapshots([]);
     setUndos([]);
     setGrafErrors(undefined);
   };
-
-  const generateSchemaFromTree = () => {
-    if (!tree) {
-      return;
-    }
-    if (tree.nodes.length === 0) {
-      if (schema.code !== '') {
-        setSchema({
-          ...schema,
-          code: '',
-        });
-      }
-      return;
-    }
-    try {
-      const graphql = TreeToGraphQL.parse(tree);
-      if (graphql !== schema.code || (grafErrors?.length || 0) > 0) {
-        Workers.validate(graphql, schema.libraries).then((errors) => {
-          if (errors.length > 0) {
-            const mapErrors = errors.map((e) => e.text);
-            const msg = [
-              ...mapErrors.filter((e, i) => mapErrors.indexOf(e) === i),
-            ].join('\n\n');
-            setGrafErrors(msg);
-            setLockCode(msg);
-            return;
-          }
-          setLockCode(undefined);
-          setGrafErrors(undefined);
-          setSchema({ ...schema, code: graphql });
-        });
-      }
-    } catch (error) {
-      const msg = (error as any).message;
-      setLockCode(msg);
-      setGrafErrors(msg);
-      return;
-    }
-  };
-
-  const generateTreeFromSchema = () => {
-    if (!schema.code) {
-      setTree({ nodes: [] });
-      return;
-    }
-    try {
-      if (schema.libraries) {
-        const excludeLibraryNodesFromDiagram = Parser.parse(schema.libraries);
-        const parsedResult = Parser.parse(schema.code, [], schema.libraries);
-        setTree({
-          nodes: parsedResult.nodes.filter(
-            (n) =>
-              !excludeLibraryNodesFromDiagram.nodes.find(
-                (eln) => eln.name === n.name && eln.data.type === n.data.type,
-              ),
-          ),
-        });
-      } else {
-        const parsedCode = Parser.parse(schema.code);
-        setTree(parsedCode);
-      }
-      Workers.validate(schema.code, schema.libraries).then((errors) => {
-        setCodeErrors(errors);
-        setLockGraf(errors.map((e) => JSON.stringify(e, null, 4)).join('\n'));
+  useEffect(() => {
+    isSortAlphabetically &&
+      setTree({
+        nodes: tree.nodes.sort(sortByTypes),
       });
-      setLockGraf(undefined);
-    } catch (error) {
-      Workers.validate(schema.code, schema.libraries).then((errors) => {
-        setCodeErrors(errors);
-        setLockGraf(errors.map((e) => JSON.stringify(e, null, 4)).join('\n'));
-      });
-    }
-  };
+  }, [isSortAlphabetically, orderTypes]);
 
   useEffect(() => {
     if (theme) {
@@ -193,8 +131,12 @@ export const Editor = ({
   }, [theme]);
 
   useEffect(() => {
-    setReadonly(!!readonly);
-  }, [readonly]);
+    if (schemaType === 'library') {
+      setReadonly(true);
+      return;
+    }
+    setReadonly(!!editorReadOnly);
+  }, [editorReadOnly, schemaType]);
 
   useEffect(() => {
     if (schema.libraries) {
@@ -212,26 +154,53 @@ export const Editor = ({
   }, [state]);
 
   useEffect(() => {
-    if (stopCodeFromTreeGeneration) {
-      stopCodeFromTreeGeneration = false;
+    if (!tree || !!tree.schema) {
       return;
     }
-    stopTreeFromCodeGeneration = true;
-    generateTreeFromSchema();
-  }, [schema.code]);
-  useEffect(() => {
+    if (tree.nodes.length === 0) {
+      if (tree.initial) {
+        return;
+      }
+      setSchema({ ...schema, isTree: true, code: '' });
+      return;
+    }
+    try {
+      Workers.generateCode(tree).then((graphql) => {
+        if (graphql !== schema.code || (grafErrors?.length || 0) > 0) {
+          Workers.validate(graphql, schema.libraries).then((errors) => {
+            if (errors.length > 0) {
+              const mapErrors = errors.map((e) => e.text);
+              const msg = [
+                ...mapErrors.filter((e, i) => mapErrors.indexOf(e) === i),
+              ].join('\n\n');
+              setGrafErrors(msg);
+              setGrafEditorErrors(errors);
+              setGrafErrorSchema(graphql);
+              setLockCode(msg);
+              return;
+            }
+            setLockCode(undefined);
+            setGrafErrors(undefined);
+            setGrafEditorErrors([]);
+            setSchema({ ...schema, code: graphql, isTree: true });
+          });
+        }
+      });
+    } catch (error) {
+      const msg = (error as any).message;
+      setLockCode(msg);
+      setGrafErrors(msg);
+      return;
+    }
     onTreeChange?.(tree);
-    if (isTreeInitial) {
-      setIsTreeInitial(false);
-      return;
-    }
-    if (stopTreeFromCodeGeneration) {
-      stopTreeFromCodeGeneration = false;
-      return;
-    }
-    stopCodeFromTreeGeneration = true;
-    generateSchemaFromTree();
   }, [tree]);
+
+  useEffect(() => {
+    if (schema.isTree) {
+      return;
+    }
+    generateTreeFromSchema(schema);
+  }, [schema]);
   return (
     <div
       data-cy={GraphQLEditorDomStructure.tree.editor}
@@ -244,6 +213,7 @@ export const Editor = ({
     >
       <Menu
         toggleCode={!!menuState.code}
+        schema={schema}
         setToggleCode={(e) =>
           setMenuState({
             ...menuState,
@@ -283,15 +253,17 @@ export const Editor = ({
               size={!menuState.pane ? 100000 : sidebarSize}
               onChange={(v, isInvalid) => {
                 if (isInvalid) {
-                  stopCodeFromTreeGeneration = true;
                   setLockGraf(isInvalid);
-                } else {
-                  stopCodeFromTreeGeneration = false;
+                  return;
                 }
                 setSchema({ ...schema, code: v }, !!isInvalid);
               }}
-              schema={schema.code}
-              libraries={schema.libraries}
+              schema={
+                schema.libraries && schemaType === 'library'
+                  ? schema.libraries
+                  : schema.code
+              }
+              libraries={schemaType === 'library' ? '' : schema.libraries}
               placeholder={placeholder}
               readonly={readonly}
             />
@@ -300,19 +272,36 @@ export const Editor = ({
       )}
       {menuState.pane === 'diagram' && (
         <div className={ErrorOuterContainer}>
-          <Graf />
+          <VisualStateProvider>
+            <Graf />
+          </VisualStateProvider>
         </div>
       )}
       {menuState.pane === 'relation' && (
         <div className={ErrorOuterContainer}>
-          <Relation />
+          <VisualStateProvider>
+            <Relation />
+          </VisualStateProvider>
+        </div>
+      )}
+      {menuState.pane === 'docs' && (
+        <div className={ErrorOuterContainer}>
+          <Docs />
         </div>
       )}
       {menuState.pane === 'hierarchy' && <Hierarchy />}
       {menuState.pane === 'diff' && diffSchemas && (
         <DiffEditor
-          schema={diffSchemas.oldSchema.code}
-          newSchema={diffSchemas.newSchema.code}
+          schema={
+            schemaType === 'library' && diffSchemas.oldSchema.libraries
+              ? diffSchemas.oldSchema.libraries
+              : diffSchemas.oldSchema.code
+          }
+          newSchema={
+            schemaType === 'library' && diffSchemas.newSchema.libraries
+              ? diffSchemas.newSchema.libraries
+              : diffSchemas.newSchema.code
+          }
         />
       )}
     </div>

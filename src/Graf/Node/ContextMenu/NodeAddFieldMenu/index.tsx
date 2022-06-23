@@ -71,7 +71,10 @@ export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({
       <MenuSearch
         onSubmit={() => {
           if (filteredNodes && filteredNodes.length > 0) {
-            onNodeClick(filteredNodes[selectedNodeIndex], menuSearchValue);
+            onNodeClick(
+              filteredNodes[selectedNodeIndex],
+              menuSearchValue.split(' ')[0],
+            );
             setMenuSearchValue('');
             return;
           }
@@ -93,12 +96,12 @@ export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({
         {filteredNodes?.map((f, i) => (
           <TypedMenuItem
             key={f.name + menuSearchValue}
-            name={`${menuSearchValue}`}
+            name={`${menuSearchValue.split(' ')[0]}`}
             type={f.name}
             dataType={f.type.name}
             selected={i === selectedNodeIndex}
             onClick={() => {
-              onNodeClick(f, menuSearchValue);
+              onNodeClick(f, menuSearchValue.split(' ')[0]);
             }}
           />
         ))}

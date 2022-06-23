@@ -23,6 +23,7 @@ import { LevenshteinDistance } from '@/search';
 import { Lines, RelationPath } from '@/Relation/Lines';
 import { themed } from '@/Theming/utils';
 import { ErrorLock } from '@/shared/components';
+import { compareNodesWithData } from '@/compare/compareNodes';
 
 const show = keyframes({
   ['0%']: {
@@ -129,7 +130,13 @@ let tRefs: Record<string, HTMLDivElement> = {};
 export const Relation: React.FC<RelationProps> = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [focusedNode, setFocusedNode] = useState<ParserField>();
-  const { libraryTree, tree, selectedNode, setSelectedNode } = useTreesState();
+  const {
+    libraryTree,
+    tree,
+    selectedNode,
+    setSelectedNode,
+    nodesImplementsInterface,
+  } = useTreesState();
   const { lockGraf, grafErrors } = useErrorsState();
   const { menuState, setMenuState } = useNavigationState();
   const { setActions } = useIOState();
@@ -142,6 +149,7 @@ export const Relation: React.FC<RelationProps> = () => {
   >([]);
 
   const [refs, setRefs] = useState<Record<string, HTMLDivElement>>({});
+  const [refsLoaded, setRefsLoaded] = useState(false);
   const [relations, setRelations] =
     useState<{ to: RelationPath; from: RelationPath[] }[]>();
   const [searchVisible, setSearchVisible] = useState<boolean>(false);
@@ -203,7 +211,7 @@ export const Relation: React.FC<RelationProps> = () => {
   }, [focusedNode]);
 
   useLayoutEffect(() => {
-    if (Object.keys(refs).length > 0) {
+    if (refsLoaded) {
       setRelations(
         relationDrawingNodes
           .map((n) => ({
@@ -228,30 +236,47 @@ export const Relation: React.FC<RelationProps> = () => {
           .map((n) => n as { from: RelationPath[]; to: RelationPath }),
       );
     }
-  }, [refs, relationDrawingNodes, currentNodes]);
+  }, [refs, relationDrawingNodes, currentNodes, refsLoaded]);
   useEffect(() => {
     if (focusedNode) {
       setFocusedNode(undefined);
     }
-    if (selectedNode) {
+    if (selectedNode?.field) {
       const relatedNodes = currentNodes.filter(
         (n) =>
-          n.args?.find((a) => a.type.name === selectedNode.name) ||
-          n === selectedNode ||
-          selectedNode.args?.find((a) => a.type.name === n.name),
+          n.args?.find((a) => a.type.name === selectedNode.field.name) ||
+          compareNodesWithData(n, selectedNode.field) ||
+          selectedNode.field.args?.find((a) => a.type.name === n.name),
       );
-      const ref = tRefs[selectedNode.name + selectedNode.data.type];
-      if (ref) {
+      setRelationDrawingNodes(relatedNodes);
+      return;
+    }
+  }, [selectedNode]);
+
+  useEffect(() => {
+    if (selectedNode?.field) {
+      const scrollToRef = (): unknown => {
+        const ref =
+          tRefs[selectedNode.field.name + selectedNode.field.data.type];
+        if (!ref) {
+          return setTimeout(scrollToRef, 10);
+        }
         ref.scrollIntoView({
           block: 'center',
           inline: 'center',
           behavior: 'smooth',
         });
-      }
-      setRelationDrawingNodes(relatedNodes);
-      return;
+      };
+      scrollToRef();
     }
   }, [selectedNode]);
+
+  const selectNode = (n: ParserField) => {
+    setSelectedNode({
+      field: n,
+      source: 'relation',
+    });
+  };
 
   const handleSearch = (searchValue: string) => {
     if (searchValue.length) {
@@ -265,7 +290,7 @@ export const Relation: React.FC<RelationProps> = () => {
         }))
         .sort((a, b) => (a.distance > b.distance ? 1 : -1))
         .map(({ n }) => n);
-      setSelectedNode(node);
+      selectNode(node);
     } else {
       setSelectedNode(undefined);
     }
@@ -290,7 +315,7 @@ export const Relation: React.FC<RelationProps> = () => {
   }, [searchVisible]);
 
   const SvgLinesContainer = useMemo(() => {
-    return <Lines relations={relations} selectedNode={selectedNode} />;
+    return <Lines relations={relations} selectedNode={selectedNode?.field} />;
   }, [relations, selectedNode]);
   const NodesContainer = useMemo(() => {
     const libraryNodeNames = libraryTree.nodes.map((l) => l.name);
@@ -301,12 +326,14 @@ export const Relation: React.FC<RelationProps> = () => {
         }}
         isLibrary={libraryNodeNames.includes(n.name)}
         fade={
-          selectedNode
-            ? selectedNode.name === n.name
+          selectedNode?.field
+            ? compareNodesWithData(selectedNode.field, n)
               ? false
-              : selectedNode.args?.find((a) => a.type.name === n.name)
+              : selectedNode.field.args?.find((a) => a.type.name === n.name)
               ? false
-              : n.args?.find((na) => na.type.name === selectedNode.name)
+              : n.args?.find((na) => na.type.name === selectedNode.field.name)
+              ? false
+              : nodesImplementsInterface.find((a) => compareNodesWithData(a, n))
               ? false
               : true
             : undefined
@@ -316,6 +343,9 @@ export const Relation: React.FC<RelationProps> = () => {
           tRefs[n.name + n.data.type] = ref;
           if (i === currentNodes.length - 1) {
             setRefs(tRefs);
+            setTimeout(() => {
+              setRefsLoaded(true);
+            }, 100);
           }
         }}
         field={n}
@@ -366,9 +396,8 @@ export const Relation: React.FC<RelationProps> = () => {
             onClick={() => {
               setMenuState((ms) => ({ ...ms, code: true }));
             }}
-          >
-            {`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:\n${lockGraf}`}
-          </ErrorLock>
+            value={`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:\n${lockGraf}`}
+          />
         )}
 
         {grafErrors && (

@@ -14,6 +14,8 @@ import { themed } from '@/Theming/utils';
 import { useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { SearchInput } from '@/Graf/Node/components/SearchInput';
+import { useSortState } from '@/state/containers/sort';
+
 export interface RootNodeProps {
   node: ParserField;
   libraryNode?: ParserField;
@@ -59,8 +61,23 @@ export const RootNode: React.FC<RootNodeProps> = ({
   const thisNode = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
   const { tree, setTree } = useTreesState();
+  const { sortAlphabetically, isSortAlphabetically, isNodeBaseType } =
+    useSortState();
 
   const [filterNodes, setFilterNodes] = useState('');
+
+  const sortNodes = () =>
+    isSortAlphabetically
+      ? node.args
+          ?.filter((a) => isNodeBaseType(a.type.operations))
+          .concat(
+            node.args
+              .filter((a) => !isNodeBaseType(a.type.operations))
+              .sort(sortAlphabetically),
+          )
+      : node.args
+          ?.filter((a) => isNodeBaseType(a.type.operations))
+          .concat(node.args.filter((a) => !isNodeBaseType(a.type.operations)));
 
   return (
     <div className={NodeContainer} ref={thisNode}>
@@ -113,7 +130,7 @@ export const RootNode: React.FC<RootNodeProps> = ({
           }}
         />
       )}
-      {node.args?.map((a, i) => {
+      {sortNodes()?.map((a) => {
         return (
           <PaintNode
             key={a.name}

@@ -1,4 +1,4 @@
-export const usersLibrary = `
+export const usersLibraryOld = `
 """
 All queries of users system
 """

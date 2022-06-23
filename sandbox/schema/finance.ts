@@ -227,7 +227,7 @@ enum RecurringPeriod{
 }
 
 """
-Source of income and expense<br>
+Source of income and expense
 """
 type Source{
 	name: String!

@@ -37,14 +37,21 @@ const ErrorLock = themed(({ error, background: { mainFurthest } }) =>
     padding: 30,
   }),
 );
+
 /**
  * React compontent holding GraphQL IDE
  */
 export const CodePane = (props: CodePaneProps) => {
   const { schema, readonly, onChange, libraries } = props;
   const { theme } = useTheme();
-  const { selectedNode } = useTreesState();
-  const { lockCode } = useErrorsState();
+  const {
+    selectedNode,
+    setSelectedNode,
+    checkRelatedNodes,
+    tree,
+    libraryTree,
+  } = useTreesState();
+  const { lockCode, errorRowNumber } = useErrorsState();
 
   const ref: React.ForwardedRef<SchemaEditorApi> = React.createRef();
   const codeSettings = useMemo(
@@ -58,11 +65,20 @@ export const CodePane = (props: CodePaneProps) => {
 
   useEffect(() => {
     if (ref.current) {
-      selectedNode
-        ? ref.current.jumpToType(selectedNode.name)
+      if (selectedNode?.source === 'code') {
+        return;
+      }
+      selectedNode?.field.name
+        ? ref.current.jumpToType(selectedNode.field.name)
         : ref.current.deselect();
     }
   }, [selectedNode]);
+
+  useEffect(() => {
+    if (ref.current && errorRowNumber) {
+      ref.current.jumpToError(errorRowNumber);
+    }
+  }, [errorRowNumber]);
 
   return (
     <div
@@ -76,13 +92,27 @@ export const CodePane = (props: CodePaneProps) => {
           beforeMount={(monaco) =>
             monaco.editor.defineTheme('graphql-editor', MonacoTheme(theme))
           }
-          onBlur={(v) => onChange(v)}
+          onBlur={(v) => {
+            if (!props.readonly) onChange(v);
+          }}
           schema={schema}
           libraries={libraries}
           options={codeSettings}
+          select={(e) => {
+            if (e) {
+              const allNodes = tree.nodes.concat(libraryTree.nodes);
+              const n = allNodes.find((an) => an.name === e);
+              checkRelatedNodes(n);
+              setSelectedNode(
+                n && {
+                  source: 'code',
+                  field: n,
+                },
+              );
+            }
+          }}
         />
       )}
-
       {lockCode && (
         <div
           className={ErrorLock(theme)}

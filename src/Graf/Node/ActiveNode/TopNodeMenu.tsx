@@ -11,25 +11,28 @@ import {
   DetailMenuItem,
   Menu,
 } from '@/Graf/Node/components';
-import { More, Interface, Monkey, Plus, Tick } from '@/Graf/icons';
+import { More, Interface, Monkey, Plus, Tick, Arrq } from '@/Graf/icons';
 import {
   NodeAddDirectiveMenu,
   NodeDirectiveOptionsMenu,
   NodeImplementInterfacesMenu,
   NodeAddFieldMenu,
   NodeOperationsMenu,
+  NodeFieldsRequiredMenu,
 } from '@/Graf/Node/ContextMenu';
 import { style } from 'typestyle';
 import { useTreesState } from '@/state/containers/trees';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { useTheme } from '@/state/containers';
+import { getScalarFields } from '@/Graf/utils/getScalarFields';
 
 type PossibleMenus =
   | 'field'
   | 'interface'
   | 'directive'
   | 'options'
-  | 'operations';
+  | 'operations'
+  | 'required';
 
 const NodeMenuContainer = style({
   position: 'absolute',
@@ -44,14 +47,28 @@ export const TopNodeMenu: React.FC<{
   node: ParserField;
   onDelete: () => void;
   onDuplicate?: () => void;
-}> = ({ node, onDelete, onDuplicate }) => {
-  const { setSelectedNode } = useTreesState();
-  const [menuOpen, setMenuOpen] = useState<PossibleMenus>();
+  onInputCreate?: () => void;
+}> = ({ node, onDelete, onDuplicate, onInputCreate }) => {
+  const { setSelectedNode, scalars } = useTreesState();
   const { theme } = useTheme();
+
+  const [menuOpen, setMenuOpen] = useState<PossibleMenus>();
+
+  const isCreateInputValid = () =>
+    getScalarFields(node, scalars)?.length > 0 &&
+    node.data.type === 'ObjectTypeDefinition';
+
+  const isRequiredMenuValid = () =>
+    node.data.type === TypeDefinition.InterfaceTypeDefinition ||
+    node.data.type === TypeDefinition.InputObjectTypeDefinition ||
+    (node.data.type === TypeDefinition.ObjectTypeDefinition &&
+      (node.interfaces?.length === 0 ||
+        (!node.interfaces && !!node.args?.length)));
 
   const hideMenu = () => {
     setMenuOpen(undefined);
   };
+
   return (
     <>
       {node.data.type !== TypeDefinition.ScalarTypeDefinition &&
@@ -130,6 +147,27 @@ export const TopNodeMenu: React.FC<{
             )}
         </div>
       )}
+      {isRequiredMenuValid() && (
+        <div
+          className={'NodeIconArea'}
+          onClick={() => {
+            setMenuOpen('required');
+          }}
+          data-cy={cyMenu.Required}
+          title="Click to mark all fields as required/non-required"
+        >
+          <Arrq
+            fill={menuOpen === 'required' ? theme.success : theme.text}
+            height={ICON_SIZE}
+            width={ICON_SIZE}
+          />
+          {menuOpen === 'required' && (
+            <div className={NodeMenuContainer}>
+              <NodeFieldsRequiredMenu hideMenu={hideMenu} node={node} />
+            </div>
+          )}
+        </div>
+      )}
       {node.data.type === TypeDefinition.ObjectTypeDefinition && (
         <>
           {/* TODO: Implement operations menu */}
@@ -175,6 +213,11 @@ export const TopNodeMenu: React.FC<{
                 {onDuplicate && (
                   <DetailMenuItem onClick={onDuplicate}>
                     Duplicate node
+                  </DetailMenuItem>
+                )}
+                {onInputCreate && isCreateInputValid() && (
+                  <DetailMenuItem onClick={onInputCreate}>
+                    Create node input
                   </DetailMenuItem>
                 )}
                 <DetailMenuItem

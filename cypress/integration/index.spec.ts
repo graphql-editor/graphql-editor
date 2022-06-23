@@ -42,7 +42,7 @@ context('Main Split IDE functions', () => {
       `[data-cy=${GraphQLEditorDomStructure.tree.elements.Graf.PaintNode}]`,
     )
       .contains('Query')
-      .click();
+      .click({ force: true });
 
     cy.get(
       `[data-cy=${GraphQLEditorDomStructure.tree.elements.Graf.ActiveNode.TopNodeMenu.CreateField}]`,
@@ -57,6 +57,7 @@ context('Main Split IDE functions', () => {
     )
       .contains('String')
       .click();
+    cy.wait(100);
 
     cy.get(`[data-cy=${GraphQLEditorDomStructure.tree.elements.CodePane.name}]`)
       .find('textarea')

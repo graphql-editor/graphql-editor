@@ -107,7 +107,7 @@ export const NewNode: React.FC<NewNodeProps> = ({ node, onCreate }) => {
     libraryTree.nodes.map((n) => n.name).includes(newName);
   const submit = () => {
     if (newName && !isError) {
-      setSelectedNode(onCreate(newName));
+      setSelectedNode({ field: onCreate(newName), source: 'diagram' });
     }
     setNewName('');
     setIsCreating(false);

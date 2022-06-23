@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { style } from 'typestyle';
 import { fontFamily } from '@/vars';
 import { PaintNodes } from './PaintNodes';
@@ -8,15 +8,15 @@ import {
   KeyboardActions,
   useErrorsState,
   useIOState,
-  useNavigationState,
   useTheme,
 } from '@/state/containers';
 import { themed } from '@/Theming/utils';
 import { darken, toHex } from 'color2k';
 import { GraphQLEditorDomStructure } from '@/domStructure';
-import { ErrorLock } from '@/shared/components';
-
-export interface GrafProps {}
+import { getScalarFields } from '@/Graf/utils/getScalarFields';
+import { findInNodes } from '@/compare/compareNodes';
+import { ErrorItem } from './ErrorItem';
+import { ParserField } from 'graphql-js-tree';
 
 const Wrapper = themed(({ background: { mainClose, mainFurthest, mainFar } }) =>
   style({
@@ -71,9 +71,23 @@ const SubNodeContainer = themed(
       transition: `max-width 0.25s ease-in-out`,
     }),
 );
+const ErrorWrapper = themed(({ background: { mainFurthest }, error }) =>
+  style({
+    fontFamily,
+    width: '80%',
+    height: '100%',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    background: mainFurthest,
+    cursor: 'pointer',
+    color: error,
+  }),
+);
+
 let snapLock = true;
 
-export const Graf: React.FC<GrafProps> = () => {
+export const Graf: React.FC = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -87,11 +101,27 @@ export const Graf: React.FC<GrafProps> = () => {
     past,
     future,
     readonly,
+    scalars,
   } = useTreesState();
   const { lockGraf, grafErrors } = useErrorsState();
-  const { setMenuState } = useNavigationState();
   const { setActions } = useIOState();
   const { theme } = useTheme();
+
+  const [errorsItems, setErrorsItems] = useState<JSX.Element[]>();
+
+  const generateErrorsText = () => {
+    if (lockGraf) {
+      const lockGrafArray = lockGraf.split('}').filter((ee) => ee);
+      const errors = lockGrafArray.map((e, i) => (
+        <ErrorItem key={i} error={e} />
+      ));
+      setErrorsItems(errors);
+    }
+  };
+
+  useEffect(() => {
+    generateErrorsText();
+  }, [lockGraf]);
 
   useEffect(() => {
     if (snapLock) {
@@ -129,9 +159,10 @@ export const Graf: React.FC<GrafProps> = () => {
   }, [snapshots]);
 
   const node = selectedNode
-    ? tree.nodes.find((n) => n === selectedNode) ||
-      libraryTree.nodes.find((n) => n === selectedNode)
+    ? findInNodes(tree.nodes, selectedNode.field) ||
+      findInNodes(libraryTree.nodes, selectedNode.field)
     : undefined;
+
   return (
     <>
       {node && wrapperRef.current && (
@@ -149,14 +180,37 @@ export const Graf: React.FC<GrafProps> = () => {
             }}
             onDuplicate={(nodeToDuplicate) => {
               const allNodes = [...tree.nodes];
-              allNodes.push(
-                JSON.parse(
-                  JSON.stringify({
-                    ...node,
-                    name: nodeToDuplicate?.name + 'Copy',
-                  }),
-                ),
-              );
+              const duplicatedNode = JSON.parse(
+                JSON.stringify({
+                  ...node,
+                  name: nodeToDuplicate?.name + 'Copy',
+                }),
+              ) as ParserField;
+              allNodes.push(duplicatedNode);
+              setSelectedNode({
+                field: duplicatedNode,
+                source: 'diagram',
+              });
+              setTree({ nodes: allNodes });
+            }}
+            onInputCreate={(nodeToCreateInput) => {
+              const allNodes = [...tree.nodes];
+              const createdInput = JSON.parse(
+                JSON.stringify({
+                  ...node,
+                  args: getScalarFields(node, scalars),
+                  interfaces: [],
+                  directives: [],
+                  type: { name: 'input' },
+                  data: { type: 'InputObjectTypeDefinition' },
+                  name: nodeToCreateInput.name + 'Input',
+                }),
+              ) as ParserField;
+              allNodes.push(createdInput);
+              setSelectedNode({
+                field: createdInput,
+                source: 'diagram',
+              });
               setTree({ nodes: allNodes });
             }}
             node={node}
@@ -171,17 +225,14 @@ export const Graf: React.FC<GrafProps> = () => {
         }}
         data-cy={GraphQLEditorDomStructure.tree.elements.Graf.name}
       >
-        <div className={Main(theme)}>{!lockGraf && <PaintNodes />}</div>
-        {lockGraf && (
-          <ErrorLock
-            onClick={() => {
-              setMenuState((ms) => ({ ...ms, code: true }));
-            }}
-          >
-            {`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:\n${lockGraf}`}
-          </ErrorLock>
+        {lockGraf ? (
+          <div className={ErrorWrapper(theme)}>
+            <p>{`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:`}</p>
+            {errorsItems}
+          </div>
+        ) : (
+          <div className={Main(theme)}>{!lockGraf && <PaintNodes />}</div>
         )}
-
         {grafErrors && (
           <div className={ErrorContainer(theme)}>{grafErrors}</div>
         )}

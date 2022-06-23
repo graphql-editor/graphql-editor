@@ -5,8 +5,9 @@ import { style } from 'typestyle';
 
 import { menuWidth } from '@/vars';
 import { GraphQLEditorDomStructure } from '@/domStructure';
-import { useTheme } from '@/state/containers';
+import { useTheme, useTreesState } from '@/state/containers';
 import { themed } from '@/Theming/utils';
+import { PassedSchema } from '@/Models';
 
 export const HiderPanel = themed(({ background, disabled }) =>
   style({
@@ -39,13 +40,20 @@ export const Hider = themed(({ active }) =>
   }),
 );
 
-export type ActivePane = 'diagram' | 'hierarchy' | 'diff' | 'relation';
+export type ActiveSource =
+  | 'diagram'
+  | 'hierarchy'
+  | 'relation'
+  | 'docs'
+  | 'code';
+export type ActivePane = 'diagram' | 'hierarchy' | 'diff' | 'relation' | 'docs';
 export interface MenuProps {
   setToggleCode: (v: boolean) => void;
   toggleCode: boolean;
   activePane?: ActivePane;
   excludePanes?: ActivePane[];
   setActivePane: (pane: ActivePane) => void;
+  schema: PassedSchema;
 }
 
 const MenuChildren = GraphQLEditorDomStructure.tree.sidebar.menu.children;
@@ -56,8 +64,10 @@ export const Menu = ({
   setActivePane,
   activePane,
   excludePanes = [],
+  schema,
 }: MenuProps) => {
   const { theme } = useTheme();
+  const { libraryTree, switchSchema, schemaType } = useTreesState();
   return (
     <div className={HiderPanel(theme)}>
       <div
@@ -106,6 +116,18 @@ export const Menu = ({
           <Icons.Layers size={18} />
         </div>
       )}
+      {!excludePanes.includes('docs') && (
+        <div
+          data-cy={MenuChildren.hierarchy}
+          className={cx(Hider(theme), {
+            active: activePane === 'docs',
+          })}
+          onClick={() => setActivePane('docs')}
+          title="Documentation View"
+        >
+          <Icons.Docs size={18} />
+        </div>
+      )}
       {!excludePanes.includes('diff') && (
         <div
           data-cy={MenuChildren.diff}
@@ -116,6 +138,20 @@ export const Menu = ({
           title="Diff View"
         >
           <Icons.Filter size={18} />
+        </div>
+      )}
+      {libraryTree.nodes.length > 0 && (
+        <div
+          data-cy={MenuChildren.diff}
+          className={cx(Hider(theme), {
+            active: schemaType === 'library',
+          })}
+          onClick={() => {
+            switchSchema(schema);
+          }}
+          title="library schema"
+        >
+          <Icons.Library size={18} />
         </div>
       )}
     </div>

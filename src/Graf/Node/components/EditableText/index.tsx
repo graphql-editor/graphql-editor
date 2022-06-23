@@ -4,7 +4,7 @@ import { fontFamily } from '@/vars';
 import { FIELD_NAME_SIZE } from '@/Graf/constants';
 import cx from 'classnames';
 import { themed } from '@/Theming/utils';
-import { useTheme } from '@/state/containers';
+import { useTheme, useVisualState } from '@/state/containers';
 const Input = themed(({ text }) =>
   style({
     border: 0,
@@ -32,6 +32,7 @@ export const EditableText: React.FC<{
   const [focus, setFocus] = useState(!!autoFocus);
   const [isError, setIsError] = useState(false);
   const { theme } = useTheme();
+  const { setDraggingAllowed, _setDraggingAllowed } = useVisualState();
   const checkEdit = () => {
     setFocus(false);
     if (isError) {
@@ -64,11 +65,22 @@ export const EditableText: React.FC<{
           pattern="[_A-Za-z][_0-9A-Za-z]*"
           style={{ width: `${editedValue.length}ch`, ...style }}
           title={isError ? 'Name already exists' : 'rename'}
-          onBlur={checkEdit}
+          onBlur={(e) => {
+            checkEdit();
+          }}
+          onMouseLeave={() => {
+            setDraggingAllowed(true);
+          }}
+          onMouseOver={(e) => {
+            setDraggingAllowed(false);
+          }}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               checkEdit();
             }
+          }}
+          onClick={() => {
+            _setDraggingAllowed(false);
           }}
           onChange={(e) => setEditedValue(e.target.value)}
         />

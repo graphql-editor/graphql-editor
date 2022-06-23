@@ -19,11 +19,14 @@ import { Workers } from '@/worker';
 import { EditorError } from '@/validation';
 import { monacoSetDecorations } from '@/editor/code/monaco/decorations';
 import { useTheme } from '@/state/containers';
+import { findCurrentNodeName } from '@/editor/code/guild/editor/onCursor';
+import { Maybe } from 'graphql-language-service';
 
 export type SchemaEditorApi = {
   jumpToType(typeName: string): void;
   jumpToField(typeName: string, fieldName: string): void;
   deselect(): void;
+  jumpToError(rowNumber: number): void;
 };
 
 export type SchemaServicesOptions = {
@@ -34,6 +37,7 @@ export type SchemaServicesOptions = {
   diagnosticsProviders?: DiagnosticsSource[];
   decorationsProviders?: DecorationsSource[];
   actions?: EditorAction[];
+  select?: (name?: Maybe<string>) => void;
   onBlur?: (value: string) => void;
   onLanguageServiceReady?: (languageService: EnrichedLanguageService) => void;
   onSchemaChange?: (schema: GraphQLSchema, sdl: string) => void;
@@ -80,7 +84,7 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
           },
         },
       }),
-    [options.sharedLanguageService],
+    [options, options.schema],
   );
 
   React.useEffect(() => {
@@ -124,6 +128,25 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
         options.decorationsProviders || [],
       );
 
+      const onCursorChangeDisposable = editorRef.onDidChangeCursorPosition(
+        (e) => {
+          const model = editorRef.getModel();
+          if (model) {
+            languageService
+              .buildBridgeForProviders(model, e.position)
+              .then((bridge) => {
+                if (bridge && options.select) {
+                  const {
+                    token: { state },
+                  } = bridge;
+                  options.select(findCurrentNodeName(state));
+                }
+              })
+              .catch((e) => {});
+          }
+        },
+      );
+
       const onChangeDisposable = editorRef.onDidChangeModelContent(() =>
         handler(
           editorRef,
@@ -147,6 +170,7 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
       );
 
       return () => {
+        onCursorChangeDisposable && onCursorChangeDisposable.dispose();
         hoverDisposable && hoverDisposable.dispose();
         definitionProviderDisposable && definitionProviderDisposable.dispose();
         onChangeDisposable && onChangeDisposable.dispose();
@@ -155,7 +179,7 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     return () => {};
-  }, [editorRef, monacoRef]);
+  }, [editorRef, monacoRef, options]);
 
   React.useEffect(() => {
     if (codeErrors && editorRef && monacoRef) {
@@ -194,7 +218,6 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
         languageService.getSchema().then((schema) => {
           if (schema) {
             const type = schema.getType(typeName);
-
             if (type?.astNode?.loc) {
               const range = locToRange(type.astNode.loc);
               editorRef?.setSelection(range);
@@ -227,6 +250,21 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
         });
       },
       deselect: () => editorRef?.setSelection(emptyLocation),
+      jumpToError: (lineNumber: number) => {
+        editorRef?.setSelection({
+          startLineNumber: lineNumber,
+          endLineNumber: lineNumber,
+          endColumn: 1000,
+          startColumn: 0,
+        });
+        editorRef?.revealPositionInCenter(
+          {
+            column: 0,
+            lineNumber: lineNumber,
+          },
+          0,
+        );
+      },
     } as SchemaEditorApi,
   };
 };

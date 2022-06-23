@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ValueDefinition } from 'graphql-js-tree';
+import { TypeSystemDefinition, ValueDefinition } from 'graphql-js-tree';
 import { style } from 'typestyle';
 import { FIELD_NAME_SIZE, FIELD_TYPE_SIZE } from '@/Graf/constants';
 import { ActiveFieldName } from './FieldName';
@@ -39,6 +39,7 @@ const TypeMenuContainer = style({
   top: 32,
   zIndex: 2,
 });
+
 export const ActiveField: React.FC<FieldProps> = ({
   node,
   inputOpen,
@@ -56,22 +57,24 @@ export const ActiveField: React.FC<FieldProps> = ({
   const { tree, setTree, parentTypes, readonly } = useTreesState();
   const [menuOpen, setMenuOpen] = useState<'options' | 'details' | 'type'>();
   const isEnumValue = node.data.type === ValueDefinition.EnumValueDefinition;
+
   return (
     <NodeFieldContainer
       className={`NodeType-${parentNodeTypeName} ${
         inputOpen || menuOpen || outputOpen ? 'Active' : ''
       }`}
     >
-      {!inputDisabled && (
-        <FieldPort
-          onClick={onInputClick}
-          open={inputOpen}
-          info={{
-            message: 'Edit field arguments',
-            placement: 'left',
-          }}
-        />
-      )}
+      {!inputDisabled &&
+        node.data.type !== TypeSystemDefinition.UnionMemberDefinition && (
+          <FieldPort
+            onClick={onInputClick}
+            open={inputOpen}
+            info={{
+              message: 'Edit field arguments',
+              placement: 'left',
+            }}
+          />
+        )}
       <Title>
         <div className={Name}>
           <ActiveFieldName
@@ -84,7 +87,11 @@ export const ActiveField: React.FC<FieldProps> = ({
                   }
             }
             data={node.data}
-            name={node.name}
+            name={
+              node.data.type !== TypeSystemDefinition.UnionMemberDefinition
+                ? node.name
+                : ''
+            }
             args={node.args}
             parentTypes={parentTypes}
           />
@@ -135,25 +142,27 @@ export const ActiveField: React.FC<FieldProps> = ({
           )}
         </FieldPort>
       )}
-      {!isLocked && !isEnumValue && (
-        <FieldPort
-          icons={{ closed: 'Arrq', open: 'Arrq' }}
-          onClick={() => {
-            setMenuOpen(menuOpen === 'options' ? undefined : 'options');
-          }}
-        >
-          {menuOpen === 'options' && (
-            <div className={OptionsMenuContainer}>
-              <NodeTypeOptionsMenu
-                hideMenu={() => {
-                  setMenuOpen(undefined);
-                }}
-                node={node}
-              />
-            </div>
-          )}
-        </FieldPort>
-      )}
+      {!isLocked &&
+        !isEnumValue &&
+        node.data.type !== TypeSystemDefinition.UnionMemberDefinition && (
+          <FieldPort
+            icons={{ closed: 'Arrq', open: 'Arrq' }}
+            onClick={() => {
+              setMenuOpen(menuOpen === 'options' ? undefined : 'options');
+            }}
+          >
+            {menuOpen === 'options' && (
+              <div className={OptionsMenuContainer}>
+                <NodeTypeOptionsMenu
+                  hideMenu={() => {
+                    setMenuOpen(undefined);
+                  }}
+                  node={node}
+                />
+              </div>
+            )}
+          </FieldPort>
+        )}
       {!outputDisabled && (
         <FieldPort
           onClick={onOutputClick}

@@ -3,9 +3,26 @@ import { useState } from 'react';
 import { EditorError } from '@/validation';
 const useErrorsStateContainer = createContainer(() => {
   const [codeErrors, setCodeErrors] = useState<EditorError[]>([]);
+  const [grafEditorErrors, setGrafEditorErrors] = useState<EditorError[]>([]);
   const [grafErrors, setGrafErrors] = useState<string>();
+  const [grafErrorSchema, setGrafErrorSchema] = useState<string>();
   const [lockGraf, setLockGraf] = useState<string>();
   const [lockCode, setLockCode] = useState<string>();
+  const [errorRowNumber, setErrorRowNumber] = useState<number>();
+  const [errorNodeNames, setErrorNodeNames] = useState<string[]>();
+
+  const transformCodeError = (errors: EditorError[]) => {
+    errors.forEach((a) => {
+      if (a.row && a.row < 0) {
+        a.row = undefined;
+        a.column = undefined;
+        a.position = undefined;
+        a.libraryError = 'Already defined in library.';
+      }
+    });
+    return errors;
+  };
+
   return {
     codeErrors,
     setCodeErrors,
@@ -15,6 +32,15 @@ const useErrorsStateContainer = createContainer(() => {
     lockCode,
     setLockGraf,
     setLockCode,
+    transformCodeError,
+    errorRowNumber,
+    setErrorRowNumber,
+    errorNodeNames,
+    setErrorNodeNames,
+    grafEditorErrors,
+    setGrafEditorErrors,
+    grafErrorSchema,
+    setGrafErrorSchema,
   };
 });
 

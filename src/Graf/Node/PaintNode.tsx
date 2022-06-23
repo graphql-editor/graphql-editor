@@ -1,11 +1,14 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ParserField } from 'graphql-js-tree';
 import { style } from 'typestyle';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { useTreesState } from '@/state/containers/trees';
 import { themed } from '@/Theming/utils';
-import { useTheme } from '@/state/containers';
+import { useErrorsState, useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
+import { useSortState } from '@/state/containers/sort';
+import { compareNodesWithData } from '@/compare/compareNodes';
+import { Error } from '../icons';
 export interface NodeProps {
   node: ParserField;
   builtIn?: boolean;
@@ -18,7 +21,7 @@ const MainNodeArea = themed(
     ({
       position: 'relative',
       borderColor: 'transparent',
-      borderWidth: 1,
+      borderWidth: 2,
       borderStyle: 'solid',
       borderRadius: 4,
       cursor: 'pointer',
@@ -27,7 +30,7 @@ const MainNodeArea = themed(
       alignItems: 'stretch',
       color: backgroundedText,
       fontSize: 12,
-      padding: `10px 15px`,
+      padding: `9.5px 15px`,
       userSelect: 'none',
       '-moz-user-select': '-moz-none',
       $nest: {
@@ -78,31 +81,88 @@ const NoMatchedSearchContainer = style({
 const NotSelected = style({
   opacity: 0.4,
 });
+const RelatedNode = style({
+  opacity: 0.9,
+});
+
+const ErrorNode = themed((theme) =>
+  style({
+    display: '',
+    borderColor: `${theme.background.error} !important`,
+    borderWidth: `2px !important`,
+    opacity: 1,
+  }),
+);
+
+const BaseNode = themed((theme) =>
+  style({
+    color: `${theme.backgroundedText} !important`,
+    borderColor: `${theme.backgroundedText} !important`,
+  }),
+);
+
 export const PaintNode: React.FC<NodeProps> = ({
   node,
   isLibrary,
   isMatchedToSearch,
-  subNode,
 }) => {
   const thisNode = useRef<HTMLDivElement>(null);
-  const { setSelectedNode, selectedNode } = useTreesState();
+  const {
+    setSelectedNode,
+    selectedNode,
+    nodesImplementsInterface,
+    checkRelatedNodes,
+  } = useTreesState();
+  const { isNodeBaseType } = useSortState();
   const { theme } = useTheme();
+  const { errorNodeNames } = useErrorsState();
+
+  useEffect(() => {
+    if (
+      thisNode &&
+      thisNode.current &&
+      compareNodesWithData(selectedNode?.field, node)
+    ) {
+      thisNode.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'center',
+      });
+    }
+  }, [selectedNode]);
+
   return (
     <div
       data-cy={GraphQLEditorDomStructure.tree.elements.Graf.PaintNode}
-      className={`${NodeContainer} ${
-        isLibrary ? LibraryNodeContainer(theme) : MainNodeContainer(theme)
-      } ${
+      className={`
+      ${isNodeBaseType(node.type.operations) ? BaseNode(theme) : null}
+      ${NodeContainer} 
+      ${isLibrary ? LibraryNodeContainer(theme) : MainNodeContainer(theme)} ${
         isMatchedToSearch ? MatchedSearchContainer : NoMatchedSearchContainer
       } ${
-        selectedNode ? (selectedNode !== node ? NotSelected : '') : ''
-      } NodeType-${node.type.name}`}
+        selectedNode
+          ? compareNodesWithData(node, selectedNode.field)
+            ? ''
+            : NotSelected
+          : ''
+      }
+      ${nodesImplementsInterface.includes(node) ? RelatedNode : ''}
+      ${errorNodeNames?.includes(node.name) ? ErrorNode(theme) : ''}
+      NodeType-${node.type.name} 
+      `}
       ref={thisNode}
       onClick={(e) => {
         e.stopPropagation();
-        setSelectedNode(node);
+        checkRelatedNodes(node);
+        setSelectedNode({
+          field: node,
+          source: 'diagram',
+        });
       }}
     >
+      {errorNodeNames?.includes(node.name) && (
+        <Error fill={theme.background.error} style={{ marginRight: 8 }} />
+      )}
       {node.name}
     </div>
   );

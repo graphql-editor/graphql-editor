@@ -2,6 +2,7 @@ import * as React from 'react';
 
 export interface IconProps {
   size: number;
+  fill?: string;
 }
 
 export const Hide = (props: IconProps) => (
@@ -347,5 +348,82 @@ export const CPU = (props: IconProps) => (
     <line x1="20" y1="14" x2="23" y2="14"></line>
     <line x1="1" y1="9" x2="4" y2="9"></line>
     <line x1="1" y1="14" x2="4" y2="14"></line>
+  </svg>
+);
+
+export const Library = (props: IconProps) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size}
+    height={props.size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="feather feather-package"
+  >
+    <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line>
+    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+    <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+    <line x1="12" y1="22.08" x2="12" y2="12"></line>
+  </svg>
+);
+
+export const Docs = (props: IconProps) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size}
+    height={props.size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="feather feather-file-text"
+  >
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+    <polyline points="14 2 14 8 20 8"></polyline>
+    <line x1="16" y1="13" x2="8" y2="13"></line>
+    <line x1="16" y1="17" x2="8" y2="17"></line>
+    <polyline points="10 9 9 9 8 9"></polyline>
+  </svg>
+);
+
+export const SortAz = (props: IconProps) => (
+  <svg
+    width={props.size}
+    height={props.size}
+    viewBox="0 0 32 32"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path
+      d="M26.276 19.61a1.333 1.333 0 0 0-.942-2.277H16V20h6.115l-5.724 5.724A1.333 1.333 0 0 0 17.334 28h9.333v-2.667h-6.115l5.724-5.724ZM9.334 5.32H6.667v16h-4L8 26.653l5.334-5.333h-4v-16ZM22.667 4H20c-.556 0-1.053.345-1.249.865l-3.667 9.778h2.85l.99-2.643h4.818l.99 2.641h2.85l-3.667-9.777A1.334 1.334 0 0 0 22.667 4Zm-2.743 5.333 1-2.666h.818l1 2.666h-2.818Z"
+      fill={props.fill || '#4D4D4D'}
+    />
+  </svg>
+);
+
+export const UpDownArrow = (props: IconProps) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className="h-6 w-6"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    strokeWidth={2}
+    width={props.size}
+    height={props.size}
+    {...props}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M7 16V4m0 0L3 8m4-4 4 4m6 0v12m0 0 4-4m-4 4-4-4"
+    />
   </svg>
 );
