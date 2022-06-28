@@ -338,7 +338,7 @@ export const Relation: React.FC<RelationProps> = () => {
               : true
             : undefined
         }
-        key={n.name + n.data.type}
+        key={n.name + n.data.type + i}
         setRef={(ref) => {
           tRefs[n.name + n.data.type] = ref;
           if (i === currentNodes.length - 1) {

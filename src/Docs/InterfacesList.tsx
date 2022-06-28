@@ -54,7 +54,11 @@ export const InterfacesList: React.FC<InterfacesListI> = ({
       <h3 className={`${Title(theme)}`}>Interfaces</h3>
       <div className={`${InterfacesWrapper}`}>
         {interfacesList.map((name) => (
-          <p className={`${Interfaces(theme)}`} onClick={() => setNode(name)}>
+          <p
+            key={name}
+            className={`${Interfaces(theme)}`}
+            onClick={() => setNode(name)}
+          >
             {name}
           </p>
         ))}
