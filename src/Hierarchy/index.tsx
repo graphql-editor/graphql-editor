@@ -40,19 +40,21 @@ export const Hierarchy = () => {
       });
       hierarchy.setNodes(tr.nodes);
       hierarchy.eventBus.subscribe('NodeSelected', (e) => {
-        const n = tree.nodes.find(
-          (tn) =>
-            tn.name === e.selectedNodes[0].name &&
-            e.selectedNodes[0].type === tn.type.name,
-        );
-        setSelectedNode(
-          e.selectedNodes.length > 0
-            ? n && {
-                field: n,
-                source: 'hierarchy',
-              }
-            : undefined,
-        );
+        if (e.selectedNodes.length > 0) {
+          const n = tree.nodes.find(
+            (tn) =>
+              tn.name === e.selectedNodes[0].name &&
+              e.selectedNodes[0].type === tn.type.name,
+          );
+          setSelectedNode(
+            e.selectedNodes.length > 0
+              ? n && {
+                  field: n,
+                  source: 'hierarchy',
+                }
+              : undefined,
+          );
+        }
       });
       if (selectedNode) {
         hierarchy.eventBus.publish('RequestNodeSelect', {

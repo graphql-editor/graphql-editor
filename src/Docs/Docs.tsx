@@ -23,6 +23,7 @@ const Wrapper = themed(({ background: { mainFar } }) =>
     position: 'relative',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    overflow: 'auto',
   }),
 );
 
