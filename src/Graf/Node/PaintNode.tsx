@@ -4,11 +4,16 @@ import { style } from 'typestyle';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 import { useTreesState } from '@/state/containers/trees';
 import { themed } from '@/Theming/utils';
-import { useErrorsState, useTheme } from '@/state/containers';
+import { useErrorsState, useLayoutState, useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { useSortState } from '@/state/containers/sort';
 import { compareNodesWithData } from '@/compare/compareNodes';
 import { Error } from '../icons';
+import {
+  dragLeaveHandler,
+  dragOverHandler,
+  dragStartHandler,
+} from './ActiveNode/dnd';
 export interface NodeProps {
   node: ParserField;
   builtIn?: boolean;
@@ -101,6 +106,16 @@ const BaseNode = themed((theme) =>
   }),
 );
 
+const DragOverStyle = style({
+  marginLeft: 40,
+});
+
+const DragNotAllowed = themed((theme) =>
+  style({
+    backgroundColor: `${theme.disabled} !important`,
+  }),
+);
+
 export const PaintNode: React.FC<NodeProps> = ({
   node,
   isLibrary,
@@ -112,10 +127,18 @@ export const PaintNode: React.FC<NodeProps> = ({
     selectedNode,
     nodesImplementsInterface,
     checkRelatedNodes,
+    tree,
+    setTree,
   } = useTreesState();
-  const { isNodeBaseType } = useSortState();
+  const { isNodeBaseType, setIsUserOrder } = useSortState();
   const { theme } = useTheme();
   const { errorNodeNames } = useErrorsState();
+  const {
+    setDragOverStylesDiagram,
+    dragOverStylesDiagram,
+    dndType,
+    setDndType,
+  } = useLayoutState();
 
   useEffect(() => {
     if (
@@ -131,11 +154,63 @@ export const PaintNode: React.FC<NodeProps> = ({
     }
   }, [selectedNode]);
 
+  const dropHandler = (
+    e: React.DragEvent<HTMLDivElement>,
+    endNodeName: string,
+  ) => {
+    e.stopPropagation();
+    setIsUserOrder(true);
+    const startNodeName = e.dataTransfer?.getData('startName');
+    if (endNodeName === startNodeName) return;
+    const newTree = [...tree.nodes];
+    const startIdx = newTree.findIndex((a) => a.name === startNodeName);
+    const endIdx = newTree.findIndex((a) => a.name === endNodeName);
+    newTree.splice(endIdx, 0, newTree.splice(startIdx, 1)[0]);
+    setTree({ nodes: newTree });
+  };
+
   return (
     <div
+      id={node.type.name}
+      draggable={!isNodeBaseType(node.type.operations)}
+      onDragStart={(e) => {
+        setDndType(node.data.type);
+        dragStartHandler(e, node.name);
+      }}
+      onDragEnd={() => {
+        setDragOverStylesDiagram(undefined);
+      }}
+      onDragLeave={(e) => {
+        dragLeaveHandler(e);
+      }}
+      onDrop={(e) => {
+        setDragOverStylesDiagram(undefined);
+        if (!isNodeBaseType(node.type.operations)) {
+          dropHandler(e, node.name);
+        }
+      }}
+      onDragOver={(e) => {
+        setDragOverStylesDiagram({
+          nodeName: node.name,
+          nodeType: node.data.type,
+        });
+
+        dragOverHandler(e);
+      }}
       data-cy={GraphQLEditorDomStructure.tree.elements.Graf.PaintNode}
       className={`
-      ${isNodeBaseType(node.type.operations) ? BaseNode(theme) : null}
+      ${
+        !isNodeBaseType(node.type.operations) &&
+        node.name === dragOverStylesDiagram?.nodeName &&
+        dndType === dragOverStylesDiagram.nodeType
+          ? DragOverStyle
+          : dragOverStylesDiagram &&
+            node.name === dragOverStylesDiagram?.nodeName &&
+            dndType !== dragOverStylesDiagram.nodeType
+          ? DragNotAllowed(theme)
+          : null
+      }
+      ${isNodeBaseType(node.type.operations) ? BaseNode(theme) : ''}
       ${NodeContainer} 
       ${isLibrary ? LibraryNodeContainer(theme) : MainNodeContainer(theme)} ${
         isMatchedToSearch ? MatchedSearchContainer : NoMatchedSearchContainer

@@ -30,6 +30,7 @@ const useSortStateContainer = createContainer(() => {
   const [isSortAlphabetically, setIsSortAlphabetically] = useState(false);
   const [orderTypes, setOrderTypes] = useState<OrderType[]>(defaultOrderTypes);
   const [isInit, setIsInit] = useState(true);
+  const [isUserOrder, setIsUserOrder] = useState(false);
 
   const sortByTypes = (a: ParserField, b: ParserField) => {
     const bValue = orderTypes.find((t) => t.name === b.data.type)
@@ -47,7 +48,7 @@ const useSortStateContainer = createContainer(() => {
       type in TypeDefinition);
 
   useEffect(() => {
-    if (tree.nodes.length && isInit) {
+    if (tree.nodes.length && isInit && !isUserOrder) {
       setIsInit(false);
       const initialOrderTypes = new Set<AllTypes | undefined>();
       tree.nodes.forEach((node) => {
@@ -90,6 +91,8 @@ const useSortStateContainer = createContainer(() => {
     sortAlphabetically,
     sortByTypes,
     isNodeBaseType,
+    isUserOrder,
+    setIsUserOrder,
   };
 });
 

@@ -109,7 +109,8 @@ export const Editor = ({
     generateTreeFromSchema,
     readonly,
   } = useTreesState();
-  const { isSortAlphabetically, sortByTypes, orderTypes } = useSortState();
+  const { isSortAlphabetically, sortByTypes, orderTypes, isUserOrder } =
+    useSortState();
   const { setSidebarSize, sidebarSize } = useLayoutState();
 
   const reset = () => {
@@ -119,6 +120,7 @@ export const Editor = ({
   };
   useEffect(() => {
     isSortAlphabetically &&
+      !isUserOrder &&
       setTree({
         nodes: tree.nodes.sort(sortByTypes),
       });

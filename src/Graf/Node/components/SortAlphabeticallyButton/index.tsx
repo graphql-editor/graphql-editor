@@ -85,6 +85,7 @@ export const SortAlphabeticallyButton = () => {
     isSortAlphabetically,
     orderTypes,
     setOrderTypes,
+    setIsUserOrder,
   } = useSortState();
   const { theme } = useTheme();
   const [dragOverName, setDragOverName] = useState('');
@@ -94,7 +95,7 @@ export const SortAlphabeticallyButton = () => {
     e.stopPropagation();
     const startName = e.dataTransfer?.getData('startName');
     if (endNodeName === startName) return;
-    setIsSortAlphabetically(true);
+
     let newOrderTypes = [...orderTypes];
     const startIdx = newOrderTypes.findIndex((a) => a.name === startName);
     const endIdx = newOrderTypes.findIndex((a) => a.name === endNodeName);
@@ -103,6 +104,8 @@ export const SortAlphabeticallyButton = () => {
       ...nt,
       value: newOrderTypes.length - i - 1,
     }));
+    setIsUserOrder(false);
+    setIsSortAlphabetically(true);
     setOrderTypes(newOrderTypes);
   };
 
@@ -148,7 +151,12 @@ export const SortAlphabeticallyButton = () => {
 
   return (
     <div className={IconWrapper}>
-      <div onClick={() => setIsSortAlphabetically((prev) => !prev)}>
+      <div
+        onClick={() => {
+          setIsUserOrder(false);
+          setIsSortAlphabetically((prev) => !prev);
+        }}
+      >
         <SortAz
           size={28}
           fill={isSortAlphabetically ? theme.active : theme.inactive}
