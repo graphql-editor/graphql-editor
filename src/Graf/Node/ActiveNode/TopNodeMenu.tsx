@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   TypeDefinition,
   ValueDefinition,
@@ -53,6 +53,7 @@ export const TopNodeMenu: React.FC<{
   const { theme } = useTheme();
 
   const [menuOpen, setMenuOpen] = useState<PossibleMenus>();
+  const [closeMenu, setCloseMenu] = useState(false);
 
   const isCreateInputValid = () =>
     getScalarFields(node, scalars)?.length > 0 &&
@@ -64,6 +65,10 @@ export const TopNodeMenu: React.FC<{
     (node.data.type === TypeDefinition.ObjectTypeDefinition &&
       (node.interfaces?.length === 0 ||
         (!node.interfaces && !!node.args?.length)));
+
+  useEffect(() => {
+    hideMenu();
+  }, [closeMenu]);
 
   const hideMenu = () => {
     setMenuOpen(undefined);
@@ -211,12 +216,22 @@ export const TopNodeMenu: React.FC<{
               <MenuScrollingArea>
                 <DetailMenuItem onClick={onDelete}>Delete node</DetailMenuItem>
                 {onDuplicate && (
-                  <DetailMenuItem onClick={onDuplicate}>
+                  <DetailMenuItem
+                    onClick={() => {
+                      setCloseMenu((prevValue) => !prevValue);
+                      onDuplicate();
+                    }}
+                  >
                     Duplicate node
                   </DetailMenuItem>
                 )}
                 {onInputCreate && isCreateInputValid() && (
-                  <DetailMenuItem onClick={onInputCreate}>
+                  <DetailMenuItem
+                    onClick={() => {
+                      setCloseMenu((prevValue) => !prevValue);
+                      onInputCreate();
+                    }}
+                  >
                     Create node input
                   </DetailMenuItem>
                 )}
