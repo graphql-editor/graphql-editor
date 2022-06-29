@@ -74,7 +74,7 @@ const SubNodeContainer = themed(
 const ErrorWrapper = themed(({ background: { mainFurthest }, error }) =>
   style({
     fontFamily,
-    width: '80%',
+    width: '100%',
     height: '100%',
     position: 'absolute',
     top: 0,
@@ -82,8 +82,13 @@ const ErrorWrapper = themed(({ background: { mainFurthest }, error }) =>
     background: mainFurthest,
     cursor: 'pointer',
     color: error,
+    paddingLeft: 16,
   }),
 );
+
+const ErrorLabel = style({
+  width: '90%',
+});
 
 let snapLock = true;
 
@@ -227,7 +232,9 @@ export const Graf: React.FC = () => {
       >
         {lockGraf ? (
           <div className={ErrorWrapper(theme)}>
-            <p>{`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:`}</p>
+            <p
+              className={ErrorLabel}
+            >{`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:`}</p>
             {errorsItems}
           </div>
         ) : (
