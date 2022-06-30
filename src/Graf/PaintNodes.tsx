@@ -44,9 +44,7 @@ export const PaintNodes: React.FC = () => {
       type: {
         name: `root-${d}`,
       },
-      args: tree.nodes
-        .filter((n) => n.data.type === d)
-        .sort((a, b) => (a.name > b.name ? 1 : -1)),
+      args: tree.nodes.filter((n) => n.data.type === d),
     },
     libraryNode: {
       name: TypeDefinitionDisplayMap[d],
@@ -56,21 +54,21 @@ export const PaintNodes: React.FC = () => {
       type: {
         name: `library-${d}`,
       },
-      args: libraryTree.nodes
-        .filter((n) => n.data.type === d)
-        .sort((a, b) => (a.name > b.name ? 1 : -1)),
+      args: libraryTree.nodes.filter((n) => n.data.type === d),
     },
   }));
-  const RootBaseTypes = useMemo(() => {
-    return baseTypes.map((d) => (
-      <RootNode
-        readonly={readonly}
-        key={d.node.type.name}
-        node={d.node}
-        libraryNode={d.libraryNode}
-      />
-    ));
-  }, [baseTypes]);
+  const RootBaseTypes = useMemo(
+    () =>
+      baseTypes.map((d) => (
+        <RootNode
+          readonly={readonly}
+          key={d.node.type.name}
+          node={d.node}
+          libraryNode={d.libraryNode}
+        />
+      )),
+    [baseTypes],
+  );
 
   return (
     <div className={Main}>

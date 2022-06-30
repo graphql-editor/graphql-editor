@@ -104,8 +104,6 @@ export const SortAlphabeticallyButton = () => {
       ...nt,
       value: newOrderTypes.length - i - 1,
     }));
-    setIsUserOrder(false);
-    setIsSortAlphabetically(true);
     setOrderTypes(newOrderTypes);
   };
 
