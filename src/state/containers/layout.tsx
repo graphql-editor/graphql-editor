@@ -2,11 +2,20 @@ import { useEffect, useState } from 'react';
 import { createContainer } from 'unstated-next';
 import { sizeSidebar, menuWidth } from '@/vars';
 import { useNavigationState } from '@/state/containers';
+import { AllTypes } from 'graphql-js-tree';
+
+type DragOverStylesDiagram = {
+  nodeName: string;
+  nodeType?: string;
+};
 
 const useLayoutStateContainer = createContainer(() => {
   const [sidebarSize, setSidebarSize] = useState(sizeSidebar);
   const [windowWidth, setWindowWidth] = useState(0);
   const [documentationWidth, setDocumentationWidth] = useState(300);
+  const [dragOverStylesDiagram, setDragOverStylesDiagram] =
+    useState<DragOverStylesDiagram>();
+  const [dndType, setDndType] = useState<AllTypes | undefined>();
 
   const { menuState } = useNavigationState();
 
@@ -32,6 +41,10 @@ const useLayoutStateContainer = createContainer(() => {
     documentationWidth,
     setDocumentationWidth,
     calcDocumentationWidth,
+    dragOverStylesDiagram,
+    setDragOverStylesDiagram,
+    dndType,
+    setDndType,
   };
 });
 

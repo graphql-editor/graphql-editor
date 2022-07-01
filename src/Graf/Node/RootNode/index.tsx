@@ -61,13 +61,24 @@ export const RootNode: React.FC<RootNodeProps> = ({
   const thisNode = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
   const { tree, setTree } = useTreesState();
-  const { sortAlphabetically, isSortAlphabetically, isNodeBaseType } =
-    useSortState();
+  const {
+    sortAlphabetically,
+    isSortAlphabetically,
+    isNodeBaseType,
+    isUserOrder,
+  } = useSortState();
 
   const [filterNodes, setFilterNodes] = useState('');
 
+  console.log('isUserOrder', isUserOrder);
+  console.log('isSortAlphabetically', isSortAlphabetically);
+
   const sortNodes = () =>
-    isSortAlphabetically
+    isUserOrder
+      ? node.args
+          ?.filter((a) => isNodeBaseType(a.type.operations))
+          .concat(node.args.filter((a) => !isNodeBaseType(a.type.operations)))
+      : isSortAlphabetically
       ? node.args
           ?.filter((a) => isNodeBaseType(a.type.operations))
           .concat(
@@ -130,29 +141,25 @@ export const RootNode: React.FC<RootNodeProps> = ({
           }}
         />
       )}
-      {sortNodes()?.map((a) => {
-        return (
-          <PaintNode
-            key={a.name}
-            node={a}
-            isMatchedToSearch={a.name
-              .toLowerCase()
-              .includes(filterNodes.toLowerCase())}
-          />
-        );
-      })}
-      {libraryNode?.args?.map((a, i) => {
-        return (
-          <PaintNode
-            isLibrary={true}
-            key={a.name}
-            node={a}
-            isMatchedToSearch={a.name
-              .toLowerCase()
-              .includes(filterNodes.toLowerCase())}
-          />
-        );
-      })}
+      {sortNodes()?.map((a) => (
+        <PaintNode
+          key={a.name}
+          node={a}
+          isMatchedToSearch={a.name
+            .toLowerCase()
+            .includes(filterNodes.toLowerCase())}
+        />
+      ))}
+      {libraryNode?.args?.map((a) => (
+        <PaintNode
+          isLibrary={true}
+          key={a.name}
+          node={a}
+          isMatchedToSearch={a.name
+            .toLowerCase()
+            .includes(filterNodes.toLowerCase())}
+        />
+      ))}
     </div>
   );
 };
