@@ -163,7 +163,7 @@ export const Graf: React.FC = () => {
     }));
   }, [snapshots]);
 
-  const node = selectedNode
+  const node = selectedNode?.field
     ? findInNodes(tree.nodes, selectedNode.field) ||
       findInNodes(libraryTree.nodes, selectedNode.field)
     : undefined;

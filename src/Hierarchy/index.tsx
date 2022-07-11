@@ -27,7 +27,7 @@ export const Hierarchy = () => {
     if (hierarchy && selectedNode?.field) {
       hierarchy.eventBus.publish('RequestNodeSelect', {
         fn: (n) =>
-          n.name === selectedNode.field.name &&
+          n.name === selectedNode.field?.name &&
           n.type === selectedNode.field.type.name,
       });
     }
@@ -59,7 +59,7 @@ export const Hierarchy = () => {
       if (selectedNode) {
         hierarchy.eventBus.publish('RequestNodeSelect', {
           fn: (n) =>
-            n.name === selectedNode.field.name &&
+            n.name === selectedNode.field?.name &&
             n.type === selectedNode.field.type.name,
         });
       }

@@ -241,12 +241,12 @@ export const Relation: React.FC<RelationProps> = () => {
     if (focusedNode) {
       setFocusedNode(undefined);
     }
-    if (selectedNode?.field) {
+    if (selectedNode?.field?.name) {
       const relatedNodes = currentNodes.filter(
         (n) =>
-          n.args?.find((a) => a.type.name === selectedNode.field.name) ||
+          n.args?.find((a) => a.type.name === selectedNode.field?.name) ||
           compareNodesWithData(n, selectedNode.field) ||
-          selectedNode.field.args?.find((a) => a.type.name === n.name),
+          selectedNode.field?.args?.find((a) => a.type.name === n.name),
       );
       setRelationDrawingNodes(relatedNodes);
       return;
@@ -254,18 +254,20 @@ export const Relation: React.FC<RelationProps> = () => {
   }, [selectedNode]);
 
   useEffect(() => {
-    if (selectedNode?.field) {
+    if (selectedNode?.field?.name) {
       const scrollToRef = (): unknown => {
-        const ref =
-          tRefs[selectedNode.field.name + selectedNode.field.data.type];
-        if (!ref) {
-          return setTimeout(scrollToRef, 10);
+        if (selectedNode?.field?.name) {
+          const ref =
+            tRefs[selectedNode.field.name + selectedNode.field.data.type];
+          if (!ref) {
+            return setTimeout(scrollToRef, 10);
+          }
+          ref.scrollIntoView({
+            block: 'center',
+            inline: 'center',
+            behavior: 'smooth',
+          });
         }
-        ref.scrollIntoView({
-          block: 'center',
-          inline: 'center',
-          behavior: 'smooth',
-        });
       };
       scrollToRef();
     }
@@ -331,7 +333,7 @@ export const Relation: React.FC<RelationProps> = () => {
               ? false
               : selectedNode.field.args?.find((a) => a.type.name === n.name)
               ? false
-              : n.args?.find((na) => na.type.name === selectedNode.field.name)
+              : n.args?.find((na) => na.type.name === selectedNode.field?.name)
               ? false
               : nodesImplementsInterface.find((a) => compareNodesWithData(a, n))
               ? false

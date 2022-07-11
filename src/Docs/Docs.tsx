@@ -112,7 +112,7 @@ export const Docs = () => {
   return (
     <div className={`${Wrapper(theme)}`}>
       <div className={`${SelectedNodeWrapper(calcDocumentationWidth())}`}>
-        {selectedNode && <DocsElement node={selectedNode.field} />}
+        {selectedNode?.field && <DocsElement node={selectedNode.field} />}
       </div>
       <DynamicResize
         resizeCallback={(e, r, c, w) => {

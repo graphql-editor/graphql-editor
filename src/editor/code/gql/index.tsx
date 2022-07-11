@@ -69,7 +69,7 @@ export const GqlCodePane = (props: GqlCodePaneProps) => {
       if (selectedNode?.source === 'code') {
         return;
       }
-      selectedNode?.field.name
+      selectedNode?.field?.name
         ? ref.current.jumpToType(selectedNode.field.name)
         : ref.current.deselect();
     }
