@@ -139,7 +139,8 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
                   const {
                     token: { state },
                   } = bridge;
-                  options.select(findCurrentNodeName(state));
+                  const n = findCurrentNodeName(state);
+                  options.select(n);
                 }
               })
               .catch((e) => {});

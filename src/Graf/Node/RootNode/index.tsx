@@ -70,9 +70,6 @@ export const RootNode: React.FC<RootNodeProps> = ({
 
   const [filterNodes, setFilterNodes] = useState('');
 
-  console.log('isUserOrder', isUserOrder);
-  console.log('isSortAlphabetically', isSortAlphabetically);
-
   const sortNodes = () =>
     isUserOrder
       ? node.args

@@ -68,7 +68,7 @@ export const CodePane = (props: CodePaneProps) => {
       if (selectedNode?.source === 'code') {
         return;
       }
-      selectedNode?.field.name
+      selectedNode?.field?.name
         ? ref.current.jumpToType(selectedNode.field.name)
         : ref.current.deselect();
     }
@@ -103,12 +103,10 @@ export const CodePane = (props: CodePaneProps) => {
               const allNodes = tree.nodes.concat(libraryTree.nodes);
               const n = allNodes.find((an) => an.name === e);
               checkRelatedNodes(n);
-              setSelectedNode(
-                n && {
-                  source: 'code',
-                  field: n,
-                },
-              );
+              setSelectedNode({
+                source: 'code',
+                field: n,
+              });
             }
           }}
         />

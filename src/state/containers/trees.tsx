@@ -16,7 +16,7 @@ import { ActiveSource } from '@/editor/Menu';
 type SchemaType = 'user' | 'library';
 
 type SelectedNode = {
-  field: ParserField;
+  field?: ParserField;
   source: ActiveSource;
 };
 
