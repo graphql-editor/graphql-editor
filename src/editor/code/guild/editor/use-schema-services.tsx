@@ -37,7 +37,11 @@ export type SchemaServicesOptions = {
   diagnosticsProviders?: DiagnosticsSource[];
   decorationsProviders?: DecorationsSource[];
   actions?: EditorAction[];
-  select?: (name?: Maybe<string>) => void;
+  select?: (
+    name?:
+      | Maybe<string>
+      | Maybe<{ operation: 'Query' | 'Mutation' | 'Subscription' }>,
+  ) => void;
   onBlur?: (value: string) => void;
   onLanguageServiceReady?: (languageService: EnrichedLanguageService) => void;
   onSchemaChange?: (schema: GraphQLSchema, sdl: string) => void;
@@ -130,6 +134,7 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
 
       const onCursorChangeDisposable = editorRef.onDidChangeCursorPosition(
         (e) => {
+          if (!options.select) return;
           const model = editorRef.getModel();
           if (model) {
             languageService

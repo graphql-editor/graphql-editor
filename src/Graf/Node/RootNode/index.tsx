@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import {
   ParserField,
   TypeDefinitionDisplayMap,
@@ -60,7 +60,7 @@ export const RootNode: React.FC<RootNodeProps> = ({
 }) => {
   const thisNode = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
-  const { tree, setTree } = useTreesState();
+  const { tree, setTree, selectedNode } = useTreesState();
   const {
     sortAlphabetically,
     isSortAlphabetically,
@@ -86,6 +86,26 @@ export const RootNode: React.FC<RootNodeProps> = ({
       : node.args
           ?.filter((a) => isNodeBaseType(a.type.operations))
           .concat(node.args.filter((a) => !isNodeBaseType(a.type.operations)));
+
+  const paintedNodes = useMemo(() => {
+    return sortNodes()?.map((a) => (
+      <PaintNode
+        key={a.name}
+        node={a}
+        isMatchedToSearch={a.name
+          .toLowerCase()
+          .includes(filterNodes.toLowerCase())}
+      />
+    ));
+  }, [
+    selectedNode,
+    tree,
+    filterNodes,
+    isUserOrder,
+    isNodeBaseType,
+    isSortAlphabetically,
+    node,
+  ]);
 
   return (
     <div className={NodeContainer} ref={thisNode}>
@@ -138,15 +158,7 @@ export const RootNode: React.FC<RootNodeProps> = ({
           }}
         />
       )}
-      {sortNodes()?.map((a) => (
-        <PaintNode
-          key={a.name}
-          node={a}
-          isMatchedToSearch={a.name
-            .toLowerCase()
-            .includes(filterNodes.toLowerCase())}
-        />
-      ))}
+      {paintedNodes}
       {libraryNode?.args?.map((a) => (
         <PaintNode
           isLibrary={true}

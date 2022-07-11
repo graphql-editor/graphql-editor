@@ -9,6 +9,7 @@ import { SchemaEditorApi, SchemaEditor } from '@/editor/code/guild';
 import { theme as MonacoTheme } from '@/editor/code/monaco';
 import { themed } from '@/Theming/utils';
 import { style } from 'typestyle';
+import { OperationType } from 'graphql-js-tree';
 
 export interface CodePaneOuterProps {
   readonly?: boolean;
@@ -20,6 +21,7 @@ export type CodePaneProps = {
   schema: string;
   onChange: (v: string, isInvalid?: string) => void;
   libraries?: string;
+  fullScreen?: boolean;
 } & CodePaneOuterProps;
 
 const ErrorLock = themed(({ error, background: { mainFurthest } }) =>
@@ -42,15 +44,9 @@ const ErrorLock = themed(({ error, background: { mainFurthest } }) =>
  * React compontent holding GraphQL IDE
  */
 export const CodePane = (props: CodePaneProps) => {
-  const { schema, readonly, onChange, libraries } = props;
+  const { schema, readonly, onChange, libraries, fullScreen } = props;
   const { theme } = useTheme();
-  const {
-    selectedNode,
-    setSelectedNode,
-    checkRelatedNodes,
-    tree,
-    libraryTree,
-  } = useTreesState();
+  const { selectedNode, setSelectedNode, tree, libraryTree } = useTreesState();
   const { lockCode, errorRowNumber } = useErrorsState();
 
   const ref: React.ForwardedRef<SchemaEditorApi> = React.createRef();
@@ -98,17 +94,26 @@ export const CodePane = (props: CodePaneProps) => {
           schema={schema}
           libraries={libraries}
           options={codeSettings}
-          select={(e) => {
-            if (e) {
-              const allNodes = tree.nodes.concat(libraryTree.nodes);
-              const n = allNodes.find((an) => an.name === e);
-              checkRelatedNodes(n);
-              setSelectedNode({
-                source: 'code',
-                field: n,
-              });
-            }
-          }}
+          select={
+            fullScreen
+              ? undefined
+              : (e) => {
+                  if (e) {
+                    const allNodes = tree.nodes.concat(libraryTree.nodes);
+                    const op =
+                      typeof e === 'object' && e.operation
+                        ? (e.operation.toLowerCase() as OperationType)
+                        : undefined;
+                    const n = op
+                      ? allNodes.find((an) => an.type.operations?.includes(op))
+                      : allNodes.find((an) => an.name === e);
+                    setSelectedNode({
+                      source: 'code',
+                      field: n,
+                    });
+                  }
+                }
+          }
         />
       )}
       {lockCode && (

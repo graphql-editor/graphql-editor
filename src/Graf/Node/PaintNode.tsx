@@ -122,14 +122,7 @@ export const PaintNode: React.FC<NodeProps> = ({
   isMatchedToSearch,
 }) => {
   const thisNode = useRef<HTMLDivElement>(null);
-  const {
-    setSelectedNode,
-    selectedNode,
-    nodesImplementsInterface,
-    checkRelatedNodes,
-    tree,
-    setTree,
-  } = useTreesState();
+  const { setSelectedNode, selectedNode, tree, setTree } = useTreesState();
   const { isNodeBaseType, setIsUserOrder } = useSortState();
   const { theme } = useTheme();
   const { errorNodeNames } = useErrorsState();
@@ -221,14 +214,18 @@ export const PaintNode: React.FC<NodeProps> = ({
             : NotSelected
           : ''
       }
-      ${nodesImplementsInterface.includes(node) ? RelatedNode : ''}
+      ${
+        selectedNode?.field &&
+        node?.interfaces?.includes(selectedNode.field.name)
+          ? RelatedNode
+          : ''
+      }
       ${errorNodeNames?.includes(node.name) ? ErrorNode(theme) : ''}
       NodeType-${node.type.name} 
       `}
       ref={thisNode}
       onClick={(e) => {
         e.stopPropagation();
-        checkRelatedNodes(node);
         setSelectedNode({
           field: node,
           source: 'diagram',

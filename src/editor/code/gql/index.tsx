@@ -45,13 +45,7 @@ const ErrorLock = themed(({ error, background: { mainFurthest } }) =>
 export const GqlCodePane = (props: GqlCodePaneProps) => {
   const { schema, readonly, onChange, gql } = props;
   const { theme } = useTheme();
-  const {
-    selectedNode,
-    setSelectedNode,
-    checkRelatedNodes,
-    tree,
-    libraryTree,
-  } = useTreesState();
+  const { selectedNode, setSelectedNode, tree, libraryTree } = useTreesState();
   const { lockCode, errorRowNumber } = useErrorsState();
 
   const ref: React.ForwardedRef<SchemaEditorApi> = React.createRef();
@@ -106,7 +100,6 @@ export const GqlCodePane = (props: GqlCodePaneProps) => {
             if (e) {
               const allNodes = tree.nodes.concat(libraryTree.nodes);
               const n = allNodes.find((an) => an.name === e);
-              checkRelatedNodes(n);
               setSelectedNode(
                 n && {
                   source: 'code',

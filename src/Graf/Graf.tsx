@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { style } from 'typestyle';
 import { fontFamily } from '@/vars';
 import { PaintNodes } from './PaintNodes';
@@ -168,9 +168,9 @@ export const Graf: React.FC = () => {
       findInNodes(libraryTree.nodes, selectedNode.field)
     : undefined;
 
-  return (
-    <>
-      {node && wrapperRef.current && (
+  const selectedNodeComponent = useMemo(() => {
+    if (node && wrapperRef.current) {
+      return (
         <div className={SubNodeContainer(theme)} onClick={() => {}}>
           <ActiveNode
             readonly={readonly}
@@ -221,7 +221,21 @@ export const Graf: React.FC = () => {
             node={node}
           />
         </div>
-      )}
+      );
+    }
+  }, [
+    node,
+    wrapperRef.current,
+    readonly,
+    selectedNode,
+    setSelectedNode,
+    setTree,
+    tree,
+  ]);
+
+  return (
+    <>
+      {selectedNodeComponent}
       <div
         ref={wrapperRef}
         className={`${Wrapper(theme)} ${node ? AnimatedWrapper : ''}`}

@@ -142,13 +142,7 @@ export const Node: React.FC<NodeProps> = ({
   focus,
   isLibrary,
 }) => {
-  const {
-    setSelectedNode,
-    selectedNode,
-    tree,
-    libraryTree,
-    checkRelatedNodes,
-  } = useTreesState();
+  const { setSelectedNode, selectedNode, tree, libraryTree } = useTreesState();
   const isNodeActive = compareNodesWithData(field, selectedNode?.field);
   const { theme } = useTheme();
   const RelationFields = useMemo(() => {
@@ -211,7 +205,6 @@ export const Node: React.FC<NodeProps> = ({
       }}
       onClick={(e) => {
         e.stopPropagation();
-        checkRelatedNodes(field);
         setSelectedNode({
           field,
           source: 'relation',

@@ -34,9 +34,6 @@ const useTreesStateContainer = createContainer(() => {
   const [selectedNode, setSelectedNode] = useState<SelectedNode>();
   const [readonly, setReadonly] = useState(false);
   const [scalars, setScalars] = useState(BuiltInScalars.map((a) => a.name));
-  const [nodesImplementsInterface, setNodesImplementsInterface] = useState<
-    ParserField[]
-  >([]);
   const [schemaType, setSchemaType] = useState<SchemaType>('user');
 
   const { setLockGraf, setCodeErrors, transformCodeError, codeErrors } =
@@ -49,10 +46,6 @@ const useTreesStateContainer = createContainer(() => {
   useEffect(() => {
     codeErrors.length && setSelectedNode(undefined);
   }, [codeErrors]);
-
-  useEffect(() => {
-    if (!selectedNode) setNodesImplementsInterface([]);
-  }, [selectedNode]);
 
   const setTree = (
     v: React.SetStateAction<Omit<TreeWithSource, 'schema' | 'initial'>>,
@@ -140,16 +133,6 @@ const useTreesStateContainer = createContainer(() => {
     ),
   };
 
-  const checkRelatedNodes = (node?: ParserField) => {
-    if (node && node.data.type === TypeDefinition.InterfaceTypeDefinition) {
-      setNodesImplementsInterface(
-        tree.nodes.filter((a) => a.interfaces?.includes(node.name)),
-      );
-    } else {
-      setNodesImplementsInterface([]);
-    }
-  };
-
   const generateTreeFromSchema = (schema: PassedSchema) => {
     if (!schema.code) {
       setTree({ nodes: [] }, true);
@@ -211,8 +194,6 @@ const useTreesStateContainer = createContainer(() => {
     relatedToSelected,
     parentTypes,
     scalars,
-    nodesImplementsInterface,
-    checkRelatedNodes,
     schemaType,
     switchSchema,
     generateTreeFromSchema,

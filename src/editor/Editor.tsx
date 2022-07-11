@@ -265,6 +265,7 @@ export const Editor = ({
                   ? schema.libraries
                   : schema.code
               }
+              fullScreen={!menuState.pane}
               libraries={schemaType === 'library' ? '' : schema.libraries}
               placeholder={placeholder}
               readonly={readonly}
