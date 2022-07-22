@@ -1,15 +1,23 @@
-import { FieldText, TypeText } from '@/Docs/DocsElement';
+import { FieldText, TypeText } from '@/Docs/DocsStyles';
 import { tranfromOptions } from '@/Docs/handleOptions';
 import { BuiltInScalars } from '@/GraphQL/Resolve';
-import { useTheme } from '@/state/containers';
+import styled from '@emotion/styled';
 import { ParserField } from 'graphql-js-tree';
 import React from 'react';
-import { style } from 'typestyle';
 
-const ArgumentsWrapper = style({
-  display: 'flex',
-  flexWrap: 'wrap',
-});
+const ArgumentsWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+`;
+
+const FieldDiv = styled.div`
+  display: flex;
+  color: ${({ theme }) => theme.backgroundedText};
+  font-size: 14px;
+  margin: 0;
+  line-height: 1.6;
+  padding-left: 2px;
+`;
 
 interface ArgumentsListI {
   argument: ParserField;
@@ -20,45 +28,41 @@ export const ArgumentsList: React.FC<ArgumentsListI> = ({
   argument,
   setNode,
 }) => {
-  const { theme } = useTheme();
-
   return (
-    <div className={`${ArgumentsWrapper}`}>
+    <ArgumentsWrapper>
       {argument.args &&
         argument.args.map((a, i) => (
           <React.Fragment key={i}>
-            {i === 0 && <p className={`${FieldText(theme)}`}>(</p>}
-            <div className={`${FieldText(theme)}`} style={{ display: 'flex' }}>
+            {i === 0 && <FieldText>(</FieldText>}
+            <FieldDiv>
               {a.name}:
-              <p
-                className={`${TypeText(
-                  BuiltInScalars.some((scalar) => scalar.name === a.type.name),
-                )(theme)}`}
+              <TypeText
+                isScalar={BuiltInScalars.some(
+                  (scalar) => scalar.name === a.type.name,
+                )}
                 onClick={() => setNode(a.type.name)}
               >
                 {tranfromOptions(a.type.name, a.type.options)}
-              </p>
-            </div>
+              </TypeText>
+            </FieldDiv>
 
             {i === argument.args?.length! - 1 ? (
               <>
-                <p className={`${FieldText(theme)}`}>)</p>
-                <p
-                  className={`${TypeText(
-                    BuiltInScalars.some(
-                      (scalar) => scalar.name === argument.type.name,
-                    ),
-                  )(theme)}`}
+                <FieldText>)</FieldText>
+                <TypeText
+                  isScalar={BuiltInScalars.some(
+                    (scalar) => scalar.name === a.type.name,
+                  )}
                   onClick={() => setNode(argument.type.name)}
                 >
                   {tranfromOptions(argument.type.name, argument.type.options)}
-                </p>
+                </TypeText>
               </>
             ) : (
-              <p className={`${FieldText(theme)}`}>,</p>
+              <FieldText>,</FieldText>
             )}
           </React.Fragment>
         ))}
-    </div>
+    </ArgumentsWrapper>
   );
 };
