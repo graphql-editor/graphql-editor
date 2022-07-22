@@ -1,4 +1,4 @@
-import { EditorTheme } from './gshared/theme/DarkTheme';
+import { EditorTheme } from './src/gshared/theme/DarkTheme';
 
 import '@emotion/react';
 
