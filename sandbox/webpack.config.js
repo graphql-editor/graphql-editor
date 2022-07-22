@@ -25,7 +25,7 @@ module.exports = {
     mainFields: ['module', 'browser', 'main'],
     plugins: [
       new TsConfigPathsPlugin({
-        configFile: path.resolve(__dirname, '../tsconfig.json'),
+        configFile: path.resolve(__dirname, '../tsconfig.build.json'),
       }),
     ],
   },

@@ -15,6 +15,7 @@ import { monacoSetDecorations } from '@/editor/code/monaco/decorations';
 import { useTheme } from '@/state/containers';
 import {
   CompletionItem,
+  ContextTokenForCodeMirror,
   getAutocompleteSuggestions,
   IRange,
   Maybe,
@@ -147,7 +148,7 @@ export const useGqlServices = (options: SchemaServicesOptions = {}) => {
                 bridge.schema,
                 bridge.document,
                 bridge.position,
-                bridge.token,
+                bridge.token as ContextTokenForCodeMirror,
               );
               return {
                 suggestions: suggestions.map((s) => toCompletion(s)),

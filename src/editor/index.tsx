@@ -7,6 +7,7 @@ import {
   IOStateProvider,
   ThemeProvider,
 } from '@/state/containers';
+import { ThemeProvider as ScThemeProvider } from '@emotion/react';
 import { LayoutStateProvider } from '@/state/containers/layout';
 import { SortStateProvider } from '@/state/containers/sort';
 import { GqlEditor, GqlEditorProps } from '@/editor/GqlEditor';
@@ -20,7 +21,9 @@ export const GraphQLEditor = ({ ...props }: EditorProps) => {
             <NavigationStateProvider>
               <LayoutStateProvider>
                 <IOStateProvider>
-                  <Editor {...props} />
+                  <ScThemeProvider theme={props.theme!}>
+                    <Editor {...props} />
+                  </ScThemeProvider>
                 </IOStateProvider>
               </LayoutStateProvider>
             </NavigationStateProvider>
@@ -40,7 +43,9 @@ export const GraphQLGqlEditor = ({ ...props }: GqlEditorProps) => {
             <NavigationStateProvider>
               <LayoutStateProvider>
                 <IOStateProvider>
-                  <GqlEditor {...props} />
+                  <ScThemeProvider theme={props.theme!}>
+                    <GqlEditor {...props} />
+                  </ScThemeProvider>
                 </IOStateProvider>
               </LayoutStateProvider>
             </NavigationStateProvider>
