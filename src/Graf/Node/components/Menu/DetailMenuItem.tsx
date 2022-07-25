@@ -1,42 +1,35 @@
 import React from 'react';
-import { style } from 'typestyle';
-import { themed } from '@/Theming/utils';
-import { useTheme } from '@/state/containers';
+import styled from '@emotion/styled';
 
 interface MenuItemProps {
   onClick: () => void;
 }
 
-const Main = themed(({ text, success }) =>
-  style({
-    display: 'flex',
-    padding: `6px 12px`,
-    fontSize: 14,
-    cursor: 'pointer',
-    scrollSnapAlign: 'end',
-    $nest: {
-      '.MenuItemText': {
-        transition: 'color .25s ease-in-out',
-        color: text,
-        width: '100%',
-        $nest: {
-          '&:hover': {
-            color: success,
-          },
-        },
-      },
-    },
-  }),
-);
+const Main = styled.div`
+  display: flex;
+  padding: 6px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  scroll-snap-align: end;
+`;
+
+const MenuItemText = styled.span`
+  transition: color 0.25s ease-in-out;
+  color: ${({ theme }) => theme.text};
+  width: 100%;
+
+  &:hover {
+    color: ${({ theme }) => theme.success};
+  }
+`;
 
 export const DetailMenuItem: React.FC<MenuItemProps> = ({
   children,
   onClick,
 }) => {
-  const { theme } = useTheme();
   return (
-    <div className={Main(theme)} onClick={onClick}>
-      <span className={`MenuItemText`}>{children}</span>
-    </div>
+    <Main onClick={onClick}>
+      <MenuItemText>{children}</MenuItemText>
+    </Main>
   );
 };

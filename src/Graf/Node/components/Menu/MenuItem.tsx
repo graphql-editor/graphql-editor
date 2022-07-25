@@ -1,10 +1,8 @@
 import React from 'react';
 import { ParserField } from 'graphql-js-tree';
-import { style } from 'typestyle';
-import { NestedCSSProperties } from 'typestyle/lib/types';
-import { themed } from '@/Theming/utils';
-import { useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
+import styled from '@emotion/styled';
+import { EditorTheme } from '@/gshared/theme/DarkTheme';
 
 interface MenuItemProps {
   node: ParserField;
@@ -12,47 +10,38 @@ interface MenuItemProps {
   name?: string;
 }
 
-const Main = themed(({ colors, hover }) =>
-  style({
-    display: 'flex',
-    padding: `8px 16px`,
-    fontSize: 14,
-    cursor: 'pointer',
-    scrollSnapAlign: 'end',
-    $nest: {
-      ...Object.keys(colors).reduce((a, b) => {
-        a[`.MenuItemText-${b}`] = {
-          color: `${(colors as any)[b]}dd`,
-        };
-        return a;
-      }, {} as Record<string, NestedCSSProperties>),
-      '.MenuItemText': {
-        transition: 'color .25s ease-in-out',
-        width: '100%',
-        $nest: {
-          '&:hover': {
-            color: hover,
-          },
-        },
-      },
-    },
-  }),
-);
+type NodeTypes = keyof EditorTheme['backgrounds'];
+
+const Main = styled.div`
+  display: flex;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  scroll-snap-align: end;
+`;
+const MenuItemText = styled.span<{ nodeType: NodeTypes }>`
+  transition: color 0.25s ease-in-out;
+  width: 100%;
+  color: ${({ theme, nodeType }) =>
+    theme.colors[nodeType] ? theme.colors[nodeType] + 'dd' : theme.text};
+
+  &:hover {
+    color: ${({ theme }) => theme.hover};
+  }
+`;
 
 export const MenuItem: React.FC<MenuItemProps> = ({ node, onClick, name }) => {
-  const { theme } = useTheme();
   return (
-    <div
-      className={Main(theme)}
+    <Main
       onClick={onClick}
       data-cy={
         GraphQLEditorDomStructure.tree.elements.Graf.ActiveNode.TopNodeMenu
           .searchableMenu.optionToSelect
       }
     >
-      <span className={`MenuItemText MenuItemText-${node.type.name}`}>
+      <MenuItemText nodeType={node.type.name as NodeTypes}>
         {name || node.name}
-      </span>
-    </div>
+      </MenuItemText>
+    </Main>
   );
 };
