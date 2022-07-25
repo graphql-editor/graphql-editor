@@ -1,14 +1,11 @@
-import cx from 'classnames';
 import React, { useEffect, useMemo } from 'react';
-import * as styles from '../style/Code';
 import { fontFamily } from '@/vars';
 import { useErrorsState, useTheme, useTreesState } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { SchemaEditorApi } from '@/editor/code/guild';
 import { settings, theme as MonacoTheme } from '@/editor/code/monaco';
-import { themed } from '@/Theming/utils';
-import { style } from 'typestyle';
 import { GqlSchemaEditor } from '@/editor/code/guild/editor/GqlSchemaEditor';
+import { CodeContainer, ErrorLock } from '@/editor/code/style/Code';
 
 export interface GqlCodePaneOuterProps {
   readonly?: boolean;
@@ -22,22 +19,6 @@ export type GqlCodePaneProps = {
   onChange: (v: string, isInvalid?: string) => void;
   libraries?: string;
 } & GqlCodePaneOuterProps;
-
-const ErrorLock = themed(({ error, background: { mainFurthest } }) =>
-  style({
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    background: mainFurthest,
-    cursor: 'pointer',
-    color: error,
-    fontFamily,
-    fontSize: 14,
-    padding: 30,
-  }),
-);
 
 /**
  * React compontent holding GraphQL IDE
@@ -76,8 +57,7 @@ export const GqlCodePane = (props: GqlCodePaneProps) => {
   }, [errorRowNumber]);
 
   return (
-    <div
-      className={cx(styles.CodeContainer(theme))}
+    <CodeContainer
       data-cy={GraphQLEditorDomStructure.tree.elements.CodePane.name}
     >
       {theme && (
@@ -111,11 +91,10 @@ export const GqlCodePane = (props: GqlCodePaneProps) => {
         />
       )}
       {lockCode && (
-        <div
-          className={ErrorLock(theme)}
+        <ErrorLock
           onClick={() => {}}
-        >{`Unable to parse GraphQL graph. Code editor is locked. Open graph editor to correct errors in GraphQL Schema. Message:\n${lockCode}`}</div>
+        >{`Unable to parse GraphQL graph. Code editor is locked. Open graph editor to correct errors in GraphQL Schema. Message:\n${lockCode}`}</ErrorLock>
       )}
-    </div>
+    </CodeContainer>
   );
 };

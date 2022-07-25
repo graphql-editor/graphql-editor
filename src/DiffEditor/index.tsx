@@ -1,25 +1,25 @@
 import { DiffEditorPane } from '@/editor/code';
+import styled from '@emotion/styled';
 import React from 'react';
-import { style } from 'typestyle';
 
 interface DiffEditorProps {
   schema: string;
   newSchema: string;
 }
 
-const Main = style({
-  display: 'flex',
-  width: '100%',
-  $debugName: 'DiffEditor',
-});
+const Main = styled.div`
+  display: flex;
+  width: 100%;
+`;
+
 export const DiffEditor = ({ schema, newSchema }: DiffEditorProps) => {
   return (
-    <div className={Main}>
+    <Main>
       <DiffEditorPane
         schema={schema}
         newSchema={newSchema}
         size={`100vw-50px`}
       />
-    </div>
+    </Main>
   );
 };

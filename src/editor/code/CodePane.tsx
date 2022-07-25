@@ -1,15 +1,12 @@
-import cx from 'classnames';
 import React, { useEffect, useMemo } from 'react';
-import * as styles from './style/Code';
 import { settings } from './monaco';
 import { fontFamily } from '@/vars';
 import { useErrorsState, useTheme, useTreesState } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { SchemaEditorApi, SchemaEditor } from '@/editor/code/guild';
 import { theme as MonacoTheme } from '@/editor/code/monaco';
-import { themed } from '@/Theming/utils';
-import { style } from 'typestyle';
 import { OperationType } from 'graphql-js-tree';
+import { CodeContainer, ErrorLock } from '@/editor/code/style/Code';
 
 export interface CodePaneOuterProps {
   readonly?: boolean;
@@ -23,22 +20,6 @@ export type CodePaneProps = {
   libraries?: string;
   fullScreen?: boolean;
 } & CodePaneOuterProps;
-
-const ErrorLock = themed(({ error, background: { mainFurthest } }) =>
-  style({
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    background: mainFurthest,
-    cursor: 'pointer',
-    color: error,
-    fontFamily,
-    fontSize: 14,
-    padding: 30,
-  }),
-);
 
 /**
  * React compontent holding GraphQL IDE
@@ -77,8 +58,7 @@ export const CodePane = (props: CodePaneProps) => {
   }, [errorRowNumber]);
 
   return (
-    <div
-      className={cx(styles.CodeContainer(theme))}
+    <CodeContainer
       data-cy={GraphQLEditorDomStructure.tree.elements.CodePane.name}
     >
       {theme && (
@@ -117,11 +97,10 @@ export const CodePane = (props: CodePaneProps) => {
         />
       )}
       {lockCode && (
-        <div
-          className={ErrorLock(theme)}
+        <ErrorLock
           onClick={() => {}}
-        >{`Unable to parse GraphQL graph. Code editor is locked. Open graph editor to correct errors in GraphQL Schema. Message:\n${lockCode}`}</div>
+        >{`Unable to parse GraphQL graph. Code editor is locked. Open graph editor to correct errors in GraphQL Schema. Message:\n${lockCode}`}</ErrorLock>
       )}
-    </div>
+    </CodeContainer>
   );
 };
