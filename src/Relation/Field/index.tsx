@@ -26,10 +26,6 @@ const Main = themed(({ backgroundedText, background: { mainClose } }) =>
     margin: `0 0`,
     transition: 'background 0.25s ease-in-out',
     $nest: {
-      '.NodeFieldPortPlaceholder': {
-        width: 24,
-        height: 16,
-      },
       '&.ActiveParent': {
         cursor: 'pointer',
         $nest: {

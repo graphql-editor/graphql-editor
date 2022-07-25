@@ -13,6 +13,8 @@ const Sidebar = styled.div`
 `;
 
 const IconBox = styled.div`
+  margin-bottom: 5px;
+  padding: 5px;
   &:hover,
   &.active {
     color: ${({ theme }) => theme.active};

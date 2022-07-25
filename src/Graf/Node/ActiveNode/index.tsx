@@ -9,11 +9,8 @@ import {
 import { ActiveField } from '@/Graf/Node/Field';
 import { ActiveDirective } from '@/Graf/Node/Directive';
 import { ActiveInputValue } from '@/Graf/Node/InputValue';
-import { style, keyframes } from 'typestyle';
-import { NestedCSSProperties } from 'typestyle/lib/types';
 import { DOM } from '@/Graf/DOM';
 import { ActiveType } from '@/Graf/Node/Type';
-import { NodeTitle } from '@/Graf/Node/SharedNode';
 import {
   ActiveDescription,
   NodeInterface,
@@ -23,8 +20,7 @@ import { useTreesState } from '@/state/containers/trees';
 import { TopNodeMenu } from '@/Graf/Node/ActiveNode/TopNodeMenu';
 import { ChangeAllRelatedNodes, isExtensionNode } from '@/GraphQL/Resolve';
 import { ActiveArgument } from '@/Graf/Node/Argument';
-import { themed } from '@/Theming/utils';
-import { useTheme, useVisualState } from '@/state/containers';
+import { useVisualState } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import {
   dragLeaveHandler,
@@ -32,6 +28,8 @@ import {
   dragStartHandler,
 } from '@/Graf/Node/ActiveNode/dnd';
 import { compareNodesWithData } from '@/compare/compareNodes';
+import styled from '@emotion/styled';
+import { NodeName, NodeTitle, NodeType } from '@/Graf/Node/SharedNode';
 
 interface NodeProps {
   node: ParserField;
@@ -42,111 +40,92 @@ interface NodeProps {
   parentNode?: ParserField;
 }
 
-const fadeIn = keyframes({
-  ['0%']: {
-    opacity: 0.0,
-  },
-  ['100%']: {
-    opacity: 1.0,
-  },
-});
+const OpenedNode = styled.div`
+  position: absolute;
+  z-index: 4;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+`;
 
-const OpenedNode: NestedCSSProperties = {
-  position: 'absolute',
-  zIndex: 4,
-  left: 0,
-  top: 0,
-  bottom: 0,
-  height: '100%',
-  width: `100%`,
-  display: 'flex',
-};
+const MainNodeArea = styled.div`
+  position: relative;
+  transition: border-color 0.25s ease-in-out;
+  border-color: ${({ theme }) => theme.success};
+  flex: 1;
+  display: flex;
+  flex-flow: column nowrap;
+  animation-name: fadeIn;
+  animation-duration: 0.25s;
+  overflow-y: auto;
 
-const LibraryNodeArea = themed<NestedCSSProperties>(({ success }) => ({
-  borderStyle: 'dashed',
-  borderColor: `${success}33`,
-}));
-const MainNodeArea = themed((theme) =>
-  style({
-    position: 'relative',
-    transition: `border-color .25s ease-in-out`,
-    borderColor: theme.success,
-    flex: 1,
-    display: 'flex',
-    flexFlow: 'column nowrap',
-    animationName: fadeIn,
-    animationDuration: '0.25s',
-    overflowY: 'auto',
-    $nest: {
-      '.NodeTitle': NodeTitle(theme),
-      '&.LibraryNodeArea': LibraryNodeArea(theme),
-    },
-  }),
-);
-const NodeContainer = themed(({ background: { mainMiddle } }) =>
-  style({
-    position: 'relative',
-    breakInside: 'avoid',
-    height: '100%',
-    background: mainMiddle,
-    maxWidth: '100%',
-    display: 'flex',
-    flexFlow: 'column nowrap',
-    $nest: {
-      '.OpenedNode': OpenedNode,
-      '&:hover': {
-        $nest: {
-          '> .ActionsMenu': {
-            opacity: 1.0,
-            pointerEvents: 'auto',
-          },
-        },
-      },
-    },
-  }),
-);
+  &.library-node-area {
+    border-style: dotted;
+    border-color: ${({ theme }) => theme.success}33;
+  }
 
-const NodeFields = style({
-  flex: 1,
-  overflowY: 'auto',
-});
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
 
-const NodeInterfaces = style({
-  maxWidth: 600,
-  display: 'flex',
-  flexFlow: 'row wrap',
-  alignItems: 'flex-start',
-  marginBottom: 5,
-});
+    100% {
+      opacity: 1;
+    }
+  }
+`;
 
-const DragOverStyle = style({
-  paddingTop: 30,
-});
+const NodeContainer = styled.div`
+  position: relative;
+  break-inside: avoid;
+  height: 100%;
+  background-color: ${({ theme }) => theme.background.mainMiddle};
+  max-width: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+`;
 
-const GapBar = themed(({ background: { mainFurthest } }) =>
-  style({
-    width: '100%',
-    height: '100%',
-    background: `${mainFurthest}99`,
-    transition: '.25s background ease-in-out',
-    $nest: {
-      '&:hover': {
-        background: `${mainFurthest}11`,
-      },
-    },
-  }),
-);
+const NodeFields = styled.div`
+  flex: 1;
+  overflow-y: auto;
+`;
 
-const NodeArea = themed(({ background: { mainFurthest } }) =>
-  style({
-    minWidth: '80%',
-    maxWidth: '50vw',
-    left: '20%',
-    position: 'absolute',
-    height: '100%',
-    boxShadow: `${mainFurthest} 0 0 20px`,
-  }),
-);
+const NodeInterfaces = styled.div`
+  max-width: 600px;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: flex-start;
+  margin-bottom: 5px;
+`;
+
+const DndContainer = styled.div`
+  &.drag-over {
+    padding-top: 30px;
+  }
+`;
+
+const GapBar = styled.div`
+  width: 100%;
+  height: 100%;
+  background-color: ${({ theme }) => theme.background.mainFurthest}99;
+  transition: 0.25s background-color ease-in-out;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.background.mainFurthest}11;
+  }
+`;
+
+const NodeArea = styled.div`
+  min-width: 80%;
+  max-width: 50vw;
+  left: 20%;
+  position: absolute;
+  height: 100%;
+  box-shadow: ${({ theme }) => theme.background.mainFurthest} 0 0 20px;
+`;
 
 const EditableTitle: React.CSSProperties = {
   fontSize: 14,
@@ -166,7 +145,6 @@ export const ActiveNode: React.FC<NodeProps> = ({
     index: number;
   }>();
   const [dragOverName, setDragOverName] = useState('');
-  const { theme } = useTheme();
 
   const {
     libraryTree,
@@ -236,10 +214,8 @@ export const ActiveNode: React.FC<NodeProps> = ({
     : undefined;
 
   return (
-    <div
-      className={`${NodeContainer(theme)} NodeBackground-${node.type.name} ${
-        DOM.classes.node
-      } ${DOM.classes.nodeSelected}`}
+    <NodeContainer
+      className={`NodeBackground-${node.type.name} ${DOM.classes.node} ${DOM.classes.nodeSelected}`}
       data-cy={GraphQLEditorDomStructure.tree.elements.Graf.ActiveNode.name}
     >
       <ActiveDescription
@@ -251,7 +227,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
         value={node.description || ''}
       />
       {!!node.interfaces?.length && (
-        <div className={NodeInterfaces}>
+        <NodeInterfaces>
           {node.interfaces.map((i) => (
             <NodeInterface
               key={i}
@@ -266,12 +242,12 @@ export const ActiveNode: React.FC<NodeProps> = ({
               {i}
             </NodeInterface>
           ))}
-        </div>
+        </NodeInterfaces>
       )}
       {openedNodeNode && openedNode && (
-        <div className={`OpenedNode`}>
-          <div className={GapBar(theme)} onClick={inactiveClick} />
-          <div className={NodeArea(theme)}>
+        <OpenedNode>
+          <GapBar onClick={inactiveClick} />
+          <NodeArea>
             <ActiveNode
               {...sharedProps}
               readonly={isLocked}
@@ -300,19 +276,17 @@ export const ActiveNode: React.FC<NodeProps> = ({
                 setTree({ ...tree });
               }}
             />
-          </div>
-        </div>
+          </NodeArea>
+        </OpenedNode>
       )}
-      <div
-        className={`${MainNodeArea(theme)}${
-          isLibrary ? ' LibraryNodeArea' : ''
-        }`}
+      <MainNodeArea
+        className={isLibrary ? 'library-node-area' : undefined}
         onClick={(e) => {
           e.stopPropagation();
         }}
       >
-        <div className={`NodeTitle`}>
-          <div className={`NodeName`}>
+        <NodeTitle>
+          <NodeName>
             {parentNode && (
               <EditableText
                 style={EditableTitle}
@@ -356,10 +330,10 @@ export const ActiveNode: React.FC<NodeProps> = ({
                 }}
               />
             )}
-          </div>
-          <div className={`NodeType`}>
+          </NodeName>
+          <NodeType>
             <ActiveType type={node.type} />
-          </div>
+          </NodeType>
           {!isLocked && (
             <TopNodeMenu
               {...sharedProps}
@@ -369,8 +343,8 @@ export const ActiveNode: React.FC<NodeProps> = ({
               node={node}
             />
           )}
-        </div>
-        <div className={NodeFields}>
+        </NodeTitle>
+        <NodeFields>
           {node.directives?.map((d, i) => {
             const outputDisabled = !(
               tree.nodes.find((n) => n.name === d.type.name) ||
@@ -425,7 +399,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
               ? ActiveInputValue
               : ActiveField;
             return (
-              <div
+              <DndContainer
                 key={a.name}
                 id={a.name}
                 onDrop={(e) => {
@@ -440,7 +414,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                   setDragOverName(a.name);
                   dragOverHandler(e);
                 }}
-                className={a.name === dragOverName ? `${DragOverStyle}` : ''}
+                className={a.name === dragOverName ? `drag-over` : ''}
               >
                 <div
                   draggable={draggingAllowed && !readonly}
@@ -482,12 +456,12 @@ export const ActiveNode: React.FC<NodeProps> = ({
                     }}
                   />
                 </div>
-              </div>
+              </DndContainer>
             );
           })}
           <div style={{ marginBottom: 400 }} />
-        </div>
-      </div>
-    </div>
+        </NodeFields>
+      </MainNodeArea>
+    </NodeContainer>
   );
 };

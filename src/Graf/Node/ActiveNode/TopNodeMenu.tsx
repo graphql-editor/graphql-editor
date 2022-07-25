@@ -20,11 +20,11 @@ import {
   NodeOperationsMenu,
   NodeFieldsRequiredMenu,
 } from '@/Graf/Node/ContextMenu';
-import { style } from 'typestyle';
 import { useTreesState } from '@/state/containers/trees';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { useTheme } from '@/state/containers';
 import { getScalarFields } from '@/Graf/utils/getScalarFields';
+import styled from '@emotion/styled';
 
 type PossibleMenus =
   | 'field'
@@ -34,12 +34,29 @@ type PossibleMenus =
   | 'operations'
   | 'required';
 
-const NodeMenuContainer = style({
-  position: 'absolute',
-  top: 35,
-  zIndex: 2,
-  right: 5,
-});
+const NodeMenuContainer = styled.div`
+  position: absolute;
+  top: 35px;
+  z-index: 2;
+  right: 5px;
+`;
+
+const NodeIconArea = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  width: 24px;
+  height: 24px;
+  transition: background-color 0.25s ease-in-out;
+  background-color: transparent;
+  cursor: pointer;
+  border-radius: 12px;
+  &:hover {
+    background-color: ${({ theme }) => theme.background.mainFurthest};
+  }
+`;
+
 const ICON_SIZE = 14;
 const cyMenu =
   GraphQLEditorDomStructure.tree.elements.Graf.ActiveNode.TopNodeMenu;
@@ -78,8 +95,7 @@ export const TopNodeMenu: React.FC<{
     <>
       {node.data.type !== TypeDefinition.ScalarTypeDefinition &&
         node.data.type !== ValueDefinition.EnumValueDefinition && (
-          <div
-            className={'NodeIconArea'}
+          <NodeIconArea
             data-cy={cyMenu.CreateField}
             onClick={() => {
               setMenuOpen('field');
@@ -92,19 +108,18 @@ export const TopNodeMenu: React.FC<{
               width={ICON_SIZE}
             />
             {menuOpen === 'field' && (
-              <div className={NodeMenuContainer}>
+              <NodeMenuContainer>
                 <NodeAddFieldMenu node={node} hideMenu={hideMenu} />
-              </div>
+              </NodeMenuContainer>
             )}
-          </div>
+          </NodeIconArea>
         )}
 
       {(node.data.type === TypeDefinition.ObjectTypeDefinition ||
         node.data.type === TypeDefinition.InterfaceTypeDefinition) && (
         <>
           {/* TODO: Implement operations menu */}
-          <div
-            className={'NodeIconArea'}
+          <NodeIconArea
             onClick={() => {
               setMenuOpen('interface');
             }}
@@ -117,16 +132,15 @@ export const TopNodeMenu: React.FC<{
               width={ICON_SIZE}
             />
             {menuOpen === 'interface' && (
-              <div className={NodeMenuContainer}>
+              <NodeMenuContainer>
                 <NodeImplementInterfacesMenu node={node} hideMenu={hideMenu} />
-              </div>
+              </NodeMenuContainer>
             )}
-          </div>
+          </NodeIconArea>
         </>
       )}
       {node.data.type !== Instances.Directive && (
-        <div
-          className={'NodeIconArea'}
+        <NodeIconArea
           onClick={() => {
             setMenuOpen('directive');
           }}
@@ -140,21 +154,20 @@ export const TopNodeMenu: React.FC<{
           />
           {menuOpen === 'directive' &&
             node.data.type !== TypeSystemDefinition.DirectiveDefinition && (
-              <div className={NodeMenuContainer}>
+              <NodeMenuContainer>
                 <NodeAddDirectiveMenu node={node} hideMenu={hideMenu} />
-              </div>
+              </NodeMenuContainer>
             )}
           {menuOpen === 'directive' &&
             node.data.type === TypeSystemDefinition.DirectiveDefinition && (
-              <div className={NodeMenuContainer}>
+              <NodeMenuContainer>
                 <NodeDirectiveOptionsMenu node={node} hideMenu={hideMenu} />
-              </div>
+              </NodeMenuContainer>
             )}
-        </div>
+        </NodeIconArea>
       )}
       {isRequiredMenuValid() && (
-        <div
-          className={'NodeIconArea'}
+        <NodeIconArea
           onClick={() => {
             setMenuOpen('required');
           }}
@@ -167,17 +180,16 @@ export const TopNodeMenu: React.FC<{
             width={ICON_SIZE}
           />
           {menuOpen === 'required' && (
-            <div className={NodeMenuContainer}>
+            <NodeMenuContainer>
               <NodeFieldsRequiredMenu hideMenu={hideMenu} node={node} />
-            </div>
+            </NodeMenuContainer>
           )}
-        </div>
+        </NodeIconArea>
       )}
       {node.data.type === TypeDefinition.ObjectTypeDefinition && (
         <>
           {/* TODO: Implement operations menu */}
-          <div
-            className={'NodeIconArea'}
+          <NodeIconArea
             onClick={() => {
               setMenuOpen('operations');
             }}
@@ -190,15 +202,14 @@ export const TopNodeMenu: React.FC<{
               fill={menuOpen === 'operations' ? theme.success : theme.text}
             />
             {menuOpen === 'operations' && (
-              <div className={NodeMenuContainer}>
+              <NodeMenuContainer>
                 <NodeOperationsMenu node={node} hideMenu={hideMenu} />
-              </div>
+              </NodeMenuContainer>
             )}
-          </div>
+          </NodeIconArea>
         </>
       )}
-      <div
-        className={'NodeIconArea'}
+      <NodeIconArea
         onClick={() => {
           setMenuOpen('options');
         }}
@@ -211,7 +222,7 @@ export const TopNodeMenu: React.FC<{
           width={ICON_SIZE}
         />
         {menuOpen === 'options' && (
-          <div className={NodeMenuContainer}>
+          <NodeMenuContainer>
             <Menu menuName={'Node options'} hideMenu={hideMenu}>
               <MenuScrollingArea>
                 <DetailMenuItem onClick={onDelete}>Delete node</DetailMenuItem>
@@ -244,9 +255,9 @@ export const TopNodeMenu: React.FC<{
                 </DetailMenuItem>
               </MenuScrollingArea>
             </Menu>
-          </div>
+          </NodeMenuContainer>
         )}
-      </div>
+      </NodeIconArea>
     </>
   );
 };

@@ -24,6 +24,7 @@ import {
 import { useTreesState } from '@/state/containers/trees';
 import { FieldProps } from '@/Graf/Node/models';
 import { FIELD_TYPE_SIZE } from '@/Graf/constants';
+import { NodeFieldPortPlaceholder } from '@/Graf/Node';
 
 const Name = style({ marginRight: 4, overflow: 'hidden' });
 const Type = style({ fontSize: FIELD_TYPE_SIZE });
@@ -114,7 +115,7 @@ export const ActiveInputValue: React.FC<FieldProps> = ({
           }}
         />
       ) : (
-        <div className={'NodeFieldPortPlaceholder'} />
+        <NodeFieldPortPlaceholder />
       )}
       <Title>
         <div className={Name}>
@@ -210,9 +211,7 @@ export const ActiveInputValue: React.FC<FieldProps> = ({
           }}
         />
       )}
-      {outputDisabled && isLocked && (
-        <div className={'NodeFieldPortPlaceholder'} />
-      )}
+      {outputDisabled && isLocked && <NodeFieldPortPlaceholder />}
     </NodeFieldContainer>
   );
 };

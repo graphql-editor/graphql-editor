@@ -1,6 +1,6 @@
 import * as Icons from '@/Graf/icons';
+import styled from '@emotion/styled';
 import React from 'react';
-import { style } from 'typestyle';
 
 interface FieldPortProps {
   onClick: () => void;
@@ -15,30 +15,17 @@ interface FieldPortProps {
   };
 }
 
-const Main = style({
-  position: 'relative',
-  width: 30,
-  height: 30,
-  fontSize: 7,
-  alignItems: 'center',
-  display: 'flex',
-  justifyContent: 'center',
-  cursor: 'pointer',
-  transition: 'all 0.25s ease-in-out',
-  $nest: {
-    '&:hover': {
-      $nest: {
-        '.OpenerIcon': {
-          opacity: `1.0 !important`,
-        },
-      },
-    },
-    '.OpenerIcon': {
-      opacity: 0.0,
-      transition: 'all 0.25s ease-in-out',
-    },
-  },
-});
+const Main = styled.div`
+  position: relative;
+  width: 30px;
+  height: 30px;
+  font-size: 7px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
+`;
 
 export const FieldPort: React.FC<FieldPortProps> = ({
   children,
@@ -50,17 +37,13 @@ export const FieldPort: React.FC<FieldPortProps> = ({
   const OpenComponent = Icons[icons.open];
   const ClosedComponent = Icons[icons.closed];
   return (
-    <div
-      title={info?.message}
-      className={`${Main} NodeFieldPort`}
-      onClick={onClick}
-    >
+    <Main title={info?.message} className="node-field-port" onClick={onClick}>
       {open ? (
-        <OpenComponent className={'OpenerIcon'} height={10} width={10} />
+        <OpenComponent className="opener-icon" height={10} width={10} />
       ) : (
-        <ClosedComponent className={'OpenerIcon'} height={12} width={12} />
+        <ClosedComponent className="opener-icon" height={12} width={12} />
       )}
       {children}
-    </div>
+    </Main>
   );
 };

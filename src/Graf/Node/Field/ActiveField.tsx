@@ -18,6 +18,7 @@ import {
   Title,
 } from '@/Graf/Node/components';
 import { FieldProps } from '@/Graf/Node/models';
+import { NodeFieldPortPlaceholder } from '@/Graf/Node';
 
 const Name = style({
   fontSize: FIELD_NAME_SIZE,
@@ -50,7 +51,6 @@ export const ActiveField: React.FC<FieldProps> = ({
   onOutputClick,
   indexInParentNode,
   parentNode,
-  parentNodeTypeName,
   isLocked,
   onDelete,
 }) => {
@@ -60,9 +60,7 @@ export const ActiveField: React.FC<FieldProps> = ({
 
   return (
     <NodeFieldContainer
-      className={`NodeType-${parentNodeTypeName} ${
-        inputOpen || menuOpen || outputOpen ? 'Active' : ''
-      }`}
+      className={`${inputOpen || menuOpen || outputOpen ? 'Active' : ''}`}
     >
       {!inputDisabled &&
         node.data.type !== TypeSystemDefinition.UnionMemberDefinition && (
@@ -173,9 +171,7 @@ export const ActiveField: React.FC<FieldProps> = ({
           }}
         />
       )}
-      {outputDisabled && isLocked && (
-        <div className={'NodeFieldPortPlaceholder'} />
-      )}
+      {outputDisabled && isLocked && <NodeFieldPortPlaceholder />}
     </NodeFieldContainer>
   );
 };

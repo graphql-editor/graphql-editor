@@ -12,6 +12,7 @@ import {
 } from '@/Graf/Node/components';
 import { FieldProps } from '@/Graf/Node/models';
 import { themed } from '@/Theming/utils';
+import { NodeFieldPortPlaceholder } from '@/Graf/Node';
 
 const Name = style({
   fontSize: 10,
@@ -59,7 +60,7 @@ export const ActiveDirective: React.FC<FieldProps> = ({
           }}
         />
       ) : (
-        <div className={'NodeFieldPortPlaceholder'} />
+        <NodeFieldPortPlaceholder />
       )}
       <Title>
         <div className={Name}>{ConvertValueToEditableString(node)}</div>
@@ -95,9 +96,7 @@ export const ActiveDirective: React.FC<FieldProps> = ({
           }}
         />
       )}
-      {outputDisabled && isLocked && (
-        <div className={'NodeFieldPortPlaceholder'} />
-      )}
+      {outputDisabled && isLocked && <NodeFieldPortPlaceholder />}
     </NodeFieldContainer>
   );
 };
