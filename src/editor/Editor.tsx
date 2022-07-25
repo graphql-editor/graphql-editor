@@ -1,4 +1,3 @@
-import cx from 'classnames';
 import React, { useEffect } from 'react';
 import { Menu } from './Menu';
 import { CodePane } from './code';
@@ -8,7 +7,6 @@ import { Graf } from '@/Graf/Graf';
 import { Hierarchy } from '@/Hierarchy';
 import { Parser, ParserTree } from 'graphql-js-tree';
 import { Workers } from '@/worker';
-import { style } from 'typestyle';
 import {
   useErrorsState,
   useNavigationState,
@@ -23,38 +21,40 @@ import { Relation } from '@/Relation/Relation';
 import { DarkTheme, EditorTheme } from '@/gshared/theme/DarkTheme';
 import { Docs } from '@/Docs/Docs';
 import { useSortState } from '@/state/containers/sort';
+import styled from '@emotion/styled';
 
-export const Main = style({
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  height: '100%',
-  width: '100%',
-  alignItems: 'stretch',
-  overflowY: 'clip' as any,
-});
+const Main = styled.div`
+  display: flex;
+  flex-flow: row nowrap;
+  height: 100%;
+  width: 100%;
+  align-items: stretch;
+  overflow-y: clip;
 
-export const FullScreenContainer = style({
-  flex: 1,
-  alignSelf: 'stretch',
-  height: '100%',
-});
+  .full-screen-container {
+    flex: 1;
+    align-self: stretch;
+    height: 100%;
+  }
+`;
 
-export const Sidebar = style({
-  alignSelf: 'stretch',
-  zIndex: 2,
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  overflow: 'hidden',
-  position: 'relative',
-});
+const Sidebar = styled.div`
+  align-self: stretch;
+  z-index: 2;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  background: ${({ theme }) => theme.background.mainFurthest};
+`;
 
-export const ErrorOuterContainer = style({
-  width: '100%',
-  position: 'relative',
-  display: 'flex',
-  overflow: 'auto',
-});
+const ErrorOuterContainer = styled.div`
+  width: 100%;
+  position: relative;
+  display: flex;
+  overflow: auto;
+`;
 
 export interface EditorProps extends Theming {
   state?: ReturnType<typeof useNavigationState>['menuState'];
@@ -87,7 +87,7 @@ export const Editor = ({
   readonly: editorReadOnly,
   theme = DarkTheme,
 }: EditorProps) => {
-  const { theme: currentTheme, setTheme } = useTheme();
+  const { setTheme } = useTheme();
 
   const { menuState, setMenuState } = useNavigationState();
   const {
@@ -203,10 +203,10 @@ export const Editor = ({
     }
     generateTreeFromSchema(schema);
   }, [schema]);
+
   return (
-    <div
+    <Main
       data-cy={GraphQLEditorDomStructure.tree.editor}
-      className={Main}
       onKeyDown={(e) => {
         if (e.key.toLowerCase() === 'f' && (e.metaKey || e.ctrlKey)) {
           e.preventDefault();
@@ -236,20 +236,15 @@ export const Editor = ({
       />
       {menuState.code && menuState.pane !== 'diff' && (
         <DynamicResize
-          disabledClass={!menuState.pane ? FullScreenContainer : undefined}
+          disabledClass={!menuState.pane ? 'full-screen-container' : undefined}
           resizeCallback={(e, r, c, w) => {
             setSidebarSize(c.getBoundingClientRect().width);
           }}
           width={!menuState.pane ? '100%' : sidebarSize}
         >
-          <div
-            className={cx(Sidebar, {
-              [FullScreenContainer]: !menuState.pane,
-            })}
+          <Sidebar
+            className={!menuState.pane ? 'full-screen-container' : undefined}
             data-cy={GraphQLEditorDomStructure.tree.sidebar.name}
-            style={{
-              background: currentTheme.background.mainFurthest,
-            }}
           >
             <CodePane
               size={!menuState.pane ? 100000 : sidebarSize}
@@ -270,27 +265,27 @@ export const Editor = ({
               placeholder={placeholder}
               readonly={readonly}
             />
-          </div>
+          </Sidebar>
         </DynamicResize>
       )}
       {menuState.pane === 'diagram' && (
-        <div className={ErrorOuterContainer}>
+        <ErrorOuterContainer>
           <VisualStateProvider>
             <Graf />
           </VisualStateProvider>
-        </div>
+        </ErrorOuterContainer>
       )}
       {menuState.pane === 'relation' && (
-        <div className={ErrorOuterContainer}>
+        <ErrorOuterContainer>
           <VisualStateProvider>
             <Relation />
           </VisualStateProvider>
-        </div>
+        </ErrorOuterContainer>
       )}
       {menuState.pane === 'docs' && (
-        <div className={ErrorOuterContainer}>
+        <ErrorOuterContainer>
           <Docs />
-        </div>
+        </ErrorOuterContainer>
       )}
       {menuState.pane === 'hierarchy' && <Hierarchy />}
       {menuState.pane === 'diff' && diffSchemas && (
@@ -307,6 +302,6 @@ export const Editor = ({
           }
         />
       )}
-    </div>
+    </Main>
   );
 };

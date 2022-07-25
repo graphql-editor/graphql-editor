@@ -1,42 +1,19 @@
 import React, { useEffect } from 'react';
 import { GqlCodePane } from './code';
 import { PassedSchema, Theming } from '@/Models';
-import { style } from 'typestyle';
 import { useTreesState, useTheme, useLayoutState } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { DarkTheme, EditorTheme } from '@/gshared/theme/DarkTheme';
+import styled from '@emotion/styled';
 
-export const Main = style({
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  height: '100%',
-  width: '100%',
-  alignItems: 'stretch',
-  overflowY: 'clip' as any,
-});
-
-export const FullScreenContainer = style({
-  flex: 1,
-  alignSelf: 'stretch',
-  height: '100%',
-});
-
-export const Sidebar = style({
-  alignSelf: 'stretch',
-  zIndex: 2,
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  overflow: 'hidden',
-  position: 'relative',
-});
-
-export const ErrorOuterContainer = style({
-  width: '100%',
-  position: 'relative',
-  display: 'flex',
-  overflow: 'auto',
-});
+const Main = styled.div`
+  display: flex;
+  flex-flow: row nowrap;
+  height: 100%;
+  width: 100%;
+  align-items: stretch;
+  overflow-y: clip;
+`;
 
 export interface GqlEditorProps extends Theming {
   readonly?: boolean;
@@ -74,9 +51,8 @@ export const GqlEditor = ({
   }, [editorReadOnly, schemaType]);
 
   return (
-    <div
+    <Main
       data-cy={GraphQLEditorDomStructure.tree.editor}
-      className={Main}
       onKeyDown={(e) => {
         if (e.key.toLowerCase() === 'f' && (e.metaKey || e.ctrlKey)) {
           e.preventDefault();
@@ -93,6 +69,6 @@ export const GqlEditor = ({
         placeholder={placeholder}
         readonly={readonly}
       />
-    </div>
+    </Main>
   );
 };
