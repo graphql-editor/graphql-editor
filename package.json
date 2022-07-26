@@ -103,7 +103,6 @@
     "graphsource": "^2.0.5",
     "re-resizable": "^6.9.1",
     "remarkable": "^2.0.1",
-    "typestyle": "^2.1.0",
     "unstated-next": "^1.1.0"
   },
   "config": {
