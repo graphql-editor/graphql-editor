@@ -45,13 +45,12 @@ export const ArgumentsList: React.FC<ArgumentsListI> = ({
                 {tranfromOptions(a.type.name, a.type.options)}
               </TypeText>
             </FieldDiv>
-
             {i === argument.args?.length! - 1 ? (
               <>
                 <FieldText>)</FieldText>
                 <TypeText
                   isScalar={BuiltInScalars.some(
-                    (scalar) => scalar.name === a.type.name,
+                    (scalar) => scalar.name === argument.type.name,
                   )}
                   onClick={() => setNode(argument.type.name)}
                 >
