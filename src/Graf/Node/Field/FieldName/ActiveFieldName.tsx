@@ -1,19 +1,22 @@
 import React from 'react';
 import { ParserField } from 'graphql-js-tree';
 import { ActiveType } from '@/Graf/Node/Type';
-import { style } from 'typestyle';
 import { EditableText } from '@/Graf/Node/components';
-const Main = style({
-  display: 'flex',
-  flexFlow: 'row no-wrap',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-});
-const Indent = style({
-  marginLeft: 2,
-  textOverflow: 'ellipsis',
-  overflow: 'hidden',
-});
+import styled from '@emotion/styled';
+
+const Main = styled.div`
+  display: flex;
+  flex-flow: row nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const Indent = styled.div`
+  margin-left: 2px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+`;
+
 export const ActiveFieldName: React.FC<
   Pick<ParserField, 'name' | 'args' | 'data'> & {
     afterChange?: (newName: string) => void;
@@ -22,11 +25,11 @@ export const ActiveFieldName: React.FC<
 > = ({ args, data, name, afterChange, parentTypes }) => {
   if (args && args.length > 0) {
     return (
-      <div className={Main}>
+      <Main>
         <EditableText value={name} onChange={afterChange} />(
         {afterChange &&
           args.map((a, i) => (
-            <div className={Indent} key={a.name}>
+            <Indent key={a.name}>
               <EditableText
                 onChange={
                   afterChange
@@ -40,18 +43,18 @@ export const ActiveFieldName: React.FC<
               />
               :<ActiveType type={a.type} parentTypes={parentTypes} />
               {i < args.length - 1 && <span>,</span>}
-            </div>
+            </Indent>
           ))}
         {!afterChange &&
           args.map((a, i) => (
-            <div className={Indent} key={a.name}>
+            <Indent key={a.name}>
               <span>{a.name}</span>
               :<ActiveType type={a.type} parentTypes={parentTypes} />
               {i < args.length - 1 && <span>,</span>}
-            </div>
+            </Indent>
           ))}
         )
-      </div>
+      </Main>
     );
   }
   return <EditableText value={name} onChange={afterChange} />;

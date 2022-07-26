@@ -1,8 +1,6 @@
 import React, { useRef } from 'react';
-import { style } from 'typestyle';
 import { Plus, Search, X } from '@/Graf/icons';
-import { themed } from '@/Theming/utils';
-import { useTheme } from '@/state/containers';
+import styled from '@emotion/styled';
 
 interface MenuSearchProps {
   value: string;
@@ -15,55 +13,47 @@ interface MenuSearchProps {
   icon?: 'search' | 'add';
 }
 
-const Main = themed(({ text, disabled, background: { mainFurther } }) =>
-  style({
-    background: mainFurther,
-    borderRadius: 5,
-    color: text,
-    border: 0,
-    width: '100%',
-    minWidth: 0,
-    height: 36,
-    padding: `0 12px`,
-    paddingLeft: 28,
-    fontSize: 14,
-    outline: 0,
-    position: 'relative',
-    $nest: {
-      '&::placeholder': {
-        color: disabled,
-      },
-    },
-  }),
-);
+const Wrapper = styled.div`
+  position: relative;
+  max-width: 100%;
+  padding: 0 16px;
+`;
 
-const SearchIconContainer = style({
-  position: 'absolute',
-  height: 36,
-  width: 30,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  zIndex: 1,
-});
-const XIconContainer = style({
-  position: 'absolute',
-  height: 36,
-  width: 36,
-  right: 12,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  cursor: 'pointer',
-  zIndex: 1,
-});
-const Wrapper = style({
-  position: 'relative',
-  maxWidth: '100%',
-  padding: 16,
-  paddingTop: 0,
-  paddingBottom: 0,
-});
+const Main = styled.input`
+  background-color: ${({ theme }) => theme.background.mainFurther};
+  border-radius: 5px;
+  color: ${({ theme }) => theme.text};
+  border: 0;
+  width: 100%;
+  min-width: 0;
+  height: 36px;
+  padding: 0 12px 0 28px;
+  font-size: 14px;
+  outline: 0;
+  position: relative;
+  &::placeholder {
+    color: ${({ theme }) => theme.disabled};
+  }
+`;
+
+const IconContainerStyle = styled.span`
+  position: absolute;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+`;
+
+const SearchIconContainer = styled(IconContainerStyle)`
+  width: 30px;
+`;
+
+const XIconContainer = styled(IconContainerStyle)`
+  width: 36px;
+  right: 12px;
+  cursor: pointer;
+`;
 
 export const SearchInput: React.FC<MenuSearchProps> = ({
   cypressName,
@@ -76,22 +66,20 @@ export const SearchInput: React.FC<MenuSearchProps> = ({
   icon = 'search',
 }) => {
   const ref = useRef<HTMLInputElement>(null);
-  const { theme } = useTheme();
   return (
-    <div className={Wrapper} data-cy={cypressName}>
-      <span className={SearchIconContainer}>
+    <Wrapper data-cy={cypressName}>
+      <SearchIconContainer>
         {icon === 'search' && <Search width={14} height={14} />}
         {icon === 'add' && <Plus width={14} height={14} />}
-      </span>
+      </SearchIconContainer>
       {value && (
-        <span onClick={onClear} className={XIconContainer}>
+        <XIconContainer onClick={onClear}>
           <X width={10} height={10} />
-        </span>
+        </XIconContainer>
       )}
-      <input
+      <Main
         ref={ref}
         autoFocus={autoFocus}
-        className={Main(theme)}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
             onSubmit();
@@ -102,6 +90,6 @@ export const SearchInput: React.FC<MenuSearchProps> = ({
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
-    </div>
+    </Wrapper>
   );
 };

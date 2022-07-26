@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { TypeSystemDefinition, ValueDefinition } from 'graphql-js-tree';
-import { style } from 'typestyle';
 import { FIELD_NAME_SIZE, FIELD_TYPE_SIZE } from '@/Graf/constants';
 import { ActiveFieldName } from './FieldName';
 import { ActiveType } from '@/Graf/Node/Type';
@@ -19,27 +18,33 @@ import {
 } from '@/Graf/Node/components';
 import { FieldProps } from '@/Graf/Node/models';
 import { NodeFieldPortPlaceholder } from '@/Graf/Node';
+import styled from '@emotion/styled';
 
-const Name = style({
-  fontSize: FIELD_NAME_SIZE,
-  marginRight: 4,
-  overflow: 'hidden',
-  whiteSpace: 'nowrap',
-  textOverflow: 'ellipsis',
-  minWidth: 30,
-});
-const Type = style({ fontSize: FIELD_TYPE_SIZE });
-const OptionsMenuContainer = style({
-  position: 'absolute',
-  top: 32,
-  right: 5,
-  zIndex: 2,
-});
-const TypeMenuContainer = style({
-  position: 'absolute',
-  top: 32,
-  zIndex: 2,
-});
+const Name = styled.div`
+  font-size: ${FIELD_NAME_SIZE};
+  margin-right: 4px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  min-width: 30px;
+`;
+
+const Type = styled.div`
+  font-size: ${FIELD_TYPE_SIZE};
+`;
+
+const OptionsMenuContainer = styled.div`
+  position: absolute;
+  top: 32px;
+  right: 5px;
+  z-index: 2;
+`;
+
+const TypeMenuContainer = styled.div`
+  position: absolute;
+  top: 32px;
+  z-index: 2;
+`;
 
 export const ActiveField: React.FC<FieldProps> = ({
   node,
@@ -74,7 +79,7 @@ export const ActiveField: React.FC<FieldProps> = ({
           />
         )}
       <Title>
-        <div className={Name}>
+        <Name>
           <ActiveFieldName
             afterChange={
               isLocked
@@ -93,8 +98,8 @@ export const ActiveField: React.FC<FieldProps> = ({
             args={node.args}
             parentTypes={parentTypes}
           />
-        </div>
-        <div className={Type}>
+        </Name>
+        <Type>
           {!isEnumValue && (
             <ActiveType
               onClick={
@@ -107,7 +112,7 @@ export const ActiveField: React.FC<FieldProps> = ({
             />
           )}
           {menuOpen === 'type' && (
-            <div className={TypeMenuContainer}>
+            <TypeMenuContainer>
               <NodeChangeFieldTypeMenu
                 node={parentNode}
                 fieldIndex={indexInParentNode}
@@ -115,9 +120,9 @@ export const ActiveField: React.FC<FieldProps> = ({
                   setMenuOpen(undefined);
                 }}
               />
-            </div>
+            </TypeMenuContainer>
           )}
-        </div>
+        </Type>
       </Title>
       {!isLocked && (
         <FieldPort
@@ -127,7 +132,7 @@ export const ActiveField: React.FC<FieldProps> = ({
           }}
         >
           {menuOpen === 'details' && (
-            <div className={OptionsMenuContainer}>
+            <OptionsMenuContainer>
               <Menu
                 menuName={'Node options'}
                 hideMenu={() => setMenuOpen(undefined)}
@@ -136,7 +141,7 @@ export const ActiveField: React.FC<FieldProps> = ({
                   <DetailMenuItem onClick={onDelete}>Delete</DetailMenuItem>
                 </MenuScrollingArea>
               </Menu>
-            </div>
+            </OptionsMenuContainer>
           )}
         </FieldPort>
       )}
@@ -150,14 +155,14 @@ export const ActiveField: React.FC<FieldProps> = ({
             }}
           >
             {menuOpen === 'options' && (
-              <div className={OptionsMenuContainer}>
+              <OptionsMenuContainer>
                 <NodeTypeOptionsMenu
                   hideMenu={() => {
                     setMenuOpen(undefined);
                   }}
                   node={node}
                 />
-              </div>
+              </OptionsMenuContainer>
             )}
           </FieldPort>
         )}

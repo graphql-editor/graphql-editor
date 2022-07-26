@@ -1,86 +1,76 @@
 import React, { useRef, useState } from 'react';
 import { ParserField } from 'graphql-js-tree';
-import { style } from 'typestyle';
 import { PaintNode } from '@/Graf/Node/PaintNode';
 import { ExtendNodeMenu } from '@/Graf/Node/ContextMenu';
 import { Plus } from '@/Graf/icons';
-import { themed } from '@/Theming/utils';
-import { useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { SearchInput } from '@/Graf/Node/components/SearchInput';
+import styled from '@emotion/styled';
 export interface RootExtendNodeProps {
   node: ParserField;
   libraryNode?: ParserField;
   readonly?: boolean;
 }
-const NodeCaption = themed(({ colors: { Extend } }) =>
-  style({
-    flexBasis: '100%',
-    margin: 15,
-    display: 'flex',
-    borderBottom: `1px solid ${Extend}22`,
-    paddingBottom: 15,
-    alignItems: 'center',
-  }),
-);
-const CaptionTitle = themed(({ colors: { Extend } }) =>
-  style({
-    margin: 10,
-    color: Extend,
-  }),
-);
-const NodeContainer = style({
-  padding: 10,
-  display: 'flex',
-  flexWrap: 'wrap',
-  alignItems: 'flex-start',
-  width: '100%',
-  paddingBottom: 15,
-});
 
-const ExtendButton = themed(({ colors: { Extend } }) =>
-  style({
-    position: 'relative',
-    borderColor: Extend,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    padding: `7.5px 0 7.5px 10px`,
-    margin: 10,
-    borderRadius: 4,
-    width: 200,
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    transition: `border-color 0.25s ease-in-out`,
-  }),
-);
-const ExtendButtonTitle = themed(({ text }) =>
-  style({
-    padding: `0 5px`,
-    fontSize: 12,
-    color: text,
-  }),
-);
+const NodeCaption = styled.div`
+  flex-basis: 100%;
+  margin: 15px;
+  display: flex;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.Extend}22;
+  padding-bottom: 15px;
+  align-items: center;
+`;
 
-const ExtendMenuContainer = style({
-  position: 'absolute',
-  top: 30,
-  right: -70,
-});
-const PlusButton = themed(({ text, colors }) =>
-  style({
-    marginLeft: 'auto',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center',
-    color: text,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    marginRight: 5,
-  }),
-);
+const CaptionTitle = styled.span`
+  margin: 10px;
+  color: ${({ theme }) => theme.colors.Extend};
+`;
+
+const NodeContainer = styled.div`
+  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  width: 100%;
+  padding-bottom: 15px;
+`;
+
+const ExtendButton = styled.div`
+  position: relative;
+  border: 1px solid ${({ theme }) => theme.colors.Extend};
+  padding: 7.5px 0 7.5px 10px;
+  margin: 10px;
+  border-radius: 4px;
+  width: 200px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+`;
+
+const ExtendButtonTitle = styled.span`
+  padding: 0 5px;
+  font-size: 12px;
+  color: ${({ theme }) => theme.text};
+`;
+
+const ExtendMenuContainer = styled.div`
+  position: absolute;
+  top: 30px;
+  right: -70px;
+`;
+
+const PlusButton = styled.span`
+  margin-left: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-self: center;
+  color: ${({ theme }) => theme.text};
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  margin-right: 5px;
+`;
 
 export const RootExtendNode: React.FC<RootExtendNodeProps> = ({
   node,
@@ -91,11 +81,10 @@ export const RootExtendNode: React.FC<RootExtendNodeProps> = ({
 
   const [filterNodes, setFilterNodes] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
-  const { theme } = useTheme();
   return (
-    <div className={NodeContainer} ref={thisNode}>
-      <div className={`${NodeCaption(theme)}`}>
-        <span className={CaptionTitle(theme)}>extend</span>
+    <NodeContainer ref={thisNode}>
+      <NodeCaption>
+        <CaptionTitle>extend</CaptionTitle>
         <SearchInput
           cypressName={GraphQLEditorDomStructure.tree.elements.Graf.searchInput}
           onSubmit={() => {}}
@@ -106,28 +95,27 @@ export const RootExtendNode: React.FC<RootExtendNodeProps> = ({
           value={filterNodes}
           onChange={setFilterNodes}
         />
-      </div>
+      </NodeCaption>
       {!readonly && (
-        <div
-          className={ExtendButton(theme)}
+        <ExtendButton
           onClick={() => {
             setMenuOpen(true);
           }}
         >
-          <span className={ExtendButtonTitle(theme)}>Extend node</span>
-          <span className={`${PlusButton(theme)}`}>
+          <ExtendButtonTitle>Extend node</ExtendButtonTitle>
+          <PlusButton>
             <Plus width={10} height={10} />
-          </span>
+          </PlusButton>
           {menuOpen && (
-            <div className={ExtendMenuContainer}>
+            <ExtendMenuContainer>
               <ExtendNodeMenu
                 hideMenu={() => {
                   setMenuOpen(false);
                 }}
               />
-            </div>
+            </ExtendMenuContainer>
           )}
-        </div>
+        </ExtendButton>
       )}
       {node.args?.map((a, i) => {
         return (
@@ -152,6 +140,6 @@ export const RootExtendNode: React.FC<RootExtendNodeProps> = ({
           />
         );
       })}
-    </div>
+    </NodeContainer>
   );
 };

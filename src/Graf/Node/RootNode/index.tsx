@@ -5,53 +5,49 @@ import {
   TypeSystemDefinition,
   Directive,
 } from 'graphql-js-tree';
-import { style } from 'typestyle';
 import { PaintNode } from '@/Graf/Node/PaintNode';
 import { NewNode } from '@/Graf/Node/NewNode';
-import { NestedCSSProperties } from 'typestyle/lib/types';
 import { useTreesState } from '@/state/containers/trees';
-import { themed } from '@/Theming/utils';
-import { useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { SearchInput } from '@/Graf/Node/components/SearchInput';
 import { useSortState } from '@/state/containers/sort';
+import styled from '@emotion/styled';
+import { EditorTheme } from '@/gshared/theme/DarkTheme';
 
 export interface RootNodeProps {
   node: ParserField;
   libraryNode?: ParserField;
   readonly?: boolean;
 }
-const NodeCaption = themed(({ colors }) =>
-  style({
-    flexBasis: '100%',
-    margin: `15px 15px`,
-    display: 'flex',
-    borderBottom: `1px solid`,
-    paddingBottom: 15,
-    alignItems: 'center',
-    userSelect: 'none',
-    '-moz-user-select': '-moz-none',
-    $nest: {
-      ...Object.keys(colors).reduce((a, b) => {
-        a[`&.CaptionType-${b}`] = {
-          color: `${(colors as any)[b]}`,
-          borderColor: `${(colors as any)[b]}22`,
-        };
-        return a;
-      }, {} as Record<string, NestedCSSProperties>),
-    },
-  }),
-);
-const CaptionTitle = style({
-  marginRight: 10,
-});
-const NodeContainer = style({
-  padding: 10,
-  display: 'flex',
-  flexWrap: 'wrap',
-  alignItems: 'flex-start',
-  width: '100%',
-});
+
+type NodeTypes = keyof EditorTheme['backgrounds'];
+
+const NodeCaption = styled.div<{ nodeType: NodeTypes }>`
+  flex-basis: 100%;
+  margin: 15px;
+  display: flex;
+  border-bottom: 1px solid;
+  padding-bottom: 15px;
+  align-items: center;
+  user-select: none;
+
+  border-color: ${({ theme, nodeType }) =>
+    theme.colors[nodeType] ? theme.colors[nodeType] : theme.text};
+  color: ${({ theme, nodeType }) =>
+    theme.colors[nodeType] ? theme.colors[nodeType] : theme.text};
+`;
+
+const CaptionTitle = styled.span`
+  margin-right: 10px;
+`;
+
+const NodeContainer = styled.div`
+  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  width: 100%;
+`;
 
 export const RootNode: React.FC<RootNodeProps> = ({
   node,
@@ -59,7 +55,6 @@ export const RootNode: React.FC<RootNodeProps> = ({
   readonly,
 }) => {
   const thisNode = useRef<HTMLDivElement>(null);
-  const { theme } = useTheme();
   const { tree, setTree, selectedNode } = useTreesState();
   const {
     sortAlphabetically,
@@ -108,14 +103,13 @@ export const RootNode: React.FC<RootNodeProps> = ({
   ]);
 
   return (
-    <div className={NodeContainer} ref={thisNode}>
-      <div className={`${NodeCaption(theme)} CaptionType-${node.name}`}>
-        <span
+    <NodeContainer ref={thisNode}>
+      <NodeCaption nodeType={node.name as NodeTypes}>
+        <CaptionTitle
           data-cy={GraphQLEditorDomStructure.tree.elements.Graf.categoryName}
-          className={CaptionTitle}
         >
           {node.name}
-        </span>
+        </CaptionTitle>
         <SearchInput
           cypressName={GraphQLEditorDomStructure.tree.elements.Graf.searchInput}
           autoFocus={false}
@@ -126,7 +120,7 @@ export const RootNode: React.FC<RootNodeProps> = ({
           value={filterNodes}
           onChange={setFilterNodes}
         />
-      </div>
+      </NodeCaption>
       {!readonly && (
         <NewNode
           node={node}
@@ -169,6 +163,6 @@ export const RootNode: React.FC<RootNodeProps> = ({
             .includes(filterNodes.toLowerCase())}
         />
       ))}
-    </div>
+    </NodeContainer>
   );
 };

@@ -5,7 +5,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { keyframes, style } from 'typestyle';
 import { fontFamily } from '@/vars';
 import { useTreesState } from '@/state/containers/trees';
 import {
@@ -13,7 +12,6 @@ import {
   useErrorsState,
   useIOState,
   useNavigationState,
-  useTheme,
 } from '@/state/containers';
 import { sortByConnection } from './Algorithm';
 import { Node } from './Node';
@@ -21,101 +19,94 @@ import { ParserField } from 'graphql-js-tree';
 import { Search } from '@/Graf/icons';
 import { LevenshteinDistance } from '@/search';
 import { Lines, RelationPath } from '@/Relation/Lines';
-import { themed } from '@/Theming/utils';
 import { ErrorLock } from '@/shared/components';
 import { compareNodesWithData } from '@/compare/compareNodes';
+import styled from '@emotion/styled';
 
-const show = keyframes({
-  ['0%']: {
-    opacity: 0.0,
-  },
-  ['50%']: {
-    opacity: 0.0,
-  },
-  ['100%']: {
-    opacity: 1.0,
-  },
-});
-
-export interface RelationProps {}
-const Wrapper = themed(({ background: { mainFar, mainClose, mainFurthest } }) =>
-  style({
-    width: '100%',
-    height: '100%',
-    overflowX: 'hidden',
-    position: 'relative',
-    flex: 1,
-    background: mainFar,
-    overflowY: 'auto',
-    scrollbarColor: `${mainClose} ${mainFurthest}`,
-  }),
-);
-const Main = style({
-  width: '100%',
-  position: 'relative',
-  fontFamily,
-  alignItems: 'flex-start',
-  display: 'flex',
-  flexDirection: 'row',
-  padding: 20,
-  flexWrap: 'wrap',
-  animationName: show,
-  animationIterationCount: 1,
-  animationDuration: '0.5s',
-  animationTimingFunction: 'ease-in-out',
-  minHeight: '100%',
-});
-const ErrorContainer = themed(({ error, text, background: { mainFurthest } }) =>
-  style({
-    position: 'absolute',
-    zIndex: 2,
-    top: 0,
-    right: 0,
-    width: `calc(100% - 40px)`,
-    padding: 20,
-    margin: 20,
-    borderRadius: 4,
-    fontSize: 12,
-    fontFamily,
-    letterSpacing: 1,
-    color: text,
-    background: mainFurthest,
-    border: `1px solid ${error}`,
-  }),
-);
-const SearchContainer = style({
-  position: 'fixed',
-  bottom: 10,
-  left: 10,
-  zIndex: 200,
-});
-const SearchIcon = style({
-  position: 'absolute',
-  bottom: 8,
-  left: 6,
-  zIndex: 200,
-});
-const SearchInput = themed(({ text, disabled, background: { mainClose } }) =>
-  style({
-    background: mainClose,
-    color: text,
-    border: 0,
-    width: '100%',
-    minWidth: 0,
-    height: 36,
-    padding: `0 12px`,
-    paddingLeft: 28,
-    fontSize: 14,
-    outline: 0,
-    position: 'relative',
-    userSelect: 'none',
-    $nest: {
-      '&::placeholder': {
-        color: disabled,
-      },
+const Wrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  position: relative;
+  flex: 1;
+  background-color: ${({ theme }) => theme.background.mainFar};
+  overflow-y: auto;
+  scrollbar-color: ${({
+    theme: {
+      background: { mainClose, mainFurthest },
     },
-  }),
-);
+  }) => `${mainClose} ${mainFurthest}`};
+`;
+
+const Main = styled.div`
+  width: 100%;
+  position: relative;
+  font-family: ${fontFamily};
+  align-items: flex-start;
+  display: flex;
+  padding: 20px;
+  flex-wrap: wrap;
+  animation: show 1 0.5s ease-in-out;
+  min-height: 100%;
+
+  @keyframes show {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+`;
+
+const ErrorContainer = styled.div`
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 0;
+  width: calc(100% - 40px);
+  padding: 20px;
+  margin: 20px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: ${fontFamily};
+  letter-spacing: 1;
+  color: ${({ theme }) => theme.text};
+  background-color: ${({ theme }) => theme.background.mainFurthest};
+  border: 1px solid ${({ theme }) => theme.error};
+`;
+
+const SearchContainer = styled.div`
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  z-index: 200;
+
+  svg {
+    position: absolute;
+    bottom: 8px;
+    left: 6px;
+    z-index: 200;
+  }
+`;
+
+const SearchInput = styled.input`
+  background-color: ${({ theme }) => theme.background.mainClose};
+  color: ${({ theme }) => theme.text};
+  border: 0;
+  width: 100%;
+  min-width: 0;
+  height: 36px;
+  padding: 0 12px 0 28px;
+  font-size: 14px;
+  outline: 0;
+  position: relative;
+  user-select: none;
+  &::placeholder {
+    color: ${({ theme }) => theme.disabled};
+  }
+`;
+
 function insert<T>(arr: T[], index: number, before: T[], after: T[]) {
   return [
     ...arr.slice(0, index),
@@ -127,7 +118,7 @@ function insert<T>(arr: T[], index: number, before: T[], after: T[]) {
 }
 
 let tRefs: Record<string, HTMLDivElement> = {};
-export const Relation: React.FC<RelationProps> = () => {
+export const Relation: React.FC = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [focusedNode, setFocusedNode] = useState<ParserField>();
   const { libraryTree, tree, selectedNode, setSelectedNode } = useTreesState();
@@ -147,7 +138,6 @@ export const Relation: React.FC<RelationProps> = () => {
   const [relations, setRelations] =
     useState<{ to: RelationPath; from: RelationPath[] }[]>();
   const [searchVisible, setSearchVisible] = useState<boolean>(false);
-  const { theme } = useTheme();
 
   useEffect(() => {
     tRefs = {};
@@ -350,20 +340,18 @@ export const Relation: React.FC<RelationProps> = () => {
   }, [currentNodes, setRefs, setFocusedNode, selectedNode]);
   return (
     <>
-      <div className={Wrapper(theme)}>
-        <div className={SearchContainer}>
+      <Wrapper>
+        <SearchContainer>
           <Search
             width={18}
             height={18}
-            className={SearchIcon}
             onClick={() => {
               setSearchVisible(!searchVisible);
             }}
           />
           {searchVisible && (
-            <input
+            <SearchInput
               autoFocus={true}
-              className={SearchInput(theme)}
               placeholder="Search..."
               type="text"
               onChange={(e) => handleSearch(e.target.value)}
@@ -375,9 +363,8 @@ export const Relation: React.FC<RelationProps> = () => {
               }}
             />
           )}
-        </div>
-        <div
-          className={Main}
+        </SearchContainer>
+        <Main
           onClick={() => {
             setSearchVisible(false);
             setSelectedNode(undefined);
@@ -386,7 +373,7 @@ export const Relation: React.FC<RelationProps> = () => {
         >
           {SvgLinesContainer}
           {!lockGraf && NodesContainer}
-        </div>
+        </Main>
         {lockGraf && (
           <ErrorLock
             onClick={() => {
@@ -396,10 +383,8 @@ export const Relation: React.FC<RelationProps> = () => {
           />
         )}
 
-        {grafErrors && (
-          <div className={ErrorContainer(theme)}>{grafErrors}</div>
-        )}
-      </div>
+        {grafErrors && <ErrorContainer>{grafErrors}</ErrorContainer>}
+      </Wrapper>
     </>
   );
 };

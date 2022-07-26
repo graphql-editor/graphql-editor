@@ -4,37 +4,32 @@ import {
   TypeSystemExtension,
   TypeExtension,
 } from 'graphql-js-tree';
-import { style } from 'typestyle';
 import { fontFamily } from '@/vars';
 import { RootNode } from '@/Graf/Node';
 import { useTreesState } from '@/state/containers/trees';
 import { RootExtendNode } from './Node/RootExtendNode';
 import { useSortState } from '@/state/containers/sort';
 import { SortAlphabeticallyButton } from './Node/components/SortAlphabeticallyButton';
-import { themed } from '@/Theming/utils';
-import { useTheme } from '@/state/containers';
+import styled from '@emotion/styled';
 
-const Main = style({
-  width: '100%',
-  position: 'relative',
-  fontFamily,
-  transition: `opacity 0.25s ease-in-out`,
-  paddingBottom: 300,
-});
+const Main = styled.div`
+  width: 100%;
+  position: relative;
+  font-family: ${fontFamily};
+  transition: opacity 0.25s ease-in-out;
+  padding-bottom: 300px;
+`;
 
-const SortContainer = themed((theme) =>
-  style({
-    position: 'absolute',
-    right: 20,
-    top: 20,
-    color: theme.backgrounds.type,
-  }),
-);
+const SortContainer = styled.div`
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  color: ${({ theme }) => theme.backgrounds.type};
+`;
 
 export const PaintNodes: React.FC = () => {
   const { libraryTree, tree, readonly } = useTreesState();
   const { orderTypes } = useSortState();
-  const { theme } = useTheme();
   const baseTypes = [...orderTypes.map((t) => t.name)].map((d) => ({
     node: {
       name: TypeDefinitionDisplayMap[d],
@@ -71,10 +66,10 @@ export const PaintNodes: React.FC = () => {
   );
 
   return (
-    <div className={Main}>
-      <div className={SortContainer(theme)}>
+    <Main>
+      <SortContainer>
         <SortAlphabeticallyButton />
-      </div>
+      </SortContainer>
       {RootBaseTypes}
       <RootExtendNode
         readonly={readonly}
@@ -119,6 +114,6 @@ export const PaintNodes: React.FC = () => {
             .sort((a, b) => (a.name > b.name ? 1 : -1)),
         }}
       />
-    </div>
+    </Main>
   );
 };

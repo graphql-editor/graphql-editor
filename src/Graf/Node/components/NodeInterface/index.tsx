@@ -1,62 +1,59 @@
 import React from 'react';
-import { style } from 'typestyle';
 import { X } from '@/Graf/icons';
 import { useTheme } from '@/state/containers';
-import { themed } from '@/Theming/utils';
+import styled from '@emotion/styled';
 
 interface NodeInterfaceProps {
   onDelete: () => void;
   isLocked?: boolean;
 }
 
-const NodeInterfaceBlock = themed(({ backgrounds, text, error }) =>
-  style({
-    padding: `3px 6px`,
-    background: backgrounds.interface,
-    color: text,
-    fontSize: 10,
-    borderRadius: 4,
-    position: 'relative',
-    cursor: 'pointer',
-    margin: 5,
-    $nest: {
-      '.DeleteInterface': {
-        opacity: 0.0,
-        position: 'absolute',
-        pointerEvents: 'none',
-        cursor: 'pointer',
-        top: -17,
-        right: 0,
-        fontSize: 8,
-        width: 200,
-        textAlign: 'right',
-        $nest: {
-          svg: {
-            fill: 'red',
-          },
-          '&:hover': {
-            opacity: 1.0,
-          },
-        },
-      },
-      svg: {
-        display: 'none',
-        marginLeft: 5,
-        fill: error,
-      },
-      '&:hover': {
-        $nest: {
-          '.DeleteInterface': {
-            opacity: 1.0,
-          },
-          svg: {
-            display: 'inline',
-          },
-        },
-      },
-    },
-  }),
-);
+const NodeInterfaceBlock = styled.div`
+  padding: 3px 6px;
+  background-color: ${({ theme }) => theme.backgrounds.interface};
+  color: ${({ theme }) => theme.text};
+  font-size: 10px;
+  border-radius: 4px;
+  position: relative;
+  cursor: pointer;
+  margin: 5px;
+
+  svg {
+    display: none;
+    margin-left: 5px;
+    fill: ${({ theme }) => theme.error};
+  }
+
+  &:hover {
+    & > div {
+      opacity: 1;
+    }
+
+    svg {
+      display: inline;
+    }
+  }
+`;
+
+const DeleteInterface = styled.div`
+  opacity: 0;
+  position: absolute;
+  pointer-events: none;
+  cursor: pointer;
+  top: -17px;
+  right: 0;
+  font-size: 8px;
+  width: 200px;
+  text-align: right;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  svg {
+    fill: red;
+  }
+`;
 
 export const NodeInterface: React.FC<NodeInterfaceProps> = ({
   onDelete,
@@ -64,9 +61,9 @@ export const NodeInterface: React.FC<NodeInterfaceProps> = ({
   isLocked,
 }) => {
   const { theme } = useTheme();
+
   return (
-    <div
-      className={NodeInterfaceBlock(theme)}
+    <NodeInterfaceBlock
       onClick={(e) => {
         if (isLocked) {
           return;
@@ -75,11 +72,11 @@ export const NodeInterface: React.FC<NodeInterfaceProps> = ({
         onDelete();
       }}
     >
-      {!isLocked && <div className={'DeleteInterface'}>Click to delete</div>}
+      {!isLocked && <DeleteInterface>Click to delete</DeleteInterface>}
       <span>
         {children}
         {!isLocked && <X fill={theme.error} />}
       </span>
-    </div>
+    </NodeInterfaceBlock>
   );
 };

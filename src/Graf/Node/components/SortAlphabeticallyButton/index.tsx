@@ -1,83 +1,67 @@
 import React, { useState, DragEvent } from 'react';
 import { SortAz, X, UpDownArrow } from '@/editor/icons';
 import { useTheme } from '@/state/containers';
-import { style } from 'typestyle';
 import { useSortState } from '@/state/containers/sort';
 import {
   dragLeaveHandler,
   dragOverHandler,
   dragStartHandler,
 } from '@/Graf/Node/ActiveNode/dnd';
-import { themed } from '@/Theming/utils';
 import { TypeDefinition, TypeSystemDefinition } from 'graphql-js-tree';
+import styled from '@emotion/styled';
 
-const IconWrapper = style({
-  cursor: 'pointer',
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-});
+const IconWrapper = styled.div`
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
 
-const DragOverStyle = themed((theme) =>
-  style({
-    paddingTop: 57,
-  }),
-);
+const ListWrapper = styled.div`
+  position: relative;
+  margin-left: 16px;
+`;
 
-const ListWrapper = style({
-  position: 'relative',
-  marginLeft: 16,
-});
+const ListHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 200px;
+`;
 
-const ListHeader = style({
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  width: 200,
-});
+const List = styled.div`
+  position: absolute;
+  top: 50px;
+  right: 0;
+  width: 200px;
+  z-index: 2;
+  background-color: ${({ theme }) => theme.background.mainMiddle};
+  border-radius: 10px;
+`;
 
-const TypeColor = themed((theme) =>
-  style({
-    color: theme.text,
-  }),
-);
+const TypeColor = styled.p`
+  color: ${({ theme }) => theme.text};
+`;
 
-const List = (backgroundColor: string) =>
-  style({
-    position: 'absolute',
-    top: 50,
-    right: 0,
-    width: 200,
-    zIndex: 2,
-    backgroundColor: backgroundColor,
-    borderRadius: 10,
-  });
+const DragContainer = styled.div<{ isDraggedOver?: boolean }>`
+  padding-top: ${({ isDraggedOver }) => (isDraggedOver ? '57px' : '0')};
+`;
 
-const ListItem = (typeColor: string) =>
-  themed((theme) =>
-    style({
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      paddingRight: 16,
-      paddingLeft: 16,
-      marginBottom: 8,
-      borderRadius: 10,
-      color: 'transparent',
-      border: `1px solid ${typeColor}`,
-      $nest: {
-        '&:hover': {
-          color: theme.disabled,
-        },
-      },
-    }),
-  );
-
-const ResetMarginBottom = style({
-  marginBottom: '0px !important',
-});
+const ListItem = styled.div<{ nodeColor: string; shouldResetMargin?: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  margin-bottom: 8px;
+  margin-bottom: ${({ shouldResetMargin }) =>
+    shouldResetMargin ? '0' : '8px'};
+  border-radius: 10px;
+  color: transparent;
+  border: 1px solid ${({ nodeColor }) => nodeColor};
+  &:hover {
+    color: ${({ theme }) => theme.disabled};
+  }
+`;
 
 export const SortAlphabeticallyButton = () => {
   const {
@@ -148,7 +132,7 @@ export const SortAlphabeticallyButton = () => {
   };
 
   return (
-    <div className={IconWrapper}>
+    <IconWrapper>
       <div
         onClick={() => {
           setIsUserOrder(false);
@@ -161,20 +145,18 @@ export const SortAlphabeticallyButton = () => {
         />
       </div>
 
-      <div
-        onClick={() => setIsListVisible((prev) => !prev)}
-        className={ListWrapper}
-      >
-        <div className={ListHeader}>
+      <ListWrapper onClick={() => setIsListVisible((prev) => !prev)}>
+        <ListHeader>
           <p>Nodes order</p>
           {isListVisible && <X size={20} />}
-        </div>
-        <div className={List(theme.background.mainMiddle)}>
+        </ListHeader>
+        <List>
           {isListVisible &&
             orderTypes.map((type, idx) => (
-              <div
+              <DragContainer
                 key={type.name}
                 id={type.name}
+                isDraggedOver={type.name === dragOverName}
                 onDrop={(e) => {
                   setDragOverName('');
                   dropHandler(e, type.name);
@@ -187,26 +169,22 @@ export const SortAlphabeticallyButton = () => {
                   setDragOverName(type.name);
                   dragOverHandler(e);
                 }}
-                className={
-                  type.name === dragOverName ? `${DragOverStyle(theme)}` : ''
-                }
               >
-                <div
+                <ListItem
+                  nodeColor={getTypeColor(type.name)}
+                  shouldResetMargin={idx === orderTypes.length - 1}
                   draggable={true}
                   onDragStart={(e) => {
                     dragStartHandler(e, type.name);
                   }}
-                  className={`${ListItem(getTypeColor(type.name))(theme)} ${
-                    idx === orderTypes.length - 1 && ResetMarginBottom
-                  }`}
                 >
-                  <p className={TypeColor(theme)}>{displayTypes(type.name)}</p>
+                  <TypeColor>{displayTypes(type.name)}</TypeColor>
                   <UpDownArrow size={24} />
-                </div>
-              </div>
+                </ListItem>
+              </DragContainer>
             ))}
-        </div>
-      </div>
-    </div>
+        </List>
+      </ListWrapper>
+    </IconWrapper>
   );
 };

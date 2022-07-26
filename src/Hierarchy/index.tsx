@@ -1,14 +1,14 @@
 import { useTheme, useTreesState } from '@/state/containers';
+import styled from '@emotion/styled';
 import { Diagram as DiagramEngine } from 'graphsource';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { style } from 'typestyle';
 import { theme as HierarchyTheme } from './theme';
 import { TreeToNodes } from './TreeToNodes';
 
-const Main = style({
-  width: '100%',
-  position: 'relative',
-});
+const Main = styled.div`
+  width: 100%;
+  position: relative;
+`;
 
 export const Hierarchy = () => {
   const { tree, libraryTree, selectedNode, setSelectedNode } = useTreesState();
@@ -74,5 +74,5 @@ export const Hierarchy = () => {
     );
     // diagram.eventBus.on('NodeSelected', this.onSelectNode);
   };
-  return <div className={Main} ref={diagramRef}></div>;
+  return <Main ref={diagramRef}></Main>;
 };
