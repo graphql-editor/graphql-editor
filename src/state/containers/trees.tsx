@@ -82,13 +82,13 @@ const useTreesStateContainer = createContainer(() => {
   };
 
   const switchSchema = (schema: PassedSchema) => {
-    setSchemaType(schemaType === 'library' ? 'user' : 'library');
     if (schemaType === 'user') {
       setTree({ nodes: [] });
     } else if (schemaType === 'library') {
       setSelectedNode(undefined);
       generateTreeFromSchema(schema);
     }
+    setSchemaType(schemaType === 'library' ? 'user' : 'library');
   };
 
   const past = () => {
