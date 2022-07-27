@@ -236,6 +236,7 @@ export const Editor = ({
       />
       {menuState.code && menuState.pane !== 'diff' && (
         <DynamicResize
+          enable={{ right: true }}
           disabledClass={!menuState.pane ? 'full-screen-container' : undefined}
           resizeCallback={(e, r, c, w) => {
             setSidebarSize(c.getBoundingClientRect().width);

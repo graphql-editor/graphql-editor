@@ -107,6 +107,7 @@ export const Docs = () => {
         {selectedNode?.field && <DocsElement node={selectedNode.field} />}
       </SelectedNodeWrapper>
       <DynamicResize
+        enable={{ left: true }}
         resizeCallback={(e, r, c, w) => {
           setDocumentationWidth(c.getBoundingClientRect().width);
         }}

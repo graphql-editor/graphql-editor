@@ -27,13 +27,13 @@ const rules = themed<monaco.editor.ITokenThemeRule[]>(
 
 const colors = themed<monaco.editor.IColors>(
   ({
-    background: { mainFurther, mainFurthest, success, error },
+    background: { mainFurther, mainFar, error },
     text,
     backgrounds: { scalar },
   }) => ({
     'editor.foreground': text,
-    'editor.background': mainFurthest,
-    'minimap.background': mainFurther,
+    'editor.background': mainFurther,
+    'minimap.background': mainFar,
     'diffEditor.insertedTextBackground': scalar,
     'diffEditor.removedTextBackground': error,
   }),
