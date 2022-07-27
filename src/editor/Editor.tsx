@@ -163,7 +163,7 @@ export const Editor = ({
       if (tree.initial) {
         return;
       }
-      setSchema({ ...schema, isTree: true, code: '' });
+      setSchema({ ...schema, isTree: true });
       return;
     }
     try {
