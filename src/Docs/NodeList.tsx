@@ -1,46 +1,38 @@
-import { useTheme, useTreesState } from '@/state/containers';
-import { themed } from '@/Theming/utils';
+import { useTreesState } from '@/state/containers';
 import { fontFamily } from '@/vars';
 import { ParserField } from 'graphql-js-tree';
 import React from 'react';
-import { style } from 'typestyle';
-import cx from 'classnames';
 import { compareNodesWithData } from '@/compare/compareNodes';
+import styled from '@emotion/styled';
 
-const List = style({
-  textAlign: 'left',
-  padding: 10,
-});
+const List = styled.div`
+  text-align: left;
+  padding: 10px;
+`;
 
-const NodeText = themed(({ colors, backgroundedText, background }) =>
-  style({
-    fontFamily,
-    color: backgroundedText,
-    cursor: 'pointer',
-    display: 'block',
-    fontSize: 14,
-    $nest: {
-      '&:hover': {
-        color: colors.type,
-        background: background.mainClose,
-      },
-      '&.active': {
-        color: colors.type,
-      },
-    },
-  }),
-);
+const NodeText = styled.a`
+  font-family: ${fontFamily};
+  color: ${({ theme }) => theme.backgroundedText};
+  cursor: pointer;
+  display: block;
+  font-size: 14px;
+  &:hover,
+  &.active {
+    color: ${({ theme }) => theme.colors.type};
+  }
+  &:hover {
+    background-color: ${({ theme }) => theme.background.mainClose};
+  }
+`;
 
-const Title = themed(({ colors }) =>
-  style({
-    fontFamily,
-    textTransform: 'uppercase',
-    color: colors.type,
-    margin: 0,
-    fontSize: 14,
-    marginBottom: 5,
-  }),
-);
+const Title = styled.p`
+  font-family: ${fontFamily};
+  text-transform: uppercase;
+  color: ${({ theme }) => theme.colors.type};
+  margin: 0;
+  font-size: 14px;
+  margin-bottom: 5px;
+`;
 
 type ListTitle =
   | 'Schema'
@@ -58,14 +50,13 @@ interface NodeListI {
 }
 
 export const NodeList: React.FC<NodeListI> = ({ nodeList, listTitle }) => {
-  const { theme } = useTheme();
   const { selectedNode, setSelectedNode } = useTreesState();
   return (
-    <div className={`${List}`}>
-      <p className={`${Title(theme)}`}>{listTitle}</p>
+    <List>
+      <Title>{listTitle}</Title>
       {nodeList &&
         nodeList.map((node, i) => (
-          <a
+          <NodeText
             key={i}
             onClick={() => {
               setSelectedNode({
@@ -73,15 +64,15 @@ export const NodeList: React.FC<NodeListI> = ({ nodeList, listTitle }) => {
                 source: 'docs',
               });
             }}
-            className={cx(NodeText(theme), {
-              active:
-                selectedNode &&
-                !!compareNodesWithData(node, selectedNode.field),
-            })}
+            className={
+              selectedNode && !!compareNodesWithData(node, selectedNode.field)
+                ? 'active'
+                : ''
+            }
           >
             {node.name}
-          </a>
+          </NodeText>
         ))}
-    </div>
+    </List>
   );
 };

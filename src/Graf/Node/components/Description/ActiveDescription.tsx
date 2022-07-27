@@ -1,29 +1,24 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { style } from 'typestyle';
-import { themed } from '@/Theming/utils';
-import { useTheme } from '@/state/containers';
+import styled from '@emotion/styled';
 
-const Main = themed(({ text, disabled, background: { mainFurthest } }) =>
-  style({
-    background: mainFurthest,
-    color: text,
-    padding: 10,
-    fontSize: 12,
-    width: '100%',
-    border: 0,
-    resize: 'none',
-    outline: 'none',
-    cursor: 'pointer',
-    $nest: {
-      '&:focus': {
-        cursor: 'auto',
-      },
-      '&::placeholder': {
-        color: disabled,
-      },
-    },
-  }),
-);
+const Main = styled.textarea`
+  background: ${({ theme }) => theme.background.mainFurthest};
+  color: ${({ theme }) => theme.text};
+  padding: 10px;
+  font-size: 12px;
+  width: 100%;
+  border: 0;
+  resize: none;
+  outline: none;
+  cursor: pointer;
+
+  &:focus {
+    cursor: auto;
+  }
+  &::placeholder {
+    color: ${({ theme }) => theme.disabled};
+  }
+`;
 
 export const ActiveDescription: React.FC<{
   value: string;
@@ -31,7 +26,6 @@ export const ActiveDescription: React.FC<{
   isLocked?: boolean;
 }> = ({ onChange, value, isLocked }) => {
   const [text, setText] = useState(value);
-  const { theme } = useTheme();
   const DescriptionRef = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
     setText(value);
@@ -41,18 +35,17 @@ export const ActiveDescription: React.FC<{
       return <></>;
     }
     return (
-      <textarea
+      <Main
         disabled={true}
         rows={1}
         data-gramm_editor="false"
         ref={DescriptionRef}
-        className={`${Main(theme)} `}
         value={text}
-      ></textarea>
+      />
     );
   }
   return (
-    <textarea
+    <Main
       rows={1}
       data-gramm_editor="false"
       ref={DescriptionRef}
@@ -74,8 +67,7 @@ export const ActiveDescription: React.FC<{
         e.currentTarget.style.height = 'auto';
         e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
       }}
-      className={`${Main(theme)} `}
       value={text}
-    ></textarea>
+    />
   );
 };

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { ValueDefinition } from 'graphql-js-tree';
-import { style } from 'typestyle';
 import { ConvertValueToEditableString } from '@/GraphQL/Convert';
 import {
   DetailMenuItem,
@@ -11,24 +10,27 @@ import {
   Title,
 } from '@/Graf/Node/components';
 import { FieldProps } from '@/Graf/Node/models';
-import { themed } from '@/Theming/utils';
+import { NodeFieldPortPlaceholder } from '@/Graf/Node';
+import styled from '@emotion/styled';
 
-const Name = style({
-  fontSize: 10,
-  marginRight: 4,
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
-});
-const DirectiveBackground = themed(({ backgrounds: { directive } }) =>
-  style({ background: directive }),
-);
-const OptionsMenuContainer = style({
-  position: 'absolute',
-  top: 32,
-  zIndex: 2,
-  right: 5,
-});
+const Name = styled.div`
+  font-size: 10px;
+  margin-right: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
+const DirectiveFieldContainer = styled(NodeFieldContainer)`
+  color: ${({ theme }) => theme.backgrounds.directive};
+`;
+
+const OptionsMenuContainer = styled.div`
+  position: absolute;
+  top: 32px;
+  z-index: 2;
+  right: 5px;
+`;
 
 export const ActiveDirective: React.FC<FieldProps> = ({
   node,
@@ -43,11 +45,10 @@ export const ActiveDirective: React.FC<FieldProps> = ({
 }) => {
   const [detailsMenuOpen, setDetailsMenuOpen] = useState(false);
   const isEnumValue = node.data.type === ValueDefinition.EnumValueDefinition;
+
   return (
-    <NodeFieldContainer
-      className={`${DirectiveBackground} ${
-        inputOpen || outputOpen ? 'Active' : ''
-      }`}
+    <DirectiveFieldContainer
+      className={`${inputOpen || outputOpen ? 'Active' : ''}`}
     >
       {!inputDisabled && !isLocked && !isEnumValue ? (
         <FieldPort
@@ -59,10 +60,10 @@ export const ActiveDirective: React.FC<FieldProps> = ({
           }}
         />
       ) : (
-        <div className={'NodeFieldPortPlaceholder'} />
+        <NodeFieldPortPlaceholder />
       )}
       <Title>
-        <div className={Name}>{ConvertValueToEditableString(node)}</div>
+        <Name>{ConvertValueToEditableString(node)}</Name>
       </Title>
       {!isLocked && (
         <FieldPort
@@ -72,7 +73,7 @@ export const ActiveDirective: React.FC<FieldProps> = ({
           }}
         >
           {detailsMenuOpen && (
-            <div className={OptionsMenuContainer}>
+            <OptionsMenuContainer>
               <Menu
                 menuName={'Node options'}
                 hideMenu={() => setDetailsMenuOpen(false)}
@@ -81,7 +82,7 @@ export const ActiveDirective: React.FC<FieldProps> = ({
                   <DetailMenuItem onClick={onDelete}>Delete</DetailMenuItem>
                 </MenuScrollingArea>
               </Menu>
-            </div>
+            </OptionsMenuContainer>
           )}
         </FieldPort>
       )}
@@ -95,9 +96,7 @@ export const ActiveDirective: React.FC<FieldProps> = ({
           }}
         />
       )}
-      {outputDisabled && isLocked && (
-        <div className={'NodeFieldPortPlaceholder'} />
-      )}
-    </NodeFieldContainer>
+      {outputDisabled && isLocked && <NodeFieldPortPlaceholder />}
+    </DirectiveFieldContainer>
   );
 };

@@ -1,5 +1,4 @@
 import React, { useRef, useEffect, useState, useMemo } from 'react';
-import { style } from 'typestyle';
 import { fontFamily } from '@/vars';
 import { PaintNodes } from './PaintNodes';
 import { ActiveNode } from '@/Graf/Node';
@@ -8,87 +7,86 @@ import {
   KeyboardActions,
   useErrorsState,
   useIOState,
-  useTheme,
 } from '@/state/containers';
-import { themed } from '@/Theming/utils';
 import { darken, toHex } from 'color2k';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { getScalarFields } from '@/Graf/utils/getScalarFields';
 import { findInNodes } from '@/compare/compareNodes';
 import { ErrorItem } from './ErrorItem';
 import { ParserField } from 'graphql-js-tree';
+import styled from '@emotion/styled';
 
-const Wrapper = themed(({ background: { mainClose, mainFurthest, mainFar } }) =>
-  style({
-    width: '100%',
-    height: '100%',
-    overflowX: 'hidden',
-    position: 'relative',
-    flex: 1,
-    background: mainFar,
-    overflowY: 'auto',
-    scrollbarColor: `${mainClose} ${mainFurthest}`,
-  }),
-);
-const AnimatedWrapper = style({});
-const Main = themed(() =>
-  style({
-    width: '100%',
-    height: '100%',
-    position: 'relative',
-    overflowY: 'auto',
-    fontFamily,
-  }),
-);
-const ErrorContainer = themed(({ error, hover }) =>
-  style({
-    position: 'absolute',
-    zIndex: 2,
-    top: 0,
-    right: 0,
-    width: `calc(100% - 40px)`,
-    padding: 20,
-    margin: 20,
-    borderRadius: 4,
-    fontSize: 12,
-    fontFamily,
-    letterSpacing: 1,
-    color: hover,
-    background: `${toHex(darken(error, 0.6))}ee`,
-    border: `1px solid ${error}`,
-  }),
-);
-const SubNodeContainer = themed(
-  ({ background: { mainClose, mainFurther, mainCloser } }) =>
-    style({
-      width: 'min(clamp(400px, 40%, 1280px), calc(100vw - 50px))',
-      background: mainFurther,
-      fontFamily,
-      right: 0,
-      top: 0,
-      bottom: 0,
-      scrollbarColor: `${mainCloser} ${mainClose}`,
-      transition: `max-width 0.25s ease-in-out`,
-    }),
-);
-const ErrorWrapper = themed(({ background: { mainFurthest }, error }) =>
-  style({
-    fontFamily,
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    background: mainFurthest,
-    cursor: 'pointer',
-    color: error,
-    paddingLeft: 16,
-  }),
-);
+const Wrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  position: relative;
+  flex: 1;
+  background-color: ${({ theme }) => theme.background.mainFar};
+  overflow-y: auto;
+  scrollbar-color: ${({
+    theme: {
+      background: { mainClose, mainFurthest },
+    },
+  }) => `${mainClose} ${mainFurthest}`};
+`;
 
-const ErrorLabel = style({
-  width: '90%',
-});
+const Main = styled.div`
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow-y: auto;
+  font-family: ${fontFamily};
+`;
+
+const ErrorContainer = styled.div`
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 0;
+  width: calc(100% - 40px);
+  padding: 20px;
+  margin: 20px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: ${fontFamily};
+  letter-spacing: 1;
+  color: ${({ theme }) => theme.hover};
+  background: ${({ theme }) => toHex(darken(theme.error, 0.6))}ee;
+  border: 1px solid ${({ theme }) => theme.error};
+`;
+
+const SubNodeContainer = styled.div`
+  width: min(clamp(400px, 40%, 1280px), calc(100vw - 50px));
+  background-color: ${({ theme }) => theme.background.mainFurther};
+  font-family: ${fontFamily};
+  right: 0;
+  top: 0;
+  bottom: 0;
+  transition: max-width 0.25s ease-in-out;
+  scrollbar-color: ${({
+    theme: {
+      background: { mainCloser, mainClose },
+    },
+  }) => `${mainCloser} ${mainClose}`};
+`;
+
+const ErrorWrapper = styled.div`
+  font-family: ${fontFamily};
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: ${({ theme }) => theme.background.mainFurthest};
+  cursor: pointer;
+  color: ${({ theme }) => theme.error};
+  padding-left: 16px;
+`;
+
+const ErrorLabel = styled.p`
+  width: 90%;
+`;
 
 let snapLock = true;
 
@@ -110,7 +108,6 @@ export const Graf: React.FC = () => {
   } = useTreesState();
   const { lockGraf, grafErrors } = useErrorsState();
   const { setActions } = useIOState();
-  const { theme } = useTheme();
 
   const [errorsItems, setErrorsItems] = useState<JSX.Element[]>();
 
@@ -171,7 +168,7 @@ export const Graf: React.FC = () => {
   const selectedNodeComponent = useMemo(() => {
     if (node && wrapperRef.current) {
       return (
-        <div className={SubNodeContainer(theme)} onClick={() => {}}>
+        <SubNodeContainer onClick={() => {}}>
           <ActiveNode
             readonly={readonly}
             onDelete={(nodeToDelete) => {
@@ -220,7 +217,7 @@ export const Graf: React.FC = () => {
             }}
             node={node}
           />
-        </div>
+        </SubNodeContainer>
       );
     }
   }, [
@@ -236,28 +233,23 @@ export const Graf: React.FC = () => {
   return (
     <>
       {selectedNodeComponent}
-      <div
+      <Wrapper
         ref={wrapperRef}
-        className={`${Wrapper(theme)} ${node ? AnimatedWrapper : ''}`}
         onClick={() => {
           setSelectedNode(undefined);
         }}
         data-cy={GraphQLEditorDomStructure.tree.elements.Graf.name}
       >
         {lockGraf ? (
-          <div className={ErrorWrapper(theme)}>
-            <p
-              className={ErrorLabel}
-            >{`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:`}</p>
+          <ErrorWrapper>
+            <ErrorLabel>{`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:`}</ErrorLabel>
             {errorsItems}
-          </div>
+          </ErrorWrapper>
         ) : (
-          <div className={Main(theme)}>{!lockGraf && <PaintNodes />}</div>
+          <Main>{!lockGraf && <PaintNodes />}</Main>
         )}
-        {grafErrors && (
-          <div className={ErrorContainer(theme)}>{grafErrors}</div>
-        )}
-      </div>
+        {grafErrors && <ErrorContainer>{grafErrors}</ErrorContainer>}
+      </Wrapper>
     </>
   );
 };

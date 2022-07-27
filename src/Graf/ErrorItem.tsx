@@ -1,59 +1,45 @@
-import { useErrorsState, useTheme } from '@/state/containers';
-import { themed } from '@/Theming/utils';
+import { useErrorsState } from '@/state/containers';
 import { fontFamily } from '@/vars';
+import styled from '@emotion/styled';
 import React from 'react';
-import { style } from 'typestyle';
 
 type ErrorItemProps = {
   error: string;
 };
 
-const ButtonStyles = themed(({ background: { mainFurthest }, error }) =>
-  style({
-    backgroundColor: mainFurthest,
-    border: `2px solid ${error}`,
-    color: error,
-    padding: '8px 16px',
-    cursor: 'pointer',
-  }),
-);
+const ButtonStyles = styled.button`
+  background-color: ${({ theme }) => theme.background.mainFurthest};
+  border: 2px solid ${({ theme }) => theme.error};
+  color: ${({ theme }) => theme.error};
+  padding: 8px 16px;
+  cursor: pointer;
+`;
 
-const Main = style({
-  marginLeft: 16,
-  marginRight: 16,
-});
+const Main = styled.div`
+  margin: 0 16px;
+`;
 
-const Message = themed(({ error, background: { mainFurthest } }) =>
-  style({
-    fontFamily,
-    height: 180,
-    fontSize: 14,
-    color: error,
-    background: mainFurthest,
-    border: 0,
-    width: '100%',
-  }),
-);
+const Message = styled.textarea`
+  font-family: ${fontFamily};
+  height: 180px;
+  font-size: 14px;
+  color: ${({ theme }) => theme.error};
+  background-color: ${({ theme }) => theme.background.mainFurthest};
+  border: 0;
+  width: 100%;
+`;
 
 export const ErrorItem: React.FC<ErrorItemProps> = ({ error }) => {
-  const { theme } = useTheme();
   const { setErrorRowNumber } = useErrorsState();
 
   const getRowNumber = () => parseInt(error.split(',')[1].split(':')[1]) + 1;
 
   return (
-    <div className={Main}>
-      <textarea
-        disabled
-        className={Message(theme)}
-        value={error.replaceAll('\\', '') + '}'}
-      />
-      <button
-        className={ButtonStyles(theme)}
-        onClick={() => setErrorRowNumber(getRowNumber())}
-      >
+    <Main>
+      <Message disabled value={error.replaceAll('\\', '') + '}'} />
+      <ButtonStyles onClick={() => setErrorRowNumber(getRowNumber())}>
         Resolve error
-      </button>
-    </div>
+      </ButtonStyles>
+    </Main>
   );
 };

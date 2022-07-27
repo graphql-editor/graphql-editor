@@ -1,44 +1,25 @@
 import React from 'react';
 import * as Icons from './icons';
-import cx from 'classnames';
-import { style } from 'typestyle';
-
-import { menuWidth } from '@/vars';
 import { GraphQLEditorDomStructure } from '@/domStructure';
-import { useTheme, useTreesState } from '@/state/containers';
-import { themed } from '@/Theming/utils';
+import { useTreesState } from '@/state/containers';
 import { PassedSchema } from '@/Models';
+import styled from '@emotion/styled';
 
-export const HiderPanel = themed(({ background, disabled }) =>
-  style({
-    width: menuWidth,
-    background: background.mainFurthest,
-    color: disabled,
-    fontSize: 12,
-    padding: 3,
-    zIndex: 3,
-  }),
-);
+const Sidebar = styled.div`
+  background: ${({ theme }) => theme.background.mainFurthest};
+  color: ${({ theme }) => theme.disabled};
+  font-size: 12px;
+  z-index: 3;
+`;
 
-export const Hider = themed(({ active }) =>
-  style({
-    width: 42,
-    height: 42,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    userSelect: 'none',
-    cursor: 'pointer',
-    $nest: {
-      '&:hover': {
-        color: active,
-      },
-      '&.active': {
-        color: active,
-      },
-    },
-  }),
-);
+const IconBox = styled.div`
+  margin-bottom: 5px;
+  padding: 5px;
+  &:hover,
+  &.active {
+    color: ${({ theme }) => theme.active};
+  }
+`;
 
 export type ActiveSource =
   | 'diagram'
@@ -66,94 +47,79 @@ export const Menu = ({
   excludePanes = [],
   schema,
 }: MenuProps) => {
-  const { theme } = useTheme();
   const { libraryTree, switchSchema, schemaType } = useTreesState();
   return (
-    <div className={HiderPanel(theme)}>
-      <div
+    <Sidebar>
+      <IconBox
         data-cy={MenuChildren.code}
-        className={cx(Hider(theme), {
-          active: toggleCode,
-        })}
+        className={toggleCode ? 'active' : ''}
         onClick={() => setToggleCode(!toggleCode)}
         title="Toggle Code"
       >
         <Icons.Code size={18} />
-      </div>
+      </IconBox>
       {!excludePanes.includes('relation') && (
-        <div
+        <IconBox
           data-cy={MenuChildren.relation}
-          className={cx(Hider(theme), {
-            active: activePane === 'relation',
-          })}
+          className={activePane === 'relation' ? 'active' : ''}
           onClick={() => setActivePane('relation')}
           title="Relation View"
         >
           <Icons.CPU size={18} />
-        </div>
+        </IconBox>
       )}
       {!excludePanes.includes('diagram') && (
-        <div
+        <IconBox
           data-cy={MenuChildren.diagram}
-          className={cx(Hider(theme), {
-            active: activePane === 'diagram',
-          })}
+          className={activePane === 'diagram' ? 'active' : ''}
           onClick={() => setActivePane('diagram')}
           title="Diagram View"
         >
           <Icons.Grid size={18} />
-        </div>
+        </IconBox>
       )}
       {!excludePanes.includes('hierarchy') && (
-        <div
+        <IconBox
           data-cy={MenuChildren.hierarchy}
-          className={cx(Hider(theme), {
-            active: activePane === 'hierarchy',
-          })}
+          className={activePane === 'hierarchy' ? 'active' : ''}
           onClick={() => setActivePane('hierarchy')}
           title="Hierarchy View"
         >
           <Icons.Layers size={18} />
-        </div>
+        </IconBox>
       )}
       {!excludePanes.includes('docs') && (
-        <div
+        <IconBox
           data-cy={MenuChildren.hierarchy}
-          className={cx(Hider(theme), {
-            active: activePane === 'docs',
-          })}
+          className={activePane === 'docs' ? 'active' : ''}
           onClick={() => setActivePane('docs')}
           title="Documentation View"
         >
           <Icons.Docs size={18} />
-        </div>
+        </IconBox>
       )}
       {!excludePanes.includes('diff') && (
-        <div
+        <IconBox
           data-cy={MenuChildren.diff}
-          className={cx(Hider(theme), {
-            active: activePane === 'diff',
-          })}
+          className={activePane === 'diff' ? 'active' : ''}
           onClick={() => setActivePane('diff')}
           title="Diff View"
         >
           <Icons.Filter size={18} />
-        </div>
+        </IconBox>
       )}
       {libraryTree.nodes.length > 0 && (
-        <div
+        <IconBox
           data-cy={MenuChildren.diff}
-          className={cx(Hider(theme), {
-            active: schemaType === 'library',
-          })}
+          className={schemaType === 'library' ? 'active' : ''}
           onClick={() => {
             switchSchema(schema);
           }}
           title="library schema"
         >
           <Icons.Library size={18} />
-        </div>
+        </IconBox>
       )}
-    </div>
+    </Sidebar>
   );
 };

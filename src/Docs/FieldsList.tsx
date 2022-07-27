@@ -1,39 +1,34 @@
 import { ArgumentsList } from '@/Docs/ArgumentsList';
-import { DescText, FieldText, Title, TypeText } from '@/Docs/DocsElement';
 import { tranfromOptions } from '@/Docs/handleOptions';
 import { BuiltInScalars } from '@/GraphQL/Resolve';
-import { useTheme } from '@/state/containers';
-import { themed } from '@/Theming/utils';
 import { ParserField } from 'graphql-js-tree';
 import React from 'react';
-import { style } from 'typestyle';
 import { Remarkable } from 'remarkable';
+import { DescText, FieldText, Title, TypeText } from '@/Docs/DocsStyles';
+import styled from '@emotion/styled';
 
 const md = new Remarkable();
 
-const ListWrapper = style({
-  marginBottom: 12,
-  flex: '1 1 auto',
-  overflowY: 'auto',
-  minHeight: '0px',
-  wordWrap: 'normal',
-});
+const ListWrapper = styled.div`
+  margin-bottom: 12px;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  min-height: 0;
+  word-wrap: normal;
+`;
 
-const FieldsWrapper = themed(({ colors }) =>
-  style({
-    display: 'flex',
-    flexDirection: 'column',
-    width: '90%',
-    marginBottom: '8px',
-    borderBottom: `1px solid ${colors.type}`,
-  }),
-);
+const FieldsWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  margin-bottom: 8px;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.type};
+`;
 
-const TitleWrapper = (isType: boolean) =>
-  style({
-    display: 'flex',
-    cursor: isType ? 'pointer' : 'default',
-  });
+const TitleWrapper = styled.div<{ isType: boolean }>`
+  display: flex;
+  cursor: ${({ isType }) => (isType ? 'pointer' : 'default')};
+`;
 
 interface FieldsListI {
   node: ParserField;
@@ -41,46 +36,43 @@ interface FieldsListI {
 }
 
 export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
-  const { theme } = useTheme();
-
   return (
     <>
-      <h3 className={`${Title(theme)}`}>Fields</h3>
-      <div className={`${ListWrapper}`}>
+      <Title>
+        <h3>Fields</h3>
+      </Title>
+      <ListWrapper>
         {node.args?.map((arg, i) => (
-          <div key={i} className={`${FieldsWrapper(theme)}`}>
-            <div
-              className={`${TitleWrapper(
-                !BuiltInScalars.some((scalar) => scalar.name === arg.type.name),
-              )}`}
+          <FieldsWrapper key={i}>
+            <TitleWrapper
+              isType={
+                !BuiltInScalars.some((scalar) => scalar.name === arg.type.name)
+              }
             >
-              <p className={`${FieldText(theme)}`}>{arg.name}</p>
+              <FieldText>{arg.name}</FieldText>
               {arg.args && arg.args?.length > 0 ? (
                 <ArgumentsList argument={arg} setNode={setNode} />
               ) : (
-                <p
-                  className={`${TypeText(
-                    BuiltInScalars.some(
-                      (scalar) => scalar.name === arg.type.name,
-                    ),
-                  )(theme)}`}
+                <TypeText
+                  isScalar={BuiltInScalars.some(
+                    (scalar) => scalar.name === arg.type.name,
+                  )}
                   onClick={() => setNode(arg.type.name)}
                 >
                   {tranfromOptions(arg.type.name, arg.type.options)}
-                </p>
+                </TypeText>
               )}
-            </div>
+            </TitleWrapper>
             {arg.description && (
-              <p
-                className={`${DescText(theme)}`}
+              <DescText
                 dangerouslySetInnerHTML={{
                   __html: md.render(arg.description),
                 }}
-              ></p>
+              />
             )}
-          </div>
+          </FieldsWrapper>
         ))}
-      </div>
+      </ListWrapper>
     </>
   );
 };

@@ -1,50 +1,30 @@
-import { NestedCSSProperties } from 'typestyle/lib/types';
-import { themed } from '@/Theming/utils';
+import styled from '@emotion/styled';
 
-const NodeName = themed<NestedCSSProperties>(({ text }) => ({
-  marginRight: 10,
-  color: text,
-  fontSize: 12,
-  padding: `5px 0 5px 10px`,
-  userSelect: 'none',
-  '-moz-user-select': '-moz-none',
-}));
-const NodeType = themed<NestedCSSProperties>(({ text }) => ({
-  color: text,
-  fontSize: 12,
-  marginRight: 'auto',
-  padding: `5px 30px 5px 0`,
-}));
-const NodeIconArea = themed<NestedCSSProperties>(
-  ({ background: { mainFurthest } }) => ({
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignSelf: 'center',
-    width: 24,
-    height: 24,
-    transition: 'background 0.25s ease-in-out',
-    background: 'transparent',
-    cursor: 'pointer',
-    borderRadius: 12,
-    $nest: {
-      '&:hover': {
-        background: mainFurthest,
-      },
-    },
-  }),
-);
-export const NodeTitle = themed<NestedCSSProperties>((theme) => ({
-  display: 'flex',
-  alignItems: 'stretch',
-  color: theme.text,
-  fontSize: 14,
-  padding: `5px 0 5px 10px`,
-  userSelect: 'none',
-  '-moz-user-select': '-moz-none',
-  $nest: {
-    '.NodeName': NodeName(theme),
-    '.NodeType': NodeType(theme),
-    '.NodeIconArea': NodeIconArea(theme),
-  },
-}));
+export const NodeName = styled.div`
+  margin-right: 10px;
+  color: ${({ theme }) => theme.text};
+  font-size: 12px;
+  padding: 5px 0 5px 10px;
+  user-select: none;
+`;
+
+export const NodeType = styled.div`
+  color: ${({ theme }) => theme.text};
+  font-size: 12px;
+  margin-right: auto;
+  padding: 5px 30px 5px 0;
+`;
+
+export const NodeTitle = styled.div`
+  display: flex;
+  align-items: stretch;
+  color: ${({ theme }) => theme.text};
+  font-size: 14px;
+  padding: 5px 0 5px 10px;
+  user-select: none;
+`;
+
+export const NodeFieldPortPlaceholder = styled.div`
+  width: 24px;
+  height: 16px;
+`;

@@ -1,23 +1,20 @@
 import { Draw } from './Draw';
 import { ParserField } from 'graphql-js-tree';
 import React from 'react';
-import { style } from 'typestyle';
 import { useTheme } from '@/state/containers';
-import { themed } from '@/Theming/utils';
 import { compareNodesWithData } from '@/compare/compareNodes';
+import styled from '@emotion/styled';
 
-const RelationsContainer = themed(({ background: { mainClosest } }) =>
-  style({
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    stroke: mainClosest,
-    fill: 'transparent',
-    strokeWidth: 2,
-    margin: -20,
-  }),
-);
+const RelationsContainer = styled.svg`
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  pointer-events: none;
+  stroke: ${({ theme }) => theme.background.mainClosest};
+  fill: transparent;
+  stroke-width: 2px;
+  margin: -20px;
+`;
 
 export interface RelationPath {
   htmlNode: HTMLDivElement;
@@ -32,7 +29,7 @@ interface LinesProps {
 export const Lines: React.FC<LinesProps> = ({ relations, selectedNode }) => {
   const { theme } = useTheme();
   return (
-    <svg className={RelationsContainer(theme)}>
+    <RelationsContainer>
       {relations?.map((r, index) => {
         const usedToIndexes: number[] = [];
         return r.from?.map((rf) => {
@@ -67,6 +64,6 @@ export const Lines: React.FC<LinesProps> = ({ relations, selectedNode }) => {
           );
         });
       })}
-    </svg>
+    </RelationsContainer>
   );
 };

@@ -1,17 +1,17 @@
-import { style } from 'typestyle';
 import React, { useEffect } from 'react';
-import { themed } from '@/Theming/utils';
-import { useTheme } from '@/state/containers';
+import styled from '@emotion/styled';
 
-const Main = themed(({ text, background: { mainFurthest, mainClose } }) =>
-  style({
-    color: text,
-    maxHeight: 200,
-    overflowY: 'auto',
-    scrollbarColor: `${mainClose} ${mainFurthest}`,
-    scrollSnapType: 'y mandatory',
-  }),
-);
+const Main = styled.div`
+  color: ${({ theme }) => theme.text};
+  max-height: 200px;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  scrollbar-color: ${({
+    theme: {
+      background: { mainClose, mainFurthest },
+    },
+  }) => `${mainClose} ${mainFurthest}`};
+`;
 
 interface MenuScrollingAreaProps
   extends React.DetailedHTMLProps<
@@ -29,7 +29,6 @@ export const MenuScrollingArea: React.FC<MenuScrollingAreaProps> = ({
   controls,
   ...props
 }) => {
-  const { theme } = useTheme();
   useEffect(() => {
     function downHandler(e: KeyboardEvent) {
       const { key } = e;
@@ -48,9 +47,5 @@ export const MenuScrollingArea: React.FC<MenuScrollingAreaProps> = ({
       window.removeEventListener('keydown', downHandler);
     };
   }, []);
-  return (
-    <div className={Main(theme)} {...props}>
-      {children}
-    </div>
-  );
+  return <Main {...props}>{children}</Main>;
 };

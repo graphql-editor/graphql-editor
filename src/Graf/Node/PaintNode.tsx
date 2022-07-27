@@ -1,9 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { ParserField } from 'graphql-js-tree';
-import { style } from 'typestyle';
-import { NestedCSSProperties } from 'typestyle/lib/types';
 import { useTreesState } from '@/state/containers/trees';
-import { themed } from '@/Theming/utils';
 import { useErrorsState, useLayoutState, useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { useSortState } from '@/state/containers/sort';
@@ -14,6 +11,8 @@ import {
   dragOverHandler,
   dragStartHandler,
 } from './ActiveNode/dnd';
+import styled from '@emotion/styled';
+import { EditorTheme } from '@/gshared/theme/DarkTheme';
 export interface NodeProps {
   node: ParserField;
   builtIn?: boolean;
@@ -21,100 +20,62 @@ export interface NodeProps {
   isMatchedToSearch?: boolean;
   subNode?: boolean;
 }
-const MainNodeArea = themed(
-  ({ backgroundedText }) =>
-    ({
-      position: 'relative',
-      borderColor: 'transparent',
-      borderWidth: 2,
-      borderStyle: 'solid',
-      borderRadius: 4,
-      cursor: 'pointer',
-      transition: `all 0.25s ease-in-out`,
-      display: 'flex',
-      alignItems: 'stretch',
-      color: backgroundedText,
-      fontSize: 12,
-      padding: `9.5px 15px`,
-      userSelect: 'none',
-      '-moz-user-select': '-moz-none',
-      $nest: {
-        '&:hover': {
-          borderColor: backgroundedText,
-        },
-      },
-    } as NestedCSSProperties),
-);
-const LibraryNodeContainer = themed((theme) =>
-  style({
-    ...MainNodeArea(theme),
-    $nest: {
-      ...MainNodeArea(theme).$nest,
-      ...Object.keys(theme.backgrounds).reduce((a, b) => {
-        a[`&.NodeType-${b}`] = {
-          borderColor: `${(theme.backgrounds as any)[b]}`,
-          borderStyle: 'dashed',
-        };
-        return a;
-      }, {} as Record<string, NestedCSSProperties>),
-    },
-  }),
-);
-const MainNodeContainer = themed((theme) =>
-  style({
-    ...MainNodeArea(theme),
-    $nest: {
-      ...MainNodeArea(theme).$nest,
-      ...Object.keys(theme.backgrounds).reduce((a, b) => {
-        a[`&.NodeType-${b}`] = {
-          background: `${(theme.backgrounds as any)[b]}`,
-        };
-        return a;
-      }, {} as Record<string, NestedCSSProperties>),
-    },
-  }),
-);
-const NodeContainer = style({
-  margin: 10,
-});
-const MatchedSearchContainer = style({
-  opacity: 1,
-});
-const NoMatchedSearchContainer = style({
-  opacity: 0.2,
-});
-const NotSelected = style({
-  opacity: 0.4,
-});
-const RelatedNode = style({
-  opacity: 0.9,
-});
 
-const ErrorNode = themed((theme) =>
-  style({
-    display: '',
-    borderColor: `${theme.background.error} !important`,
-    borderWidth: `2px !important`,
-    opacity: 1,
-  }),
-);
+type NodeTypes = keyof EditorTheme['backgrounds'];
 
-const BaseNode = themed((theme) =>
-  style({
-    color: `${theme.backgroundedText} !important`,
-    borderColor: `${theme.backgroundedText} !important`,
-  }),
-);
+interface MainNodeAreaProps {
+  nodeType: NodeTypes;
+  isLibrary?: boolean;
+  isBaseNode?: boolean;
+  isDragNotAllowed?: boolean;
+  isDragOver?: boolean;
+  isError?: boolean;
+  isMatchedToSearch?: boolean;
+  isNotSelected?: boolean;
+  isRelatedNode?: boolean;
+}
 
-const DragOverStyle = style({
-  marginLeft: 40,
-});
+const MainNodeArea = styled.div<MainNodeAreaProps>`
+  position: relative;
+  border-color: transparent;
+  border-radius: 4px;
+  margin: 10px;
+  margin-left: ${({ isDragOver }) => (isDragOver ? '40px' : '10px')};
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
+  display: flex;
+  align-items: stretch;
+  color: ${({ theme }) => theme.backgroundedText};
+  font-size: 12px;
+  padding: 9.5px 15px;
+  user-select: none;
+  border-width: 2px;
+  border-style: ${({ isLibrary }) => (isLibrary ? 'dashed' : 'solid')};
+  border-color: ${({ theme, nodeType, isBaseNode, isError }) => {
+    if (isError) return theme.background.error;
+    if (isBaseNode) return theme.backgroundedText;
+    return theme.backgrounds[nodeType]
+      ? theme.backgrounds[nodeType]
+      : 'transparent';
+  }};
+  background-color: ${({ theme, nodeType, isDragNotAllowed, isLibrary }) => {
+    if (isDragNotAllowed) return theme.disabled;
+    if (isLibrary) return 'transparent';
+    return theme.backgrounds[nodeType]
+      ? theme.backgrounds[nodeType]
+      : 'transparent';
+  }};
+  opacity: ${({ isMatchedToSearch, isNotSelected, isRelatedNode }) => {
+    if (isRelatedNode) return 0.9;
+    if (isNotSelected) return 0.4;
+    if (isMatchedToSearch === false) return 0.2;
+    return 1;
+  }};
 
-const DragNotAllowed = themed((theme) =>
-  style({
-    backgroundColor: `${theme.disabled} !important`,
-  }),
-);
+  &:hover {
+    border-color: ${({ theme }) => theme.backgroundedText};
+  }
+`;
 
 export const PaintNode: React.FC<NodeProps> = ({
   node,
@@ -162,8 +123,18 @@ export const PaintNode: React.FC<NodeProps> = ({
     setTree({ nodes: newTree });
   };
 
+  const isDragNotAllowed =
+    dragOverStylesDiagram &&
+    node.name === dragOverStylesDiagram?.nodeName &&
+    dndType !== dragOverStylesDiagram.nodeType;
+
+  const isDragOver =
+    !isNodeBaseType(node.type.operations) &&
+    node.name === dragOverStylesDiagram?.nodeName &&
+    dndType === dragOverStylesDiagram.nodeType;
+
   return (
-    <div
+    <MainNodeArea
       id={node.type.name}
       draggable={!isNodeBaseType(node.type.operations)}
       onDragStart={(e) => {
@@ -191,38 +162,22 @@ export const PaintNode: React.FC<NodeProps> = ({
         dragOverHandler(e);
       }}
       data-cy={GraphQLEditorDomStructure.tree.elements.Graf.PaintNode}
-      className={`
-      ${
-        !isNodeBaseType(node.type.operations) &&
-        node.name === dragOverStylesDiagram?.nodeName &&
-        dndType === dragOverStylesDiagram.nodeType
-          ? DragOverStyle
-          : dragOverStylesDiagram &&
-            node.name === dragOverStylesDiagram?.nodeName &&
-            dndType !== dragOverStylesDiagram.nodeType
-          ? DragNotAllowed(theme)
-          : null
-      }
-      ${isNodeBaseType(node.type.operations) ? BaseNode(theme) : ''}
-      ${NodeContainer} 
-      ${isLibrary ? LibraryNodeContainer(theme) : MainNodeContainer(theme)} ${
-        isMatchedToSearch ? MatchedSearchContainer : NoMatchedSearchContainer
-      } ${
+      nodeType={node.type.name as NodeTypes}
+      isLibrary={isLibrary}
+      isBaseNode={isNodeBaseType(node.type.operations)}
+      isDragNotAllowed={isDragNotAllowed}
+      isDragOver={isDragOver}
+      isError={errorNodeNames?.includes(node.name)}
+      isMatchedToSearch={isMatchedToSearch}
+      isNotSelected={
         selectedNode
-          ? compareNodesWithData(node, selectedNode.field)
-            ? ''
-            : NotSelected
-          : ''
+          ? !compareNodesWithData(node, selectedNode.field)
+          : undefined
       }
-      ${
+      isRelatedNode={
         selectedNode?.field &&
         node?.interfaces?.includes(selectedNode.field.name)
-          ? RelatedNode
-          : ''
       }
-      ${errorNodeNames?.includes(node.name) ? ErrorNode(theme) : ''}
-      NodeType-${node.type.name} 
-      `}
       ref={thisNode}
       onClick={(e) => {
         e.stopPropagation();
@@ -236,6 +191,6 @@ export const PaintNode: React.FC<NodeProps> = ({
         <Error fill={theme.background.error} style={{ marginRight: 8 }} />
       )}
       {node.name}
-    </div>
+    </MainNodeArea>
   );
 };

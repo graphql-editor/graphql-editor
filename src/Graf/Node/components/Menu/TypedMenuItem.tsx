@@ -1,9 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { style } from 'typestyle';
-import { NestedCSSProperties } from 'typestyle/lib/types';
-import { themed } from '@/Theming/utils';
-import { useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
+import styled from '@emotion/styled';
+import { EditorTheme } from '@/gshared/theme/DarkTheme';
 
 interface TypedMenuItemProps {
   onClick: () => void;
@@ -13,40 +11,37 @@ interface TypedMenuItemProps {
   selected?: boolean;
 }
 
-const Main = themed(({ colors, hover, background }) =>
-  style({
-    display: 'flex',
-    padding: `8px 16px`,
-    fontSize: 14,
-    cursor: 'pointer',
-    scrollSnapAlign: 'end',
-    $nest: {
-      '&.isSelected, &:hover': {
-        background: background.mainClose,
-      },
-      ...Object.keys(colors).reduce((a, b) => {
-        a[`.MenuItemType-${b}`] = {
-          color: `${(colors as any)[b]}dd`,
-        };
-        return a;
-      }, {} as Record<string, NestedCSSProperties>),
-      '.MenuItemName': {
-        transition: 'color .25s ease-in-out',
-        $nest: {
-          '&:hover': {
-            color: hover,
-          },
-        },
-      },
-      '.MenuItemType': {
-        fontSize: 14,
-        display: 'flex',
-        alignItems: 'flex-start',
-        marginLeft: 4,
-      },
-    },
-  }),
-);
+type NodeTypes = keyof EditorTheme['backgrounds'];
+
+const Main = styled.div<{ isSelected?: boolean }>`
+  display: flex;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  scroll-snap-align: end;
+  background-color: ${({ isSelected, theme }) =>
+    isSelected && theme.background.mainClose};
+
+  &:hover {
+    background-color: ${({ theme }) => theme.background.mainClose};
+  }
+`;
+
+const MenuItemName = styled.span`
+  transition: color 0.25s ease-in-out;
+  &:hover {
+    color: ${({ theme }) => theme.hover};
+  }
+`;
+
+const MenuItemType = styled.span<{ nodeType: NodeTypes }>`
+  font-size: 14px;
+  display: flex;
+  align-items: flex-start;
+  margin-left: 4px;
+  color: ${({ theme, nodeType }) =>
+    theme.colors[nodeType] ? theme.colors[nodeType] : theme.text}dd;
+`;
 
 export const TypedMenuItem: React.FC<TypedMenuItemProps> = ({
   type,
@@ -55,7 +50,6 @@ export const TypedMenuItem: React.FC<TypedMenuItemProps> = ({
   name,
   selected,
 }) => {
-  const { theme } = useTheme();
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (selected) {
@@ -64,17 +58,17 @@ export const TypedMenuItem: React.FC<TypedMenuItemProps> = ({
   }, [selected]);
 
   return (
-    <div
+    <Main
       ref={ref}
-      className={`${Main(theme)} ${selected ? 'isSelected' : ''}`}
+      isSelected={selected}
       onClick={onClick}
       data-cy={
         GraphQLEditorDomStructure.tree.elements.Graf.ActiveNode.TopNodeMenu
           .searchableMenu.optionToSelect
       }
     >
-      {name && <span className={`MenuItemName`}>{name}</span>}
-      <span className={`MenuItemType MenuItemType-${dataType}`}>{type}</span>
-    </div>
+      {name && <MenuItemName>{name}</MenuItemName>}
+      <MenuItemType nodeType={dataType as NodeTypes}>{type}</MenuItemType>
+    </Main>
   );
 };

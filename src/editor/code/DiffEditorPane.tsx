@@ -1,11 +1,10 @@
-import cx from 'classnames';
 import React, { useMemo } from 'react';
-import * as styles from './style/Code';
 import { theme as MonacoTheme, diffEditorSettings } from './monaco';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { fontFamily } from '@/vars';
 import { useTheme } from '@/state/containers';
 import { SchemaDiffEditor } from '@/editor/code/guild';
+import { CodeContainer } from '@/editor/code/style/Code';
 
 export type DiffEditorPaneProps = {
   size: number | string;
@@ -30,8 +29,7 @@ export const DiffEditorPane = (props: DiffEditorPaneProps) => {
   return (
     <>
       {theme && (
-        <div
-          className={cx(styles.CodeContainer(theme))}
+        <CodeContainer
           data-cy={GraphQLEditorDomStructure.tree.elements.DiffEditor.name}
         >
           <SchemaDiffEditor
@@ -44,7 +42,7 @@ export const DiffEditorPane = (props: DiffEditorPaneProps) => {
             theme="graphql-editor"
             options={codeSettings}
           />
-        </div>
+        </CodeContainer>
       )}
     </>
   );

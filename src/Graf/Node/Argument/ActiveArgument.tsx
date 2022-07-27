@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { ParserField, Options, Value, TypeDefinition } from 'graphql-js-tree';
-import { style } from 'typestyle';
 import { NodeTypeOptionsMenu } from '@/Graf/Node/ContextMenu';
 import { ActiveArgumentName } from './ActiveArgumentName';
 import {
@@ -19,13 +18,21 @@ import {
 } from '@/GraphQL/Convert';
 import { useTreesState } from '@/state/containers/trees';
 import { FieldProps } from '@/Graf/Node/models';
-const Name = style({ fontSize: 10, marginRight: 4, overflow: 'hidden' });
-const OptionsMenuContainer = style({
-  position: 'absolute',
-  top: 20,
-  zIndex: 2,
-  right: 5,
-});
+import styled from '@emotion/styled';
+import { NodeFieldPortPlaceholder } from '@/Graf/Node';
+
+const Name = styled.div`
+  font-size: 10px;
+  margin-right: 4px;
+  overflow: hidden;
+`;
+
+const OptionsMenuContainer = styled.div`
+  position: absolute;
+  top: 20px;
+  z-index: 2;
+  right: 5px;
+`;
 
 interface PlaceFunctionArgs {
   v: string;
@@ -100,9 +107,10 @@ export const ActiveArgument: React.FC<FieldProps> = ({
   const { tree, setTree } = useTreesState();
   const [optionsMenuOpen, setOptionsMenuOpen] = useState(false);
   const [detailsMenuOpen, setDetailsMenuOpen] = useState(false);
+
   return (
     <NodeFieldContainer
-      className={`NodeType-${parentNodeTypeName} ${
+      className={`${
         inputOpen || outputOpen || optionsMenuOpen ? 'Active' : ''
       }`}
     >
@@ -116,10 +124,10 @@ export const ActiveArgument: React.FC<FieldProps> = ({
           }}
         />
       ) : (
-        <div className={'NodeFieldPortPlaceholder'} />
+        <NodeFieldPortPlaceholder />
       )}
       <Title>
-        <div className={Name}>
+        <Name>
           {isLocked && <span>{node.name}</span>}
           {!isLocked && (
             <ActiveArgumentName
@@ -130,7 +138,7 @@ export const ActiveArgument: React.FC<FieldProps> = ({
               node={node}
             />
           )}
-        </div>
+        </Name>
         <EditableDefaultValue
           value={resolveValueFromNode(node, parentNode)}
           style={{ marginLeft: 5 }}
@@ -152,7 +160,7 @@ export const ActiveArgument: React.FC<FieldProps> = ({
           }}
         >
           {detailsMenuOpen && (
-            <div className={OptionsMenuContainer}>
+            <OptionsMenuContainer>
               <Menu
                 menuName={'Node options'}
                 hideMenu={() => setDetailsMenuOpen(false)}
@@ -161,7 +169,7 @@ export const ActiveArgument: React.FC<FieldProps> = ({
                   <DetailMenuItem onClick={onDelete}>Delete</DetailMenuItem>
                 </MenuScrollingArea>
               </Menu>
-            </div>
+            </OptionsMenuContainer>
           )}
         </FieldPort>
       )}
@@ -173,12 +181,12 @@ export const ActiveArgument: React.FC<FieldProps> = ({
           }}
         >
           {optionsMenuOpen && (
-            <div className={OptionsMenuContainer}>
+            <OptionsMenuContainer>
               <NodeTypeOptionsMenu
                 hideMenu={() => setOptionsMenuOpen(false)}
                 node={node}
               />
-            </div>
+            </OptionsMenuContainer>
           )}
         </FieldPort>
       )}
@@ -192,9 +200,7 @@ export const ActiveArgument: React.FC<FieldProps> = ({
           }}
         />
       )}
-      {outputDisabled && isLocked && (
-        <div className={'NodeFieldPortPlaceholder'} />
-      )}
+      {outputDisabled && isLocked && <NodeFieldPortPlaceholder />}
     </NodeFieldContainer>
   );
 };

@@ -1,26 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { style } from 'typestyle';
 import { fontFamily } from '@/vars';
 import { FIELD_NAME_SIZE } from '@/Graf/constants';
-import cx from 'classnames';
-import { themed } from '@/Theming/utils';
-import { useTheme, useVisualState } from '@/state/containers';
-const Input = themed(({ text }) =>
-  style({
-    border: 0,
-    background: 'transparent',
-    color: text,
-    minWidth: 'auto',
-    padding: 0,
-    fontFamily: fontFamily,
-    fontSize: FIELD_NAME_SIZE,
-  }),
-);
-const InputIsError = themed(({ error }) =>
-  style({
-    color: error,
-  }),
-);
+import { useVisualState } from '@/state/containers';
+import styled from '@emotion/styled';
+
+const Input = styled.input<{ isError?: boolean }>`
+  border: 0;
+  background-color: transparent;
+  color: ${({ theme, isError }) => (isError ? theme.error : theme.text)};
+  min-width: auto;
+  padding: 0;
+  font-family: ${fontFamily};
+  font-size: ${FIELD_NAME_SIZE}px;
+`;
+
 export const EditableText: React.FC<{
   value: string;
   onChange?: (value: string) => void;
@@ -31,7 +24,6 @@ export const EditableText: React.FC<{
   const [editedValue, setEditedValue] = useState('');
   const [focus, setFocus] = useState(!!autoFocus);
   const [isError, setIsError] = useState(false);
-  const { theme } = useTheme();
   const { setDraggingAllowed, _setDraggingAllowed } = useVisualState();
   const checkEdit = () => {
     setFocus(false);
@@ -56,11 +48,9 @@ export const EditableText: React.FC<{
   return (
     <>
       {onChange ? (
-        <input
+        <Input
           autoFocus={focus}
-          className={cx(Input(theme), {
-            [InputIsError(theme)]: isError,
-          })}
+          isError={isError}
           value={editedValue}
           pattern="[_A-Za-z][_0-9A-Za-z]*"
           style={{ width: `${editedValue.length}ch`, ...style }}

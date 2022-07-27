@@ -1,30 +1,27 @@
-import { style } from 'typestyle';
 import React, { useRef } from 'react';
-import { themed } from '@/Theming/utils';
-import { useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { useOnClickOutside } from '@/Graf/Node/hooks';
+import styled from '@emotion/styled';
 
-const Wrapper = style({
-  zIndex: 4,
-  width: 220,
-  borderRadius: 4,
-});
-const Content = themed(({ shadow, background: { mainFurther } }) =>
-  style({
-    background: mainFurther,
-    borderRadius: 4,
-    padding: 0,
-    boxShadow: shadow,
-  }),
-);
-const Title = themed(({ info }) =>
-  style({
-    padding: 16,
-    fontSize: 14,
-    color: info,
-  }),
-);
+const Wrapper = styled.div`
+  z-index: 4;
+  width: 220px;
+  border-radius: 4px;
+`;
+
+const Content = styled.div`
+  background: ${({ theme }) => theme.background.mainFurther};
+  border-radius: 4px;
+  padding: 0;
+  box-shadow: ${({ theme }) => theme.shadow};
+`;
+
+const Title = styled.div`
+  padding: 16px;
+  font-size: 14px;
+  color: ${({ theme }) => theme.info};
+`;
+
 interface MenuProps
   extends React.DetailedHTMLProps<
     React.HTMLAttributes<HTMLDivElement>,
@@ -41,22 +38,20 @@ export const Menu: React.FC<MenuProps> = ({
   ...props
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
-  const { theme } = useTheme();
   useOnClickOutside(menuRef, () => hideMenu());
   return (
-    <div {...props} className={Wrapper} ref={menuRef}>
-      <div className={Content(theme)}>
-        <div
+    <Wrapper {...props} ref={menuRef}>
+      <Content>
+        <Title
           data-cy={
             GraphQLEditorDomStructure.tree.elements.Graf.ActiveNode.TopNodeMenu
               .searchableMenu.title
           }
-          className={Title(theme)}
         >
           {menuName}
-        </div>
+        </Title>
         {children}
-      </div>
-    </div>
+      </Content>
+    </Wrapper>
   );
 };

@@ -2,130 +2,98 @@ import { ActiveType } from '@/Graf/Node/Type';
 import { useTheme, useTreesState } from '@/state/containers';
 import { ParserField, TypeDefinition } from 'graphql-js-tree';
 import React, { useMemo } from 'react';
-import { style } from 'typestyle';
 import { Field } from '../Field';
 import * as Icons from '@/editor/icons';
-import { themed } from '@/Theming/utils';
-import { NestedCSSProperties } from 'typestyle/lib/types';
 import { FIELD_NAME_SIZE } from '@/Graf/constants';
 import { fontFamily } from '@/vars';
 import { compareNodesWithData } from '@/compare/compareNodes';
+import styled from '@emotion/styled';
+import { EditorTheme } from '@/gshared/theme/DarkTheme';
 
-const Content = themed(
-  ({
-    shadow,
-    backgroundedText,
-    info,
-    hover,
-    background: { mainFurther, mainFar, mainMiddle },
-    colors,
-  }) =>
-    style({
-      background: mainMiddle,
-      padding: 20,
-      margin: 20,
-      textOverflow: 'elipssis',
-      borderRadius: 10,
-      overflowY: 'hidden',
-      borderStyle: 'solid',
-      borderWidth: 1,
-      borderColor: `${hover}00`,
-      transition: '.25s all ease-in-out',
-      zIndex: 1,
-      flex: '1 0 auto',
-      cursor: 'pointer',
-      maxWidth: '50%',
-      $nest: {
-        '.NodeTitle': {
-          alignItems: 'stretch',
-          color: backgroundedText,
-          fontSize: 14,
-          padding: `10px 5px`,
-          display: 'flex',
-          $nest: {
-            '.NodeName': {
-              marginRight: 5,
-            },
-            '.NodeFocus': {
-              marginLeft: 'auto',
-              textTransform: 'lowercase',
-              fontSize: 12,
-              opacity: 0.0,
-              pointerEvents: 'none',
-              color: backgroundedText,
-              display: 'flex',
-              alignItems: 'center',
-              $nest: {
-                '&:hover': { color: backgroundedText },
-                span: { marginRight: 5 },
-              },
-              fontWeight: 'bold',
-            },
-          },
-        },
-        '&:hover': {
-          ...Object.keys(colors).reduce((a, b) => {
-            a[`&.NodeBackground-${b}`] = {
-              borderColor: `${(colors as any)[b]}`,
-            };
-            return a;
-          }, {} as Record<string, NestedCSSProperties>),
-        },
-        '&.Library': {
-          borderStyle: 'dashed',
-        },
-        '&.Fade': {
-          background: mainFurther,
-          opacity: 0.9,
-          $nest: {
-            '.NodeRelationFields': {
-              opacity: 0.25,
-            },
-            '.NodeTitle': {
-              color: backgroundedText,
-              opacity: 0.5,
-            },
-            '.NodeType': {
-              opacity: 0.25,
-            },
-          },
-        },
-        '&.Active': {
-          boxShadow: shadow,
-        },
+type NodeTypes = keyof EditorTheme['backgrounds'];
 
-        '&.Selected': {
-          borderColor: hover,
-          cursor: 'auto',
-          $nest: {
-            '.NodeFocus': {
-              opacity: 1.0,
-              pointerEvents: 'auto',
-              cursor: 'pointer',
-            },
-          },
-          ...Object.keys(colors).reduce((a, b) => {
-            a[`&.NodeBackground-${b}`] = {
-              borderColor: `${(colors as any)[b]}`,
-            };
-            return a;
-          }, {} as Record<string, NestedCSSProperties>),
-        },
-      },
-    }),
-);
+interface ContentProps {
+  nodeType: NodeTypes;
+  isSelected?: boolean;
+  isLibrary?: boolean;
+  isActive?: boolean;
+  fade?: boolean;
+}
 
-const NameInRelation = themed(({ text }) =>
-  style({
-    border: 0,
-    background: 'transparent',
-    color: text,
-    minWidth: 'auto',
-    padding: 0,
-    fontFamily: fontFamily,
-    fontSize: FIELD_NAME_SIZE,
-  }),
-);
+const Content = styled.div<ContentProps>`
+  background-color: ${({ theme, fade }) =>
+    fade ? theme.background.mainFurther : theme.background.mainMiddle};
+  opacity: ${({ fade }) => (fade ? '0.9' : '1')};
+  padding: 20px;
+  margin: 20px;
+  text-overflow: ellipsis;
+  border-radius: 10px;
+  overflow-y: hidden;
+  transition: 0.25s all ease-in-out;
+  z-index: 1;
+  flex: 1 0 auto;
+  cursor: ${({ isSelected }) => (isSelected ? 'auto' : 'pointer')};
+  max-width: 50%;
+  border-width: 1px;
+  border-style: ${({ isLibrary }) => (isLibrary ? 'dashed' : 'solid')};
+  border-color: ${({ theme, nodeType, isSelected }) =>
+    theme.colors[nodeType] && isSelected
+      ? theme.colors[nodeType]
+      : `${theme.hover}00`};
+  box-shadow: ${({ theme, isActive }) => isActive && theme.shadow};
+
+  &:hover {
+    border-color: ${({ theme, nodeType }) =>
+      theme.colors[nodeType] ? theme.colors[nodeType] : `${theme.hover}00`};
+  }
+`;
+
+const OpacityFade = styled.div<{ fade?: boolean }>`
+  opacity: ${({ fade }) => (fade ? '0.25' : '1')};
+`;
+
+const NodeRelationFields = styled(OpacityFade)``;
+const NodeType = styled(OpacityFade)``;
+
+const NodeTitle = styled.div<{ fade?: boolean }>`
+  align-items: stretch;
+  color: ${({ theme }) => theme.backgroundedText};
+  font-size: 14px;
+  padding: 10px 5px;
+  display: flex;
+  opacity: ${({ fade }) => (fade ? '0.5' : '1')};
+`;
+
+const NodeName = styled.div`
+  margin-right: 5px;
+`;
+
+const NodeFocus = styled.div<{ isSelected?: boolean }>`
+  margin-left: auto;
+  text-transform: lowercase;
+  font-size: 12px;
+  opacity: ${({ isSelected }) => (isSelected ? '1' : '0')};
+  color: ${({ theme }) => theme.backgroundedText};
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  cursor: ${({ isSelected }) => (isSelected ? 'pointer' : 'auto')};
+  pointer-events: ${({ isSelected }) => (isSelected ? 'auto' : 'none')};
+
+  span {
+    margin-right: 5px;
+  }
+`;
+
+const NameInRelation = styled.span`
+  border: 0;
+  background-color: transparent;
+  color: ${({ theme }) => theme.text};
+  min-width: auto;
+  padding: 0;
+  font-family: ${fontFamily};
+  font-size: ${FIELD_NAME_SIZE};
+`;
 
 interface NodeProps {
   field: ParserField;
@@ -148,7 +116,7 @@ export const Node: React.FC<NodeProps> = ({
   const RelationFields = useMemo(() => {
     const nodeFields = field.args;
     return (
-      <div className={'NodeRelationFields'}>
+      <NodeRelationFields fade={fade}>
         {nodeFields?.map((a) => (
           <Field
             onClick={() => {
@@ -170,20 +138,20 @@ export const Node: React.FC<NodeProps> = ({
             parentNodeTypeName={field.type.name}
           />
         ))}
-      </div>
+      </NodeRelationFields>
     );
-  }, [field, isNodeActive, theme]);
+  }, [field, isNodeActive, theme, fade]);
   const NodeContent = useMemo(
     () => (
-      <div className={'NodeTitle'}>
-        <div className={`NodeName`}>
-          <span className={NameInRelation(theme)}>{field.name}</span>
-        </div>
-        <div className={`NodeType`}>
+      <NodeTitle fade={fade}>
+        <NodeName>
+          <NameInRelation>{field.name}</NameInRelation>
+        </NodeName>
+        <NodeType fade={fade}>
           <ActiveType type={field.type} />
-        </div>
-        <div
-          className={'NodeFocus'}
+        </NodeType>
+        <NodeFocus
+          isSelected={selectedNode?.field === field}
           onClick={(e) => {
             e.stopPropagation();
             focus();
@@ -191,13 +159,18 @@ export const Node: React.FC<NodeProps> = ({
         >
           <span>Focus</span>
           <Icons.Eye size={16} />
-        </div>
-      </div>
+        </NodeFocus>
+      </NodeTitle>
     ),
-    [field, theme],
+    [field, theme, fade, selectedNode],
   );
   return (
-    <div
+    <Content
+      isSelected={selectedNode?.field === field}
+      isLibrary={isLibrary}
+      fade={fade}
+      isActive={!fade && typeof fade !== 'undefined'}
+      nodeType={field.type.name as NodeTypes}
       ref={(ref) => {
         if (ref) {
           setRef(ref);
@@ -210,15 +183,9 @@ export const Node: React.FC<NodeProps> = ({
           source: 'relation',
         });
       }}
-      className={
-        `NodeBackground-${field.type.name} ${Content(theme)} ` +
-        `${fade ? 'Fade' : typeof fade === 'undefined' ? '' : 'Active'}` +
-        `${isLibrary ? ' Library' : ''}` +
-        (selectedNode?.field === field ? ` Selected` : '')
-      }
     >
       {NodeContent}
       {RelationFields}
-    </div>
+    </Content>
   );
 };

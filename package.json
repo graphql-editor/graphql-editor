@@ -94,6 +94,7 @@
     "worker-loader": ">=3.0.8"
   },
   "dependencies": {
+    "@emotion/styled": "^11.9.3",
     "classnames": "^2.3.1",
     "color2k": "^1.2.4",
     "fuzzyjs": "^5.0.1",
@@ -102,7 +103,6 @@
     "graphsource": "^2.0.5",
     "re-resizable": "^6.9.1",
     "remarkable": "^2.0.1",
-    "typestyle": "^2.1.0",
     "unstated-next": "^1.1.0"
   },
   "config": {

@@ -1,21 +1,19 @@
 import React, { useState } from 'react';
-import { style } from 'typestyle';
 import { fontFamily } from '@/vars';
-import { themed } from '@/Theming/utils';
-import { useTheme } from '@/state/containers';
-const Input = themed(({ background: { mainFurthest }, text }) =>
-  style({
-    border: 0,
-    background: `${mainFurthest}44`,
-    borderRadius: 4,
-    color: text,
-    minWidth: 30,
-    fontFamily: fontFamily,
-    fontSize: 10,
-    textAlign: 'center',
-    padding: `2px 0`,
-  }),
-);
+import styled from '@emotion/styled';
+
+const Input = styled.input`
+  border: 0;
+  background: ${({ theme }) => theme.background.mainFurthest}44;
+  border-radius: 4px;
+  color: ${({ theme }) => theme.text};
+  min-width: 30px;
+  font-family: ${fontFamily};
+  font-size: 10px;
+  text-align: center;
+  padding: 2px 0;
+`;
+
 interface EditableDefaultValueProps {
   value: string;
   onChange?: (value: string) => void;
@@ -28,7 +26,6 @@ export const EditableDefaultValue: React.FC<EditableDefaultValueProps> = ({
   autoFocus,
   style = {},
 }) => {
-  const { theme } = useTheme();
   const [editedValue, setEditedValue] = useState(value);
   const [focus, setFocus] = useState(!!autoFocus);
   const checkEdit = () => {
@@ -41,9 +38,8 @@ export const EditableDefaultValue: React.FC<EditableDefaultValueProps> = ({
   };
   return (
     <>
-      <input
+      <Input
         autoFocus={focus}
-        className={Input(theme)}
         disabled={!onChange}
         value={editedValue}
         style={{ width: `${editedValue.length + 3}ch`, ...style }}

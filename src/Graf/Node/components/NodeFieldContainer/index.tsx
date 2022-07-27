@@ -1,59 +1,48 @@
-import { useTheme } from '@/state/containers';
-import { themed } from '@/Theming/utils';
+import styled from '@emotion/styled';
 import React from 'react';
-import { style } from 'typestyle';
 
-const Main = themed(
-  ({ text, background: { mainFurther }, background: { mainClose } }) =>
-    style({
-      position: 'relative',
-      display: 'flex',
-      alignItems: 'center',
-      color: text,
-      margin: `0 0`,
-      transition: 'background 0.25s ease-in-out',
-      $nest: {
-        '&.Active': {
-          background: mainClose,
-          $nest: {
-            '.NodeFieldPort': {
-              backgroundColor: mainFurther,
-              $nest: {
-                '.OpenerIcon': {
-                  opacity: 1,
-                },
-              },
-            },
-          },
-        },
-        '.NodeFieldPortPlaceholder': {
-          width: 24,
-          height: 16,
-        },
-        '&:hover': {
-          background: mainClose,
-          $nest: {
-            '.NodeFieldPort': {
-              backgroundColor: `${mainFurther}88`,
-              $nest: {
-                '.OpenerIcon': {
-                  opacity: 0.5,
-                },
-              },
-            },
-          },
-        },
-      },
-    }),
-);
+const Main = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  color: ${({ theme }) => theme.text};
+  margin: 0;
+  transition: background-color 0.25s ease-in-out;
+
+  .opener-icon {
+    transition: all 0.25s ease-in-out;
+    opacity: 0;
+  }
+
+  &.Active,
+  &:hover {
+    background-color: ${({ theme }) => theme.background.mainClose};
+  }
+  &:hover .node-field-port {
+    background-color: ${({ theme }) => theme.background.mainFurther}88;
+    .opener-icon {
+      opacity: 0.5;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+
+  &.Active .node-field-port {
+    background-color: ${({ theme }) => theme.background.mainFurther};
+    .opener-icon {
+      opacity: 1;
+    }
+  }
+`;
 
 export const NodeFieldContainer: React.FC<
   React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>
 > = ({ children, className = '', ...props }) => {
-  const { theme } = useTheme();
   return (
-    <div className={[Main(theme), className].join(' ')} {...props}>
+    <Main className={className} {...props}>
       {children}
-    </div>
+    </Main>
   );
 };

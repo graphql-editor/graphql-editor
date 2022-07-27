@@ -1,12 +1,5 @@
 import React from 'react';
-import { style } from 'typestyle';
 import { RELATION_CONSTANTS } from './constants';
-
-const PathClass = style({
-  $nest: {
-    '&:hover': {},
-  },
-});
 
 export const Draw = ({
   from,
@@ -53,7 +46,6 @@ export const Draw = ({
     const bFX = f.x + RELATION_CONSTANTS.PORT_PADDING + gapSize;
     return (
       <path
-        className={`${active ? PathClass : ''}`}
         stroke={stroke}
         strokeDasharray={inverse ? '5,5' : undefined}
         d={`M ${t.x} ${t.y}
