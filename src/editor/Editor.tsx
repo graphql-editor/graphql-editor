@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Menu } from './Menu';
+import { Menu } from './menu/Menu';
 import { CodePane } from './code';
 import { PassedSchema, Theming } from '@/Models';
 import { DynamicResize } from './code/Components';
