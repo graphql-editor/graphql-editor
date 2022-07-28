@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import * as Icons from './icons';
+import * as Icons from '../icons';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { useTreesState } from '@/state/containers';
 import { PassedSchema } from '@/Models';
 import styled from '@emotion/styled';
 import { fontFamilySans } from '@/vars';
+import { CollapseArrow } from '@/editor/menu/CollapseArrow';
 
 const Sidebar = styled.div<{ isCollapsed: boolean }>`
   background: ${({ theme }) => theme.background.mainFurthest};
   color: ${({ theme }) => theme.disabled};
   font-size: 12px;
-  padding: 15px 0;
   z-index: 4;
   border: 0 solid ${({ theme }) => theme.contra};
   border-right-width: 2px;
@@ -19,54 +19,21 @@ const Sidebar = styled.div<{ isCollapsed: boolean }>`
   width: ${({ isCollapsed }) => (isCollapsed ? '64px' : '210px')};
 `;
 
-const CollapseArrow = styled.div<{ isCollapsed: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  height: 29px;
-  width: 29px;
-  border-radius: 100%;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  background-color: ${({ theme }) => theme.background.mainMiddle};
-  position: absolute;
-  z-index: 5;
-  right: 0;
-  top: 50%;
-  transform: translate(50%, -50%);
-  color: ${({ theme }) => theme.disabled};
-  transition: color 0.25s ease;
-
-  &:hover {
-    color: ${({ theme }) => theme.active};
-  }
-
-  svg {
-    width: 6px;
-    height: 11px;
-    transform: ${({ isCollapsed }) =>
-      isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)'};
-  }
-`;
-
 const MenuItem = styled.div<{ isCollapsed: boolean; borderBottom?: boolean }>`
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  margin-bottom: 15px;
   color: ${({ theme }) => theme.text};
-  padding: 5px 20px;
+  padding: 15px 20px;
   border-bottom: ${({ borderBottom, theme }) =>
     borderBottom ? `2px solid ${theme.contra}` : ''};
-  padding-bottom: ${({ borderBottom }) => (borderBottom ? `15px` : '')};
   font-family: ${fontFamilySans};
   cursor: pointer;
-  transition: color 0.25s ease;
+  transition: all 0.25s ease;
   overflow: hidden;
 
-  & > div {
-    display: flex;
-    position: relative;
+  &:hover {
+    background-color: #020202;
   }
 
   & > div::after,
@@ -82,12 +49,13 @@ const MenuItem = styled.div<{ isCollapsed: boolean; borderBottom?: boolean }>`
 
   & > div::after {
     position: absolute;
-    right: -15px;
-    top: -10px;
+    right: 5px;
+    top: 5px;
   }
 
   svg {
     flex-shrink: 0;
+    height: 22px;
   }
 
   p {
@@ -97,11 +65,6 @@ const MenuItem = styled.div<{ isCollapsed: boolean; borderBottom?: boolean }>`
     white-space: nowrap;
     transition: opacity 0.25s ease-in-out;
     opacity: ${({ isCollapsed }) => (isCollapsed ? '0' : '1')};
-  }
-
-  &:hover,
-  &.active {
-    color: ${({ theme }) => theme.active};
   }
 
   &.active {
@@ -116,6 +79,31 @@ const MenuItem = styled.div<{ isCollapsed: boolean; borderBottom?: boolean }>`
 
     & > div::after {
       opacity: ${({ isCollapsed }) => (isCollapsed ? 1 : 0)};
+    }
+  }
+
+  &[data-tooltip] {
+    &:after {
+      content: attr(data-tooltip);
+      position: absolute;
+      pointer-events: none;
+      left: 67px;
+      width: max-content;
+      color: ${({ theme }) => theme.text};
+      font-weight: 400;
+      background: #000000;
+      border: 1px solid ${({ theme }) => theme.dimmed};
+      text-align: center;
+      padding: 5px 12px;
+      z-index: 100;
+      opacity: 0;
+      transition: opacity 0.25s ease-in-out;
+    }
+
+    &:hover {
+      &:after {
+        opacity: ${({ isCollapsed }) => (isCollapsed ? 1 : 0)};
+      }
     }
   }
 `;
@@ -155,9 +143,9 @@ export const Menu = ({
         data-cy={MenuChildren.code}
         className={toggleCode ? 'toggle-active' : ''}
         onClick={() => setToggleCode(!toggleCode)}
-        title="Toggle Code"
         borderBottom
         isCollapsed={isCollapsed}
+        data-tooltip="Toggle Code"
       >
         <div>
           <Icons.ToggleCode size={20} />
@@ -171,9 +159,9 @@ export const Menu = ({
           onClick={() => {
             switchSchema(schema);
           }}
-          title="Library Schema"
           borderBottom
           isCollapsed={isCollapsed}
+          data-tooltip="Library Schema"
         >
           <div>
             <Icons.Library size={22} />
@@ -186,7 +174,7 @@ export const Menu = ({
           data-cy={MenuChildren.diagram}
           className={activePane === 'diagram' ? 'active' : ''}
           onClick={() => setActivePane('diagram')}
-          title="Diagram View"
+          data-tooltip="Diagram View"
           isCollapsed={isCollapsed}
         >
           <Icons.DiagramView size={22} />
@@ -199,7 +187,7 @@ export const Menu = ({
           data-cy={MenuChildren.relation}
           className={activePane === 'relation' ? 'active' : ''}
           onClick={() => setActivePane('relation')}
-          title="Relation View"
+          data-tooltip="Relation View"
           isCollapsed={isCollapsed}
         >
           <Icons.RelationView size={22} />
@@ -211,7 +199,7 @@ export const Menu = ({
           data-cy={MenuChildren.hierarchy}
           className={activePane === 'hierarchy' ? 'active' : ''}
           onClick={() => setActivePane('hierarchy')}
-          title="Hierarchy View"
+          data-tooltip="Hierarchy View"
           isCollapsed={isCollapsed}
         >
           <Icons.HierarchyView size={22} />
@@ -223,7 +211,7 @@ export const Menu = ({
           data-cy={MenuChildren.hierarchy}
           className={activePane === 'docs' ? 'active' : ''}
           onClick={() => setActivePane('docs')}
-          title="Documentation View"
+          data-tooltip="Documentation View"
           isCollapsed={isCollapsed}
           borderBottom
         >
@@ -236,7 +224,7 @@ export const Menu = ({
           data-cy={MenuChildren.diff}
           className={activePane === 'diff' ? 'active' : ''}
           onClick={() => setActivePane('diff')}
-          title="Diff View"
+          data-tooltip="Diff View"
           isCollapsed={isCollapsed}
         >
           <Icons.DiffView size={22} />
@@ -245,7 +233,7 @@ export const Menu = ({
       )}
       <CollapseArrow
         isCollapsed={isCollapsed}
-        onClick={() => setIsCollapsed((prev) => !prev)}
+        toggle={() => setIsCollapsed((prev) => !prev)}
       >
         <Icons.ArrowLeft size={11} />
       </CollapseArrow>
