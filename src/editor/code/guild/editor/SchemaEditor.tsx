@@ -42,6 +42,7 @@ function BaseSchemaEditor(
     useErrorsState();
 
   useEffect(() => {
+    setErrorNodeNames(undefined);
     if (languageService && lockCode && props.schema) {
       Promise.all(
         grafEditorErrors.map((gee) => {
