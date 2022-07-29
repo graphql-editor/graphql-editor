@@ -61,6 +61,7 @@ export interface EditorProps extends Theming {
   readonly?: boolean;
   placeholder?: string;
   schema: PassedSchema;
+  sidebarExpanded?: boolean;
   diffSchemas?: {
     oldSchema: PassedSchema;
     newSchema: PassedSchema;
@@ -86,6 +87,7 @@ export const Editor = ({
   onTreeChange,
   readonly: editorReadOnly,
   theme = DarkTheme,
+  sidebarExpanded,
 }: EditorProps) => {
   const { setTheme } = useTheme();
 
@@ -215,6 +217,7 @@ export const Editor = ({
     >
       <Menu
         toggleCode={!!menuState.code}
+        sidebarExpanded={sidebarExpanded}
         setToggleCode={(e) =>
           setMenuState({
             ...menuState,

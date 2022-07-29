@@ -19,22 +19,25 @@ const Sidebar = styled.div<{ isCollapsed: boolean }>`
   padding-top: 10px;
 `;
 
-const MenuItem = styled.div<{ isCollapsed: boolean }>`
+const MenuItem = styled.div<{ isCollapsed: boolean; isDisabled?: boolean }>`
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  color: ${({ theme }) => theme.text};
+  color: ${({ theme, isDisabled }) =>
+    isDisabled ? theme.disabled : theme.text};
   padding: 15px;
   margin: 0 5px;
   border-radius: 4px;
   font-family: ${fontFamilySans};
-  cursor: pointer;
+  cursor: ${({ isDisabled }) => (isDisabled ? 'not-allowed' : 'pointer')};
   transition: all 0.25s ease;
   overflow: hidden;
+  user-select: none;
 
   &:hover {
-    background-color: ${({ theme }) => theme.contra};
-    color: #e3f6fc;
+    background-color: ${({ theme, isDisabled }) => !isDisabled && theme.contra};
+    color: ${({ isDisabled, theme }) =>
+      isDisabled ? theme.disabled : '#e3f6fc'};
   }
 
   & > div::after,
@@ -49,6 +52,7 @@ const MenuItem = styled.div<{ isCollapsed: boolean }>`
   }
 
   p::after {
+    display: ${({ isDisabled }) => (isDisabled ? 'none' : 'inline')};
     position: relative;
     bottom: 1px;
   }
@@ -60,6 +64,7 @@ const MenuItem = styled.div<{ isCollapsed: boolean }>`
   }
 
   & > div::after {
+    display: ${({ isDisabled }) => (isDisabled ? 'none' : 'block')};
     position: absolute;
     right: -10px;
     top: -10px;
@@ -139,6 +144,7 @@ export type ActivePane = 'diagram' | 'hierarchy' | 'diff' | 'relation' | 'docs';
 export interface MenuProps {
   setToggleCode: (v: boolean) => void;
   toggleCode: boolean;
+  sidebarExpanded?: boolean;
   activePane?: ActivePane;
   excludePanes?: ActivePane[];
   setActivePane: (pane: ActivePane) => void;
@@ -152,17 +158,24 @@ export const Menu = ({
   setActivePane,
   activePane,
   excludePanes = [],
+  sidebarExpanded,
 }: MenuProps) => {
   const { libraryTree, switchSchema, schemaType } = useTreesState();
-  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(
+    sidebarExpanded === true ? false : true,
+  );
 
   return (
     <Sidebar isCollapsed={isCollapsed}>
       <MenuItem
         data-cy={MenuChildren.code}
         className={toggleCode ? 'toggle-active' : ''}
-        onClick={() => setToggleCode(!toggleCode)}
+        onClick={() => {
+          if (activePane === 'diff') return;
+          setToggleCode(!toggleCode);
+        }}
         isCollapsed={isCollapsed}
+        isDisabled={activePane === 'diff'}
         data-tooltip="Toggle Code"
       >
         <div>
