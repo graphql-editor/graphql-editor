@@ -11,7 +11,8 @@ const Main = styled.div`
 `;
 
 export const Hierarchy = () => {
-  const { tree, libraryTree, selectedNode, setSelectedNode } = useTreesState();
+  const { tree, libraryTree, schemaType, selectedNode, setSelectedNode } =
+    useTreesState();
   const [hierarchy, setHierarchy] = useState<DiagramEngine>();
 
   const diagramRef = useRef<HTMLDivElement>(null);
@@ -36,7 +37,10 @@ export const Hierarchy = () => {
   useEffect(() => {
     if (hierarchy && tree && libraryTree) {
       const tr = TreeToNodes.resolveTree({
-        nodes: [...tree.nodes, ...libraryTree.nodes],
+        nodes:
+          schemaType === 'library'
+            ? [...libraryTree.nodes]
+            : [...tree.nodes, ...libraryTree.nodes],
       });
       hierarchy.setNodes(tr.nodes);
       hierarchy.eventBus.subscribe('NodeSelected', (e) => {
@@ -64,7 +68,7 @@ export const Hierarchy = () => {
         });
       }
     }
-  }, [tree, hierarchy, libraryTree]);
+  }, [tree, hierarchy, libraryTree, schemaType]);
 
   const setDOMElement = (element: HTMLElement): void => {
     setHierarchy(

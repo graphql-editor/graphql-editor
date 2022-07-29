@@ -121,7 +121,8 @@ let tRefs: Record<string, HTMLDivElement> = {};
 export const Relation: React.FC = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [focusedNode, setFocusedNode] = useState<ParserField>();
-  const { libraryTree, tree, selectedNode, setSelectedNode } = useTreesState();
+  const { libraryTree, tree, selectedNode, setSelectedNode, schemaType } =
+    useTreesState();
   const { lockGraf, grafErrors } = useErrorsState();
   const { menuState, setMenuState } = useNavigationState();
   const { setActions } = useIOState();
@@ -305,12 +306,20 @@ export const Relation: React.FC = () => {
   }, [relations, selectedNode]);
   const NodesContainer = useMemo(() => {
     const libraryNodeNames = libraryTree.nodes.map((l) => l.name);
-    return currentNodes.map((n, i) => (
+
+    const nodes =
+      schemaType === 'library'
+        ? [...currentNodes].filter((e) => libraryNodeNames.includes(e.name))
+        : [...currentNodes];
+
+    return nodes.map((n, i) => (
       <Node
         focus={() => {
           setFocusedNode(n);
         }}
-        isLibrary={libraryNodeNames.includes(n.name)}
+        isLibrary={
+          schemaType === 'library' ? true : libraryNodeNames.includes(n.name)
+        }
         fade={
           selectedNode?.field
             ? compareNodesWithData(selectedNode.field, n)
@@ -337,7 +346,8 @@ export const Relation: React.FC = () => {
         field={n}
       />
     ));
-  }, [currentNodes, setRefs, setFocusedNode, selectedNode]);
+  }, [currentNodes, setRefs, setFocusedNode, selectedNode, schemaType]);
+
   return (
     <>
       <Wrapper>

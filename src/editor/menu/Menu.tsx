@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import * as Icons from '../icons';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { useTreesState } from '@/state/containers';
-import { PassedSchema } from '@/Models';
 import styled from '@emotion/styled';
 import { fontFamilySans } from '@/vars';
 import { CollapseArrow } from '@/editor/menu/CollapseArrow';
@@ -17,23 +16,25 @@ const Sidebar = styled.div<{ isCollapsed: boolean }>`
   position: relative;
   transition: width 0.5s ease-in-out;
   width: ${({ isCollapsed }) => (isCollapsed ? '64px' : '210px')};
+  padding-top: 10px;
 `;
 
-const MenuItem = styled.div<{ isCollapsed: boolean; borderBottom?: boolean }>`
+const MenuItem = styled.div<{ isCollapsed: boolean }>`
   display: flex;
   justify-content: flex-start;
   align-items: center;
   color: ${({ theme }) => theme.text};
-  padding: 15px 20px;
-  border-bottom: ${({ borderBottom, theme }) =>
-    borderBottom ? `2px solid ${theme.contra}` : ''};
+  padding: 15px;
+  margin: 0 5px;
+  border-radius: 4px;
   font-family: ${fontFamilySans};
   cursor: pointer;
   transition: all 0.25s ease;
   overflow: hidden;
 
   &:hover {
-    background-color: #020202;
+    background-color: ${({ theme }) => theme.contra};
+    color: #e3f6fc;
   }
 
   & > div::after,
@@ -47,10 +48,21 @@ const MenuItem = styled.div<{ isCollapsed: boolean; borderBottom?: boolean }>`
     transition: opacity 0.25s ease-in-out;
   }
 
+  p::after {
+    position: relative;
+    bottom: 1px;
+  }
+
+  & > div {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
   & > div::after {
     position: absolute;
-    right: 5px;
-    top: 5px;
+    right: -10px;
+    top: -10px;
   }
 
   svg {
@@ -64,6 +76,7 @@ const MenuItem = styled.div<{ isCollapsed: boolean; borderBottom?: boolean }>`
     width: max-content;
     white-space: nowrap;
     transition: opacity 0.25s ease-in-out;
+    transform: translateY(2px);
     opacity: ${({ isCollapsed }) => (isCollapsed ? '0' : '1')};
   }
 
@@ -103,9 +116,17 @@ const MenuItem = styled.div<{ isCollapsed: boolean; borderBottom?: boolean }>`
     &:hover {
       &:after {
         opacity: ${({ isCollapsed }) => (isCollapsed ? 1 : 0)};
+        color: #e3f6fc;
       }
     }
   }
+`;
+
+const BorderSpacer = styled.div`
+  border-bottom: 2px solid ${({ theme }) => theme.contra};
+  margin: 10px 0;
+  height: 0;
+  width: 100%;
 `;
 
 export type ActiveSource =
@@ -121,7 +142,6 @@ export interface MenuProps {
   activePane?: ActivePane;
   excludePanes?: ActivePane[];
   setActivePane: (pane: ActivePane) => void;
-  schema: PassedSchema;
 }
 
 const MenuChildren = GraphQLEditorDomStructure.tree.sidebar.menu.children;
@@ -132,7 +152,6 @@ export const Menu = ({
   setActivePane,
   activePane,
   excludePanes = [],
-  schema,
 }: MenuProps) => {
   const { libraryTree, switchSchema, schemaType } = useTreesState();
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -143,7 +162,6 @@ export const Menu = ({
         data-cy={MenuChildren.code}
         className={toggleCode ? 'toggle-active' : ''}
         onClick={() => setToggleCode(!toggleCode)}
-        borderBottom
         isCollapsed={isCollapsed}
         data-tooltip="Toggle Code"
       >
@@ -157,9 +175,8 @@ export const Menu = ({
           data-cy={MenuChildren.diff}
           className={schemaType === 'library' ? 'toggle-active' : ''}
           onClick={() => {
-            switchSchema(schema);
+            switchSchema();
           }}
-          borderBottom
           isCollapsed={isCollapsed}
           data-tooltip="Library Schema"
         >
@@ -169,6 +186,7 @@ export const Menu = ({
           <p>Library Schema</p>
         </MenuItem>
       )}
+      <BorderSpacer />
       {!excludePanes.includes('diagram') && (
         <MenuItem
           data-cy={MenuChildren.diagram}
@@ -213,12 +231,12 @@ export const Menu = ({
           onClick={() => setActivePane('docs')}
           data-tooltip="Documentation View"
           isCollapsed={isCollapsed}
-          borderBottom
         >
           <Icons.DocsView size={22} />
           <p>Documentation View</p>
         </MenuItem>
       )}
+      <BorderSpacer />
       {!excludePanes.includes('diff') && (
         <MenuItem
           data-cy={MenuChildren.diff}

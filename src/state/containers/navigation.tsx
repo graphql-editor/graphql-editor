@@ -1,6 +1,6 @@
 import { createContainer } from 'unstated-next';
 import { useState } from 'react';
-import { ActivePane } from '@/editor/Menu';
+import { ActivePane } from '@/editor/menu/Menu';
 const useNavigationStateContainer = createContainer(() => {
   const [menuState, setMenuState] = useState<{
     pane?: ActivePane;

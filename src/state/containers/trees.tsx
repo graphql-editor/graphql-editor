@@ -11,7 +11,7 @@ import { BuiltInScalars } from '@/GraphQL/Resolve';
 import { PassedSchema } from '@/Models';
 import { useErrorsState } from '@/state/containers';
 import { compareNodesWithData } from '@/compare/compareNodes';
-import { ActiveSource } from '@/editor/Menu';
+import { ActiveSource } from '@/editor/menu/Menu';
 
 type SchemaType = 'user' | 'library';
 
@@ -81,13 +81,8 @@ const useTreesStateContainer = createContainer(() => {
     setScalars((prevValue) => [...prevValue, ...ownScalars]);
   };
 
-  const switchSchema = (schema: PassedSchema) => {
-    if (schemaType === 'user') {
-      setTree({ nodes: [] });
-    } else if (schemaType === 'library') {
-      setSelectedNode(undefined);
-      generateTreeFromSchema(schema);
-    }
+  const switchSchema = () => {
+    setSelectedNode(undefined);
     setSchemaType(schemaType === 'library' ? 'user' : 'library');
   };
 
