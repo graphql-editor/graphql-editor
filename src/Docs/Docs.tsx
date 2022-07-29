@@ -43,7 +43,7 @@ const ListWrapper = styled.div`
 `;
 
 export const Docs = () => {
-  const { tree, selectedNode, libraryTree } = useTreesState();
+  const { tree, selectedNode, libraryTree, schemaType } = useTreesState();
   const { setDocumentationWidth, documentationWidth, calcDocumentationWidth } =
     useLayoutState();
   const { sortAlphabetically } = useSortState();
@@ -57,7 +57,11 @@ export const Docs = () => {
     const interfaceNodes: ParserField[] = [];
     const schemaNodes: ParserField[] = [];
     const directivesNodes: ParserField[] = [];
-    const allNodes = tree.nodes.concat(libraryTree.nodes);
+    let allNodes =
+      schemaType === 'library'
+        ? [...libraryTree.nodes]
+        : [...tree.nodes, ...libraryTree.nodes];
+
     allNodes.sort(sortAlphabetically);
     allNodes.forEach((node) => {
       switch (node.data.type) {
@@ -99,7 +103,7 @@ export const Docs = () => {
       schemaNodes,
       directivesNodes,
     };
-  }, [tree, libraryTree]);
+  }, [tree, libraryTree, schemaType]);
 
   return (
     <Wrapper>

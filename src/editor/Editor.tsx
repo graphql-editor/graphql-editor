@@ -163,7 +163,7 @@ export const Editor = ({
       if (tree.initial) {
         return;
       }
-      setSchema({ ...schema, isTree: true });
+      setSchema({ ...schema, isTree: true, code: '' });
       return;
     }
     try {
@@ -215,7 +215,6 @@ export const Editor = ({
     >
       <Menu
         toggleCode={!!menuState.code}
-        schema={schema}
         setToggleCode={(e) =>
           setMenuState({
             ...menuState,

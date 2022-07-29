@@ -55,7 +55,7 @@ export const RootNode: React.FC<RootNodeProps> = ({
   readonly,
 }) => {
   const thisNode = useRef<HTMLDivElement>(null);
-  const { tree, setTree, selectedNode } = useTreesState();
+  const { tree, setTree, schemaType, selectedNode } = useTreesState();
   const {
     sortAlphabetically,
     isSortAlphabetically,
@@ -152,7 +152,7 @@ export const RootNode: React.FC<RootNodeProps> = ({
           }}
         />
       )}
-      {paintedNodes}
+      {schemaType === 'user' && paintedNodes}
       {libraryNode?.args?.map((a) => (
         <PaintNode
           isLibrary={true}
