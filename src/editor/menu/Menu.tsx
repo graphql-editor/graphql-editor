@@ -139,6 +139,7 @@ export type ActivePane = 'diagram' | 'hierarchy' | 'diff' | 'relation' | 'docs';
 export interface MenuProps {
   setToggleCode: (v: boolean) => void;
   toggleCode: boolean;
+  sidebarExpanded?: boolean;
   activePane?: ActivePane;
   excludePanes?: ActivePane[];
   setActivePane: (pane: ActivePane) => void;
@@ -152,9 +153,12 @@ export const Menu = ({
   setActivePane,
   activePane,
   excludePanes = [],
+  sidebarExpanded,
 }: MenuProps) => {
   const { libraryTree, switchSchema, schemaType } = useTreesState();
-  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(
+    sidebarExpanded === true ? false : true,
+  );
 
   return (
     <Sidebar isCollapsed={isCollapsed}>
