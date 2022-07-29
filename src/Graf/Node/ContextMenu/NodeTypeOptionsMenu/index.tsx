@@ -6,16 +6,37 @@ interface NodeTypeOptionsMenuProps {
   node: ParserField;
   hideMenu: () => void;
 }
+
 const configureOpts = (node: ParserField) => {
   let { options = [] } = node.type;
-  let opts: Record<string, boolean> = {};
-  opts[Options.required] = !!options.includes(Options.required);
-  opts[Options.array] = !!options.includes(Options.array);
-  if (opts[Options.array]) {
-    opts[Options.arrayRequired] = !!options.includes(Options.arrayRequired);
-  }
+  const t = node.type.name;
+  const r = !!options.includes(Options.required);
+  const a = !!options.includes(Options.array);
+  const ar = !!options.includes(Options.arrayRequired);
+  const opts: Record<string, boolean> = {
+    [`${t}`]: !r && !a && !ar,
+    [`${t}!`]: r && !a && !ar,
+    [`[${t}]`]: a && !r && !ar,
+    [`[${t}!]`]: a && r && !ar,
+    [`[${t}!]!`]: r && a && ar,
+    [`[${t}]!`]: a && ar && !r,
+  };
   return opts;
 };
+const configureNode = (node: ParserField, optionString: string) => {
+  const t = node.type.name;
+  const isRequired = [`${t}!`, `[${t}!]`, `[${t}!]!`].includes(optionString);
+  const isArray = [`[${t}]`, `[${t}]!`, `[${t}!]`, `[${t}!]!`].includes(
+    optionString,
+  );
+  const isArrayRequired = [`[${t}]!`, `[${t}!]!`].includes(optionString);
+  node.type.options = [];
+  if (isRequired) node.type.options.push(Options.required);
+  if (isArrayRequired) node.type.options.push(Options.arrayRequired);
+  if (isArray) node.type.options.push(Options.array);
+  return;
+};
+
 export const NodeTypeOptionsMenu: React.FC<NodeTypeOptionsMenuProps> = ({
   node,
   hideMenu,
@@ -31,12 +52,7 @@ export const NodeTypeOptionsMenu: React.FC<NodeTypeOptionsMenuProps> = ({
       hideMenu={hideMenu}
       options={opts}
       onCheck={(o) => {
-        const turnOff = !!node.type.options?.includes(o as Options);
-        if (turnOff) {
-          node.type.options = node.type.options?.filter((opt) => opt !== o);
-        } else {
-          node.type.options = [...(node.type.options || []), o as Options];
-        }
+        configureNode(node, o);
         setTree({ ...tree });
       }}
     />

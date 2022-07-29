@@ -20,7 +20,6 @@ const checkOptions = (node: ParserField) => {
   opts['non-required'] = allNonRequired;
   return opts;
 };
-
 export const NodeFieldsRequiredMenu: React.FC<NodeChangeFieldTypeMenuProps> = ({
   hideMenu,
   node,
