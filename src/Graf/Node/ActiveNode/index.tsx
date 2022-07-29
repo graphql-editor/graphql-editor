@@ -196,7 +196,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
 
   useEffect(() => {
     setOpenedNode(undefined);
-  }, [node]);
+  }, [selectedNode]);
 
   const inactiveClick = () => {
     if (openedNode) {
