@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState, useMemo } from 'react';
-import { fontFamily } from '@/vars';
+import { fontFamily, fontFamilySans } from '@/vars';
 import { PaintNodes } from './PaintNodes';
 import { ActiveNode } from '@/Graf/Node';
 import { useTreesState } from '@/state/containers/trees';
@@ -37,6 +37,14 @@ const Main = styled.div`
   position: relative;
   overflow-y: auto;
   font-family: ${fontFamily};
+`;
+
+const Heading = styled.h1`
+  font-size: 14px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.inactive};
+  margin: 20px 25px;
+  font-family: ${fontFamilySans};
 `;
 
 const ErrorContainer = styled.div`
@@ -240,6 +248,7 @@ export const Graf: React.FC = () => {
         }}
         data-cy={GraphQLEditorDomStructure.tree.elements.Graf.name}
       >
+        <Heading>DIAGRAM VIEW</Heading>
         {lockGraf ? (
           <ErrorWrapper>
             <ErrorLabel>{`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:`}</ErrorLabel>
