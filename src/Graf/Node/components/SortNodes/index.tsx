@@ -1,11 +1,7 @@
 import React, { useState, DragEvent } from 'react';
 import { ArrowLeft, SixDots } from '@/editor/icons';
 import { useSortState } from '@/state/containers/sort';
-import {
-  dragLeaveHandler,
-  dragOverHandler,
-  dragStartHandler,
-} from '@/Graf/Node/ActiveNode/dnd';
+import { dragLeaveHandler, dragOverHandler } from '@/Graf/Node/ActiveNode/dnd';
 import { TypeDefinition, TypeSystemDefinition } from 'graphql-js-tree';
 import styled from '@emotion/styled';
 import { fontFamily, fontFamilySans } from '@/vars';
@@ -43,9 +39,17 @@ const ChevronBox = styled.div<{ isListVisible: boolean }>`
   }
 `;
 
-const DragContainer = styled.div<{ isDraggedOver?: boolean }>`
-  padding-top: ${({ isDraggedOver }) => (isDraggedOver ? '57px' : '0')};
-  margin-bottom: 10px;
+const DragContainer = styled.div<{
+  isDraggedOver?: boolean;
+  disableDrag?: boolean;
+  dragSpaceTop?: boolean;
+  isDragged?: boolean;
+}>`
+  ${({ isDraggedOver, dragSpaceTop, disableDrag }) => {
+    if (disableDrag || !isDraggedOver) return undefined;
+    return dragSpaceTop ? 'padding-top:50px;' : 'padding-bottom:50px;';
+  }}
+  opacity: ${({ isDragged }) => (isDragged ? 0.4 : 1)};
 `;
 
 const List = styled.div<{ isListVisible: boolean }>`
@@ -66,6 +70,7 @@ const ListItem = styled.div<{ nodeType: NodeType }>`
   display: flex;
   align-items: center;
   padding: 0 10px;
+  margin-bottom: 10px;
   border-radius: 4px;
   height: 36px;
   color: ${({ theme }) => theme.text};
@@ -85,18 +90,25 @@ const ListItem = styled.div<{ nodeType: NodeType }>`
   }
 `;
 
+const initDragObj = {
+  name: '',
+  idx: 0,
+};
+
 export const SortNodes = () => {
   const { orderTypes, setOrderTypes } = useSortState();
-  const [dragOverName, setDragOverName] = useState('');
+  const [dragOverObj, setDragOverObj] = useState(initDragObj);
+  const [dragStartObj, setDragStartObj] = useState(initDragObj);
   const [isListVisible, setIsListVisible] = useState(true);
 
   const dropHandler = (e: DragEvent, endNodeName: string) => {
     e.stopPropagation();
-    const startName = e.dataTransfer?.getData('startName');
-    if (endNodeName === startName) return;
+    if (endNodeName === dragStartObj.name) return;
 
     let newOrderTypes = [...orderTypes];
-    const startIdx = newOrderTypes.findIndex((a) => a.name === startName);
+    const startIdx = newOrderTypes.findIndex(
+      (a) => a.name === dragStartObj.name,
+    );
     const endIdx = newOrderTypes.findIndex((a) => a.name === endNodeName);
     newOrderTypes.splice(endIdx, 0, newOrderTypes.splice(startIdx, 1)[0]);
     newOrderTypes = newOrderTypes.map((nt, i) => ({
@@ -139,25 +151,29 @@ export const SortNodes = () => {
           <DragContainer
             key={type.name}
             id={type.name}
-            isDraggedOver={type.name === dragOverName}
+            isDragged={type.name === dragStartObj.name}
+            isDraggedOver={type.name === dragOverObj.name}
+            dragSpaceTop={dragStartObj.idx > dragOverObj.idx}
+            disableDrag={dragOverObj.name === dragStartObj.name}
             onDrop={(e) => {
-              setDragOverName('');
+              setDragOverObj(initDragObj);
+              setDragStartObj(initDragObj);
               dropHandler(e, type.name);
             }}
-            onDragEnd={() => setDragOverName('')}
+            onDragEnd={() => setDragOverObj(initDragObj)}
             onDragLeave={(e) => {
               dragLeaveHandler(e);
             }}
             onDragOver={(e) => {
-              setDragOverName(type.name);
+              setDragOverObj({ name: type.name, idx });
               dragOverHandler(e);
             }}
           >
             <ListItem
               nodeType={displayTypes(type.name)}
               draggable={true}
-              onDragStart={(e) => {
-                dragStartHandler(e, type.name);
+              onDragStart={() => {
+                setDragStartObj({ name: type.name, idx });
               }}
             >
               <SixDots size={18} />
