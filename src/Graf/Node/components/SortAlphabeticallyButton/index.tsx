@@ -1,5 +1,5 @@
 import React, { useState, DragEvent } from 'react';
-import { SortAz, X, UpDownArrow } from '@/editor/icons';
+import { ArrowLeft, UpDownArrow } from '@/editor/icons';
 import { useTheme } from '@/state/containers';
 import { useSortState } from '@/state/containers/sort';
 import {
@@ -10,7 +10,7 @@ import {
 import { TypeDefinition, TypeSystemDefinition } from 'graphql-js-tree';
 import styled from '@emotion/styled';
 
-const IconWrapper = styled.div`
+const Container = styled.div`
   cursor: pointer;
   display: flex;
   justify-content: space-between;
@@ -26,7 +26,6 @@ const ListHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 200px;
 `;
 
 const List = styled.div`
@@ -64,13 +63,7 @@ const ListItem = styled.div<{ nodeColor: string; shouldResetMargin?: boolean }>`
 `;
 
 export const SortAlphabeticallyButton = () => {
-  const {
-    setIsSortAlphabetically,
-    isSortAlphabetically,
-    orderTypes,
-    setOrderTypes,
-    setIsUserOrder,
-  } = useSortState();
+  const { orderTypes, setOrderTypes } = useSortState();
   const { theme } = useTheme();
   const [dragOverName, setDragOverName] = useState('');
   const [isListVisible, setIsListVisible] = useState(false);
@@ -132,23 +125,11 @@ export const SortAlphabeticallyButton = () => {
   };
 
   return (
-    <IconWrapper>
-      <div
-        onClick={() => {
-          setIsUserOrder(false);
-          setIsSortAlphabetically((prev) => !prev);
-        }}
-      >
-        <SortAz
-          size={28}
-          fill={isSortAlphabetically ? theme.active : theme.inactive}
-        />
-      </div>
-
+    <Container>
       <ListWrapper onClick={() => setIsListVisible((prev) => !prev)}>
         <ListHeader>
           <p>Nodes order</p>
-          {isListVisible && <X size={20} />}
+          <ArrowLeft size={20} />
         </ListHeader>
         <List>
           {isListVisible &&
@@ -185,6 +166,6 @@ export const SortAlphabeticallyButton = () => {
             ))}
         </List>
       </ListWrapper>
-    </IconWrapper>
+    </Container>
   );
 };

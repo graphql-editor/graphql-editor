@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef } from 'react';
 import {
   ParserField,
   TypeDefinitionDisplayMap,
@@ -9,13 +9,13 @@ import { PaintNode } from '@/Graf/Node/PaintNode';
 import { NewNode } from '@/Graf/Node/NewNode';
 import { useTreesState } from '@/state/containers/trees';
 import { GraphQLEditorDomStructure } from '@/domStructure';
-import { SearchInput } from '@/Graf/Node/components/SearchInput';
 import { useSortState } from '@/state/containers/sort';
 import styled from '@emotion/styled';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
 
 export interface RootNodeProps {
   node: ParserField;
+  filterNodes: string;
   libraryNode?: ParserField;
   readonly?: boolean;
 }
@@ -53,6 +53,7 @@ export const RootNode: React.FC<RootNodeProps> = ({
   node,
   libraryNode,
   readonly,
+  filterNodes,
 }) => {
   const thisNode = useRef<HTMLDivElement>(null);
   const { tree, setTree, schemaType, selectedNode } = useTreesState();
@@ -62,8 +63,6 @@ export const RootNode: React.FC<RootNodeProps> = ({
     isNodeBaseType,
     isUserOrder,
   } = useSortState();
-
-  const [filterNodes, setFilterNodes] = useState('');
 
   const sortNodes = () =>
     isUserOrder
@@ -110,16 +109,6 @@ export const RootNode: React.FC<RootNodeProps> = ({
         >
           {node.name}
         </CaptionTitle>
-        <SearchInput
-          cypressName={GraphQLEditorDomStructure.tree.elements.Graf.searchInput}
-          autoFocus={false}
-          onClear={() => {
-            setFilterNodes('');
-          }}
-          onSubmit={() => {}}
-          value={filterNodes}
-          onChange={setFilterNodes}
-        />
       </NodeCaption>
       {!readonly && (
         <NewNode

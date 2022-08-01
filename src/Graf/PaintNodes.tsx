@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   TypeDefinitionDisplayMap,
   TypeSystemExtension,
@@ -11,6 +11,8 @@ import { RootExtendNode } from './Node/RootExtendNode';
 import { useSortState } from '@/state/containers/sort';
 import { SortAlphabeticallyButton } from './Node/components/SortAlphabeticallyButton';
 import styled from '@emotion/styled';
+import { SearchInput } from '@/Graf/Node/components/SearchInput';
+import { GraphQLEditorDomStructure } from '@/domStructure';
 
 const Main = styled.div`
   width: 100%;
@@ -20,16 +22,20 @@ const Main = styled.div`
   padding-bottom: 300px;
 `;
 
-const SortContainer = styled.div`
-  position: absolute;
-  right: 20px;
-  top: 20px;
-  color: ${({ theme }) => theme.backgrounds.type};
+const TopBar = styled.div`
+  display: flex;
+  margin: 0 20px 0 8px;
+
+  & > div:first-of-type {
+    flex: 1;
+  }
 `;
 
 export const PaintNodes: React.FC = () => {
   const { libraryTree, tree, readonly } = useTreesState();
   const { orderTypes } = useSortState();
+  const [filterNodes, setFilterNodes] = useState('');
+
   const baseTypes = [...orderTypes.map((t) => t.name)].map((d) => ({
     node: {
       name: TypeDefinitionDisplayMap[d],
@@ -60,6 +66,7 @@ export const PaintNodes: React.FC = () => {
           key={d.node.type.name}
           node={d.node}
           libraryNode={d.libraryNode}
+          filterNodes={filterNodes}
         />
       )),
     [baseTypes],
@@ -67,9 +74,20 @@ export const PaintNodes: React.FC = () => {
 
   return (
     <Main>
-      <SortContainer>
+      <TopBar>
+        <SearchInput
+          cypressName={GraphQLEditorDomStructure.tree.elements.Graf.searchInput}
+          autoFocus={false}
+          onClear={() => {
+            setFilterNodes('');
+          }}
+          onSubmit={() => {}}
+          value={filterNodes}
+          onChange={setFilterNodes}
+        />
         <SortAlphabeticallyButton />
-      </SortContainer>
+      </TopBar>
+
       {RootBaseTypes}
       <RootExtendNode
         readonly={readonly}

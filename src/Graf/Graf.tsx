@@ -43,7 +43,7 @@ const Heading = styled.h1`
   font-size: 14px;
   font-weight: 500;
   color: ${({ theme }) => theme.inactive};
-  margin: 20px 25px;
+  margin: 20px 25px 15px;
   font-family: ${fontFamilySans};
 `;
 
