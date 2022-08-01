@@ -3,7 +3,7 @@ import { GqlCodePane } from './code';
 import { PassedSchema, Theming } from '@/Models';
 import { useTreesState, useTheme, useLayoutState } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
-import { DarkTheme, EditorTheme } from '@/gshared/theme/DarkTheme';
+import { EditorTheme } from '@/gshared/theme/DarkTheme';
 import styled from '@emotion/styled';
 
 const Main = styled.div`
@@ -32,7 +32,7 @@ export const GqlEditor = ({
   },
   gql,
   readonly: editorReadOnly,
-  theme = DarkTheme,
+  theme,
   setGql,
 }: GqlEditorProps) => {
   const { setTheme } = useTheme();

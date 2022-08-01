@@ -18,7 +18,7 @@ import {
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { DiffEditor } from '@/DiffEditor';
 import { Relation } from '@/Relation/Relation';
-import { DarkTheme, EditorTheme } from '@/gshared/theme/DarkTheme';
+import { EditorTheme } from '@/gshared/theme/DarkTheme';
 import { Docs } from '@/Docs/Docs';
 import { useSortState } from '@/state/containers/sort';
 import styled from '@emotion/styled';
@@ -86,7 +86,7 @@ export const Editor = ({
   diffSchemas,
   onTreeChange,
   readonly: editorReadOnly,
-  theme = DarkTheme,
+  theme,
   sidebarExpanded,
 }: EditorProps) => {
   const { setTheme } = useTheme();
