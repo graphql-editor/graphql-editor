@@ -9,7 +9,7 @@ import { RootNode } from '@/Graf/Node';
 import { useTreesState } from '@/state/containers/trees';
 import { RootExtendNode } from './Node/RootExtendNode';
 import { useSortState } from '@/state/containers/sort';
-import { SortAlphabeticallyButton } from './Node/components/SortAlphabeticallyButton';
+import { SortNodes } from './Node/components/SortNodes';
 import styled from '@emotion/styled';
 import { SearchInput } from '@/Graf/Node/components/SearchInput';
 import { GraphQLEditorDomStructure } from '@/domStructure';
@@ -85,7 +85,7 @@ export const PaintNodes: React.FC = () => {
           value={filterNodes}
           onChange={setFilterNodes}
         />
-        <SortAlphabeticallyButton />
+        <SortNodes />
       </TopBar>
 
       {RootBaseTypes}
