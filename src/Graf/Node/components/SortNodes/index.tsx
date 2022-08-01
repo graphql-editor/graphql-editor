@@ -99,7 +99,7 @@ export const SortNodes = () => {
   const { orderTypes, setOrderTypes } = useSortState();
   const [dragOverObj, setDragOverObj] = useState(initDragObj);
   const [dragStartObj, setDragStartObj] = useState(initDragObj);
-  const [isListVisible, setIsListVisible] = useState(true);
+  const [isListVisible, setIsListVisible] = useState(false);
 
   const dropHandler = (e: DragEvent, endNodeName: string) => {
     e.stopPropagation();

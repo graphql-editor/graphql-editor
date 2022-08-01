@@ -31,7 +31,6 @@ const NodeCreate = styled.input`
   color: ${({ theme }) => theme.text};
   background-color: transparent;
   font-size: 12px;
-  padding: 5px 0 5px 10px;
   border: 0;
   outline: 0;
   font-family: ${fontFamily};
@@ -69,9 +68,7 @@ const ChangedNodeTitle = styled(NodeTitle)`
   background-color: transparent;
 `;
 
-const NodeContainer = styled.div`
-  margin: 10px;
-`;
+const NodeContainer = styled.div``;
 
 const PlusButton = styled.span`
   margin-left: auto;

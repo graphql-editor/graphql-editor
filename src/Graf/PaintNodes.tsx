@@ -31,6 +31,13 @@ const TopBar = styled.div`
   }
 `;
 
+export const LineSpacer = styled.div`
+  width: 100%;
+  height: 0;
+  border-bottom: 1px solid ${({ theme }) => theme.disabled}36;
+  margin: 20px 0;
+`;
+
 export const PaintNodes: React.FC = () => {
   const { libraryTree, tree, readonly } = useTreesState();
   const { orderTypes } = useSortState();
@@ -61,13 +68,16 @@ export const PaintNodes: React.FC = () => {
   const RootBaseTypes = useMemo(
     () =>
       baseTypes.map((d) => (
-        <RootNode
-          readonly={readonly}
-          key={d.node.type.name}
-          node={d.node}
-          libraryNode={d.libraryNode}
-          filterNodes={filterNodes}
-        />
+        <>
+          <LineSpacer />
+          <RootNode
+            readonly={readonly}
+            key={d.node.type.name}
+            node={d.node}
+            libraryNode={d.libraryNode}
+            filterNodes={filterNodes}
+          />
+        </>
       )),
     [baseTypes],
   );
@@ -87,7 +97,6 @@ export const PaintNodes: React.FC = () => {
         />
         <SortNodes />
       </TopBar>
-
       {RootBaseTypes}
       <RootExtendNode
         filterNodes={filterNodes}
