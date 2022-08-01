@@ -11,34 +11,27 @@ export interface RootExtendNodeProps {
   readonly?: boolean;
 }
 
-const NodeCaption = styled.div`
-  flex-basis: 100%;
-  margin: 15px;
-  display: flex;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.Extend}22;
-  padding-bottom: 15px;
-  align-items: center;
+const NodeContainer = styled.div`
+  margin: 0 25px;
 `;
 
-const CaptionTitle = styled.span`
-  margin: 10px;
+const NodeTopBar = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 0 20px 25px 0;
   color: ${({ theme }) => theme.colors.Extend};
 `;
 
-const NodeContainer = styled.div`
-  padding: 10px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  width: 100%;
-  padding-bottom: 15px;
+const NodeName = styled.span`
+  font-size: 14px;
+  font-weight: 700;
+  margin-right: 20px;
 `;
 
 const ExtendButton = styled.div`
   position: relative;
   border: 1px solid ${({ theme }) => theme.colors.Extend};
-  padding: 7.5px 0 7.5px 10px;
-  margin: 10px;
+  height: 36px;
   border-radius: 4px;
   width: 200px;
   cursor: pointer;
@@ -47,7 +40,6 @@ const ExtendButton = styled.div`
 `;
 
 const ExtendButtonTitle = styled.span`
-  padding: 0 5px;
   font-size: 12px;
   color: ${({ theme }) => theme.text};
 `;
@@ -71,6 +63,13 @@ const PlusButton = styled.span`
   margin-right: 5px;
 `;
 
+const NodeBox = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 15px 20px;
+`;
+
 export const RootExtendNode: React.FC<RootExtendNodeProps> = ({
   node,
   libraryNode,
@@ -82,53 +81,55 @@ export const RootExtendNode: React.FC<RootExtendNodeProps> = ({
   const [menuOpen, setMenuOpen] = useState(false);
   return (
     <NodeContainer ref={thisNode}>
-      <NodeCaption>
-        <CaptionTitle>extend</CaptionTitle>
-      </NodeCaption>
-      {!readonly && (
-        <ExtendButton
-          onClick={() => {
-            setMenuOpen(true);
-          }}
-        >
-          <ExtendButtonTitle>Extend node</ExtendButtonTitle>
-          <PlusButton>
-            <Plus width={10} height={10} />
-          </PlusButton>
-          {menuOpen && (
-            <ExtendMenuContainer>
-              <ExtendNodeMenu
-                hideMenu={() => {
-                  setMenuOpen(false);
-                }}
-              />
-            </ExtendMenuContainer>
-          )}
-        </ExtendButton>
-      )}
-      {node.args?.map((a, i) => {
-        return (
-          <PaintNode
-            isMatchedToSearch={a.name
-              .toLowerCase()
-              .includes(filterNodes.toLowerCase())}
-            key={a.name + i}
-            node={a}
-          />
-        );
-      })}
-      {libraryNode?.args?.map((a, i) => {
-        return (
-          <PaintNode
-            isMatchedToSearch={a.name
-              .toLowerCase()
-              .includes(filterNodes.toLowerCase())}
-            isLibrary={true}
-            key={a.name + i + node.args?.length}
-            node={a}
-          />
-        );
-      })}
+      <NodeTopBar>
+        <NodeName>extend</NodeName>
+        {!readonly && (
+          <ExtendButton
+            onClick={() => {
+              setMenuOpen(true);
+            }}
+          >
+            <ExtendButtonTitle>Extend node</ExtendButtonTitle>
+            <PlusButton>
+              <Plus width={10} height={10} />
+            </PlusButton>
+            {menuOpen && (
+              <ExtendMenuContainer>
+                <ExtendNodeMenu
+                  hideMenu={() => {
+                    setMenuOpen(false);
+                  }}
+                />
+              </ExtendMenuContainer>
+            )}
+          </ExtendButton>
+        )}
+      </NodeTopBar>
+      <NodeBox>
+        {node.args?.map((a, i) => {
+          return (
+            <PaintNode
+              isMatchedToSearch={a.name
+                .toLowerCase()
+                .includes(filterNodes.toLowerCase())}
+              key={a.name + i}
+              node={a}
+            />
+          );
+        })}
+        {libraryNode?.args?.map((a, i) => {
+          return (
+            <PaintNode
+              isMatchedToSearch={a.name
+                .toLowerCase()
+                .includes(filterNodes.toLowerCase())}
+              isLibrary={true}
+              key={a.name + i + node.args?.length}
+              node={a}
+            />
+          );
+        })}
+      </NodeBox>
     </NodeContainer>
   );
 };

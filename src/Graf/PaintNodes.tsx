@@ -31,7 +31,7 @@ const TopBar = styled.div`
   }
 `;
 
-export const LineSpacer = styled.div`
+const LineSpacer = styled.div`
   width: 100%;
   height: 0;
   border-bottom: 1px solid ${({ theme }) => theme.disabled}36;
@@ -68,16 +68,15 @@ export const PaintNodes: React.FC = () => {
   const RootBaseTypes = useMemo(
     () =>
       baseTypes.map((d) => (
-        <>
+        <div key={d.node.type.name}>
           <LineSpacer />
           <RootNode
             readonly={readonly}
-            key={d.node.type.name}
             node={d.node}
             libraryNode={d.libraryNode}
             filterNodes={filterNodes}
           />
-        </>
+        </div>
       )),
     [baseTypes],
   );
@@ -98,6 +97,7 @@ export const PaintNodes: React.FC = () => {
         <SortNodes />
       </TopBar>
       {RootBaseTypes}
+      <LineSpacer />
       <RootExtendNode
         filterNodes={filterNodes}
         readonly={readonly}
