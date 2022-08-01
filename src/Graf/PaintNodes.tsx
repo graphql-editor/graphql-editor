@@ -90,6 +90,7 @@ export const PaintNodes: React.FC = () => {
 
       {RootBaseTypes}
       <RootExtendNode
+        filterNodes={filterNodes}
         readonly={readonly}
         node={{
           name: TypeSystemExtension.TypeExtension,

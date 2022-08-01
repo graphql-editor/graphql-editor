@@ -3,11 +3,10 @@ import { ParserField } from 'graphql-js-tree';
 import { PaintNode } from '@/Graf/Node/PaintNode';
 import { ExtendNodeMenu } from '@/Graf/Node/ContextMenu';
 import { Plus } from '@/Graf/icons';
-import { GraphQLEditorDomStructure } from '@/domStructure';
-import { SearchInput } from '@/Graf/Node/components/SearchInput';
 import styled from '@emotion/styled';
 export interface RootExtendNodeProps {
   node: ParserField;
+  filterNodes: string;
   libraryNode?: ParserField;
   readonly?: boolean;
 }
@@ -76,25 +75,15 @@ export const RootExtendNode: React.FC<RootExtendNodeProps> = ({
   node,
   libraryNode,
   readonly,
+  filterNodes,
 }) => {
   const thisNode = useRef<HTMLDivElement>(null);
 
-  const [filterNodes, setFilterNodes] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   return (
     <NodeContainer ref={thisNode}>
       <NodeCaption>
         <CaptionTitle>extend</CaptionTitle>
-        <SearchInput
-          cypressName={GraphQLEditorDomStructure.tree.elements.Graf.searchInput}
-          onSubmit={() => {}}
-          autoFocus={false}
-          onClear={() => {
-            setFilterNodes('');
-          }}
-          value={filterNodes}
-          onChange={setFilterNodes}
-        />
       </NodeCaption>
       {!readonly && (
         <ExtendButton
