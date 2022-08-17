@@ -25,7 +25,9 @@ export const googlediff = () => {
         theme={MainTheme}
         schema={currentSchema}
         sidebarExpanded
-        setSchema={(s) => setCurrentSchema(s)}
+        setSchema={(s) => {
+          setCurrentSchema(s);
+        }}
         diffSchemas={{
           newSchema: {
             code: schemas.googleDirectionsNew,
