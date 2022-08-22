@@ -2,8 +2,8 @@ import React, { useRef, useState } from 'react';
 import { ParserField } from 'graphql-js-tree';
 import { PaintNode } from '@/Graf/Node/PaintNode';
 import { ExtendNodeMenu } from '@/Graf/Node/ContextMenu';
-import { Plus } from '@/Graf/icons';
 import styled from '@emotion/styled';
+import { transition } from '@/vars';
 export interface RootExtendNodeProps {
   node: ParserField;
   filterNodes: string;
@@ -18,48 +18,58 @@ const NodeContainer = styled.div`
 const NodeTopBar = styled.div`
   display: flex;
   align-items: center;
-  margin: 0 20px 25px 0;
+  height: 34px;
+  cursor: pointer;
+  position: relative;
+  font-size: 12px;
+  margin: 0 20px 20px 0;
   color: ${({ theme }) => theme.colors.Extend};
 `;
 
 const NodeName = styled.span`
   font-size: 14px;
   font-weight: 700;
-  margin-right: 20px;
+  margin-right: 10px;
 `;
 
 const ExtendButton = styled.div`
-  position: relative;
-  border: 1px solid ${({ theme }) => theme.colors.Extend};
-  height: 36px;
-  border-radius: 4px;
-  width: 200px;
-  cursor: pointer;
   display: flex;
   align-items: center;
+  padding: 0 10px;
+  border-radius: 4px;
+  position: relative;
+  height: 100%;
+  transition: ${transition};
+
+  &:hover {
+    background-color: ${({ theme }) => theme.background.mainFurthest};
+    color: ${({ theme }) => theme.text};
+  }
+
+  & > span {
+    transition: ${transition};
+    color: ${({ theme }) => theme.disabled};
+
+    &:hover {
+      color: ${({ theme }) => theme.text};
+    }
+  }
 `;
 
 const ExtendButtonTitle = styled.span`
   font-size: 12px;
-  color: ${({ theme }) => theme.text};
 `;
 
 const ExtendMenuContainer = styled.div`
   position: absolute;
-  top: 30px;
+  z-index: 5;
+  top: 34px;
   right: -70px;
 `;
 
-const PlusButton = styled.span`
-  margin-left: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  align-self: center;
-  color: ${({ theme }) => theme.text};
-  width: 20px;
-  height: 20px;
-  border-radius: 10px;
+const Plus = styled.span`
+  font-size: 18px;
+  font-weight: 600;
   margin-right: 5px;
 `;
 
@@ -89,10 +99,8 @@ export const RootExtendNode: React.FC<RootExtendNodeProps> = ({
               setMenuOpen(true);
             }}
           >
+            <Plus>+</Plus>
             <ExtendButtonTitle>Extend node</ExtendButtonTitle>
-            <PlusButton>
-              <Plus width={10} height={10} />
-            </PlusButton>
             {menuOpen && (
               <ExtendMenuContainer>
                 <ExtendNodeMenu

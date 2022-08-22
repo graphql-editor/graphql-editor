@@ -29,7 +29,7 @@ const NodeContainer = styled.div`
 const NodeTopBar = styled.div<{ nodeType: NodeTypes }>`
   display: flex;
   align-items: center;
-  margin: 0 20px 25px 0;
+  margin: 0 20px 20px 0;
   color: ${({ theme, nodeType }) =>
     theme.colors[nodeType] ? theme.colors[nodeType] : theme.text};
 `;
@@ -37,7 +37,7 @@ const NodeTopBar = styled.div<{ nodeType: NodeTypes }>`
 const NodeName = styled.span`
   font-size: 14px;
   font-weight: 700;
-  margin-right: 20px;
+  margin-right: 10px;
 `;
 
 const NodeBox = styled.div`

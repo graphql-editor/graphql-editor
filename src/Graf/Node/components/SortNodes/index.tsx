@@ -30,6 +30,7 @@ const Container = styled.div`
 `;
 
 const ChevronBox = styled.div<{ isListVisible: boolean }>`
+  display: flex;
   svg path {
     fill: ${({ theme }) => theme.text};
     transform-origin: 50% 50%;
