@@ -69,7 +69,9 @@ export const CodePane = (props: CodePaneProps) => {
             monaco.editor.defineTheme('graphql-editor', MonacoTheme(theme))
           }
           onBlur={(v) => {
-            if (!props.readonly) onChange(v);
+            if (props.readonly) return;
+            if (v === schema) return;
+            onChange(v);
           }}
           schema={schema}
           libraries={libraries}

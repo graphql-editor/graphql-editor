@@ -23,7 +23,10 @@ export const googlediff = () => {
     >
       <GraphQLEditor
         schema={currentSchema}
-        setSchema={(s) => setCurrentSchema(s)}
+        sidebarExpanded
+        setSchema={(s) => {
+          setCurrentSchema(s);
+        }}
         diffSchemas={{
           newSchema: {
             code: schemas.googleDirectionsNew,
