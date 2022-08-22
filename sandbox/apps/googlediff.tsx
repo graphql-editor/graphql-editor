@@ -22,7 +22,6 @@ export const googlediff = () => {
       }}
     >
       <GraphQLEditor
-        theme={MainTheme}
         schema={currentSchema}
         sidebarExpanded
         setSchema={(s) => {

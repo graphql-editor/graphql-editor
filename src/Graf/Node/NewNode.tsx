@@ -1,10 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { ParserField } from 'graphql-js-tree';
-import { NodeName, NodeTitle } from './SharedNode';
-import { fontFamily } from '@/vars';
+import { fontFamily, fontFamilySans, transition } from '@/vars';
 import { useTreesState } from '@/state/containers/trees';
-import { Plus } from '@/Graf/icons';
-import { useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import styled from '@emotion/styled';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
@@ -15,30 +12,84 @@ export interface NewNodeProps {
 
 type NodeTypes = keyof EditorTheme['backgrounds'];
 
-const NameErrorMessage = styled.div`
-  position: absolute;
-  height: 30px;
-  top: -30px;
-  color: ${({ theme }) => theme.error};
-  width: 600px;
-  font-size: 10px;
-  margin-left: -10px;
+const Container = styled.div`
   display: flex;
   align-items: center;
+  height: 34px;
+  font-family: ${fontFamilySans};
+  color: ${({ theme }) => theme.disabled};
+  cursor: pointer;
+  position: relative;
+  font-size: 12px;
 `;
 
-const NodeCreate = styled.input`
-  color: ${({ theme }) => theme.text};
-  background-color: transparent;
-  font-size: 12px;
-  padding: 5px 0 5px 10px;
-  border: 0;
-  outline: 0;
-  font-family: ${fontFamily};
-  width: 200px;
+const Plus = styled.span`
+  font-size: 18px;
+  font-weight: 600;
+  margin-right: 5px;
+`;
 
-  &::placeholder {
-    font-family: ${fontFamily};
+const NameErrorMessage = styled.div`
+  position: absolute;
+  color: ${({ theme }) => theme.error};
+  font-size: 10px;
+  left: 100%;
+  margin-left: 20px;
+  display: flex;
+  align-items: center;
+  width: max-content;
+`;
+
+const NewNodeButton = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: 4px;
+  height: 100%;
+  transition: ${transition};
+  &:hover {
+    background-color: ${({ theme }) => theme.background.mainFurthest};
+    color: ${({ theme }) => theme.text};
+  }
+`;
+
+const NodeCreateBox = styled.div`
+  display: flex;
+  position: relative;
+  height: 100%;
+
+  &:after {
+    position: absolute;
+    content: '+';
+    font-size: 18px;
+    font-weight: 600;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+`;
+
+const NodeCreate = styled.input<{
+  nodeType: NodeTypes;
+}>`
+  color: ${({ theme }) => theme.text};
+  background-color: ${({ theme }) => theme.background.mainFurthest};
+  border: 1px solid ${({ theme, nodeType }) => theme.backgrounds[nodeType]};
+  display: flex;
+  align-items: center;
+  padding: 0 23px 0 15px;
+  outline: 0;
+  border-radius: 4px;
+  font-family: ${fontFamily};
+  animation: init 0.25s ease-in-out;
+
+  @keyframes init {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   &.name-error {
@@ -46,51 +97,11 @@ const NodeCreate = styled.input`
   }
 `;
 
-const MainNodeArea = styled.div<{
-  nodeType: NodeTypes;
-}>`
-  position: relative;
-  border-radius: 4px;
-  border: 1px solid
-    ${({ theme, nodeType }) =>
-      theme.backgrounds[nodeType]
-        ? theme.backgrounds[nodeType]
-        : 'transparent'};
-  cursor: pointer;
-  transition: border-color 0.25s ease-in-out;
-
-  &:hover {
-    border-color: ${({ theme }) => theme.hover};
-  }
-`;
-
-const ChangedNodeTitle = styled(NodeTitle)`
-  width: 200px;
-  background-color: transparent;
-`;
-
-const NodeContainer = styled.div`
-  margin: 10px;
-`;
-
-const PlusButton = styled.span`
-  margin-left: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  align-self: center;
-  color: ${({ theme }) => theme.text};
-  width: 20px;
-  height: 20px;
-  margin-right: 5px;
-`;
-
 export const NewNode: React.FC<NewNodeProps> = ({ node, onCreate }) => {
   const thisNode = useRef<HTMLDivElement>(null);
   const [newName, setNewName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const { libraryTree, tree, setSelectedNode } = useTreesState();
-  const { theme } = useTheme();
   const isError =
     tree.nodes.map((n) => n.name).includes(newName) ||
     libraryTree.nodes.map((n) => n.name).includes(newName);
@@ -102,45 +113,41 @@ export const NewNode: React.FC<NewNodeProps> = ({ node, onCreate }) => {
     setIsCreating(false);
   };
   return (
-    <NodeContainer
+    <Container
       ref={thisNode}
       data-cy={GraphQLEditorDomStructure.tree.elements.Graf.newNode}
+      onClick={(e) => {
+        e.stopPropagation();
+        setIsCreating(true);
+        setSelectedNode(undefined);
+      }}
     >
-      <MainNodeArea
-        nodeType={node.name as NodeTypes}
-        onClick={(e) => {
-          e.stopPropagation();
-          setIsCreating(true);
-          setSelectedNode(undefined);
-        }}
-      >
-        <ChangedNodeTitle>
-          {isError && (
-            <NameErrorMessage>{`Cannot create ${node.name} with name:${newName} type with that name already exists. Try different name`}</NameErrorMessage>
-          )}
-          {!isCreating && <NodeName>{`New ${node.name}`}</NodeName>}
-          {isCreating && (
-            <NodeCreate
-              className={`${isError ? 'name-error' : ''}`}
-              value={newName}
-              autoFocus
-              placeholder={`New ${node.name} name...`}
-              onChange={(e) => setNewName(e.target.value)}
-              onBlur={submit}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  submit();
-                }
-              }}
-            />
-          )}
-          {!isCreating && (
-            <PlusButton>
-              <Plus width={10} height={10} fill={theme.text} />
-            </PlusButton>
-          )}
-        </ChangedNodeTitle>
-      </MainNodeArea>
-    </NodeContainer>
+      {isError && (
+        <NameErrorMessage>{`Cannot create ${node.name} with name:${newName} type with that name already exists. Try different name.`}</NameErrorMessage>
+      )}
+      {!isCreating && (
+        <NewNodeButton>
+          <Plus>+</Plus>
+          {`New ${node.name}`}
+        </NewNodeButton>
+      )}
+      {isCreating && (
+        <NodeCreateBox>
+          <NodeCreate
+            className={`${isError ? 'name-error' : ''}`}
+            nodeType={node.name as NodeTypes}
+            value={newName}
+            autoFocus
+            onChange={(e) => setNewName(e.target.value)}
+            onBlur={submit}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                submit();
+              }
+            }}
+          />
+        </NodeCreateBox>
+      )}
+    </Container>
   );
 };

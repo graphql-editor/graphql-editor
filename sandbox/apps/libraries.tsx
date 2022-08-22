@@ -21,6 +21,7 @@ export const libraries = () => {
     >
       <GraphQLEditor
         theme={DarkTheme}
+        sidebarExpanded
         setSchema={(props) => {
           setMySchema(props);
         }}

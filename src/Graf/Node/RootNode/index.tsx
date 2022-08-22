@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef } from 'react';
 import {
   ParserField,
   TypeDefinitionDisplayMap,
@@ -9,50 +9,49 @@ import { PaintNode } from '@/Graf/Node/PaintNode';
 import { NewNode } from '@/Graf/Node/NewNode';
 import { useTreesState } from '@/state/containers/trees';
 import { GraphQLEditorDomStructure } from '@/domStructure';
-import { SearchInput } from '@/Graf/Node/components/SearchInput';
 import { useSortState } from '@/state/containers/sort';
 import styled from '@emotion/styled';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
 
 export interface RootNodeProps {
   node: ParserField;
+  filterNodes: string;
   libraryNode?: ParserField;
   readonly?: boolean;
 }
 
 type NodeTypes = keyof EditorTheme['backgrounds'];
 
-const NodeCaption = styled.div<{ nodeType: NodeTypes }>`
-  flex-basis: 100%;
-  margin: 15px;
-  display: flex;
-  border-bottom: 1px solid;
-  padding-bottom: 15px;
-  align-items: center;
-  user-select: none;
+const NodeContainer = styled.div`
+  margin: 0 25px;
+`;
 
-  border-color: ${({ theme, nodeType }) =>
-    theme.colors[nodeType] ? theme.colors[nodeType] : theme.text};
+const NodeTopBar = styled.div<{ nodeType: NodeTypes }>`
+  display: flex;
+  align-items: center;
+  margin: 0 20px 20px 0;
   color: ${({ theme, nodeType }) =>
     theme.colors[nodeType] ? theme.colors[nodeType] : theme.text};
 `;
 
-const CaptionTitle = styled.span`
+const NodeName = styled.span`
+  font-size: 14px;
+  font-weight: 700;
   margin-right: 10px;
 `;
 
-const NodeContainer = styled.div`
-  padding: 10px;
+const NodeBox = styled.div`
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
-  width: 100%;
+  gap: 15px 20px;
 `;
 
 export const RootNode: React.FC<RootNodeProps> = ({
   node,
   libraryNode,
   readonly,
+  filterNodes,
 }) => {
   const thisNode = useRef<HTMLDivElement>(null);
   const { tree, setTree, schemaType, selectedNode } = useTreesState();
@@ -62,8 +61,6 @@ export const RootNode: React.FC<RootNodeProps> = ({
     isNodeBaseType,
     isUserOrder,
   } = useSortState();
-
-  const [filterNodes, setFilterNodes] = useState('');
 
   const sortNodes = () =>
     isUserOrder
@@ -104,65 +101,58 @@ export const RootNode: React.FC<RootNodeProps> = ({
 
   return (
     <NodeContainer ref={thisNode}>
-      <NodeCaption nodeType={node.name as NodeTypes}>
-        <CaptionTitle
+      <NodeTopBar nodeType={node.name as NodeTypes}>
+        <NodeName
           data-cy={GraphQLEditorDomStructure.tree.elements.Graf.categoryName}
         >
           {node.name}
-        </CaptionTitle>
-        <SearchInput
-          cypressName={GraphQLEditorDomStructure.tree.elements.Graf.searchInput}
-          autoFocus={false}
-          onClear={() => {
-            setFilterNodes('');
-          }}
-          onSubmit={() => {}}
-          value={filterNodes}
-          onChange={setFilterNodes}
-        />
-      </NodeCaption>
-      {!readonly && (
-        <NewNode
-          node={node}
-          onCreate={(name) => {
-            const createdNode =
-              node.data.type === TypeSystemDefinition.DirectiveDefinition
-                ? {
-                    ...node,
-                    name,
-                    args: [],
-                    type: {
-                      name: TypeDefinitionDisplayMap[node.data.type],
-                      directiveOptions: [Directive.OBJECT],
-                    },
-                  }
-                : {
-                    ...node,
-                    name,
-                    args: [],
-                    type: {
-                      name: (TypeDefinitionDisplayMap as any)[
-                        node.data.type as any
-                      ],
-                    },
-                  };
-            tree.nodes.push(createdNode);
-            setTree({ ...tree });
-            return createdNode;
-          }}
-        />
-      )}
-      {schemaType === 'user' && paintedNodes}
-      {libraryNode?.args?.map((a) => (
-        <PaintNode
-          isLibrary={true}
-          key={a.name}
-          node={a}
-          isMatchedToSearch={a.name
-            .toLowerCase()
-            .includes(filterNodes.toLowerCase())}
-        />
-      ))}
+        </NodeName>
+        {!readonly && (
+          <NewNode
+            node={node}
+            onCreate={(name) => {
+              const createdNode =
+                node.data.type === TypeSystemDefinition.DirectiveDefinition
+                  ? {
+                      ...node,
+                      name,
+                      args: [],
+                      type: {
+                        name: TypeDefinitionDisplayMap[node.data.type],
+                        directiveOptions: [Directive.OBJECT],
+                      },
+                    }
+                  : {
+                      ...node,
+                      name,
+                      args: [],
+                      type: {
+                        name: (TypeDefinitionDisplayMap as any)[
+                          node.data.type as any
+                        ],
+                      },
+                    };
+              tree.nodes.push(createdNode);
+              setTree({ ...tree });
+              return createdNode;
+            }}
+          />
+        )}
+      </NodeTopBar>
+
+      <NodeBox>
+        {schemaType === 'user' && paintedNodes}
+        {libraryNode?.args?.map((a) => (
+          <PaintNode
+            isLibrary={true}
+            key={a.name}
+            node={a}
+            isMatchedToSearch={a.name
+              .toLowerCase()
+              .includes(filterNodes.toLowerCase())}
+          />
+        ))}
+      </NodeBox>
     </NodeContainer>
   );
 };

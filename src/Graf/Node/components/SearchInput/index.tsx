@@ -20,19 +20,19 @@ const Wrapper = styled.div`
 `;
 
 const Main = styled.input`
-  background-color: ${({ theme }) => theme.background.mainFurther};
+  background-color: ${({ theme }) => theme.background.mainFurthest};
   border-radius: 5px;
   color: ${({ theme }) => theme.text};
   border: 0;
   width: 100%;
   min-width: 0;
   height: 36px;
-  padding: 0 12px 0 28px;
+  padding: 0 12px 0 44px;
   font-size: 14px;
   outline: 0;
   position: relative;
   &::placeholder {
-    color: ${({ theme }) => theme.disabled};
+    color: ${({ theme }) => theme.dimmed};
   }
 `;
 
@@ -46,7 +46,7 @@ const IconContainerStyle = styled.span`
 `;
 
 const SearchIconContainer = styled(IconContainerStyle)`
-  width: 30px;
+  margin-left: 15px;
 `;
 
 const XIconContainer = styled(IconContainerStyle)`
@@ -69,7 +69,7 @@ export const SearchInput: React.FC<MenuSearchProps> = ({
   return (
     <Wrapper data-cy={cypressName}>
       <SearchIconContainer>
-        {icon === 'search' && <Search width={14} height={14} />}
+        {icon === 'search' && <Search width={18} height={18} />}
         {icon === 'add' && <Plus width={14} height={14} />}
       </SearchIconContainer>
       {value && (
