@@ -15,16 +15,27 @@ export interface NewNodeProps {
 
 type NodeTypes = keyof EditorTheme['backgrounds'];
 
+const Container = styled.div<{
+  nodeType: NodeTypes;
+}>`
+  position: relative;
+  /* border: 1px solid
+    ${({ theme, nodeType }) =>
+    theme.backgrounds[nodeType]
+      ? theme.backgrounds[nodeType]
+      : 'transparent'}; */
+`;
+
 const NameErrorMessage = styled.div`
   position: absolute;
-  height: 30px;
-  top: -30px;
   color: ${({ theme }) => theme.error};
-  width: 600px;
   font-size: 10px;
-  margin-left: -10px;
+  left: 100%;
+  bottom: 3px;
+  margin-left: 20px;
   display: flex;
   align-items: center;
+  width: max-content;
 `;
 
 const NodeCreate = styled.input`
@@ -45,42 +56,12 @@ const NodeCreate = styled.input`
   }
 `;
 
-const MainNodeArea = styled.div<{
-  nodeType: NodeTypes;
-}>`
-  position: relative;
-  border-radius: 4px;
-  border: 1px solid
-    ${({ theme, nodeType }) =>
-      theme.backgrounds[nodeType]
-        ? theme.backgrounds[nodeType]
-        : 'transparent'};
-  cursor: pointer;
-  transition: border-color 0.25s ease-in-out;
-
-  &:hover {
-    border-color: ${({ theme }) => theme.hover};
-  }
-`;
-
 const ChangedNodeTitle = styled(NodeTitle)`
   width: 200px;
   background-color: transparent;
 `;
 
-const NodeContainer = styled.div``;
-
-const PlusButton = styled.span`
-  margin-left: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  align-self: center;
-  color: ${({ theme }) => theme.text};
-  width: 20px;
-  height: 20px;
-  margin-right: 5px;
-`;
+const NewNodeButton = styled.div``;
 
 export const NewNode: React.FC<NewNodeProps> = ({ node, onCreate }) => {
   const thisNode = useRef<HTMLDivElement>(null);
@@ -99,45 +80,40 @@ export const NewNode: React.FC<NewNodeProps> = ({ node, onCreate }) => {
     setIsCreating(false);
   };
   return (
-    <NodeContainer
+    <Container
       ref={thisNode}
       data-cy={GraphQLEditorDomStructure.tree.elements.Graf.newNode}
+      nodeType={node.name as NodeTypes}
+      onClick={(e) => {
+        e.stopPropagation();
+        setIsCreating(true);
+        setSelectedNode(undefined);
+      }}
     >
-      <MainNodeArea
-        nodeType={node.name as NodeTypes}
-        onClick={(e) => {
-          e.stopPropagation();
-          setIsCreating(true);
-          setSelectedNode(undefined);
-        }}
-      >
-        <ChangedNodeTitle>
-          {isError && (
-            <NameErrorMessage>{`Cannot create ${node.name} with name:${newName} type with that name already exists. Try different name`}</NameErrorMessage>
-          )}
-          {!isCreating && <NodeName>{`New ${node.name}`}</NodeName>}
-          {isCreating && (
-            <NodeCreate
-              className={`${isError ? 'name-error' : ''}`}
-              value={newName}
-              autoFocus
-              placeholder={`New ${node.name} name...`}
-              onChange={(e) => setNewName(e.target.value)}
-              onBlur={submit}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  submit();
-                }
-              }}
-            />
-          )}
-          {!isCreating && (
-            <PlusButton>
-              <Plus width={10} height={10} fill={theme.text} />
-            </PlusButton>
-          )}
-        </ChangedNodeTitle>
-      </MainNodeArea>
-    </NodeContainer>
+      {!isError && (
+        <NameErrorMessage>{`Cannot create ${node.name} with name:${newName} type with that name already exists. Try different name`}</NameErrorMessage>
+      )}
+      {!isCreating && (
+        <NewNodeButton>
+          {`New ${node.name}`}
+          <Plus width={10} height={10} fill={theme.text} />
+        </NewNodeButton>
+      )}
+      {isCreating && (
+        <NodeCreate
+          className={`${isError ? 'name-error' : ''}`}
+          value={newName}
+          autoFocus
+          placeholder={`New ${node.name} name...`}
+          onChange={(e) => setNewName(e.target.value)}
+          onBlur={submit}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              submit();
+            }
+          }}
+        />
+      )}
+    </Container>
   );
 };
