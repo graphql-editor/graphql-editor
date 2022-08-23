@@ -74,8 +74,8 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
   const [decorationIds, setDecorationIds] = React.useState<string[]>([]);
   const [monacoRef, setMonaco] = React.useState<typeof monaco | null>(null);
   const { theme } = useTheme();
+  // move to worker
   const languageService = React.useMemo(() => {
-    console.log('REBUILDING LANGUAGE SERVICE');
     return (
       options.sharedLanguageService ||
       new EnrichedLanguageService({
@@ -138,6 +138,7 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
           if (!options.select) return;
           const model = editorRef.getModel();
           if (model) {
+            // move to worker
             languageService
               .buildBridgeForProviders(model, e.position)
               .then((bridge) => {
@@ -222,7 +223,6 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
     },
     editorApi: {
       jumpToType: async (typeName: string) => {
-        console.time('schema');
         const schema =
           languageService.schema || (await languageService.getSchema());
         if (schema) {
@@ -235,7 +235,6 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
               0,
             );
           }
-          console.timeEnd('schema');
         }
       },
       jumpToField: (typeName: string, fieldName: string) => {

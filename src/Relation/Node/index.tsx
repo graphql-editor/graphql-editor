@@ -115,29 +115,31 @@ export const Node: React.FC<NodeProps> = ({
   const { theme } = useTheme();
   const RelationFields = useMemo(() => {
     const nodeFields = field.args;
+    const showFields = selectedNode ? !fade : false;
     return (
       <NodeRelationFields fade={fade}>
-        {nodeFields?.map((a) => (
-          <Field
-            onClick={() => {
-              const allNodes = tree.nodes.concat(libraryTree.nodes);
-              const n = allNodes.find((tn) => tn.name === a.type.name);
-              setSelectedNode(
-                n && {
-                  field: n,
-                  source: 'relation',
-                },
-              );
-            }}
-            active={
-              isNodeActive &&
-              field.data.type !== TypeDefinition.EnumTypeDefinition
-            }
-            key={a.name}
-            node={a}
-            parentNodeTypeName={field.type.name}
-          />
-        ))}
+        {showFields &&
+          nodeFields?.map((a) => (
+            <Field
+              onClick={() => {
+                const allNodes = tree.nodes.concat(libraryTree.nodes);
+                const n = allNodes.find((tn) => tn.name === a.type.name);
+                setSelectedNode(
+                  n && {
+                    field: n,
+                    source: 'relation',
+                  },
+                );
+              }}
+              active={
+                isNodeActive &&
+                field.data.type !== TypeDefinition.EnumTypeDefinition
+              }
+              key={a.name}
+              node={a}
+              parentNodeTypeName={field.type.name}
+            />
+          ))}
       </NodeRelationFields>
     );
   }, [field, isNodeActive, theme, fade]);

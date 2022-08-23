@@ -80,15 +80,17 @@ export const RootNode: React.FC<RootNodeProps> = ({
           .concat(node.args.filter((a) => !isNodeBaseType(a.type.operations)));
 
   const paintedNodes = useMemo(() => {
-    return sortNodes()?.map((a) => (
-      <PaintNode
-        key={a.name}
-        node={a}
-        isMatchedToSearch={a.name
-          .toLowerCase()
-          .includes(filterNodes.toLowerCase())}
-      />
-    ));
+    return sortNodes()
+      ?.filter((a) => a.name.toLowerCase().includes(filterNodes.toLowerCase()))
+      .map((a) => (
+        <PaintNode
+          key={a.name}
+          node={a}
+          isMatchedToSearch={a.name
+            .toLowerCase()
+            .includes(filterNodes.toLowerCase())}
+        />
+      ));
   }, [
     selectedNode,
     tree,
