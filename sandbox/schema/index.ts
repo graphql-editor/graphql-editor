@@ -11,3 +11,4 @@ export * from './userLibraryOld';
 export * from './userLibraryNew';
 export * from './finance';
 export * from './versioned';
+export * from './saleor';

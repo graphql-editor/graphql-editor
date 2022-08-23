@@ -74,8 +74,9 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
   const [decorationIds, setDecorationIds] = React.useState<string[]>([]);
   const [monacoRef, setMonaco] = React.useState<typeof monaco | null>(null);
   const { theme } = useTheme();
-  const languageService = React.useMemo(
-    () =>
+  const languageService = React.useMemo(() => {
+    console.log('REBUILDING LANGUAGE SERVICE');
+    return (
       options.sharedLanguageService ||
       new EnrichedLanguageService({
         schemaString: options.schema
@@ -87,9 +88,9 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
             assumeValidSDL: true,
           },
         },
-      }),
-    [options, options.schema],
-  );
+      })
+    );
+  }, [options.libraries, options.schema]);
 
   React.useEffect(() => {
     if (monacoRef && editorRef) {
@@ -220,20 +221,22 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
       }
     },
     editorApi: {
-      jumpToType: (typeName: string) => {
-        languageService.getSchema().then((schema) => {
-          if (schema) {
-            const type = schema.getType(typeName);
-            if (type?.astNode?.loc) {
-              const range = locToRange(type.astNode.loc);
-              editorRef?.setSelection(range);
-              editorRef?.revealPositionInCenter(
-                { column: 0, lineNumber: range.startLineNumber },
-                0,
-              );
-            }
+      jumpToType: async (typeName: string) => {
+        console.time('schema');
+        const schema =
+          languageService.schema || (await languageService.getSchema());
+        if (schema) {
+          const type = schema.getType(typeName);
+          if (type?.astNode?.loc) {
+            const range = locToRange(type.astNode.loc);
+            editorRef?.setSelection(range);
+            editorRef?.revealPositionInCenter(
+              { column: 0, lineNumber: range.startLineNumber },
+              0,
+            );
           }
-        });
+          console.timeEnd('schema');
+        }
       },
       jumpToField: (typeName: string, fieldName: string) => {
         languageService.getSchema().then((schema) => {
