@@ -122,15 +122,6 @@ export const useGqlServices = (options: SchemaServicesOptions = {}) => {
         options.diagnosticsProviders || [],
         options.decorationsProviders || [],
       );
-      const onChangeDisposable = editorRef.onDidChangeModelContent(() =>
-        handler(
-          editorRef,
-          monacoRef,
-          options.diagnosticsProviders || [],
-          options.decorationsProviders || [],
-        ),
-      );
-
       const completionProviderDisposable =
         monacoRef.languages.registerCompletionItemProvider('graphql', {
           provideCompletionItems: async (
@@ -175,7 +166,6 @@ export const useGqlServices = (options: SchemaServicesOptions = {}) => {
         completionProviderDisposable && completionProviderDisposable.dispose();
         hoverDisposable && hoverDisposable.dispose();
         definitionProviderDisposable && definitionProviderDisposable.dispose();
-        onChangeDisposable && onChangeDisposable.dispose();
       };
     }
 

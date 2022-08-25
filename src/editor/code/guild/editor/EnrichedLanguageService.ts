@@ -1,10 +1,10 @@
+import { Workers } from '@/worker';
 import { GraphQLSchema } from 'graphql';
 import {
   LanguageService,
   getRange,
   IPosition as GraphQLPosition,
   ContextToken,
-  getTokenAtPosition,
   Position,
 } from 'graphql-language-service';
 import type * as monaco from 'monaco-editor';
@@ -29,8 +29,7 @@ export class EnrichedLanguageService extends LanguageService {
     position: GraphQLPosition,
   ): Promise<ContextToken | null> {
     if (schema) {
-      const token = getTokenAtPosition(document, position);
-
+      const token = await Workers.getTokenAtPosition(document, position);
       if (token) {
         return token;
       }

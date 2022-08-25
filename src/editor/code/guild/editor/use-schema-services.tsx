@@ -135,6 +135,7 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
 
       const onCursorChangeDisposable = editorRef.onDidChangeCursorPosition(
         (e) => {
+          if (e.reason === 0) return;
           if (!options.select) return;
           const model = editorRef.getModel();
           if (model) {
@@ -155,15 +156,6 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
         },
       );
 
-      const onChangeDisposable = editorRef.onDidChangeModelContent(() =>
-        handler(
-          editorRef,
-          monacoRef,
-          options.diagnosticsProviders || [],
-          options.decorationsProviders || [],
-        ),
-      );
-
       const definitionProviderDisposable =
         monacoRef.languages.registerDefinitionProvider(
           'graphql',
@@ -181,7 +173,6 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
         onCursorChangeDisposable && onCursorChangeDisposable.dispose();
         hoverDisposable && hoverDisposable.dispose();
         definitionProviderDisposable && definitionProviderDisposable.dispose();
-        onChangeDisposable && onChangeDisposable.dispose();
       };
     }
 
