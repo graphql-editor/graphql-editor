@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { fontFamily } from '@/vars';
+import { fontFamily, fontFamilySans } from '@/vars';
 import { useTreesState } from '@/state/containers/trees';
 import {
   useErrorsState,
@@ -19,6 +19,8 @@ import { Lines, RelationPath } from '@/Relation/Lines';
 import { ErrorLock } from '@/shared/components';
 import { compareNodesWithData } from '@/compare/compareNodes';
 import styled from '@emotion/styled';
+import { SearchInput } from '@/Graf/Node/components/SearchInput';
+import { GraphQLEditorDomStructure } from '@/domStructure';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -73,6 +75,30 @@ const ErrorContainer = styled.div`
   border: 1px solid ${({ theme }) => theme.error};
 `;
 
+const TopBar = styled.div`
+  display: flex;
+  margin: 0 20px 0 8px;
+  flex-direction: column;
+  & > div:first-of-type {
+    flex: 1;
+  }
+`;
+
+const Heading = styled.h1`
+  font-size: 14px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.inactive};
+  margin: 20px 20px 15px 15px;
+  font-family: ${fontFamilySans};
+`;
+
+const LineSpacer = styled.div`
+  width: 100%;
+  height: 0;
+  border-bottom: 1px solid ${({ theme }) => theme.disabled}36;
+  margin: 20px 0;
+`;
+
 function insert<T>(arr: T[], index: number, before: T[], after: T[]) {
   return [
     ...arr.slice(0, index),
@@ -105,6 +131,7 @@ export const Relation: React.FC = () => {
   const [refsLoaded, setRefsLoaded] = useState(false);
   const [relations, setRelations] =
     useState<{ to: RelationPath; from: RelationPath[] }[]>();
+  const [filterNodes, setFilterNodes] = useState('');
 
   useEffect(() => {
     tRefs = {};
@@ -160,6 +187,11 @@ export const Relation: React.FC = () => {
       setCurrentNodes(inserted);
     }
   }, [focusedNode]);
+
+  useEffect(() => {
+    if (filterNodes) {
+    }
+  }, [filterNodes]);
 
   useLayoutEffect(() => {
     if (refsLoaded) {
@@ -235,45 +267,73 @@ export const Relation: React.FC = () => {
         ? [...currentNodes].filter((e) => libraryNodeNames.includes(e.name))
         : [...currentNodes];
 
-    return nodes.map((n, i) => (
-      <Node
-        focus={() => {
-          setFocusedNode(n);
-        }}
-        isLibrary={
-          schemaType === 'library' ? true : libraryNodeNames.includes(n.name)
-        }
-        fade={
-          selectedNode?.field
-            ? compareNodesWithData(selectedNode.field, n)
-              ? false
-              : selectedNode.field.args?.find((a) => a.type.name === n.name)
-              ? false
-              : n.args?.find((na) => na.type.name === selectedNode.field?.name)
-              ? false
-              : n.interfaces?.includes(selectedNode.field.name)
-              ? false
-              : true
-            : undefined
-        }
-        key={n.name + n.data.type + i}
-        setRef={(ref) => {
-          tRefs[n.name + n.data.type] = ref;
-          if (i === currentNodes.length - 1) {
-            setRefs(tRefs);
-            setTimeout(() => {
-              setRefsLoaded(true);
-            }, 100);
+    return nodes
+      .filter((n) => n.name.toLowerCase().includes(filterNodes))
+      .map((n, i) => (
+        <Node
+          focus={() => {
+            setFocusedNode(n);
+          }}
+          isLibrary={
+            schemaType === 'library' ? true : libraryNodeNames.includes(n.name)
           }
-        }}
-        field={n}
-      />
-    ));
-  }, [currentNodes, setRefs, setFocusedNode, selectedNode, schemaType]);
+          clearSearchValue={() => setFilterNodes('')}
+          fade={
+            selectedNode?.field
+              ? compareNodesWithData(selectedNode.field, n)
+                ? false
+                : selectedNode.field.args?.find((a) => a.type.name === n.name)
+                ? false
+                : n.args?.find(
+                    (na) => na.type.name === selectedNode.field?.name,
+                  )
+                ? false
+                : n.interfaces?.includes(selectedNode.field.name)
+                ? false
+                : true
+              : undefined
+          }
+          key={n.name + n.data.type + i}
+          setRef={(ref) => {
+            tRefs[n.name + n.data.type] = ref;
+            if (i === currentNodes.length - 1) {
+              setRefs(tRefs);
+              setTimeout(() => {
+                setRefsLoaded(true);
+              }, 100);
+            }
+          }}
+          field={n}
+        />
+      ));
+  }, [
+    currentNodes,
+    setRefs,
+    setFocusedNode,
+    selectedNode,
+    schemaType,
+    filterNodes,
+  ]);
 
   return (
     <>
       <Wrapper>
+        <TopBar>
+          <Heading>RELATION VIEW</Heading>
+          <SearchInput
+            cypressName={
+              GraphQLEditorDomStructure.tree.elements.Graf.searchInput
+            }
+            autoFocus={false}
+            onClear={() => {
+              setFilterNodes('');
+            }}
+            onSubmit={() => {}}
+            value={filterNodes}
+            onChange={setFilterNodes}
+          />
+        </TopBar>
+        <LineSpacer />
         <Main
           onClick={() => {
             setSearchVisible(false);

@@ -1,7 +1,7 @@
 import { ActiveType } from '@/Graf/Node/Type';
 import { useTheme, useTreesState } from '@/state/containers';
 import { ParserField, TypeDefinition } from 'graphql-js-tree';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Field } from '../Field';
 import * as Icons from '@/editor/icons';
 import { FIELD_NAME_SIZE } from '@/Graf/constants';
@@ -43,7 +43,7 @@ const Content = styled.div<ContentProps>`
       ? theme.colors[nodeType]
       : `${theme.hover}00`};
   box-shadow: ${({ theme, isActive }) => isActive && theme.shadow};
-  max-height: ${({ isMoreThanTen }) => isMoreThanTen && '372px'};
+  max-height: ${({ isMoreThanTen }) => isMoreThanTen && '400px'};
   overflow-y: ${({ isMoreThanTen, isActive }) =>
     isMoreThanTen && isActive && 'scroll'};
   &:hover {
@@ -111,6 +111,7 @@ interface NodeProps {
   isLibrary?: boolean;
   fade?: boolean;
   setRef: (instance: HTMLDivElement) => void;
+  clearSearchValue: () => void;
 }
 
 export const Node: React.FC<NodeProps> = ({
@@ -119,6 +120,7 @@ export const Node: React.FC<NodeProps> = ({
   fade,
   focus,
   isLibrary,
+  clearSearchValue,
 }) => {
   const { setSelectedNode, selectedNode, tree, libraryTree } = useTreesState();
   const isNodeActive = compareNodesWithData(field, selectedNode?.field);
@@ -207,6 +209,7 @@ export const Node: React.FC<NodeProps> = ({
       }}
       onClick={(e) => {
         e.stopPropagation();
+        clearSearchValue();
         setSelectedNode({
           field,
           source: 'relation',
