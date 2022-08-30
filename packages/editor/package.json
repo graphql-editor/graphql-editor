@@ -1,0 +1,57 @@
+{
+  "name": "graphql-editor",
+  "version": "5.5.1",
+  "private": false,
+  "license": "MIT",
+  "description": "Visual node editor for GraphQL",
+  "homepage": "https://graphqleditor.com",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "ttsc --build tsconfig.build.json",
+    "start": "ttsc --build tsconfig.build.json --watch",
+    "test": "jest",
+    "domTree": "tree src/domStructure/domStructure.treelang -f ts > src/domStructure/domStructure.ts",
+    "updatedeps": "npm i graphql-zeus@latest graphsource@latest",
+    "lint": "eslint \"./src/**/*.{ts,js}\" --quiet --fix && prettier --write \"./src/**/*.{ts,js}\" "
+  },
+  "resolutions": {
+    "@types/react": "^16.9.11"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/graphql-editor/graphql-editor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/graphql-editor/graphql-editor.git"
+  },
+  "devDependencies": {},
+  "peerDependencies": {
+    "@monaco-editor/react": ">=4.2.2",
+    "css-loader": ">=6.2.0",
+    "file-loader": ">=6.2.0",
+    "monaco-editor": ">=0.27.0",
+    "react": ">=17.0.2",
+    "react-dom": ">=17.0.2",
+    "webpack": ">=5.53.0",
+    "worker-loader": ">=3.0.8"
+  },
+  "dependencies": {
+    "graphql-editor-worker": "*",
+    "@emotion/react": "^11.9.3",
+    "@emotion/styled": "^11.9.3",
+    "color2k": "^1.2.4",
+    "fuzzyjs": "^5.0.1",
+    "graphql-js-tree": "^0.0.3",
+    "graphql-language-service": "^3.1.4",
+    "graphsource": "^2.0.5",
+    "re-resizable": "^6.9.1",
+    "remarkable": "^2.0.1",
+    "unstated-next": "^1.1.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}

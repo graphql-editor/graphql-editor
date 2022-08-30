@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "declaration": true,
+    "incremental": true,
+    "removeComments": true,
+    "noUnusedLocals": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "outDir": "./lib",
+    "lib": ["es6", "es7", "esnext", "dom"],
+    "rootDir": "./src",
+    "baseUrl": "./src/",
+    "paths": {
+      "@/*": ["./*"]
+    },
+    "plugins": [
+      {
+        "transform": "typescript-transform-paths"
+      },
+      {
+        "transform": "typescript-transform-paths",
+        "afterDeclarations": true
+      }
+    ],
+    "skipLibCheck": true,
+    "composite": true
+  },
+  "exclude": [
+    "lib",
+    "sandbox",
+    "cloud",
+    "docs",
+    "cypress",
+    "cypress.config.ts",
+    "__mocks__",
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ]
+}

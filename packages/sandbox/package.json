@@ -1,0 +1,53 @@
+{
+  "name": "sandbox",
+  "version": "5.5.0",
+  "private": false,
+  "license": "MIT",
+  "description": "Visual node editor for GraphQL",
+  "homepage": "https://graphqleditor.com",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "start": "webpack serve --port 1568 --hot --open",
+    "start-ci": "webpack serve --config ./webpack.config.ci.js --port 1568 --hot --open",
+    "e2e:test": "cypress open",
+    "lint": "eslint \"./src/**/*.{ts,js}\" --quiet --fix && prettier --write \"./src/**/*.{ts,js}\" "
+  },
+  "resolutions": {
+    "@types/react": "^16.9.11"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/graphql-editor/graphql-editor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/graphql-editor/graphql-editor.git"
+  },
+  "devDependencies": {
+    "@types/webpack": "5.28.0",
+    "@types/webpack-env": "^1.16.2",
+    "babel-loader": "^8.2.2",
+    "css-loader": "^5.2.1",
+    "file-loader": "^6.0.0",
+    "fork-ts-checker-webpack-plugin": "^6.3.3",
+    "html-loader": "^2.1.2",
+    "html-webpack-plugin": "^5.3.2",
+    "react-hot-loader": "^4.13.0",
+    "style-loader": "^3.2.1",
+    "ts-loader": "^9.2.5",
+    "tsconfig-paths-webpack-plugin": "^3.5.1",
+    "url-loader": "^4.1.1",
+    "webpack": "^5.53.0",
+    "webpack-cleanup-plugin": "^0.5.1",
+    "webpack-cli": "^4.8.0",
+    "webpack-dev-server": "^4.2.1"
+  },
+  "dependencies": {
+    "graphql-editor": "*"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}

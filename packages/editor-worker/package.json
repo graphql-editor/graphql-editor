@@ -1,0 +1,39 @@
+{
+  "name": "graphql-editor-worker",
+  "version": "5.5.1",
+  "private": false,
+  "license": "MIT",
+  "description": "Visual node editor for GraphQL",
+  "homepage": "https://graphqleditor.com",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "ttsc --build tsconfig.build.json",
+    "start": "ttsc --build tsconfig.build.json --watch",
+    "lint": "eslint \"./src/**/*.{ts,js}\" --quiet --fix && prettier --write \"./src/**/*.{ts,js}\" "
+  },
+  "resolutions": {
+    "@types/react": "^16.9.11"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/graphql-editor/graphql-editor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/graphql-editor/graphql-editor.git"
+  },
+  "devDependencies": {},
+  "peerDependencies": {
+    "webpack": ">=5.53.0",
+    "worker-loader": ">=3.0.8"
+  },
+  "dependencies": {
+    "graphql-js-tree": "^0.0.3",
+    "graphql-language-service": "^3.1.4"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}

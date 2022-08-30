@@ -1,0 +1,1 @@
+export { GraphQLEditorWorker } from '@/worker';
