@@ -8,16 +8,13 @@ import React, {
 import { fontFamily } from '@/vars';
 import { useTreesState } from '@/state/containers/trees';
 import {
-  KeyboardActions,
   useErrorsState,
-  useIOState,
+  useLayoutState,
   useNavigationState,
 } from '@/state/containers';
 import { sortByConnection } from './Algorithm';
 import { Node } from './Node';
 import { ParserField } from 'graphql-js-tree';
-import { Search } from '@/Graf/icons';
-import { LevenshteinDistance } from '@/search';
 import { Lines, RelationPath } from '@/Relation/Lines';
 import { ErrorLock } from '@/shared/components';
 import { compareNodesWithData } from '@/compare/compareNodes';
@@ -76,37 +73,6 @@ const ErrorContainer = styled.div`
   border: 1px solid ${({ theme }) => theme.error};
 `;
 
-const SearchContainer = styled.div`
-  position: fixed;
-  bottom: 10px;
-  left: 10px;
-  z-index: 200;
-
-  svg {
-    position: absolute;
-    bottom: 8px;
-    left: 6px;
-    z-index: 200;
-  }
-`;
-
-const SearchInput = styled.input`
-  background-color: ${({ theme }) => theme.background.mainClose};
-  color: ${({ theme }) => theme.text};
-  border: 0;
-  width: 100%;
-  min-width: 0;
-  height: 36px;
-  padding: 0 12px 0 28px;
-  font-size: 14px;
-  outline: 0;
-  position: relative;
-  user-select: none;
-  &::placeholder {
-    color: ${({ theme }) => theme.disabled};
-  }
-`;
-
 function insert<T>(arr: T[], index: number, before: T[], after: T[]) {
   return [
     ...arr.slice(0, index),
@@ -120,15 +86,16 @@ function insert<T>(arr: T[], index: number, before: T[], after: T[]) {
 let tRefs: Record<string, HTMLDivElement> = {};
 export const Relation: React.FC = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const [focusedNode, setFocusedNode] = useState<ParserField>();
   const { libraryTree, tree, selectedNode, setSelectedNode, schemaType } =
     useTreesState();
   const { lockGraf, grafErrors } = useErrorsState();
-  const { menuState, setMenuState } = useNavigationState();
-  const { setActions } = useIOState();
+  const { setMenuState } = useNavigationState();
+  const { setSearchVisible } = useLayoutState();
+
   const [currentNodes, setCurrentNodes] = useState<ParserField[]>(
     sortByConnection(tree.nodes.concat(libraryTree.nodes)),
   );
+  const [focusedNode, setFocusedNode] = useState<ParserField>();
 
   const [relationDrawingNodes, setRelationDrawingNodes] = useState<
     ParserField[]
@@ -138,7 +105,6 @@ export const Relation: React.FC = () => {
   const [refsLoaded, setRefsLoaded] = useState(false);
   const [relations, setRelations] =
     useState<{ to: RelationPath; from: RelationPath[] }[]>();
-  const [searchVisible, setSearchVisible] = useState<boolean>(false);
 
   useEffect(() => {
     tRefs = {};
@@ -258,49 +224,6 @@ export const Relation: React.FC = () => {
     }
   }, [selectedNode]);
 
-  const selectNode = (n: ParserField) => {
-    setSelectedNode({
-      field: n,
-      source: 'relation',
-    });
-  };
-
-  const handleSearch = (searchValue: string) => {
-    if (searchValue.length) {
-      const [node] = currentNodes
-        .map((n) => ({
-          distance: LevenshteinDistance(
-            searchValue.toLocaleLowerCase(),
-            n.name.toLocaleLowerCase(),
-          ),
-          n,
-        }))
-        .sort((a, b) => (a.distance > b.distance ? 1 : -1))
-        .map(({ n }) => n);
-      selectNode(node);
-    } else {
-      setSelectedNode(undefined);
-    }
-  };
-
-  useEffect(() => {
-    setActions((acts) => ({
-      ...acts,
-      [KeyboardActions.FindRelation]: () => {
-        if (menuState === 'relation') {
-          setSearchVisible(!searchVisible);
-        }
-      },
-    }));
-
-    return () => {
-      setActions((acts) => ({
-        ...acts,
-        [KeyboardActions.FindRelation]: () => {},
-      }));
-    };
-  }, [searchVisible]);
-
   const SvgLinesContainer = useMemo(() => {
     return <Lines relations={relations} selectedNode={selectedNode?.field} />;
   }, [relations, selectedNode]);
@@ -351,29 +274,6 @@ export const Relation: React.FC = () => {
   return (
     <>
       <Wrapper>
-        <SearchContainer>
-          <Search
-            width={18}
-            height={18}
-            onClick={() => {
-              setSearchVisible(!searchVisible);
-            }}
-          />
-          {searchVisible && (
-            <SearchInput
-              autoFocus={true}
-              placeholder="Search..."
-              type="text"
-              onChange={(e) => handleSearch(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Escape') {
-                  setSearchVisible(false);
-                  setSelectedNode(undefined);
-                }
-              }}
-            />
-          )}
-        </SearchContainer>
         <Main
           onClick={() => {
             setSearchVisible(false);
@@ -392,7 +292,6 @@ export const Relation: React.FC = () => {
             value={`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:\n${lockGraf}`}
           />
         )}
-
         {grafErrors && <ErrorContainer>{grafErrors}</ErrorContainer>}
       </Wrapper>
     </>

@@ -1,7 +1,7 @@
 import { ActiveType } from '@/Graf/Node/Type';
 import { useTheme, useTreesState } from '@/state/containers';
 import { ParserField, TypeDefinition } from 'graphql-js-tree';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Field } from '../Field';
 import * as Icons from '@/editor/icons';
 import { FIELD_NAME_SIZE } from '@/Graf/constants';
@@ -9,11 +9,13 @@ import { fontFamily } from '@/vars';
 import { compareNodesWithData } from '@/compare/compareNodes';
 import styled from '@emotion/styled';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
+import { SearchInput } from '@/shared/components/SearchInput';
 
 type NodeTypes = keyof EditorTheme['backgrounds'];
 
 interface ContentProps {
   nodeType: NodeTypes;
+  isMoreThanTen?: boolean;
   isSelected?: boolean;
   isLibrary?: boolean;
   isActive?: boolean;
@@ -23,7 +25,7 @@ interface ContentProps {
 const Content = styled.div<ContentProps>`
   background-color: ${({ theme, fade }) =>
     fade ? theme.background.mainFurther : theme.background.mainMiddle};
-  opacity: ${({ fade }) => (fade ? '0.9' : '1')};
+  display: ${({ fade }) => fade && 'none'};
   padding: 20px;
   margin: 20px;
   text-overflow: ellipsis;
@@ -41,7 +43,9 @@ const Content = styled.div<ContentProps>`
       ? theme.colors[nodeType]
       : `${theme.hover}00`};
   box-shadow: ${({ theme, isActive }) => isActive && theme.shadow};
-
+  max-height: ${({ isMoreThanTen }) => isMoreThanTen && '372px'};
+  overflow-y: ${({ isMoreThanTen, isActive }) =>
+    isMoreThanTen && isActive && 'scroll'};
   &:hover {
     border-color: ${({ theme, nodeType }) =>
       theme.colors[nodeType] ? theme.colors[nodeType] : `${theme.hover}00`};
@@ -62,6 +66,12 @@ const NodeTitle = styled.div<{ fade?: boolean }>`
   padding: 10px 5px;
   display: flex;
   opacity: ${({ fade }) => (fade ? '0.5' : '1')};
+`;
+
+const ContentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  position: relative;
 `;
 
 const NodeName = styled.div`
@@ -113,17 +123,20 @@ export const Node: React.FC<NodeProps> = ({
   const { setSelectedNode, selectedNode, tree, libraryTree } = useTreesState();
   const isNodeActive = compareNodesWithData(field, selectedNode?.field);
   const { theme } = useTheme();
+
+  const [filteredFields, setFilteredFields] = useState(field.args);
+
   const RelationFields = useMemo(() => {
-    const nodeFields = field.args;
     const showFields = selectedNode ? !fade : false;
+
     return (
       <NodeRelationFields fade={fade}>
         {showFields &&
-          nodeFields?.map((a) => (
+          filteredFields?.map((a) => (
             <Field
               onClick={() => {
                 const allNodes = tree.nodes.concat(libraryTree.nodes);
-                const n = allNodes.find((tn) => tn.name === a.type.name);
+                let n = allNodes.find((tn) => tn.name === a.type.name);
                 setSelectedNode(
                   n && {
                     field: n,
@@ -142,30 +155,43 @@ export const Node: React.FC<NodeProps> = ({
           ))}
       </NodeRelationFields>
     );
-  }, [field, isNodeActive, theme, fade]);
+  }, [field, isNodeActive, theme, fade, filteredFields]);
+
+  const handleSearch = (searchValue: string) => {
+    setFilteredFields(
+      field.args?.filter((a) => a.name.toLowerCase().includes(searchValue)),
+    );
+  };
+
   const NodeContent = useMemo(
     () => (
-      <NodeTitle fade={fade}>
-        <NodeName>
-          <NameInRelation>{field.name}</NameInRelation>
-        </NodeName>
-        <NodeType fade={fade}>
-          <ActiveType type={field.type} />
-        </NodeType>
-        <NodeFocus
-          isSelected={selectedNode?.field === field}
-          onClick={(e) => {
-            e.stopPropagation();
-            focus();
-          }}
-        >
-          <span>Focus</span>
-          <Icons.Eye size={16} />
-        </NodeFocus>
-      </NodeTitle>
+      <ContentWrapper>
+        <NodeTitle fade={fade}>
+          <NodeName>
+            <NameInRelation>{field.name}</NameInRelation>
+          </NodeName>
+          <NodeType fade={fade}>
+            <ActiveType type={field.type} />
+          </NodeType>
+          <NodeFocus
+            isSelected={selectedNode?.field === field}
+            onClick={(e) => {
+              e.stopPropagation();
+              focus();
+            }}
+          >
+            <span>Focus</span>
+            <Icons.Eye size={16} />
+          </NodeFocus>
+        </NodeTitle>
+        {selectedNode?.field === field &&
+          field.args &&
+          field.args.length > 10 && <SearchInput handleSearch={handleSearch} />}
+      </ContentWrapper>
     ),
     [field, theme, fade, selectedNode],
   );
+
   return (
     <Content
       isSelected={selectedNode?.field === field}
@@ -173,6 +199,7 @@ export const Node: React.FC<NodeProps> = ({
       fade={fade}
       isActive={!fade && typeof fade !== 'undefined'}
       nodeType={field.type.name as NodeTypes}
+      isMoreThanTen={field.args && field.args.length > 10}
       ref={(ref) => {
         if (ref) {
           setRef(ref);
