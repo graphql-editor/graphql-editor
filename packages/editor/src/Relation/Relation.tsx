@@ -5,23 +5,22 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { fontFamily } from '@/vars';
+import { fontFamily, fontFamilySans } from '@/vars';
 import { useTreesState } from '@/state/containers/trees';
 import {
-  KeyboardActions,
   useErrorsState,
-  useIOState,
+  useLayoutState,
   useNavigationState,
 } from '@/state/containers';
 import { sortByConnection } from './Algorithm';
 import { Node } from './Node';
 import { ParserField } from 'graphql-js-tree';
-import { Search } from '@/Graf/icons';
-import { LevenshteinDistance } from '@/search';
 import { Lines, RelationPath } from '@/Relation/Lines';
 import { ErrorLock } from '@/shared/components';
 import { compareNodesWithData } from '@/compare/compareNodes';
 import styled from '@emotion/styled';
+import { SearchInput } from '@/Graf/Node/components/SearchInput';
+import { GraphQLEditorDomStructure } from '@/domStructure';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -76,35 +75,28 @@ const ErrorContainer = styled.div`
   border: 1px solid ${({ theme }) => theme.error};
 `;
 
-const SearchContainer = styled.div`
-  position: fixed;
-  bottom: 10px;
-  left: 10px;
-  z-index: 200;
-
-  svg {
-    position: absolute;
-    bottom: 8px;
-    left: 6px;
-    z-index: 200;
+const TopBar = styled.div`
+  display: flex;
+  margin: 0 20px 0 8px;
+  flex-direction: column;
+  & > div:first-of-type {
+    flex: 1;
   }
 `;
 
-const SearchInput = styled.input`
-  background-color: ${({ theme }) => theme.background.mainClose};
-  color: ${({ theme }) => theme.text};
-  border: 0;
-  width: 100%;
-  min-width: 0;
-  height: 36px;
-  padding: 0 12px 0 28px;
+const Heading = styled.h1`
   font-size: 14px;
-  outline: 0;
-  position: relative;
-  user-select: none;
-  &::placeholder {
-    color: ${({ theme }) => theme.disabled};
-  }
+  font-weight: 500;
+  color: ${({ theme }) => theme.inactive};
+  margin: 20px 20px 15px 15px;
+  font-family: ${fontFamilySans};
+`;
+
+const LineSpacer = styled.div`
+  width: 100%;
+  height: 0;
+  border-bottom: 1px solid ${({ theme }) => theme.disabled}36;
+  margin: 20px 0;
 `;
 
 function insert<T>(arr: T[], index: number, before: T[], after: T[]) {
@@ -120,15 +112,16 @@ function insert<T>(arr: T[], index: number, before: T[], after: T[]) {
 let tRefs: Record<string, HTMLDivElement> = {};
 export const Relation: React.FC = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const [focusedNode, setFocusedNode] = useState<ParserField>();
   const { libraryTree, tree, selectedNode, setSelectedNode, schemaType } =
     useTreesState();
   const { lockGraf, grafErrors } = useErrorsState();
-  const { menuState, setMenuState } = useNavigationState();
-  const { setActions } = useIOState();
+  const { setMenuState } = useNavigationState();
+  const { setSearchVisible } = useLayoutState();
+
   const [currentNodes, setCurrentNodes] = useState<ParserField[]>(
     sortByConnection(tree.nodes.concat(libraryTree.nodes)),
   );
+  const [focusedNode, setFocusedNode] = useState<ParserField>();
 
   const [relationDrawingNodes, setRelationDrawingNodes] = useState<
     ParserField[]
@@ -138,7 +131,7 @@ export const Relation: React.FC = () => {
   const [refsLoaded, setRefsLoaded] = useState(false);
   const [relations, setRelations] =
     useState<{ to: RelationPath; from: RelationPath[] }[]>();
-  const [searchVisible, setSearchVisible] = useState<boolean>(false);
+  const [filterNodes, setFilterNodes] = useState('');
 
   useEffect(() => {
     tRefs = {};
@@ -194,6 +187,11 @@ export const Relation: React.FC = () => {
       setCurrentNodes(inserted);
     }
   }, [focusedNode]);
+
+  useEffect(() => {
+    if (filterNodes) {
+    }
+  }, [filterNodes]);
 
   useLayoutEffect(() => {
     if (refsLoaded) {
@@ -258,49 +256,6 @@ export const Relation: React.FC = () => {
     }
   }, [selectedNode]);
 
-  const selectNode = (n: ParserField) => {
-    setSelectedNode({
-      field: n,
-      source: 'relation',
-    });
-  };
-
-  const handleSearch = (searchValue: string) => {
-    if (searchValue.length) {
-      const [node] = currentNodes
-        .map((n) => ({
-          distance: LevenshteinDistance(
-            searchValue.toLocaleLowerCase(),
-            n.name.toLocaleLowerCase(),
-          ),
-          n,
-        }))
-        .sort((a, b) => (a.distance > b.distance ? 1 : -1))
-        .map(({ n }) => n);
-      selectNode(node);
-    } else {
-      setSelectedNode(undefined);
-    }
-  };
-
-  useEffect(() => {
-    setActions((acts) => ({
-      ...acts,
-      [KeyboardActions.FindRelation]: () => {
-        if (menuState === 'relation') {
-          setSearchVisible(!searchVisible);
-        }
-      },
-    }));
-
-    return () => {
-      setActions((acts) => ({
-        ...acts,
-        [KeyboardActions.FindRelation]: () => {},
-      }));
-    };
-  }, [searchVisible]);
-
   const SvgLinesContainer = useMemo(() => {
     return <Lines relations={relations} selectedNode={selectedNode?.field} />;
   }, [relations, selectedNode]);
@@ -312,68 +267,73 @@ export const Relation: React.FC = () => {
         ? [...currentNodes].filter((e) => libraryNodeNames.includes(e.name))
         : [...currentNodes];
 
-    return nodes.map((n, i) => (
-      <Node
-        focus={() => {
-          setFocusedNode(n);
-        }}
-        isLibrary={
-          schemaType === 'library' ? true : libraryNodeNames.includes(n.name)
-        }
-        fade={
-          selectedNode?.field
-            ? compareNodesWithData(selectedNode.field, n)
-              ? false
-              : selectedNode.field.args?.find((a) => a.type.name === n.name)
-              ? false
-              : n.args?.find((na) => na.type.name === selectedNode.field?.name)
-              ? false
-              : n.interfaces?.includes(selectedNode.field.name)
-              ? false
-              : true
-            : undefined
-        }
-        key={n.name + n.data.type + i}
-        setRef={(ref) => {
-          tRefs[n.name + n.data.type] = ref;
-          if (i === currentNodes.length - 1) {
-            setRefs(tRefs);
-            setTimeout(() => {
-              setRefsLoaded(true);
-            }, 100);
+    return nodes
+      .filter((n) => n.name.toLowerCase().includes(filterNodes))
+      .map((n, i) => (
+        <Node
+          focus={() => {
+            setFocusedNode(n);
+          }}
+          isLibrary={
+            schemaType === 'library' ? true : libraryNodeNames.includes(n.name)
           }
-        }}
-        field={n}
-      />
-    ));
-  }, [currentNodes, setRefs, setFocusedNode, selectedNode, schemaType]);
+          clearSearchValue={() => setFilterNodes('')}
+          fade={
+            selectedNode?.field
+              ? compareNodesWithData(selectedNode.field, n)
+                ? false
+                : selectedNode.field.args?.find((a) => a.type.name === n.name)
+                ? false
+                : n.args?.find(
+                    (na) => na.type.name === selectedNode.field?.name,
+                  )
+                ? false
+                : n.interfaces?.includes(selectedNode.field.name)
+                ? false
+                : true
+              : undefined
+          }
+          key={n.name + n.data.type + i}
+          setRef={(ref) => {
+            tRefs[n.name + n.data.type] = ref;
+            if (i === currentNodes.length - 1) {
+              setRefs(tRefs);
+              setTimeout(() => {
+                setRefsLoaded(true);
+              }, 100);
+            }
+          }}
+          field={n}
+        />
+      ));
+  }, [
+    currentNodes,
+    setRefs,
+    setFocusedNode,
+    selectedNode,
+    schemaType,
+    filterNodes,
+  ]);
 
   return (
     <>
       <Wrapper>
-        <SearchContainer>
-          <Search
-            width={18}
-            height={18}
-            onClick={() => {
-              setSearchVisible(!searchVisible);
+        <TopBar>
+          <Heading>RELATION VIEW</Heading>
+          <SearchInput
+            cypressName={
+              GraphQLEditorDomStructure.tree.elements.Graf.searchInput
+            }
+            autoFocus={false}
+            onClear={() => {
+              setFilterNodes('');
             }}
+            onSubmit={() => {}}
+            value={filterNodes}
+            onChange={setFilterNodes}
           />
-          {searchVisible && (
-            <SearchInput
-              autoFocus={true}
-              placeholder="Search..."
-              type="text"
-              onChange={(e) => handleSearch(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Escape') {
-                  setSearchVisible(false);
-                  setSelectedNode(undefined);
-                }
-              }}
-            />
-          )}
-        </SearchContainer>
+        </TopBar>
+        <LineSpacer />
         <Main
           onClick={() => {
             setSearchVisible(false);
@@ -392,7 +352,6 @@ export const Relation: React.FC = () => {
             value={`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:\n${lockGraf}`}
           />
         )}
-
         {grafErrors && <ErrorContainer>{grafErrors}</ErrorContainer>}
       </Wrapper>
     </>
