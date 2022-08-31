@@ -9,7 +9,8 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "updatedeps": "npm i -w graphql-editor graphql-zeus@latest graphsource@latest",
-    "lint": "eslint \"./src/**/*.{ts,js}\" --quiet --fix && prettier --write \"./src/**/*.{ts,js}\" "
+    "lint": "eslint \"./src/**/*.{ts,js}\" --quiet --fix && prettier --write \"./src/**/*.{ts,js}\" ",
+    "run-all": "concurrently \"npm run start -w graphql-editor-worker\" \"npm run start -w graphql-editor\" \"npm run start -w sandbox\" "
   },
   "resolutions": {
     "@types/react": "^16.9.11"
@@ -38,6 +39,7 @@
     "@types/remarkable": "^2.0.3",
     "@typescript-eslint/eslint-plugin": "^4.31.1",
     "@typescript-eslint/parser": "^4.31.1",
+    "concurrently": "^7.3.0",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
