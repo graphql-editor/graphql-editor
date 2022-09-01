@@ -26,8 +26,8 @@ const Content = styled.div<ContentProps>`
   background-color: ${({ theme, fade }) =>
     fade ? theme.background.mainFurther : theme.background.mainMiddle};
   display: ${({ fade }) => fade && 'none'};
-  padding: 20px;
-  margin: 20px;
+  padding: 12px;
+  margin: 12px;
   text-overflow: ellipsis;
   border-radius: 10px;
   overflow-y: hidden;
@@ -43,9 +43,9 @@ const Content = styled.div<ContentProps>`
       ? theme.colors[nodeType]
       : `${theme.hover}00`};
   box-shadow: ${({ theme, isActive }) => isActive && theme.shadow};
-  max-height: ${({ isMoreThanTen }) => isMoreThanTen && '400px'};
+  /* max-height: ${({ isMoreThanTen }) => isMoreThanTen && '400px'};
   overflow-y: ${({ isMoreThanTen, isActive }) =>
-    isMoreThanTen && isActive && 'scroll'};
+    isMoreThanTen && isActive && 'scroll'}; */
   &:hover {
     border-color: ${({ theme, nodeType }) =>
       theme.colors[nodeType] ? theme.colors[nodeType] : `${theme.hover}00`};
@@ -107,11 +107,14 @@ const NameInRelation = styled.span`
 
 interface NodeProps {
   field: ParserField;
-  focus: () => void;
   isLibrary?: boolean;
   fade?: boolean;
   setRef: (instance: HTMLDivElement) => void;
   clearSearchValue: () => void;
+  focus: () => void;
+  setFilteredFieldsTypes: React.Dispatch<
+    React.SetStateAction<string[] | undefined>
+  >;
 }
 
 export const Node: React.FC<NodeProps> = ({
@@ -121,6 +124,7 @@ export const Node: React.FC<NodeProps> = ({
   focus,
   isLibrary,
   clearSearchValue,
+  setFilteredFieldsTypes,
 }) => {
   const { setSelectedNode, selectedNode, tree, libraryTree } = useTreesState();
   const isNodeActive = compareNodesWithData(field, selectedNode?.field);
@@ -160,8 +164,12 @@ export const Node: React.FC<NodeProps> = ({
   }, [field, isNodeActive, theme, fade, filteredFields]);
 
   const handleSearch = (searchValue: string) => {
-    setFilteredFields(
-      field.args?.filter((a) => a.name.toLowerCase().includes(searchValue)),
+    const filteredFields = field.args?.filter((a) =>
+      a.name.toLowerCase().includes(searchValue),
+    );
+    setFilteredFields(filteredFields);
+    setFilteredFieldsTypes(
+      filteredFields?.map((ff) => ff.type.name.toLowerCase()),
     );
   };
 
@@ -187,8 +195,10 @@ export const Node: React.FC<NodeProps> = ({
           </NodeFocus>
         </NodeTitle>
         {selectedNode?.field === field &&
-          field.args &&
-          field.args.length > 10 && <SearchInput handleSearch={handleSearch} />}
+          filteredFields &&
+          filteredFields.length > 10 && (
+            <SearchInput handleSearch={handleSearch} />
+          )}
       </ContentWrapper>
     ),
     [field, theme, fade, selectedNode],
@@ -201,7 +211,7 @@ export const Node: React.FC<NodeProps> = ({
       fade={fade}
       isActive={!fade && typeof fade !== 'undefined'}
       nodeType={field.type.name as NodeTypes}
-      isMoreThanTen={field.args && field.args.length > 10}
+      isMoreThanTen={filteredFields && filteredFields.length > 10}
       ref={(ref) => {
         if (ref) {
           setRef(ref);
@@ -210,6 +220,7 @@ export const Node: React.FC<NodeProps> = ({
       onClick={(e) => {
         e.stopPropagation();
         clearSearchValue();
+        setFilteredFieldsTypes([]);
         setSelectedNode({
           field,
           source: 'relation',
