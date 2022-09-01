@@ -29,7 +29,7 @@ const Content = styled.div<ContentProps>`
   margin: 12px;
   text-overflow: ellipsis;
   border-radius: 10px;
-  overflow-y: hidden;
+  overflow: hidden;
   transition: 0.25s all ease-in-out;
   z-index: 1;
   flex: 1 0 auto;
@@ -42,9 +42,6 @@ const Content = styled.div<ContentProps>`
       ? theme.colors[nodeType]
       : `${theme.hover}00`};
   box-shadow: ${({ theme, isActive }) => isActive && theme.shadow};
-  /* max-height: ${({ isMoreThanTen }) => isMoreThanTen && '400px'};
-  overflow-y: ${({ isMoreThanTen, isActive }) =>
-    isMoreThanTen && isActive && 'scroll'}; */
   &:hover {
     border-color: ${({ theme, nodeType }) =>
       theme.colors[nodeType] ? theme.colors[nodeType] : `${theme.hover}00`};

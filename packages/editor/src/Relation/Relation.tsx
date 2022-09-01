@@ -90,8 +90,14 @@ let tRefs: Record<string, HTMLDivElement> = {};
 
 export const Relation: React.FC = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const { libraryTree, selectedNode, schemaType, tree, relatedToSelected } =
-    useTreesState();
+  const {
+    libraryTree,
+    selectedNode,
+    schemaType,
+    tree,
+    relatedToSelected,
+    setSelectedNode,
+  } = useTreesState();
   const { lockGraf, grafErrors } = useErrorsState();
   const { setMenuState } = useNavigationState();
   const {
@@ -128,6 +134,10 @@ export const Relation: React.FC = () => {
     setCurrentNodes(current);
     setRelationDrawingNodes(current);
   }, [tree, libraryTree, filteredFieldsTypes]);
+
+  useEffect(() => {
+    setFilteredFieldsTypes([]);
+  }, [selectedNode]);
 
   const NodesContainer = useMemo(() => {
     const libraryNodeNames = libraryTree.nodes.map((l) => l.name);
@@ -201,7 +211,7 @@ export const Relation: React.FC = () => {
           />
         </TopBar>
         <LineSpacer />
-        <Main ref={wrapperRef}>
+        <Main ref={wrapperRef} onClick={() => setSelectedNode(undefined)}>
           {!lockGraf && NodesContainer}
           {selectedNode && <RelationNode />}
         </Main>
