@@ -36,7 +36,6 @@ export const SearchInput: React.FC<SearchInputProps> = React.memo(
           placeholder="Search..."
           type="text"
           onChange={(e) => handleSearch(e.target.value)}
-          onBlur={() => handleSearch('')}
         />
       </SearchContainer>
     );

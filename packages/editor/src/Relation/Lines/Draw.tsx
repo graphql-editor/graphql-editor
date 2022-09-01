@@ -24,6 +24,7 @@ export const Draw = ({
   if (from && to) {
     const pos =
       RELATION_CONSTANTS.TOP_HEIGHT +
+      RELATION_CONSTANTS.SEARCHBAR_HEIGHT +
       PortNumber * RELATION_CONSTANTS.FIELD_HEIGHT +
       RELATION_CONSTANTS.FIELD_HEIGHT / 2;
     const f = {

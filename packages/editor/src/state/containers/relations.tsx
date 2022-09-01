@@ -7,7 +7,6 @@ import { useTreesState } from './trees';
 const useRelationsContainer = createContainer(() => {
   const { tree, libraryTree } = useTreesState();
 
-  const [focusedNode, setFocusedNode] = useState<ParserField>();
   const [currentNodes, setCurrentNodes] = useState<ParserField[]>(
     sortByConnection(tree.nodes.concat(libraryTree.nodes)),
   );
@@ -18,8 +17,6 @@ const useRelationsContainer = createContainer(() => {
   >([]);
 
   return {
-    focusedNode,
-    setFocusedNode,
     currentNodes,
     setCurrentNodes,
     refs,

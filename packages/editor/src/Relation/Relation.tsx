@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { fontFamily } from '@/vars';
 import { useTreesState } from '@/state/containers/trees';
 import {
@@ -94,16 +88,6 @@ const LineSpacer = styled.div`
 
 let tRefs: Record<string, HTMLDivElement> = {};
 
-function insert<T>(arr: T[], index: number, before: T[], after: T[]) {
-  return [
-    ...arr.slice(0, index),
-    ...before,
-    arr[index],
-    ...after,
-    ...arr.slice(index + 1),
-  ];
-}
-
 export const Relation: React.FC = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const { libraryTree, selectedNode, schemaType, tree, relatedToSelected } =
@@ -111,8 +95,6 @@ export const Relation: React.FC = () => {
   const { lockGraf, grafErrors } = useErrorsState();
   const { setMenuState } = useNavigationState();
   const {
-    focusedNode,
-    setFocusedNode,
     currentNodes,
     setCurrentNodes,
     setRefs,
@@ -123,25 +105,8 @@ export const Relation: React.FC = () => {
   const [filterNodes, setFilterNodes] = useState('');
   const [filteredFieldsTypes, setFilteredFieldsTypes] = useState<string[]>();
 
-  useLayoutEffect(() => {
-    if (!focusedNode) {
-      return;
-    }
-    setTimeout(() => {
-      const ref = tRefs[focusedNode.name + focusedNode.data.type];
-      if (ref) {
-        ref.scrollIntoView({
-          block: 'center',
-          inline: 'center',
-          behavior: 'smooth',
-        });
-      }
-    }, 50);
-  }, [focusedNode]);
-
   useEffect(() => {
     tRefs = {};
-    setFocusedNode(undefined);
     let current: ParserField[];
     if (selectedNode?.field) {
       const related = relatedToSelected();
@@ -164,37 +129,6 @@ export const Relation: React.FC = () => {
     setRelationDrawingNodes(current);
   }, [tree, libraryTree, filteredFieldsTypes]);
 
-  useEffect(() => {
-    if (focusedNode) {
-      const relatedNodes = currentNodes.filter(
-        (n) =>
-          n.args?.find((a) => a.type.name === focusedNode.name) ||
-          n === focusedNode ||
-          focusedNode.args?.find((a) => a.type.name === n.name),
-      );
-      const withoutRelated = currentNodes.filter(
-        (n) => !relatedNodes.includes(n) || n === focusedNode,
-      );
-
-      const focusedNodeIndex = currentNodes.findIndex(
-        (cn) => cn === focusedNode,
-      );
-      const before = currentNodes
-        .slice(0, focusedNodeIndex)
-        .filter((n) => relatedNodes.includes(n));
-      const after = currentNodes
-        .slice(focusedNodeIndex + 1)
-        .filter((n) => relatedNodes.includes(n));
-      const inserted = insert(
-        withoutRelated,
-        withoutRelated.findIndex((wr) => wr === focusedNode),
-        before,
-        after,
-      );
-      setCurrentNodes(inserted);
-    }
-  }, [focusedNode]);
-
   const NodesContainer = useMemo(() => {
     const libraryNodeNames = libraryTree.nodes.map((l) => l.name);
 
@@ -207,9 +141,6 @@ export const Relation: React.FC = () => {
       .filter((n) => n.name.toLowerCase().includes(filterNodes))
       .map((n, i) => (
         <Node
-          focus={() => {
-            setFocusedNode(n);
-          }}
           setFilteredFieldsTypes={setFilteredFieldsTypes}
           isLibrary={
             schemaType === 'library' ? true : libraryNodeNames.includes(n.name)
@@ -245,7 +176,6 @@ export const Relation: React.FC = () => {
       ));
   }, [
     currentNodes,
-    setFocusedNode,
     selectedNode,
     schemaType,
     filterNodes,

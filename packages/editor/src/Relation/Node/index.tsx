@@ -1,9 +1,8 @@
 import { ActiveType } from '@/Graf/Node/Type';
 import { useTheme, useTreesState } from '@/state/containers';
 import { ParserField, TypeDefinition } from 'graphql-js-tree';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Field } from '../Field';
-import * as Icons from '@/editor/icons';
 import { FIELD_NAME_SIZE } from '@/Graf/constants';
 import { fontFamily } from '@/vars';
 import { compareNodesWithData } from '@/compare/compareNodes';
@@ -78,23 +77,6 @@ const NodeName = styled.div`
   margin-right: 5px;
 `;
 
-const NodeFocus = styled.div<{ isSelected?: boolean }>`
-  margin-left: auto;
-  text-transform: lowercase;
-  font-size: 12px;
-  opacity: ${({ isSelected }) => (isSelected ? '1' : '0')};
-  color: ${({ theme }) => theme.backgroundedText};
-  display: flex;
-  align-items: center;
-  font-weight: bold;
-  cursor: ${({ isSelected }) => (isSelected ? 'pointer' : 'auto')};
-  pointer-events: ${({ isSelected }) => (isSelected ? 'auto' : 'none')};
-
-  span {
-    margin-right: 5px;
-  }
-`;
-
 const NameInRelation = styled.span`
   border: 0;
   background-color: transparent;
@@ -111,7 +93,6 @@ interface NodeProps {
   fade?: boolean;
   setRef: (instance: HTMLDivElement) => void;
   clearSearchValue: () => void;
-  focus: () => void;
   setFilteredFieldsTypes: React.Dispatch<
     React.SetStateAction<string[] | undefined>
   >;
@@ -121,7 +102,6 @@ export const Node: React.FC<NodeProps> = ({
   field,
   setRef,
   fade,
-  focus,
   isLibrary,
   clearSearchValue,
   setFilteredFieldsTypes,
@@ -163,15 +143,24 @@ export const Node: React.FC<NodeProps> = ({
     );
   }, [field, isNodeActive, theme, fade, filteredFields]);
 
-  const handleSearch = (searchValue: string) => {
-    const filteredFields = field.args?.filter((a) =>
-      a.name.toLowerCase().includes(searchValue),
-    );
-    setFilteredFields(filteredFields);
-    setFilteredFieldsTypes(
-      filteredFields?.map((ff) => ff.type.name.toLowerCase()),
-    );
+  const handleSearch = (searchValue?: string) => {
+    if (searchValue) {
+      const filteredFields = field.args?.filter((a) =>
+        a.name.toLowerCase().includes(searchValue.toLowerCase()),
+      );
+      setFilteredFields(filteredFields);
+      setFilteredFieldsTypes(
+        filteredFields?.map((ff) => ff.type.name.toLowerCase()),
+      );
+    } else {
+      setFilteredFields(field.args);
+      setFilteredFieldsTypes([]);
+    }
   };
+
+  useEffect(() => {
+    handleSearch();
+  }, [selectedNode]);
 
   const NodeContent = useMemo(
     () => (
@@ -183,16 +172,6 @@ export const Node: React.FC<NodeProps> = ({
           <NodeType fade={fade}>
             <ActiveType type={field.type} />
           </NodeType>
-          <NodeFocus
-            isSelected={selectedNode?.field === field}
-            onClick={(e) => {
-              e.stopPropagation();
-              focus();
-            }}
-          >
-            <span>Focus</span>
-            <Icons.Eye size={16} />
-          </NodeFocus>
         </NodeTitle>
         {selectedNode?.field === field &&
           filteredFields &&

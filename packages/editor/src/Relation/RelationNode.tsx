@@ -7,9 +7,8 @@ import { compareNodesWithData } from '@/compare/compareNodes';
 let tRefs: Record<string, HTMLDivElement> = {};
 
 export const RelationNode = () => {
-  const { selectedNode, setSelectedNode } = useTreesState();
-  const { focusedNode, setFocusedNode, currentNodes, refsLoaded, refs } =
-    useRelationsState();
+  const { selectedNode } = useTreesState();
+  const { currentNodes, refsLoaded, refs } = useRelationsState();
 
   const [relations, setRelations] =
     useState<{ to: RelationPath; from: RelationPath[] }[]>();
@@ -19,9 +18,6 @@ export const RelationNode = () => {
   >([]);
 
   useEffect(() => {
-    if (focusedNode) {
-      setFocusedNode(undefined);
-    }
     if (selectedNode?.field?.name) {
       const relatedNodes = currentNodes.filter(
         (n) =>
@@ -85,8 +81,5 @@ export const RelationNode = () => {
       scrollToRef();
     }
   }, [selectedNode]);
-
-  return (
-    <div onClick={() => setSelectedNode(undefined)}>{SvgLinesContainer}</div>
-  );
+  return SvgLinesContainer;
 };
