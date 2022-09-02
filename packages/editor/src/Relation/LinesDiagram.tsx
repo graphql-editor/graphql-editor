@@ -37,6 +37,10 @@ const Main = styled.div`
 `;
 
 let tRefs: Record<string, HTMLDivElement> = {};
+export type FilteredFieldsTypesProps = {
+  fieldsTypes?: string[];
+  searchValueEmpty: boolean;
+};
 
 export const LinesDiagram: React.FC = () => {
   const mainRef = useRef<HTMLDivElement>(null);
@@ -57,7 +61,8 @@ export const LinesDiagram: React.FC = () => {
     relationDrawingNodes,
   } = useRelationsState();
 
-  const [filteredFieldsTypes, setFilteredFieldsTypes] = useState<string[]>();
+  const [filteredFieldsTypes, setFilteredFieldsTypes] =
+    useState<FilteredFieldsTypesProps>();
   const [relations, setRelations] =
     useState<
       { to: RelationPath; from: RelationPath[]; fromLength: number }[]
@@ -126,20 +131,22 @@ export const LinesDiagram: React.FC = () => {
         selectedNode?.field,
         ...tree.nodes.filter((n) => related?.includes(n.name)),
       ]);
-      if (filteredFieldsTypes?.length) {
+      if (filteredFieldsTypes?.fieldsTypes?.length) {
         resorted = [
           selectedNode.field,
           ...resorted.filter((c) =>
-            filteredFieldsTypes.includes(c.name.toLowerCase()),
+            filteredFieldsTypes.fieldsTypes?.includes(c.name.toLowerCase()),
           ),
         ];
+      } else if (!filteredFieldsTypes?.searchValueEmpty) {
+        resorted = [selectedNode.field];
       }
       setRelationDrawingNodes(resorted);
     }
   }, [tree, libraryTree, filteredFieldsTypes]);
 
   useEffect(() => {
-    setFilteredFieldsTypes([]);
+    setFilteredFieldsTypes({ fieldsTypes: [], searchValueEmpty: true });
   }, [selectedNode]);
 
   const NodesContainer = useMemo(() => {

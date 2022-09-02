@@ -9,6 +9,7 @@ import { compareNodesWithData } from '@/compare/compareNodes';
 import styled from '@emotion/styled';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
 import { SearchInput } from '@/shared/components/SearchInput';
+import { FilteredFieldsTypesProps } from '../LinesDiagram';
 
 type NodeTypes = keyof EditorTheme['backgrounds'];
 
@@ -89,7 +90,7 @@ interface NodeProps {
   fade?: boolean;
   setRef: (instance: HTMLDivElement) => void;
   setFilteredFieldsTypes: React.Dispatch<
-    React.SetStateAction<string[] | undefined>
+    React.SetStateAction<FilteredFieldsTypesProps | undefined>
   >;
 }
 
@@ -143,12 +144,13 @@ export const Node: React.FC<NodeProps> = ({
         a.name.toLowerCase().includes(searchValue.toLowerCase()),
       );
       setFilteredFields(filteredFields);
-      setFilteredFieldsTypes(
-        filteredFields?.map((ff) => ff.type.name.toLowerCase()),
-      );
+      setFilteredFieldsTypes({
+        fieldsTypes: filteredFields?.map((ff) => ff.type.name.toLowerCase()),
+        searchValueEmpty: false,
+      });
     } else {
       setFilteredFields(field.args);
-      setFilteredFieldsTypes([]);
+      setFilteredFieldsTypes({ fieldsTypes: [], searchValueEmpty: true });
     }
   };
 
@@ -190,7 +192,7 @@ export const Node: React.FC<NodeProps> = ({
       }}
       onClick={(e) => {
         e.stopPropagation();
-        setFilteredFieldsTypes([]);
+        setFilteredFieldsTypes({ fieldsTypes: [], searchValueEmpty: true });
         setSelectedNode({
           field,
           source: 'relation',

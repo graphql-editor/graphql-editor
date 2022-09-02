@@ -28,8 +28,8 @@ export const BasicNodes: React.FC = () => {
   const { currentNodes } = useRelationsState();
   return (
     <Main>
-      {currentNodes.map((cn) => (
-        <PaintNode node={cn} />
+      {currentNodes.map((cn, idx) => (
+        <PaintNode node={cn} key={idx} />
       ))}
     </Main>
   );
