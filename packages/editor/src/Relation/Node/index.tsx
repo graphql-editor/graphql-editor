@@ -140,8 +140,10 @@ export const Node: React.FC<NodeProps> = ({
 
   const handleSearch = (searchValue?: string) => {
     if (searchValue) {
-      const filteredFields = field.args?.filter((a) =>
-        a.name.toLowerCase().includes(searchValue.toLowerCase()),
+      const filteredFields = field.args?.filter(
+        (a) =>
+          a.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+          a.type.name.toLowerCase().includes(searchValue.toLowerCase()),
       );
       setFilteredFields(filteredFields);
       setFilteredFieldsTypes({
