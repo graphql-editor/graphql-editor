@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { fontFamily } from '@/vars';
 import { useTreesState } from '@/state/containers/trees';
 import { useRelationsState } from '@/state/containers';
@@ -42,8 +36,9 @@ export type FilteredFieldsTypesProps = {
   searchValueEmpty: boolean;
 };
 
-export const LinesDiagram: React.FC = () => {
-  const mainRef = useRef<HTMLDivElement>(null);
+export const LinesDiagram: React.FC<{
+  mainRef: React.RefObject<HTMLDivElement>;
+}> = ({ mainRef }) => {
   const {
     libraryTree,
     selectedNode,
