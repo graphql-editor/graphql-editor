@@ -1,7 +1,7 @@
 import { ActiveType } from '@/Graf/Node/Type';
 import { useTheme, useTreesState } from '@/state/containers';
 import { ParserField, TypeDefinition } from 'graphql-js-tree';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Field } from '../Field';
 import { FIELD_NAME_SIZE } from '@/Graf/constants';
 import { fontFamily } from '@/vars';
@@ -23,7 +23,7 @@ interface ContentProps {
 }
 
 const Content = styled.div<ContentProps>`
-  background-color: ${({ theme, fade }) => theme.background.mainFurther};
+  background-color: ${({ theme }) => theme.background.mainFurther};
   display: ${({ fade }) => fade && 'none'};
   padding: 12px;
   margin: 12px;
@@ -145,20 +145,22 @@ export const Node: React.FC<NodeProps> = ({
           a.name.toLowerCase().includes(searchValue.toLowerCase()) ||
           a.type.name.toLowerCase().includes(searchValue.toLowerCase()),
       );
+      const uniqeFilteredFields = new Set(
+        filteredFields?.map((ff) => ff.type.name.toLowerCase()),
+      );
       setFilteredFields(filteredFields);
       setFilteredFieldsTypes({
-        fieldsTypes: filteredFields?.map((ff) => ff.type.name.toLowerCase()),
+        fieldsTypes: Array.from(uniqeFilteredFields),
         searchValueEmpty: false,
       });
     } else {
       setFilteredFields(field.args);
-      setFilteredFieldsTypes({ fieldsTypes: [], searchValueEmpty: true });
+      setFilteredFieldsTypes({
+        fieldsTypes: undefined,
+        searchValueEmpty: true,
+      });
     }
   };
-
-  useEffect(() => {
-    handleSearch();
-  }, [selectedNode]);
 
   const NodeContent = useMemo(
     () => (
@@ -194,7 +196,10 @@ export const Node: React.FC<NodeProps> = ({
       }}
       onClick={(e) => {
         e.stopPropagation();
-        setFilteredFieldsTypes({ fieldsTypes: [], searchValueEmpty: true });
+        setFilteredFieldsTypes({
+          fieldsTypes: undefined,
+          searchValueEmpty: true,
+        });
         setSelectedNode({
           field,
           source: 'relation',

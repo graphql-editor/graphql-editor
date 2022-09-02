@@ -61,8 +61,12 @@ export const LinesDiagram: React.FC = () => {
     relationDrawingNodes,
   } = useRelationsState();
 
-  const [filteredFieldsTypes, setFilteredFieldsTypes] =
-    useState<FilteredFieldsTypesProps>();
+  const [filteredFieldsTypes, setFilteredFieldsTypes] = useState<
+    FilteredFieldsTypesProps | undefined
+  >({
+    fieldsTypes: [],
+    searchValueEmpty: true,
+  });
   const [relations, setRelations] =
     useState<
       { to: RelationPath; from: RelationPath[]; fromLength: number }[]
@@ -116,11 +120,11 @@ export const LinesDiagram: React.FC = () => {
           ),
       );
     }
-  }, [refs, relationDrawingNodes, refsLoaded]);
+  }, [refs, relationDrawingNodes, refsLoaded, filteredFieldsTypes]);
 
   const SvgLinesContainer = useMemo(() => {
     return <Lines relations={relations} selectedNode={selectedNode?.field} />;
-  }, [relations, selectedNode]);
+  }, [relations, selectedNode, filteredFieldsTypes]);
 
   useEffect(() => {
     tRefs = {};
@@ -144,10 +148,6 @@ export const LinesDiagram: React.FC = () => {
       setRelationDrawingNodes(resorted);
     }
   }, [tree, libraryTree, filteredFieldsTypes]);
-
-  useEffect(() => {
-    setFilteredFieldsTypes({ fieldsTypes: [], searchValueEmpty: true });
-  }, [selectedNode]);
 
   const NodesContainer = useMemo(() => {
     const libraryNodeNames = libraryTree.nodes.map((l) => l.name);
