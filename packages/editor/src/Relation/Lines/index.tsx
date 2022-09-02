@@ -22,7 +22,9 @@ export interface RelationPath {
   index: number;
 }
 interface LinesProps {
-  relations: { to: RelationPath; from: RelationPath[] }[] | undefined;
+  relations:
+    | { to: RelationPath; from: RelationPath[]; fromLength: number }[]
+    | undefined;
   selectedNode?: ParserField;
 }
 
@@ -48,9 +50,11 @@ export const Lines: React.FC<LinesProps> = ({ relations, selectedNode }) => {
               ) || 0;
             portNumber = portNumber === -1 ? 0 : portNumber;
             usedToIndexes.push(portNumber);
+            console.log(rf.field.name, (rf.field.args?.length || 0) > 10);
           }
           return (
             <Draw
+              hasSearch={r.fromLength > 10}
               active={fromField || toField}
               inverse={fromField}
               color={(theme.colors as any)[rf.field.type.name]}

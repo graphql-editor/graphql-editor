@@ -22,8 +22,7 @@ interface ContentProps {
 }
 
 const Content = styled.div<ContentProps>`
-  background-color: ${({ theme, fade }) =>
-    fade ? theme.background.mainFurther : theme.background.mainMiddle};
+  background-color: ${({ theme, fade }) => theme.background.mainFurther};
   display: ${({ fade }) => fade && 'none'};
   padding: 12px;
   margin: 12px;
@@ -89,7 +88,6 @@ interface NodeProps {
   isLibrary?: boolean;
   fade?: boolean;
   setRef: (instance: HTMLDivElement) => void;
-  clearSearchValue: () => void;
   setFilteredFieldsTypes: React.Dispatch<
     React.SetStateAction<string[] | undefined>
   >;
@@ -100,7 +98,6 @@ export const Node: React.FC<NodeProps> = ({
   setRef,
   fade,
   isLibrary,
-  clearSearchValue,
   setFilteredFieldsTypes,
 }) => {
   const { setSelectedNode, selectedNode, tree, libraryTree } = useTreesState();
@@ -170,11 +167,9 @@ export const Node: React.FC<NodeProps> = ({
             <ActiveType type={field.type} />
           </NodeType>
         </NodeTitle>
-        {selectedNode?.field === field &&
-          filteredFields &&
-          filteredFields.length > 10 && (
-            <SearchInput handleSearch={handleSearch} />
-          )}
+        {(field?.args?.length || 0) > 10 && (
+          <SearchInput handleSearch={handleSearch} />
+        )}
       </ContentWrapper>
     ),
     [field, theme, fade, selectedNode],
@@ -195,7 +190,6 @@ export const Node: React.FC<NodeProps> = ({
       }}
       onClick={(e) => {
         e.stopPropagation();
-        clearSearchValue();
         setFilteredFieldsTypes([]);
         setSelectedNode({
           field,
