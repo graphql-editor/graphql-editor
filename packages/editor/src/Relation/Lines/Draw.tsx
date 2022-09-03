@@ -22,6 +22,7 @@ export const Draw = ({
   PortNumber: number;
   maxIndex: number;
 }) => {
+  console.log(PortNumber);
   const stroke = active ? color : `${inActiveColor}10`;
   if (from && to) {
     let pos =

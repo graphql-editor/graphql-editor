@@ -12,7 +12,6 @@ import { Node } from './Node';
 import styled from '@emotion/styled';
 import { compareNodesWithData } from '@/compare/compareNodes';
 import { sortByConnection } from './Algorithm';
-import { ParserField } from 'graphql-js-tree';
 import { Lines, RelationPath } from '@/Relation/Lines';
 
 const Main = styled.div`
@@ -44,14 +43,8 @@ export type FilteredFieldsTypesProps = {
 
 export const LinesDiagram: React.FC = () => {
   const mainRef = useRef<HTMLDivElement>(null);
-  const {
-    libraryTree,
-    selectedNode,
-    schemaType,
-    tree,
-    relatedToSelected,
-    setSelectedNode,
-  } = useTreesState();
+  const { libraryTree, selectedNode, schemaType, tree, setSelectedNode } =
+    useTreesState();
   const {
     refsLoaded,
     refs,
@@ -81,13 +74,23 @@ export const LinesDiagram: React.FC = () => {
           compareNodesWithData(n, selectedNode.field) ||
           selectedNode.field?.args?.find((a) => a.type.name === n.name),
       );
-      setRelationDrawingNodes(relatedNodes);
+      const resorted = sortByConnection(relatedNodes);
+      const filtered = filteredFieldsTypes?.searchValueEmpty
+        ? resorted
+        : [
+            selectedNode.field,
+            ...resorted.filter((rn) =>
+              filteredFieldsTypes?.fieldsTypes?.includes(rn.name.toLowerCase()),
+            ),
+          ];
+      setRelationDrawingNodes(filtered);
       return;
     }
-  }, [selectedNode, tree, libraryTree]);
+  }, [selectedNode, tree, libraryTree, filteredFieldsTypes]);
 
   useLayoutEffect(() => {
     if (refsLoaded) {
+      console.log('RESETING RELATIONS');
       setRelations(
         relationDrawingNodes
           .map((n) => ({
@@ -120,34 +123,11 @@ export const LinesDiagram: React.FC = () => {
           ),
       );
     }
-  }, [refs, relationDrawingNodes, refsLoaded, filteredFieldsTypes]);
+  }, [refs, relationDrawingNodes, refsLoaded]);
 
   const SvgLinesContainer = useMemo(() => {
     return <Lines relations={relations} selectedNode={selectedNode?.field} />;
-  }, [relations, selectedNode, filteredFieldsTypes]);
-
-  useEffect(() => {
-    tRefs = {};
-    if (selectedNode?.field) {
-      let resorted: ParserField[];
-      const related = relatedToSelected();
-      resorted = sortByConnection([
-        selectedNode?.field,
-        ...tree.nodes.filter((n) => related?.includes(n.name)),
-      ]);
-      if (filteredFieldsTypes?.fieldsTypes?.length) {
-        resorted = [
-          selectedNode.field,
-          ...resorted.filter((c) =>
-            filteredFieldsTypes.fieldsTypes?.includes(c.name.toLowerCase()),
-          ),
-        ];
-      } else if (!filteredFieldsTypes?.searchValueEmpty) {
-        resorted = [selectedNode.field];
-      }
-      setRelationDrawingNodes(resorted);
-    }
-  }, [tree, libraryTree, filteredFieldsTypes]);
+  }, [relations]);
 
   const NodesContainer = useMemo(() => {
     const libraryNodeNames = libraryTree.nodes.map((l) => l.name);

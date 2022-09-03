@@ -30,6 +30,7 @@ interface LinesProps {
 
 export const Lines: React.FC<LinesProps> = ({ relations, selectedNode }) => {
   const { theme } = useTheme();
+  console.log(relations);
   return (
     <RelationsContainer>
       {relations?.map((r, index) => {
