@@ -72,7 +72,7 @@ export const LinesDiagram: React.FC = () => {
             .includes(
               filteredFieldsTypes[
                 '' + selectedNode.field?.name + selectedNode.field?.data.type
-              ],
+              ] || '',
             ),
         ),
       };
@@ -103,7 +103,7 @@ export const LinesDiagram: React.FC = () => {
               ?.filter((a) =>
                 a.name
                   .toLowerCase()
-                  .includes(filteredFieldsTypes[n.name + n.data.type]),
+                  .includes(filteredFieldsTypes[n.name + n.data.type] || ''),
               )
               .map((a, index) => {
                 const pn = relationDrawingNodes.find(
@@ -149,7 +149,7 @@ export const LinesDiagram: React.FC = () => {
 
     return nodes.map((n, i) => (
       <Node
-        filteredFieldTypes={filteredFieldsTypes[n.name + n.data.type]}
+        filteredFieldTypes={filteredFieldsTypes[n.name + n.data.type] || ''}
         setFilteredFieldsTypes={(q) =>
           setFilteredFieldsTypes((ftt) => ({
             ...ftt,
