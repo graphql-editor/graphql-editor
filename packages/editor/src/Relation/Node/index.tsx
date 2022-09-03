@@ -1,7 +1,7 @@
 import { ActiveType } from '@/Graf/Node/Type';
 import { useTheme, useTreesState } from '@/state/containers';
 import { ParserField, TypeDefinition } from 'graphql-js-tree';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Field } from '../Field';
 import { FIELD_NAME_SIZE } from '@/Graf/constants';
 import { fontFamily } from '@/vars';
@@ -9,13 +9,11 @@ import { compareNodesWithData } from '@/compare/compareNodes';
 import styled from '@emotion/styled';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
 import { SearchInput } from '@/shared/components/SearchInput';
-import { FilteredFieldsTypesProps } from '../LinesDiagram';
 
 type NodeTypes = keyof EditorTheme['backgrounds'];
 
 interface ContentProps {
   nodeType: NodeTypes;
-  isMoreThanTen?: boolean;
   isSelected?: boolean;
   isLibrary?: boolean;
   isActive?: boolean;
@@ -89,9 +87,8 @@ interface NodeProps {
   isLibrary?: boolean;
   fade?: boolean;
   setRef: (instance: HTMLDivElement) => void;
-  setFilteredFieldsTypes: React.Dispatch<
-    React.SetStateAction<FilteredFieldsTypesProps | undefined>
-  >;
+  filteredFieldTypes: string;
+  setFilteredFieldsTypes: (q: string) => void;
 }
 
 export const Node: React.FC<NodeProps> = ({
@@ -99,13 +96,12 @@ export const Node: React.FC<NodeProps> = ({
   setRef,
   fade,
   isLibrary,
+  filteredFieldTypes,
   setFilteredFieldsTypes,
 }) => {
   const { setSelectedNode, selectedNode, tree, libraryTree } = useTreesState();
   const isNodeActive = compareNodesWithData(field, selectedNode?.field);
   const { theme } = useTheme();
-
-  const [filteredFields, setFilteredFields] = useState(field.args);
 
   const RelationFields = useMemo(() => {
     const showFields = selectedNode ? !fade : false;
@@ -113,7 +109,12 @@ export const Node: React.FC<NodeProps> = ({
     return (
       <NodeRelationFields fade={fade}>
         {showFields &&
-          filteredFields?.map((a) => (
+          (!filteredFieldTypes
+            ? field.args
+            : field.args?.filter((n) =>
+                n.name.toLowerCase().includes(filteredFieldTypes),
+              )
+          )?.map((a) => (
             <Field
               onClick={() => {
                 const allNodes = tree.nodes.concat(libraryTree.nodes);
@@ -136,30 +137,10 @@ export const Node: React.FC<NodeProps> = ({
           ))}
       </NodeRelationFields>
     );
-  }, [field, isNodeActive, theme, fade, filteredFields]);
+  }, [field, isNodeActive, theme, fade, filteredFieldTypes]);
 
   const handleSearch = (searchValue?: string) => {
-    if (searchValue) {
-      const filteredFields = field.args?.filter(
-        (a) =>
-          a.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-          a.type.name.toLowerCase().includes(searchValue.toLowerCase()),
-      );
-      const uniqeFilteredFields = new Set(
-        filteredFields?.map((ff) => ff.type.name.toLowerCase()),
-      );
-      setFilteredFields(filteredFields);
-      setFilteredFieldsTypes({
-        fieldsTypes: Array.from(uniqeFilteredFields),
-        searchValueEmpty: false,
-      });
-    } else {
-      setFilteredFields(field.args);
-      setFilteredFieldsTypes({
-        fieldsTypes: undefined,
-        searchValueEmpty: true,
-      });
-    }
+    setFilteredFieldsTypes(searchValue || '');
   };
 
   const NodeContent = useMemo(
@@ -188,7 +169,6 @@ export const Node: React.FC<NodeProps> = ({
       fade={fade}
       isActive={!fade && typeof fade !== 'undefined'}
       nodeType={field.type.name as NodeTypes}
-      isMoreThanTen={filteredFields && filteredFields.length > 10}
       ref={(ref) => {
         if (ref) {
           setRef(ref);
@@ -196,10 +176,6 @@ export const Node: React.FC<NodeProps> = ({
       }}
       onClick={(e) => {
         e.stopPropagation();
-        setFilteredFieldsTypes({
-          fieldsTypes: undefined,
-          searchValueEmpty: true,
-        });
         setSelectedNode({
           field,
           source: 'relation',

@@ -55,11 +55,8 @@ export const LinesDiagram: React.FC = () => {
   } = useRelationsState();
 
   const [filteredFieldsTypes, setFilteredFieldsTypes] = useState<
-    FilteredFieldsTypesProps | undefined
-  >({
-    fieldsTypes: [],
-    searchValueEmpty: true,
-  });
+    Record<string, string>
+  >({});
   const [relations, setRelations] =
     useState<
       { to: RelationPath; from: RelationPath[]; fromLength: number }[]
@@ -67,23 +64,29 @@ export const LinesDiagram: React.FC = () => {
 
   useEffect(() => {
     if (selectedNode?.field?.name) {
-      const together = tree.nodes.concat(libraryTree.nodes);
-      const relatedNodes = together.filter(
-        (n) =>
-          n.args?.find((a) => a.type.name === selectedNode.field?.name) ||
-          compareNodesWithData(n, selectedNode.field) ||
-          selectedNode.field?.args?.find((a) => a.type.name === n.name),
-      );
-      const resorted = sortByConnection(relatedNodes);
-      const filtered = filteredFieldsTypes?.searchValueEmpty
-        ? resorted
-        : [
-            selectedNode.field,
-            ...resorted.filter((rn) =>
-              filteredFieldsTypes?.fieldsTypes?.includes(rn.name.toLowerCase()),
+      const compareNode = {
+        ...selectedNode.field,
+        args: selectedNode.field.args?.filter((a) =>
+          a.name
+            .toLowerCase()
+            .includes(
+              filteredFieldsTypes[
+                '' + selectedNode.field?.name + selectedNode.field?.data.type
+              ],
             ),
-          ];
-      setRelationDrawingNodes(filtered);
+        ),
+      };
+      console.log(compareNode);
+      const together = tree.nodes.concat(libraryTree.nodes);
+      const relatedNodes = together
+        .filter(
+          (n) => compareNode.args?.find((a) => a.type.name === n.name),
+          // || n.args?.find((arg) => arg.type.name === selectedNode.field?.name),
+        )
+        .filter((n) => n.name !== selectedNode.field?.name);
+      const resorted = sortByConnection(relatedNodes);
+      console.log(resorted);
+      setRelationDrawingNodes([selectedNode.field, ...resorted]);
       return;
     }
   }, [selectedNode, tree, libraryTree, filteredFieldsTypes]);
@@ -91,14 +94,18 @@ export const LinesDiagram: React.FC = () => {
   useLayoutEffect(() => {
     if (refsLoaded) {
       console.log('RESETING RELATIONS');
-      let i = 0;
       setRelations(
         relationDrawingNodes
           .map((n) => ({
             to: { htmlNode: refs[n.name + n.data.type], field: n },
             fromLength: n.args?.length || 0,
             from: n.args
-              ?.map((a) => {
+              ?.filter((a) =>
+                a.name
+                  .toLowerCase()
+                  .includes(filteredFieldsTypes[n.name + n.data.type]),
+              )
+              .map((a, index) => {
                 const pn = relationDrawingNodes.find(
                   (nf) => nf.name === a.type.name,
                 );
@@ -108,7 +115,7 @@ export const LinesDiagram: React.FC = () => {
                 return {
                   htmlNode: refs[pn.name + pn.data.type],
                   field: pn,
-                  index: i++,
+                  index,
                 } as RelationPath;
               })
               .filter((o) => !!o),
@@ -142,7 +149,13 @@ export const LinesDiagram: React.FC = () => {
 
     return nodes.map((n, i) => (
       <Node
-        setFilteredFieldsTypes={setFilteredFieldsTypes}
+        filteredFieldTypes={filteredFieldsTypes[n.name + n.data.type]}
+        setFilteredFieldsTypes={(q) =>
+          setFilteredFieldsTypes((ftt) => ({
+            ...ftt,
+            [n.name + n.data.type]: q,
+          }))
+        }
         isLibrary={
           schemaType === 'library' ? true : libraryNodeNames.includes(n.name)
         }
