@@ -91,13 +91,14 @@ export const LinesDiagram: React.FC = () => {
   useLayoutEffect(() => {
     if (refsLoaded) {
       console.log('RESETING RELATIONS');
+      let i = 0;
       setRelations(
         relationDrawingNodes
           .map((n) => ({
             to: { htmlNode: refs[n.name + n.data.type], field: n },
             fromLength: n.args?.length || 0,
             from: n.args
-              ?.map((a, index) => {
+              ?.map((a) => {
                 const pn = relationDrawingNodes.find(
                   (nf) => nf.name === a.type.name,
                 );
@@ -107,7 +108,7 @@ export const LinesDiagram: React.FC = () => {
                 return {
                   htmlNode: refs[pn.name + pn.data.type],
                   field: pn,
-                  index,
+                  index: i++,
                 } as RelationPath;
               })
               .filter((o) => !!o),
