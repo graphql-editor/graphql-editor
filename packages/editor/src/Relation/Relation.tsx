@@ -47,19 +47,15 @@ const ErrorContainer = styled.div`
 `;
 
 const TopBar = styled.div`
+  position: fixed;
+  background-color: ${({ theme }) => theme.background.mainFar};
   display: flex;
+  align-items: center;
   margin: 0 20px 0 8px;
-  flex-direction: column;
-  & > div:first-of-type {
-    flex: 1;
-  }
 `;
 
-const LineSpacer = styled.div`
-  width: 100%;
-  height: 0;
-  border-bottom: 1px solid ${({ theme }) => theme.disabled}36;
-  margin: 20px 0;
+const VerticalContainer = styled.div`
+  padding-top: 100px;
 `;
 
 export const Relation: React.FC = () => {
@@ -92,19 +88,21 @@ export const Relation: React.FC = () => {
           value={filterNodes}
           onChange={setFilterNodes}
         />
+        <div onClick={() => {}}>Base Types On</div>
       </TopBar>
-      <LineSpacer />
-      {!lockGraf && !selectedNode && <BasicNodes />}
-      {!lockGraf && selectedNode && <LinesDiagram />}
-      {lockGraf && (
-        <ErrorLock
-          onClick={() => {
-            setMenuState((ms) => ({ ...ms, code: true }));
-          }}
-          value={`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:\n${lockGraf}`}
-        />
-      )}
-      {grafErrors && <ErrorContainer>{grafErrors}</ErrorContainer>}
+      <VerticalContainer>
+        {!lockGraf && !selectedNode && <BasicNodes />}
+        {!lockGraf && selectedNode && <LinesDiagram />}
+        {lockGraf && (
+          <ErrorLock
+            onClick={() => {
+              setMenuState((ms) => ({ ...ms, code: true }));
+            }}
+            value={`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:\n${lockGraf}`}
+          />
+        )}
+        {grafErrors && <ErrorContainer>{grafErrors}</ErrorContainer>}
+      </VerticalContainer>
     </Wrapper>
   );
 };

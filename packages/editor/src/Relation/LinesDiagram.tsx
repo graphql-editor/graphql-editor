@@ -13,6 +13,7 @@ import styled from '@emotion/styled';
 import { compareNodesWithData } from '@/compare/compareNodes';
 import { sortByConnection } from './Algorithm';
 import { Lines, RelationPath } from '@/Relation/Lines';
+import { isScalarArgument } from '@/GraphQL/Resolve';
 
 const Main = styled.div`
   width: 100%;
@@ -57,6 +58,8 @@ export const LinesDiagram: React.FC = () => {
   const [filteredFieldsTypes, setFilteredFieldsTypes] = useState<
     Record<string, string>
   >({});
+  const [baseTypesOn] = useState(false);
+
   const [relations, setRelations] =
     useState<
       { to: RelationPath; from: RelationPath[]; fromLength: number }[]
@@ -76,20 +79,31 @@ export const LinesDiagram: React.FC = () => {
             ),
         ),
       };
-      console.log(compareNode);
+      const selected = !baseTypesOn
+        ? {
+            ...selectedNode.field,
+            args: selectedNode.field.args?.filter((a) => !isScalarArgument(a)),
+          }
+        : selectedNode.field;
       const together = tree.nodes.concat(libraryTree.nodes);
-      const relatedNodes = together
+      const based = !baseTypesOn
+        ? together.map((n) => ({
+            ...n,
+            args: n.args?.filter((a) => !isScalarArgument(a)),
+          }))
+        : together;
+      const relatedNodes = based
         .filter(
-          (n) => compareNode.args?.find((a) => a.type.name === n.name),
-          // || n.args?.find((arg) => arg.type.name === selectedNode.field?.name),
+          (n) =>
+            compareNode.args?.find((a) => a.type.name === n.name) ||
+            n.args?.find((arg) => arg.type.name === selectedNode.field?.name),
         )
         .filter((n) => n.name !== selectedNode.field?.name);
       const resorted = sortByConnection(relatedNodes);
-      console.log(resorted);
-      setRelationDrawingNodes([selectedNode.field, ...resorted]);
+      setRelationDrawingNodes([selected, ...resorted]);
       return;
     }
-  }, [selectedNode, tree, libraryTree, filteredFieldsTypes]);
+  }, [selectedNode, tree, libraryTree, filteredFieldsTypes, baseTypesOn]);
 
   useLayoutEffect(() => {
     if (refsLoaded) {

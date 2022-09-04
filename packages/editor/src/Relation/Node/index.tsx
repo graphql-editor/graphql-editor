@@ -21,7 +21,7 @@ interface ContentProps {
 }
 
 const Content = styled.div<ContentProps>`
-  background-color: ${({ theme }) => theme.background.mainFurther};
+  background-color: ${({ theme }) => `${theme.background.mainFurther}ee`};
   display: ${({ fade }) => fade && 'none'};
   padding: 12px;
   margin: 12px;
