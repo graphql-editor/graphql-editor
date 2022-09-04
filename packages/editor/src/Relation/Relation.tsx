@@ -13,6 +13,7 @@ import { GraphQLEditorDomStructure } from '@/domStructure';
 import { Heading } from '@/shared/components/Heading';
 import { LinesDiagram } from '@/Relation/LinesDiagram';
 import { BasicNodes } from '@/Relation/BasicNodes';
+import { PaintNode } from '@/Graf/Node';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -52,6 +53,7 @@ const TopBar = styled.div`
   display: flex;
   align-items: center;
   margin: 0 20px 0 8px;
+  z-index: 3;
 `;
 
 const VerticalContainer = styled.div`
@@ -68,10 +70,10 @@ export const Relation: React.FC = () => {
 
   useEffect(() => {
     const together = tree.nodes.concat(libraryTree.nodes);
-    const filteered = together.filter((tn) =>
+    const filtered = together.filter((tn) =>
       tn.name.toLowerCase().includes(filterNodes),
     );
-    setCurrentNodes(filteered);
+    setCurrentNodes(filtered);
   }, [tree, libraryTree, filterNodes]);
 
   return (
@@ -88,7 +90,7 @@ export const Relation: React.FC = () => {
           value={filterNodes}
           onChange={setFilterNodes}
         />
-        <div onClick={() => {}}>Base Types On</div>
+        {selectedNode?.field && <PaintNode node={selectedNode.field} />}
       </TopBar>
       <VerticalContainer>
         {!lockGraf && !selectedNode && <BasicNodes />}
