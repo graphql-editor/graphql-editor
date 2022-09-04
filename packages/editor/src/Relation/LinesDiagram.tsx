@@ -13,6 +13,7 @@ import styled from '@emotion/styled';
 import { sortByConnection } from './Algorithm';
 import { Lines, RelationPath } from '@/Relation/Lines';
 import { isScalarArgument } from '@/GraphQL/Resolve';
+import * as vars from '@/vars';
 
 const Main = styled.div`
   width: 100%;
@@ -24,6 +25,7 @@ const Main = styled.div`
   flex-wrap: wrap;
   animation: show 1 0.5s ease-in-out;
   min-height: 100%;
+  transition: ${vars.transition};
 
   @keyframes show {
     from {
@@ -53,17 +55,36 @@ export const LinesDiagram: React.FC = () => {
     setRefsLoaded,
     setRelationDrawingNodes,
     relationDrawingNodes,
+    showRelatedTo,
+    baseTypesOn,
   } = useRelationsState();
 
   const [filteredFieldsTypes, setFilteredFieldsTypes] = useState<
     Record<string, string>
   >({});
-  const [baseTypesOn] = useState(false);
-
   const [relations, setRelations] =
     useState<
       { to: RelationPath; from: RelationPath[]; fromLength: number }[]
     >();
+  useEffect(() => {
+    if (selectedNode?.field?.name && refsLoaded) {
+      const scrollToRef = (): unknown => {
+        if (selectedNode?.field?.name) {
+          const ref =
+            tRefs[selectedNode.field.name + selectedNode.field.data.type];
+          if (!ref) {
+            return setTimeout(scrollToRef, 10);
+          }
+          ref.scrollIntoView({
+            block: 'center',
+            inline: 'center',
+            behavior: 'smooth',
+          });
+        }
+      };
+      scrollToRef();
+    }
+  }, [selectedNode, refsLoaded]);
 
   useEffect(() => {
     if (selectedNode?.field?.name) {
@@ -93,23 +114,30 @@ export const LinesDiagram: React.FC = () => {
           }))
         : together;
       const relatedNodes = based
-        .filter(
-          (n) =>
-            compareNode.args?.find((a) => a.type.name === n.name) ||
-            n.args?.find((arg) => arg.type.name === selectedNode.field?.name),
-        )
+        .filter((n) => compareNode.args?.find((a) => a.type.name === n.name))
         .filter((n) => n.name !== selectedNode.field?.name);
+      const relatedToNodes = showRelatedTo
+        ? based.filter((n) =>
+            n.args?.find((arg) => arg.type.name === selectedNode.field?.name),
+          )
+        : [];
       const resorted = sortByConnection(relatedNodes);
+      const resortedRelatedTo = sortByConnection(relatedToNodes);
       setRefsLoaded(false);
-      setRelations([]);
-      setRelationDrawingNodes([selected, ...resorted]);
+      setRelationDrawingNodes([...resortedRelatedTo, selected, ...resorted]);
       return;
     }
-  }, [selectedNode, tree, libraryTree, filteredFieldsTypes, baseTypesOn]);
+  }, [
+    selectedNode,
+    tree,
+    libraryTree,
+    filteredFieldsTypes,
+    baseTypesOn,
+    showRelatedTo,
+  ]);
 
   useLayoutEffect(() => {
     if (refsLoaded) {
-      console.log('RESETING RELATIONS');
       setRelations(
         relationDrawingNodes
           .map((n) => ({
@@ -148,7 +176,6 @@ export const LinesDiagram: React.FC = () => {
       );
     }
   }, [refs, relationDrawingNodes, refsLoaded]);
-
   const SvgLinesContainer = useMemo(() => {
     return <Lines relations={relations} selectedNode={selectedNode?.field} />;
   }, [relations]);

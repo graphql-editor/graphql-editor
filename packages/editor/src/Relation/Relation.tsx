@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { fontFamily } from '@/vars';
+import { fontFamily, fontFamilySans } from '@/vars';
 import { useTreesState } from '@/state/containers/trees';
 import {
   useErrorsState,
   useNavigationState,
   useRelationsState,
 } from '@/state/containers';
-import { ErrorLock } from '@/shared/components';
+import { ErrorLock, Toggle } from '@/shared/components';
 import styled from '@emotion/styled';
 import { SearchInput } from '@/Graf/Node/components/SearchInput';
 import { GraphQLEditorDomStructure } from '@/domStructure';
@@ -52,7 +52,9 @@ const TopBar = styled.div`
   background-color: ${({ theme }) => theme.background.mainFar};
   display: flex;
   align-items: center;
+  gap: 20px;
   margin: 0 20px 0 8px;
+  font-family: ${fontFamilySans};
   z-index: 3;
 `;
 
@@ -64,7 +66,13 @@ export const Relation: React.FC = () => {
   const { selectedNode, tree, libraryTree } = useTreesState();
   const { lockGraf, grafErrors } = useErrorsState();
   const { setMenuState } = useNavigationState();
-  const { setCurrentNodes } = useRelationsState();
+  const {
+    setCurrentNodes,
+    showRelatedTo,
+    setShowRelatedTo,
+    setBaseTypesOn,
+    baseTypesOn,
+  } = useRelationsState();
 
   const [filterNodes, setFilterNodes] = useState('');
 
@@ -80,17 +88,35 @@ export const Relation: React.FC = () => {
     <Wrapper>
       <TopBar>
         <Heading heading="RELATION VIEW" />
-        <SearchInput
-          cypressName={GraphQLEditorDomStructure.tree.elements.Graf.searchInput}
-          autoFocus={false}
-          onClear={() => {
-            setFilterNodes('');
-          }}
-          onSubmit={() => {}}
-          value={filterNodes}
-          onChange={setFilterNodes}
-        />
-        {selectedNode?.field && <PaintNode node={selectedNode.field} />}
+        {!selectedNode?.field && (
+          <SearchInput
+            cypressName={
+              GraphQLEditorDomStructure.tree.elements.Graf.searchInput
+            }
+            autoFocus={false}
+            onClear={() => {
+              setFilterNodes('');
+            }}
+            onSubmit={() => {}}
+            value={filterNodes}
+            onChange={setFilterNodes}
+          />
+        )}
+        {selectedNode?.field && (
+          <>
+            <Toggle
+              toggled={showRelatedTo}
+              label="parent"
+              onToggle={() => setShowRelatedTo(!showRelatedTo)}
+            />
+            <Toggle
+              toggled={baseTypesOn}
+              label="scalars"
+              onToggle={() => setBaseTypesOn(!baseTypesOn)}
+            />
+            <PaintNode node={selectedNode.field} />
+          </>
+        )}
       </TopBar>
       <VerticalContainer>
         {!lockGraf && !selectedNode && <BasicNodes />}

@@ -16,7 +16,6 @@ interface MenuSearchProps {
 const Wrapper = styled.div`
   position: relative;
   max-width: 100%;
-  padding: 0 16px;
 `;
 
 const Main = styled.input`

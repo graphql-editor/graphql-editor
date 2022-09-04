@@ -16,6 +16,9 @@ const useRelationsContainer = createContainer(() => {
     ParserField[]
   >([]);
 
+  const [showRelatedTo, setShowRelatedTo] = useState(true);
+  const [baseTypesOn, setBaseTypesOn] = useState(false);
+
   return {
     currentNodes,
     setCurrentNodes,
@@ -25,6 +28,10 @@ const useRelationsContainer = createContainer(() => {
     setRefsLoaded,
     relationDrawingNodes,
     setRelationDrawingNodes,
+    showRelatedTo,
+    setShowRelatedTo,
+    setBaseTypesOn,
+    baseTypesOn,
   };
 });
 

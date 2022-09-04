@@ -16,6 +16,7 @@ const StyledSearchInput = styled.input`
   height: 36px;
   padding: 0 12px 0 32px;
   font-size: 14px;
+  margin: 0;
   outline: 0;
   position: relative;
   user-select: none;
@@ -35,6 +36,7 @@ export const SearchInput: React.FC<SearchInputProps> = React.memo(
         <StyledSearchInput
           placeholder="Search..."
           type="text"
+          onClick={(e) => e.stopPropagation()}
           onChange={(e) => handleSearch(e.target.value)}
         />
       </SearchContainer>
