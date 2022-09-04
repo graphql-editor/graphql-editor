@@ -14,6 +14,7 @@ const RelationsContainer = styled.svg`
   fill: transparent;
   stroke-width: 2px;
   margin: -20px;
+  overflow: visible;
 `;
 
 export interface RelationPath {

@@ -16,13 +16,10 @@ interface ContentProps {
   nodeType: NodeTypes;
   isSelected?: boolean;
   isLibrary?: boolean;
-  isActive?: boolean;
-  fade?: boolean;
 }
 
 const Content = styled.div<ContentProps>`
   background-color: ${({ theme }) => `${theme.background.mainFurther}ee`};
-  display: ${({ fade }) => fade && 'none'};
   padding: 12px;
   margin: 12px;
   text-overflow: ellipsis;
@@ -39,27 +36,21 @@ const Content = styled.div<ContentProps>`
     theme.colors[nodeType] && isSelected
       ? theme.colors[nodeType]
       : `${theme.hover}00`};
-  box-shadow: ${({ theme, isActive }) => isActive && theme.shadow};
   &:hover {
     border-color: ${({ theme, nodeType }) =>
       theme.colors[nodeType] ? theme.colors[nodeType] : `${theme.hover}00`};
   }
 `;
 
-const OpacityFade = styled.div<{ fade?: boolean }>`
-  opacity: ${({ fade }) => (fade ? '0.25' : '1')};
-`;
+const NodeRelationFields = styled.div``;
+const NodeType = styled.div``;
 
-const NodeRelationFields = styled(OpacityFade)``;
-const NodeType = styled(OpacityFade)``;
-
-const NodeTitle = styled.div<{ fade?: boolean }>`
+const NodeTitle = styled.div`
   align-items: stretch;
   color: ${({ theme }) => theme.backgroundedText};
   font-size: 14px;
   padding: 10px 5px;
   display: flex;
-  opacity: ${({ fade }) => (fade ? '0.5' : '1')};
 `;
 
 const ContentWrapper = styled.div`
@@ -85,7 +76,6 @@ const NameInRelation = styled.span`
 interface NodeProps {
   field: ParserField;
   isLibrary?: boolean;
-  fade?: boolean;
   setRef: (instance: HTMLDivElement) => void;
   filteredFieldTypes: string;
   setFilteredFieldsTypes: (q: string) => void;
@@ -94,7 +84,6 @@ interface NodeProps {
 export const Node: React.FC<NodeProps> = ({
   field,
   setRef,
-  fade,
   isLibrary,
   filteredFieldTypes,
   setFilteredFieldsTypes,
@@ -104,40 +93,37 @@ export const Node: React.FC<NodeProps> = ({
   const { theme } = useTheme();
 
   const RelationFields = useMemo(() => {
-    const showFields = selectedNode ? !fade : false;
-
     return (
-      <NodeRelationFields fade={fade}>
-        {showFields &&
-          (!filteredFieldTypes
-            ? field.args
-            : field.args?.filter((n) =>
-                n.name.toLowerCase().includes(filteredFieldTypes),
-              )
-          )?.map((a) => (
-            <Field
-              onClick={() => {
-                const allNodes = tree.nodes.concat(libraryTree.nodes);
-                let n = allNodes.find((tn) => tn.name === a.type.name);
-                setSelectedNode(
-                  n && {
-                    field: n,
-                    source: 'relation',
-                  },
-                );
-              }}
-              active={
-                isNodeActive &&
-                field.data.type !== TypeDefinition.EnumTypeDefinition
-              }
-              key={a.name}
-              node={a}
-              parentNodeTypeName={field.type.name}
-            />
-          ))}
+      <NodeRelationFields>
+        {(!filteredFieldTypes
+          ? field.args
+          : field.args?.filter((n) =>
+              n.name.toLowerCase().includes(filteredFieldTypes),
+            )
+        )?.map((a) => (
+          <Field
+            onClick={() => {
+              const allNodes = tree.nodes.concat(libraryTree.nodes);
+              let n = allNodes.find((tn) => tn.name === a.type.name);
+              setSelectedNode(
+                n && {
+                  field: n,
+                  source: 'relation',
+                },
+              );
+            }}
+            active={
+              isNodeActive &&
+              field.data.type !== TypeDefinition.EnumTypeDefinition
+            }
+            key={a.name}
+            node={a}
+            parentNodeTypeName={field.type.name}
+          />
+        ))}
       </NodeRelationFields>
     );
-  }, [field, isNodeActive, theme, fade, filteredFieldTypes]);
+  }, [field, isNodeActive, theme, filteredFieldTypes]);
 
   const handleSearch = (searchValue?: string) => {
     setFilteredFieldsTypes(searchValue || '');
@@ -146,11 +132,11 @@ export const Node: React.FC<NodeProps> = ({
   const NodeContent = useMemo(
     () => (
       <ContentWrapper>
-        <NodeTitle fade={fade}>
+        <NodeTitle>
           <NodeName>
             <NameInRelation>{field.name}</NameInRelation>
           </NodeName>
-          <NodeType fade={fade}>
+          <NodeType>
             <ActiveType type={field.type} />
           </NodeType>
         </NodeTitle>
@@ -159,15 +145,13 @@ export const Node: React.FC<NodeProps> = ({
         )}
       </ContentWrapper>
     ),
-    [field, theme, fade, selectedNode],
+    [field, theme, selectedNode],
   );
 
   return (
     <Content
-      isSelected={selectedNode?.field === field}
+      isSelected={selectedNode?.field?.name === field.name}
       isLibrary={isLibrary}
-      fade={fade}
-      isActive={!fade && typeof fade !== 'undefined'}
       nodeType={field.type.name as NodeTypes}
       ref={(ref) => {
         if (ref) {

@@ -38,6 +38,7 @@ type FieldProps = Pick<GrafFieldProps, 'node' | 'parentNodeTypeName'> & {
   onClick: () => void;
   active?: boolean;
   isPrimitive?: boolean;
+  showArgs?: boolean;
 };
 
 export const Field: React.FC<FieldProps> = ({
@@ -45,6 +46,7 @@ export const Field: React.FC<FieldProps> = ({
   parentNodeTypeName,
   onClick,
   active,
+  showArgs,
   isPrimitive,
 }) => {
   const { parentTypes } = useTreesState();
@@ -63,7 +65,7 @@ export const Field: React.FC<FieldProps> = ({
           <ActiveFieldName
             data={node.data}
             name={node.name}
-            args={node.args}
+            args={showArgs ? node.args : []}
             parentTypes={parentTypes}
           />
         </Name>

@@ -10,7 +10,6 @@ import { useTreesState } from '@/state/containers/trees';
 import { useRelationsState } from '@/state/containers';
 import { Node } from './Node';
 import styled from '@emotion/styled';
-import { compareNodesWithData } from '@/compare/compareNodes';
 import { sortByConnection } from './Algorithm';
 import { Lines, RelationPath } from '@/Relation/Lines';
 import { isScalarArgument } from '@/GraphQL/Resolve';
@@ -37,6 +36,7 @@ const Main = styled.div`
 `;
 
 let tRefs: Record<string, HTMLDivElement> = {};
+let refTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
 export type FilteredFieldsTypesProps = {
   fieldsTypes?: string[];
   searchValueEmpty: boolean;
@@ -100,6 +100,8 @@ export const LinesDiagram: React.FC = () => {
         )
         .filter((n) => n.name !== selectedNode.field?.name);
       const resorted = sortByConnection(relatedNodes);
+      setRefsLoaded(false);
+      setRelations([]);
       setRelationDrawingNodes([selected, ...resorted]);
       return;
     }
@@ -173,27 +175,17 @@ export const LinesDiagram: React.FC = () => {
         isLibrary={
           schemaType === 'library' ? true : libraryNodeNames.includes(n.name)
         }
-        fade={
-          selectedNode?.field
-            ? compareNodesWithData(selectedNode.field, n)
-              ? false
-              : selectedNode.field.args?.find((a) => a.type.name === n.name)
-              ? false
-              : n.args?.find((na) => na.type.name === selectedNode.field?.name)
-              ? false
-              : n.interfaces?.includes(selectedNode.field.name)
-              ? false
-              : true
-            : undefined
-        }
         key={n.name + n.data.type + i}
         setRef={(ref) => {
           tRefs[n.name + n.data.type] = ref;
           if (i === relationDrawingNodes.length - 1) {
-            setRefs(tRefs);
-            setTimeout(() => {
+            if (refTimeout) {
+              clearTimeout(refTimeout);
+            }
+            refTimeout = setTimeout(() => {
+              setRefs(tRefs);
               setRefsLoaded(true);
-            }, 100);
+            }, 10);
           }
         }}
         field={n}
