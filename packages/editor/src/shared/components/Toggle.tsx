@@ -20,6 +20,7 @@ const Main = styled.div`
   gap: 5px;
   align-items: center;
   height: 14px;
+  cursor: pointer;
 `;
 const Text = styled.div<{ active?: boolean }>`
   font-size: 12px;

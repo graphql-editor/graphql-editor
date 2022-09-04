@@ -76,6 +76,7 @@ const NameInRelation = styled.span`
 interface NodeProps {
   field: ParserField;
   isLibrary?: boolean;
+  enums?: boolean;
   setRef: (instance: HTMLDivElement) => void;
   filteredFieldTypes: string;
   setFilteredFieldsTypes: (q: string) => void;
@@ -85,6 +86,7 @@ export const Node: React.FC<NodeProps> = ({
   field,
   setRef,
   isLibrary,
+  enums,
   filteredFieldTypes,
   setFilteredFieldsTypes,
 }) => {
@@ -93,6 +95,9 @@ export const Node: React.FC<NodeProps> = ({
   const { theme } = useTheme();
 
   const RelationFields = useMemo(() => {
+    if (!enums && field.data.type === TypeDefinition.EnumTypeDefinition) {
+      return <NodeRelationFields></NodeRelationFields>;
+    }
     return (
       <NodeRelationFields>
         {(!filteredFieldTypes
@@ -123,10 +128,10 @@ export const Node: React.FC<NodeProps> = ({
         ))}
       </NodeRelationFields>
     );
-  }, [field, isNodeActive, theme, filteredFieldTypes]);
+  }, [field, isNodeActive, theme, filteredFieldTypes, enums]);
 
   const handleSearch = (searchValue?: string) => {
-    setFilteredFieldsTypes(searchValue || '');
+    setFilteredFieldsTypes(searchValue?.toLowerCase() || '');
   };
 
   const NodeContent = useMemo(
@@ -140,12 +145,13 @@ export const Node: React.FC<NodeProps> = ({
             <ActiveType type={field.type} />
           </NodeType>
         </NodeTitle>
-        {(field?.args?.length || 0) > 10 && (
-          <SearchInput handleSearch={handleSearch} />
-        )}
+        {!(!enums && field.data.type === TypeDefinition.EnumTypeDefinition) &&
+          (field?.args?.length || 0) > 10 && (
+            <SearchInput handleSearch={handleSearch} />
+          )}
       </ContentWrapper>
     ),
-    [field, theme, selectedNode],
+    [field, theme, selectedNode, enums],
   );
 
   return (

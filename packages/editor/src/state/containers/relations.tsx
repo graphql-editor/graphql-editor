@@ -18,6 +18,7 @@ const useRelationsContainer = createContainer(() => {
 
   const [showRelatedTo, setShowRelatedTo] = useState(true);
   const [baseTypesOn, setBaseTypesOn] = useState(false);
+  const [enumsOn, setEnumsOn] = useState(false);
 
   return {
     currentNodes,
@@ -32,6 +33,8 @@ const useRelationsContainer = createContainer(() => {
     setShowRelatedTo,
     setBaseTypesOn,
     baseTypesOn,
+    enumsOn,
+    setEnumsOn,
   };
 });
 

@@ -72,6 +72,8 @@ export const Relation: React.FC = () => {
     setShowRelatedTo,
     setBaseTypesOn,
     baseTypesOn,
+    setEnumsOn,
+    enumsOn,
   } = useRelationsState();
 
   const [filterNodes, setFilterNodes] = useState('');
@@ -79,7 +81,7 @@ export const Relation: React.FC = () => {
   useEffect(() => {
     const together = tree.nodes.concat(libraryTree.nodes);
     const filtered = together.filter((tn) =>
-      tn.name.toLowerCase().includes(filterNodes),
+      tn.name.toLowerCase().includes(filterNodes.toLowerCase()),
     );
     setCurrentNodes(filtered);
   }, [tree, libraryTree, filterNodes]);
@@ -113,6 +115,11 @@ export const Relation: React.FC = () => {
               toggled={baseTypesOn}
               label="scalars"
               onToggle={() => setBaseTypesOn(!baseTypesOn)}
+            />
+            <Toggle
+              toggled={enumsOn}
+              label="enums"
+              onToggle={() => setEnumsOn(!enumsOn)}
             />
             <PaintNode node={selectedNode.field} />
           </>

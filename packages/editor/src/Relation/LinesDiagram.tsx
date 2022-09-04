@@ -57,6 +57,7 @@ export const LinesDiagram: React.FC = () => {
     relationDrawingNodes,
     showRelatedTo,
     baseTypesOn,
+    enumsOn,
   } = useRelationsState();
 
   const [filteredFieldsTypes, setFilteredFieldsTypes] = useState<
@@ -133,6 +134,7 @@ export const LinesDiagram: React.FC = () => {
     libraryTree,
     filteredFieldsTypes,
     baseTypesOn,
+    enumsOn,
     showRelatedTo,
   ]);
 
@@ -192,6 +194,7 @@ export const LinesDiagram: React.FC = () => {
 
     return nodes.map((n, i) => (
       <Node
+        enums={enumsOn}
         filteredFieldTypes={filteredFieldsTypes[n.name + n.data.type] || ''}
         setFilteredFieldsTypes={(q) =>
           setFilteredFieldsTypes((ftt) => ({
@@ -218,7 +221,7 @@ export const LinesDiagram: React.FC = () => {
         field={n}
       />
     ));
-  }, [selectedNode, schemaType, relationDrawingNodes, filteredFieldsTypes]);
+  }, [schemaType, relationDrawingNodes]);
 
   return (
     <Main ref={mainRef} onClick={() => setSelectedNode(undefined)}>
