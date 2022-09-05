@@ -28,9 +28,14 @@ interface LinesProps {
     | { to: RelationPath; from: RelationPath[]; fromLength: number }[]
     | undefined;
   selectedNode?: ParserField;
+  showAllPaths?: boolean;
 }
 
-export const Lines: React.FC<LinesProps> = ({ relations, selectedNode }) => {
+export const Lines: React.FC<LinesProps> = ({
+  relations,
+  selectedNode,
+  showAllPaths,
+}) => {
   const { theme } = useTheme();
 
   // For optimization purposes
@@ -61,6 +66,7 @@ export const Lines: React.FC<LinesProps> = ({ relations, selectedNode }) => {
           portNumber = portNumber === -1 ? 0 : portNumber;
           usedToIndexes.push(portNumber);
         }
+        if (!showAllPaths && !fromField && !toField) return null;
         return (
           <Draw
             hasSearch={r.fromLength > 10}

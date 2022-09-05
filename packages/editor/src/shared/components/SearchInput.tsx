@@ -1,21 +1,17 @@
+import { RELATION_CONSTANTS } from '@/Relation/Lines/constants';
 import styled from '@emotion/styled';
 import React from 'react';
 
-const SearchContainer = styled.div`
-  width: '100%';
-  height: 50px;
-  position: relative;
-`;
-
 const StyledSearchInput = styled.input`
-  background-color: ${({ theme }) => theme.background.mainClose};
+  background-color: ${({ theme }) => theme.background.mainMiddle};
   color: ${({ theme }) => theme.text};
   border: 0;
   width: 100%;
   min-width: 0;
-  height: 36px;
-  padding: 0 12px 0 32px;
-  font-size: 14px;
+  height: ${RELATION_CONSTANTS.SEARCHBAR_HEIGHT}px;
+  padding: 0px 10px;
+  font-size: 12px;
+  border-radius: 5px;
   margin: 0;
   outline: 0;
   position: relative;
@@ -32,14 +28,12 @@ type SearchInputProps = {
 export const SearchInput: React.FC<SearchInputProps> = React.memo(
   ({ handleSearch }) => {
     return (
-      <SearchContainer>
-        <StyledSearchInput
-          placeholder="Search..."
-          type="text"
-          onClick={(e) => e.stopPropagation()}
-          onChange={(e) => handleSearch(e.target.value)}
-        />
-      </SearchContainer>
+      <StyledSearchInput
+        placeholder="Search..."
+        type="text"
+        onClick={(e) => e.stopPropagation()}
+        onChange={(e) => handleSearch(e.target.value)}
+      />
     );
   },
 );

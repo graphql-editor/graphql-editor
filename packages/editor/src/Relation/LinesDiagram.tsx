@@ -85,9 +85,10 @@ export const LinesDiagram: React.FC = () => {
       };
       scrollToRef();
     }
-  }, [selectedNode, refsLoaded]);
+  }, [refsLoaded]);
 
   useEffect(() => {
+    setRefsLoaded(false);
     if (selectedNode?.field?.name) {
       const compareNode = {
         ...selectedNode.field,
@@ -124,7 +125,6 @@ export const LinesDiagram: React.FC = () => {
         : [];
       const resorted = sortByConnection(relatedNodes);
       const resortedRelatedTo = sortByConnection(relatedToNodes);
-      setRefsLoaded(false);
       setRelationDrawingNodes([...resortedRelatedTo, selected, ...resorted]);
       return;
     }
