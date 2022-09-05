@@ -8,8 +8,7 @@ import { Abc } from '@/editor/icons';
 import { useTheme } from '@emotion/react';
 
 interface DiffEditorProps {
-  schema: string;
-  newSchema: string;
+  schemas: Record<string, string>;
 }
 
 const Main = styled.div`
@@ -41,11 +40,17 @@ const LineSpacer = styled.div`
   margin: 20px 0;
 `;
 
-export const DiffEditor = ({ schema, newSchema }: DiffEditorProps) => {
+export const DiffEditor = ({ schemas }: DiffEditorProps) => {
   const { sortAlphabetically } = useSortState();
   const { inactive, active } = useTheme();
 
   const [isSortActive, setIsSortActive] = useState(false);
+  const [choosenLeftVersion, setChoosenLeftVersion] = useState(
+    Object.keys(schemas)[Object.keys(schemas).length - 1],
+  );
+  const [choosenRightVersion, setChoosenRightVersion] = useState(
+    Object.keys(schemas)[Object.keys(schemas).length],
+  );
 
   const sortSchema = (schema: string) => {
     const tree = Parser.parse(schema);
@@ -64,10 +69,36 @@ export const DiffEditor = ({ schema, newSchema }: DiffEditorProps) => {
           <Abc size={28} fill={isSortActive ? active : inactive} />
         </div>
       </TopBar>
+      <TopBar>
+        <div>
+          <p>SELECT VERSION:</p>
+          <select onChange={(e) => setChoosenLeftVersion(e.target.value)}>
+            {Object.keys(schemas).map((s) => (
+              <option>{s}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <p>SELECT VERSION:</p>
+          <select onChange={(e) => setChoosenRightVersion(e.target.value)}>
+            {Object.keys(schemas).map((s) => (
+              <option>{s}</option>
+            ))}
+          </select>
+        </div>
+      </TopBar>
       <LineSpacer />
       <DiffEditorPane
-        schema={isSortActive ? sortSchema(schema) : schema}
-        newSchema={isSortActive ? sortSchema(newSchema) : newSchema}
+        schema={
+          isSortActive
+            ? sortSchema(schemas[choosenLeftVersion])
+            : schemas[choosenLeftVersion]
+        }
+        newSchema={
+          isSortActive
+            ? sortSchema(schemas[choosenRightVersion])
+            : schemas[choosenRightVersion]
+        }
         size={`100vw-50px`}
       />
     </Main>

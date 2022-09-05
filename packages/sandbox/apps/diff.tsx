@@ -2,6 +2,15 @@ import React from 'react';
 import { GraphQLEditor, DarkTheme } from 'graphql-editor';
 import * as schemas from '../schema';
 
+export type SchemasVersions = Record<string, string>;
+
+const mockData: SchemasVersions = {
+  '1.0.31': '',
+  '1.0.32': '',
+  '1.0.33': schemas.versionedUsersLibraryLatest,
+  '1.0.34': schemas.versionedUsersLibrary01,
+};
+
 export const diff = () => {
   return (
     <div
@@ -18,14 +27,7 @@ export const diff = () => {
         theme={DarkTheme}
         schema={{ code: schemas.versionedUsersLibraryLatest }}
         setSchema={() => {}}
-        diffSchemas={{
-          newSchema: {
-            code: schemas.versionedUsersLibraryLatest,
-          },
-          oldSchema: {
-            code: schemas.versionedUsersLibrary01,
-          },
-        }}
+        diffSchemas={mockData}
       />
     </div>
   );
