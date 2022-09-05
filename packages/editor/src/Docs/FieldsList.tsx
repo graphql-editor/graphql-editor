@@ -2,11 +2,19 @@ import { ArgumentsList } from '@/Docs/ArgumentsList';
 import { tranfromOptions } from '@/Docs/handleOptions';
 import { BuiltInScalars } from '@/GraphQL/Resolve';
 import { ParserField } from 'graphql-js-tree';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Remarkable } from 'remarkable';
-import { DescText, FieldText, Title, TypeText } from '@/Docs/DocsStyles';
+import {
+  DescText,
+  DescWrapper,
+  FieldText,
+  Title,
+  TypeText,
+} from '@/Docs/DocsStyles';
 import styled from '@emotion/styled';
 import { AddDescriptionInput } from './AddDescriptionInput';
+import { Edit } from '@/editor/icons';
+import { useTheme } from '@emotion/react';
 
 const md = new Remarkable();
 
@@ -37,14 +45,14 @@ interface FieldsListI {
 }
 
 export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
-  const onSubmit = useCallback((description: string, idx: number) => {
-    console.log(node.args);
+  const { backgroundedText } = useTheme();
 
+  const [isEdit, setIsEdit] = useState(false);
+
+  const onSubmit = useCallback((description: string, idx: number) => {
     if (node.args) {
       node.args[idx].description = description;
-      console.log(node.args[idx].description);
     }
-    console.log('nie');
   }, []);
 
   return (
@@ -74,17 +82,22 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
                 </TypeText>
               )}
             </TitleWrapper>
-            {arg.description ? (
-              <DescText
-                dangerouslySetInnerHTML={{
-                  __html: md.render(arg.description),
-                }}
-              />
+            {arg.description && !isEdit ? (
+              <DescWrapper onClick={() => setIsEdit(true)}>
+                <DescText
+                  dangerouslySetInnerHTML={{
+                    __html: md.render(arg.description),
+                  }}
+                />
+                <Edit size={16} fill={backgroundedText} />
+              </DescWrapper>
             ) : (
               <AddDescriptionInput
                 onSubmit={(description) => {
                   onSubmit(description, i);
+                  setIsEdit(false);
                 }}
+                defaultValue={arg.description || ''}
               />
             )}
           </FieldsWrapper>

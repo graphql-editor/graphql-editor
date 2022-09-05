@@ -26,12 +26,14 @@ const DescriptionInput = styled.input`
 
 type AddDescriptionInputProps = {
   onSubmit: (description: string) => void;
+  defaultValue: string;
 };
 
 export const AddDescriptionInput: React.FC<AddDescriptionInputProps> = ({
   onSubmit,
+  defaultValue,
 }) => {
-  const [newDescription, setNewDescription] = useState('');
+  const [newDescription, setNewDescription] = useState(defaultValue);
 
   return (
     <DescriptionInput
@@ -40,7 +42,7 @@ export const AddDescriptionInput: React.FC<AddDescriptionInputProps> = ({
           onSubmit(newDescription);
         }
       }}
-      placeholder="Add description"
+      placeholder="No description"
       type="text"
       value={newDescription}
       onChange={(e) => setNewDescription(e.target.value)}

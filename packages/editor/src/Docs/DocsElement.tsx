@@ -3,12 +3,14 @@ import { InterfacesList } from '@/Docs/InterfacesList';
 import { useTreesState } from '@/state/containers';
 import { fontFamilySans } from '@/vars';
 import { ParserField } from 'graphql-js-tree';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 // @ts-ignore
 import { Remarkable } from 'remarkable';
 import styled from '@emotion/styled';
-import { DescText, Title } from '@/Docs/DocsStyles';
+import { DescText, DescWrapper, Title } from '@/Docs/DocsStyles';
 import { AddDescriptionInput } from './AddDescriptionInput';
+import { Edit } from '@/editor/icons';
+import { useTheme } from '@emotion/react';
 
 const Wrapper = styled.div`
   display: flex;
@@ -28,12 +30,16 @@ const Type = styled.div`
   margin-left: 4px;
   font-size: 10px;
 `;
+
 interface DocsElementI {
   node: ParserField;
 }
 
 export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
   const { setSelectedNode, tree } = useTreesState();
+  const { backgroundedText } = useTheme();
+
+  const [isEdit, setIsEdit] = useState(false);
 
   const setNode = (nodeName: string) => {
     const newSelectedNode = tree.nodes.filter((node) => node.name === nodeName);
@@ -62,14 +68,23 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
       {node.interfaces && node.interfaces.length > 0 && (
         <InterfacesList setNode={setNode} interfacesList={node.interfaces} />
       )}
-      {description ? (
-        <DescText
-          dangerouslySetInnerHTML={{
-            __html: description,
-          }}
-        />
+      {description && !isEdit ? (
+        <DescWrapper onClick={() => setIsEdit(true)}>
+          <DescText
+            dangerouslySetInnerHTML={{
+              __html: description,
+            }}
+          />
+          <Edit size={16} fill={backgroundedText} />
+        </DescWrapper>
       ) : (
-        <AddDescriptionInput onSubmit={onSubmit} />
+        <AddDescriptionInput
+          onSubmit={(description: string) => {
+            onSubmit(description);
+            setIsEdit(false);
+          }}
+          defaultValue={node.description || ''}
+        />
       )}
       {node.args && node.args.length > 0 && (
         <FieldsList node={node} setNode={setNode} />
