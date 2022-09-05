@@ -3,11 +3,12 @@ import { InterfacesList } from '@/Docs/InterfacesList';
 import { useTreesState } from '@/state/containers';
 import { fontFamilySans } from '@/vars';
 import { ParserField } from 'graphql-js-tree';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 // @ts-ignore
 import { Remarkable } from 'remarkable';
 import styled from '@emotion/styled';
 import { DescText, Title } from '@/Docs/DocsStyles';
+import { AddDescriptionInput } from './AddDescriptionInput';
 
 const Wrapper = styled.div`
   display: flex;
@@ -47,6 +48,11 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
     return node.description ? new Remarkable().render(node.description) : '';
   }, [node.description]);
 
+  const onSubmit = useCallback(
+    (description: string) => (node.description = description),
+    [],
+  );
+
   return (
     <Wrapper>
       <Top>
@@ -56,11 +62,15 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
       {node.interfaces && node.interfaces.length > 0 && (
         <InterfacesList setNode={setNode} interfacesList={node.interfaces} />
       )}
-      <DescText
-        dangerouslySetInnerHTML={{
-          __html: description,
-        }}
-      />
+      {description ? (
+        <DescText
+          dangerouslySetInnerHTML={{
+            __html: description,
+          }}
+        />
+      ) : (
+        <AddDescriptionInput onSubmit={onSubmit} />
+      )}
       {node.args && node.args.length > 0 && (
         <FieldsList node={node} setNode={setNode} />
       )}

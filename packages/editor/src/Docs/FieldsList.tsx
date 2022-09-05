@@ -2,10 +2,11 @@ import { ArgumentsList } from '@/Docs/ArgumentsList';
 import { tranfromOptions } from '@/Docs/handleOptions';
 import { BuiltInScalars } from '@/GraphQL/Resolve';
 import { ParserField } from 'graphql-js-tree';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Remarkable } from 'remarkable';
 import { DescText, FieldText, Title, TypeText } from '@/Docs/DocsStyles';
 import styled from '@emotion/styled';
+import { AddDescriptionInput } from './AddDescriptionInput';
 
 const md = new Remarkable();
 
@@ -22,7 +23,7 @@ const FieldsWrapper = styled.div`
   flex-direction: column;
   width: 90%;
   margin-bottom: 8px;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.type};
+  border-bottom: 1px solid ${({ theme }) => theme.disabled}36;
 `;
 
 const TitleWrapper = styled.div<{ isType: boolean }>`
@@ -36,6 +37,16 @@ interface FieldsListI {
 }
 
 export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
+  const onSubmit = useCallback((description: string, idx: number) => {
+    console.log(node.args);
+
+    if (node.args) {
+      node.args[idx].description = description;
+      console.log(node.args[idx].description);
+    }
+    console.log('nie');
+  }, []);
+
   return (
     <>
       <Title>
@@ -63,10 +74,16 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
                 </TypeText>
               )}
             </TitleWrapper>
-            {arg.description && (
+            {arg.description ? (
               <DescText
                 dangerouslySetInnerHTML={{
                   __html: md.render(arg.description),
+                }}
+              />
+            ) : (
+              <AddDescriptionInput
+                onSubmit={(description) => {
+                  onSubmit(description, i);
                 }}
               />
             )}
