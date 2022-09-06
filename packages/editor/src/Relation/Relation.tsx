@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { fontFamily, fontFamilySans } from '@/vars';
 import { useTreesState } from '@/state/containers/trees';
 import {
@@ -14,6 +14,7 @@ import { Heading } from '@/shared/components/Heading';
 import { LinesDiagram } from '@/Relation/LinesDiagram';
 import { BasicNodes } from '@/Relation/BasicNodes';
 import { PaintNode } from '@/Graf/Node';
+import { toPng } from 'html-to-image';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -62,7 +63,17 @@ const VerticalContainer = styled.div`
   padding-top: 100px;
 `;
 
+const ExportToPng = styled.p`
+  font-size: 14px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.inactive};
+  margin: 20px 20px 15px 15px;
+  font-family: ${fontFamilySans};
+  cursor: pointer;
+`;
+
 export const Relation: React.FC = () => {
+  const mainRef = useRef<HTMLDivElement>(null);
   const { selectedNode, tree, libraryTree } = useTreesState();
   const { lockGraf, grafErrors } = useErrorsState();
   const { setMenuState } = useNavigationState();
@@ -85,6 +96,22 @@ export const Relation: React.FC = () => {
     );
     setCurrentNodes(filtered);
   }, [tree, libraryTree, filterNodes]);
+
+  const downloadPng = useCallback(() => {
+    if (mainRef.current === null) {
+      return;
+    }
+    toPng(mainRef.current, { cacheBust: true })
+      .then((dataUrl) => {
+        const link = document.createElement('a');
+        link.download = `${'relation_view'}`;
+        link.href = dataUrl;
+        link.click();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [mainRef]);
 
   return (
     <Wrapper>
@@ -122,12 +149,15 @@ export const Relation: React.FC = () => {
               onToggle={() => setEnumsOn(!enumsOn)}
             />
             <PaintNode node={selectedNode.field} />
+            <ExportToPng onClick={() => downloadPng()}>
+              EXPORT TO PNG
+            </ExportToPng>
           </>
         )}
       </TopBar>
       <VerticalContainer>
         {!lockGraf && !selectedNode && <BasicNodes />}
-        {!lockGraf && selectedNode && <LinesDiagram />}
+        {!lockGraf && selectedNode && <LinesDiagram mainRef={mainRef} />}
         {lockGraf && (
           <ErrorLock
             onClick={() => {
