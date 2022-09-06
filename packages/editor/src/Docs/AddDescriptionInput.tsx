@@ -9,11 +9,11 @@ const DescriptionInput = styled.input`
   width: 60%;
   min-width: 0;
   height: 36px;
-  padding: 0 12px 0 28px;
+  padding: 0 10px;
   font-size: 14px;
   outline: 0;
   position: relative;
-  margin: 10px 0px;
+  margin: 7px 0px;
   border-bottom: 1px solid ${({ theme }) => theme.background.mainClose};
 
   &::placeholder {

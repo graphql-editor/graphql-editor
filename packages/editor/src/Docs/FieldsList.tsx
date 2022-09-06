@@ -15,6 +15,7 @@ import styled from '@emotion/styled';
 import { AddDescriptionInput } from './AddDescriptionInput';
 import { Edit } from '@/editor/icons';
 import { useTheme } from '@emotion/react';
+import { useTreesState } from '@/state/containers';
 
 const md = new Remarkable();
 
@@ -46,6 +47,7 @@ interface FieldsListI {
 
 export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
   const { backgroundedText } = useTheme();
+  const { setTree, tree } = useTreesState();
 
   const [isEdit, setIsEdit] = useState(false);
   const [editedIdx, setEditedIdx] = useState(-1);
@@ -53,6 +55,9 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
   const onSubmit = useCallback((description: string, idx: number) => {
     if (node.args) {
       node.args[idx].description = description;
+      const changedIdx = tree.nodes.findIndex((n) => n.name === node.name);
+      tree.nodes[changedIdx] = node;
+      setTree(tree);
     }
   }, []);
 
@@ -103,7 +108,7 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
                     __html: md.render(arg.description || 'No description'),
                   }}
                 />
-                <Edit size={16} fill={backgroundedText} />
+                <Edit size={14} fill={backgroundedText} />
               </DescWrapper>
             )}
           </FieldsWrapper>

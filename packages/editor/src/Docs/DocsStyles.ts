@@ -37,7 +37,8 @@ export const DescWrapper = styled.div`
   flex-direction: row;
   align-items: center;
   cursor: pointer;
-
+  height: 50px;
+  margin-left: 12px;
   svg {
     margin-bottom: 10px;
   }
