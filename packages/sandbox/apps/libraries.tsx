@@ -26,14 +26,8 @@ export const libraries = () => {
           setMySchema(props);
         }}
         diffSchemas={{
-          newSchema: {
-            code: schemas.finance,
-            libraries: schemas.usersLibraryNew,
-          },
-          oldSchema: {
-            code: schemas.finance,
-            libraries: schemas.usersLibraryOld,
-          },
+          '1': schemas.finance + schemas.usersLibraryNew,
+          '2': schemas.finance + schemas.usersLibraryOld,
         }}
         schema={mySchema}
       />

@@ -35,8 +35,8 @@ export const SetSchema = () => {
           });
         }}
         diffSchemas={{
-          newSchema: { code: schemas.versionedUsersLibraryLatest },
-          oldSchema: { code: schemas.versionedUsersLibrary01 },
+          '1': schemas.versionedUsersLibraryLatest,
+          '2': schemas.versionedUsersLibrary01,
         }}
         schema={mySchema}
       />
