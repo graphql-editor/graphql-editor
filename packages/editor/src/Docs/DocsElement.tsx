@@ -68,16 +68,7 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
       {node.interfaces && node.interfaces.length > 0 && (
         <InterfacesList setNode={setNode} interfacesList={node.interfaces} />
       )}
-      {description && !isEdit ? (
-        <DescWrapper onClick={() => setIsEdit(true)}>
-          <DescText
-            dangerouslySetInnerHTML={{
-              __html: description,
-            }}
-          />
-          <Edit size={16} fill={backgroundedText} />
-        </DescWrapper>
-      ) : (
+      {isEdit ? (
         <AddDescriptionInput
           onSubmit={(description: string) => {
             onSubmit(description);
@@ -85,6 +76,15 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
           }}
           defaultValue={node.description || ''}
         />
+      ) : (
+        <DescWrapper onClick={() => setIsEdit(true)}>
+          <DescText
+            dangerouslySetInnerHTML={{
+              __html: description || 'No description',
+            }}
+          />
+          <Edit size={16} fill={backgroundedText} />
+        </DescWrapper>
       )}
       {node.args && node.args.length > 0 && (
         <FieldsList node={node} setNode={setNode} />

@@ -48,6 +48,7 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
   const { backgroundedText } = useTheme();
 
   const [isEdit, setIsEdit] = useState(false);
+  const [editedIdx, setEditedIdx] = useState(-1);
 
   const onSubmit = useCallback((description: string, idx: number) => {
     if (node.args) {
@@ -82,23 +83,28 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
                 </TypeText>
               )}
             </TitleWrapper>
-            {arg.description && !isEdit ? (
-              <DescWrapper onClick={() => setIsEdit(true)}>
-                <DescText
-                  dangerouslySetInnerHTML={{
-                    __html: md.render(arg.description),
-                  }}
-                />
-                <Edit size={16} fill={backgroundedText} />
-              </DescWrapper>
-            ) : (
+            {isEdit && editedIdx === i ? (
               <AddDescriptionInput
-                onSubmit={(description) => {
+                onSubmit={(description: string) => {
                   onSubmit(description, i);
                   setIsEdit(false);
                 }}
                 defaultValue={arg.description || ''}
               />
+            ) : (
+              <DescWrapper
+                onClick={() => {
+                  setEditedIdx(i);
+                  setIsEdit(true);
+                }}
+              >
+                <DescText
+                  dangerouslySetInnerHTML={{
+                    __html: md.render(arg.description || 'No description'),
+                  }}
+                />
+                <Edit size={16} fill={backgroundedText} />
+              </DescWrapper>
             )}
           </FieldsWrapper>
         ))}
