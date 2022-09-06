@@ -62,10 +62,7 @@ export interface EditorProps extends Theming {
   placeholder?: string;
   schema: PassedSchema;
   sidebarExpanded?: boolean;
-  diffSchemas?: {
-    oldSchema: PassedSchema;
-    newSchema: PassedSchema;
-  };
+  diffSchemas?: Record<string, string>;
   onStateChange?: (
     state?: ReturnType<typeof useNavigationState>['menuState'],
   ) => void;
@@ -294,18 +291,7 @@ export const Editor = ({
       )}
       {menuState.pane === 'hierarchy' && <Hierarchy />}
       {menuState.pane === 'diff' && diffSchemas && (
-        <DiffEditor
-          schema={
-            schemaType === 'library' && diffSchemas.oldSchema.libraries
-              ? diffSchemas.oldSchema.libraries
-              : diffSchemas.oldSchema.code
-          }
-          newSchema={
-            schemaType === 'library' && diffSchemas.newSchema.libraries
-              ? diffSchemas.newSchema.libraries
-              : diffSchemas.newSchema.code
-          }
-        />
+        <DiffEditor schemas={diffSchemas} />
       )}
     </Main>
   );

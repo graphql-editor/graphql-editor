@@ -10,6 +10,7 @@ export const Draw = ({
   inActiveColor,
   PortNumber,
   maxIndex,
+  hasSearch,
 }: {
   from?: HTMLDivElement;
   to?: HTMLDivElement;
@@ -17,15 +18,19 @@ export const Draw = ({
   inActiveColor: string;
   active?: boolean;
   inverse?: boolean;
+  hasSearch?: boolean;
   PortNumber: number;
   maxIndex: number;
 }) => {
   const stroke = active ? color : `${inActiveColor}10`;
   if (from && to) {
-    const pos =
+    let pos =
       RELATION_CONSTANTS.TOP_HEIGHT +
       PortNumber * RELATION_CONSTANTS.FIELD_HEIGHT +
       RELATION_CONSTANTS.FIELD_HEIGHT / 2;
+    if (hasSearch) {
+      pos = pos + RELATION_CONSTANTS.SEARCHBAR_HEIGHT;
+    }
     const f = {
       x: from.offsetLeft,
       y: from.offsetTop,

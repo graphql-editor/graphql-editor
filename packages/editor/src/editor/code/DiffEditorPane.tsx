@@ -15,8 +15,7 @@ export type DiffEditorPaneProps = {
 /**
  * React compontent holding GraphQL IDE
  */
-export const DiffEditorPane = (props: DiffEditorPaneProps) => {
-  const { schema, newSchema } = props;
+export const DiffEditorPane = ({ schema, newSchema }: DiffEditorPaneProps) => {
   const { theme } = useTheme();
 
   const codeSettings = useMemo(

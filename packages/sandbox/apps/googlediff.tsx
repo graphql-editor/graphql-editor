@@ -28,12 +28,8 @@ export const googlediff = () => {
           setCurrentSchema(s);
         }}
         diffSchemas={{
-          newSchema: {
-            code: schemas.googleDirectionsNew,
-          },
-          oldSchema: {
-            code: schemas.googleDirectionsOld,
-          },
+          '1': schemas.googleDirectionsNew,
+          '2': schemas.googleDirectionsOld,
         }}
       />
     </div>

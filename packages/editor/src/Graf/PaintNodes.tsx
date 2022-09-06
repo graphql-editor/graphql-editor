@@ -24,7 +24,8 @@ const Main = styled.div`
 
 const TopBar = styled.div`
   display: flex;
-  margin: 0 20px 0 8px;
+  margin: 0 25px;
+  gap: 20px;
 
   & > div:first-of-type {
     flex: 1;

@@ -1,26 +1,19 @@
-import React, {
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useEffect, useState } from 'react';
 import { fontFamily, fontFamilySans } from '@/vars';
 import { useTreesState } from '@/state/containers/trees';
 import {
   useErrorsState,
-  useLayoutState,
   useNavigationState,
+  useRelationsState,
 } from '@/state/containers';
-import { sortByConnection } from './Algorithm';
-import { Node } from './Node';
-import { ParserField } from 'graphql-js-tree';
-import { Lines, RelationPath } from '@/Relation/Lines';
-import { ErrorLock } from '@/shared/components';
-import { compareNodesWithData } from '@/compare/compareNodes';
+import { ErrorLock, Toggle } from '@/shared/components';
 import styled from '@emotion/styled';
 import { SearchInput } from '@/Graf/Node/components/SearchInput';
 import { GraphQLEditorDomStructure } from '@/domStructure';
+import { Heading } from '@/shared/components/Heading';
+import { LinesDiagram } from '@/Relation/LinesDiagram';
+import { BasicNodes } from '@/Relation/BasicNodes';
+import { PaintNode } from '@/Graf/Node';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -35,27 +28,6 @@ const Wrapper = styled.div`
       background: { mainClose, mainFurthest },
     },
   }) => `${mainClose} ${mainFurthest}`};
-`;
-
-const Main = styled.div`
-  width: 100%;
-  position: relative;
-  font-family: ${fontFamily};
-  align-items: flex-start;
-  display: flex;
-  padding: 20px;
-  flex-wrap: wrap;
-  animation: show 1 0.5s ease-in-out;
-  min-height: 100%;
-
-  @keyframes show {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
 `;
 
 const ErrorContainer = styled.div`
@@ -76,250 +48,49 @@ const ErrorContainer = styled.div`
 `;
 
 const TopBar = styled.div`
+  position: fixed;
+  background-color: ${({ theme }) => theme.background.mainFar};
   display: flex;
+  align-items: center;
+  gap: 20px;
   margin: 0 20px 0 8px;
-  flex-direction: column;
-  & > div:first-of-type {
-    flex: 1;
-  }
-`;
-
-const Heading = styled.h1`
-  font-size: 14px;
-  font-weight: 500;
-  color: ${({ theme }) => theme.inactive};
-  margin: 20px 20px 15px 15px;
   font-family: ${fontFamilySans};
+  z-index: 3;
 `;
 
-const LineSpacer = styled.div`
-  width: 100%;
-  height: 0;
-  border-bottom: 1px solid ${({ theme }) => theme.disabled}36;
-  margin: 20px 0;
+const VerticalContainer = styled.div`
+  padding-top: 100px;
 `;
 
-function insert<T>(arr: T[], index: number, before: T[], after: T[]) {
-  return [
-    ...arr.slice(0, index),
-    ...before,
-    arr[index],
-    ...after,
-    ...arr.slice(index + 1),
-  ];
-}
-
-let tRefs: Record<string, HTMLDivElement> = {};
 export const Relation: React.FC = () => {
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const { libraryTree, tree, selectedNode, setSelectedNode, schemaType } =
-    useTreesState();
+  const { selectedNode, tree, libraryTree } = useTreesState();
   const { lockGraf, grafErrors } = useErrorsState();
   const { setMenuState } = useNavigationState();
-  const { setSearchVisible } = useLayoutState();
+  const {
+    setCurrentNodes,
+    showRelatedTo,
+    setShowRelatedTo,
+    setBaseTypesOn,
+    baseTypesOn,
+    setEnumsOn,
+    enumsOn,
+  } = useRelationsState();
 
-  const [currentNodes, setCurrentNodes] = useState<ParserField[]>(
-    sortByConnection(tree.nodes.concat(libraryTree.nodes)),
-  );
-  const [focusedNode, setFocusedNode] = useState<ParserField>();
-
-  const [relationDrawingNodes, setRelationDrawingNodes] = useState<
-    ParserField[]
-  >([]);
-
-  const [refs, setRefs] = useState<Record<string, HTMLDivElement>>({});
-  const [refsLoaded, setRefsLoaded] = useState(false);
-  const [relations, setRelations] =
-    useState<{ to: RelationPath; from: RelationPath[] }[]>();
   const [filterNodes, setFilterNodes] = useState('');
 
   useEffect(() => {
-    tRefs = {};
-    setFocusedNode(undefined);
-    const current = sortByConnection(tree.nodes.concat(libraryTree.nodes));
-    setCurrentNodes(current);
-    setRelationDrawingNodes(current);
-  }, [tree, libraryTree]);
-
-  useLayoutEffect(() => {
-    if (!focusedNode) {
-      return;
-    }
-    setTimeout(() => {
-      const ref = tRefs[focusedNode.name + focusedNode.data.type];
-      if (ref) {
-        ref.scrollIntoView({
-          block: 'center',
-          inline: 'center',
-          behavior: 'smooth',
-        });
-      }
-    }, 50);
-  }, [focusedNode]);
-
-  useEffect(() => {
-    if (focusedNode) {
-      const relatedNodes = currentNodes.filter(
-        (n) =>
-          n.args?.find((a) => a.type.name === focusedNode.name) ||
-          n === focusedNode ||
-          focusedNode.args?.find((a) => a.type.name === n.name),
-      );
-      const withoutRelated = currentNodes.filter(
-        (n) => !relatedNodes.includes(n) || n === focusedNode,
-      );
-
-      const focusedNodeIndex = currentNodes.findIndex(
-        (cn) => cn === focusedNode,
-      );
-      const before = currentNodes
-        .slice(0, focusedNodeIndex)
-        .filter((n) => relatedNodes.includes(n));
-      const after = currentNodes
-        .slice(focusedNodeIndex + 1)
-        .filter((n) => relatedNodes.includes(n));
-      const inserted = insert(
-        withoutRelated,
-        withoutRelated.findIndex((wr) => wr === focusedNode),
-        before,
-        after,
-      );
-      setCurrentNodes(inserted);
-    }
-  }, [focusedNode]);
-
-  useEffect(() => {
-    if (filterNodes) {
-    }
-  }, [filterNodes]);
-
-  useLayoutEffect(() => {
-    if (refsLoaded) {
-      setRelations(
-        relationDrawingNodes
-          .map((n) => ({
-            to: { htmlNode: refs[n.name + n.data.type], field: n },
-            from: n.args
-              ?.map((a, index) => {
-                const pn = relationDrawingNodes.find(
-                  (nf) => nf.name === a.type.name,
-                );
-                if (!pn) {
-                  return;
-                }
-                return {
-                  htmlNode: refs[pn.name + pn.data.type],
-                  field: pn,
-                  index,
-                } as RelationPath;
-              })
-              .filter((o) => !!o),
-          }))
-          .filter((n) => n.from)
-          .map((n) => n as { from: RelationPath[]; to: RelationPath }),
-      );
-    }
-  }, [refs, relationDrawingNodes, currentNodes, refsLoaded]);
-  useEffect(() => {
-    if (focusedNode) {
-      setFocusedNode(undefined);
-    }
-    if (selectedNode?.field?.name) {
-      const relatedNodes = currentNodes.filter(
-        (n) =>
-          n.args?.find((a) => a.type.name === selectedNode.field?.name) ||
-          compareNodesWithData(n, selectedNode.field) ||
-          selectedNode.field?.args?.find((a) => a.type.name === n.name),
-      );
-      setRelationDrawingNodes(relatedNodes);
-      return;
-    }
-  }, [selectedNode]);
-
-  useEffect(() => {
-    if (selectedNode?.field?.name) {
-      const scrollToRef = (): unknown => {
-        if (selectedNode?.field?.name) {
-          const ref =
-            tRefs[selectedNode.field.name + selectedNode.field.data.type];
-          if (!ref) {
-            return setTimeout(scrollToRef, 10);
-          }
-          ref.scrollIntoView({
-            block: 'center',
-            inline: 'center',
-            behavior: 'smooth',
-          });
-        }
-      };
-      scrollToRef();
-    }
-  }, [selectedNode]);
-
-  const SvgLinesContainer = useMemo(() => {
-    return <Lines relations={relations} selectedNode={selectedNode?.field} />;
-  }, [relations, selectedNode]);
-  const NodesContainer = useMemo(() => {
-    const libraryNodeNames = libraryTree.nodes.map((l) => l.name);
-
-    const nodes =
-      schemaType === 'library'
-        ? [...currentNodes].filter((e) => libraryNodeNames.includes(e.name))
-        : [...currentNodes];
-
-    return nodes
-      .filter((n) => n.name.toLowerCase().includes(filterNodes))
-      .map((n, i) => (
-        <Node
-          focus={() => {
-            setFocusedNode(n);
-          }}
-          isLibrary={
-            schemaType === 'library' ? true : libraryNodeNames.includes(n.name)
-          }
-          clearSearchValue={() => setFilterNodes('')}
-          fade={
-            selectedNode?.field
-              ? compareNodesWithData(selectedNode.field, n)
-                ? false
-                : selectedNode.field.args?.find((a) => a.type.name === n.name)
-                ? false
-                : n.args?.find(
-                    (na) => na.type.name === selectedNode.field?.name,
-                  )
-                ? false
-                : n.interfaces?.includes(selectedNode.field.name)
-                ? false
-                : true
-              : undefined
-          }
-          key={n.name + n.data.type + i}
-          setRef={(ref) => {
-            tRefs[n.name + n.data.type] = ref;
-            if (i === currentNodes.length - 1) {
-              setRefs(tRefs);
-              setTimeout(() => {
-                setRefsLoaded(true);
-              }, 100);
-            }
-          }}
-          field={n}
-        />
-      ));
-  }, [
-    currentNodes,
-    setRefs,
-    setFocusedNode,
-    selectedNode,
-    schemaType,
-    filterNodes,
-  ]);
+    const together = tree.nodes.concat(libraryTree.nodes);
+    const filtered = together.filter((tn) =>
+      tn.name.toLowerCase().includes(filterNodes.toLowerCase()),
+    );
+    setCurrentNodes(filtered);
+  }, [tree, libraryTree, filterNodes]);
 
   return (
-    <>
-      <Wrapper>
-        <TopBar>
-          <Heading>RELATION VIEW</Heading>
+    <Wrapper>
+      <TopBar>
+        <Heading heading="RELATION VIEW" />
+        {!selectedNode?.field && (
           <SearchInput
             cypressName={
               GraphQLEditorDomStructure.tree.elements.Graf.searchInput
@@ -332,18 +103,31 @@ export const Relation: React.FC = () => {
             value={filterNodes}
             onChange={setFilterNodes}
           />
-        </TopBar>
-        <LineSpacer />
-        <Main
-          onClick={() => {
-            setSearchVisible(false);
-            setSelectedNode(undefined);
-          }}
-          ref={wrapperRef}
-        >
-          {SvgLinesContainer}
-          {!lockGraf && NodesContainer}
-        </Main>
+        )}
+        {selectedNode?.field && (
+          <>
+            <Toggle
+              toggled={showRelatedTo}
+              label="parent"
+              onToggle={() => setShowRelatedTo(!showRelatedTo)}
+            />
+            <Toggle
+              toggled={baseTypesOn}
+              label="scalars"
+              onToggle={() => setBaseTypesOn(!baseTypesOn)}
+            />
+            <Toggle
+              toggled={enumsOn}
+              label="enums"
+              onToggle={() => setEnumsOn(!enumsOn)}
+            />
+            <PaintNode node={selectedNode.field} />
+          </>
+        )}
+      </TopBar>
+      <VerticalContainer>
+        {!lockGraf && !selectedNode && <BasicNodes />}
+        {!lockGraf && selectedNode && <LinesDiagram />}
         {lockGraf && (
           <ErrorLock
             onClick={() => {
@@ -353,7 +137,7 @@ export const Relation: React.FC = () => {
           />
         )}
         {grafErrors && <ErrorContainer>{grafErrors}</ErrorContainer>}
-      </Wrapper>
-    </>
+      </VerticalContainer>
+    </Wrapper>
   );
 };

@@ -3,7 +3,6 @@ import { ParserTree, TreeToGraphQL } from 'graphql-js-tree';
 import { getTokenAtPosition, IPosition } from 'graphql-language-service';
 const ctx: Worker = self as any;
 ctx.addEventListener('message', (message) => {
-  console.log(JSON.stringify(message.data, null, 4));
   const m = message.data as
     | {
         event: 'validate';
