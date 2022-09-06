@@ -29,7 +29,7 @@ const Content = styled.div<ContentProps>`
   z-index: 1;
   flex: 1 0 auto;
   cursor: ${({ isSelected }) => (isSelected ? 'auto' : 'pointer')};
-  max-width: 50%;
+  max-width: 400px;
   border-width: 1px;
   border-style: ${({ isLibrary }) => (isLibrary ? 'dashed' : 'solid')};
   border-color: ${({ theme, nodeType, isSelected }) =>
