@@ -42,31 +42,44 @@ const LineSpacer = styled.div`
 
 const SelectVersionWrapper = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  width: 50%;
 `;
 
-const Option = styled.div`
-  padding: 15px;
+const Option = styled.div<{ idx?: number }>`
+  padding: 15px 15px 15px 20px;
   color: ${({ theme }) => theme.text};
   font-size: 14px;
   font-family: ${fontFamilySans};
   background-color: ${({ theme }) => theme.background.mainMiddle};
   display: flex;
   flex-direction: row;
-  justify-content: center;
   align-items: center;
+  position: absolute;
+  top: ${({ idx }) => typeof idx === 'number' && (idx + 1) * 36}px;
+  left: 0;
+  width: 160px;
+  height: 36px;
+  cursor: pointer;
+  z-index: 100;
   &:hover {
     background-color: ${({ theme }) => theme.background.mainMiddle};
   }
 `;
 
 const OptionsWrapper = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
+  align-self: flex-start;
+  margin-left: 16px;
 `;
 
-const Placeholder = styled.p`
-  margin-right: 16px;
+const IconWrapper = styled.div`
+  position: absolute;
+  top: 7.5px;
+  right: 20px;
+  z-index: 100;
 `;
 
 export const DiffEditor = ({ schemas }: DiffEditorProps) => {
@@ -84,6 +97,7 @@ export const DiffEditor = ({ schemas }: DiffEditorProps) => {
   const [isRightOpen, setIsRightOpen] = useState(false);
 
   const sortSchema = (schema: string) => {
+    if (!schema) return '';
     const tree = Parser.parse(schema);
     tree.nodes.sort(sortAlphabetically);
     tree.nodes = tree.nodes.filter(
@@ -103,16 +117,17 @@ export const DiffEditor = ({ schemas }: DiffEditorProps) => {
       <TopBar>
         <SelectVersionWrapper>
           <Heading>SELECT VERSION</Heading>
-          <Option>
-            <Placeholder onClick={() => setIsLeftOpen(true)}>
+          <OptionsWrapper>
+            <Option onClick={() => setIsLeftOpen((lo) => !lo)}>
               {choosenLeftVersion || 'Select version'}
-            </Placeholder>
-            <Arrow size={12} fill={text} />
-          </Option>
-          {isLeftOpen && (
-            <OptionsWrapper>
-              {Object.keys(schemas).map((s, i) => (
+              <IconWrapper>
+                <Arrow size={12} fill={text} />
+              </IconWrapper>
+            </Option>
+            {isLeftOpen &&
+              Object.keys(schemas).map((s, i) => (
                 <Option
+                  idx={i}
                   onClick={() => {
                     setIsLeftOpen(false);
                     setChoosenLeftVersion(s);
@@ -122,21 +137,21 @@ export const DiffEditor = ({ schemas }: DiffEditorProps) => {
                   {s}
                 </Option>
               ))}
-            </OptionsWrapper>
-          )}
+          </OptionsWrapper>
         </SelectVersionWrapper>
         <SelectVersionWrapper>
           <Heading>SELECT VERSION</Heading>
-          <Option>
-            <Placeholder onClick={() => setIsRightOpen(true)}>
+          <OptionsWrapper>
+            <Option onClick={() => setIsRightOpen((ro) => !ro)}>
               {choosenRightVersion || 'Select version'}
-            </Placeholder>
-            <Arrow size={12} fill={text} />
-          </Option>
-          {isRightOpen && (
-            <OptionsWrapper>
-              {Object.keys(schemas).map((s, i) => (
+              <IconWrapper>
+                <Arrow size={12} fill={text} />
+              </IconWrapper>
+            </Option>
+            {isRightOpen &&
+              Object.keys(schemas).map((s, i) => (
                 <Option
+                  idx={i}
                   onClick={() => {
                     setIsRightOpen(false);
                     setChoosenRightVersion(s);
@@ -146,8 +161,7 @@ export const DiffEditor = ({ schemas }: DiffEditorProps) => {
                   {s}
                 </Option>
               ))}
-            </OptionsWrapper>
-          )}
+          </OptionsWrapper>
         </SelectVersionWrapper>
       </TopBar>
       <LineSpacer />
