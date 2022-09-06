@@ -88,6 +88,7 @@ export const Relation: React.FC = () => {
   } = useRelationsState();
 
   const [filterNodes, setFilterNodes] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const together = tree.nodes.concat(libraryTree.nodes);
@@ -101,14 +102,17 @@ export const Relation: React.FC = () => {
     if (mainRef.current === null) {
       return;
     }
+    setIsLoading(true);
     toPng(mainRef.current, { cacheBust: true })
       .then((dataUrl) => {
         const link = document.createElement('a');
         link.download = `${'relation_view'}`;
         link.href = dataUrl;
         link.click();
+        setIsLoading(false);
       })
       .catch((err) => {
+        setIsLoading(false);
         console.log(err);
       });
   }, [mainRef]);
@@ -149,9 +153,13 @@ export const Relation: React.FC = () => {
               onToggle={() => setEnumsOn(!enumsOn)}
             />
             <PaintNode node={selectedNode.field} />
-            <ExportToPng onClick={() => downloadPng()}>
-              EXPORT TO PNG
-            </ExportToPng>
+            {isLoading ? (
+              <img src={require('/packages/sandbox/fonts/loader.gif')} />
+            ) : (
+              <ExportToPng onClick={() => downloadPng()}>
+                EXPORT TO PNG
+              </ExportToPng>
+            )}
           </>
         )}
       </TopBar>
