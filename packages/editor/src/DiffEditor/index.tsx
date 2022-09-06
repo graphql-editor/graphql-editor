@@ -51,7 +51,7 @@ const Option = styled.div<{ idx?: number }>`
   color: ${({ theme }) => theme.text};
   font-size: 14px;
   font-family: ${fontFamilySans};
-  background-color: ${({ theme }) => theme.background.mainMiddle};
+  background-color: ${({ theme }) => theme.contra};
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -61,6 +61,7 @@ const Option = styled.div<{ idx?: number }>`
   width: 160px;
   height: 36px;
   cursor: pointer;
+  border-radius: ${({ idx }) => !idx && idx !== 0 && 4}px;
   z-index: 100;
   &:hover {
     background-color: ${({ theme }) => theme.background.mainMiddle};
