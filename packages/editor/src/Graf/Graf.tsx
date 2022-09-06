@@ -24,7 +24,7 @@ const Wrapper = styled.div`
   position: relative;
   flex: 1;
   background-color: ${({ theme }) => theme.background.mainFar};
-  overflow-y: auto;
+  overflow: hidden;
   scrollbar-color: ${({
     theme: {
       background: { mainClose, mainFurthest },
@@ -36,7 +36,7 @@ const Main = styled.div`
   width: 100%;
   height: 100%;
   position: relative;
-  overflow-y: auto;
+  overflow: auto;
   font-family: ${fontFamily};
 `;
 

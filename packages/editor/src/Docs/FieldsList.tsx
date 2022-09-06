@@ -2,10 +2,20 @@ import { ArgumentsList } from '@/Docs/ArgumentsList';
 import { tranfromOptions } from '@/Docs/handleOptions';
 import { BuiltInScalars } from '@/GraphQL/Resolve';
 import { ParserField } from 'graphql-js-tree';
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { Remarkable } from 'remarkable';
-import { DescText, FieldText, Title, TypeText } from '@/Docs/DocsStyles';
+import {
+  DescText,
+  DescWrapper,
+  FieldText,
+  Title,
+  TypeText,
+} from '@/Docs/DocsStyles';
 import styled from '@emotion/styled';
+import { AddDescriptionInput } from './AddDescriptionInput';
+import { Edit } from '@/editor/icons';
+import { useTheme } from '@emotion/react';
+import { useTreesState } from '@/state/containers';
 
 const md = new Remarkable();
 
@@ -22,7 +32,7 @@ const FieldsWrapper = styled.div`
   flex-direction: column;
   width: 90%;
   margin-bottom: 8px;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.type};
+  border-bottom: 1px solid ${({ theme }) => theme.disabled}36;
 `;
 
 const TitleWrapper = styled.div<{ isType: boolean }>`
@@ -36,6 +46,21 @@ interface FieldsListI {
 }
 
 export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
+  const { backgroundedText } = useTheme();
+  const { setTree, tree } = useTreesState();
+
+  const [isEdit, setIsEdit] = useState(false);
+  const [editedIdx, setEditedIdx] = useState(-1);
+
+  const onSubmit = useCallback((description: string, idx: number) => {
+    if (node.args) {
+      node.args[idx].description = description;
+      const changedIdx = tree.nodes.findIndex((n) => n.name === node.name);
+      tree.nodes[changedIdx] = node;
+      setTree(tree);
+    }
+  }, []);
+
   return (
     <>
       <Title>
@@ -63,12 +88,28 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
                 </TypeText>
               )}
             </TitleWrapper>
-            {arg.description && (
-              <DescText
-                dangerouslySetInnerHTML={{
-                  __html: md.render(arg.description),
+            {isEdit && editedIdx === i ? (
+              <AddDescriptionInput
+                onSubmit={(description: string) => {
+                  onSubmit(description, i);
+                  setIsEdit(false);
                 }}
+                defaultValue={arg.description || ''}
               />
+            ) : (
+              <DescWrapper
+                onClick={() => {
+                  setEditedIdx(i);
+                  setIsEdit(true);
+                }}
+              >
+                <DescText
+                  dangerouslySetInnerHTML={{
+                    __html: md.render(arg.description || 'No description'),
+                  }}
+                />
+                <Edit size={14} fill={backgroundedText} />
+              </DescWrapper>
             )}
           </FieldsWrapper>
         ))}
