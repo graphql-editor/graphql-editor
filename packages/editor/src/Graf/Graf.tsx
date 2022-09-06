@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState, useMemo } from 'react';
-import { fontFamily, fontFamilySans } from '@/vars';
+import { fontFamily } from '@/vars';
 import { PaintNodes } from './PaintNodes';
 import { ActiveNode } from '@/Graf/Node';
 import { useTreesState } from '@/state/containers/trees';
@@ -15,6 +15,7 @@ import { findInNodes } from '@/compare/compareNodes';
 import { ErrorItem } from './ErrorItem';
 import { ParserField } from 'graphql-js-tree';
 import styled from '@emotion/styled';
+import { Heading } from '@/shared/components';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -37,14 +38,6 @@ const Main = styled.div`
   position: relative;
   overflow-y: auto;
   font-family: ${fontFamily};
-`;
-
-const Heading = styled.h1`
-  font-size: 14px;
-  font-weight: 500;
-  color: ${({ theme }) => theme.inactive};
-  margin: 20px 25px 15px;
-  font-family: ${fontFamilySans};
 `;
 
 const ErrorContainer = styled.div`
@@ -94,6 +87,10 @@ const ErrorWrapper = styled.div`
 
 const ErrorLabel = styled.p`
   width: 90%;
+`;
+
+const TopBar = styled.div`
+  margin-left: 12px;
 `;
 
 let snapLock = true;
@@ -248,7 +245,9 @@ export const Graf: React.FC = () => {
         }}
         data-cy={GraphQLEditorDomStructure.tree.elements.Graf.name}
       >
-        <Heading>DIAGRAM VIEW</Heading>
+        <TopBar>
+          <Heading heading="DIAGRAM VIEW" />
+        </TopBar>
         {lockGraf ? (
           <ErrorWrapper>
             <ErrorLabel>{`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:`}</ErrorLabel>

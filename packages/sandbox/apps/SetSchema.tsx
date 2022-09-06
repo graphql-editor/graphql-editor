@@ -28,7 +28,6 @@ export const SetSchema = () => {
       <GraphQLEditor
         theme={DarkTheme}
         setSchema={(props) => {
-          console.log(props.code);
           console.log(magicNumber);
           setMySchema({
             code: props.code,

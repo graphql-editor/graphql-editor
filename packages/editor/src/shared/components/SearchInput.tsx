@@ -1,36 +1,18 @@
+import { RELATION_CONSTANTS } from '@/Relation/Lines/constants';
 import styled from '@emotion/styled';
-import React, { useEffect } from 'react';
-import {
-  KeyboardActions,
-  useIOState,
-  useLayoutState,
-  useNavigationState,
-  useTreesState,
-} from '@/state/containers';
-import { Search } from '@/Graf/icons';
-
-const SearchContainer = styled.div`
-  width: '100%';
-  height: 50px;
-  position: relative;
-
-  svg {
-    position: absolute;
-    top: 9px;
-    left: 9px;
-    z-index: 200;
-  }
-`;
+import React from 'react';
 
 const StyledSearchInput = styled.input`
-  background-color: ${({ theme }) => theme.background.mainClose};
+  background-color: ${({ theme }) => theme.background.mainMiddle};
   color: ${({ theme }) => theme.text};
   border: 0;
   width: 100%;
   min-width: 0;
-  height: 36px;
-  padding: 0 12px 0 32px;
-  font-size: 14px;
+  height: ${RELATION_CONSTANTS.SEARCHBAR_HEIGHT}px;
+  padding: 0px 10px;
+  font-size: 12px;
+  border-radius: 5px;
+  margin: 0;
   outline: 0;
   position: relative;
   user-select: none;
@@ -45,45 +27,13 @@ type SearchInputProps = {
 
 export const SearchInput: React.FC<SearchInputProps> = React.memo(
   ({ handleSearch }) => {
-    const { setActions } = useIOState();
-    const { menuState } = useNavigationState();
-    const { setSelectedNode } = useTreesState();
-    const { searchVisible, setSearchVisible } = useLayoutState();
-
-    useEffect(() => {
-      setActions((acts) => ({
-        ...acts,
-        [KeyboardActions.FindRelation]: () => {
-          if (menuState === 'relation') {
-            setSearchVisible(!searchVisible);
-          }
-        },
-      }));
-
-      return () => {
-        setActions((acts) => ({
-          ...acts,
-          [KeyboardActions.FindRelation]: () => {},
-        }));
-      };
-    }, [searchVisible]);
-
     return (
-      <SearchContainer>
-        <Search width={18} height={18} />
-        <StyledSearchInput
-          placeholder="Search..."
-          type="text"
-          onChange={(e) => handleSearch(e.target.value)}
-          onBlur={() => handleSearch('')}
-          onKeyDown={(e) => {
-            if (e.key === 'Escape') {
-              setSearchVisible(false);
-              setSelectedNode(undefined);
-            }
-          }}
-        />
-      </SearchContainer>
+      <StyledSearchInput
+        placeholder="Search..."
+        type="text"
+        onClick={(e) => e.stopPropagation()}
+        onChange={(e) => handleSearch(e.target.value)}
+      />
     );
   },
 );
