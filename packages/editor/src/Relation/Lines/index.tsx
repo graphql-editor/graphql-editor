@@ -49,7 +49,7 @@ export const Lines: React.FC<LinesProps> = ({
   const RelationSVGS = useMemo(() => {
     return relations?.map((r, index) => {
       const usedToIndexes: number[] = [];
-      return r.from?.map((rf) => {
+      return r.from?.map((rf, relationNumber) => {
         if (!selectedNode) {
           return null;
         }
@@ -72,6 +72,7 @@ export const Lines: React.FC<LinesProps> = ({
             hasSearch={r.fromLength > 10}
             active={fromField || toField}
             inverse={fromField}
+            relationNumber={relationNumber}
             color={(theme.colors as any)[rf.field.type.name]}
             inActiveColor={(theme.backgrounds as any)[rf.field.type.name]}
             key={`${index}-${rf.index}-${rf.field.name}`}
