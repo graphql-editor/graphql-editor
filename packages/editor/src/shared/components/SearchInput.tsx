@@ -23,14 +23,16 @@ const StyledSearchInput = styled.input`
 
 type SearchInputProps = {
   handleSearch: (searchValue: string) => void;
+  value: string;
 };
 
 export const SearchInput: React.FC<SearchInputProps> = React.memo(
-  ({ handleSearch }) => {
+  ({ handleSearch, value }) => {
     return (
       <StyledSearchInput
         placeholder="Search..."
         type="text"
+        value={value}
         onClick={(e) => e.stopPropagation()}
         onChange={(e) => handleSearch(e.target.value)}
       />

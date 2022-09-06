@@ -16,12 +16,12 @@ interface ContentProps {
   nodeType: NodeTypes;
   isSelected?: boolean;
   isLibrary?: boolean;
+  args: number;
 }
 
 const Content = styled.div<ContentProps>`
   background-color: ${({ theme }) => `${theme.background.mainFurther}ee`};
   padding: 12px;
-  margin: 12px;
   text-overflow: ellipsis;
   border-radius: 10px;
   overflow: hidden;
@@ -94,18 +94,22 @@ export const Node: React.FC<NodeProps> = ({
   const isNodeActive = compareNodesWithData(field, selectedNode?.field);
   const { theme } = useTheme();
 
+  const nodeArgs = useMemo(() => {
+    return !filteredFieldTypes
+      ? field.args
+      : field.args?.filter((n) =>
+          n.name.toLowerCase().includes(filteredFieldTypes),
+        );
+  }, [filteredFieldTypes, field.args]);
+
   const RelationFields = useMemo(() => {
     if (!enums && field.data.type === TypeDefinition.EnumTypeDefinition) {
       return <NodeRelationFields></NodeRelationFields>;
     }
+
     return (
       <NodeRelationFields>
-        {(!filteredFieldTypes
-          ? field.args
-          : field.args?.filter((n) =>
-              n.name.toLowerCase().includes(filteredFieldTypes),
-            )
-        )?.map((a) => (
+        {nodeArgs?.map((a) => (
           <Field
             onClick={() => {
               const allNodes = tree.nodes.concat(libraryTree.nodes);
@@ -128,7 +132,7 @@ export const Node: React.FC<NodeProps> = ({
         ))}
       </NodeRelationFields>
     );
-  }, [field, isNodeActive, theme, filteredFieldTypes, enums]);
+  }, [field, isNodeActive, theme, nodeArgs]);
 
   const handleSearch = (searchValue?: string) => {
     setFilteredFieldsTypes(searchValue?.toLowerCase() || '');
@@ -147,15 +151,21 @@ export const Node: React.FC<NodeProps> = ({
         </NodeTitle>
         {!(!enums && field.data.type === TypeDefinition.EnumTypeDefinition) &&
           (field?.args?.length || 0) > 10 && (
-            <SearchInput handleSearch={handleSearch} />
+            <SearchInput
+              value={filteredFieldTypes}
+              handleSearch={handleSearch}
+            />
           )}
       </ContentWrapper>
     ),
-    [field, theme, selectedNode, enums],
+    [field, theme, selectedNode, enums, filteredFieldTypes],
   );
 
   return (
     <Content
+      args={
+        selectedNode?.field?.name === field.name ? nodeArgs?.length || 0 : 0
+      }
       isSelected={selectedNode?.field?.name === field.name}
       isLibrary={isLibrary}
       nodeType={field.type.name as NodeTypes}
@@ -167,7 +177,11 @@ export const Node: React.FC<NodeProps> = ({
       onClick={(e) => {
         e.stopPropagation();
         setSelectedNode({
-          field,
+          field: tree.nodes
+            .concat(libraryTree.nodes)
+            .find(
+              (n) => n.name === field.name && n.data.type === field.data.type,
+            ),
           source: 'relation',
         });
       }}
