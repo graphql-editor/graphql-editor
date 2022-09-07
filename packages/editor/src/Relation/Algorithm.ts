@@ -1,4 +1,4 @@
-import { ParserField } from 'graphql-js-tree';
+import { ParserField, getTypeName } from 'graphql-js-tree';
 
 export const sortByConnection = (nodes: ParserField[]) => {
   const roots = nodes.sort((a, b) =>
@@ -14,7 +14,9 @@ export const sortByConnection = (nodes: ParserField[]) => {
       return;
     }
     node.args?.forEach((arg) => {
-      const found = roots.find((r) => r.name === arg.type.name);
+      const found = roots.find(
+        (r) => r.name === getTypeName(arg.type.fieldType),
+      );
       pushCheckNode(found, (found?.args?.length || 2) > 3);
     });
   };

@@ -8,6 +8,7 @@ import { sortByConnection } from './Algorithm';
 import { Lines, RelationPath } from '@/Relation/Lines';
 import { isScalarArgument } from '@/GraphQL/Resolve';
 import * as vars from '@/vars';
+import { getTypeName } from 'graphql-js-tree';
 
 const Main = styled.div`
   width: 100%;
@@ -126,13 +127,20 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
           }))
         : together;
       const relatedNodes = based
-        .filter((n) => compareNode.args?.find((a) => a.type.name === n.name))
+        .filter((n) =>
+          compareNode.args?.find(
+            (a) => getTypeName(a.type.fieldType) === n.name,
+          ),
+        )
         .filter((n) => n.name !== selectedNode.field?.name);
       const relatedNames = relatedNodes.map((r) => r.name);
       const relatedToNodes = showRelatedTo
         ? based
             .filter((n) =>
-              n.args?.find((arg) => arg.type.name === selectedNode.field?.name),
+              n.args?.find(
+                (arg) =>
+                  getTypeName(arg.type.fieldType) === selectedNode.field?.name,
+              ),
             )
             .filter((n) => n.name !== selectedNode.field?.name)
             .filter((n) => !relatedNames.includes(n.name))
@@ -167,7 +175,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
               )
               .map((a, index) => {
                 const pn = relationDrawingNodes.find(
-                  (nf) => nf.name === a.type.name,
+                  (nf) => nf.name === getTypeName(a.type.fieldType),
                 );
                 if (!pn) {
                   return;

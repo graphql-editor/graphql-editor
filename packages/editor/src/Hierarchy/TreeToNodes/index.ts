@@ -6,6 +6,7 @@ import {
   ParserTree,
   TypeExtension,
   Value,
+  getTypeName,
 } from 'graphql-js-tree';
 import { NodeUtils, InputNode as Node } from 'graphsource';
 
@@ -161,13 +162,9 @@ export class TreeToNodes {
       { x: 0, y: 0 },
       {
         name: root.data.type === Value.NullValue ? 'null' : root.name,
-        type: root.type.name,
+        type: getTypeName(root.type.fieldType),
         description: root.description,
-        options:
-          root.type.options ||
-          root.type.directiveOptions ||
-          root.type.operations ||
-          [],
+        options: root.type.directiveOptions || root.type.operations || [],
       },
     );
     nodes.push(nodeCreated);

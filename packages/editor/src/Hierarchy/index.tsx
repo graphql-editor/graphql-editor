@@ -4,6 +4,7 @@ import { Diagram as DiagramEngine } from 'graphsource';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { theme as HierarchyTheme } from './theme';
 import { TreeToNodes } from './TreeToNodes';
+import { getTypeName } from 'graphql-js-tree';
 
 const Main = styled.div`
   width: 100%;
@@ -29,7 +30,7 @@ export const Hierarchy = () => {
       hierarchy.eventBus.publish('RequestNodeSelect', {
         fn: (n) =>
           n.name === selectedNode.field?.name &&
-          n.type === selectedNode.field.type.name,
+          n.type === getTypeName(selectedNode.field.type.fieldType),
       });
     }
   }, [selectedNode, hierarchy]);
@@ -48,7 +49,7 @@ export const Hierarchy = () => {
           const n = tree.nodes.find(
             (tn) =>
               tn.name === e.selectedNodes[0].name &&
-              e.selectedNodes[0].type === tn.type.name,
+              e.selectedNodes[0].type === getTypeName(tn.type.fieldType),
           );
           setSelectedNode(
             e.selectedNodes.length > 0
@@ -64,7 +65,7 @@ export const Hierarchy = () => {
         hierarchy.eventBus.publish('RequestNodeSelect', {
           fn: (n) =>
             n.name === selectedNode.field?.name &&
-            n.type === selectedNode.field.type.name,
+            n.type === getTypeName(selectedNode.field.type.fieldType),
         });
       }
     }

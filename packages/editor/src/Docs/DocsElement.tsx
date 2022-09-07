@@ -2,7 +2,7 @@ import { FieldsList } from '@/Docs/FieldsList';
 import { InterfacesList } from '@/Docs/InterfacesList';
 import { useTreesState } from '@/state/containers';
 import { fontFamilySans } from '@/vars';
-import { ParserField } from 'graphql-js-tree';
+import { ParserField, getTypeName } from 'graphql-js-tree';
 import React, { useCallback, useMemo, useState } from 'react';
 // @ts-ignore
 import { Remarkable } from 'remarkable';
@@ -65,7 +65,7 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
     <Wrapper>
       <Top>
         <Title>{node.name}</Title>
-        <Type>{node.type.name}</Type>
+        <Type>{getTypeName(node.type.fieldType)}</Type>
       </Top>
       {node.interfaces && node.interfaces.length > 0 && (
         <InterfacesList setNode={setNode} interfacesList={node.interfaces} />

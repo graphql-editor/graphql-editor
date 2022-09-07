@@ -1,7 +1,6 @@
 import { ArgumentsList } from '@/Docs/ArgumentsList';
-import { tranfromOptions } from '@/Docs/handleOptions';
 import { BuiltInScalars } from '@/GraphQL/Resolve';
-import { ParserField } from 'graphql-js-tree';
+import { ParserField, getTypeName, compileType } from 'graphql-js-tree';
 import React, { useCallback, useState } from 'react';
 import { Remarkable } from 'remarkable';
 import {
@@ -71,7 +70,9 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
           <FieldsWrapper key={i}>
             <TitleWrapper
               isType={
-                !BuiltInScalars.some((scalar) => scalar.name === arg.type.name)
+                !BuiltInScalars.some(
+                  (scalar) => scalar.name === getTypeName(arg.type.fieldType),
+                )
               }
             >
               <FieldText>{arg.name}</FieldText>
@@ -80,11 +81,11 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
               ) : (
                 <TypeText
                   isScalar={BuiltInScalars.some(
-                    (scalar) => scalar.name === arg.type.name,
+                    (scalar) => scalar.name === getTypeName(arg.type.fieldType),
                   )}
-                  onClick={() => setNode(arg.type.name)}
+                  onClick={() => setNode(getTypeName(arg.type.fieldType))}
                 >
-                  {tranfromOptions(arg.type.name, arg.type.options)}
+                  {compileType(arg.type.fieldType)}
                 </TypeText>
               )}
             </TitleWrapper>

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { ParserField } from 'graphql-js-tree';
+import { ParserField, getTypeName } from 'graphql-js-tree';
 import { useTreesState } from '@/state/containers/trees';
 import { useErrorsState, useLayoutState, useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
@@ -137,7 +137,7 @@ export const PaintNode: React.FC<NodeProps> = ({
 
   return (
     <MainNodeArea
-      id={node.type.name}
+      id={getTypeName(node.type.fieldType)}
       draggable={!isNodeBaseType(node.type.operations)}
       onDragStart={(e) => {
         setDndType(node.data.type);
@@ -164,7 +164,7 @@ export const PaintNode: React.FC<NodeProps> = ({
         dragOverHandler(e);
       }}
       data-cy={GraphQLEditorDomStructure.tree.elements.Graf.PaintNode}
-      nodeType={node.type.name as NodeTypes}
+      nodeType={getTypeName(node.type.fieldType) as NodeTypes}
       isLibrary={isLibrary}
       isBaseNode={isNodeBaseType(node.type.operations)}
       isDragNotAllowed={isDragNotAllowed}
