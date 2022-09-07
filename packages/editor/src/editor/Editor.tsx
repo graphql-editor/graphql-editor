@@ -4,7 +4,6 @@ import { CodePane } from './code';
 import { PassedSchema, Theming } from '@/Models';
 import { DynamicResize } from './code/Components';
 import { Graf } from '@/Graf/Graf';
-import { Hierarchy } from '@/Hierarchy';
 import { Parser, ParserTree } from 'graphql-js-tree';
 import { GraphQLEditorWorker } from 'graphql-editor-worker';
 import {
@@ -287,7 +286,6 @@ export const Editor = ({
           <Docs />
         </ErrorOuterContainer>
       )}
-      {menuState.pane === 'hierarchy' && <Hierarchy />}
       {menuState.pane === 'diff' && diffSchemas && (
         <DiffEditor schemas={diffSchemas} />
       )}
