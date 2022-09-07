@@ -6,6 +6,7 @@ import { TypeDefinition, TypeSystemDefinition } from 'graphql-js-tree';
 import styled from '@emotion/styled';
 import { fontFamily, fontFamilySans } from '@/vars';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
+import { useLayoutState } from '@/state/containers';
 
 type NodeType = keyof EditorTheme['colors'];
 
@@ -98,9 +99,10 @@ const initDragObj = {
 
 export const SortNodes = () => {
   const { orderTypes, setOrderTypes } = useSortState();
+  const { isOrderListVisible, setIsOrderListVisible } = useLayoutState();
+
   const [dragOverObj, setDragOverObj] = useState(initDragObj);
   const [dragStartObj, setDragStartObj] = useState(initDragObj);
-  const [isListVisible, setIsListVisible] = useState(false);
 
   const dropHandler = (e: DragEvent, endNodeName: string) => {
     e.stopPropagation();
@@ -142,12 +144,12 @@ export const SortNodes = () => {
   };
 
   return (
-    <Container onClick={() => setIsListVisible((prev) => !prev)}>
+    <Container onClick={() => setIsOrderListVisible((prev) => !prev)}>
       <h4>Nodes order</h4>
-      <ChevronBox isListVisible={isListVisible}>
+      <ChevronBox isListVisible={isOrderListVisible}>
         <ArrowLeft size={11} />
       </ChevronBox>
-      <List isListVisible={isListVisible}>
+      <List isListVisible={isOrderListVisible}>
         {orderTypes.map((type, idx) => (
           <DragContainer
             key={type.name}
