@@ -3,6 +3,8 @@ import {
   TypeDefinitionDisplayMap,
   TypeSystemExtension,
   TypeExtension,
+  Options,
+  getTypeName,
 } from 'graphql-js-tree';
 import { fontFamily } from '@/vars';
 import { RootNode } from '@/Graf/Node';
@@ -51,10 +53,13 @@ export const PaintNodes: React.FC = () => {
         type: d,
       },
       type: {
-        name: `root-${d}`,
+        fieldType: { name: `root-${d}`, type: Options.name },
       },
+      interfaces: [],
+      directives: [],
       args: tree.nodes.filter((n) => n.data.type === d),
     },
+
     libraryNode: {
       name: TypeDefinitionDisplayMap[d],
       data: {
@@ -63,13 +68,15 @@ export const PaintNodes: React.FC = () => {
       type: {
         name: `library-${d}`,
       },
+      interfaces: [],
+      directives: [],
       args: libraryTree.nodes.filter((n) => n.data.type === d),
     },
   }));
   const RootBaseTypes = useMemo(
     () =>
       baseTypes.map((d) => (
-        <div key={d.node.type.name}>
+        <div key={getTypeName(d.node.type.fieldType)}>
           <LineSpacer />
           <RootNode
             readonly={readonly}
@@ -108,8 +115,10 @@ export const PaintNodes: React.FC = () => {
             type: TypeExtension.ObjectTypeExtension,
           },
           type: {
-            name: 'root',
+            fieldType: { name: 'root', type: Options.name },
           },
+          interfaces: [],
+          directives: [],
           args: tree.nodes
             .filter(
               (n) =>
@@ -128,8 +137,10 @@ export const PaintNodes: React.FC = () => {
             type: TypeExtension.ObjectTypeExtension,
           },
           type: {
-            name: 'root',
+            fieldType: { name: 'root', type: Options.name },
           },
+          interfaces: [],
+          directives: [],
           args: libraryTree.nodes
             .filter(
               (n) =>

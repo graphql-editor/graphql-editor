@@ -12,3 +12,16 @@ export const changeNodeName = (field: FieldType, newName: string) => {
   changeFieldName(field, newName);
   return field;
 };
+
+export const changeNodeOptions = (field: FieldType, newOption: Options) => {
+  const changeOptions = (field: FieldType, newOption: Options) => {
+    if (field.type !== newOption && newOption === Options.array) {
+      changeOptions(field, Options.array);
+    } else if (field.type !== newOption && newOption === Options.required) {
+      changeOptions(field, Options.required);
+    }
+    field.type = Options.name;
+  };
+  changeOptions(field, newOption);
+  return field;
+};

@@ -31,7 +31,7 @@ const configureNode = (node: ParserField, optionString: string) => {
   );
   const isArrayRequired = [`[${t}]!`, `[${t}!]!`].includes(optionString);
   node.type.options = [];
-  if (isRequired) node.type.options.push(Options.required);
+  if (isRequired) node.type.operations.push(Options.required);
   if (isArrayRequired) node.type.options.push(Options.arrayRequired);
   if (isArray) node.type.options.push(Options.array);
   return;
