@@ -37,7 +37,7 @@ const ListWrapper = styled.div`
   flex-direction: column;
   overflow-y: scroll;
   overflow-x: hidden;
-  padding: 12px 12px 12px 0px;
+  padding: 12px 12px 12px 24px;
   width: 100%;
   border-left: 4px solid ${({ theme }) => theme.background.mainClose};
 `;
@@ -107,9 +107,6 @@ export const Docs = () => {
 
   return (
     <Wrapper>
-      <SelectedNodeWrapper width={calcDocumentationWidth()}>
-        {selectedNode?.field && <DocsElement node={selectedNode.field} />}
-      </SelectedNodeWrapper>
       <DynamicResize
         enable={{ left: true }}
         resizeCallback={(e, r, c, w) => {
@@ -135,6 +132,9 @@ export const Docs = () => {
           />
         </ListWrapper>
       </DynamicResize>
+      <SelectedNodeWrapper width={calcDocumentationWidth()}>
+        {selectedNode?.field && <DocsElement node={selectedNode.field} />}
+      </SelectedNodeWrapper>
     </Wrapper>
   );
 };

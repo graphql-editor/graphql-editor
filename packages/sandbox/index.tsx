@@ -5,15 +5,12 @@ import { Pure } from './apps';
 
 export type AppType = keyof typeof apps;
 export const App = () => {
-  const [, ls] = window.location.search.split('?');
-  if (!ls) {
+  const s = new URLSearchParams(window.location.search);
+  const p = s.get('a');
+  if (!p) {
     return <Pure />;
   }
-  const [, appType] = ls.split('=');
-  if (!appType) {
-    return <Pure />;
-  }
-  return <>{apps[appType]()}</>;
+  return <>{apps[p]()}</>;
 };
 
 render(<App />, document.getElementById('root'));

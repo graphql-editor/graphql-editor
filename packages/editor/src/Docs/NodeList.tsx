@@ -1,9 +1,9 @@
 import { useTreesState } from '@/state/containers';
-import { fontFamily } from '@/vars';
 import { ParserField } from 'graphql-js-tree';
 import React from 'react';
 import { compareNodesWithData } from '@/compare/compareNodes';
 import styled from '@emotion/styled';
+import { fontFamilySans } from '@/vars';
 
 const List = styled.div`
   text-align: left;
@@ -11,23 +11,21 @@ const List = styled.div`
 `;
 
 const NodeText = styled.a`
-  font-family: ${fontFamily};
-  color: ${({ theme }) => theme.backgroundedText};
+  font-family: ${fontFamilySans};
+  color: ${({ theme }) => theme.dimmed};
   cursor: pointer;
   display: block;
   font-size: 14px;
+  padding: 10px 15px;
   &:hover,
   &.active {
     color: ${({ theme }) => theme.colors.type};
   }
-  &:hover {
-    background-color: ${({ theme }) => theme.background.mainClose};
-  }
 `;
 
 const Title = styled.p`
-  font-family: ${fontFamily};
-  text-transform: uppercase;
+  font-family: ${fontFamilySans};
+  font-weight: bold;
   color: ${({ theme }) => theme.colors.type};
   margin: 0;
   font-size: 14px;

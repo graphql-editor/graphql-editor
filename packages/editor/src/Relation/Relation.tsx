@@ -60,10 +60,11 @@ const TopBar = styled.div`
 
 const VerticalContainer = styled.div`
   padding-top: 100px;
+  min-height: 100%;
 `;
 
 export const Relation: React.FC = () => {
-  const { selectedNode, tree, libraryTree } = useTreesState();
+  const { selectedNode, tree, libraryTree, setSelectedNode } = useTreesState();
   const { lockGraf, grafErrors } = useErrorsState();
   const { setMenuState } = useNavigationState();
   const {
@@ -125,13 +126,13 @@ export const Relation: React.FC = () => {
           </>
         )}
       </TopBar>
-      <VerticalContainer>
+      <VerticalContainer onClick={() => setSelectedNode(undefined)}>
         {!lockGraf && !selectedNode && <BasicNodes />}
         {!lockGraf && selectedNode && <LinesDiagram />}
         {lockGraf && (
           <ErrorLock
             onClick={() => {
-              setMenuState((ms) => ({ ...ms, code: true }));
+              setMenuState({ code: 'on' });
             }}
             value={`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:\n${lockGraf}`}
           />

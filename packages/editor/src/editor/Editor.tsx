@@ -215,27 +215,25 @@ export const Editor = ({
       }}
     >
       <Menu
-        toggleCode={!!menuState.code}
+        toggleCode={menuState.code === 'on'}
         sidebarExpanded={sidebarExpanded}
         setToggleCode={(e) =>
           setMenuState({
             ...menuState,
-            code: !menuState.pane ? true : e,
+            code: menuState.code === 'off' ? 'on' : 'off',
           })
         }
         activePane={menuState.pane}
         excludePanes={diffSchemas ? undefined : ['diff']}
         setActivePane={(p) => {
-          const pane =
-            p === menuState.pane ? (menuState.code ? undefined : p) : p;
-          const newState = { ...menuState, pane };
+          const newState: typeof menuState = { ...menuState, pane: p };
           setMenuState(newState);
           if (onStateChange) {
             onStateChange(newState);
           }
         }}
       />
-      {menuState.code && menuState.pane !== 'diff' && (
+      {menuState.code === 'on' && menuState.pane !== 'diff' && (
         <DynamicResize
           enable={{ right: true }}
           disabledClass={!menuState.pane ? 'full-screen-container' : undefined}

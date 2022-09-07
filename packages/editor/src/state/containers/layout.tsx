@@ -32,7 +32,7 @@ const useLayoutStateContainer = createContainer(() => {
     windowWidth -
     documentationWidth -
     menuWidth -
-    (menuState.code ? sidebarSize : 0);
+    (menuState.code === 'on' ? sidebarSize : 0);
 
   return {
     windowWidth,
