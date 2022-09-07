@@ -1,8 +1,6 @@
 import { DocsElement } from '@/Docs/DocsElement';
 import { NodeList } from '@/Docs/NodeList';
-import { DynamicResize } from '@/editor/code/Components';
 import { useTreesState } from '@/state/containers';
-import { useLayoutState } from '@/state/containers/layout';
 import { useSortState } from '@/state/containers/sort';
 import styled from '@emotion/styled';
 
@@ -24,9 +22,9 @@ const Wrapper = styled.div`
   overflow: auto;
 `;
 
-const SelectedNodeWrapper = styled.div<{ width: number }>`
+const SelectedNodeWrapper = styled.div`
   height: 100%;
-  width: ${({ width }) => `${width - 64}px`};
+  width: 100%;
   min-width: 90px;
   margin: 32px;
   overflow: hidden;
@@ -38,14 +36,12 @@ const ListWrapper = styled.div`
   overflow-y: scroll;
   overflow-x: hidden;
   padding: 12px 12px 12px 24px;
-  width: 100%;
+  width: 400px;
   border-left: 4px solid ${({ theme }) => theme.background.mainClose};
 `;
 
 export const Docs = () => {
   const { tree, selectedNode, libraryTree, schemaType } = useTreesState();
-  const { setDocumentationWidth, documentationWidth, calcDocumentationWidth } =
-    useLayoutState();
   const { sortAlphabetically } = useSortState();
 
   const splittedNodes = useMemo(() => {
@@ -107,32 +103,23 @@ export const Docs = () => {
 
   return (
     <Wrapper>
-      <DynamicResize
-        enable={{ left: true }}
-        resizeCallback={(e, r, c, w) => {
-          setDocumentationWidth(c.getBoundingClientRect().width);
-        }}
-        width={documentationWidth}
-        maxWidth={500}
-      >
-        <ListWrapper>
-          <NodeList nodeList={splittedNodes?.schemaNodes} listTitle="Schema" />
-          <NodeList nodeList={splittedNodes?.typeNodes} listTitle="Types" />
-          <NodeList
-            nodeList={splittedNodes?.interfaceNodes}
-            listTitle="Interface"
-          />
-          <NodeList nodeList={splittedNodes?.inputNodes} listTitle="Inputs" />
-          <NodeList nodeList={splittedNodes?.enumNodes} listTitle="Enums" />
-          <NodeList nodeList={splittedNodes?.scalarNodes} listTitle="Scalars" />
-          <NodeList nodeList={splittedNodes?.unionNodes} listTitle="Unions" />
-          <NodeList
-            nodeList={splittedNodes?.directivesNodes}
-            listTitle="Directives"
-          />
-        </ListWrapper>
-      </DynamicResize>
-      <SelectedNodeWrapper width={calcDocumentationWidth()}>
+      <ListWrapper>
+        <NodeList nodeList={splittedNodes?.schemaNodes} listTitle="Schema" />
+        <NodeList nodeList={splittedNodes?.typeNodes} listTitle="Types" />
+        <NodeList
+          nodeList={splittedNodes?.interfaceNodes}
+          listTitle="Interface"
+        />
+        <NodeList nodeList={splittedNodes?.inputNodes} listTitle="Inputs" />
+        <NodeList nodeList={splittedNodes?.enumNodes} listTitle="Enums" />
+        <NodeList nodeList={splittedNodes?.scalarNodes} listTitle="Scalars" />
+        <NodeList nodeList={splittedNodes?.unionNodes} listTitle="Unions" />
+        <NodeList
+          nodeList={splittedNodes?.directivesNodes}
+          listTitle="Directives"
+        />
+      </ListWrapper>
+      <SelectedNodeWrapper>
         {selectedNode?.field && <DocsElement node={selectedNode.field} />}
       </SelectedNodeWrapper>
     </Wrapper>
