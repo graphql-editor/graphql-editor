@@ -99,10 +99,10 @@ export const Relation: React.FC = () => {
   }, [tree, libraryTree, filterNodes]);
 
   const downloadPng = useCallback(() => {
+    setIsLoading(true);
     if (mainRef.current === null) {
       return;
     }
-    setIsLoading(true);
     toPng(mainRef.current, { cacheBust: true })
       .then((dataUrl) => {
         const link = document.createElement('a');

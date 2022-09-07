@@ -3,8 +3,7 @@ on:
     branches:
       - develop
 jobs:
-  cypress:
-    name: Test with cyprees
+  develop:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -16,16 +15,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - name: Install packages
         run: npm install
-      - name: Cypress run
-        uses: cypress-io/github-action@v4
-        timeout-minutes: 10
-        with:
-          browser: chrome
-          build: npm run build
-          start: npm run start-ci
-      - name: Upload videos
-        uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          name: cypress-videos
-          path: cypress/videos
+      - name: Build
+        run: npm run build --ws --if-present
+      - name: Test
+        run: npm run test --ws --if-present

@@ -16,6 +16,7 @@ const Main = styled.div`
   align-items: flex-start;
   display: flex;
   padding: 20px;
+  gap: 80px;
   flex-wrap: wrap;
   animation: show 1 0.5s ease-in-out;
   min-height: 100%;
@@ -36,6 +37,18 @@ let refTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
 export type FilteredFieldsTypesProps = {
   fieldsTypes?: string[];
   searchValueEmpty: boolean;
+};
+
+const scrollToRef = (fieldName: string): unknown => {
+  const ref = tRefs[fieldName];
+  if (!ref) {
+    return setTimeout(scrollToRef, 10);
+  }
+  ref.scrollIntoView({
+    block: 'center',
+    inline: 'center',
+    behavior: 'smooth',
+  });
 };
 
 type LinesDiagramProps = {
@@ -60,29 +73,29 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
   const [filteredFieldsTypes, setFilteredFieldsTypes] = useState<
     Record<string, string>
   >({});
+  const [scrolledTo, setScrolledTo] = useState('');
   const [relations, setRelations] =
     useState<
       { to: RelationPath; from: RelationPath[]; fromLength: number }[]
     >();
   useEffect(() => {
+    if (scrolledTo == selectedNode?.field?.name) {
+      return;
+    }
     if (selectedNode?.field?.name && refsLoaded) {
-      const scrollToRef = (): unknown => {
-        if (selectedNode?.field?.name) {
-          const ref =
-            tRefs[selectedNode.field.name + selectedNode.field.data.type];
-          if (!ref) {
-            return setTimeout(scrollToRef, 10);
-          }
-          ref.scrollIntoView({
-            block: 'center',
-            inline: 'center',
-            behavior: 'smooth',
-          });
-        }
-      };
-      scrollToRef();
+      scrollToRef(selectedNode.field.name + selectedNode.field.data.type);
+      setScrolledTo(selectedNode.field.name);
     }
   }, [refsLoaded]);
+  useEffect(() => {
+    if (!selectedNode) {
+      setFilteredFieldsTypes({});
+    } else {
+      if (selectedNode?.field?.name && refsLoaded) {
+        scrollToRef(selectedNode.field.name + selectedNode.field.data.type);
+      }
+    }
+  }, [selectedNode]);
 
   useEffect(() => {
     setRefsLoaded(false);
@@ -115,10 +128,14 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
       const relatedNodes = based
         .filter((n) => compareNode.args?.find((a) => a.type.name === n.name))
         .filter((n) => n.name !== selectedNode.field?.name);
+      const relatedNames = relatedNodes.map((r) => r.name);
       const relatedToNodes = showRelatedTo
-        ? based.filter((n) =>
-            n.args?.find((arg) => arg.type.name === selectedNode.field?.name),
-          )
+        ? based
+            .filter((n) =>
+              n.args?.find((arg) => arg.type.name === selectedNode.field?.name),
+            )
+            .filter((n) => n.name !== selectedNode.field?.name)
+            .filter((n) => !relatedNames.includes(n.name))
         : [];
       const resorted = sortByConnection(relatedNodes);
       const resortedRelatedTo = sortByConnection(relatedToNodes);
@@ -188,7 +205,6 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
             libraryNodeNames.includes(e.name),
           )
         : [...relationDrawingNodes];
-
     return nodes.map((n, i) => (
       <Node
         enums={enumsOn}
