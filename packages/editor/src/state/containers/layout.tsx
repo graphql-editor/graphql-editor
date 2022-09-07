@@ -16,7 +16,6 @@ const useLayoutStateContainer = createContainer(() => {
   const [dragOverStylesDiagram, setDragOverStylesDiagram] =
     useState<DragOverStylesDiagram>();
   const [dndType, setDndType] = useState<AllTypes | undefined>();
-  const [isOrderListVisible, setIsOrderListVisible] = useState(false);
 
   const { menuState } = useNavigationState();
 
@@ -46,8 +45,6 @@ const useLayoutStateContainer = createContainer(() => {
     setDragOverStylesDiagram,
     dndType,
     setDndType,
-    isOrderListVisible,
-    setIsOrderListVisible,
   };
 });
 

@@ -13,7 +13,6 @@ import { SortNodes } from './Node/components/SortNodes';
 import styled from '@emotion/styled';
 import { SearchInput } from '@/Graf/Node/components/SearchInput';
 import { GraphQLEditorDomStructure } from '@/domStructure';
-import { useLayoutState } from '@/state/containers';
 
 const Main = styled.div`
   width: 100%;
@@ -43,7 +42,6 @@ const LineSpacer = styled.div`
 export const PaintNodes: React.FC = () => {
   const { libraryTree, tree, readonly } = useTreesState();
   const { orderTypes } = useSortState();
-  const { setIsOrderListVisible } = useLayoutState();
   const [filterNodes, setFilterNodes] = useState('');
 
   const baseTypes = [...orderTypes.map((t) => t.name)].map((d) => ({
@@ -71,10 +69,7 @@ export const PaintNodes: React.FC = () => {
   const RootBaseTypes = useMemo(
     () =>
       baseTypes.map((d) => (
-        <div
-          key={d.node.type.name}
-          onClick={() => setIsOrderListVisible(false)}
-        >
+        <div key={d.node.type.name}>
           <LineSpacer />
           <RootNode
             readonly={readonly}
