@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { fontFamily } from '@/vars';
 import { useTreesState } from '@/state/containers/trees';
 import { useRelationsState } from '@/state/containers';
@@ -57,8 +51,11 @@ const scrollToRef = (fieldName: string): unknown => {
   });
 };
 
-export const LinesDiagram: React.FC = () => {
-  const mainRef = useRef<HTMLDivElement>(null);
+type LinesDiagramProps = {
+  mainRef: React.RefObject<HTMLDivElement>;
+};
+
+export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
   const { libraryTree, selectedNode, schemaType, tree, setSelectedNode } =
     useTreesState();
   const {
