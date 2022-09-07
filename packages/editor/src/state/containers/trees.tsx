@@ -5,6 +5,7 @@ import {
   ParserField,
   TypeDefinition,
   Parser,
+  getTypeName,
 } from 'graphql-js-tree';
 import { GraphQLEditorWorker } from 'graphql-editor-worker';
 import { BuiltInScalars } from '@/GraphQL/Resolve';
@@ -111,19 +112,19 @@ const useTreesStateContainer = createContainer(() => {
         compareNodesWithData(n, selectedNode?.field),
       );
     if (node) {
-      return node.args?.map((a) => a.type.name);
+      return node.args?.map((a) => getTypeName(a.type.fieldType));
     }
   }, [selectedNode]);
 
   const parentTypes = {
     ...tree.nodes.reduce(
       (obj: Record<string, string>, item: ParserField) =>
-        Object.assign(obj, { [item.name]: item.type.name }),
+        Object.assign(obj, { [item.name]: getTypeName(item.type.fieldType) }),
       {},
     ),
     ...libraryTree.nodes.reduce(
       (obj: Record<string, string>, item: ParserField) =>
-        Object.assign(obj, { [item.name]: item.type.name }),
+        Object.assign(obj, { [item.name]: getTypeName(item.type.fieldType) }),
       {},
     ),
   };

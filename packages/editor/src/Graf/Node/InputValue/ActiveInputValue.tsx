@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { ParserField, Options, ValueDefinition, Value } from 'graphql-js-tree';
+import {
+  ParserField,
+  Options,
+  ValueDefinition,
+  Value,
+  getTypeName,
+  compileType,
+} from 'graphql-js-tree';
 import { ActiveType } from '@/Graf/Node/Type';
 import {
   NodeChangeFieldTypeMenu,
@@ -64,7 +71,7 @@ const placeStringInNode = ({ node, v }: PlaceFunctionArgs) => {
   const isObjectArg =
     (node.data.type === ValueDefinition.InputValueDefinition && !valueType) ||
     node.data.type === Value.ObjectValue;
-  if (node.type.options?.includes(Options.array)) {
+  if (compileType(node.type.fieldType).includes(Options.array)) {
     return ConvertStringToObject(v);
   }
   if (isObjectArg) {
@@ -212,7 +219,7 @@ export const ActiveInputValue: React.FC<FieldProps> = ({
           onClick={onOutputClick}
           open={outputOpen}
           info={{
-            message: `Expand ${node.type.name} details`,
+            message: `Expand ${getTypeName(node.type.fieldType)} details`,
             placement: 'right',
           }}
         />

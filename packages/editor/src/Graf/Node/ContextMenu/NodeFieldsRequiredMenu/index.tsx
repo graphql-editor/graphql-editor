@@ -1,6 +1,6 @@
 import { OptionsMenu } from '@/Graf/Node/components';
 import { useTreesState } from '@/state/containers';
-import { Options, ParserField } from 'graphql-js-tree';
+import { Options, ParserField, compileType } from 'graphql-js-tree';
 import React, { useState } from 'react';
 
 interface NodeChangeFieldTypeMenuProps {
@@ -10,11 +10,13 @@ interface NodeChangeFieldTypeMenuProps {
 
 const checkOptions = (node: ParserField) => {
   const allRequired =
-    node.args?.filter((arg) => arg.type.options?.includes(Options.required))
-      ?.length === node.args?.length;
+    node.args?.filter((arg) =>
+      compileType(arg.type.fieldType).includes(Options.required),
+    )?.length === node.args?.length;
   const allNonRequired =
-    node.args?.filter((arg) => !arg.type.options?.includes(Options.required))
-      ?.length === node.args?.length;
+    node.args?.filter(
+      (arg) => !compileType(arg.type.fieldType)?.includes(Options.required),
+    )?.length === node.args?.length;
   let opts: Record<string, boolean> = {};
   opts['required'] = allRequired;
   opts['non-required'] = allNonRequired;

@@ -1,6 +1,6 @@
 import { ActiveType } from '@/Graf/Node/Type';
 import { useTheme, useTreesState } from '@/state/containers';
-import { ParserField, TypeDefinition } from 'graphql-js-tree';
+import { ParserField, TypeDefinition, getTypeName } from 'graphql-js-tree';
 import React, { useMemo } from 'react';
 import { Field } from '../Field';
 import { FIELD_NAME_SIZE } from '@/Graf/constants';
@@ -113,7 +113,9 @@ export const Node: React.FC<NodeProps> = ({
           <Field
             onClick={() => {
               const allNodes = tree.nodes.concat(libraryTree.nodes);
-              let n = allNodes.find((tn) => tn.name === a.type.name);
+              let n = allNodes.find(
+                (tn) => tn.name === getTypeName(a.type.fieldType),
+              );
               setSelectedNode(
                 n && {
                   field: n,
@@ -127,7 +129,7 @@ export const Node: React.FC<NodeProps> = ({
             }
             key={a.name}
             node={a}
-            parentNodeTypeName={field.type.name}
+            parentNodeTypeName={getTypeName(field.type.fieldType)}
           />
         ))}
       </NodeRelationFields>
@@ -168,7 +170,7 @@ export const Node: React.FC<NodeProps> = ({
       }
       isSelected={selectedNode?.field?.name === field.name}
       isLibrary={isLibrary}
-      nodeType={field.type.name as NodeTypes}
+      nodeType={getTypeName(field.type.fieldType) as NodeTypes}
       ref={(ref) => {
         if (ref) {
           setRef(ref);

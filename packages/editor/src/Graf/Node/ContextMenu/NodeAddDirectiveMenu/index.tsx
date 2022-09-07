@@ -6,7 +6,7 @@ import {
   TypedMenuItem,
 } from '@/Graf/Node/components';
 import { ResolveDirectives } from '@/GraphQL/Resolve';
-import { ParserField, Instances } from 'graphql-js-tree';
+import { ParserField, Instances, getTypeName } from 'graphql-js-tree';
 import { useTreesState } from '@/state/containers/trees';
 import { sortNodes } from '@/Graf/Node/ContextMenu/sort';
 
@@ -46,9 +46,7 @@ export const NodeAddDirectiveMenu: React.FC<NodeAddDirectiveMenuProps> = ({
     }
     node.directives.push({
       ...f,
-      type: {
-        name: f.name,
-      },
+      type: { ...f.type },
       name: f.name[0].toLowerCase() + f.name.slice(1),
       args: [],
       data: {
@@ -84,7 +82,7 @@ export const NodeAddDirectiveMenu: React.FC<NodeAddDirectiveMenuProps> = ({
           <TypedMenuItem
             key={f.name}
             type={f.name}
-            dataType={f.type.name}
+            dataType={getTypeName(f.type.fieldType)}
             selected={i === selectedNodeIndex}
             onClick={() => {
               onNodeClick(f);

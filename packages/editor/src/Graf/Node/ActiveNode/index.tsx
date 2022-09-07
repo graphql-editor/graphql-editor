@@ -5,6 +5,7 @@ import {
   Instances,
   TypeDefinition,
   TypeExtension,
+  getTypeName,
 } from 'graphql-js-tree';
 import { ActiveField } from '@/Graf/Node/Field';
 import { ActiveDirective } from '@/Graf/Node/Directive';
@@ -174,10 +175,14 @@ export const ActiveNode: React.FC<NodeProps> = ({
   const findNodeByField = (field?: ParserField) => {
     return field
       ? (tree.nodes.find(
-          (n) => n.name === field.type.name && !isExtensionNode(n.data.type!),
+          (n) =>
+            n.name === getTypeName(field.type.fieldType) &&
+            !isExtensionNode(n.data.type!),
         ) ||
           libraryTree.nodes.find(
-            (n) => n.name === field.type.name && !isExtensionNode(n.data.type!),
+            (n) =>
+              n.name === getTypeName(field.type.fieldType) &&
+              !isExtensionNode(n.data.type!),
           ))!
       : undefined;
   };
@@ -215,7 +220,9 @@ export const ActiveNode: React.FC<NodeProps> = ({
 
   return (
     <NodeContainer
-      className={`NodeBackground-${node.type.name} ${DOM.classes.node} ${DOM.classes.nodeSelected}`}
+      className={`NodeBackground-${getTypeName(node.type.fieldType)} ${
+        DOM.classes.node
+      } ${DOM.classes.nodeSelected}`}
       data-cy={GraphQLEditorDomStructure.tree.elements.Graf.ActiveNode.name}
     >
       <ActiveDescription
@@ -347,15 +354,19 @@ export const ActiveNode: React.FC<NodeProps> = ({
         <NodeFields>
           {node.directives?.map((d, i) => {
             const outputDisabled = !(
-              tree.nodes.find((n) => n.name === d.type.name) ||
-              libraryTree.nodes.find((n) => n.name === d.type.name)
+              tree.nodes.find(
+                (n) => n.name === getTypeName(d.type.fieldType),
+              ) ||
+              libraryTree.nodes.find(
+                (n) => n.name === getTypeName(d.type.fieldType),
+              )
             );
             return (
               <ActiveDirective
                 isLocked={isLocked}
                 indexInParentNode={i}
                 parentNode={node}
-                parentNodeTypeName={node.type.name}
+                parentNodeTypeName={getTypeName(node.type.fieldType)}
                 key={d.name + i}
                 onInputClick={() => {
                   setOpenedNode((oN) =>
@@ -390,8 +401,12 @@ export const ActiveNode: React.FC<NodeProps> = ({
           })}
           {node.args?.map((a, i) => {
             const outputDisabled = !(
-              tree.nodes.find((n) => n.name === a.type.name) ||
-              libraryTree.nodes.find((n) => n.name === a.type.name)
+              tree.nodes.find(
+                (n) => n.name === getTypeName(a.type.fieldType),
+              ) ||
+              libraryTree.nodes.find(
+                (n) => n.name === getTypeName(a.type.fieldType),
+              )
             );
             const Component = isArgumentNode
               ? ActiveArgument
@@ -426,7 +441,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                     indexInParentNode={i}
                     parentNode={node}
                     isLocked={isLocked}
-                    parentNodeTypeName={node.type.name}
+                    parentNodeTypeName={getTypeName(node.type.fieldType)}
                     key={a.name}
                     onInputClick={() => {
                       setOpenedNode((oN) =>

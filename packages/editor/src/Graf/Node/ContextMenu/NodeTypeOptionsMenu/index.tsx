@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { OptionsMenu } from '@/Graf/Node/components';
-import { ParserField, Options } from 'graphql-js-tree';
+import { ParserField, Options, compileType } from 'graphql-js-tree';
 import { useTreesState } from '@/state/containers/trees';
 interface NodeTypeOptionsMenuProps {
   node: ParserField;
@@ -8,7 +8,7 @@ interface NodeTypeOptionsMenuProps {
 }
 
 const configureOpts = (node: ParserField) => {
-  let { options = [] } = node.type;
+  let options = compileType(node.type.fieldType);
   const t = node.type.name;
   const r = !!options.includes(Options.required);
   const a = !!options.includes(Options.array);

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ResolveCreateField } from '@/GraphQL/Resolve';
-import { ParserField } from 'graphql-js-tree';
+import { getTypeName, ParserField } from 'graphql-js-tree';
 import { useTreesState } from '@/state/containers/trees';
 import {
   Menu,
@@ -52,9 +52,9 @@ export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({
       ...f,
       description: undefined,
       directives: [],
-      interfaces: undefined,
+      interfaces: [],
       type: {
-        name: f.name,
+        ...f.type,
       },
       name: newName,
       args: [],
@@ -98,7 +98,7 @@ export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({
             key={f.name + menuSearchValue}
             name={`${menuSearchValue.split(' ')[0]}`}
             type={f.name}
-            dataType={f.type.name}
+            dataType={getTypeName(f.type.fieldType)}
             selected={i === selectedNodeIndex}
             onClick={() => {
               onNodeClick(f, menuSearchValue.split(' ')[0]);

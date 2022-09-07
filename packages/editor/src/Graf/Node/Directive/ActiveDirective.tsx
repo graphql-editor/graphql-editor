@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ValueDefinition } from 'graphql-js-tree';
+import { getTypeName, ValueDefinition } from 'graphql-js-tree';
 import { ConvertValueToEditableString } from '@/GraphQL/Convert';
 import {
   DetailMenuItem,
@@ -91,7 +91,7 @@ export const ActiveDirective: React.FC<FieldProps> = ({
           onClick={onOutputClick}
           open={outputOpen}
           info={{
-            message: `Expand ${node.type.name} details`,
+            message: `Expand ${getTypeName(node.type.fieldType)} details`,
             placement: 'right',
           }}
         />

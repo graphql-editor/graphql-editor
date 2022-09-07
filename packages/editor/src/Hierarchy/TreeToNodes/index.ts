@@ -80,7 +80,7 @@ export class TreeToNodes {
           type: Helpers.Implements,
         },
         type: {
-          name: Helpers.Implements,
+          name: Helpers.Implems,
         },
       },
       rootNode,

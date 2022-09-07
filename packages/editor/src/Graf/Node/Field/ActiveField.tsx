@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
-import { TypeSystemDefinition, ValueDefinition } from 'graphql-js-tree';
+import {
+  getTypeName,
+  TypeSystemDefinition,
+  ValueDefinition,
+} from 'graphql-js-tree';
 import { FIELD_NAME_SIZE, FIELD_TYPE_SIZE } from '@/Graf/constants';
 import { ActiveFieldName } from './FieldName';
 import { ActiveType } from '@/Graf/Node/Type';
@@ -171,7 +175,7 @@ export const ActiveField: React.FC<FieldProps> = ({
           onClick={onOutputClick}
           open={outputOpen}
           info={{
-            message: `Expand ${node.type.name} details`,
+            message: `Expand ${getTypeName(node.type.fieldType)} details`,
             placement: 'right',
           }}
         />

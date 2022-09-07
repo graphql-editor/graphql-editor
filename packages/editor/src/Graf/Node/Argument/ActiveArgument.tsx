@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { ParserField, Options, Value, TypeDefinition } from 'graphql-js-tree';
+import {
+  ParserField,
+  Options,
+  Value,
+  TypeDefinition,
+  getTypeName,
+  compileType,
+} from 'graphql-js-tree';
 import { NodeTypeOptionsMenu } from '@/Graf/Node/ContextMenu';
 import { ActiveArgumentName } from './ActiveArgumentName';
 import {
@@ -43,7 +50,7 @@ interface PlaceFunctionArgs {
 const placeStringInNode = ({ node, v }: PlaceFunctionArgs) => {
   const valueType = isScalarArgument(node);
   const isObjectArg = !valueType || node.data.type === Value.ObjectValue;
-  if (node.type.options?.includes(Options.array)) {
+  if (compileType(node.type.fieldType)?.includes(Options.array)) {
     return ConvertStringToObject(v);
   }
   if (isObjectArg) {
@@ -195,7 +202,7 @@ export const ActiveArgument: React.FC<FieldProps> = ({
           onClick={onOutputClick}
           open={outputOpen}
           info={{
-            message: `Expand ${node.type.name} details`,
+            message: `Expand ${getTypeName(node.type.fieldType)} details`,
             placement: 'right',
           }}
         />

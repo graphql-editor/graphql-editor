@@ -1,5 +1,5 @@
 import { Draw } from './Draw';
-import { ParserField } from 'graphql-js-tree';
+import { ParserField, getTypeName } from 'graphql-js-tree';
 import React, { useMemo } from 'react';
 import { useTheme } from '@/state/containers';
 import { compareNodesWithData } from '@/compare/compareNodes';
@@ -60,7 +60,7 @@ export const Lines: React.FC<LinesProps> = ({
           portNumber =
             r.to.field.args?.findIndex(
               (fa, argIndex) =>
-                fa.type.name === rf.field.name &&
+                getTypeName(fa.type.fieldType) === rf.field.name &&
                 !usedToIndexes.includes(argIndex),
             ) || 0;
           portNumber = portNumber === -1 ? 0 : portNumber;
@@ -73,8 +73,10 @@ export const Lines: React.FC<LinesProps> = ({
             active={fromField || toField}
             inverse={fromField}
             relationNumber={relationNumber}
-            color={(theme.colors as any)[rf.field.type.name]}
-            inActiveColor={(theme.backgrounds as any)[rf.field.type.name]}
+            color={(theme.colors as any)[getTypeName(rf.field.type.fieldType)]}
+            inActiveColor={
+              (theme.backgrounds as any)[getTypeName(rf.field.type.fieldType)]
+            }
             key={`${index}-${rf.index}-${rf.field.name}`}
             from={rf.htmlNode}
             to={r.to.htmlNode}

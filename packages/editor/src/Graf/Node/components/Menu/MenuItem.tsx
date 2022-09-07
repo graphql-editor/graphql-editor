@@ -1,5 +1,5 @@
 import React from 'react';
-import { ParserField } from 'graphql-js-tree';
+import { ParserField, getTypeName } from 'graphql-js-tree';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import styled from '@emotion/styled';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
@@ -39,7 +39,7 @@ export const MenuItem: React.FC<MenuItemProps> = ({ node, onClick, name }) => {
           .searchableMenu.optionToSelect
       }
     >
-      <MenuItemText nodeType={node.type.name as NodeTypes}>
+      <MenuItemText nodeType={getTypeName(node.type.fieldType) as NodeTypes}>
         {name || node.name}
       </MenuItemText>
     </Main>
