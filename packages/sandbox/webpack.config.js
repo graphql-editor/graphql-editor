@@ -21,7 +21,7 @@ module.exports = {
   target: 'web',
   mode: 'development',
   resolve: {
-    extensions: ['.mjs', '.js', '.jsx', '.ts', '.tsx', 'gif'],
+    extensions: ['.mjs', '.js', '.jsx', '.ts', '.tsx'],
     mainFields: ['module', 'browser', 'main'],
     plugins: [new TsConfigPathsPlugin({})],
   },
