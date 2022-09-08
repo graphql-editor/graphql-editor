@@ -65,10 +65,6 @@ tree{
                 }
             }
         }
-        Hierarchy{
-            name
-            canvas
-        }
         DiffEditor{
             name
             oldPane
