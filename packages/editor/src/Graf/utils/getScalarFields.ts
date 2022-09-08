@@ -1,6 +1,8 @@
-import { ParserField } from 'graphql-js-tree';
+import { ParserField, getTypeName } from 'graphql-js-tree';
 
 export const getScalarFields = (node: ParserField, validScalars: string[]) =>
   node.args?.filter(
-    (a) => validScalars.includes(a.type.name) && a.args?.length === 0,
+    (a) =>
+      validScalars.includes(getTypeName(a.type.fieldType)) &&
+      a.args?.length === 0,
   ) || [];

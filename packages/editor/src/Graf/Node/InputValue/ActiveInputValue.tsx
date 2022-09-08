@@ -89,8 +89,14 @@ const placeStringInNode = ({ node, v }: PlaceFunctionArgs) => {
       data: {
         type: valueType,
       },
+      args: [],
+      interfaces: [],
+      directives: [],
       type: {
-        name: valueType,
+        fieldType: {
+          name: valueType,
+          type: Options.name,
+        },
       },
       name: value,
     };
@@ -170,7 +176,7 @@ export const ActiveInputValue: React.FC<FieldProps> = ({
             isLocked
               ? undefined
               : (v) => {
-                  node.args = placeStringInNode({ v, node });
+                  node.args = placeStringInNode({ v, node }) || [];
                   setTree({ ...tree });
                 }
           }

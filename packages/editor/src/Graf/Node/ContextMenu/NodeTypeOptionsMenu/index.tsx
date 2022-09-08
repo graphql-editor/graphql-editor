@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { OptionsMenu } from '@/Graf/Node/components';
-import { ParserField, Options, compileType } from 'graphql-js-tree';
+import {
+  ParserField,
+  Options,
+  compileType,
+  getTypeName,
+} from 'graphql-js-tree';
 import { useTreesState } from '@/state/containers/trees';
 interface NodeTypeOptionsMenuProps {
   node: ParserField;
@@ -9,10 +14,12 @@ interface NodeTypeOptionsMenuProps {
 
 const configureOpts = (node: ParserField) => {
   let options = compileType(node.type.fieldType);
-  const t = node.type.name;
+  const t = getTypeName(node.type.fieldType);
   const r = !!options.includes(Options.required);
   const a = !!options.includes(Options.array);
-  const ar = !!options.includes(Options.arrayRequired);
+  const ar = !!(
+    options.includes(Options.array) && options.includes(Options.required)
+  );
   const opts: Record<string, boolean> = {
     [`${t}`]: !r && !a && !ar,
     [`${t}!`]: r && !a && !ar,
@@ -24,7 +31,7 @@ const configureOpts = (node: ParserField) => {
   return opts;
 };
 const configureNode = (node: ParserField, optionString: string) => {
-  const t = node.type.name;
+  const t = getTypeName(node.type.fieldType);
   const isRequired = [`${t}!`, `[${t}!]`, `[${t}!]!`].includes(optionString);
   const isArray = [`[${t}]`, `[${t}]!`, `[${t}!]`, `[${t}!]!`].includes(
     optionString,

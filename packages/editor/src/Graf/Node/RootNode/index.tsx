@@ -4,6 +4,7 @@ import {
   TypeDefinitionDisplayMap,
   TypeSystemDefinition,
   Directive,
+  Options,
 } from 'graphql-js-tree';
 import { PaintNode } from '@/Graf/Node/PaintNode';
 import { NewNode } from '@/Graf/Node/NewNode';
@@ -113,14 +114,17 @@ export const RootNode: React.FC<RootNodeProps> = ({
           <NewNode
             node={node}
             onCreate={(name) => {
-              const createdNode =
+              const createdNode: ParserField =
                 node.data.type === TypeSystemDefinition.DirectiveDefinition
                   ? {
                       ...node,
                       name,
                       args: [],
                       type: {
-                        name: TypeDefinitionDisplayMap[node.data.type],
+                        fieldType: {
+                          name: TypeDefinitionDisplayMap[node.data.type],
+                          type: Options.name,
+                        },
                         directiveOptions: [Directive.OBJECT],
                       },
                     }
@@ -129,9 +133,12 @@ export const RootNode: React.FC<RootNodeProps> = ({
                       name,
                       args: [],
                       type: {
-                        name: (TypeDefinitionDisplayMap as any)[
-                          node.data.type as any
-                        ],
+                        fieldType: {
+                          name: (TypeDefinitionDisplayMap as any)[
+                            node.data.type as any
+                          ],
+                          type: Options.name,
+                        },
                       },
                     };
               tree.nodes.push(createdNode);

@@ -15,7 +15,9 @@ export const changeNodeName = (field: FieldType, newName: string) => {
 
 export const changeNodeOptions = (field: FieldType, newOption: Options) => {
   const changeOptions = (field: FieldType, newOption: Options) => {
-    if (field.type !== newOption && newOption === Options.array) {
+    if (field.type !== Options.array && newOption === Options.array) {
+      if (field.type === Options.required) {
+      }
       changeOptions(field, Options.array);
     } else if (field.type !== newOption && newOption === Options.required) {
       changeOptions(field, Options.required);
@@ -24,4 +26,29 @@ export const changeNodeOptions = (field: FieldType, newOption: Options) => {
   };
   changeOptions(field, newOption);
   return field;
+};
+
+export const resolveValueFieldType = (
+  name: string,
+  fType: FieldType,
+  isRequired = false,
+  fn: (str: string) => string = (x) => x,
+): string => {
+  if (fType.type === Options.name) {
+    return fn(isRequired ? name : `${name} | undefined | null`);
+  }
+  if (fType.type === Options.array) {
+    return resolveValueFieldType(
+      name,
+      fType.nest,
+      false,
+      isRequired
+        ? (x) => `Array<${fn(x)}>`
+        : (x) => `Array<${fn(x)}> | undefined | null`,
+    );
+  }
+  if (fType.type === Options.required) {
+    return resolveValueFieldType(name, fType.nest, true, fn);
+  }
+  throw new Error('Invalid field type');
 };

@@ -5,6 +5,7 @@ import {
   TypeExtension,
   Options,
   getTypeName,
+  ParserField,
 } from 'graphql-js-tree';
 import { fontFamily } from '@/vars';
 import { RootNode } from '@/Graf/Node';
@@ -41,38 +42,48 @@ const LineSpacer = styled.div`
   margin: 20px 0;
 `;
 
+type BaseTypesType = { node: ParserField; libraryNode: ParserField }[];
+
 export const PaintNodes: React.FC = () => {
   const { libraryTree, tree, readonly } = useTreesState();
   const { orderTypes } = useSortState();
   const [filterNodes, setFilterNodes] = useState('');
 
-  const baseTypes = [...orderTypes.map((t) => t.name)].map((d) => ({
-    node: {
-      name: TypeDefinitionDisplayMap[d],
-      data: {
-        type: d,
+  const baseTypes: BaseTypesType = [...orderTypes.map((t) => t.name)].map(
+    (d) => ({
+      node: {
+        name: TypeDefinitionDisplayMap[d],
+        data: {
+          type: d,
+        },
+        type: {
+          fieldType: {
+            name: `root-${d}`,
+            type: Options.name,
+          },
+        },
+        interfaces: [],
+        directives: [],
+        args: tree.nodes.filter((n) => n.data.type === d),
       },
-      type: {
-        fieldType: { name: `root-${d}`, type: Options.name },
+      libraryNode: {
+        name: TypeDefinitionDisplayMap[d],
+        data: {
+          type: d,
+        },
+        type: {
+          fieldType: {
+            type: Options.name,
+            name: `library-${d}`,
+          },
+        },
+        interfaces: [],
+        directives: [],
+        args: libraryTree.nodes.filter((n) => n.data.type === d),
       },
-      interfaces: [],
-      directives: [],
-      args: tree.nodes.filter((n) => n.data.type === d),
-    },
+    }),
+  );
 
-    libraryNode: {
-      name: TypeDefinitionDisplayMap[d],
-      data: {
-        type: d,
-      },
-      type: {
-        name: `library-${d}`,
-      },
-      interfaces: [],
-      directives: [],
-      args: libraryTree.nodes.filter((n) => n.data.type === d),
-    },
-  }));
   const RootBaseTypes = useMemo(
     () =>
       baseTypes.map((d) => (
