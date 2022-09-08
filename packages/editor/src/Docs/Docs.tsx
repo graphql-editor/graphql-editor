@@ -17,7 +17,7 @@ const Wrapper = styled.div`
   height: 100%;
   display: flex;
   position: relative;
-  background: ${({ theme }) => theme.background.mainFar};
+  background: ${({ theme }) => theme.background.mainFurther};
   flex-direction: row;
   overflow: auto;
   align-items: stretch;
@@ -26,7 +26,10 @@ const Wrapper = styled.div`
 const SelectedNodeWrapper = styled.div`
   flex: 1;
   overflow-y: auto;
+  background-color: ${({ theme }) => theme.background.mainFar};
   overflow-x: hidden;
+  scrollbar-color: ${({ theme }) =>
+    `${theme.background.mainClose} ${theme.background.mainFurthest}`};
 `;
 
 const ListWrapper = styled.div`
@@ -40,6 +43,8 @@ const ListContainer = styled.div`
   flex-flow: column nowrap;
   overflow-y: scroll;
   overflow-x: hidden;
+  scrollbar-color: ${({ theme }) =>
+    `${theme.background.mainClose} ${theme.background.mainFurthest}`};
 `;
 const SearchWrapper = styled.div`
   padding: 20px;
@@ -51,6 +56,7 @@ export const Docs = () => {
   const { tree, selectedNode, libraryTree, schemaType } = useTreesState();
   const { sortAlphabetically } = useSortState();
   const [q, setQ] = useState('');
+  const [listExpanded, setListExpanded] = useState<Array<string>>([]);
 
   const splittedNodes = useMemo(() => {
     const enumNodes: ParserField[] = [];
@@ -128,17 +134,83 @@ export const Docs = () => {
         </SearchWrapper>
 
         <ListWrapper>
-          <NodeList nodeList={splittedNodes?.schemaNodes} listTitle="Schema" />
-          <NodeList nodeList={splittedNodes?.typeNodes} listTitle="Types" />
           <NodeList
+            expanded={listExpanded}
+            setExpanded={(e) =>
+              setListExpanded((le) =>
+                le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+              )
+            }
+            nodeList={splittedNodes?.schemaNodes}
+            listTitle="Schema"
+          />
+          <NodeList
+            expanded={listExpanded}
+            setExpanded={(e) =>
+              setListExpanded((le) =>
+                le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+              )
+            }
+            nodeList={splittedNodes?.typeNodes}
+            listTitle="Types"
+          />
+          <NodeList
+            expanded={listExpanded}
+            setExpanded={(e) =>
+              setListExpanded((le) =>
+                le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+              )
+            }
             nodeList={splittedNodes?.interfaceNodes}
             listTitle="Interface"
           />
-          <NodeList nodeList={splittedNodes?.inputNodes} listTitle="Inputs" />
-          <NodeList nodeList={splittedNodes?.enumNodes} listTitle="Enums" />
-          <NodeList nodeList={splittedNodes?.scalarNodes} listTitle="Scalars" />
-          <NodeList nodeList={splittedNodes?.unionNodes} listTitle="Unions" />
           <NodeList
+            expanded={listExpanded}
+            setExpanded={(e) =>
+              setListExpanded((le) =>
+                le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+              )
+            }
+            nodeList={splittedNodes?.inputNodes}
+            listTitle="Inputs"
+          />
+          <NodeList
+            expanded={listExpanded}
+            setExpanded={(e) =>
+              setListExpanded((le) =>
+                le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+              )
+            }
+            nodeList={splittedNodes?.enumNodes}
+            listTitle="Enums"
+          />
+          <NodeList
+            expanded={listExpanded}
+            setExpanded={(e) =>
+              setListExpanded((le) =>
+                le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+              )
+            }
+            nodeList={splittedNodes?.scalarNodes}
+            listTitle="Scalars"
+          />
+          <NodeList
+            expanded={listExpanded}
+            setExpanded={(e) =>
+              setListExpanded((le) =>
+                le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+              )
+            }
+            nodeList={splittedNodes?.unionNodes}
+            listTitle="Unions"
+          />
+          <NodeList
+            expanded={listExpanded}
+            setExpanded={(e) =>
+              setListExpanded((le) =>
+                le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+              )
+            }
             nodeList={splittedNodes?.directivesNodes}
             listTitle="Directives"
           />

@@ -1,11 +1,11 @@
 import { createContainer } from 'unstated-next';
 import { useRouter } from '@/state/containers/router';
 const useNavigationStateContainer = createContainer(() => {
-  const { get, set } = useRouter();
+  const { routes, set } = useRouter();
   return {
     menuState: {
-      pane: get('pane') || 'diagram',
-      code: get('code') || 'on',
+      pane: routes.pane || 'diagram',
+      code: routes.code || 'on',
     },
     setMenuState: set,
   };

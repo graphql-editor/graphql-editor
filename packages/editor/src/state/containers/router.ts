@@ -1,19 +1,15 @@
 import { ActivePane } from '@/editor/menu/Menu';
 import { useMemo, useState } from 'react';
 
-export interface Routes {
-  pane?: ActivePane;
-  code?: 'on' | 'off';
-  n?: string;
-}
+const defaultValues = {
+  pane: 'diagram' as ActivePane,
+  code: 'on' as 'on' | 'off',
+  n: '',
+};
 
 export const useRouter = () => {
   const [path, setPath] = useState('');
-  const params = useMemo(
-    () => new URLSearchParams(window.location.search),
-    [window.location.search, path],
-  );
-  const set = (props: Routes) => {
+  const set = (props: Partial<typeof defaultValues>) => {
     const currentSearchParams = new URLSearchParams(window.location.search);
     Object.entries(props).forEach(([k, v]) => {
       currentSearchParams.set(k, v);
@@ -25,9 +21,14 @@ export const useRouter = () => {
     );
     setPath(currentSearchParams.toString());
   };
+  const routes = useMemo(() => {
+    const params = new URLSearchParams(window.location.search);
+    return Object.fromEntries(
+      Object.entries(defaultValues).map(([k, v]) => [k, params.get(k) || v]),
+    );
+  }, [window.location.search, path]) as unknown as typeof defaultValues;
   return {
     set,
-    get: <T extends keyof Routes>(key: T) =>
-      params.get(key) as Routes[T] | undefined,
+    routes,
   };
 };

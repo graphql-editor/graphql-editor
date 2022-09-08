@@ -496,7 +496,7 @@ export const SixDots = (props: IconProps) => (
   </svg>
 );
 
-export const Abc = ({ size, fill }: IconProps) => (
+export const Abc = ({ size, fill = 'currentColor' }: IconProps) => (
   <svg
     width={size}
     height={size}
@@ -512,7 +512,7 @@ export const Abc = ({ size, fill }: IconProps) => (
   </svg>
 );
 
-export const Arrow = ({ size, fill }: IconProps) => (
+export const Arrow = ({ size, fill = 'currentColor' }: IconProps) => (
   <svg
     width={size}
     height={size / 2}
@@ -527,7 +527,7 @@ export const Arrow = ({ size, fill }: IconProps) => (
   </svg>
 );
 
-export const Edit = ({ size, fill }: IconProps) => (
+export const Edit = ({ size, fill = 'currentColor' }: IconProps) => (
   <svg
     width={size}
     height={size}

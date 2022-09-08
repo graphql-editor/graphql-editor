@@ -21,6 +21,7 @@ import { EditorTheme } from '@/gshared/theme/DarkTheme';
 import { Docs } from '@/Docs/Docs';
 import { useSortState } from '@/state/containers/sort';
 import styled from '@emotion/styled';
+import { useRouter } from '@/state/containers/router';
 
 const Main = styled.div`
   display: flex;
@@ -98,6 +99,7 @@ export const Editor = ({
   } = useErrorsState();
   const {
     tree,
+    libraryTree,
     setTree,
     setSnapshots,
     setUndos,
@@ -105,17 +107,29 @@ export const Editor = ({
     setReadonly,
     schemaType,
     generateTreeFromSchema,
+    selectedNode,
+    setSelectedNode,
     readonly,
   } = useTreesState();
   const { isSortAlphabetically, sortByTypes, orderTypes, isUserOrder } =
     useSortState();
   const { setSidebarSize, sidebarSize } = useLayoutState();
-
+  const { routes, set } = useRouter();
+  const selectedNodeFromQuery = routes.n;
   const reset = () => {
     setSnapshots([]);
     setUndos([]);
     setGrafErrors(undefined);
   };
+  useEffect(() => {
+    if (!selectedNodeFromQuery) return;
+    setSelectedNode({
+      source: 'code',
+      field: tree.nodes
+        .concat(libraryTree.nodes)
+        .find((n) => n.name === selectedNodeFromQuery),
+    });
+  }, [selectedNodeFromQuery, tree, libraryTree]);
   useEffect(() => {
     isSortAlphabetically &&
       !isUserOrder &&
@@ -123,6 +137,16 @@ export const Editor = ({
         nodes: tree.nodes.sort(sortByTypes),
       });
   }, [isSortAlphabetically, orderTypes]);
+  useEffect(() => {
+    if (
+      selectedNode?.field?.name &&
+      selectedNode.field.name !== selectedNodeFromQuery
+    ) {
+      set({
+        n: selectedNode.field.name,
+      });
+    }
+  }, [selectedNode]);
 
   useEffect(() => {
     if (theme) {

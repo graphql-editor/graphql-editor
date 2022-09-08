@@ -4,6 +4,7 @@ import React from 'react';
 import { compareNodesWithData } from '@/compare/compareNodes';
 import styled from '@emotion/styled';
 import { fontFamilySans } from '@/vars';
+import { Arrow } from '@/editor/icons';
 
 const List = styled.div`
   text-align: left;
@@ -13,23 +14,31 @@ const List = styled.div`
 const NodeText = styled.a<{ active?: boolean }>`
   font-family: ${fontFamilySans};
   font-weight: ${({ active }) => (active ? 'bold' : 'normal')};
-  color: ${({ theme, active }) => (active ? theme.active : theme.dimmed)};
+  color: ${({ theme, active }) => (active ? theme.active : theme.disabled)};
   cursor: pointer;
   display: block;
   font-size: 14px;
-  padding: 5px 15px 5px 0;
+  padding: 8px 15px 8px 10px;
   &:hover {
     color: ${({ theme }) => theme.active};
   }
 `;
 
-const Title = styled.p`
+const Title = styled.div<{ open?: boolean }>`
   font-family: ${fontFamilySans};
   font-weight: 600;
+  cursor: pointer;
   color: ${({ theme }) => theme.text};
   margin: 0;
   font-size: 14px;
-  margin-bottom: 5px;
+  padding-bottom: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  svg {
+    fill: ${({ theme }) => theme.dimmed};
+    transform: ${({ open }) => (open ? 'scaleY(1.0)' : 'scaleY(-1.0)')};
+  }
 `;
 
 type ListTitle =
@@ -45,14 +54,29 @@ type ListTitle =
 interface NodeListI {
   listTitle: ListTitle;
   nodeList?: ParserField[];
+  expanded: Array<string>;
+  setExpanded: (e: string) => void;
 }
 
-export const NodeList: React.FC<NodeListI> = ({ nodeList, listTitle }) => {
+export const NodeList: React.FC<NodeListI> = ({
+  nodeList,
+  listTitle,
+  setExpanded,
+  expanded,
+}) => {
   const { selectedNode, setSelectedNode } = useTreesState();
+  const open =
+    (!!selectedNode?.field?.name &&
+      nodeList?.map((n) => n.name).includes(selectedNode?.field?.name)) ||
+    expanded.includes(listTitle);
   return (
     <List>
-      <Title>{listTitle}</Title>
-      {nodeList &&
+      <Title onClick={() => setExpanded(listTitle)} open={open}>
+        <div>{listTitle}</div>
+        <Arrow size={14} />
+      </Title>
+      {open &&
+        nodeList &&
         nodeList.map((node, i) => (
           <NodeText
             key={i}

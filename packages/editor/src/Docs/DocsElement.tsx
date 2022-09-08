@@ -54,9 +54,10 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
   }, [node.description]);
 
   const onSubmit = useCallback((description: string) => {
-    node.description = description;
-    const changedIdx = tree.nodes.findIndex((n) => n.name === node.name);
-    tree.nodes[changedIdx] = node;
+    const n = tree.nodes.find((n) => n.name === node.name);
+    if (n) {
+      n.description = description;
+    }
     setTree(tree);
   }, []);
 
