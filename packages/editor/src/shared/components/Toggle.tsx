@@ -32,7 +32,7 @@ const Text = styled.div<{ active?: boolean }>`
 const ToggleWrapper = styled.div<{ active?: boolean }>`
   border: 1px solid
     ${({ theme, active }) => (active ? theme.text : theme.inactive)};
-  border-radius: 10px;
+  border-radius: 5px;
   width: 28px;
   height: 14px;
   position: relative;
@@ -46,7 +46,7 @@ const ToggleCircle = styled.div<{ active?: boolean }>`
   background-color: ${({ theme, active }) =>
     active ? theme.text : theme.inactive};
   position: absolute;
-  border-radius: 10px;
+  border-radius: 5px;
   margin-left: ${({ active }) => (active ? '14px' : '0px')};
   transition: ${vars.transition};
 `;

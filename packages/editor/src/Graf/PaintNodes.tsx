@@ -14,8 +14,8 @@ import { RootExtendNode } from './Node/RootExtendNode';
 import { useSortState } from '@/state/containers/sort';
 import { SortNodes } from './Node/components/SortNodes';
 import styled from '@emotion/styled';
-import { SearchInput } from '@/Graf/Node/components/SearchInput';
 import { GraphQLEditorDomStructure } from '@/domStructure';
+import { SearchInput } from '@/shared/components';
 
 const Main = styled.div`
   width: 100%;

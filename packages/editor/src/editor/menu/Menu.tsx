@@ -134,13 +134,8 @@ const BorderSpacer = styled.div`
   width: 100%;
 `;
 
-export type ActiveSource =
-  | 'diagram'
-  | 'hierarchy'
-  | 'relation'
-  | 'docs'
-  | 'code';
-export type ActivePane = 'diagram' | 'hierarchy' | 'diff' | 'relation' | 'docs';
+export type ActiveSource = 'diagram' | 'relation' | 'docs' | 'code';
+export type ActivePane = 'diagram' | 'diff' | 'relation' | 'docs';
 export interface MenuProps {
   setToggleCode: (v: boolean) => void;
   toggleCode: boolean;
@@ -225,21 +220,9 @@ export const Menu = ({
           <p>Relation View</p>
         </MenuItem>
       )}
-      {!excludePanes.includes('hierarchy') && (
-        <MenuItem
-          data-cy={MenuChildren.hierarchy}
-          className={activePane === 'hierarchy' ? 'active' : ''}
-          onClick={() => setActivePane('hierarchy')}
-          data-tooltip="Hierarchy View"
-          isCollapsed={isCollapsed}
-        >
-          <Icons.HierarchyView size={22} />
-          <p>Hierarchy View</p>
-        </MenuItem>
-      )}
       {!excludePanes.includes('docs') && (
         <MenuItem
-          data-cy={MenuChildren.hierarchy}
+          data-cy={MenuChildren.docs}
           className={activePane === 'docs' ? 'active' : ''}
           onClick={() => setActivePane('docs')}
           data-tooltip="Documentation View"

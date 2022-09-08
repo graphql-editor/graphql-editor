@@ -21,7 +21,6 @@ const md = new Remarkable();
 const ListWrapper = styled.div`
   margin-bottom: 12px;
   flex: 1 1 auto;
-  overflow-y: auto;
   min-height: 0;
   word-wrap: normal;
 `;

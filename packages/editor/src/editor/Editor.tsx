@@ -4,7 +4,6 @@ import { CodePane } from './code';
 import { PassedSchema, Theming } from '@/Models';
 import { DynamicResize } from './code/Components';
 import { Graf } from '@/Graf/Graf';
-import { Hierarchy } from '@/Hierarchy';
 import { Parser, ParserTree } from 'graphql-js-tree';
 import { GraphQLEditorWorker } from 'graphql-editor-worker';
 import {
@@ -215,27 +214,25 @@ export const Editor = ({
       }}
     >
       <Menu
-        toggleCode={!!menuState.code}
+        toggleCode={menuState.code === 'on'}
         sidebarExpanded={sidebarExpanded}
         setToggleCode={(e) =>
           setMenuState({
             ...menuState,
-            code: !menuState.pane ? true : e,
+            code: menuState.code === 'off' ? 'on' : 'off',
           })
         }
         activePane={menuState.pane}
         excludePanes={diffSchemas ? undefined : ['diff']}
         setActivePane={(p) => {
-          const pane =
-            p === menuState.pane ? (menuState.code ? undefined : p) : p;
-          const newState = { ...menuState, pane };
+          const newState: typeof menuState = { ...menuState, pane: p };
           setMenuState(newState);
           if (onStateChange) {
             onStateChange(newState);
           }
         }}
       />
-      {menuState.code && menuState.pane !== 'diff' && (
+      {menuState.code === 'on' && menuState.pane !== 'diff' && (
         <DynamicResize
           enable={{ right: true }}
           disabledClass={!menuState.pane ? 'full-screen-container' : undefined}
@@ -289,7 +286,6 @@ export const Editor = ({
           <Docs />
         </ErrorOuterContainer>
       )}
-      {menuState.pane === 'hierarchy' && <Hierarchy />}
       {menuState.pane === 'diff' && diffSchemas && (
         <DiffEditor schemas={diffSchemas} />
       )}

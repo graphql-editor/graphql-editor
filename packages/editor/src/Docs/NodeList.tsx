@@ -1,34 +1,32 @@
 import { useTreesState } from '@/state/containers';
-import { fontFamily } from '@/vars';
 import { ParserField } from 'graphql-js-tree';
 import React from 'react';
 import { compareNodesWithData } from '@/compare/compareNodes';
 import styled from '@emotion/styled';
+import { fontFamilySans } from '@/vars';
 
 const List = styled.div`
   text-align: left;
   padding: 10px;
 `;
 
-const NodeText = styled.a`
-  font-family: ${fontFamily};
-  color: ${({ theme }) => theme.backgroundedText};
+const NodeText = styled.a<{ active?: boolean }>`
+  font-family: ${fontFamilySans};
+  font-weight: ${({ active }) => (active ? 'bold' : 'normal')};
+  color: ${({ theme, active }) => (active ? theme.active : theme.dimmed)};
   cursor: pointer;
   display: block;
   font-size: 14px;
-  &:hover,
-  &.active {
-    color: ${({ theme }) => theme.colors.type};
-  }
+  padding: 5px 15px 5px 0;
   &:hover {
-    background-color: ${({ theme }) => theme.background.mainClose};
+    color: ${({ theme }) => theme.active};
   }
 `;
 
 const Title = styled.p`
-  font-family: ${fontFamily};
-  text-transform: uppercase;
-  color: ${({ theme }) => theme.colors.type};
+  font-family: ${fontFamilySans};
+  font-weight: 600;
+  color: ${({ theme }) => theme.text};
   margin: 0;
   font-size: 14px;
   margin-bottom: 5px;
@@ -64,10 +62,8 @@ export const NodeList: React.FC<NodeListI> = ({ nodeList, listTitle }) => {
                 source: 'docs',
               });
             }}
-            className={
+            active={
               selectedNode && !!compareNodesWithData(node, selectedNode.field)
-                ? 'active'
-                : ''
             }
           >
             {node.name}

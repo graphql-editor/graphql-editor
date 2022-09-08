@@ -1,15 +1,14 @@
 import { createContainer } from 'unstated-next';
-import { useState } from 'react';
-import { ActivePane } from '@/editor/menu/Menu';
+import { useRouter } from '@/state/containers/router';
 const useNavigationStateContainer = createContainer(() => {
-  const [menuState, setMenuState] = useState<{
-    pane?: ActivePane;
-    code?: boolean;
-  }>({
-    code: true,
-    pane: 'diagram',
-  });
-  return { menuState, setMenuState };
+  const { get, set } = useRouter();
+  return {
+    menuState: {
+      pane: get('pane') || 'diagram',
+      code: get('code') || 'on',
+    },
+    setMenuState: set,
+  };
 });
 
 export const useNavigationState = useNavigationStateContainer.useContainer;

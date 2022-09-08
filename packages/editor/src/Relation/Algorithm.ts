@@ -2,7 +2,7 @@ import { ParserField, getTypeName } from 'graphql-js-tree';
 
 export const sortByConnection = (nodes: ParserField[]) => {
   const roots = nodes.sort((a, b) =>
-    (a.args?.length || 0) > (b.args?.length || 0) ? -1 : 1,
+    (a.args?.length || 0) > (b.args?.length || 0) ? 1 : -1,
   );
   const copyRoots: ParserField[] = [];
   const pushCheckNode = (node?: ParserField, stop?: boolean) => {

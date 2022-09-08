@@ -1,4 +1,4 @@
-import React, { useState, DragEvent } from 'react';
+import React, { useState, DragEvent, useRef } from 'react';
 import { ArrowLeft, SixDots } from '@/editor/icons';
 import { useSortState } from '@/state/containers/sort';
 import { dragLeaveHandler, dragOverHandler } from '@/Graf/Node/ActiveNode/dnd';
@@ -6,6 +6,7 @@ import { TypeDefinition, TypeSystemDefinition } from 'graphql-js-tree';
 import styled from '@emotion/styled';
 import { fontFamily, fontFamilySans } from '@/vars';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
+import { useOnClickOutside } from '../../hooks';
 
 type NodeType = keyof EditorTheme['colors'];
 
@@ -97,10 +98,16 @@ const initDragObj = {
 };
 
 export const SortNodes = () => {
+  const orderListRef = useRef<HTMLDivElement>(null);
+  useOnClickOutside(orderListRef, () => {
+    setIsOrderListVisible(false);
+  });
+
   const { orderTypes, setOrderTypes } = useSortState();
+  const [isOrderListVisible, setIsOrderListVisible] = useState(false);
+
   const [dragOverObj, setDragOverObj] = useState(initDragObj);
   const [dragStartObj, setDragStartObj] = useState(initDragObj);
-  const [isListVisible, setIsListVisible] = useState(false);
 
   const dropHandler = (e: DragEvent, endNodeName: string) => {
     e.stopPropagation();
@@ -142,12 +149,15 @@ export const SortNodes = () => {
   };
 
   return (
-    <Container onClick={() => setIsListVisible((prev) => !prev)}>
+    <Container
+      onClick={() => setIsOrderListVisible((prev) => !prev)}
+      ref={orderListRef}
+    >
       <h4>Nodes order</h4>
-      <ChevronBox isListVisible={isListVisible}>
+      <ChevronBox isListVisible={isOrderListVisible}>
         <ArrowLeft size={11} />
       </ChevronBox>
-      <List isListVisible={isListVisible}>
+      <List isListVisible={isOrderListVisible}>
         {orderTypes.map((type, idx) => (
           <DragContainer
             key={type.name}

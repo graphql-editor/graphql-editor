@@ -67,7 +67,6 @@
     "graphql-js-tree": "^0.1.1",
     "graphql-language-service": "^3.1.4",
     "graphsource": "^2.0.5",
-    "html-to-image": "^1.10.8",
     "re-resizable": "^6.9.1",
     "remarkable": "^2.0.1",
     "unstated-next": "^1.1.0"

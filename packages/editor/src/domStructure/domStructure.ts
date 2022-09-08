@@ -86,10 +86,6 @@ export const tree = {
           },
         },
       },
-      Hierarchy: {
-        name: 'tree-elements-Hierarchy-name',
-        canvas: 'tree-elements-Hierarchy-canvas',
-      },
       DiffEditor: {
         name: 'tree-elements-DiffEditor-name',
         oldPane: 'tree-elements-DiffEditor-oldPane',
@@ -107,9 +103,9 @@ export const tree = {
           diagram: 'tree-sidebar-menu-children-diagram',
           codeDiagram: 'tree-sidebar-menu-children-codeDiagram',
           code: 'tree-sidebar-menu-children-code',
-          hierarchy: 'tree-sidebar-menu-children-hierarchy',
           diff: 'tree-sidebar-menu-children-diff',
           relation: 'tree-sidebar-menu-children-relation',
+          docs: 'tree-sidebar-menu-children-docs',
         },
       },
     },
