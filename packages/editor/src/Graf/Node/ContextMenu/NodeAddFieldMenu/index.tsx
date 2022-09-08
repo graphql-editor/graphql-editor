@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ResolveCreateField } from '@/GraphQL/Resolve';
-import { getTypeName, ParserField } from 'graphql-js-tree';
+import { getTypeName, Options, ParserField } from 'graphql-js-tree';
 import { useTreesState } from '@/state/containers/trees';
 import {
   Menu,
@@ -54,7 +54,10 @@ export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({
       directives: [],
       interfaces: [],
       type: {
-        ...f.type,
+        fieldType: {
+          name: f.name,
+          type: Options.name,
+        },
       },
       name: newName,
       args: [],

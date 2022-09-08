@@ -9,14 +9,12 @@ interface NodeChangeFieldTypeMenuProps {
 }
 
 const checkOptions = (node: ParserField) => {
-  const allRequired =
-    node.args?.filter((arg) =>
-      compileType(arg.type.fieldType).includes(Options.required),
-    )?.length === node.args?.length;
-  const allNonRequired =
-    node.args?.filter(
-      (arg) => !compileType(arg.type.fieldType)?.includes(Options.required),
-    )?.length === node.args?.length;
+  const allRequired = node.args.every(
+    (arg) => arg.type.fieldType.type === Options.required,
+  );
+  const allNonRequired = node.args.every(
+    (arg) => arg.type.fieldType.type !== Options.required,
+  );
   let opts: Record<string, boolean> = {};
   opts['required'] = allRequired;
   opts['non-required'] = allNonRequired;
@@ -35,14 +33,21 @@ export const NodeFieldsRequiredMenu: React.FC<NodeChangeFieldTypeMenuProps> = ({
       onCheck={(o) => {
         if (o === 'required') {
           node.args?.forEach((arg) => {
-            arg.type.options = [];
-            arg.type.options.push(Options.required);
+            const argType = compileType(arg.type.fieldType);
+            if (!argType.endsWith('!')) {
+              arg.type.fieldType = {
+                type: Options.required,
+                nest: arg.type.fieldType,
+              };
+            }
           });
         } else if (o === 'non-required') {
           node.args?.forEach((arg) => {
-            arg.type.options = arg.type.options?.filter(
-              (o) => o !== Options.required,
-            );
+            if (arg.type.fieldType.type === Options.required) {
+              arg.type.fieldType = {
+                ...arg.type.fieldType.nest,
+              };
+            }
           });
         }
         setOpts(checkOptions(node));

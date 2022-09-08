@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import {
   ParserField,
-  Options,
   Value,
   TypeDefinition,
   getTypeName,
-  compileType,
 } from 'graphql-js-tree';
 import { NodeTypeOptionsMenu } from '@/Graf/Node/ContextMenu';
 import { ActiveArgumentName } from './ActiveArgumentName';
@@ -18,10 +16,9 @@ import {
   NodeFieldContainer,
   Title,
 } from '@/Graf/Node/components';
-import { isScalarArgument } from '@/GraphQL/Resolve';
 import {
-  ConvertStringToObject,
   ConvertValueToEditableString,
+  placeStringInNode,
 } from '@/GraphQL/Convert';
 import { useTreesState } from '@/state/containers/trees';
 import { FieldProps } from '@/Graf/Node/models';
@@ -41,43 +38,7 @@ const OptionsMenuContainer = styled.div`
   right: 5px;
 `;
 
-interface PlaceFunctionArgs {
-  v: string;
-  node: ParserField;
-  parentNodeOfArgument: ParserField;
-}
-
-const placeStringInNode = ({ node, v }: PlaceFunctionArgs) => {
-  const valueType = isScalarArgument(node);
-  const isObjectArg = !valueType || node.data.type === Value.ObjectValue;
-  if (compileType(node.type.fieldType)?.includes(Options.array)) {
-    return ConvertStringToObject(v);
-  }
-  if (isObjectArg) {
-    return ConvertStringToObject(v);
-  }
-  if (valueType) {
-    let value = v;
-    if (valueType === Value.StringValue) {
-      if (!(v.startsWith(`\"`) && v.endsWith(`\"`))) {
-        //String must have ciapki
-        return node.args;
-      }
-      value = v.slice(1, -1);
-    }
-    const n: ParserField = {
-      data: {
-        type: valueType,
-      },
-      type: {
-        name: valueType,
-      },
-      name: value,
-    };
-    return [n];
-  }
-};
-
+//TODO Wogle to naprawic bo przypal od dawna
 const resolveValueFromNode = (node: ParserField, parentNode: ParserField) => {
   const inside =
     node.args
@@ -88,11 +49,7 @@ const resolveValueFromNode = (node: ParserField, parentNode: ParserField) => {
         return ConvertValueToEditableString(a);
       })
       .join(',') || '';
-  if (
-    node.args &&
-    node.args.length > 0 &&
-    node.type.options?.includes(Options.array)
-  ) {
+  if (node.args && node.args.length > 0) {
     return `[ ${inside} ]`;
   }
   return inside;
@@ -150,11 +107,11 @@ export const ActiveArgument: React.FC<FieldProps> = ({
           value={resolveValueFromNode(node, parentNode)}
           style={{ marginLeft: 5 }}
           onChange={(v) => {
-            node.args = placeStringInNode({
-              v,
-              node,
-              parentNodeOfArgument: parentNode,
-            });
+            node.args =
+              placeStringInNode({
+                v,
+                node,
+              }) || [];
             setTree({ ...tree });
           }}
         />

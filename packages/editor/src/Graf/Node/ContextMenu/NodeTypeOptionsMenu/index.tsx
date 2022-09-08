@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { OptionsMenu } from '@/Graf/Node/components';
 import {
   ParserField,
-  Options,
   compileType,
   getTypeName,
+  decompileType,
 } from 'graphql-js-tree';
 import { useTreesState } from '@/state/containers/trees';
 interface NodeTypeOptionsMenuProps {
@@ -13,34 +13,20 @@ interface NodeTypeOptionsMenuProps {
 }
 
 const configureOpts = (node: ParserField) => {
-  let options = compileType(node.type.fieldType);
+  const theType = compileType(node.type.fieldType);
   const t = getTypeName(node.type.fieldType);
-  const r = !!options.includes(Options.required);
-  const a = !!options.includes(Options.array);
-  const ar = !!(
-    options.includes(Options.array) && options.includes(Options.required)
-  );
   const opts: Record<string, boolean> = {
-    [`${t}`]: !r && !a && !ar,
-    [`${t}!`]: r && !a && !ar,
-    [`[${t}]`]: a && !r && !ar,
-    [`[${t}!]`]: a && r && !ar,
-    [`[${t}!]!`]: r && a && ar,
-    [`[${t}]!`]: a && ar && !r,
+    [`${t}`]: theType === `${t}`,
+    [`${t}!`]: theType === `${t}!`,
+    [`[${t}]`]: theType === `[${t}]`,
+    [`[${t}!]`]: theType === `[${t}!]`,
+    [`[${t}!]!`]: theType === `[${t}!]!`,
+    [`[${t}]!`]: theType === `[${t}]!`,
   };
   return opts;
 };
 const configureNode = (node: ParserField, optionString: string) => {
-  const t = getTypeName(node.type.fieldType);
-  const isRequired = [`${t}!`, `[${t}!]`, `[${t}!]!`].includes(optionString);
-  const isArray = [`[${t}]`, `[${t}]!`, `[${t}!]`, `[${t}!]!`].includes(
-    optionString,
-  );
-  const isArrayRequired = [`[${t}]!`, `[${t}!]!`].includes(optionString);
-  node.type.options = [];
-  if (isRequired) node.type.operations.push(Options.required);
-  if (isArrayRequired) node.type.options.push(Options.arrayRequired);
-  if (isArray) node.type.options.push(Options.array);
+  node.type.fieldType = decompileType(optionString);
   return;
 };
 
@@ -52,7 +38,7 @@ export const NodeTypeOptionsMenu: React.FC<NodeTypeOptionsMenuProps> = ({
   const [opts, setOpts] = useState(configureOpts(node));
   useEffect(() => {
     setOpts(configureOpts(node));
-  }, [node.type.options]);
+  }, [node.type.fieldType]);
   return (
     <OptionsMenu
       menuName={'Node kind'}

@@ -19,7 +19,7 @@ export const BuiltInScalars = [
       },
       type: {
         fieldType: {
-          name: 'scalar',
+          name: t,
           type: Options.name,
         },
       },

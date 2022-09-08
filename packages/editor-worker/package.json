@@ -22,13 +22,12 @@
   "bugs": {
     "url": "https://github.com/graphql-editor/graphql-editor.git"
   },
-  "devDependencies": {},
   "peerDependencies": {
     "webpack": ">=5.53.0",
     "worker-loader": ">=3.0.8"
   },
   "dependencies": {
-    "graphql-js-tree": "^0.1.1",
+    "graphql-js-tree": "^0.1.5",
     "graphql-language-service": "^3.1.4"
   },
   "config": {

@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-  ParserField,
-  Options,
-  ValueDefinition,
-  Value,
-  getTypeName,
-  compileType,
-} from 'graphql-js-tree';
+import { getTypeName } from 'graphql-js-tree';
 import { ActiveType } from '@/Graf/Node/Type';
 import {
   NodeChangeFieldTypeMenu,
@@ -22,11 +15,7 @@ import {
   NodeFieldContainer,
   Title,
 } from '@/Graf/Node/components';
-import { isScalarArgument } from '@/GraphQL/Resolve';
-import {
-  ConvertStringToObject,
-  ConvertValueNodeToString,
-} from '@/GraphQL/Convert';
+import { ConvertValueNodeToString, placeStringInNode } from '@/GraphQL/Convert';
 import { useTreesState } from '@/state/containers/trees';
 import { FieldProps } from '@/Graf/Node/models';
 import { FIELD_TYPE_SIZE } from '@/Graf/constants';
@@ -54,55 +43,6 @@ const TypeMenuContainer = styled.div`
   top: 32px;
   z-index: 2;
 `;
-
-interface PlaceFunctionArgs {
-  v: string;
-  node: ParserField;
-}
-
-const placeStringInNode = ({ node, v }: PlaceFunctionArgs) => {
-  if (!v) {
-    return;
-  }
-  if (v.length === 2 && v[0] === '[' && v[1] === ']') {
-    return [];
-  }
-  const valueType = isScalarArgument(node);
-  const isObjectArg =
-    (node.data.type === ValueDefinition.InputValueDefinition && !valueType) ||
-    node.data.type === Value.ObjectValue;
-  if (compileType(node.type.fieldType).includes(Options.array)) {
-    return ConvertStringToObject(v);
-  }
-  if (isObjectArg) {
-    return ConvertStringToObject(v);
-  }
-  if (valueType) {
-    let value = v;
-    if (valueType === Value.StringValue) {
-      if (!(v.startsWith(`\"`) && v.endsWith(`\"`))) {
-        value = `"${value}"`;
-      }
-      value = value.slice(1, -1);
-    }
-    const n: ParserField = {
-      data: {
-        type: valueType,
-      },
-      args: [],
-      interfaces: [],
-      directives: [],
-      type: {
-        fieldType: {
-          name: valueType,
-          type: Options.name,
-        },
-      },
-      name: value,
-    };
-    return [n];
-  }
-};
 
 export const ActiveInputValue: React.FC<FieldProps> = ({
   node,

@@ -1,10 +1,22 @@
-import { Parser, ParserField, Options } from 'graphql-js-tree';
+import { isScalarArgument } from '@/GraphQL/Resolve';
+import {
+  compileType,
+  getTypeName,
+  Options,
+  Parser,
+  ParserField,
+  Value,
+} from 'graphql-js-tree';
 import { TemplateUtils } from 'graphql-js-tree/lib/TreeToGraphQL/templates/TemplateUtils';
-export const ConvertStringToObject = (value: string) => {
+export const ConvertStringToObject = (
+  value: string,
+  typeName: string,
+  fieldType: string,
+) => {
   const computeString = `
-    scalar Translatable
+    scalar ${typeName}
     input Translate{
-        field: Translatable = ${value}
+        field: ${fieldType} = ${value}
     }
 `;
   const TranslatedString = Parser.parse(computeString);
@@ -15,7 +27,8 @@ export const ConvertStringToObject = (value: string) => {
   if (!translationNode || !translationNode.args) {
     return;
   }
-  return translationNode.args[0].args;
+  const fieldNode = translationNode.args[0];
+  return fieldNode.args;
 };
 
 export const ConvertValueToEditableString = (f: ParserField) => {
@@ -24,17 +37,54 @@ export const ConvertValueToEditableString = (f: ParserField) => {
 };
 
 export const ConvertValueNodeToString = (node: ParserField) => {
-  if (!node.args) {
-    return '';
-  }
-  if (node.type.options?.includes(Options.array)) {
-    if (node.args.length === 0) {
-      return '[]';
-    }
-    return ConvertValueToEditableString(node).split('=')[1];
-  }
-  if (node.args.length === 0) {
+  if (!node.args.length) {
     return '';
   }
   return ConvertValueToEditableString(node).split('=')[1];
+};
+
+interface PlaceFunctionArgs {
+  v: string;
+  node: ParserField;
+}
+export const placeStringInNode = ({ node, v }: PlaceFunctionArgs) => {
+  if (!v) {
+    return;
+  }
+  if (v.length === 2 && v[0] === '[' && v[1] === ']') {
+    return [];
+  }
+  const valueType = isScalarArgument(node);
+  let value = v;
+  if (valueType) {
+    if (valueType === Value.StringValue) {
+      if (v.startsWith(`\"`) && v.endsWith(`\"`)) {
+        value = v.slice(1, -1);
+      }
+    }
+    if (valueType === Value.BooleanValue) {
+      value = v === 'true' ? 'true' : 'false';
+    }
+    const n: ParserField = {
+      data: {
+        type: valueType,
+      },
+      type: {
+        fieldType: {
+          name: valueType,
+          type: Options.name,
+        },
+      },
+      name: value,
+      directives: [],
+      args: [],
+      interfaces: [],
+    };
+    return [n];
+  }
+  return ConvertStringToObject(
+    v,
+    getTypeName(node.type.fieldType),
+    compileType(node.type.fieldType),
+  );
 };

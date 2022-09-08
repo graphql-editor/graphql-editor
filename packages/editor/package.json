@@ -25,7 +25,6 @@
   "bugs": {
     "url": "https://github.com/graphql-editor/graphql-editor.git"
   },
-  "devDependencies": {},
   "peerDependencies": {
     "@monaco-editor/react": ">=4.2.2",
     "css-loader": ">=6.2.0",
@@ -37,18 +36,17 @@
     "worker-loader": ">=3.0.8"
   },
   "dependencies": {
-    "graphql-editor-worker": "*",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
     "color2k": "^1.2.4",
     "fuzzyjs": "^5.0.1",
-    "graphql-js-tree": "^0.1.1",
+    "graphql-editor-worker": "*",
+    "graphql-js-tree": "^0.1.5",
     "graphql-language-service": "^3.1.4",
-    "graphsource": "^2.0.5",
+    "html-to-image": "^1.10.8",
     "re-resizable": "^6.9.1",
     "remarkable": "^2.0.1",
-    "unstated-next": "^1.1.0",
-    "html-to-image": "^1.10.8"
+    "unstated-next": "^1.1.0"
   },
   "config": {
     "commitizen": {
