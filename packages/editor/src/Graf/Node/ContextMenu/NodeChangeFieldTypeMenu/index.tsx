@@ -9,7 +9,7 @@ import {
   TypedMenuItem,
 } from '@/Graf/Node/components';
 import { sortNodes } from '@/Graf/Node/ContextMenu/sort';
-import { changeNodeName } from '@/utils';
+import { changeTypeName } from '@/utils';
 
 interface NodeChangeFieldTypeMenuProps {
   node: ParserField;
@@ -46,7 +46,7 @@ export const NodeChangeFieldTypeMenu: React.FC<
   const onNodeClick = (f: ParserField) => {
     if (node.args) {
       node.args[fieldIndex].data.type = f.data.type;
-      changeNodeName(node.args[fieldIndex].type.fieldType, f.name);
+      changeTypeName(node.args[fieldIndex].type.fieldType, f.name);
     }
     hideMenu();
     setTree({ ...tree });

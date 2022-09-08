@@ -1,4 +1,10 @@
-import { ScalarTypes, ParserField, TypeDefinition } from 'graphql-js-tree';
+import { isScalarArgument } from '@/GraphQL/Resolve/Resolve';
+import {
+  ScalarTypes,
+  ParserField,
+  TypeDefinition,
+  Options,
+} from 'graphql-js-tree';
 export const BuiltInScalars = [
   ScalarTypes.String,
   ScalarTypes.Boolean,
@@ -12,8 +18,13 @@ export const BuiltInScalars = [
         type: TypeDefinition.ScalarTypeDefinition,
       },
       type: {
-        name: 'scalar',
+        fieldType: {
+          name: 'scalar',
+          type: Options.name,
+        },
       },
       name: t,
     } as ParserField),
 );
+
+isScalarArgument;

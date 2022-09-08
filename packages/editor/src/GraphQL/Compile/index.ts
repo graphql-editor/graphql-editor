@@ -1,29 +1,21 @@
 import {
   ParserField,
-  Options,
   ScalarTypes,
   TypeDefinition,
   TypeDefinitionDisplayMap,
+  compileType,
+  getTypeName,
 } from 'graphql-js-tree';
 
 export const compileTypeOptions = ({ type }: Pick<ParserField, 'type'>) => {
-  let compiledType = type.name;
-  if (type.options?.includes(Options.required)) {
-    compiledType = `${compiledType}!`;
-  }
-  if (type.options?.includes(Options.array)) {
-    compiledType = `[${compiledType}]`;
-    if (type.options?.includes(Options.arrayRequired)) {
-      compiledType = `${compiledType}!`;
-    }
-  }
-  return compiledType;
+  return compileType(type.fieldType);
 };
 export const compileScalarTypes = (type: ParserField['type']) => {
-  if ((Object.values(ScalarTypes) as string[]).includes(type.name)) {
+  const typeName = getTypeName(type.fieldType);
+  if ((Object.values(ScalarTypes) as string[]).includes(typeName)) {
     return TypeDefinitionDisplayMap[TypeDefinition.ScalarTypeDefinition];
   }
-  return type.name;
+  return typeName;
 };
 
 export const enrichWithScalarColors = <T extends { scalar: string }>(

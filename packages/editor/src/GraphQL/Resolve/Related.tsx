@@ -1,4 +1,5 @@
-import { ParserField } from 'graphql-js-tree';
+import { changeTypeName } from '@/utils';
+import { getTypeName, ParserField } from 'graphql-js-tree';
 
 export const ChangeRelatedNode = ({
   newName,
@@ -9,8 +10,9 @@ export const ChangeRelatedNode = ({
   newName: string;
   node: ParserField;
 }) => {
-  if (node.type.name === oldName) {
-    node.type.name = newName;
+  const typeName = getTypeName(node.type.fieldType);
+  if (typeName === oldName) {
+    changeTypeName(node.type.fieldType, newName);
   }
   if (node.args) {
     node.args.forEach((n) => ChangeRelatedNode({ oldName, newName, node: n }));

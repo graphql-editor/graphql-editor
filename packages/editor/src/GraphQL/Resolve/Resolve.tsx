@@ -8,6 +8,8 @@ import {
   Value,
   Instances,
   TypeExtension,
+  getTypeName,
+  Options,
 } from 'graphql-js-tree';
 import { BuiltInScalars } from '@/GraphQL/Resolve/BuiltInNodes';
 
@@ -15,6 +17,7 @@ export const ResolveCreateField = (
   field: ParserField,
   actualFields: ParserField[],
 ): ParserField[] | undefined => {
+  const typeName = getTypeName(field.type.fieldType);
   if (
     field.data.type === TypeDefinition.ObjectTypeDefinition ||
     field.data.type === TypeDefinition.InterfaceTypeDefinition ||
@@ -65,8 +68,14 @@ export const ResolveCreateField = (
           type: ValueDefinition.EnumValueDefinition,
         },
         type: {
-          name: ValueDefinition.EnumValueDefinition,
+          fieldType: {
+            name: ValueDefinition.EnumValueDefinition,
+            type: Options.name,
+          },
         },
+        interfaces: [],
+        directives: [],
+        args: [],
         name: '',
       },
     ];
@@ -92,7 +101,7 @@ export const ResolveCreateField = (
   }
   if (field.data.type === Instances.Directive) {
     return actualFields
-      .find((a) => a.name === field.type.name)!
+      .find((a) => a.name === typeName)!
       .args?.filter((a) => !field.args?.map((el) => el.name).includes(a.name))
       .map((a) => {
         return {
@@ -171,19 +180,20 @@ export const ResolveDirectives = (
 };
 
 export const isScalarArgument = (field: ParserField) => {
-  if (field.type.name === ScalarTypes.Boolean) {
+  const typeName = getTypeName(field.type.fieldType);
+  if (typeName === ScalarTypes.Boolean) {
     return Value.BooleanValue;
   }
-  if (field.type.name === ScalarTypes.Float) {
+  if (typeName === ScalarTypes.Float) {
     return Value.FloatValue;
   }
-  if (field.type.name === ScalarTypes.ID) {
+  if (typeName === ScalarTypes.ID) {
     return Value.StringValue;
   }
-  if (field.type.name === ScalarTypes.Int) {
+  if (typeName === ScalarTypes.Int) {
     return Value.IntValue;
   }
-  if (field.type.name === ScalarTypes.String) {
+  if (typeName === ScalarTypes.String) {
     return Value.StringValue;
   }
   return;
