@@ -8,7 +8,7 @@ import { fontFamily } from '@/vars';
 import { compareNodesWithData } from '@/compare/compareNodes';
 import styled from '@emotion/styled';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
-import { SearchInput } from '@/shared/components/SearchInput';
+import { NodeSearchFields } from '@/Relation/Node/NodeSearchFields';
 
 type NodeTypes = keyof EditorTheme['backgrounds'];
 
@@ -49,7 +49,7 @@ const NodeTitle = styled.div`
   align-items: stretch;
   color: ${({ theme }) => theme.backgroundedText};
   font-size: 14px;
-  padding: 10px 5px;
+  padding: 10px 0;
   display: flex;
 `;
 
@@ -151,7 +151,7 @@ export const Node: React.FC<NodeProps> = ({
         </NodeTitle>
         {!(!enums && field.data.type === TypeDefinition.EnumTypeDefinition) &&
           (field?.args?.length || 0) > 10 && (
-            <SearchInput
+            <NodeSearchFields
               value={filteredFieldTypes}
               handleSearch={handleSearch}
             />

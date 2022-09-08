@@ -218,7 +218,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
         isLibrary={
           schemaType === 'library' ? true : libraryNodeNames.includes(n.name)
         }
-        key={n.name + n.data.type + i}
+        key={n.name + n.data.type}
         setRef={(ref) => {
           tRefs[n.name + n.data.type] = ref;
           if (i === relationDrawingNodes.length - 1) {

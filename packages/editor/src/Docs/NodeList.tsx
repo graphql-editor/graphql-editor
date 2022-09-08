@@ -10,23 +10,23 @@ const List = styled.div`
   padding: 10px;
 `;
 
-const NodeText = styled.a`
+const NodeText = styled.a<{ active?: boolean }>`
   font-family: ${fontFamilySans};
-  color: ${({ theme }) => theme.dimmed};
+  font-weight: ${({ active }) => (active ? 'bold' : 'normal')};
+  color: ${({ theme, active }) => (active ? theme.active : theme.dimmed)};
   cursor: pointer;
   display: block;
   font-size: 14px;
-  padding: 10px 15px;
-  &:hover,
-  &.active {
-    color: ${({ theme }) => theme.colors.type};
+  padding: 5px 15px 5px 0;
+  &:hover {
+    color: ${({ theme }) => theme.active};
   }
 `;
 
 const Title = styled.p`
   font-family: ${fontFamilySans};
-  font-weight: bold;
-  color: ${({ theme }) => theme.colors.type};
+  font-weight: 600;
+  color: ${({ theme }) => theme.text};
   margin: 0;
   font-size: 14px;
   margin-bottom: 5px;
@@ -62,10 +62,8 @@ export const NodeList: React.FC<NodeListI> = ({ nodeList, listTitle }) => {
                 source: 'docs',
               });
             }}
-            className={
+            active={
               selectedNode && !!compareNodesWithData(node, selectedNode.field)
-                ? 'active'
-                : ''
             }
           >
             {node.name}

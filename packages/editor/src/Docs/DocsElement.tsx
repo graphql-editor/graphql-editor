@@ -13,11 +13,10 @@ import { Edit } from '@/editor/icons';
 import { useTheme } from '@emotion/react';
 
 const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
   font-family: ${fontFamilySans};
   font-size: 14px;
   height: 100%;
+  padding: 40px 50px;
 `;
 
 const Top = styled.div`

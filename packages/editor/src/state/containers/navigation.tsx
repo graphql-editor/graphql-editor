@@ -3,7 +3,10 @@ import { useRouter } from '@/state/containers/router';
 const useNavigationStateContainer = createContainer(() => {
   const { get, set } = useRouter();
   return {
-    menuState: { pane: get('pane') || 'diagram', code: get('code') },
+    menuState: {
+      pane: get('pane') || 'diagram',
+      code: get('code') || 'on',
+    },
     setMenuState: set,
   };
 });

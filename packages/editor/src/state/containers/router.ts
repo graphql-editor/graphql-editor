@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 export interface Routes {
   pane?: ActivePane;
   code?: 'on' | 'off';
+  n?: string;
 }
 
 export const useRouter = () => {

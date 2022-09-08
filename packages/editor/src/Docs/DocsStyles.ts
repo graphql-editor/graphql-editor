@@ -25,7 +25,8 @@ export const TypeText = styled.p<{ isScalar?: boolean }>`
 
 export const Title = styled.div`
   color: ${({ theme }) => theme.backgroundedText};
-  font-size: 16px;
+  font-size: 18px;
+  font-weight: bold;
 
   h3 {
     font-size: inherit;
@@ -37,7 +38,6 @@ export const DescWrapper = styled.div`
   flex-direction: row;
   align-items: center;
   cursor: pointer;
-  height: 50px;
   margin-left: 12px;
   svg {
     margin-bottom: 10px;

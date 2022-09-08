@@ -1,8 +1,7 @@
 import { DocsElement } from '@/Docs/DocsElement';
 import { NodeList } from '@/Docs/NodeList';
-import { DynamicResize } from '@/editor/code/Components';
+import { SearchInput } from '@/shared/components';
 import { useTreesState } from '@/state/containers';
-import { useLayoutState } from '@/state/containers/layout';
 import { useSortState } from '@/state/containers/sort';
 import styled from '@emotion/styled';
 
@@ -11,7 +10,7 @@ import {
   TypeDefinition,
   TypeSystemDefinition,
 } from 'graphql-js-tree';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -20,33 +19,38 @@ const Wrapper = styled.div`
   position: relative;
   background: ${({ theme }) => theme.background.mainFar};
   flex-direction: row;
-  justify-content: space-between;
   overflow: auto;
+  align-items: stretch;
 `;
 
-const SelectedNodeWrapper = styled.div<{ width: number }>`
-  height: 100%;
-  width: ${({ width }) => `${width - 64}px`};
-  min-width: 90px;
-  margin: 32px;
-  overflow: hidden;
+const SelectedNodeWrapper = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
 `;
 
 const ListWrapper = styled.div`
+  width: 100%;
+  padding: 0 20px 100px;
+  position: relative;
+`;
+
+const ListContainer = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-flow: column nowrap;
   overflow-y: scroll;
   overflow-x: hidden;
-  padding: 12px 12px 12px 24px;
+`;
+const SearchWrapper = styled.div`
+  padding: 20px;
+  position: sticky;
   width: 100%;
-  border-left: 4px solid ${({ theme }) => theme.background.mainClose};
 `;
 
 export const Docs = () => {
   const { tree, selectedNode, libraryTree, schemaType } = useTreesState();
-  const { setDocumentationWidth, documentationWidth, calcDocumentationWidth } =
-    useLayoutState();
   const { sortAlphabetically } = useSortState();
+  const [q, setQ] = useState('');
 
   const splittedNodes = useMemo(() => {
     const enumNodes: ParserField[] = [];
@@ -57,13 +61,16 @@ export const Docs = () => {
     const interfaceNodes: ParserField[] = [];
     const schemaNodes: ParserField[] = [];
     const directivesNodes: ParserField[] = [];
-    let allNodes =
+    const allNodes =
       schemaType === 'library'
         ? [...libraryTree.nodes]
         : [...tree.nodes, ...libraryTree.nodes];
+    const filteredNodes = allNodes.filter((n) =>
+      n.name.toLowerCase().includes(q.toLowerCase()),
+    );
 
-    allNodes.sort(sortAlphabetically);
-    allNodes.forEach((node) => {
+    filteredNodes.sort(sortAlphabetically);
+    filteredNodes.forEach((node) => {
       switch (node.data.type) {
         case TypeDefinition.EnumTypeDefinition:
           enumNodes.push(node);
@@ -103,18 +110,23 @@ export const Docs = () => {
       schemaNodes,
       directivesNodes,
     };
-  }, [tree, libraryTree, schemaType]);
+  }, [tree, libraryTree, schemaType, q]);
 
   return (
     <Wrapper>
-      <DynamicResize
-        enable={{ left: true }}
-        resizeCallback={(e, r, c, w) => {
-          setDocumentationWidth(c.getBoundingClientRect().width);
-        }}
-        width={documentationWidth}
-        maxWidth={500}
-      >
+      <ListContainer>
+        <SearchWrapper>
+          <SearchInput
+            onChange={(e) => {
+              setQ(e);
+            }}
+            value={q}
+            onClear={() => setQ('')}
+            onSubmit={() => {}}
+            cypressName="Search-docs"
+          />
+        </SearchWrapper>
+
         <ListWrapper>
           <NodeList nodeList={splittedNodes?.schemaNodes} listTitle="Schema" />
           <NodeList nodeList={splittedNodes?.typeNodes} listTitle="Types" />
@@ -131,8 +143,8 @@ export const Docs = () => {
             listTitle="Directives"
           />
         </ListWrapper>
-      </DynamicResize>
-      <SelectedNodeWrapper width={calcDocumentationWidth()}>
+      </ListContainer>
+      <SelectedNodeWrapper>
         {selectedNode?.field && <DocsElement node={selectedNode.field} />}
       </SelectedNodeWrapper>
     </Wrapper>
