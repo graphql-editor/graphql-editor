@@ -58,13 +58,16 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
     return node.description ? new Remarkable().render(node.description) : '';
   }, [node.description]);
 
-  const onSubmit = useCallback((description: string) => {
-    const n = tree.nodes.find((n) => n.name === node.name);
-    if (n) {
-      n.description = description;
-    }
-    setTree(tree);
-  }, []);
+  const onSubmit = useCallback(
+    (description: string) => {
+      const n = tree.nodes.find((n) => n.name === node.name);
+      if (n) {
+        n.description = description;
+      }
+      setTree(tree);
+    },
+    [node],
+  );
 
   return (
     <Wrapper>

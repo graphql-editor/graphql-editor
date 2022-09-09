@@ -13,7 +13,7 @@ const DescriptionInput = styled.input`
   font-size: 14px;
   outline: 0;
   position: relative;
-  margin: 7px 0px;
+  margin: 8px;
   border-bottom: 1px solid ${({ theme }) => theme.background.mainClose};
 
   &::placeholder {

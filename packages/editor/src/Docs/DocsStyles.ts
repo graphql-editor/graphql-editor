@@ -1,7 +1,6 @@
 import styled from '@emotion/styled';
 
 export const DescText = styled.p`
-  margin-top: 8px;
   margin-right: 8px;
   color: ${({ theme }) => theme.disabled};
 `;
@@ -36,12 +35,10 @@ export const Title = styled.div<{ subTitle: boolean }>`
 `;
 
 export const DescWrapper = styled.div`
+  height: 36px;
   display: flex;
   flex-direction: row;
   align-items: center;
   cursor: pointer;
-  margin-left: 12px;
-  svg {
-    margin-bottom: 10px;
-  }
+  margin: 8px 12px;
 `;
