@@ -24,11 +24,6 @@ const Wrapper = styled.div`
   flex: 1;
   background-color: ${({ theme }) => theme.background.mainFar};
   overflow-y: auto;
-  scrollbar-color: ${({
-    theme: {
-      background: { mainClose, mainFurthest },
-    },
-  }) => `${mainClose} ${mainFurthest}`};
 `;
 
 const ErrorContainer = styled.div`

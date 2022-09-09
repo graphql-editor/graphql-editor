@@ -31,6 +31,18 @@ const Main = styled.div`
   align-items: stretch;
   overflow-y: clip;
 
+  scrollbar-color: ${({ theme }) =>
+    `${theme.background.mainClose} ${theme.background.mainFurthest}`};
+  *::-webkit-scrollbar {
+    background: ${({ theme }) => theme.background.mainClose};
+  }
+  *::-webkit-scrollbar-thumb {
+    background: ${({ theme }) => theme.background.mainClose};
+  }
+  *::-webkit-scrollbar-track {
+    background: ${({ theme }) => theme.background.mainFurthest};
+  }
+
   .full-screen-container {
     flex: 1;
     align-self: stretch;
