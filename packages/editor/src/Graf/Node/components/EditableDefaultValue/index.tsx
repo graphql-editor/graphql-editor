@@ -27,9 +27,7 @@ export const EditableDefaultValue: React.FC<EditableDefaultValueProps> = ({
   style = {},
 }) => {
   const [editedValue, setEditedValue] = useState(value);
-  const [focus, setFocus] = useState(!!autoFocus);
   const checkEdit = () => {
-    setFocus(false);
     if (onChange) {
       if (editedValue !== value) {
         onChange(editedValue);
@@ -39,7 +37,6 @@ export const EditableDefaultValue: React.FC<EditableDefaultValueProps> = ({
   return (
     <>
       <Input
-        autoFocus={focus}
         disabled={!onChange}
         value={editedValue}
         style={{ width: `${editedValue.length + 3}ch`, ...style }}

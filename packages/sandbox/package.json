@@ -43,7 +43,8 @@
     "webpack-dev-server": "^4.2.1"
   },
   "dependencies": {
-    "graphql-editor": "*"
+    "graphql-editor": "*",
+    "graphql-js-tree": "^0.1.6"
   },
   "config": {
     "commitizen": {

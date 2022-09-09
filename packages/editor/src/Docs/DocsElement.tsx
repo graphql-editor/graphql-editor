@@ -8,10 +8,10 @@ import React, { useMemo, useState } from 'react';
 import { Remarkable } from 'remarkable';
 import styled from '@emotion/styled';
 import { DescText, DescWrapper, Title } from '@/Docs/DocsStyles';
-import { AddDescriptionInput } from './AddDescriptionInput';
 import { Edit } from '@/editor/icons';
 import { useTheme } from '@emotion/react';
 import { compareNodesWithData } from '@/compare/compareNodes';
+import { Description } from '@/Docs/Description';
 
 const Wrapper = styled.div`
   font-family: ${fontFamilySans};
@@ -74,12 +74,12 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
         <Type>{getTypeName(node.type.fieldType)}</Type>
       </Top>
       {isEdit ? (
-        <AddDescriptionInput
-          onSubmit={(description: string) => {
+        <Description
+          onChange={(description: string) => {
             onSubmit(description);
             setIsEdit(false);
           }}
-          defaultValue={node.description || ''}
+          value={node.description || ''}
         />
       ) : (
         <DescWrapper onClick={() => setIsEdit(true)}>

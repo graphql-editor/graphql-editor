@@ -19,6 +19,7 @@ input PlaceCoordinatesInput{
 	startLng: Float!
 	endLat: Float!
 	endLng: Float!
+	testDefaultValues: [String]! = ["dupa"]
 }
 
 enum AllowTravelModes{
@@ -201,6 +202,7 @@ input PlaceCoordinatesInput{
 	startLng: Float!
 	endLat: Float!
 	endLng: Float!
+	testDefaultValues: [String]! = ["dupa"]
 }
 
 enum AllowTravelModes{
