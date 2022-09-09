@@ -10,17 +10,17 @@ jobs:
       # Setup .npmrc file to publish to npm
       - uses: actions/setup-node@v1
         with:
-          node-version: '14.x'
+          node-version: '16.x'
           registry-url: 'https://registry.npmjs.org'
       - name: Install
         run: npm install
       - name: Build
         run: npm run build --ws --if-present
-      - name: Build
-      - run: npm run test --ws --if-present
-      - name: Publish Editor
-        run: npm publish -w graphql-editor --access public
       - name: Publish Editor Worker
-        run: npm publish -w graphql-editor-worker --access public
+        run: npm publish -w graphql-editor-worker --access public --tag latest
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      - name: Publish Editor
+        run: npm publish -w graphql-editor --access public --tag latest
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
