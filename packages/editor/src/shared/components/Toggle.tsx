@@ -19,7 +19,8 @@ const Main = styled.div`
   display: flex;
   gap: 5px;
   align-items: center;
-  height: 14px;
+  margin: 0px 12px;
+  height: 20px;
   cursor: pointer;
 `;
 const Text = styled.div<{ active?: boolean }>`
@@ -31,22 +32,22 @@ const Text = styled.div<{ active?: boolean }>`
 `;
 const ToggleWrapper = styled.div<{ active?: boolean }>`
   border: 1px solid
-    ${({ theme, active }) => (active ? theme.text : theme.inactive)};
-  border-radius: 5px;
-  width: 28px;
-  height: 14px;
+    ${({ theme, active }) => (active ? theme.backgrounds.type : theme.inactive)};
+  border-radius: 10px;
+  width: 40px;
+  height: 20px;
   position: relative;
   display: flex;
   align-items: center;
   transition: ${vars.transition};
 `;
 const ToggleCircle = styled.div<{ active?: boolean }>`
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   background-color: ${({ theme, active }) =>
-    active ? theme.text : theme.inactive};
+    active ? theme.backgrounds.type : theme.inactive};
   position: absolute;
-  border-radius: 5px;
-  margin-left: ${({ active }) => (active ? '14px' : '0px')};
+  border-radius: 8px;
+  margin-left: ${({ active }) => (active ? '20px' : '2px')};
   transition: ${vars.transition};
 `;
