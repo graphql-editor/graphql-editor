@@ -13,7 +13,8 @@ import { Heading } from '@/shared/components/Heading';
 import { LinesDiagram } from '@/Relation/LinesDiagram';
 import { BasicNodes } from '@/Relation/BasicNodes';
 import { toPng } from 'html-to-image';
-import * as vars from '@/vars';
+import { Clear, Export, Eye } from '@/editor/icons';
+import { useTheme } from '@emotion/react';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -23,11 +24,6 @@ const Wrapper = styled.div`
   flex: 1;
   background-color: ${({ theme }) => theme.background.mainFar};
   overflow-y: auto;
-  scrollbar-color: ${({
-    theme: {
-      background: { mainClose, mainFurthest },
-    },
-  }) => `${mainClose} ${mainFurthest}`};
 `;
 
 const ErrorContainer = styled.div`
@@ -51,14 +47,12 @@ const TopBar = styled.div`
   background-color: ${({ theme }) => theme.background.mainFar};
   display: flex;
   align-items: center;
-  gap: 20px;
-  margin-left: 15px;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 4px 16px;
+  height: 60px;
   font-family: ${fontFamilySans};
-  z-index: 3;
-`;
-const HeadingWrapper = styled.div`
-  position: fixed;
-  z-index: 3;
+  border-bottom: 2px solid ${({ theme }) => theme.contra};
 `;
 
 const VerticalContainer = styled.div`
@@ -66,25 +60,69 @@ const VerticalContainer = styled.div`
   min-height: 100%;
 `;
 
-const ExportToPng = styled.div`
+const IconWrapper = styled.div`
+  position: relative;
   font-size: 12px;
   font-weight: 500;
   color: ${({ theme }) => theme.inactive};
   font-family: ${fontFamilySans};
   cursor: pointer;
+  background-color: ${({ theme }) => theme.contra};
+  padding: 8px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  user-select: none;
+
+  &[data-tooltip] {
+    &:after {
+      content: attr(data-tooltip);
+      position: absolute;
+      pointer-events: none;
+      top: 44px;
+      right: 0px;
+      width: max-content;
+      color: ${({ theme }) => theme.text};
+      font-weight: 400;
+      background: #000000;
+      border: 1px solid ${({ theme }) => theme.dimmed};
+      text-align: center;
+      padding: 5px 12px;
+      z-index: 100;
+      opacity: 0;
+      transition: opacity 0.25s ease-in-out;
+    }
+
+    &:hover {
+      &:after {
+        opacity: 1;
+        color: #e3f6fc;
+      }
+    }
+  }
 `;
 
-const Selected = styled.div`
-  color: ${({ theme }) => theme.dimmed};
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 12px;
-  padding: 5px 12px;
-  transition: ${vars.transition};
-  :hover {
-    border-color: ${({ theme }) => theme.active};
-    color: ${({ theme }) => theme.active};
-  }
+const TogglesWrapper = styled.div`
+  height: 40px;
+  align-self: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-right: 1px solid ${({ theme }) => theme.disabled}36;
+`;
+
+const Label = styled.p`
+  margin-left: 12px;
+  color: ${({ theme }) => theme.text};
+  font-family: ${fontFamilySans};
+`;
+
+const HeadingWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
 `;
 
 export const Relation: React.FC = () => {
@@ -101,6 +139,7 @@ export const Relation: React.FC = () => {
     setEnumsOn,
     enumsOn,
   } = useRelationsState();
+  const { text } = useTheme();
 
   const [filterNodes, setFilterNodes] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -134,25 +173,28 @@ export const Relation: React.FC = () => {
 
   return (
     <Wrapper>
-      <HeadingWrapper>
-        <Heading heading="RELATION VIEW" />
-        <TopBar>
-          {!selectedNode?.field && (
-            <SearchInput
-              cypressName={
-                GraphQLEditorDomStructure.tree.elements.Graf.searchInput
-              }
-              autoFocus={false}
-              onClear={() => {
-                setFilterNodes('');
-              }}
-              onSubmit={() => {}}
-              value={filterNodes}
-              onChange={setFilterNodes}
-            />
-          )}
-          {selectedNode?.field && (
-            <>
+      <TopBar>
+        <HeadingWrapper>
+          <Heading heading="RELATION VIEW" />
+        </HeadingWrapper>
+        {!selectedNode?.field && (
+          <SearchInput
+            cypressName={
+              GraphQLEditorDomStructure.tree.elements.Graf.searchInput
+            }
+            autoFocus={false}
+            onClear={() => {
+              setFilterNodes('');
+            }}
+            onSubmit={() => {}}
+            value={filterNodes}
+            onChange={setFilterNodes}
+          />
+        )}
+        {selectedNode?.field && (
+          <>
+            <TogglesWrapper>
+              <Label>View:</Label>
               <Toggle
                 toggled={showRelatedTo}
                 label="parent"
@@ -168,20 +210,32 @@ export const Relation: React.FC = () => {
                 label="enums"
                 onToggle={() => setEnumsOn(!enumsOn)}
               />
-              <Selected onClick={(e) => setSelectedNode({ ...selectedNode })}>
-                {selectedNode.field.name}
-              </Selected>
-              {isLoading ? (
-                <ExportToPng>LOADING</ExportToPng>
-              ) : (
-                <ExportToPng onClick={() => downloadPng()}>
-                  export image
-                </ExportToPng>
-              )}
-            </>
-          )}
-        </TopBar>
-      </HeadingWrapper>
+            </TogglesWrapper>
+            <IconWrapper
+              data-tooltip="Deselect node"
+              onClick={(_e) => setSelectedNode(undefined)}
+            >
+              <Clear size={22} fill={text} />
+            </IconWrapper>
+            <IconWrapper
+              data-tooltip="Focus selected node"
+              onClick={(_e) => setSelectedNode({ ...selectedNode })}
+            >
+              <Eye size={22} fill={text} />
+            </IconWrapper>
+            {isLoading ? (
+              <IconWrapper data-tooltip="Loading...">...</IconWrapper>
+            ) : (
+              <IconWrapper
+                data-tooltip="Export to png"
+                onClick={() => downloadPng()}
+              >
+                <Export size={22} fill={text} />
+              </IconWrapper>
+            )}
+          </>
+        )}
+      </TopBar>
       <VerticalContainer onClick={() => setSelectedNode(undefined)}>
         {!lockGraf && !selectedNode && <BasicNodes />}
         {!lockGraf && selectedNode && <LinesDiagram mainRef={mainRef} />}

@@ -1,11 +1,12 @@
 import { DiffEditorPane } from '@/editor/code';
 import styled from '@emotion/styled';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Parser, TreeToGraphQL } from 'graphql-js-tree';
 import { useSortState } from '@/state/containers/sort';
 import { fontFamilySans } from '@/vars';
 import { Abc, Arrow } from '@/editor/icons';
 import { useTheme } from '@emotion/react';
+import { useOnClickOutside } from '@/Graf/Node/hooks';
 
 interface DiffEditorProps {
   schemas: Record<string, string>;
@@ -86,6 +87,11 @@ const IconWrapper = styled.div`
 export const DiffEditor = ({ schemas }: DiffEditorProps) => {
   const { sortAlphabetically } = useSortState();
   const { inactive, active, text } = useTheme();
+  const leftSelect = useRef<HTMLDivElement>(null);
+  const rightSelect = useRef<HTMLDivElement>(null);
+
+  useOnClickOutside(leftSelect, () => setIsLeftOpen(false));
+  useOnClickOutside(rightSelect, () => setIsRightOpen(false));
 
   const [isSortActive, setIsSortActive] = useState(false);
   const [choosenLeftVersion, setChoosenLeftVersion] = useState(
@@ -118,7 +124,7 @@ export const DiffEditor = ({ schemas }: DiffEditorProps) => {
       <TopBar>
         <SelectVersionWrapper>
           <Heading>SELECT VERSION</Heading>
-          <OptionsWrapper>
+          <OptionsWrapper ref={leftSelect}>
             <Option onClick={() => setIsLeftOpen((lo) => !lo)}>
               {choosenLeftVersion || 'Select version'}
               <IconWrapper>
@@ -142,7 +148,7 @@ export const DiffEditor = ({ schemas }: DiffEditorProps) => {
         </SelectVersionWrapper>
         <SelectVersionWrapper>
           <Heading>SELECT VERSION</Heading>
-          <OptionsWrapper>
+          <OptionsWrapper ref={rightSelect}>
             <Option onClick={() => setIsRightOpen((ro) => !ro)}>
               {choosenRightVersion || 'Select version'}
               <IconWrapper>

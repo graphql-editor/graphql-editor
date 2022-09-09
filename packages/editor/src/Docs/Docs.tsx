@@ -28,8 +28,6 @@ const SelectedNodeWrapper = styled.div`
   overflow-y: auto;
   background-color: ${({ theme }) => theme.background.mainFar};
   overflow-x: hidden;
-  scrollbar-color: ${({ theme }) =>
-    `${theme.background.mainClose} ${theme.background.mainFurthest}`};
 `;
 
 const ListWrapper = styled.div`
@@ -43,8 +41,6 @@ const ListContainer = styled.div`
   flex-flow: column nowrap;
   overflow-y: scroll;
   overflow-x: hidden;
-  scrollbar-color: ${({ theme }) =>
-    `${theme.background.mainClose} ${theme.background.mainFurthest}`};
 `;
 const SearchWrapper = styled.div`
   padding: 20px;
@@ -132,7 +128,6 @@ export const Docs = () => {
             cypressName="Search-docs"
           />
         </SearchWrapper>
-
         <ListWrapper>
           <NodeList
             expanded={listExpanded}

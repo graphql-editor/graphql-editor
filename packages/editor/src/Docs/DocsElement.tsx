@@ -30,6 +30,11 @@ const Type = styled.div`
   font-size: 10px;
 `;
 
+const Line = styled.div`
+  border-bottom: 1px solid ${({ theme }) => theme.disabled}36;
+  width: 100%;
+`;
+
 interface DocsElementI {
   node: ParserField;
 }
@@ -53,23 +58,23 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
     return node.description ? new Remarkable().render(node.description) : '';
   }, [node.description]);
 
-  const onSubmit = useCallback((description: string) => {
-    const n = tree.nodes.find((n) => n.name === node.name);
-    if (n) {
-      n.description = description;
-    }
-    setTree(tree);
-  }, []);
+  const onSubmit = useCallback(
+    (description: string) => {
+      const n = tree.nodes.find((n) => n.name === node.name);
+      if (n) {
+        n.description = description;
+      }
+      setTree(tree);
+    },
+    [node],
+  );
 
   return (
     <Wrapper>
       <Top>
-        <Title>{node.name}</Title>
+        <Title subTitle={false}>{node.name}</Title>
         <Type>{getTypeName(node.type.fieldType)}</Type>
       </Top>
-      {node.interfaces && node.interfaces.length > 0 && (
-        <InterfacesList setNode={setNode} interfacesList={node.interfaces} />
-      )}
       {isEdit ? (
         <AddDescriptionInput
           onSubmit={(description: string) => {
@@ -88,6 +93,11 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
           <Edit size={14} fill={backgroundedText} />
         </DescWrapper>
       )}
+      <Line />
+      {node.interfaces && node.interfaces.length > 0 && (
+        <InterfacesList setNode={setNode} interfacesList={node.interfaces} />
+      )}
+      <Line />
       {node.args && node.args.length > 0 && (
         <FieldsList node={node} setNode={setNode} />
       )}

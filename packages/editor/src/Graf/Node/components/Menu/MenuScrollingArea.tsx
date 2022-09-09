@@ -6,11 +6,6 @@ const Main = styled.div`
   max-height: 200px;
   overflow-y: auto;
   scroll-snap-type: y mandatory;
-  scrollbar-color: ${({
-    theme: {
-      background: { mainClose, mainFurthest },
-    },
-  }) => `${mainClose} ${mainFurthest}`};
 `;
 
 interface MenuScrollingAreaProps

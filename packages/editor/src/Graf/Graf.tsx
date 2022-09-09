@@ -25,11 +25,6 @@ const Wrapper = styled.div`
   flex: 1;
   background-color: ${({ theme }) => theme.background.mainFar};
   overflow: hidden;
-  scrollbar-color: ${({
-    theme: {
-      background: { mainClose, mainFurthest },
-    },
-  }) => `${mainClose} ${mainFurthest}`};
 `;
 
 const Main = styled.div`
@@ -65,11 +60,6 @@ const SubNodeContainer = styled.div`
   top: 0;
   bottom: 0;
   transition: max-width 0.25s ease-in-out;
-  scrollbar-color: ${({
-    theme: {
-      background: { mainCloser, mainClose },
-    },
-  }) => `${mainCloser} ${mainClose}`};
 `;
 
 const ErrorWrapper = styled.div`

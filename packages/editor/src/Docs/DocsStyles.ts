@@ -1,9 +1,8 @@
 import styled from '@emotion/styled';
 
 export const DescText = styled.p`
-  margin-top: 8px;
   margin-right: 8px;
-  color: ${({ theme }) => theme.backgroundedText};
+  color: ${({ theme }) => theme.disabled};
 `;
 
 export const FieldText = styled.p`
@@ -23,9 +22,11 @@ export const TypeText = styled.p<{ isScalar?: boolean }>`
   line-height: 1.6;
 `;
 
-export const Title = styled.div`
-  color: ${({ theme }) => theme.backgroundedText};
+export const Title = styled.div<{ subTitle: boolean }>`
+  color: ${({ theme, subTitle }) =>
+    subTitle ? theme.disabled : theme.backgroundedText};
   font-size: 18px;
+  margin: ${({ subTitle }) => (subTitle ? '18px 0px' : '0px 0px 4px 0px')};
   font-weight: bold;
 
   h3 {
@@ -34,12 +35,10 @@ export const Title = styled.div`
 `;
 
 export const DescWrapper = styled.div`
+  height: 36px;
   display: flex;
   flex-direction: row;
   align-items: center;
   cursor: pointer;
-  margin-left: 12px;
-  svg {
-    margin-bottom: 10px;
-  }
+  margin: 8px 12px;
 `;

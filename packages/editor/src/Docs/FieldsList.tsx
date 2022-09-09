@@ -50,20 +50,21 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [editedIdx, setEditedIdx] = useState(-1);
 
-  const onSubmit = useCallback((description: string, idx: number) => {
-    if (node.args) {
-      node.args[idx].description = description;
-      const changedIdx = tree.nodes.findIndex((n) => n.name === node.name);
-      tree.nodes[changedIdx] = node;
-      setTree(tree);
-    }
-  }, []);
+  const onSubmit = useCallback(
+    (description: string, idx: number) => {
+      if (node.args) {
+        node.args[idx].description = description;
+        const changedIdx = tree.nodes.findIndex((n) => n.name === node.name);
+        tree.nodes[changedIdx] = node;
+        setTree(tree);
+      }
+    },
+    [node],
+  );
 
   return (
     <>
-      <Title>
-        <h3>Fields</h3>
-      </Title>
+      <Title subTitle>Fields</Title>
       <ListWrapper>
         {node.args?.map((arg, i) => (
           <FieldsWrapper key={i}>
