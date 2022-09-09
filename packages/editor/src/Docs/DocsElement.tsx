@@ -3,7 +3,7 @@ import { InterfacesList } from '@/Docs/InterfacesList';
 import { useTreesState } from '@/state/containers';
 import { fontFamilySans } from '@/vars';
 import { ParserField, getTypeName } from 'graphql-js-tree';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 // @ts-ignore
 import { Remarkable } from 'remarkable';
 import styled from '@emotion/styled';
@@ -11,6 +11,7 @@ import { DescText, DescWrapper, Title } from '@/Docs/DocsStyles';
 import { AddDescriptionInput } from './AddDescriptionInput';
 import { Edit } from '@/editor/icons';
 import { useTheme } from '@emotion/react';
+import { compareNodesWithData } from '@/compare/compareNodes';
 
 const Wrapper = styled.div`
   font-family: ${fontFamilySans};
@@ -58,16 +59,13 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
     return node.description ? new Remarkable().render(node.description) : '';
   }, [node.description]);
 
-  const onSubmit = useCallback(
-    (description: string) => {
-      const n = tree.nodes.find((n) => n.name === node.name);
-      if (n) {
-        n.description = description;
-      }
-      setTree(tree);
-    },
-    [node],
-  );
+  const onSubmit = (description: string) => {
+    const n = tree.nodes.find((n) => compareNodesWithData(n, node));
+    if (n) {
+      n.description = description;
+    }
+    setTree({ ...tree });
+  };
 
   return (
     <Wrapper>

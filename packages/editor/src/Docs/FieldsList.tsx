@@ -15,6 +15,7 @@ import { AddDescriptionInput } from './AddDescriptionInput';
 import { Edit } from '@/editor/icons';
 import { useTheme } from '@emotion/react';
 import { useTreesState } from '@/state/containers';
+import { compareNodesWithData } from '@/compare/compareNodes';
 
 const md = new Remarkable();
 
@@ -54,12 +55,14 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
     (description: string, idx: number) => {
       if (node.args) {
         node.args[idx].description = description;
-        const changedIdx = tree.nodes.findIndex((n) => n.name === node.name);
+        const changedIdx = tree.nodes.findIndex((n) =>
+          compareNodesWithData(n, node),
+        );
         tree.nodes[changedIdx] = node;
         setTree(tree);
       }
     },
-    [node],
+    [node, tree.nodes],
   );
 
   return (
