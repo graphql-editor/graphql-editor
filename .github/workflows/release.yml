@@ -18,6 +18,8 @@ jobs:
         run: npm run build --ws --if-present
       - name: Publish Editor Worker
         run: npm publish -w graphql-editor-worker --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
       - name: Publish Editor
         run: npm publish -w graphql-editor --access public
         env:
