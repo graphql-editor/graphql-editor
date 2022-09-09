@@ -61,9 +61,7 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
 
   return (
     <>
-      <Title>
-        <h3>Fields</h3>
-      </Title>
+      <Title subTitle>Fields</Title>
       <ListWrapper>
         {node.args?.map((arg, i) => (
           <FieldsWrapper key={i}>

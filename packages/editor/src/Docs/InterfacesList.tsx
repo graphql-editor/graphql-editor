@@ -22,12 +22,14 @@ const Interface = styled.p`
 const InterfacesWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
+  margin-bottom: 18px;
+  margin-left: 14px;
 `;
 
 const Title = styled.h3`
-  color: ${({ theme }) => theme.backgroundedText};
+  color: ${({ theme }) => theme.disabled};
   font-family: ${fontFamily};
-  font-size: 1vw;
+  font-size: 18px;
 `;
 
 interface InterfacesListI {

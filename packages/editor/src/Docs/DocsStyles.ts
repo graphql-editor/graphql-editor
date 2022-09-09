@@ -3,7 +3,7 @@ import styled from '@emotion/styled';
 export const DescText = styled.p`
   margin-top: 8px;
   margin-right: 8px;
-  color: ${({ theme }) => theme.backgroundedText};
+  color: ${({ theme }) => theme.disabled};
 `;
 
 export const FieldText = styled.p`
@@ -23,9 +23,11 @@ export const TypeText = styled.p<{ isScalar?: boolean }>`
   line-height: 1.6;
 `;
 
-export const Title = styled.div`
-  color: ${({ theme }) => theme.backgroundedText};
+export const Title = styled.div<{ subTitle: boolean }>`
+  color: ${({ theme, subTitle }) =>
+    subTitle ? theme.disabled : theme.backgroundedText};
   font-size: 18px;
+  margin: ${({ subTitle }) => (subTitle ? '18px 0px' : '0px 0px 4px 0px')};
   font-weight: bold;
 
   h3 {

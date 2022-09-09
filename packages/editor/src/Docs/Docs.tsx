@@ -132,7 +132,6 @@ export const Docs = () => {
             cypressName="Search-docs"
           />
         </SearchWrapper>
-
         <ListWrapper>
           <NodeList
             expanded={listExpanded}
