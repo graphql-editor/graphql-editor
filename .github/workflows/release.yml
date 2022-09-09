@@ -17,7 +17,7 @@ jobs:
       - name: Build
         run: npm run build --ws --if-present
       - name: Build
-      - run: npm run test --ws --if-present
+        run: npm run test --ws --if-present
       - name: Publish Editor
         run: npm publish -w graphql-editor --access public
       - name: Publish Editor Worker
