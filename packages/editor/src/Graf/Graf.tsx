@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useMemo } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import { fontFamily } from '@/vars';
 import { PaintNodes } from './PaintNodes';
 import { ActiveNode } from '@/Graf/Node';
@@ -12,10 +12,10 @@ import { darken, toHex } from 'color2k';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { getScalarFields } from '@/Graf/utils/getScalarFields';
 import { findInNodes } from '@/compare/compareNodes';
-import { ErrorItem } from './ErrorItem';
 import { ParserField } from 'graphql-js-tree';
 import styled from '@emotion/styled';
 import { Heading } from '@/shared/components';
+import { ErrorLabel, ErrorWrapper } from '@/shared/components/ErrorStyles';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -62,23 +62,6 @@ const SubNodeContainer = styled.div`
   transition: max-width 0.25s ease-in-out;
 `;
 
-const ErrorWrapper = styled.div`
-  font-family: ${fontFamily};
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  background-color: ${({ theme }) => theme.background.mainFurthest};
-  cursor: pointer;
-  color: ${({ theme }) => theme.error};
-  padding-left: 16px;
-`;
-
-const ErrorLabel = styled.p`
-  width: 90%;
-`;
-
 const TopBar = styled.div`
   margin-left: 12px;
 `;
@@ -101,24 +84,8 @@ export const Graf: React.FC = () => {
     readonly,
     scalars,
   } = useTreesState();
-  const { lockGraf, grafErrors } = useErrorsState();
+  const { lockGraf, grafErrors, errorsItems } = useErrorsState();
   const { setActions } = useIOState();
-
-  const [errorsItems, setErrorsItems] = useState<JSX.Element[]>();
-
-  const generateErrorsText = () => {
-    if (lockGraf) {
-      const lockGrafArray = lockGraf.split('}').filter((ee) => ee);
-      const errors = lockGrafArray.map((e, i) => (
-        <ErrorItem key={i} error={e} />
-      ));
-      setErrorsItems(errors);
-    }
-  };
-
-  useEffect(() => {
-    generateErrorsText();
-  }, [lockGraf]);
 
   useEffect(() => {
     if (snapLock) {

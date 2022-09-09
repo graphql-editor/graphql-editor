@@ -1,6 +1,7 @@
 import { createContainer } from 'unstated-next';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { EditorError } from '@/validation';
+import { ErrorItem } from '@/Graf/ErrorItem';
 const useErrorsStateContainer = createContainer(() => {
   const [codeErrors, setCodeErrors] = useState<EditorError[]>([]);
   const [grafEditorErrors, setGrafEditorErrors] = useState<EditorError[]>([]);
@@ -10,6 +11,7 @@ const useErrorsStateContainer = createContainer(() => {
   const [lockCode, setLockCode] = useState<string>();
   const [errorRowNumber, setErrorRowNumber] = useState<number>();
   const [errorNodeNames, setErrorNodeNames] = useState<string[]>();
+  const [errorsItems, setErrorsItems] = useState<JSX.Element[]>();
 
   const transformCodeError = (errors: EditorError[]) => {
     errors.forEach((a) => {
@@ -22,6 +24,20 @@ const useErrorsStateContainer = createContainer(() => {
     });
     return errors;
   };
+
+  const generateErrorsText = () => {
+    if (lockGraf) {
+      const lockGrafArray = lockGraf.split('}').filter((ee) => ee);
+      const errors = lockGrafArray.map((e, i) => (
+        <ErrorItem key={i} error={e} />
+      ));
+      setErrorsItems(errors);
+    }
+  };
+
+  useEffect(() => {
+    generateErrorsText();
+  }, [lockGraf]);
 
   return {
     codeErrors,
@@ -41,6 +57,9 @@ const useErrorsStateContainer = createContainer(() => {
     setGrafEditorErrors,
     grafErrorSchema,
     setGrafErrorSchema,
+    generateErrorsText,
+    setErrorsItems,
+    errorsItems,
   };
 });
 

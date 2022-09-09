@@ -6,7 +6,7 @@ import {
   useNavigationState,
   useRelationsState,
 } from '@/state/containers';
-import { ErrorLock, SearchInput, Toggle } from '@/shared/components';
+import { SearchInput, Toggle } from '@/shared/components';
 import styled from '@emotion/styled';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { Heading } from '@/shared/components/Heading';
@@ -15,6 +15,7 @@ import { BasicNodes } from '@/Relation/BasicNodes';
 import { toPng } from 'html-to-image';
 import { Clear, Export, Eye } from '@/editor/icons';
 import { useTheme } from '@emotion/react';
+import { ErrorLabel, ErrorWrapper } from '@/shared/components/ErrorStyles';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -128,7 +129,7 @@ const HeadingWrapper = styled.div`
 export const Relation: React.FC = () => {
   const mainRef = useRef<HTMLDivElement>(null);
   const { selectedNode, tree, libraryTree, setSelectedNode } = useTreesState();
-  const { lockGraf, grafErrors } = useErrorsState();
+  const { lockGraf, grafErrors, errorsItems } = useErrorsState();
   const { setMenuState } = useNavigationState();
   const {
     setCurrentNodes,
@@ -240,12 +241,14 @@ export const Relation: React.FC = () => {
         {!lockGraf && !selectedNode && <BasicNodes />}
         {!lockGraf && selectedNode && <LinesDiagram mainRef={mainRef} />}
         {lockGraf && (
-          <ErrorLock
+          <ErrorWrapper
             onClick={() => {
               setMenuState({ code: 'on' });
             }}
-            value={`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:\n${lockGraf}`}
-          />
+          >
+            <ErrorLabel>{`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:`}</ErrorLabel>
+            {errorsItems}
+          </ErrorWrapper>
         )}
         {grafErrors && <ErrorContainer>{grafErrors}</ErrorContainer>}
       </VerticalContainer>
