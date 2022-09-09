@@ -61,6 +61,7 @@ const VerticalContainer = styled.div`
 `;
 
 const IconWrapper = styled.div`
+  position: relative;
   font-size: 12px;
   font-weight: 500;
   color: ${({ theme }) => theme.inactive};
@@ -73,6 +74,34 @@ const IconWrapper = styled.div`
   justify-content: center;
   align-items: center;
   width: 50px;
+  user-select: none;
+
+  &[data-tooltip] {
+    &:after {
+      content: attr(data-tooltip);
+      position: absolute;
+      pointer-events: none;
+      top: 44px;
+      right: 0px;
+      width: max-content;
+      color: ${({ theme }) => theme.text};
+      font-weight: 400;
+      background: #000000;
+      border: 1px solid ${({ theme }) => theme.dimmed};
+      text-align: center;
+      padding: 5px 12px;
+      z-index: 100;
+      opacity: 0;
+      transition: opacity 0.25s ease-in-out;
+    }
+
+    &:hover {
+      &:after {
+        opacity: 1;
+        color: #e3f6fc;
+      }
+    }
+  }
 `;
 
 const TogglesWrapper = styled.div`
@@ -183,21 +212,24 @@ export const Relation: React.FC = () => {
               />
             </TogglesWrapper>
             <IconWrapper
-              title="Deselect node"
+              data-tooltip="Deselect node"
               onClick={(_e) => setSelectedNode(undefined)}
             >
               <Clear size={22} fill={text} />
             </IconWrapper>
             <IconWrapper
-              title="Select node"
+              data-tooltip="Focus selected node"
               onClick={(_e) => setSelectedNode({ ...selectedNode })}
             >
               <Eye size={22} fill={text} />
             </IconWrapper>
             {isLoading ? (
-              <IconWrapper title="Loading...">...</IconWrapper>
+              <IconWrapper data-tooltip="Loading...">...</IconWrapper>
             ) : (
-              <IconWrapper title="Export to png" onClick={() => downloadPng()}>
+              <IconWrapper
+                data-tooltip="Export to png"
+                onClick={() => downloadPng()}
+              >
                 <Export size={22} fill={text} />
               </IconWrapper>
             )}
