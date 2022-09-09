@@ -16,11 +16,9 @@ jobs:
         run: npm install
       - name: Build
         run: npm run build --ws --if-present
-      - name: Build
-        run: npm run test --ws --if-present
-      - name: Publish Editor
-        run: npm publish -w graphql-editor --access public
       - name: Publish Editor Worker
         run: npm publish -w graphql-editor-worker --access public
+      - name: Publish Editor
+        run: npm publish -w graphql-editor --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}

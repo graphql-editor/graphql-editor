@@ -16,5 +16,3 @@ jobs:
         run: npm install
       - name: Build
         run: npm run build --ws --if-present
-      - name: Test
-        run: npm run test --ws --if-present
