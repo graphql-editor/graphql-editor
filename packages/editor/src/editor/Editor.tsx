@@ -126,7 +126,7 @@ export const Editor = ({
   const { isSortAlphabetically, sortByTypes, orderTypes, isUserOrder } =
     useSortState();
   const { setSidebarSize, sidebarSize } = useLayoutState();
-  const { routes, set } = useRouter();
+  const { routes } = useRouter();
   const selectedNodeFromQuery = routes.n;
   const reset = () => {
     setSnapshots([]);
@@ -134,14 +134,22 @@ export const Editor = ({
     setGrafErrors(undefined);
   };
   useEffect(() => {
-    if (!selectedNodeFromQuery) return;
-    setSelectedNode({
-      source: 'code',
-      field: tree.nodes
-        .concat(libraryTree.nodes)
-        .find((n) => n.name === selectedNodeFromQuery),
-    });
+    if (selectedNodeFromQuery === selectedNode?.field?.name || tree.initial) {
+      return;
+    }
+    const field = tree.nodes
+      .concat(libraryTree.nodes)
+      .find((n) => n.name === selectedNodeFromQuery);
+    setSelectedNode(
+      field
+        ? {
+            source: 'routing',
+            field,
+          }
+        : undefined,
+    );
   }, [selectedNodeFromQuery, tree, libraryTree]);
+
   useEffect(() => {
     isSortAlphabetically &&
       !isUserOrder &&
@@ -149,16 +157,6 @@ export const Editor = ({
         nodes: tree.nodes.sort(sortByTypes),
       });
   }, [isSortAlphabetically, orderTypes]);
-  useEffect(() => {
-    if (
-      selectedNode?.field?.name &&
-      selectedNode.field.name !== selectedNodeFromQuery
-    ) {
-      set({
-        n: selectedNode.field.name,
-      });
-    }
-  }, [selectedNode]);
 
   useEffect(() => {
     if (theme) {

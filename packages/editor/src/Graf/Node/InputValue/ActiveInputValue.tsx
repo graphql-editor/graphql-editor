@@ -117,7 +117,6 @@ export const ActiveInputValue: React.FC<FieldProps> = ({
               ? undefined
               : (v) => {
                   node.args = [...(placeStringInNode({ v, node }) || [])];
-                  console.log(node);
                   setTree({ ...tree });
                 }
           }

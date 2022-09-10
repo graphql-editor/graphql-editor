@@ -134,7 +134,7 @@ const BorderSpacer = styled.div`
   width: 100%;
 `;
 
-export type ActiveSource = 'diagram' | 'relation' | 'docs' | 'code';
+export type ActiveSource = 'diagram' | 'relation' | 'docs' | 'code' | 'routing';
 export type ActivePane = 'diagram' | 'diff' | 'relation' | 'docs';
 export interface MenuProps {
   setToggleCode: (v: boolean) => void;

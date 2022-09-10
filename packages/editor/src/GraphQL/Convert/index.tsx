@@ -2,7 +2,6 @@ import { compileType, getTypeName, Parser, ParserField } from 'graphql-js-tree';
 import { TemplateUtils } from 'graphql-js-tree/lib/TreeToGraphQL/templates/TemplateUtils';
 
 export const ConvertValueToEditableString = (f: ParserField) => {
-  console.log(f);
   const TranslatedString = TemplateUtils.resolverForConnection(f);
   return TranslatedString;
 };
@@ -29,7 +28,6 @@ export const ConvertStringToObject = (
         field: ${fieldType} = ${value}
     }
 `;
-  console.log(computeString);
   const TranslatedString = Parser.parse(computeString);
 
   const translationNode = TranslatedString.nodes.find(
@@ -51,6 +49,5 @@ export const placeStringInNode = ({ node, v }: PlaceFunctionArgs) => {
     getTypeName(node.type.fieldType),
     compileType(node.type.fieldType),
   );
-  console.log(converted?.args);
   return converted?.args;
 };
