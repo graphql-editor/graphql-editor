@@ -4,7 +4,7 @@ import { CodePane } from './code';
 import { PassedSchema, Theming } from '@/Models';
 import { DynamicResize } from './code/Components';
 import { Graf } from '@/Graf/Graf';
-import { Parser, ParserTree } from 'graphql-js-tree';
+import { ParserTree } from 'graphql-js-tree';
 import { GraphQLEditorWorker } from 'graphql-editor-worker';
 import {
   useErrorsState,
@@ -148,7 +148,7 @@ export const Editor = ({
           }
         : undefined,
     );
-  }, [selectedNodeFromQuery, tree, libraryTree]);
+  }, [tree, libraryTree]);
 
   useEffect(() => {
     isSortAlphabetically &&
@@ -174,7 +174,7 @@ export const Editor = ({
 
   useEffect(() => {
     if (schema.libraries) {
-      setLibraryTree(Parser.parse(schema.libraries));
+      GraphQLEditorWorker.generateTree(schema.libraries).then(setLibraryTree);
     } else {
       setLibraryTree({ nodes: [] });
     }

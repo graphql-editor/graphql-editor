@@ -56,7 +56,7 @@ const TopBar = styled.div`
 `;
 
 const VerticalContainer = styled.div`
-  padding-top: 100px;
+  padding-top: 20px;
   min-height: 100%;
 `;
 
