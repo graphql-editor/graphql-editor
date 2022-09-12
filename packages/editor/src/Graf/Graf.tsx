@@ -77,8 +77,8 @@ const TopBar = styled.div`
 
 const SortWrapper = styled.div`
   display: flex;
-  justify-content: space-between;
-  width: 50%;
+  justify-content: flex-end;
+  gap: 20px;
 `;
 
 let snapLock = true;

@@ -15,6 +15,7 @@ const findPrevState = (
     'DirectiveDef',
     'ExtendDef',
   ];
+
   if (state.kind) {
     if (allowedKinds.includes(state.kind)) {
       return state.name;
