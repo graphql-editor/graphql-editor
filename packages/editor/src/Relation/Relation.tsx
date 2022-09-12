@@ -17,14 +17,9 @@ import { Clear, Export, Eye } from '@/editor/icons';
 import { useTheme } from '@emotion/react';
 import { ErrorLabel, ErrorWrapper } from '@/shared/components/ErrorStyles';
 
-const Wrapper = styled.div<{ isGrafLocked: boolean }>`
-  width: 100%;
-  height: 100%;
-  overflow-x: hidden;
-  position: relative;
+const Wrapper = styled.div`
   flex: 1;
-  background-color: ${({ theme }) => theme.background.mainFar};
-  overflow-y: ${({ isGrafLocked }) => (isGrafLocked ? 'hidden' : 'auto')};
+  width: 100%;
 `;
 
 const ErrorContainer = styled.div`
@@ -54,11 +49,7 @@ const TopBar = styled.div`
   height: 60px;
   font-family: ${fontFamilySans};
   border-bottom: 2px solid ${({ theme }) => theme.contra};
-`;
-
-const VerticalContainer = styled.div`
-  padding-top: 100px;
-  min-height: 100%;
+  width: 100%;
 `;
 
 const IconWrapper = styled.div`
@@ -125,6 +116,13 @@ const HeadingWrapper = styled.div`
   top: 0;
   left: 0;
 `;
+const Main = styled.div`
+  height: calc(100vh - 60px);
+  width: 100%;
+  overflow: auto;
+  font-family: ${fontFamily};
+  background-color: ${({ theme }) => theme.background.mainFurthest};
+`;
 
 export const Relation: React.FC = () => {
   const mainRef = useRef<HTMLDivElement>(null);
@@ -173,7 +171,7 @@ export const Relation: React.FC = () => {
   }, [mainRef]);
 
   return (
-    <Wrapper isGrafLocked={!!lockGraf}>
+    <Wrapper>
       <TopBar>
         <HeadingWrapper>
           <Heading heading={lockGraf ? 'ERRORS' : 'RELATION VIEW'} />
@@ -237,7 +235,7 @@ export const Relation: React.FC = () => {
           </>
         )}
       </TopBar>
-      <VerticalContainer onClick={() => setSelectedNode(undefined)}>
+      <Main onClick={() => setSelectedNode(undefined)}>
         {!lockGraf && !selectedNode && <BasicNodes />}
         {!lockGraf && selectedNode && <LinesDiagram mainRef={mainRef} />}
         {lockGraf && (
@@ -251,7 +249,7 @@ export const Relation: React.FC = () => {
           </ErrorWrapper>
         )}
         {grafErrors && <ErrorContainer>{grafErrors}</ErrorContainer>}
-      </VerticalContainer>
+      </Main>
     </Wrapper>
   );
 };
