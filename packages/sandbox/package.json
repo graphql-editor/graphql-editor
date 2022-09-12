@@ -1,6 +1,6 @@
 {
   "name": "sandbox",
-  "version": "5.6.0",
+  "version": "5.6.1",
   "private": false,
   "license": "MIT",
   "description": "Visual node editor for GraphQL",
