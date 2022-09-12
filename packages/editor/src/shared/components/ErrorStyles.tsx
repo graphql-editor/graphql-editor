@@ -6,7 +6,7 @@ export const ErrorWrapper = styled.div`
   width: 100%;
   height: 100%;
   position: absolute;
-  top: 0;
+  top: 55px;
   left: 0;
   background-color: ${({ theme }) => theme.background.mainFurthest};
   cursor: pointer;

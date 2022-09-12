@@ -20,7 +20,6 @@ import { ErrorLabel, ErrorWrapper } from '@/shared/components/ErrorStyles';
 const Wrapper = styled.div`
   width: 100%;
   height: 100%;
-  overflow-x: hidden;
   position: relative;
   flex: 1;
   background-color: ${({ theme }) => theme.background.mainFar};
@@ -63,7 +62,7 @@ const SubNodeContainer = styled.div`
 `;
 
 const TopBar = styled.div`
-  margin-left: 12px;
+  background-color: ${({ theme }) => theme.background.mainFar};
 `;
 
 let snapLock = true;
@@ -203,7 +202,7 @@ export const Graf: React.FC = () => {
         data-cy={GraphQLEditorDomStructure.tree.elements.Graf.name}
       >
         <TopBar>
-          <Heading heading="DIAGRAM VIEW" />
+          <Heading heading={lockGraf ? 'ERRORS' : 'DIAGRAM VIEW'} />
         </TopBar>
         {lockGraf ? (
           <ErrorWrapper>

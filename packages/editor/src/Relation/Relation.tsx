@@ -17,14 +17,14 @@ import { Clear, Export, Eye } from '@/editor/icons';
 import { useTheme } from '@emotion/react';
 import { ErrorLabel, ErrorWrapper } from '@/shared/components/ErrorStyles';
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ isGrafLocked: boolean }>`
   width: 100%;
   height: 100%;
   overflow-x: hidden;
   position: relative;
   flex: 1;
   background-color: ${({ theme }) => theme.background.mainFar};
-  overflow-y: auto;
+  overflow-y: ${({ isGrafLocked }) => (isGrafLocked ? 'hidden' : 'auto')};
 `;
 
 const ErrorContainer = styled.div`
@@ -173,12 +173,12 @@ export const Relation: React.FC = () => {
   }, [mainRef]);
 
   return (
-    <Wrapper>
+    <Wrapper isGrafLocked={!!lockGraf}>
       <TopBar>
         <HeadingWrapper>
-          <Heading heading="RELATION VIEW" />
+          <Heading heading={lockGraf ? 'ERRORS' : 'RELATION VIEW'} />
         </HeadingWrapper>
-        {!selectedNode?.field && (
+        {!selectedNode?.field && !lockGraf && (
           <SearchInput
             cypressName={
               GraphQLEditorDomStructure.tree.elements.Graf.searchInput
