@@ -46,7 +46,7 @@ interface FieldsListI {
 
 export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
   const { backgroundedText } = useTheme();
-  const { setTree, tree } = useTreesState();
+  const { setTree, tree, readonly } = useTreesState();
 
   const [isEdit, setIsEdit] = useState(false);
   const [editedIdx, setEditedIdx] = useState(-1);
@@ -102,6 +102,7 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
               />
             ) : (
               <DescWrapper
+                isSvgVisible={!arg.description}
                 onClick={() => {
                   setEditedIdx(i);
                   setIsEdit(true);
@@ -112,7 +113,7 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
                     __html: md.render(arg.description || 'No description'),
                   }}
                 />
-                <Edit size={14} fill={backgroundedText} />
+                {!readonly && <Edit size={14} fill={backgroundedText} />}
               </DescWrapper>
             )}
           </FieldsWrapper>
