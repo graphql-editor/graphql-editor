@@ -161,7 +161,7 @@ export const useGqlServices = (options: SchemaServicesOptions = {}) => {
         'graphql',
         languageService.getHoverProvider(options.hoverProviders || []),
       );
-
+      definitionProviderDisposable;
       return () => {
         completionProviderDisposable && completionProviderDisposable.dispose();
         hoverDisposable && hoverDisposable.dispose();
@@ -225,6 +225,8 @@ export function toCompletion(
   const results: monaco.languages.CompletionItem = {
     label: entry.label,
     insertText: entry.insertText ?? entry.label,
+    insertTextRules:
+      monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
     sortText: entry.sortText,
     filterText: entry.filterText,
     documentation: entry.documentation,
