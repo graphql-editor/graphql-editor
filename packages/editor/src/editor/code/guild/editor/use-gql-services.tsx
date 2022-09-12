@@ -161,7 +161,6 @@ export const useGqlServices = (options: SchemaServicesOptions = {}) => {
         'graphql',
         languageService.getHoverProvider(options.hoverProviders || []),
       );
-      definitionProviderDisposable;
       return () => {
         completionProviderDisposable && completionProviderDisposable.dispose();
         hoverDisposable && hoverDisposable.dispose();
