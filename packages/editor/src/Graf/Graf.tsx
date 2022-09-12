@@ -66,8 +66,10 @@ const SubNodeContainer = styled.div`
 
 const TopBar = styled.div`
   display: flex;
-  flex-direction: column;
-  padding: 0 25px 15px;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 25px 8px;
   margin-bottom: 20px;
   background-color: ${({ theme }) => theme.background.mainFar};
   border-bottom: 1px solid ${({ theme }) => theme.disabled}36;
@@ -76,6 +78,7 @@ const TopBar = styled.div`
 const SortWrapper = styled.div`
   display: flex;
   justify-content: space-between;
+  width: 50%;
 `;
 
 let snapLock = true;
