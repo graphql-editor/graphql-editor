@@ -35,10 +35,8 @@ export const Title = styled.div<{ subTitle: boolean }>`
 `;
 
 export const DescWrapper = styled.div`
-  height: 36px;
   display: flex;
   flex-direction: row;
   align-items: center;
   cursor: pointer;
-  margin: 8px 12px;
 `;

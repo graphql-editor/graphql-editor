@@ -1,5 +1,4 @@
-import { isScalarArgument } from '@/GraphQL/Resolve';
-import { Options, ParserField, Value } from 'graphql-js-tree';
+import { compileType, getTypeName, Parser, ParserField } from 'graphql-js-tree';
 import { TemplateUtils } from 'graphql-js-tree/lib/TreeToGraphQL/templates/TemplateUtils';
 
 export const ConvertValueToEditableString = (f: ParserField) => {
@@ -18,56 +17,37 @@ interface PlaceFunctionArgs {
   v: string;
   node: ParserField;
 }
+export const ConvertStringToObject = (
+  value: string,
+  typeName: string,
+  fieldType: string,
+) => {
+  const computeString = `
+    scalar ${typeName}
+    input Translate{
+        field: ${fieldType} = ${value}
+    }
+`;
+  const TranslatedString = Parser.parse(computeString);
+
+  const translationNode = TranslatedString.nodes.find(
+    (n) => n.name === 'Translate',
+  );
+  if (!translationNode || !translationNode.args) {
+    return;
+  }
+  const fieldNode = translationNode.args[0];
+  return fieldNode;
+};
+
 export const placeStringInNode = ({ node, v }: PlaceFunctionArgs) => {
   if (!v) {
     return;
   }
-  if (v.length === 2 && v[0] === '[' && v[1] === ']') {
-    return [];
-  }
-  const valueType = isScalarArgument(node);
-  let value = v;
-  if (valueType) {
-    if (valueType === Value.StringValue) {
-      if (v.startsWith(`\"`) && v.endsWith(`\"`)) {
-        value = v.slice(1, -1);
-      }
-    }
-    if (valueType === Value.BooleanValue) {
-      value = v === 'true' ? 'true' : 'false';
-    }
-    const n: ParserField = {
-      data: {
-        type: valueType,
-      },
-      type: {
-        fieldType: {
-          name: valueType,
-          type: Options.name,
-        },
-      },
-      name: value,
-      directives: [],
-      args: [],
-      interfaces: [],
-    };
-    return [n];
-  }
-  return [
-    {
-      data: {
-        type: Value.IntValue,
-      },
-      type: {
-        fieldType: {
-          name: Value.IntValue,
-          type: Options.name,
-        },
-      },
-      name: value,
-      directives: [],
-      args: [],
-      interfaces: [],
-    } as ParserField,
-  ];
+  const converted = ConvertStringToObject(
+    v,
+    getTypeName(node.type.fieldType),
+    compileType(node.type.fieldType),
+  );
+  return converted?.args;
 };

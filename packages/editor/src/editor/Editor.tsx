@@ -4,7 +4,7 @@ import { CodePane } from './code';
 import { PassedSchema, Theming } from '@/Models';
 import { DynamicResize } from './code/Components';
 import { Graf } from '@/Graf/Graf';
-import { Parser, ParserTree } from 'graphql-js-tree';
+import { ParserTree } from 'graphql-js-tree';
 import { GraphQLEditorWorker } from 'graphql-editor-worker';
 import {
   useErrorsState,
@@ -126,7 +126,7 @@ export const Editor = ({
   const { isSortAlphabetically, sortByTypes, orderTypes, isUserOrder } =
     useSortState();
   const { setSidebarSize, sidebarSize } = useLayoutState();
-  const { routes, set } = useRouter();
+  const { routes } = useRouter();
   const selectedNodeFromQuery = routes.n;
   const reset = () => {
     setSnapshots([]);
@@ -134,14 +134,22 @@ export const Editor = ({
     setGrafErrors(undefined);
   };
   useEffect(() => {
-    if (!selectedNodeFromQuery) return;
-    setSelectedNode({
-      source: 'code',
-      field: tree.nodes
-        .concat(libraryTree.nodes)
-        .find((n) => n.name === selectedNodeFromQuery),
-    });
-  }, [selectedNodeFromQuery, tree, libraryTree]);
+    if (selectedNodeFromQuery === selectedNode?.field?.name || tree.initial) {
+      return;
+    }
+    const field = tree.nodes
+      .concat(libraryTree.nodes)
+      .find((n) => n.name === selectedNodeFromQuery);
+    setSelectedNode(
+      field
+        ? {
+            source: 'routing',
+            field,
+          }
+        : undefined,
+    );
+  }, [tree, libraryTree]);
+
   useEffect(() => {
     isSortAlphabetically &&
       !isUserOrder &&
@@ -149,16 +157,6 @@ export const Editor = ({
         nodes: tree.nodes.sort(sortByTypes),
       });
   }, [isSortAlphabetically, orderTypes]);
-  useEffect(() => {
-    if (
-      selectedNode?.field?.name &&
-      selectedNode.field.name !== selectedNodeFromQuery
-    ) {
-      set({
-        n: selectedNode.field.name,
-      });
-    }
-  }, [selectedNode]);
 
   useEffect(() => {
     if (theme) {
@@ -176,7 +174,7 @@ export const Editor = ({
 
   useEffect(() => {
     if (schema.libraries) {
-      setLibraryTree(Parser.parse(schema.libraries));
+      GraphQLEditorWorker.generateTree(schema.libraries).then(setLibraryTree);
     } else {
       setLibraryTree({ nodes: [] });
     }

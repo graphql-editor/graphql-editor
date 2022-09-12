@@ -11,11 +11,11 @@ import {
   TypeText,
 } from '@/Docs/DocsStyles';
 import styled from '@emotion/styled';
-import { AddDescriptionInput } from './AddDescriptionInput';
 import { Edit } from '@/editor/icons';
 import { useTheme } from '@emotion/react';
 import { useTreesState } from '@/state/containers';
 import { compareNodesWithData } from '@/compare/compareNodes';
+import { Description } from '@/Docs/Description';
 
 const md = new Remarkable();
 
@@ -93,12 +93,12 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
               )}
             </TitleWrapper>
             {isEdit && editedIdx === i ? (
-              <AddDescriptionInput
-                onSubmit={(description: string) => {
+              <Description
+                onChange={(description: string) => {
                   onSubmit(description, i);
                   setIsEdit(false);
                 }}
-                defaultValue={arg.description || ''}
+                value={arg.description || ''}
               />
             ) : (
               <DescWrapper

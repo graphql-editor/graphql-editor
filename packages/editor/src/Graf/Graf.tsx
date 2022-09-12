@@ -217,21 +217,23 @@ export const Graf: React.FC = () => {
       >
         <TopBar>
           <Heading heading={lockGraf ? 'ERRORS' : 'DIAGRAM VIEW'} />
-          <SortWrapper>
-            <SearchInput
-              cypressName={
-                GraphQLEditorDomStructure.tree.elements.Graf.searchInput
-              }
-              autoFocus={false}
-              onClear={() => {
-                setFilterNodes('');
-              }}
-              onSubmit={() => {}}
-              value={filterNodes}
-              onChange={setFilterNodes}
-            />
-            <SortNodes />
-          </SortWrapper>
+          {!lockGraf && (
+            <SortWrapper>
+              <SearchInput
+                cypressName={
+                  GraphQLEditorDomStructure.tree.elements.Graf.searchInput
+                }
+                autoFocus={false}
+                onClear={() => {
+                  setFilterNodes('');
+                }}
+                onSubmit={() => {}}
+                value={filterNodes}
+                onChange={setFilterNodes}
+              />
+              <SortNodes />
+            </SortWrapper>
+          )}
         </TopBar>
         {lockGraf ? (
           <ErrorWrapper>

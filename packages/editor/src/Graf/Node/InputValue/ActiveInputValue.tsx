@@ -116,7 +116,7 @@ export const ActiveInputValue: React.FC<FieldProps> = ({
             isLocked
               ? undefined
               : (v) => {
-                  node.args = placeStringInNode({ v, node }) || [];
+                  node.args = [...(placeStringInNode({ v, node }) || [])];
                   setTree({ ...tree });
                 }
           }

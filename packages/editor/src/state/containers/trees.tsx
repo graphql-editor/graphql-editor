@@ -13,6 +13,7 @@ import { PassedSchema } from '@/Models';
 import { useErrorsState } from '@/state/containers';
 import { compareNodesWithData } from '@/compare/compareNodes';
 import { ActiveSource } from '@/editor/menu/Menu';
+import { useRouter } from '@/state/containers/router';
 
 type SchemaType = 'user' | 'library';
 
@@ -32,13 +33,28 @@ const useTreesStateContainer = createContainer(() => {
   const [libraryTree, setLibraryTree] = useState<ParserTree>({ nodes: [] });
   const [snapshots, setSnapshots] = useState<string[]>([]);
   const [undos, setUndos] = useState<string[]>([]);
-  const [selectedNode, setSelectedNode] = useState<SelectedNode>();
+  const [selectedNode, _setSelectedNode] = useState<SelectedNode>();
   const [readonly, setReadonly] = useState(false);
   const [scalars, setScalars] = useState(BuiltInScalars.map((a) => a.name));
   const [schemaType, setSchemaType] = useState<SchemaType>('user');
 
   const { setLockGraf, setCodeErrors, transformCodeError, codeErrors } =
     useErrorsState();
+  const { set } = useRouter();
+
+  const setSelectedNode: React.Dispatch<
+    React.SetStateAction<SelectedNode | undefined>
+  > = (v) => {
+    if (typeof v === 'function') {
+      return _setSelectedNode((sl) => {
+        const r = v(sl);
+        set({ n: r?.field?.name });
+        return r;
+      });
+    }
+    set({ n: v?.field?.name });
+    return _setSelectedNode(v);
+  };
 
   useEffect(() => {
     updateScallars();
@@ -137,21 +153,24 @@ const useTreesStateContainer = createContainer(() => {
     try {
       if (schema.libraries) {
         const excludeLibraryNodesFromDiagram = Parser.parse(schema.libraries);
-        const parsedResult = Parser.parse(schema.code, [], schema.libraries);
-        setTree(
-          {
-            nodes: parsedResult.nodes.filter(
-              (n) =>
-                !excludeLibraryNodesFromDiagram.nodes.find(
-                  (eln) => eln.name === n.name && eln.data.type === n.data.type,
-                ),
-            ),
-          },
-          true,
-        );
+        GraphQLEditorWorker.generateTree(schema.code).then((parsedResult) => {
+          setTree(
+            {
+              nodes: parsedResult.nodes.filter(
+                (n) =>
+                  !excludeLibraryNodesFromDiagram.nodes.find(
+                    (eln) =>
+                      eln.name === n.name && eln.data.type === n.data.type,
+                  ),
+              ),
+            },
+            true,
+          );
+        });
       } else {
-        const parsedCode = Parser.parse(schema.code);
-        setTree({ nodes: parsedCode.nodes }, true);
+        GraphQLEditorWorker.generateTree(schema.code).then((parsedCode) => {
+          setTree({ nodes: parsedCode.nodes }, true);
+        });
       }
       if (schemaType === 'user') {
         GraphQLEditorWorker.validate(schema.code, schema.libraries).then(

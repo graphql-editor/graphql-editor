@@ -12,7 +12,11 @@ export const useRouter = () => {
   const set = (props: Partial<typeof defaultValues>) => {
     const currentSearchParams = new URLSearchParams(window.location.search);
     Object.entries(props).forEach(([k, v]) => {
-      currentSearchParams.set(k, v);
+      if (!v) {
+        currentSearchParams.delete(k);
+      } else {
+        currentSearchParams.set(k, v);
+      }
     });
     window.history.replaceState(
       {},
