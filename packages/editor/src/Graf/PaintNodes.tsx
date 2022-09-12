@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import {
   TypeDefinitionDisplayMap,
   TypeSystemExtension,
@@ -12,10 +12,7 @@ import { RootNode } from '@/Graf/Node';
 import { useTreesState } from '@/state/containers/trees';
 import { RootExtendNode } from './Node/RootExtendNode';
 import { useSortState } from '@/state/containers/sort';
-import { SortNodes } from './Node/components/SortNodes';
 import styled from '@emotion/styled';
-import { GraphQLEditorDomStructure } from '@/domStructure';
-import { SearchInput } from '@/shared/components';
 
 const Main = styled.div`
   width: 100%;
@@ -23,16 +20,6 @@ const Main = styled.div`
   font-family: ${fontFamily};
   transition: opacity 0.25s ease-in-out;
   padding-bottom: 300px;
-`;
-
-const TopBar = styled.div`
-  display: flex;
-  margin: 0 25px;
-  gap: 20px;
-
-  & > div:first-of-type {
-    flex: 1;
-  }
 `;
 
 const LineSpacer = styled.div`
@@ -46,8 +33,7 @@ type BaseTypesType = { node: ParserField; libraryNode: ParserField }[];
 
 export const PaintNodes: React.FC = () => {
   const { libraryTree, tree, readonly } = useTreesState();
-  const { orderTypes } = useSortState();
-  const [filterNodes, setFilterNodes] = useState('');
+  const { orderTypes, filterNodes } = useSortState();
 
   const baseTypes: BaseTypesType = [...orderTypes.map((t) => t.name)].map(
     (d) => ({
@@ -86,9 +72,9 @@ export const PaintNodes: React.FC = () => {
 
   const RootBaseTypes = useMemo(
     () =>
-      baseTypes.map((d) => (
+      baseTypes.map((d, i) => (
         <div key={getTypeName(d.node.type.fieldType)}>
-          <LineSpacer />
+          {i !== 0 && <LineSpacer />}
           <RootNode
             readonly={readonly}
             node={d.node}
@@ -102,19 +88,6 @@ export const PaintNodes: React.FC = () => {
 
   return (
     <Main>
-      <TopBar>
-        <SearchInput
-          cypressName={GraphQLEditorDomStructure.tree.elements.Graf.searchInput}
-          autoFocus={false}
-          onClear={() => {
-            setFilterNodes('');
-          }}
-          onSubmit={() => {}}
-          value={filterNodes}
-          onChange={setFilterNodes}
-        />
-        <SortNodes />
-      </TopBar>
       {RootBaseTypes}
       <LineSpacer />
       <RootExtendNode

@@ -16,6 +16,9 @@ import { ParserField } from 'graphql-js-tree';
 import styled from '@emotion/styled';
 import { Heading } from '@/shared/components';
 import { ErrorLabel, ErrorWrapper } from '@/shared/components/ErrorStyles';
+import { SortNodes } from './Node/components/SortNodes';
+import { SearchInput } from '@/shared/components';
+import { useSortState } from '@/state/containers/sort';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -62,7 +65,17 @@ const SubNodeContainer = styled.div`
 `;
 
 const TopBar = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 0 25px 15px;
+  margin-bottom: 20px;
   background-color: ${({ theme }) => theme.background.mainFar};
+  border-bottom: 1px solid ${({ theme }) => theme.disabled}36;
+`;
+
+const SortWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
 `;
 
 let snapLock = true;
@@ -85,6 +98,7 @@ export const Graf: React.FC = () => {
   } = useTreesState();
   const { lockGraf, grafErrors, errorsItems } = useErrorsState();
   const { setActions } = useIOState();
+  const { setFilterNodes, filterNodes } = useSortState();
 
   useEffect(() => {
     if (snapLock) {
@@ -203,6 +217,21 @@ export const Graf: React.FC = () => {
       >
         <TopBar>
           <Heading heading={lockGraf ? 'ERRORS' : 'DIAGRAM VIEW'} />
+          <SortWrapper>
+            <SearchInput
+              cypressName={
+                GraphQLEditorDomStructure.tree.elements.Graf.searchInput
+              }
+              autoFocus={false}
+              onClear={() => {
+                setFilterNodes('');
+              }}
+              onSubmit={() => {}}
+              value={filterNodes}
+              onChange={setFilterNodes}
+            />
+            <SortNodes />
+          </SortWrapper>
         </TopBar>
         {lockGraf ? (
           <ErrorWrapper>
