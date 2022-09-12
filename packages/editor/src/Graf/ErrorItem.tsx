@@ -9,10 +9,12 @@ type ErrorItemProps = {
 
 const ButtonStyles = styled.button`
   background-color: ${({ theme }) => theme.background.mainFurthest};
-  border: 2px solid ${({ theme }) => theme.error};
+  border: 1px solid ${({ theme }) => theme.error};
   color: ${({ theme }) => theme.error};
-  padding: 8px 16px;
+  padding: 10px 50px;
   cursor: pointer;
+  text-transform: uppercase;
+  border-radius: 4px;
 `;
 
 const Main = styled.div`

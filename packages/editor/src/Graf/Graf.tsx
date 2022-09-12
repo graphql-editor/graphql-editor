@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useMemo } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import { fontFamily } from '@/vars';
 import { PaintNodes } from './PaintNodes';
 import { ActiveNode } from '@/Graf/Node';
@@ -12,15 +12,17 @@ import { darken, toHex } from 'color2k';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { getScalarFields } from '@/Graf/utils/getScalarFields';
 import { findInNodes } from '@/compare/compareNodes';
-import { ErrorItem } from './ErrorItem';
 import { ParserField } from 'graphql-js-tree';
 import styled from '@emotion/styled';
 import { Heading } from '@/shared/components';
+import { ErrorLabel, ErrorWrapper } from '@/shared/components/ErrorStyles';
+import { SortNodes } from './Node/components/SortNodes';
+import { SearchInput } from '@/shared/components';
+import { useSortState } from '@/state/containers/sort';
 
 const Wrapper = styled.div`
   width: 100%;
   height: 100%;
-  overflow-x: hidden;
   position: relative;
   flex: 1;
   background-color: ${({ theme }) => theme.background.mainFar};
@@ -62,25 +64,18 @@ const SubNodeContainer = styled.div`
   transition: max-width 0.25s ease-in-out;
 `;
 
-const ErrorWrapper = styled.div`
-  font-family: ${fontFamily};
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  background-color: ${({ theme }) => theme.background.mainFurthest};
-  cursor: pointer;
-  color: ${({ theme }) => theme.error};
-  padding-left: 16px;
-`;
-
-const ErrorLabel = styled.p`
-  width: 90%;
-`;
-
 const TopBar = styled.div`
-  margin-left: 12px;
+  display: flex;
+  flex-direction: column;
+  padding: 0 25px 15px;
+  margin-bottom: 20px;
+  background-color: ${({ theme }) => theme.background.mainFar};
+  border-bottom: 1px solid ${({ theme }) => theme.disabled}36;
+`;
+
+const SortWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
 `;
 
 let snapLock = true;
@@ -101,24 +96,9 @@ export const Graf: React.FC = () => {
     readonly,
     scalars,
   } = useTreesState();
-  const { lockGraf, grafErrors } = useErrorsState();
+  const { lockGraf, grafErrors, errorsItems } = useErrorsState();
   const { setActions } = useIOState();
-
-  const [errorsItems, setErrorsItems] = useState<JSX.Element[]>();
-
-  const generateErrorsText = () => {
-    if (lockGraf) {
-      const lockGrafArray = lockGraf.split('}').filter((ee) => ee);
-      const errors = lockGrafArray.map((e, i) => (
-        <ErrorItem key={i} error={e} />
-      ));
-      setErrorsItems(errors);
-    }
-  };
-
-  useEffect(() => {
-    generateErrorsText();
-  }, [lockGraf]);
+  const { setFilterNodes, filterNodes } = useSortState();
 
   useEffect(() => {
     if (snapLock) {
@@ -236,7 +216,22 @@ export const Graf: React.FC = () => {
         data-cy={GraphQLEditorDomStructure.tree.elements.Graf.name}
       >
         <TopBar>
-          <Heading heading="DIAGRAM VIEW" />
+          <Heading heading={lockGraf ? 'ERRORS' : 'DIAGRAM VIEW'} />
+          <SortWrapper>
+            <SearchInput
+              cypressName={
+                GraphQLEditorDomStructure.tree.elements.Graf.searchInput
+              }
+              autoFocus={false}
+              onClear={() => {
+                setFilterNodes('');
+              }}
+              onSubmit={() => {}}
+              value={filterNodes}
+              onChange={setFilterNodes}
+            />
+            <SortNodes />
+          </SortWrapper>
         </TopBar>
         {lockGraf ? (
           <ErrorWrapper>
