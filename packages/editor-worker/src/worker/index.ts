@@ -9,14 +9,23 @@ const send = <T extends keyof WorkerEvents>(
   key: T,
   data: WorkerEvents[T]['args'],
 ): Promise<WorkerEvents[T]['returned']> => {
-  return new Promise((resolve) => {
-    ValidationWorker.postMessage({ ...data, event: key });
+  return new Promise((resolve, reject) => {
+    const id = Math.random().toString(8);
+    ValidationWorker.postMessage({ ...data, event: key, id });
     ValidationWorker.addEventListener(
       'message',
       (
-        message: MessageEvent<{ event: T; data: WorkerEvents[T]['returned'] }>,
+        message: MessageEvent<
+          { event: T; data: WorkerEvents[T]['returned'] } & {
+            error?: string;
+            id?: string;
+          }
+        >,
       ) => {
-        if (message.data.event === key) {
+        if (message.data.error) {
+          reject(message.data.error);
+        }
+        if (message.data.event === key && message.data.id === id) {
           resolve(message.data.data);
         }
       },

@@ -169,8 +169,6 @@ export const Relation: React.FC = () => {
         setIsLoading(false);
       });
   }, [mainRef]);
-  console.log('!lockGraf', !lockGraf);
-  console.log('!selectedNode?.field', !selectedNode?.field);
 
   return (
     <Wrapper>

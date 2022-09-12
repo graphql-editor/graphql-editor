@@ -41,10 +41,22 @@ const receive =
   (message: MessageEvent) => {
     const m = message.data;
     if (m.event === key)
-      postMessage({
-        data: fn(m),
-        event: key,
-      });
+      try {
+        const data = fn(m);
+        postMessage({
+          data,
+          event: key,
+          id: m.id,
+        });
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          postMessage({
+            error: error.message,
+            event: key,
+            id: m.id,
+          });
+        }
+      }
   };
 
 ctx.addEventListener('message', (message) => {

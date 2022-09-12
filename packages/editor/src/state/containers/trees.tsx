@@ -153,20 +153,22 @@ const useTreesStateContainer = createContainer(() => {
     try {
       if (schema.libraries) {
         const excludeLibraryNodesFromDiagram = Parser.parse(schema.libraries);
-        GraphQLEditorWorker.generateTree(schema.code).then((parsedResult) => {
-          setTree(
-            {
-              nodes: parsedResult.nodes.filter(
-                (n) =>
-                  !excludeLibraryNodesFromDiagram.nodes.find(
-                    (eln) =>
-                      eln.name === n.name && eln.data.type === n.data.type,
-                  ),
-              ),
-            },
-            true,
-          );
-        });
+        GraphQLEditorWorker.generateTree(schema.code, schema.libraries).then(
+          (parsedResult) => {
+            const nodes = parsedResult.nodes.filter(
+              (n) =>
+                !excludeLibraryNodesFromDiagram.nodes.find(
+                  (eln) => eln.name === n.name && eln.data.type === n.data.type,
+                ),
+            );
+            setTree(
+              {
+                nodes,
+              },
+              true,
+            );
+          },
+        );
       } else {
         GraphQLEditorWorker.generateTree(schema.code).then((parsedCode) => {
           setTree({ nodes: parsedCode.nodes }, true);

@@ -67,8 +67,6 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
     setTree({ ...tree });
   };
 
-  console.log(readonly);
-
   return (
     <Wrapper>
       <Top>
