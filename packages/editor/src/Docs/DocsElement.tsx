@@ -41,7 +41,7 @@ interface DocsElementI {
 }
 
 export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
-  const { setSelectedNode, tree, setTree } = useTreesState();
+  const { setSelectedNode, tree, setTree, readonly } = useTreesState();
   const { backgroundedText } = useTheme();
 
   const [isEdit, setIsEdit] = useState(false);
@@ -67,6 +67,8 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
     setTree({ ...tree });
   };
 
+  console.log(readonly);
+
   return (
     <Wrapper>
       <Top>
@@ -82,13 +84,16 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
           value={node.description || ''}
         />
       ) : (
-        <DescWrapper onClick={() => setIsEdit(true)}>
+        <DescWrapper
+          isSvgVisible={!description}
+          onClick={() => setIsEdit(true)}
+        >
           <DescText
             dangerouslySetInnerHTML={{
               __html: description || 'No description',
             }}
           />
-          <Edit size={14} fill={backgroundedText} />
+          {!readonly && <Edit size={14} fill={backgroundedText} />}
         </DescWrapper>
       )}
       <Line />

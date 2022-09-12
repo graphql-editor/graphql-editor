@@ -34,9 +34,19 @@ export const Title = styled.div<{ subTitle: boolean }>`
   }
 `;
 
-export const DescWrapper = styled.div`
+export const DescWrapper = styled.div<{ isSvgVisible: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: center;
   cursor: pointer;
+
+  svg {
+    display: ${({ isSvgVisible }) => (isSvgVisible ? 'block' : 'none')};
+  }
+
+  &:hover {
+    svg {
+      display: block;
+    }
+  }
 `;
