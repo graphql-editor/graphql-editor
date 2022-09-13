@@ -45,7 +45,7 @@ const TopBar = styled.div`
   align-items: center;
   justify-content: flex-end;
   gap: 12px;
-  padding: 4px 16px;
+  padding: 4px 25px;
   height: 60px;
   font-family: ${fontFamilySans};
   border-bottom: 2px solid ${({ theme }) => theme.contra};
@@ -113,8 +113,8 @@ const Label = styled.p`
 
 const HeadingWrapper = styled.div`
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 10px;
+  left: 25px;
 `;
 const Main = styled.div`
   height: calc(100vh - 60px);

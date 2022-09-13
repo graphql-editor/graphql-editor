@@ -41,12 +41,13 @@ export const DescWrapper = styled.div<{ isSvgVisible: boolean }>`
   cursor: pointer;
 
   svg {
-    display: ${({ isSvgVisible }) => (isSvgVisible ? 'block' : 'none')};
+    opacity: ${({ isSvgVisible }) => (isSvgVisible ? 1 : 0)};
+    transition: opacity 0.5s;
   }
 
   &:hover {
     svg {
-      display: block;
+      opacity: 1;
     }
   }
 `;

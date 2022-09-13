@@ -93,7 +93,7 @@ export const DiffEditor = ({ schemas }: DiffEditorProps) => {
   useOnClickOutside(leftSelect, () => setIsLeftOpen(false));
   useOnClickOutside(rightSelect, () => setIsRightOpen(false));
 
-  const [isSortActive, setIsSortActive] = useState(false);
+  const [isSortActive, setIsSortActive] = useState(true);
   const [choosenLeftVersion, setChoosenLeftVersion] = useState(
     Object.keys(schemas)[Object.keys(schemas).length - 2],
   );

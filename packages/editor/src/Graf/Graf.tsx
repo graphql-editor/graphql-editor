@@ -70,6 +70,7 @@ const TopBar = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 8px 25px 8px;
+  height: 60px;
   margin-bottom: 20px;
   background-color: ${({ theme }) => theme.background.mainFar};
   border-bottom: 1px solid ${({ theme }) => theme.disabled}36;
@@ -77,8 +78,8 @@ const TopBar = styled.div`
 
 const SortWrapper = styled.div`
   display: flex;
-  justify-content: space-between;
-  width: 50%;
+  justify-content: flex-end;
+  gap: 20px;
 `;
 
 let snapLock = true;

@@ -61,6 +61,7 @@ export const RootNode: React.FC<RootNodeProps> = ({
     isSortAlphabetically,
     isNodeBaseType,
     isUserOrder,
+    setFilterNodes,
   } = useSortState();
 
   const sortNodes = () =>
@@ -141,6 +142,7 @@ export const RootNode: React.FC<RootNodeProps> = ({
                         },
                       },
                     };
+              setFilterNodes('');
               tree.nodes.push(createdNode);
               setTree({ ...tree });
               return createdNode;
