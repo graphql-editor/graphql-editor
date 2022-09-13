@@ -6,7 +6,6 @@ const StyledHeading = styled.h1`
   font-size: 14px;
   font-weight: 500;
   color: ${({ theme }) => theme.inactive};
-  margin: 20px 20px 15px 15px;
   font-family: ${fontFamilySans};
 `;
 
