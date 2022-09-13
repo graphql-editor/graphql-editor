@@ -65,7 +65,6 @@ const ErrorOuterContainer = styled.div`
   width: 100%;
   position: relative;
   display: flex;
-  overflow: auto;
 `;
 
 export interface EditorProps extends Theming {
