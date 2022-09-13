@@ -61,10 +61,11 @@ const Sidebar = styled.div`
   background: ${({ theme }) => theme.background.mainFurthest};
 `;
 
-const ErrorOuterContainer = styled.div`
+const ErrorOuterContainer = styled.div<{ isOverflow?: boolean }>`
   width: 100%;
   position: relative;
   display: flex;
+  overflow: ${({ isOverflow }) => isOverflow && 'auto'};
 `;
 
 export interface EditorProps extends Theming {
@@ -301,7 +302,7 @@ export const Editor = ({
         </DynamicResize>
       )}
       {menuState.pane === 'diagram' && (
-        <ErrorOuterContainer>
+        <ErrorOuterContainer isOverflow>
           <VisualStateProvider>
             <Graf />
           </VisualStateProvider>

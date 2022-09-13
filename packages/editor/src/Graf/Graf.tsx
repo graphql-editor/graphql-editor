@@ -24,16 +24,18 @@ const Wrapper = styled.div`
   width: 100%;
   height: 100%;
   position: relative;
-  flex: 1;
   background-color: ${({ theme }) => theme.background.mainFar};
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 `;
 
 const Main = styled.div`
   width: 100%;
   height: 100%;
+  flex: 1;
   position: relative;
-  overflow: auto;
+  overflow-y: auto;
   font-family: ${fontFamily};
 `;
 
