@@ -80,7 +80,7 @@ export const CodePane = (props: CodePaneProps) => {
             fullScreen
               ? undefined
               : (e) => {
-                  console.log(e);
+                  console.log('node name', e);
 
                   if (e) {
                     const allNodes = tree.nodes.concat(libraryTree.nodes);

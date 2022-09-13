@@ -150,8 +150,6 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
                   console.log('state', state);
 
                   const n = findCurrentNodeName(state);
-                  console.log('n', n);
-
                   options.select(n);
                 }
               })

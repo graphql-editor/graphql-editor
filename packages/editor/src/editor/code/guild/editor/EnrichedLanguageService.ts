@@ -78,7 +78,7 @@ export class EnrichedLanguageService extends LanguageService {
     if (!schema) {
       return null;
     }
-
+    // TODO: this generates the bug
     const tokenAtPosition = await this.getNodeAtPosition(
       schema,
       document,
@@ -88,7 +88,6 @@ export class EnrichedLanguageService extends LanguageService {
     if (!tokenAtPosition) {
       return null;
     }
-
     return {
       languageService: this,
       position: graphQLPosition,
