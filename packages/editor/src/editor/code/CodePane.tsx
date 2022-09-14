@@ -10,7 +10,6 @@ import { CodeContainer, ErrorLock } from '@/editor/code/style/Code';
 
 export interface CodePaneOuterProps {
   readonly?: boolean;
-  placeholder?: string;
 }
 
 export type CodePaneProps = {

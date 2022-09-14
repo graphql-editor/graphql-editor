@@ -14,5 +14,6 @@
     "outDir": "./lib",
     "baseUrl": "./",
     "rootDir": "./"
-  }
+  },
+  "include": ["**/*.ts", "**/*.tsx"]
 }

@@ -20,7 +20,7 @@ import { EditorTheme } from '@/gshared/theme/DarkTheme';
 import { Docs } from '@/Docs/Docs';
 import { useSortState } from '@/state/containers/sort';
 import styled from '@emotion/styled';
-import { useRouter } from '@/state/containers/router';
+import { useRouter, EditorRoutes } from '@/state/containers/router';
 
 const Main = styled.div`
   display: flex;
@@ -68,32 +68,36 @@ const ErrorOuterContainer = styled.div<{ isOverflow?: boolean }>`
 `;
 
 export interface EditorProps extends Theming {
-  state?: ReturnType<typeof useRouter>['routes'];
+  // Code in editor is readonly
   readonly?: boolean;
-  placeholder?: string;
+  // Code and libraries
   schema: PassedSchema;
+  // force expand/hide sidebar
   sidebarExpanded?: boolean;
+  // Record containing graphql schemas with "name" as a key and graphql schema as a "value"
   diffSchemas?: Record<string, string>;
-  onStateChange?: (state?: ReturnType<typeof useRouter>['routes']) => void;
+  // Function to be called when schema is set by the editor
   setSchema: (props: PassedSchema, isInvalid?: boolean) => void;
+  // Function that could be fired if tree changes
   onTreeChange?: (tree: ParserTree) => void;
+  // Editor theme
   theme?: EditorTheme;
+  // Override current route
+  routeState?: EditorRoutes;
 }
 
 export const Editor = ({
-  placeholder,
   schema = {
     code: '',
     libraries: '',
   },
-  state,
-  onStateChange,
   setSchema,
   diffSchemas,
   onTreeChange,
   readonly: editorReadOnly,
   theme,
   sidebarExpanded,
+  routeState,
 }: EditorProps) => {
   const { setTheme } = useTheme();
   const {
@@ -237,16 +241,10 @@ export const Editor = ({
   }, [selectedNode]);
 
   useEffect(() => {
-    if (state) {
-      set(state);
+    if (routeState) {
+      set(routeState);
     }
-  }, [state]);
-
-  useEffect(() => {
-    if (onStateChange) {
-      onStateChange(routes);
-    }
-  }, [onStateChange, routes]);
+  }, [routeState]);
 
   return (
     <Main
@@ -302,7 +300,6 @@ export const Editor = ({
               }
               fullScreen={!routes.pane}
               libraries={schemaType === 'library' ? '' : schema.libraries}
-              placeholder={placeholder}
               readonly={readonly}
             />
           </Sidebar>

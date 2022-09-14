@@ -6,6 +6,7 @@ export * from './github';
 export * from './diff';
 export * from './Gql';
 export * from './googlediff';
+export * from './googleState';
 export * from './libraries';
 export * from './Light';
 export * from './ThemeChange';

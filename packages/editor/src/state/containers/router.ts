@@ -8,6 +8,8 @@ const defaultValues = {
   n: '',
 };
 
+export type EditorRoutes = typeof defaultValues;
+
 export const useRouterContainer = createContainer(() => {
   const [path, setPath] = useState(window.location.search);
 

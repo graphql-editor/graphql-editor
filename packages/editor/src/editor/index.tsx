@@ -12,11 +12,10 @@ import { LayoutStateProvider } from '@/state/containers/layout';
 import { SortStateProvider } from '@/state/containers/sort';
 import { GqlEditor, GqlEditorProps } from '@/editor/GqlEditor';
 import { MainTheme } from '@/gshared/theme/MainTheme';
-import { RouterProvider } from '@/state/containers/router';
+import { RouterProvider, EditorRoutes } from '@/state/containers/router';
 
 export const GraphQLEditor = ({ ...props }: EditorProps) => {
   const theme = props.theme || MainTheme;
-
   return (
     <ThemeProvider initialState={theme}>
       <RouterProvider>
@@ -63,3 +62,4 @@ export const GraphQLGqlEditor = ({ ...props }: GqlEditorProps) => {
     </ThemeProvider>
   );
 };
+export { EditorRoutes };
