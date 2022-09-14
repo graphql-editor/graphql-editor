@@ -84,6 +84,8 @@ export interface EditorProps extends Theming {
   theme?: EditorTheme;
   // Override current route
   routeState?: EditorRoutes;
+  // listen to route changes. Don't bind it with routeState though! You will get Maximum depth exceeded
+  onRouteChange?: (r: EditorRoutes) => void;
 }
 
 export const Editor = ({
@@ -98,6 +100,7 @@ export const Editor = ({
   theme,
   sidebarExpanded,
   routeState,
+  onRouteChange,
 }: EditorProps) => {
   const { setTheme } = useTheme();
   const {
@@ -245,6 +248,12 @@ export const Editor = ({
       set(routeState);
     }
   }, [routeState]);
+
+  useEffect(() => {
+    if (onRouteChange) {
+      onRouteChange(routes);
+    }
+  }, [routes, onRouteChange]);
 
   return (
     <Main

@@ -47,6 +47,7 @@ export const googleState = () => {
         routeState={s}
         schema={currentSchema}
         sidebarExpanded
+        onRouteChange={(r) => console.log(r)}
         setSchema={(s) => {
           setCurrentSchema(s);
         }}
