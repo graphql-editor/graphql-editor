@@ -13,7 +13,6 @@ import { PassedSchema } from '@/Models';
 import { useErrorsState } from '@/state/containers';
 import { compareNodesWithData } from '@/compare/compareNodes';
 import { ActiveSource } from '@/editor/menu/Menu';
-import { useRouter } from '@/state/containers/router';
 
 type SchemaType = 'user' | 'library';
 
@@ -33,28 +32,13 @@ const useTreesStateContainer = createContainer(() => {
   const [libraryTree, setLibraryTree] = useState<ParserTree>({ nodes: [] });
   const [snapshots, setSnapshots] = useState<string[]>([]);
   const [undos, setUndos] = useState<string[]>([]);
-  const [selectedNode, _setSelectedNode] = useState<SelectedNode>();
+  const [selectedNode, setSelectedNode] = useState<SelectedNode>();
   const [readonly, setReadonly] = useState(false);
   const [scalars, setScalars] = useState(BuiltInScalars.map((a) => a.name));
   const [schemaType, setSchemaType] = useState<SchemaType>('user');
 
   const { setLockGraf, setCodeErrors, transformCodeError, codeErrors } =
     useErrorsState();
-  const { set } = useRouter();
-
-  const setSelectedNode: React.Dispatch<
-    React.SetStateAction<SelectedNode | undefined>
-  > = (v) => {
-    if (typeof v === 'function') {
-      return _setSelectedNode((sl) => {
-        const r = v(sl);
-        set({ n: r?.field?.name });
-        return r;
-      });
-    }
-    set({ n: v?.field?.name });
-    return _setSelectedNode(v);
-  };
 
   useEffect(() => {
     updateScallars();

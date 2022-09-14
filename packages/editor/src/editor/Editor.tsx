@@ -8,7 +8,6 @@ import { ParserTree } from 'graphql-js-tree';
 import { GraphQLEditorWorker } from 'graphql-editor-worker';
 import {
   useErrorsState,
-  useNavigationState,
   useTreesState,
   useTheme,
   VisualStateProvider,
@@ -69,15 +68,13 @@ const ErrorOuterContainer = styled.div<{ isOverflow?: boolean }>`
 `;
 
 export interface EditorProps extends Theming {
-  state?: ReturnType<typeof useNavigationState>['menuState'];
+  state?: ReturnType<typeof useRouter>['routes'];
   readonly?: boolean;
   placeholder?: string;
   schema: PassedSchema;
   sidebarExpanded?: boolean;
   diffSchemas?: Record<string, string>;
-  onStateChange?: (
-    state?: ReturnType<typeof useNavigationState>['menuState'],
-  ) => void;
+  onStateChange?: (state?: ReturnType<typeof useRouter>['routes']) => void;
   setSchema: (props: PassedSchema, isInvalid?: boolean) => void;
   onTreeChange?: (tree: ParserTree) => void;
   theme?: EditorTheme;
@@ -99,8 +96,6 @@ export const Editor = ({
   sidebarExpanded,
 }: EditorProps) => {
   const { setTheme } = useTheme();
-
-  const { menuState, setMenuState } = useNavigationState();
   const {
     grafErrors,
     setGrafErrors,
@@ -126,7 +121,7 @@ export const Editor = ({
   const { isSortAlphabetically, sortByTypes, orderTypes, isUserOrder } =
     useSortState();
   const { setSidebarSize, sidebarSize } = useLayoutState();
-  const { routes } = useRouter();
+  const { routes, set } = useRouter();
   const selectedNodeFromQuery = routes.n;
   const reset = () => {
     setSnapshots([]);
@@ -148,7 +143,7 @@ export const Editor = ({
           }
         : undefined,
     );
-  }, [tree, libraryTree]);
+  }, [tree, libraryTree, selectedNodeFromQuery]);
 
   useEffect(() => {
     isSortAlphabetically &&
@@ -180,12 +175,6 @@ export const Editor = ({
     }
     reset();
   }, [schema.libraries]);
-
-  useEffect(() => {
-    if (state) {
-      setMenuState(state);
-    }
-  }, [state]);
 
   useEffect(() => {
     if (!tree || !!tree.schema) {
@@ -238,6 +227,27 @@ export const Editor = ({
     generateTreeFromSchema(schema);
   }, [schema]);
 
+  useEffect(() => {
+    if (tree.initial) {
+      return;
+    }
+    set({
+      n: selectedNode?.field?.name,
+    });
+  }, [selectedNode]);
+
+  useEffect(() => {
+    if (state) {
+      set(state);
+    }
+  }, [state]);
+
+  useEffect(() => {
+    if (onStateChange) {
+      onStateChange(routes);
+    }
+  }, [onStateChange, routes]);
+
   return (
     <Main
       data-cy={GraphQLEditorDomStructure.tree.editor}
@@ -248,39 +258,36 @@ export const Editor = ({
       }}
     >
       <Menu
-        toggleCode={menuState.code === 'on'}
+        toggleCode={routes.code === 'on'}
         sidebarExpanded={sidebarExpanded}
         setToggleCode={(e) =>
-          setMenuState({
-            ...menuState,
-            code: menuState.code === 'off' ? 'on' : 'off',
+          set({
+            ...routes,
+            code: routes.code === 'off' ? 'on' : 'off',
           })
         }
-        activePane={menuState.pane}
+        activePane={routes.pane}
         excludePanes={diffSchemas ? undefined : ['diff']}
         setActivePane={(p) => {
-          const newState: typeof menuState = { ...menuState, pane: p };
-          setMenuState(newState);
-          if (onStateChange) {
-            onStateChange(newState);
-          }
+          const newState: typeof routes = { ...routes, pane: p };
+          set(newState);
         }}
       />
-      {menuState.code === 'on' && menuState.pane !== 'diff' && (
+      {routes.code === 'on' && routes.pane !== 'diff' && (
         <DynamicResize
           enable={{ right: true }}
-          disabledClass={!menuState.pane ? 'full-screen-container' : undefined}
+          disabledClass={!routes.pane ? 'full-screen-container' : undefined}
           resizeCallback={(e, r, c, w) => {
             setSidebarSize(c.getBoundingClientRect().width);
           }}
-          width={!menuState.pane ? '100%' : sidebarSize}
+          width={!routes.pane ? '100%' : sidebarSize}
         >
           <Sidebar
-            className={!menuState.pane ? 'full-screen-container' : undefined}
+            className={!routes.pane ? 'full-screen-container' : undefined}
             data-cy={GraphQLEditorDomStructure.tree.sidebar.name}
           >
             <CodePane
-              size={!menuState.pane ? 100000 : sidebarSize}
+              size={!routes.pane ? 100000 : sidebarSize}
               onChange={(v, isInvalid) => {
                 if (isInvalid) {
                   setLockGraf(isInvalid);
@@ -293,7 +300,7 @@ export const Editor = ({
                   ? schema.libraries
                   : schema.code
               }
-              fullScreen={!menuState.pane}
+              fullScreen={!routes.pane}
               libraries={schemaType === 'library' ? '' : schema.libraries}
               placeholder={placeholder}
               readonly={readonly}
@@ -301,26 +308,26 @@ export const Editor = ({
           </Sidebar>
         </DynamicResize>
       )}
-      {menuState.pane === 'diagram' && (
+      {routes.pane === 'diagram' && (
         <ErrorOuterContainer isOverflow>
           <VisualStateProvider>
             <Graf />
           </VisualStateProvider>
         </ErrorOuterContainer>
       )}
-      {menuState.pane === 'relation' && (
+      {routes.pane === 'relation' && (
         <ErrorOuterContainer>
           <VisualStateProvider>
             <Relation />
           </VisualStateProvider>
         </ErrorOuterContainer>
       )}
-      {menuState.pane === 'docs' && (
+      {routes.pane === 'docs' && (
         <ErrorOuterContainer>
           <Docs />
         </ErrorOuterContainer>
       )}
-      {menuState.pane === 'diff' && diffSchemas && (
+      {routes.pane === 'diff' && diffSchemas && (
         <DiffEditor schemas={diffSchemas} />
       )}
     </Main>

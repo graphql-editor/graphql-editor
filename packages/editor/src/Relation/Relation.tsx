@@ -1,11 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { fontFamily, fontFamilySans } from '@/vars';
 import { useTreesState } from '@/state/containers/trees';
-import {
-  useErrorsState,
-  useNavigationState,
-  useRelationsState,
-} from '@/state/containers';
+import { useErrorsState, useRelationsState } from '@/state/containers';
 import { SearchInput, Toggle } from '@/shared/components';
 import styled from '@emotion/styled';
 import { GraphQLEditorDomStructure } from '@/domStructure';
@@ -16,6 +12,7 @@ import { toPng } from 'html-to-image';
 import { Clear, Export, Eye } from '@/editor/icons';
 import { useTheme } from '@emotion/react';
 import { ErrorLabel, ErrorWrapper } from '@/shared/components/ErrorStyles';
+import { useRouter } from '@/state/containers/router';
 
 const Wrapper = styled.div`
   flex: 1;
@@ -128,7 +125,7 @@ export const Relation: React.FC = () => {
   const mainRef = useRef<HTMLDivElement>(null);
   const { selectedNode, tree, libraryTree, setSelectedNode } = useTreesState();
   const { lockGraf, grafErrors, errorsItems } = useErrorsState();
-  const { setMenuState } = useNavigationState();
+  const { set } = useRouter();
   const {
     setCurrentNodes,
     showRelatedTo,
@@ -241,7 +238,7 @@ export const Relation: React.FC = () => {
         {lockGraf && (
           <ErrorWrapper
             onClick={() => {
-              setMenuState({ code: 'on' });
+              set({ code: 'on' });
             }}
           >
             <ErrorLabel>{`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:`}</ErrorLabel>

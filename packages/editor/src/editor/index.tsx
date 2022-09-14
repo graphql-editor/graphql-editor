@@ -3,7 +3,6 @@ import { Editor, EditorProps } from './Editor';
 import {
   TreesStateProvider,
   ErrorsStateProvider,
-  NavigationStateProvider,
   IOStateProvider,
   ThemeProvider,
   RelationsProvider,
@@ -13,17 +12,18 @@ import { LayoutStateProvider } from '@/state/containers/layout';
 import { SortStateProvider } from '@/state/containers/sort';
 import { GqlEditor, GqlEditorProps } from '@/editor/GqlEditor';
 import { MainTheme } from '@/gshared/theme/MainTheme';
+import { RouterProvider } from '@/state/containers/router';
 
 export const GraphQLEditor = ({ ...props }: EditorProps) => {
   const theme = props.theme || MainTheme;
 
   return (
     <ThemeProvider initialState={theme}>
-      <ErrorsStateProvider>
-        <TreesStateProvider>
-          <RelationsProvider>
-            <SortStateProvider>
-              <NavigationStateProvider>
+      <RouterProvider>
+        <ErrorsStateProvider>
+          <TreesStateProvider>
+            <RelationsProvider>
+              <SortStateProvider>
                 <LayoutStateProvider>
                   <IOStateProvider>
                     <ScThemeProvider theme={theme}>
@@ -31,11 +31,11 @@ export const GraphQLEditor = ({ ...props }: EditorProps) => {
                     </ScThemeProvider>
                   </IOStateProvider>
                 </LayoutStateProvider>
-              </NavigationStateProvider>
-            </SortStateProvider>
-          </RelationsProvider>
-        </TreesStateProvider>
-      </ErrorsStateProvider>
+              </SortStateProvider>
+            </RelationsProvider>
+          </TreesStateProvider>
+        </ErrorsStateProvider>
+      </RouterProvider>
     </ThemeProvider>
   );
 };
@@ -45,10 +45,10 @@ export const GraphQLGqlEditor = ({ ...props }: GqlEditorProps) => {
 
   return (
     <ThemeProvider initialState={theme}>
-      <ErrorsStateProvider>
-        <TreesStateProvider>
-          <SortStateProvider>
-            <NavigationStateProvider>
+      <RouterProvider>
+        <ErrorsStateProvider>
+          <TreesStateProvider>
+            <SortStateProvider>
               <LayoutStateProvider>
                 <IOStateProvider>
                   <ScThemeProvider theme={theme}>
@@ -56,10 +56,10 @@ export const GraphQLGqlEditor = ({ ...props }: GqlEditorProps) => {
                   </ScThemeProvider>
                 </IOStateProvider>
               </LayoutStateProvider>
-            </NavigationStateProvider>
-          </SortStateProvider>
-        </TreesStateProvider>
-      </ErrorsStateProvider>
+            </SortStateProvider>
+          </TreesStateProvider>
+        </ErrorsStateProvider>
+      </RouterProvider>
     </ThemeProvider>
   );
 };
