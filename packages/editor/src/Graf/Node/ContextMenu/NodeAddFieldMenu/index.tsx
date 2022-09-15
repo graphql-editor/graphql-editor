@@ -1,6 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ResolveCreateField } from '@/GraphQL/Resolve';
-import { getTypeName, Options, ParserField } from 'graphql-js-tree';
+import {
+  createParserField,
+  getTypeName,
+  Options,
+  ParserField,
+} from 'graphql-js-tree';
 import { useTreesState } from '@/state/containers/trees';
 import {
   Menu,
@@ -41,28 +46,29 @@ export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({
   const selectedNodeIndex =
     (selectedIndex < 0 ? fNLength - selectedIndex : selectedIndex) % fNLength;
 
-  const onNodeClick = (f: ParserField, name?: string) => {
+  const onNodeClick = ({ id, ...f }: ParserField, name?: string) => {
     let newName = name || f.name[0].toLowerCase() + f.name.slice(1);
     const existingNodes =
       node.args?.filter((a) => a.name.match(`${newName}\d?`)) || [];
     if (existingNodes.length > 0) {
       newName = `${newName}${existingNodes.length}`;
     }
-    node.args?.push({
-      ...f,
-      description: undefined,
-      directives: [],
-      interfaces: [],
-      type: {
-        fieldType: {
-          name: f.name,
-          type: Options.name,
+    node.args?.push(
+      createParserField({
+        ...f,
+        directives: [],
+        interfaces: [],
+        args: [],
+        type: {
+          fieldType: {
+            name: f.name,
+            type: Options.name,
+          },
         },
-      },
-      name: newName,
-      args: [],
-    });
-    setTree({ ...tree });
+        name: newName,
+      }),
+    );
+    setTree(tree);
   };
 
   return (

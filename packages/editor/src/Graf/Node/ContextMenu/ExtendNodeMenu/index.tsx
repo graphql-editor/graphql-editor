@@ -61,6 +61,9 @@ export const ExtendNodeMenu: React.FC<ExtendNodeMenuProps> = ({ hideMenu }) => {
           },
         },
         name: f.name,
+        args: [],
+        interfaces: [],
+        directives: [],
       }),
     );
     hideMenu();

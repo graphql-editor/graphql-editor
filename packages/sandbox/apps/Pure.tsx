@@ -23,8 +23,7 @@ export const Pure = () => {
         theme={MainTheme}
         setSchema={(props) => {
           setMySchema({
-            code: props.code,
-            libraries: props.libraries,
+            ...props,
           });
         }}
         schema={mySchema}

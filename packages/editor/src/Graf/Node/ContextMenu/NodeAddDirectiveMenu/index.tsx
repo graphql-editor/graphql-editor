@@ -61,6 +61,8 @@ export const NodeAddDirectiveMenu: React.FC<NodeAddDirectiveMenuProps> = ({
         },
         name: f.name[0].toLowerCase() + f.name.slice(1),
         args: [],
+        directives: [],
+        interfaces: [],
         data: {
           type: Instances.Directive,
         },

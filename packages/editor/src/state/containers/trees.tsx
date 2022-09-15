@@ -130,7 +130,7 @@ const useTreesStateContainer = createContainer(() => {
     ),
   };
 
-  const generateTreeFromSchema = (schema: PassedSchema) => {
+  const generateTreeFromSchema = async (schema: PassedSchema) => {
     if (!schema.code) {
       setTree({ nodes: [] }, true);
       return;
@@ -138,30 +138,32 @@ const useTreesStateContainer = createContainer(() => {
     try {
       if (schema.libraries) {
         const excludeLibraryNodesFromDiagram = Parser.parse(schema.libraries);
-        GraphQLEditorWorker.generateTree(schema.code, schema.libraries).then(
-          (parsedResult) => {
-            const nodes = parsedResult.nodes.filter(
-              (n) =>
-                !excludeLibraryNodesFromDiagram.nodes.find(
-                  (eln) => eln.name === n.name && eln.data.type === n.data.type,
-                ),
-            );
-            setTree(
-              {
-                nodes,
-              },
-              true,
-            );
+        await GraphQLEditorWorker.generateTree(
+          schema.code,
+          schema.libraries,
+        ).then((parsedResult) => {
+          const nodes = parsedResult.nodes.filter(
+            (n) =>
+              !excludeLibraryNodesFromDiagram.nodes.find(
+                (eln) => eln.name === n.name && eln.data.type === n.data.type,
+              ),
+          );
+          setTree(
+            {
+              nodes,
+            },
+            true,
+          );
+        });
+      } else {
+        await GraphQLEditorWorker.generateTree(schema.code).then(
+          (parsedCode) => {
+            setTree({ nodes: parsedCode.nodes }, true);
           },
         );
-      } else {
-        GraphQLEditorWorker.generateTree(schema.code).then((parsedCode) => {
-          console.log(parsedCode);
-          setTree({ nodes: parsedCode.nodes }, true);
-        });
       }
       if (schemaType === 'user') {
-        GraphQLEditorWorker.validate(schema.code, schema.libraries).then(
+        await GraphQLEditorWorker.validate(schema.code, schema.libraries).then(
           (errors) => {
             const tranformedErrors = transformCodeError(errors);
             setCodeErrors(tranformedErrors);
@@ -175,7 +177,7 @@ const useTreesStateContainer = createContainer(() => {
       }
       setLockGraf(undefined);
     } catch (error) {
-      GraphQLEditorWorker.validate(schema.code, schema.libraries).then(
+      await GraphQLEditorWorker.validate(schema.code, schema.libraries).then(
         (errors) => {
           const tranformedErrors = transformCodeError(errors);
           setCodeErrors(tranformedErrors);

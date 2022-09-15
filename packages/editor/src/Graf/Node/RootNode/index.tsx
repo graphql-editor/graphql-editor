@@ -122,6 +122,8 @@ export const RootNode: React.FC<RootNodeProps> = ({
                       ...node,
                       name,
                       args: [],
+                      directives: [],
+                      interfaces: [],
                       type: {
                         fieldType: {
                           name: TypeDefinitionDisplayMap[node.data.type],
@@ -134,6 +136,8 @@ export const RootNode: React.FC<RootNodeProps> = ({
                       ...node,
                       name,
                       args: [],
+                      directives: [],
+                      interfaces: [],
                       type: {
                         fieldType: {
                           name: (TypeDefinitionDisplayMap as any)[
