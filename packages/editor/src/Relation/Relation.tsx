@@ -233,8 +233,8 @@ export const Relation: React.FC = () => {
         )}
       </TopBar>
       <Main onClick={() => setSelectedNode(undefined)}>
-        {!lockGraf && !selectedNode && <BasicNodes />}
-        {!lockGraf && selectedNode && <LinesDiagram mainRef={mainRef} />}
+        {!lockGraf && !selectedNode?.field && <BasicNodes />}
+        {!lockGraf && selectedNode?.field && <LinesDiagram mainRef={mainRef} />}
         {lockGraf && (
           <ErrorWrapper
             onClick={() => {

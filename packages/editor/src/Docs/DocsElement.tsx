@@ -2,7 +2,7 @@ import { FieldsList } from '@/Docs/FieldsList';
 import { InterfacesList } from '@/Docs/InterfacesList';
 import { useTreesState } from '@/state/containers';
 import { fontFamilySans } from '@/vars';
-import { ParserField, getTypeName } from 'graphql-js-tree';
+import { ParserField, getTypeName, compareParserFields } from 'graphql-js-tree';
 import React, { useMemo, useState } from 'react';
 // @ts-ignore
 import { Remarkable } from 'remarkable';
@@ -10,7 +10,6 @@ import styled from '@emotion/styled';
 import { DescText, DescWrapper, Title } from '@/Docs/DocsStyles';
 import { Edit } from '@/editor/icons';
 import { useTheme } from '@emotion/react';
-import { compareNodesWithData } from '@/compare/compareNodes';
 import { Description } from '@/Docs/Description';
 
 const Wrapper = styled.div`
@@ -60,7 +59,7 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
   }, [node.description]);
 
   const onSubmit = (description: string) => {
-    const n = tree.nodes.find((n) => compareNodesWithData(n, node));
+    const n = tree.nodes.find(compareParserFields(node));
     if (n) {
       n.description = description;
     }

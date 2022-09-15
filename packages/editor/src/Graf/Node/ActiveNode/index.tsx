@@ -6,6 +6,7 @@ import {
   TypeDefinition,
   TypeExtension,
   getTypeName,
+  compareParserFields,
 } from 'graphql-js-tree';
 import { ActiveField } from '@/Graf/Node/Field';
 import { ActiveDirective } from '@/Graf/Node/Directive';
@@ -28,7 +29,6 @@ import {
   dragOverHandler,
   dragStartHandler,
 } from '@/Graf/Node/ActiveNode/dnd';
-import { compareNodesWithData } from '@/compare/compareNodes';
 import styled from '@emotion/styled';
 import { NodeName, NodeTitle, NodeType } from '@/Graf/Node/SharedNode';
 
@@ -323,8 +323,8 @@ export const ActiveNode: React.FC<NodeProps> = ({
                     nodes: tree.nodes,
                     oldName: node.name,
                   });
-                  const reselect = selectedNode
-                    ? compareNodesWithData(node, selectedNode.field)
+                  const reselect = selectedNode?.field
+                    ? compareParserFields(node)(selectedNode.field)
                     : false;
                   node.name = v;
                   setTree({ ...tree });

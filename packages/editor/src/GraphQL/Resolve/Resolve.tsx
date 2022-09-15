@@ -10,6 +10,7 @@ import {
   TypeExtension,
   getTypeName,
   Options,
+  createParserField,
 } from 'graphql-js-tree';
 import { BuiltInScalars } from '@/GraphQL/Resolve/BuiltInNodes';
 
@@ -63,7 +64,7 @@ export const ResolveCreateField = (
   }
   if (field.data.type === TypeDefinition.EnumTypeDefinition) {
     return [
-      {
+      createParserField({
         data: {
           type: ValueDefinition.EnumValueDefinition,
         },
@@ -73,11 +74,8 @@ export const ResolveCreateField = (
             type: Options.name,
           },
         },
-        interfaces: [],
-        directives: [],
-        args: [],
         name: '',
-      },
+      }),
     ];
   }
   if (

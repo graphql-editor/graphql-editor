@@ -128,7 +128,8 @@ export const Editor = ({
   const { isSortAlphabetically, sortByTypes, orderTypes, isUserOrder } =
     useSortState();
   const { setSidebarSize, sidebarSize } = useLayoutState();
-  const { routes, set } = useRouter();
+  const { routes, set, initialRoutingDone, setInitialRoutingDone } =
+    useRouter();
   const selectedNodeFromQuery = routes.n;
   const reset = () => {
     setSnapshots([]);
@@ -136,21 +137,22 @@ export const Editor = ({
     setGrafErrors(undefined);
   };
   useEffect(() => {
-    if (selectedNodeFromQuery === selectedNode?.field?.name || tree.initial) {
+    if (
+      selectedNodeFromQuery === selectedNode?.field?.id ||
+      tree.initial ||
+      initialRoutingDone
+    ) {
       return;
     }
     const field = tree.nodes
       .concat(libraryTree.nodes)
-      .find((n) => n.name === selectedNodeFromQuery);
-    setSelectedNode(
-      field
-        ? {
-            source: 'routing',
-            field,
-          }
-        : undefined,
-    );
-  }, [tree, libraryTree, selectedNodeFromQuery]);
+      .find((n) => n.id === selectedNodeFromQuery);
+    setSelectedNode({
+      source: 'routing',
+      field,
+    });
+    setInitialRoutingDone(true);
+  }, [tree, libraryTree, selectedNodeFromQuery, initialRoutingDone]);
 
   useEffect(() => {
     isSortAlphabetically &&
@@ -235,11 +237,11 @@ export const Editor = ({
   }, [schema]);
 
   useEffect(() => {
-    if (tree.initial) {
+    if (tree.initial || selectedNode?.source === 'routing') {
       return;
     }
     set({
-      n: selectedNode?.field?.name,
+      n: selectedNode?.field?.id,
     });
   }, [selectedNode]);
 
@@ -300,7 +302,7 @@ export const Editor = ({
                   setLockGraf(isInvalid);
                   return;
                 }
-                setSchema({ ...schema, code: v }, !!isInvalid);
+                setSchema({ ...schema, code: v, isTree: false }, !!isInvalid);
               }}
               schema={
                 schema.libraries && schemaType === 'library'

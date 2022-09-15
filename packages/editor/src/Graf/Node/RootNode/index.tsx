@@ -5,6 +5,7 @@ import {
   TypeSystemDefinition,
   Directive,
   Options,
+  createParserField,
 } from 'graphql-js-tree';
 import { PaintNode } from '@/Graf/Node/PaintNode';
 import { NewNode } from '@/Graf/Node/NewNode';
@@ -55,7 +56,7 @@ export const RootNode: React.FC<RootNodeProps> = ({
   filterNodes,
 }) => {
   const thisNode = useRef<HTMLDivElement>(null);
-  const { tree, setTree, schemaType, selectedNode } = useTreesState();
+  const { tree, schemaType, selectedNode } = useTreesState();
   const {
     sortAlphabetically,
     isSortAlphabetically,
@@ -117,7 +118,7 @@ export const RootNode: React.FC<RootNodeProps> = ({
             onCreate={(name) => {
               const createdNode: ParserField =
                 node.data.type === TypeSystemDefinition.DirectiveDefinition
-                  ? {
+                  ? createParserField({
                       ...node,
                       name,
                       args: [],
@@ -128,8 +129,8 @@ export const RootNode: React.FC<RootNodeProps> = ({
                         },
                         directiveOptions: [Directive.OBJECT],
                       },
-                    }
-                  : {
+                    })
+                  : createParserField({
                       ...node,
                       name,
                       args: [],
@@ -141,10 +142,8 @@ export const RootNode: React.FC<RootNodeProps> = ({
                           type: Options.name,
                         },
                       },
-                    };
+                    });
               setFilterNodes('');
-              tree.nodes.push(createdNode);
-              setTree({ ...tree });
               return createdNode;
             }}
           />

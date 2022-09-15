@@ -6,7 +6,13 @@ import {
   TypedMenuItem,
 } from '@/Graf/Node/components';
 import { ResolveDirectives } from '@/GraphQL/Resolve';
-import { ParserField, Instances, getTypeName } from 'graphql-js-tree';
+import {
+  ParserField,
+  Instances,
+  getTypeName,
+  createParserField,
+  Options,
+} from 'graphql-js-tree';
 import { useTreesState } from '@/state/containers/trees';
 import { sortNodes } from '@/Graf/Node/ContextMenu/sort';
 
@@ -44,15 +50,22 @@ export const NodeAddDirectiveMenu: React.FC<NodeAddDirectiveMenuProps> = ({
     if (!node.directives) {
       node.directives = [];
     }
-    node.directives.push({
-      ...f,
-      type: { ...f.type },
-      name: f.name[0].toLowerCase() + f.name.slice(1),
-      args: [],
-      data: {
-        type: Instances.Directive,
-      },
-    });
+    node.directives.push(
+      createParserField({
+        ...f,
+        type: {
+          fieldType: {
+            name: f.name,
+            type: Options.name,
+          },
+        },
+        name: f.name[0].toLowerCase() + f.name.slice(1),
+        args: [],
+        data: {
+          type: Instances.Directive,
+        },
+      }),
+    );
     hideMenu();
     setTree({ ...tree });
   };

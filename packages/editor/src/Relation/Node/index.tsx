@@ -1,11 +1,15 @@
 import { ActiveType } from '@/Graf/Node/Type';
 import { useTheme, useTreesState } from '@/state/containers';
-import { ParserField, TypeDefinition, getTypeName } from 'graphql-js-tree';
+import {
+  ParserField,
+  TypeDefinition,
+  getTypeName,
+  compareParserFields,
+} from 'graphql-js-tree';
 import React, { useMemo } from 'react';
 import { Field } from '../Field';
 import { FIELD_NAME_SIZE } from '@/Graf/constants';
 import { fontFamily } from '@/vars';
-import { compareNodesWithData } from '@/compare/compareNodes';
 import styled from '@emotion/styled';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
 import { NodeSearchFields } from '@/Relation/Node/NodeSearchFields';
@@ -91,7 +95,8 @@ export const Node: React.FC<NodeProps> = ({
   setFilteredFieldsTypes,
 }) => {
   const { setSelectedNode, selectedNode, tree, libraryTree } = useTreesState();
-  const isNodeActive = compareNodesWithData(field, selectedNode?.field);
+  const isNodeActive =
+    !!selectedNode?.field && compareParserFields(field)(selectedNode?.field);
   const { theme } = useTheme();
 
   const nodeArgs = useMemo(() => {

@@ -21,7 +21,7 @@ import { SearchInput } from '@/shared/components';
 import { useSortState } from '@/state/containers/sort';
 
 const Wrapper = styled.div`
-  width: 100%;
+  flex: 1;
   height: 100%;
   position: relative;
   background-color: ${({ theme }) => theme.background.mainFar};
@@ -57,13 +57,15 @@ const ErrorContainer = styled.div`
 `;
 
 const SubNodeContainer = styled.div`
-  width: min(clamp(400px, 40%, 1280px), calc(100vw - 50px));
   background-color: ${({ theme }) => theme.background.mainFurther};
   font-family: ${fontFamily};
-  right: 0;
-  top: 0;
+  left: 0;
+  top: 60px;
   bottom: 0;
-  transition: max-width 0.25s ease-in-out;
+  position: absolute;
+  transition: max-width 0.5s ease-in-out;
+  width: 50%;
+  z-index: 2;
 `;
 
 const TopBar = styled.div`
@@ -213,7 +215,6 @@ export const Graf: React.FC = () => {
 
   return (
     <>
-      {selectedNodeComponent}
       <Wrapper
         ref={wrapperRef}
         onClick={() => {
@@ -241,6 +242,7 @@ export const Graf: React.FC = () => {
             </SortWrapper>
           )}
         </TopBar>
+        {selectedNodeComponent}
         {lockGraf ? (
           <ErrorWrapper>
             <ErrorLabel>{`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:`}</ErrorLabel>

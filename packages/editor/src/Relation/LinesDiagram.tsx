@@ -47,7 +47,6 @@ const scrollToRef = (fieldName: string): unknown => {
   }
   ref.scrollIntoView({
     block: 'center',
-    inline: 'center',
     behavior: 'smooth',
   });
 };

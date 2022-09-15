@@ -1,8 +1,7 @@
 import { Draw } from './Draw';
-import { ParserField, getTypeName } from 'graphql-js-tree';
+import { ParserField, getTypeName, compareParserFields } from 'graphql-js-tree';
 import React, { useMemo } from 'react';
 import { useTheme } from '@/state/containers';
-import { compareNodesWithData } from '@/compare/compareNodes';
 import styled from '@emotion/styled';
 
 const RelationsContainer = styled.svg`
@@ -53,8 +52,9 @@ export const Lines: React.FC<LinesProps> = ({
         if (!selectedNode) {
           return null;
         }
-        const fromField = compareNodesWithData(selectedNode, rf.field);
-        const toField = compareNodesWithData(selectedNode, r.to.field);
+        const comparator = compareParserFields(selectedNode);
+        const fromField = comparator(rf.field);
+        const toField = comparator(r.to.field);
         let portNumber = rf.index;
         if (fromField) {
           portNumber =

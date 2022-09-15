@@ -12,6 +12,7 @@ export type EditorRoutes = typeof defaultValues;
 
 export const useRouterContainer = createContainer(() => {
   const [path, setPath] = useState(window.location.search);
+  const [initialRoutingDone, setInitialRoutingDone] = useState(false);
 
   useEffect(() => {
     const listener = (e: PopStateEvent) => {
@@ -45,6 +46,8 @@ export const useRouterContainer = createContainer(() => {
   return {
     set,
     routes,
+    initialRoutingDone,
+    setInitialRoutingDone,
   };
 });
 export const useRouter = useRouterContainer.useContainer;

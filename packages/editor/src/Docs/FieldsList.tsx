@@ -1,6 +1,11 @@
 import { ArgumentsList } from '@/Docs/ArgumentsList';
 import { BuiltInScalars } from '@/GraphQL/Resolve';
-import { ParserField, getTypeName, compileType } from 'graphql-js-tree';
+import {
+  ParserField,
+  getTypeName,
+  compileType,
+  compareParserFields,
+} from 'graphql-js-tree';
 import React, { useCallback, useState } from 'react';
 import { Remarkable } from 'remarkable';
 import {
@@ -14,7 +19,6 @@ import styled from '@emotion/styled';
 import { Edit } from '@/editor/icons';
 import { useTheme } from '@emotion/react';
 import { useTreesState } from '@/state/containers';
-import { compareNodesWithData } from '@/compare/compareNodes';
 import { Description } from '@/Docs/Description';
 
 const md = new Remarkable();
@@ -55,9 +59,7 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
     (description: string, idx: number) => {
       if (node.args) {
         node.args[idx].description = description;
-        const changedIdx = tree.nodes.findIndex((n) =>
-          compareNodesWithData(n, node),
-        );
+        const changedIdx = tree.nodes.findIndex(compareParserFields(node));
         tree.nodes[changedIdx] = node;
         setTree(tree);
       }

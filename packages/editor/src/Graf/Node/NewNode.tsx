@@ -101,13 +101,18 @@ export const NewNode: React.FC<NewNodeProps> = ({ node, onCreate }) => {
   const thisNode = useRef<HTMLDivElement>(null);
   const [newName, setNewName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
-  const { libraryTree, tree, setSelectedNode } = useTreesState();
+  const { libraryTree, tree, setTree, setSelectedNode, setCreatedNode } =
+    useTreesState();
   const isError =
     tree.nodes.map((n) => n.name).includes(newName) ||
     libraryTree.nodes.map((n) => n.name).includes(newName);
   const submit = () => {
     if (newName && !isError) {
-      setSelectedNode({ field: onCreate(newName), source: 'diagram' });
+      const n = onCreate(newName);
+      setCreatedNode(n);
+      tree.nodes.push(n);
+      setTree({ ...tree });
+      setSelectedNode({ field: n, source: 'diagram' });
     }
     setNewName('');
     setIsCreating(false);

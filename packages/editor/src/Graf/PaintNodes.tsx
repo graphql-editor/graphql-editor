@@ -6,6 +6,7 @@ import {
   Options,
   getTypeName,
   ParserField,
+  createParserField,
 } from 'graphql-js-tree';
 import { fontFamily } from '@/vars';
 import { RootNode } from '@/Graf/Node';
@@ -14,8 +15,9 @@ import { RootExtendNode } from './Node/RootExtendNode';
 import { useSortState } from '@/state/containers/sort';
 import styled from '@emotion/styled';
 
-const Main = styled.div`
+const Main = styled.div<{ openedNode?: boolean }>`
   width: 100%;
+  padding-left: ${({ openedNode }) => (openedNode ? '50%' : '0')};
   position: relative;
   font-family: ${fontFamily};
   transition: opacity 0.25s ease-in-out;
@@ -32,12 +34,12 @@ const LineSpacer = styled.div`
 type BaseTypesType = { node: ParserField; libraryNode: ParserField }[];
 
 export const PaintNodes: React.FC = () => {
-  const { libraryTree, tree, readonly } = useTreesState();
+  const { libraryTree, tree, readonly, selectedNode } = useTreesState();
   const { orderTypes, filterNodes } = useSortState();
 
   const baseTypes: BaseTypesType = [...orderTypes.map((t) => t.name)].map(
     (d) => ({
-      node: {
+      node: createParserField({
         name: TypeDefinitionDisplayMap[d],
         data: {
           type: d,
@@ -48,11 +50,9 @@ export const PaintNodes: React.FC = () => {
             type: Options.name,
           },
         },
-        interfaces: [],
-        directives: [],
         args: tree.nodes.filter((n) => n.data.type === d),
-      },
-      libraryNode: {
+      }),
+      libraryNode: createParserField({
         name: TypeDefinitionDisplayMap[d],
         data: {
           type: d,
@@ -63,10 +63,8 @@ export const PaintNodes: React.FC = () => {
             name: `library-${d}`,
           },
         },
-        interfaces: [],
-        directives: [],
         args: libraryTree.nodes.filter((n) => n.data.type === d),
-      },
+      }),
     }),
   );
 
@@ -87,13 +85,13 @@ export const PaintNodes: React.FC = () => {
   );
 
   return (
-    <Main>
+    <Main openedNode={!!selectedNode?.field}>
       {RootBaseTypes}
       <LineSpacer />
       <RootExtendNode
         filterNodes={filterNodes}
         readonly={readonly}
-        node={{
+        node={createParserField({
           name: TypeSystemExtension.TypeExtension,
           data: {
             type: TypeExtension.ObjectTypeExtension,
@@ -101,8 +99,6 @@ export const PaintNodes: React.FC = () => {
           type: {
             fieldType: { name: 'root', type: Options.name },
           },
-          interfaces: [],
-          directives: [],
           args: tree.nodes
             .filter(
               (n) =>
@@ -114,8 +110,8 @@ export const PaintNodes: React.FC = () => {
                 n.data.type === TypeExtension.UnionTypeExtension,
             )
             .sort((a, b) => (a.name > b.name ? 1 : -1)),
-        }}
-        libraryNode={{
+        })}
+        libraryNode={createParserField({
           name: TypeDefinitionDisplayMap.ObjectTypeExtension,
           data: {
             type: TypeExtension.ObjectTypeExtension,
@@ -123,8 +119,6 @@ export const PaintNodes: React.FC = () => {
           type: {
             fieldType: { name: 'root', type: Options.name },
           },
-          interfaces: [],
-          directives: [],
           args: libraryTree.nodes
             .filter(
               (n) =>
@@ -136,7 +130,7 @@ export const PaintNodes: React.FC = () => {
                 n.data.type === TypeExtension.UnionTypeExtension,
             )
             .sort((a, b) => (a.name > b.name ? 1 : -1)),
-        }}
+        })}
       />
     </Main>
   );

@@ -1,10 +1,9 @@
 import React, { useEffect, useRef } from 'react';
-import { ParserField, getTypeName } from 'graphql-js-tree';
+import { ParserField, getTypeName, compareParserFields } from 'graphql-js-tree';
 import { useTreesState } from '@/state/containers/trees';
 import { useErrorsState, useLayoutState, useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { useSortState } from '@/state/containers/sort';
-import { compareNodesWithData } from '@/compare/compareNodes';
 import { Error } from '../icons';
 import {
   dragLeaveHandler,
@@ -100,12 +99,12 @@ export const PaintNode: React.FC<NodeProps> = ({
     if (
       thisNode &&
       thisNode.current &&
-      compareNodesWithData(selectedNode?.field, node)
+      selectedNode?.field &&
+      compareParserFields(selectedNode.field)(node)
     ) {
       thisNode.current.scrollIntoView({
         behavior: 'smooth',
         block: 'center',
-        inline: 'center',
       });
     }
   }, [selectedNode]);
@@ -172,8 +171,8 @@ export const PaintNode: React.FC<NodeProps> = ({
       isError={errorNodeNames?.includes(node.name)}
       isMatchedToSearch={isMatchedToSearch}
       isNotSelected={
-        selectedNode
-          ? !compareNodesWithData(node, selectedNode.field)
+        selectedNode?.field
+          ? !compareParserFields(node)(selectedNode.field)
           : undefined
       }
       isRelatedNode={

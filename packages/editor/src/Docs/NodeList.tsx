@@ -1,7 +1,6 @@
 import { useTreesState } from '@/state/containers';
-import { ParserField } from 'graphql-js-tree';
+import { compareParserFields, ParserField } from 'graphql-js-tree';
 import React from 'react';
-import { compareNodesWithData } from '@/compare/compareNodes';
 import styled from '@emotion/styled';
 import { fontFamilySans } from '@/vars';
 import { Arrow } from '@/editor/icons';
@@ -87,7 +86,8 @@ export const NodeList: React.FC<NodeListI> = ({
               });
             }}
             active={
-              selectedNode && !!compareNodesWithData(node, selectedNode.field)
+              selectedNode?.field &&
+              !!compareParserFields(node)(selectedNode.field)
             }
           >
             {node.name}

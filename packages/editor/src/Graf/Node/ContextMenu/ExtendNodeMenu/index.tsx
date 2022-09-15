@@ -6,6 +6,7 @@ import {
   TypeDefinitionDisplayMap,
   ParserField,
   Options,
+  createParserField,
 } from 'graphql-js-tree';
 import { useTreesState } from '@/state/containers/trees';
 import {
@@ -47,22 +48,21 @@ export const ExtendNodeMenu: React.FC<ExtendNodeMenuProps> = ({ hideMenu }) => {
   );
 
   const onClickFilteredNode = (f: ParserField) => {
-    tree.nodes.push({
-      data: {
-        type: ResolveExtension(f.data.type)!,
-      },
-      description: undefined,
-      interfaces: [],
-      directives: [],
-      type: {
-        fieldType: {
-          name: TypeDefinitionDisplayMap[ResolveExtension(f.data.type)!],
-          type: Options.name,
+    tree.nodes.push(
+      createParserField({
+        data: {
+          type: ResolveExtension(f.data.type)!,
         },
-      },
-      name: f.name,
-      args: [],
-    });
+        description: undefined,
+        type: {
+          fieldType: {
+            name: TypeDefinitionDisplayMap[ResolveExtension(f.data.type)!],
+            type: Options.name,
+          },
+        },
+        name: f.name,
+      }),
+    );
     hideMenu();
     setTree({ ...tree });
   };
