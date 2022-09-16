@@ -11,6 +11,7 @@ export const googleState = () => {
     libraries: '',
   });
 
+  const [s2, setS2] = useState<EditorRoutes>();
   const [s, setS] = useState<EditorRoutes>();
 
   return (
@@ -47,7 +48,7 @@ export const googleState = () => {
         routeState={s}
         schema={currentSchema}
         sidebarExpanded
-        onRouteChange={(r) => console.log(r)}
+        onRouteChange={(r) => setS2(r)}
         setSchema={(s) => {
           setCurrentSchema(s);
         }}

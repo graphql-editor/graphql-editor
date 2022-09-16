@@ -145,7 +145,7 @@ const useTreesStateContainer = createContainer(() => {
           const nodes = parsedResult.nodes.filter(
             (n) =>
               !excludeLibraryNodesFromDiagram.nodes.find(
-                (eln) => eln.name === n.name && eln.data.type === n.data.type,
+                compareParserFields(n),
               ),
           );
           setTree(

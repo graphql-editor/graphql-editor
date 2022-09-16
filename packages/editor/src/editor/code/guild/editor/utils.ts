@@ -74,7 +74,7 @@ export const coreDiagnosticsSource: DiagnosticsSource = {
             }),
           ];
         } else {
-          console.warn(`GraphQL getDiagnostics failed unexpected error: `, e);
+          // console.warn(`GraphQL getDiagnostics failed unexpected error: `, e);
           return [];
         }
       });

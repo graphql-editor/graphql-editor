@@ -137,9 +137,12 @@ export const Editor = ({
     setGrafErrors(undefined);
   };
   useEffect(() => {
+    if (!selectedNodeFromQuery) {
+      setInitialRoutingDone(true);
+      return;
+    }
     if (
       selectedNodeFromQuery === selectedNode?.field?.id ||
-      tree.initial ||
       initialRoutingDone
     ) {
       return;
@@ -147,11 +150,16 @@ export const Editor = ({
     const field = tree.nodes
       .concat(libraryTree.nodes)
       .find((n) => n.id === selectedNodeFromQuery);
-    setSelectedNode({
-      source: 'routing',
-      field,
-    });
-    setInitialRoutingDone(true);
+    if (field) {
+      setSelectedNode({
+        source: 'routing',
+        field,
+      });
+      setInitialRoutingDone(true);
+    }
+    if (!field && tree.nodes.length > 0 && libraryTree.nodes.length > 0) {
+      setInitialRoutingDone(true);
+    }
   }, [tree, libraryTree, selectedNodeFromQuery, initialRoutingDone]);
 
   useEffect(() => {

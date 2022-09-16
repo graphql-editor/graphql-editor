@@ -82,9 +82,9 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
     if (scrolledTo == selectedNode?.field?.name) {
       return;
     }
-    if (selectedNode?.field?.name && refsLoaded) {
-      scrollToRef(selectedNode.field.name + selectedNode.field.data.type);
-      setScrolledTo(selectedNode.field.name);
+    if (selectedNode?.field && refsLoaded) {
+      scrollToRef(selectedNode.field.id);
+      setScrolledTo(selectedNode.field.id);
     }
   }, [refsLoaded]);
   useEffect(() => {
@@ -92,7 +92,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
       setFilteredFieldsTypes({});
     } else {
       if (selectedNode?.field?.name && refsLoaded) {
-        scrollToRef(selectedNode.field.name + selectedNode.field.data.type);
+        scrollToRef(selectedNode.field.id);
       }
     }
   }, [selectedNode]);
@@ -105,11 +105,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
         args: selectedNode.field.args?.filter((a) =>
           a.name
             .toLowerCase()
-            .includes(
-              filteredFieldsTypes[
-                '' + selectedNode.field?.name + selectedNode.field?.data.type
-              ] || '',
-            ),
+            .includes(filteredFieldsTypes['' + selectedNode.field?.id] || ''),
         ),
       };
       const selected = !baseTypesOn
@@ -164,13 +160,11 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
       setRelations(
         relationDrawingNodes
           .map((n) => ({
-            to: { htmlNode: refs[n.name + n.data.type], field: n },
+            to: { htmlNode: refs[n.id], field: n },
             fromLength: n.args?.length || 0,
             from: n.args
               ?.filter((a) =>
-                a.name
-                  .toLowerCase()
-                  .includes(filteredFieldsTypes[n.name + n.data.type] || ''),
+                a.name.toLowerCase().includes(filteredFieldsTypes[n.id] || ''),
               )
               .map((a, index) => {
                 const pn = relationDrawingNodes.find(
@@ -180,7 +174,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
                   return;
                 }
                 return {
-                  htmlNode: refs[pn.name + pn.data.type],
+                  htmlNode: refs[pn.id],
                   field: pn,
                   index,
                 } as RelationPath;
@@ -215,19 +209,19 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
     return nodes.map((n, i) => (
       <Node
         enums={enumsOn}
-        filteredFieldTypes={filteredFieldsTypes[n.name + n.data.type] || ''}
+        filteredFieldTypes={filteredFieldsTypes[n.id] || ''}
         setFilteredFieldsTypes={(q) =>
           setFilteredFieldsTypes((ftt) => ({
             ...ftt,
-            [n.name + n.data.type]: q,
+            [n.id]: q,
           }))
         }
         isLibrary={
           schemaType === 'library' ? true : libraryNodeNames.includes(n.name)
         }
-        key={n.name + n.data.type}
+        key={n.id}
         setRef={(ref) => {
-          tRefs[n.name + n.data.type] = ref;
+          tRefs[n.id] = ref;
           if (i === relationDrawingNodes.length - 1) {
             if (refTimeout) {
               clearTimeout(refTimeout);
