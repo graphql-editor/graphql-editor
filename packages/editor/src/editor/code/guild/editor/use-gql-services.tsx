@@ -79,7 +79,7 @@ export const useGqlServices = (options: SchemaServicesOptions = {}) => {
           },
         },
       }),
-    [options, options.schema],
+    [options.libraries, options.schema, options.sharedLanguageService],
   );
 
   React.useEffect(() => {
@@ -89,7 +89,6 @@ export const useGqlServices = (options: SchemaServicesOptions = {}) => {
           editorRef.addAction(action);
         }
       }
-
       for (const action of options.actions || []) {
         editorRef.addAction({
           id: action.id,
@@ -170,7 +169,16 @@ export const useGqlServices = (options: SchemaServicesOptions = {}) => {
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     return () => {};
-  }, [editorRef, monacoRef, options]);
+  }, [
+    editorRef,
+    monacoRef,
+    options.keyboardShortcuts,
+    options.actions,
+    options.diagnosticsProviders,
+    options.decorationsProviders,
+    options.definitionProviders,
+    options.hoverProviders,
+  ]);
 
   React.useEffect(() => {
     if (codeErrors && editorRef && monacoRef) {

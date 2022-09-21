@@ -5,6 +5,7 @@ export * from './withSchema';
 export * from './github';
 export * from './diff';
 export * from './Gql';
+export * from './GqlSaleor';
 export * from './googlediff';
 export * from './googleState';
 export * from './libraries';

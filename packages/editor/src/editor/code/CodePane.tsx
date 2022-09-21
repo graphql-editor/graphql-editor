@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { settings } from './monaco';
 import { fontFamily } from '@/vars';
 import { useErrorsState, useTheme, useTreesState } from '@/state/containers';
@@ -7,6 +7,7 @@ import { SchemaEditorApi, SchemaEditor } from '@/editor/code/guild';
 import { theme as MonacoTheme } from '@/editor/code/monaco';
 import { OperationType } from 'graphql-js-tree';
 import { CodeContainer, ErrorLock } from '@/editor/code/style/Code';
+import { Maybe } from 'graphql-language-service';
 
 export interface CodePaneOuterProps {
   readonly?: boolean;
@@ -56,6 +57,31 @@ export const CodePane = (props: CodePaneProps) => {
     }
   }, [errorRowNumber]);
 
+  const selectFunction = useCallback(
+    (
+      e?:
+        | Maybe<string>
+        | Maybe<{ operation: 'Query' | 'Mutation' | 'Subscription' }>,
+    ) => {
+      if (fullScreen) return;
+      if (e) {
+        const allNodes = tree.nodes.concat(libraryTree.nodes);
+        const op =
+          typeof e === 'object' && e.operation
+            ? (e.operation.toLowerCase() as OperationType)
+            : undefined;
+        const n = op
+          ? allNodes.find((an) => an.type.operations?.includes(op))
+          : allNodes.find((an) => an.name === e);
+        setSelectedNode({
+          source: 'code',
+          field: n,
+        });
+      }
+    },
+    [fullScreen, tree, libraryTree, setSelectedNode],
+  );
+
   return (
     <CodeContainer
       data-cy={GraphQLEditorDomStructure.tree.elements.CodePane.name}
@@ -75,26 +101,7 @@ export const CodePane = (props: CodePaneProps) => {
           schema={schema}
           libraries={libraries}
           options={codeSettings}
-          select={
-            fullScreen
-              ? undefined
-              : (e) => {
-                  if (e) {
-                    const allNodes = tree.nodes.concat(libraryTree.nodes);
-                    const op =
-                      typeof e === 'object' && e.operation
-                        ? (e.operation.toLowerCase() as OperationType)
-                        : undefined;
-                    const n = op
-                      ? allNodes.find((an) => an.type.operations?.includes(op))
-                      : allNodes.find((an) => an.name === e);
-                    setSelectedNode({
-                      source: 'code',
-                      field: n,
-                    });
-                  }
-                }
-          }
+          select={selectFunction}
         />
       )}
       {lockCode && (

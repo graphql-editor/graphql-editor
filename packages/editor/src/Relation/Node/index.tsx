@@ -139,7 +139,7 @@ export const Node: React.FC<NodeProps> = ({
         ))}
       </NodeRelationFields>
     );
-  }, [field, isNodeActive, theme, nodeArgs]);
+  }, [field, isNodeActive, theme, nodeArgs, enums]);
 
   const handleSearch = (searchValue?: string) => {
     setFilteredFieldsTypes(searchValue?.toLowerCase() || '');

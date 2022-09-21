@@ -99,7 +99,6 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
           editorRef.addAction(action);
         }
       }
-
       for (const action of options.actions || []) {
         editorRef.addAction({
           id: action.id,
@@ -178,7 +177,17 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     return () => {};
-  }, [editorRef, monacoRef, options]);
+  }, [
+    editorRef,
+    monacoRef,
+    options.keyboardShortcuts,
+    options.actions,
+    options.diagnosticsProviders,
+    options.decorationsProviders,
+    options.definitionProviders,
+    options.hoverProviders,
+    options.select,
+  ]);
 
   React.useEffect(() => {
     if (codeErrors && editorRef && monacoRef) {
