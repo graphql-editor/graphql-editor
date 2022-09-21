@@ -15,8 +15,9 @@ import { Description } from '@/Docs/Description';
 const Wrapper = styled.div`
   font-family: ${fontFamilySans};
   font-size: 14px;
-  height: 100%;
   padding: 40px 50px;
+  max-width: 960px;
+  margin: auto;
 `;
 
 const Top = styled.div`

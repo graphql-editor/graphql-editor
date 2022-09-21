@@ -150,11 +150,11 @@ export const ActiveNode: React.FC<NodeProps> = ({
   const {
     libraryTree,
     tree,
-    setTree,
     setSelectedNode,
     selectedNode,
     parentTypes,
     readonly,
+    updateNode,
   } = useTreesState();
   const { draggingAllowed } = useVisualState();
 
@@ -196,7 +196,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
       const endIdx = node.args.findIndex((a) => a.name === endNodeName);
       node.args.splice(endIdx, 0, node.args.splice(startIdx, 1)[0]);
     }
-    setTree({ nodes: tree.nodes });
+    updateNode(node);
   };
 
   useEffect(() => {
@@ -228,7 +228,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
       <ActiveDescription
         onChange={(d) => {
           node.description = d;
-          setTree({ ...tree });
+          updateNode(node);
         }}
         isLocked={isLocked}
         value={node.description || ''}
@@ -243,7 +243,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                 node.interfaces = node.interfaces?.filter(
                   (oldInterface) => oldInterface !== i,
                 );
-                setTree({ ...tree });
+                updateNode(node);
               }}
             >
               {i}
@@ -280,7 +280,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                   sharedProps.onDelete(openedNodeNode);
                   return;
                 }
-                setTree({ ...tree });
+                updateNode(node);
               }}
             />
           </NodeArea>
@@ -327,7 +327,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                     ? compareParserFields(node)(selectedNode.field)
                     : false;
                   node.name = v;
-                  setTree({ ...tree });
+                  updateNode(node);
                   if (reselect && selectedNode) {
                     setSelectedNode({
                       field: node,
@@ -394,7 +394,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                 onDelete={() => {
                   setOpenedNode(undefined);
                   node.directives!.splice(i, 1);
-                  setTree({ ...tree });
+                  updateNode(node);
                 }}
               />
             );
@@ -467,7 +467,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                     }
                     onDelete={() => {
                       node.args!.splice(i, 1);
-                      setTree({ ...tree });
+                      updateNode(node);
                     }}
                   />
                 </div>

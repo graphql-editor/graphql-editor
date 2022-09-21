@@ -203,6 +203,7 @@ export const Graf: React.FC = () => {
         </SubNodeContainer>
       );
     }
+    return null;
   }, [
     node,
     wrapperRef.current,

@@ -34,7 +34,7 @@ export const NodeTypeOptionsMenu: React.FC<NodeTypeOptionsMenuProps> = ({
   node,
   hideMenu,
 }) => {
-  const { tree, setTree } = useTreesState();
+  const { updateNode } = useTreesState();
   const [opts, setOpts] = useState(configureOpts(node));
   useEffect(() => {
     setOpts(configureOpts(node));
@@ -46,7 +46,7 @@ export const NodeTypeOptionsMenu: React.FC<NodeTypeOptionsMenuProps> = ({
       options={opts}
       onCheck={(o) => {
         configureNode(node, o);
-        setTree({ ...tree });
+        updateNode(node);
       }}
     />
   );

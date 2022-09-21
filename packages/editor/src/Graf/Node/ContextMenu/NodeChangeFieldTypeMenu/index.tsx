@@ -20,7 +20,7 @@ interface NodeChangeFieldTypeMenuProps {
 export const NodeChangeFieldTypeMenu: React.FC<
   NodeChangeFieldTypeMenuProps
 > = ({ node, fieldIndex, hideMenu }) => {
-  const { tree, setTree, libraryTree } = useTreesState();
+  const { tree, libraryTree, updateNode } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -49,7 +49,7 @@ export const NodeChangeFieldTypeMenu: React.FC<
       changeTypeName(node.args[fieldIndex].type.fieldType, f.name);
     }
     hideMenu();
-    setTree({ ...tree });
+    updateNode(node);
   };
   return (
     <Menu

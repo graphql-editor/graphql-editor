@@ -58,7 +58,7 @@ export const ActiveInputValue: React.FC<FieldProps> = ({
   isLocked,
   onDelete,
 }) => {
-  const { tree, setTree, parentTypes } = useTreesState();
+  const { parentTypes, updateNode } = useTreesState();
   const [menuOpen, setMenuOpen] = useState<'options' | 'details' | 'type'>();
   return (
     <NodeFieldContainer
@@ -83,7 +83,7 @@ export const ActiveInputValue: React.FC<FieldProps> = ({
             <ActiveInputValueName
               afterChange={(newName) => {
                 node.name = newName;
-                setTree({ ...tree });
+                updateNode(node);
               }}
               node={node}
             />
@@ -117,7 +117,7 @@ export const ActiveInputValue: React.FC<FieldProps> = ({
               ? undefined
               : (v) => {
                   node.args = [...(placeStringInNode({ v, node }) || [])];
-                  setTree({ ...tree });
+                  updateNode(node);
                 }
           }
         />

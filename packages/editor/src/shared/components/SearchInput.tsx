@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { Plus, Search, X } from '@/Graf/icons';
 import styled from '@emotion/styled';
+import * as vars from '@/vars';
 
 interface MenuSearchProps {
   value: string;
@@ -22,7 +23,6 @@ const Main = styled.input`
   background-color: ${({ theme }) => theme.background.mainFurthest};
   border-radius: 5px;
   color: ${({ theme }) => theme.text};
-  border: 0;
   width: 100%;
   min-width: 0;
   height: 36px;
@@ -30,8 +30,15 @@ const Main = styled.input`
   font-size: 14px;
   outline: 0;
   position: relative;
+  border-color: transparent;
+  border-width: 1px;
+  border-style: solid;
+  transition: ${vars.transition};
   &::placeholder {
     color: ${({ theme }) => theme.dimmed};
+  }
+  :focus {
+    border-color: ${({ theme }) => theme.active};
   }
 `;
 

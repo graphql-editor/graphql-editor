@@ -23,11 +23,12 @@ const NodeText = styled.a<{ active?: boolean }>`
   }
 `;
 
-const Title = styled.div<{ open?: boolean }>`
+const Title = styled.div<{ open?: boolean; nodeInsideSelected?: boolean }>`
   font-family: ${fontFamilySans};
   font-weight: 600;
   cursor: pointer;
-  color: ${({ theme }) => theme.text};
+  color: ${({ theme, nodeInsideSelected }) =>
+    nodeInsideSelected ? theme.active : theme.text};
   margin: 0;
   font-size: 14px;
   padding-bottom: 5px;
@@ -64,13 +65,17 @@ export const NodeList: React.FC<NodeListI> = ({
   expanded,
 }) => {
   const { selectedNode, setSelectedNode } = useTreesState();
-  const open =
-    (!!selectedNode?.field?.name &&
-      nodeList?.map((n) => n.name).includes(selectedNode?.field?.name)) ||
-    expanded.includes(listTitle);
+  const nodeInsideSelected =
+    !!selectedNode?.field?.name &&
+    nodeList?.map((n) => n.name).includes(selectedNode?.field?.name);
+  const open = expanded.includes(listTitle);
   return (
     <List>
-      <Title onClick={() => setExpanded(listTitle)} open={open}>
+      <Title
+        nodeInsideSelected={nodeInsideSelected}
+        onClick={() => setExpanded(listTitle)}
+        open={open}
+      >
         <div>{listTitle}</div>
         <Arrow size={14} />
       </Title>

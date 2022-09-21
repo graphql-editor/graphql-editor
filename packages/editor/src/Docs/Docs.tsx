@@ -19,7 +19,6 @@ const Wrapper = styled.div`
   position: relative;
   background: ${({ theme }) => theme.background.mainFurther};
   flex-direction: row;
-  overflow: auto;
   align-items: stretch;
 `;
 
@@ -28,6 +27,7 @@ const SelectedNodeWrapper = styled.div`
   overflow-y: auto;
   background-color: ${({ theme }) => theme.background.mainFar};
   overflow-x: hidden;
+  height: 100%;
 `;
 
 const ListWrapper = styled.div`
@@ -41,6 +41,7 @@ const ListContainer = styled.div`
   flex-flow: column nowrap;
   overflow-y: scroll;
   overflow-x: hidden;
+  width: 320px; ;
 `;
 const SearchWrapper = styled.div`
   padding: 20px;

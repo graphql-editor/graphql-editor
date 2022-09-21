@@ -68,7 +68,7 @@ export const ActiveArgument: React.FC<FieldProps> = ({
   isLocked,
   onDelete,
 }) => {
-  const { tree, setTree } = useTreesState();
+  const { updateNode } = useTreesState();
   const [optionsMenuOpen, setOptionsMenuOpen] = useState(false);
   const [detailsMenuOpen, setDetailsMenuOpen] = useState(false);
 
@@ -97,7 +97,7 @@ export const ActiveArgument: React.FC<FieldProps> = ({
             <ActiveArgumentName
               afterChange={(newName) => {
                 node.name = newName;
-                setTree({ ...tree });
+                updateNode(node);
               }}
               node={node}
             />
@@ -112,7 +112,7 @@ export const ActiveArgument: React.FC<FieldProps> = ({
                 v,
                 node,
               }) || [];
-            setTree({ ...tree });
+            updateNode(node);
           }}
         />
       </Title>

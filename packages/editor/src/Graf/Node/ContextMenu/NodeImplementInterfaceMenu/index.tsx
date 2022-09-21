@@ -18,7 +18,7 @@ interface NodeImplementInterfacesMenuProps {
 export const NodeImplementInterfacesMenu: React.FC<
   NodeImplementInterfacesMenuProps
 > = ({ node, hideMenu }) => {
-  const { tree, setTree, libraryTree } = useTreesState();
+  const { tree, libraryTree, updateNode } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -73,7 +73,7 @@ export const NodeImplementInterfacesMenu: React.FC<
       f.args?.filter((a) => !node.args?.find((na) => na.name === a.name)) || [];
     node.args = node.args?.concat(argsToPush);
     hideMenu();
-    setTree({ ...tree });
+    updateNode(node);
   };
   return (
     <Menu

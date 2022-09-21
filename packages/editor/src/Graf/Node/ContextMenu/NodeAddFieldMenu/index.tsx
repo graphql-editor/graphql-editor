@@ -23,7 +23,7 @@ export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({
   node,
   hideMenu,
 }) => {
-  const { tree, setTree, libraryTree } = useTreesState();
+  const { tree, libraryTree, updateNode } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -68,7 +68,7 @@ export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({
         name: newName,
       }),
     );
-    setTree(tree);
+    updateNode(node);
   };
 
   return (

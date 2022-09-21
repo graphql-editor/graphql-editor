@@ -63,7 +63,7 @@ export const ActiveField: React.FC<FieldProps> = ({
   isLocked,
   onDelete,
 }) => {
-  const { tree, setTree, parentTypes, readonly } = useTreesState();
+  const { parentTypes, readonly, updateNode } = useTreesState();
   const [menuOpen, setMenuOpen] = useState<'options' | 'details' | 'type'>();
   const isEnumValue = node.data.type === ValueDefinition.EnumValueDefinition;
 
@@ -90,7 +90,7 @@ export const ActiveField: React.FC<FieldProps> = ({
                 ? undefined
                 : (newName) => {
                     node.name = newName;
-                    setTree({ ...tree });
+                    updateNode(node);
                   }
             }
             data={node.data}

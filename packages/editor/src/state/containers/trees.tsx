@@ -7,6 +7,7 @@ import {
   Parser,
   getTypeName,
   compareParserFields,
+  generateNodeId,
 } from 'graphql-js-tree';
 import { GraphQLEditorWorker } from 'graphql-editor-worker';
 import { BuiltInScalars } from '@/GraphQL/Resolve';
@@ -48,6 +49,16 @@ const useTreesStateContainer = createContainer(() => {
   useEffect(() => {
     codeErrors.length && setSelectedNode(undefined);
   }, [codeErrors]);
+
+  const updateNode = (n: ParserField) => {
+    const id = generateNodeId(n.name, n.data.type, n.args);
+    const shouldBeReselected = n.id === selectedNode?.field?.id && id !== n.id;
+    n.id = id;
+    setTree({ ...tree });
+    if (shouldBeReselected) {
+      setSelectedNode({ source: 'diagram', field: n });
+    }
+  };
 
   const setTree = (
     v: React.SetStateAction<Omit<TreeWithSource, 'schema' | 'initial'>>,
@@ -212,6 +223,7 @@ const useTreesStateContainer = createContainer(() => {
     generateTreeFromSchema,
     readonly,
     setReadonly,
+    updateNode,
   };
 });
 
