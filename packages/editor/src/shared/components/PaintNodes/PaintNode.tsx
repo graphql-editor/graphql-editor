@@ -4,12 +4,12 @@ import { useTreesState } from '@/state/containers/trees';
 import { useErrorsState, useLayoutState, useTheme } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { useSortState } from '@/state/containers/sort';
-import { Error } from '../icons';
+import { Error } from '@/shared/icons';
 import {
   dragLeaveHandler,
   dragOverHandler,
   dragStartHandler,
-} from './ActiveNode/dnd';
+} from '@/shared/dnd';
 import styled from '@emotion/styled';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
 import { fontFamily } from '@/vars';

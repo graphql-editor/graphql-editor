@@ -1,41 +1,41 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { ResolveImplementInterface } from '@/GraphQL/Resolve';
+import { getTypeName, ParserField, TypeDefinition } from 'graphql-js-tree';
+import { useTreesState } from '@/state/containers/trees';
 import {
   Menu,
   MenuScrollingArea,
   MenuSearch,
   TypedMenuItem,
 } from '@/Graf/Node/components';
-import { ResolveDirectives } from '@/GraphQL/Resolve';
-import {
-  ParserField,
-  Instances,
-  getTypeName,
-  createParserField,
-  Options,
-} from 'graphql-js-tree';
-import { useTreesState } from '@/state/containers/trees';
-import { sortNodes } from '@/Graf/Node/ContextMenu/sort';
+import { sortNodes } from '@/shared/components/ContextMenu/sort';
 
-interface NodeAddDirectiveMenuProps {
+interface NodeImplementInterfacesMenuProps {
   node: ParserField;
   hideMenu: () => void;
 }
 
-export const NodeAddDirectiveMenu: React.FC<NodeAddDirectiveMenuProps> = ({
-  node,
-  hideMenu,
-}) => {
-  const { tree, libraryTree, setTree } = useTreesState();
+export const NodeImplementInterfacesMenu: React.FC<
+  NodeImplementInterfacesMenuProps
+> = ({ node, hideMenu }) => {
+  const { tree, libraryTree, updateNode } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
+
   const creationNodes = useMemo(
-    () => ResolveDirectives(node, tree.nodes.concat(libraryTree.nodes)) || [],
+    () =>
+      ResolveImplementInterface(
+        node,
+        tree.nodes.concat(libraryTree.nodes),
+      )?.filter((a) => !node.interfaces?.includes(a.name)) || [],
     [tree.nodes, libraryTree.nodes],
   );
+
   const filteredNodes = useMemo(
     () => sortNodes(menuSearchValue, creationNodes),
     [tree.nodes, libraryTree.nodes, menuSearchValue],
   );
+
   useEffect(() => {
     if (!menuSearchValue) {
       setSelectedIndex(0);
@@ -47,35 +47,39 @@ export const NodeAddDirectiveMenu: React.FC<NodeAddDirectiveMenuProps> = ({
     (selectedIndex < 0 ? fNLength - selectedIndex : selectedIndex) % fNLength;
 
   const onNodeClick = (f: ParserField) => {
-    if (!node.directives) {
-      node.directives = [];
+    if (!node.interfaces) {
+      node.interfaces = [];
     }
-    node.directives.push(
-      createParserField({
-        ...f,
-        type: {
-          fieldType: {
-            name: f.name,
-            type: Options.name,
-          },
-        },
-        name: f.name[0].toLowerCase() + f.name.slice(1),
-        args: [],
-        directives: [],
-        interfaces: [],
-        data: {
-          type: Instances.Directive,
-        },
-      }),
+    const interfacesToPush: string[] = [];
+    const allInterfaces = tree.nodes.filter(
+      (ni) => ni.data.type === TypeDefinition.InterfaceTypeDefinition,
     );
+    const computeInterfaces = (interfaces: string[]) => {
+      interfacesToPush.push(
+        ...interfaces.filter((ii) => !interfacesToPush.includes(ii)),
+      );
+      for (const i of interfaces) {
+        const hasInterface = allInterfaces.find(
+          (interfaceObject) => interfaceObject.name === i,
+        )!;
+        if (hasInterface?.interfaces && hasInterface.interfaces.length) {
+          computeInterfaces(hasInterface.interfaces);
+        }
+      }
+    };
+    computeInterfaces([f.name]);
+    node.interfaces.push(...interfacesToPush);
+    const argsToPush =
+      f.args?.filter((a) => !node.args?.find((na) => na.name === a.name)) || [];
+    node.args = node.args?.concat(argsToPush);
     hideMenu();
-    setTree({ ...tree });
+    updateNode(node);
   };
   return (
     <Menu
-      menuName={'Add directive'}
+      menuName={'Implement interface'}
       onScroll={(e) => e.stopPropagation()}
-      hideMenu={hideMenu}
+      hideMenu={() => hideMenu()}
     >
       <MenuSearch
         onSubmit={() => {
@@ -93,7 +97,7 @@ export const NodeAddDirectiveMenu: React.FC<NodeAddDirectiveMenuProps> = ({
           arrowUp: () => setSelectedIndex((s) => s - 1),
         }}
       >
-        {filteredNodes.map((f, i) => (
+        {filteredNodes?.map((f, i) => (
           <TypedMenuItem
             key={f.name}
             type={f.name}

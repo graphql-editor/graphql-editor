@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
-import { Plus, Search, X } from '@/Graf/icons';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import styled from '@emotion/styled';
+import { Search, Plus, X } from '@/shared/icons';
 
 interface MenuSearchProps {
   value: string;

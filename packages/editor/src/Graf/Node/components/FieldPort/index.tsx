@@ -1,4 +1,4 @@
-import * as Icons from '@/Graf/icons';
+import * as Icons from '@/shared/icons';
 import styled from '@emotion/styled';
 import React from 'react';
 

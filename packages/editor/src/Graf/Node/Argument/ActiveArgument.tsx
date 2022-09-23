@@ -5,7 +5,7 @@ import {
   TypeDefinition,
   getTypeName,
 } from 'graphql-js-tree';
-import { NodeTypeOptionsMenu } from '@/Graf/Node/ContextMenu';
+import { NodeTypeOptionsMenu } from '@/shared/components/ContextMenu';
 import { ActiveArgumentName } from './ActiveArgumentName';
 import {
   DetailMenuItem,

@@ -15,7 +15,7 @@ import {
   MenuSearch,
   MenuItem,
 } from '@/Graf/Node/components';
-import { sortNodes } from '@/Graf/Node/ContextMenu/sort';
+import { sortNodes } from '@/shared/components/ContextMenu/sort';
 
 interface ExtendNodeMenuProps {
   hideMenu: () => void;

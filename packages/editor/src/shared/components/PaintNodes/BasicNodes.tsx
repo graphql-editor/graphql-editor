@@ -1,4 +1,4 @@
-import { PaintNode } from '@/Graf/Node';
+import { PaintNode } from '@/shared/components/PaintNodes/PaintNode';
 import { useRelationsState } from '@/state/containers';
 import { fontFamily } from '@/vars';
 import styled from '@emotion/styled';

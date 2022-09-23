@@ -1,38 +1,41 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ResolveCreateField } from '@/GraphQL/Resolve';
-import { getTypeName, ParserField } from 'graphql-js-tree';
-import { useTreesState } from '@/state/containers/trees';
 import {
   Menu,
   MenuScrollingArea,
   MenuSearch,
   TypedMenuItem,
 } from '@/Graf/Node/components';
-import { sortNodes } from '@/Graf/Node/ContextMenu/sort';
-import { changeTypeName } from '@/utils';
+import { ResolveDirectives } from '@/GraphQL/Resolve';
+import {
+  ParserField,
+  Instances,
+  getTypeName,
+  createParserField,
+  Options,
+} from 'graphql-js-tree';
+import { useTreesState } from '@/state/containers/trees';
+import { sortNodes } from '@/shared/components/ContextMenu/sort';
 
-interface NodeChangeFieldTypeMenuProps {
+interface NodeAddDirectiveMenuProps {
   node: ParserField;
-  fieldIndex: number;
   hideMenu: () => void;
 }
 
-export const NodeChangeFieldTypeMenu: React.FC<
-  NodeChangeFieldTypeMenuProps
-> = ({ node, fieldIndex, hideMenu }) => {
-  const { tree, libraryTree, updateNode } = useTreesState();
+export const NodeAddDirectiveMenu: React.FC<NodeAddDirectiveMenuProps> = ({
+  node,
+  hideMenu,
+}) => {
+  const { tree, libraryTree, setTree } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
-
   const creationNodes = useMemo(
-    () => ResolveCreateField(node, tree.nodes.concat(libraryTree.nodes)) || [],
+    () => ResolveDirectives(node, tree.nodes.concat(libraryTree.nodes)) || [],
     [tree.nodes, libraryTree.nodes],
   );
   const filteredNodes = useMemo(
     () => sortNodes(menuSearchValue, creationNodes),
     [tree.nodes, libraryTree.nodes, menuSearchValue],
   );
-
   useEffect(() => {
     if (!menuSearchValue) {
       setSelectedIndex(0);
@@ -44,16 +47,33 @@ export const NodeChangeFieldTypeMenu: React.FC<
     (selectedIndex < 0 ? fNLength - selectedIndex : selectedIndex) % fNLength;
 
   const onNodeClick = (f: ParserField) => {
-    if (node.args) {
-      node.args[fieldIndex].data.type = f.data.type;
-      changeTypeName(node.args[fieldIndex].type.fieldType, f.name);
+    if (!node.directives) {
+      node.directives = [];
     }
+    node.directives.push(
+      createParserField({
+        ...f,
+        type: {
+          fieldType: {
+            name: f.name,
+            type: Options.name,
+          },
+        },
+        name: f.name[0].toLowerCase() + f.name.slice(1),
+        args: [],
+        directives: [],
+        interfaces: [],
+        data: {
+          type: Instances.Directive,
+        },
+      }),
+    );
     hideMenu();
-    updateNode(node);
+    setTree({ ...tree });
   };
   return (
     <Menu
-      menuName={'Change type'}
+      menuName={'Add directive'}
       onScroll={(e) => e.stopPropagation()}
       hideMenu={hideMenu}
     >
@@ -73,11 +93,11 @@ export const NodeChangeFieldTypeMenu: React.FC<
           arrowUp: () => setSelectedIndex((s) => s - 1),
         }}
       >
-        {filteredNodes?.map((f, i) => (
+        {filteredNodes.map((f, i) => (
           <TypedMenuItem
             key={f.name}
-            dataType={getTypeName(f.type.fieldType)}
             type={f.name}
+            dataType={getTypeName(f.type.fieldType)}
             selected={i === selectedNodeIndex}
             onClick={() => {
               onNodeClick(f);

@@ -10,7 +10,7 @@ import { ActiveType } from '@/Graf/Node/Type';
 import {
   NodeChangeFieldTypeMenu,
   NodeTypeOptionsMenu,
-} from '@/Graf/Node/ContextMenu';
+} from '@/shared/components/ContextMenu';
 import { useTreesState } from '@/state/containers/trees';
 import {
   DetailMenuItem,

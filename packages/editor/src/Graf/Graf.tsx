@@ -1,6 +1,5 @@
 import React, { useRef, useEffect, useMemo } from 'react';
 import { fontFamily } from '@/vars';
-import { PaintNodes } from './PaintNodes';
 import { ActiveNode } from '@/Graf/Node';
 import { useTreesState } from '@/state/containers/trees';
 import {
@@ -14,11 +13,9 @@ import { getScalarFields } from '@/Graf/utils/getScalarFields';
 import { findInNodes } from '@/compare/compareNodes';
 import { ParserField } from 'graphql-js-tree';
 import styled from '@emotion/styled';
-import { Heading } from '@/shared/components';
 import { ErrorLabel, ErrorWrapper } from '@/shared/components/ErrorStyles';
-import { SortNodes } from './Node/components/SortNodes';
-import { SearchInput } from '@/shared/components';
-import { useSortState } from '@/state/containers/sort';
+import { PaintNodes } from '@/shared/components/PaintNodes/PaintNodes';
+import { TopBar } from '@/shared/components/TopBar';
 
 const Wrapper = styled.div`
   flex: 1;
@@ -68,24 +65,6 @@ const SubNodeContainer = styled.div`
   z-index: 2;
 `;
 
-const TopBar = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 25px 8px;
-  height: 60px;
-  margin-bottom: 20px;
-  background-color: ${({ theme }) => theme.background.mainFar};
-  border-bottom: 1px solid ${({ theme }) => theme.disabled}36;
-`;
-
-const SortWrapper = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  gap: 20px;
-`;
-
 let snapLock = true;
 
 export const Graf: React.FC = () => {
@@ -106,7 +85,6 @@ export const Graf: React.FC = () => {
   } = useTreesState();
   const { lockGraf, grafErrors, errorsItems } = useErrorsState();
   const { setActions } = useIOState();
-  const { setFilterNodes, filterNodes } = useSortState();
 
   useEffect(() => {
     if (snapLock) {
@@ -223,26 +201,7 @@ export const Graf: React.FC = () => {
         }}
         data-cy={GraphQLEditorDomStructure.tree.elements.Graf.name}
       >
-        <TopBar>
-          <Heading heading={lockGraf ? 'ERRORS' : 'DIAGRAM VIEW'} />
-          {!lockGraf && (
-            <SortWrapper>
-              <SearchInput
-                cypressName={
-                  GraphQLEditorDomStructure.tree.elements.Graf.searchInput
-                }
-                autoFocus={false}
-                onClear={() => {
-                  setFilterNodes('');
-                }}
-                onSubmit={() => {}}
-                value={filterNodes}
-                onChange={setFilterNodes}
-              />
-              <SortNodes />
-            </SortWrapper>
-          )}
-        </TopBar>
+        <TopBar heading={lockGraf ? 'ERRORS' : 'DIAGRAM VIEW'} />
         {selectedNodeComponent}
         {lockGraf ? (
           <ErrorWrapper>

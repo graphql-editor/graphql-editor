@@ -9,11 +9,11 @@ import {
   createParserField,
 } from 'graphql-js-tree';
 import { fontFamily } from '@/vars';
-import { RootNode } from '@/Graf/Node';
 import { useTreesState } from '@/state/containers/trees';
-import { RootExtendNode } from './Node/RootExtendNode';
 import { useSortState } from '@/state/containers/sort';
 import styled from '@emotion/styled';
+import { RootExtendNode } from '@/shared/components/PaintNodes/RootExtendNode';
+import { RootNode } from '@/shared/components/PaintNodes/RootNode';
 
 const Main = styled.div<{ openedNode?: boolean }>`
   width: 100%;
@@ -33,7 +33,9 @@ const LineSpacer = styled.div`
 
 type BaseTypesType = { node: ParserField; libraryNode: ParserField }[];
 
-export const PaintNodes: React.FC = () => {
+export const PaintNodes: React.FC<{ disableOps?: boolean }> = ({
+  disableOps,
+}) => {
   const { libraryTree, tree, readonly, selectedNode } = useTreesState();
   const { orderTypes, filterNodes } = useSortState();
 
@@ -74,7 +76,7 @@ export const PaintNodes: React.FC = () => {
         <div key={getTypeName(d.node.type.fieldType)}>
           {i !== 0 && <LineSpacer />}
           <RootNode
-            readonly={readonly}
+            readonly={readonly || disableOps}
             node={d.node}
             libraryNode={d.libraryNode}
             filterNodes={filterNodes}
@@ -90,7 +92,7 @@ export const PaintNodes: React.FC = () => {
       <LineSpacer />
       <RootExtendNode
         filterNodes={filterNodes}
-        readonly={readonly}
+        readonly={readonly || disableOps}
         node={createParserField({
           name: TypeSystemExtension.TypeExtension,
           data: {

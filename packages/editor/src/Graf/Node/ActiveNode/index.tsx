@@ -28,7 +28,7 @@ import {
   dragLeaveHandler,
   dragOverHandler,
   dragStartHandler,
-} from '@/Graf/Node/ActiveNode/dnd';
+} from '@/shared/dnd';
 import styled from '@emotion/styled';
 import { NodeName, NodeTitle, NodeType } from '@/Graf/Node/SharedNode';
 

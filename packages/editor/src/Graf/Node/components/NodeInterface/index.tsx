@@ -1,5 +1,5 @@
 import React from 'react';
-import { X } from '@/Graf/icons';
+import { X } from '@/shared/icons';
 import { useTheme } from '@/state/containers';
 import styled from '@emotion/styled';
 

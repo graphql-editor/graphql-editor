@@ -1,9 +1,9 @@
 import React, { useRef, useState } from 'react';
 import { ParserField } from 'graphql-js-tree';
-import { PaintNode } from '@/Graf/Node/PaintNode';
-import { ExtendNodeMenu } from '@/Graf/Node/ContextMenu';
+import { ExtendNodeMenu } from '@/shared/components/ContextMenu';
 import styled from '@emotion/styled';
 import { transition } from '@/vars';
+import { PaintNode } from '@/shared/components/PaintNodes/PaintNode';
 export interface RootExtendNodeProps {
   node: ParserField;
   filterNodes: string;

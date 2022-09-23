@@ -9,6 +9,7 @@ import { Lines, RelationPath } from '@/Relation/Lines';
 import { isScalarArgument } from '@/GraphQL/Resolve';
 import * as vars from '@/vars';
 import { getTypeName, ParserField } from 'graphql-js-tree';
+import { useRouter } from '@/state/containers/router';
 
 const Main = styled.div`
   position: relative;
@@ -64,6 +65,7 @@ type LinesDiagramProps = {
 export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
   const { libraryTree, selectedNode, schemaType, tree, setSelectedNode } =
     useTreesState();
+  const { routes } = useRouter();
   const {
     refsLoaded,
     refs,
@@ -168,6 +170,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
 
   useLayoutEffect(() => {
     if (refsLoaded) {
+      console.log('RELOADING RELATIONS');
       setRelations(
         relationDrawingNodesArray
           .map((n) => ({
@@ -204,11 +207,18 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
       );
     }
   }, [refs, relationDrawingNodesArray, refsLoaded]);
+
   const SvgLinesContainer = useMemo(() => {
+    console.log('REDRAWING LINSES');
     return <Lines relations={relations} selectedNode={selectedNode?.field} />;
   }, [relations]);
 
   const NodesContainer = useMemo(() => {
+    tRefs = {};
+    setRelations([]);
+    setRefs({});
+    setRefsLoaded(false);
+    console.log('RELOADING CONTIAINRE');
     const libraryNodeNames = libraryTree.nodes.map((l) => l.name);
 
     const filterNodes = (nodes?: ParserField[]) =>
@@ -290,41 +300,54 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
           )}
         </NodePane>
         <NodePane>
-          {filterNodes(relationDrawingNodes?.children).map((n, i) => (
-            <Node
-              enums={enumsOn}
-              filteredFieldTypes={filteredFieldsTypes[n.id] || ''}
-              setFilteredFieldsTypes={(q) =>
-                setFilteredFieldsTypes((ftt) => ({
-                  ...ftt,
-                  [n.id]: q,
-                }))
-              }
-              isLibrary={
-                schemaType === 'library'
-                  ? true
-                  : libraryNodeNames.includes(n.name)
-              }
-              key={n.id}
-              setRef={(ref) => {
-                tRefs[n.id] = ref;
-                if (i === (relationDrawingNodes?.children.length || 0) - 1) {
-                  if (refTimeout) {
-                    clearTimeout(refTimeout);
-                  }
-                  refTimeout = setTimeout(() => {
-                    setRefs(tRefs);
-                    setRefsLoaded(true);
-                  }, 10);
+          {filterNodes(relationDrawingNodes?.children)
+            .sort((a, b) => {
+              const aIndex =
+                relationDrawingNodes?.selected.args.findIndex(
+                  (n) => getTypeName(n.type.fieldType) === a.name,
+                ) || -1;
+              const bIndex =
+                relationDrawingNodes?.selected.args.findIndex(
+                  (n) => getTypeName(n.type.fieldType) === b.name,
+                ) || -1;
+
+              return aIndex > bIndex ? 1 : -1;
+            })
+            .map((n, i) => (
+              <Node
+                enums={enumsOn}
+                filteredFieldTypes={filteredFieldsTypes[n.id] || ''}
+                setFilteredFieldsTypes={(q) =>
+                  setFilteredFieldsTypes((ftt) => ({
+                    ...ftt,
+                    [n.id]: q,
+                  }))
                 }
-              }}
-              field={n}
-            />
-          ))}
+                isLibrary={
+                  schemaType === 'library'
+                    ? true
+                    : libraryNodeNames.includes(n.name)
+                }
+                key={n.id}
+                setRef={(ref) => {
+                  tRefs[n.id] = ref;
+                  if (i === (relationDrawingNodes?.children.length || 0) - 1) {
+                    if (refTimeout) {
+                      clearTimeout(refTimeout);
+                    }
+                    refTimeout = setTimeout(() => {
+                      setRefs(tRefs);
+                      setRefsLoaded(true);
+                    }, 10);
+                  }
+                }}
+                field={n}
+              />
+            ))}
         </NodePane>
       </>
     );
-  }, [schemaType, relationDrawingNodes]);
+  }, [schemaType, relationDrawingNodes, routes.code]);
 
   return (
     <Main ref={mainRef} onClick={() => setSelectedNode(undefined)}>

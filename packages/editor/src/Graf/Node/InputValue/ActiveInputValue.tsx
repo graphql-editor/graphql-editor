@@ -4,7 +4,7 @@ import { ActiveType } from '@/Graf/Node/Type';
 import {
   NodeChangeFieldTypeMenu,
   NodeTypeOptionsMenu,
-} from '@/Graf/Node/ContextMenu';
+} from '@/shared/components/ContextMenu';
 import { ActiveInputValueName } from './ActiveInputValueName';
 import {
   DetailMenuItem,

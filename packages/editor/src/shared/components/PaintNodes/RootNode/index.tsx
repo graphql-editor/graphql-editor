@@ -7,13 +7,13 @@ import {
   Options,
   createParserField,
 } from 'graphql-js-tree';
-import { PaintNode } from '@/Graf/Node/PaintNode';
-import { NewNode } from '@/Graf/Node/NewNode';
 import { useTreesState } from '@/state/containers/trees';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { useSortState } from '@/state/containers/sort';
 import styled from '@emotion/styled';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
+import { NewNode } from '@/shared/components/PaintNodes/NewNode';
+import { PaintNode } from '@/shared/components/PaintNodes/PaintNode';
 
 export interface RootNodeProps {
   node: ParserField;

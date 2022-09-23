@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Plus, Search, X } from '@/Graf/icons';
+import { Plus, Search, X } from '@/shared/icons';
 import styled from '@emotion/styled';
 import * as vars from '@/vars';
 

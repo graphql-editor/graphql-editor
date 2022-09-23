@@ -1,12 +1,12 @@
 import React, { useState, DragEvent, useRef } from 'react';
 import { ArrowLeft, SixDots } from '@/editor/icons';
 import { useSortState } from '@/state/containers/sort';
-import { dragLeaveHandler, dragOverHandler } from '@/Graf/Node/ActiveNode/dnd';
 import { TypeDefinition, TypeSystemDefinition } from 'graphql-js-tree';
 import styled from '@emotion/styled';
 import { fontFamily, fontFamilySans } from '@/vars';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
 import { useOnClickOutside } from '../../hooks';
+import { dragLeaveHandler, dragOverHandler } from '@/shared/dnd';
 
 type NodeType = keyof EditorTheme['colors'];
 

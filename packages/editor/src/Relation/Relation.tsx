@@ -2,21 +2,25 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { fontFamily, fontFamilySans } from '@/vars';
 import { useTreesState } from '@/state/containers/trees';
 import { useErrorsState, useRelationsState } from '@/state/containers';
-import { SearchInput, Toggle } from '@/shared/components';
+import { Toggle } from '@/shared/components';
 import styled from '@emotion/styled';
-import { GraphQLEditorDomStructure } from '@/domStructure';
-import { Heading } from '@/shared/components/Heading';
 import { LinesDiagram } from '@/Relation/LinesDiagram';
-import { BasicNodes } from '@/Relation/BasicNodes';
 import { toPng } from 'html-to-image';
 import { Clear, Export, Eye } from '@/editor/icons';
 import { useTheme } from '@emotion/react';
 import { ErrorLabel, ErrorWrapper } from '@/shared/components/ErrorStyles';
 import { useRouter } from '@/state/containers/router';
+import { PaintNodes } from '@/shared/components/PaintNodes/PaintNodes';
+import { useSortState } from '@/state/containers/sort';
+import * as vars from '@/vars';
+import { TopBar } from '@/shared/components/TopBar';
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ relationsOn?: boolean }>`
   flex: 1;
   width: 100%;
+  transition: ${vars.transition};
+  background: ${({ theme, relationsOn }) =>
+    relationsOn ? theme.background.mainFurthest : theme.background.mainFar};
 `;
 
 const ErrorContainer = styled.div`
@@ -34,19 +38,6 @@ const ErrorContainer = styled.div`
   color: ${({ theme }) => theme.text};
   background-color: ${({ theme }) => theme.background.mainFurthest};
   border: 1px solid ${({ theme }) => theme.error};
-`;
-
-const TopBar = styled.div`
-  background-color: ${({ theme }) => theme.background.mainFar};
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 12px;
-  padding: 4px 25px;
-  height: 60px;
-  font-family: ${fontFamilySans};
-  border-bottom: 2px solid ${({ theme }) => theme.contra};
-  width: 100%;
 `;
 
 const IconWrapper = styled.div`
@@ -106,19 +97,22 @@ const Label = styled.p`
   margin-left: 12px;
   color: ${({ theme }) => theme.text};
   font-family: ${fontFamilySans};
+  font-size: 12px;
 `;
 
-const HeadingWrapper = styled.div`
-  position: absolute;
-  top: 10px;
-  left: 25px;
-`;
 const Main = styled.div`
   height: calc(100vh - 60px);
   width: 100%;
   overflow: auto;
   font-family: ${fontFamily};
-  background-color: ${({ theme }) => theme.background.mainFurthest};
+`;
+
+const Menu = styled.div`
+  display: flex;
+  font-family: ${fontFamilySans};
+  gap: 12px;
+  align-items: center;
+  justify-content: flex-end;
 `;
 
 export const Relation: React.FC = () => {
@@ -137,7 +131,8 @@ export const Relation: React.FC = () => {
   } = useRelationsState();
   const { text } = useTheme();
 
-  const [filterNodes, setFilterNodes] = useState('');
+  const { filterNodes } = useSortState();
+
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -168,27 +163,10 @@ export const Relation: React.FC = () => {
   }, [mainRef]);
 
   return (
-    <Wrapper>
-      <TopBar>
-        <HeadingWrapper>
-          <Heading heading={lockGraf ? 'ERRORS' : 'RELATION VIEW'} />
-        </HeadingWrapper>
-        {!selectedNode?.field && !lockGraf && (
-          <SearchInput
-            cypressName={
-              GraphQLEditorDomStructure.tree.elements.Graf.searchInput
-            }
-            autoFocus={false}
-            onClear={() => {
-              setFilterNodes('');
-            }}
-            onSubmit={() => {}}
-            value={filterNodes}
-            onChange={setFilterNodes}
-          />
-        )}
+    <Wrapper relationsOn={!!selectedNode?.field}>
+      <TopBar heading={lockGraf ? 'ERRORS' : 'RELATION VIEW'}>
         {selectedNode?.field && (
-          <>
+          <Menu>
             <TogglesWrapper>
               <Label>View:</Label>
               <Toggle
@@ -229,11 +207,11 @@ export const Relation: React.FC = () => {
                 <Export size={22} fill={text} />
               </IconWrapper>
             )}
-          </>
+          </Menu>
         )}
       </TopBar>
       <Main onClick={() => setSelectedNode(undefined)}>
-        {!lockGraf && !selectedNode?.field && <BasicNodes />}
+        {!lockGraf && !selectedNode?.field && <PaintNodes disableOps />}
         {!lockGraf && selectedNode?.field && <LinesDiagram mainRef={mainRef} />}
         {lockGraf && (
           <ErrorWrapper

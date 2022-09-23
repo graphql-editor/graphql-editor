@@ -11,7 +11,7 @@ import {
   DetailMenuItem,
   Menu,
 } from '@/Graf/Node/components';
-import { More, Interface, Monkey, Plus, Tick, Arrq } from '@/Graf/icons';
+import { More, Interface, Monkey, Plus, Tick, Arrq } from '@/shared/icons';
 import {
   NodeAddDirectiveMenu,
   NodeDirectiveOptionsMenu,
@@ -19,7 +19,7 @@ import {
   NodeAddFieldMenu,
   NodeOperationsMenu,
   NodeFieldsRequiredMenu,
-} from '@/Graf/Node/ContextMenu';
+} from '@/shared/components/ContextMenu';
 import { useTreesState } from '@/state/containers/trees';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { useTheme } from '@/state/containers';
