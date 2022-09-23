@@ -29,6 +29,7 @@ const Content = styled.div<ContentProps>`
   text-overflow: ellipsis;
   border-radius: 10px;
   overflow: hidden;
+  margin: 15px;
   transition: 0.25s all ease-in-out;
   z-index: 1;
   flex: 1 0 auto;

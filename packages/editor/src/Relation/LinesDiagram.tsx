@@ -8,17 +8,17 @@ import { sortByConnection } from './Algorithm';
 import { Lines, RelationPath } from '@/Relation/Lines';
 import { isScalarArgument } from '@/GraphQL/Resolve';
 import * as vars from '@/vars';
-import { getTypeName } from 'graphql-js-tree';
+import { getTypeName, ParserField } from 'graphql-js-tree';
 
 const Main = styled.div`
-  width: 100%;
   position: relative;
+  overflow-x: scroll;
   font-family: ${fontFamily};
   align-items: flex-start;
   display: flex;
   padding: 20px;
   gap: 80px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   animation: show 1 0.5s ease-in-out;
   min-height: 100%;
   transition: ${vars.transition};
@@ -32,7 +32,13 @@ const Main = styled.div`
     }
   }
 `;
-
+const NodePane = styled.div`
+  padding: 1%;
+  align-self: center;
+  flex-flow: column nowrap;
+  z-index: 1;
+  width: 30%;
+`;
 let tRefs: Record<string, HTMLDivElement> = {};
 let refTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
 export type FilteredFieldsTypesProps = {
@@ -65,6 +71,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
     setRefsLoaded,
     setRelationDrawingNodes,
     relationDrawingNodes,
+    relationDrawingNodesArray,
     showRelatedTo,
     baseTypesOn,
     enumsOn,
@@ -142,7 +149,11 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
         : [];
       const resorted = sortByConnection(relatedNodes);
       const resortedRelatedTo = sortByConnection(relatedToNodes);
-      setRelationDrawingNodes([...resortedRelatedTo, selected, ...resorted]);
+      setRelationDrawingNodes({
+        parent: resortedRelatedTo,
+        selected,
+        children: resorted,
+      });
       return;
     }
   }, [
@@ -158,7 +169,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
   useLayoutEffect(() => {
     if (refsLoaded) {
       setRelations(
-        relationDrawingNodes
+        relationDrawingNodesArray
           .map((n) => ({
             to: { htmlNode: refs[n.id], field: n },
             fromLength: n.args?.length || 0,
@@ -167,7 +178,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
                 a.name.toLowerCase().includes(filteredFieldsTypes[n.id] || ''),
               )
               .map((a, index) => {
-                const pn = relationDrawingNodes.find(
+                const pn = relationDrawingNodesArray.find(
                   (nf) => nf.name === getTypeName(a.type.fieldType),
                 );
                 if (!pn) {
@@ -192,7 +203,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
           ),
       );
     }
-  }, [refs, relationDrawingNodes, refsLoaded]);
+  }, [refs, relationDrawingNodesArray, refsLoaded]);
   const SvgLinesContainer = useMemo(() => {
     return <Lines relations={relations} selectedNode={selectedNode?.field} />;
   }, [relations]);
@@ -200,41 +211,119 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
   const NodesContainer = useMemo(() => {
     const libraryNodeNames = libraryTree.nodes.map((l) => l.name);
 
-    const nodes =
-      schemaType === 'library'
-        ? [...relationDrawingNodes].filter((e) =>
-            libraryNodeNames.includes(e.name),
-          )
-        : [...relationDrawingNodes];
-    return nodes.map((n, i) => (
-      <Node
-        enums={enumsOn}
-        filteredFieldTypes={filteredFieldsTypes[n.id] || ''}
-        setFilteredFieldsTypes={(q) =>
-          setFilteredFieldsTypes((ftt) => ({
-            ...ftt,
-            [n.id]: q,
-          }))
-        }
-        isLibrary={
-          schemaType === 'library' ? true : libraryNodeNames.includes(n.name)
-        }
-        key={n.id}
-        setRef={(ref) => {
-          tRefs[n.id] = ref;
-          if (i === relationDrawingNodes.length - 1) {
-            if (refTimeout) {
-              clearTimeout(refTimeout);
-            }
-            refTimeout = setTimeout(() => {
-              setRefs(tRefs);
-              setRefsLoaded(true);
-            }, 10);
-          }
-        }}
-        field={n}
-      />
-    ));
+    const filterNodes = (nodes?: ParserField[]) =>
+      nodes
+        ? schemaType === 'library'
+          ? [...nodes].filter((e) => libraryNodeNames.includes(e.name))
+          : [...nodes]
+        : [];
+    return (
+      <>
+        {relationDrawingNodes?.parent.length && (
+          <NodePane>
+            {filterNodes(relationDrawingNodes?.parent).map((n, i) => (
+              <Node
+                enums={enumsOn}
+                filteredFieldTypes={filteredFieldsTypes[n.id] || ''}
+                setFilteredFieldsTypes={(q) =>
+                  setFilteredFieldsTypes((ftt) => ({
+                    ...ftt,
+                    [n.id]: q,
+                  }))
+                }
+                isLibrary={
+                  schemaType === 'library'
+                    ? true
+                    : libraryNodeNames.includes(n.name)
+                }
+                key={n.id}
+                setRef={(ref) => {
+                  tRefs[n.id] = ref;
+                  if (i === (relationDrawingNodes?.parent.length || 0) - 1) {
+                    if (refTimeout) {
+                      clearTimeout(refTimeout);
+                    }
+                    refTimeout = setTimeout(() => {
+                      setRefs(tRefs);
+                      setRefsLoaded(true);
+                    }, 10);
+                  }
+                }}
+                field={n}
+              />
+            ))}
+          </NodePane>
+        )}
+        <NodePane style={{ zIndex: 2 }}>
+          {relationDrawingNodes?.selected && (
+            <Node
+              enums={enumsOn}
+              filteredFieldTypes={
+                filteredFieldsTypes[relationDrawingNodes.selected.id] || ''
+              }
+              setFilteredFieldsTypes={(q) =>
+                setFilteredFieldsTypes((ftt) => ({
+                  ...ftt,
+                  [relationDrawingNodes.selected.id]: q,
+                }))
+              }
+              isLibrary={
+                schemaType === 'library'
+                  ? true
+                  : libraryNodeNames.includes(
+                      relationDrawingNodes.selected.name,
+                    )
+              }
+              key={relationDrawingNodes.selected.id}
+              setRef={(ref) => {
+                tRefs[relationDrawingNodes.selected.id] = ref;
+                if (refTimeout) {
+                  clearTimeout(refTimeout);
+                }
+                refTimeout = setTimeout(() => {
+                  setRefs(tRefs);
+                  setRefsLoaded(true);
+                }, 10);
+              }}
+              field={relationDrawingNodes.selected}
+            />
+          )}
+        </NodePane>
+        <NodePane>
+          {filterNodes(relationDrawingNodes?.children).map((n, i) => (
+            <Node
+              enums={enumsOn}
+              filteredFieldTypes={filteredFieldsTypes[n.id] || ''}
+              setFilteredFieldsTypes={(q) =>
+                setFilteredFieldsTypes((ftt) => ({
+                  ...ftt,
+                  [n.id]: q,
+                }))
+              }
+              isLibrary={
+                schemaType === 'library'
+                  ? true
+                  : libraryNodeNames.includes(n.name)
+              }
+              key={n.id}
+              setRef={(ref) => {
+                tRefs[n.id] = ref;
+                if (i === (relationDrawingNodes?.children.length || 0) - 1) {
+                  if (refTimeout) {
+                    clearTimeout(refTimeout);
+                  }
+                  refTimeout = setTimeout(() => {
+                    setRefs(tRefs);
+                    setRefsLoaded(true);
+                  }, 10);
+                }
+              }}
+              field={n}
+            />
+          ))}
+        </NodePane>
+      </>
+    );
   }, [schemaType, relationDrawingNodes]);
 
   return (
