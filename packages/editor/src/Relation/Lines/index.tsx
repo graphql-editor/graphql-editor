@@ -69,7 +69,6 @@ export const Lines: React.FC<LinesProps> = ({
         if (!showAllPaths && !fromField && !toField) return null;
         return (
           <Draw
-            hasSearch={r.fromLength > 10}
             active={fromField || toField}
             inverse={fromField}
             relationNumber={relationNumber}

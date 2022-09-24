@@ -8,7 +8,7 @@ import { sortByConnection } from './Algorithm';
 import { Lines, RelationPath } from '@/Relation/Lines';
 import { isScalarArgument } from '@/GraphQL/Resolve';
 import * as vars from '@/vars';
-import { getTypeName, ParserField } from 'graphql-js-tree';
+import { ParserField, compileType, getTypeName } from 'graphql-js-tree';
 import { useRouter } from '@/state/containers/router';
 
 const Main = styled.div`
@@ -18,10 +18,11 @@ const Main = styled.div`
   align-items: flex-start;
   display: flex;
   padding: 20px;
-  gap: 80px;
+  gap: 120px;
   flex-wrap: nowrap;
   animation: show 1 0.5s ease-in-out;
   min-height: 100%;
+  margin: auto;
   transition: ${vars.transition};
 
   @keyframes show {
@@ -33,12 +34,16 @@ const Main = styled.div`
     }
   }
 `;
-const NodePane = styled.div`
-  padding: 1%;
+const NodePane = styled.div<{ maxCharsInLine: number }>`
   align-self: center;
   flex-flow: column nowrap;
+  margin: auto;
   z-index: 1;
-  width: 30%;
+  font-size: 12px;
+  align-items: flex-end;
+  display: flex;
+  width: ${({ maxCharsInLine }) => maxCharsInLine}ch;
+  padding-bottom: 200px;
 `;
 let tRefs: Record<string, HTMLDivElement> = {};
 let refTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
@@ -213,6 +218,17 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
     return <Lines relations={relations} selectedNode={selectedNode?.field} />;
   }, [relations]);
 
+  const maximumCharsInLine = useMemo(
+    () => ({
+      parent: findMaxCharacters(relationDrawingNodes?.parent || []),
+      selected: findMaxCharacters(
+        relationDrawingNodes?.selected ? [relationDrawingNodes.selected] : [],
+      ),
+      children: findMaxCharacters(relationDrawingNodes?.children || []),
+    }),
+    [relationDrawingNodes],
+  );
+
   const NodesContainer = useMemo(() => {
     tRefs = {};
     setRelations([]);
@@ -230,7 +246,10 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
     return (
       <>
         {relationDrawingNodes?.parent.length && (
-          <NodePane>
+          <NodePane
+            style={{ alignItems: 'start' }}
+            maxCharsInLine={maximumCharsInLine.parent}
+          >
             {filterNodes(relationDrawingNodes?.parent).map((n, i) => (
               <Node
                 enums={enumsOn}
@@ -264,7 +283,10 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
             ))}
           </NodePane>
         )}
-        <NodePane style={{ zIndex: 2 }}>
+        <NodePane
+          maxCharsInLine={maximumCharsInLine.selected}
+          style={{ zIndex: 2, alignItems: 'center' }}
+        >
           {relationDrawingNodes?.selected && (
             <Node
               enums={enumsOn}
@@ -299,7 +321,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
             />
           )}
         </NodePane>
-        <NodePane>
+        <NodePane maxCharsInLine={maximumCharsInLine.children}>
           {filterNodes(relationDrawingNodes?.children)
             .sort((a, b) => {
               const aIndex =
@@ -356,3 +378,16 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
     </Main>
   );
 };
+
+const findMaxCharacters = (nodes: ParserField[], padding = 20) =>
+  Math.max(
+    0,
+    ...nodes.map((n) =>
+      Math.max(
+        ...n.args.map(
+          (na) => na.name.length + compileType(na.type.fieldType).length,
+        ),
+        n.name.length + compileType(n.type.fieldType).length,
+      ),
+    ),
+  ) + padding;

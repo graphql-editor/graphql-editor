@@ -9,7 +9,7 @@ import { RELATION_CONSTANTS } from '@/Relation/Lines/constants';
 
 const Name = styled.div`
   font-size: ${FIELD_NAME_SIZE};
-  margin-right: 4px;
+  margin-right: 30px;
   white-space: nowrap;
   min-width: 30px;
 `;
@@ -21,8 +21,9 @@ const Main = styled.div<{ isActive?: boolean }>`
   justify-content: space-between;
   height: ${RELATION_CONSTANTS.FIELD_HEIGHT}px;
   font-size: 12px;
+  padding: 0 12px;
   color: ${({ theme }) => theme.backgroundedText};
-  margin: 0;
+  margin: 0 -12px;
   transition: background-color 0.25s ease-in-out;
   cursor: pointer;
 

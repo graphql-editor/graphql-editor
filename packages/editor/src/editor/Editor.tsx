@@ -64,7 +64,8 @@ const ErrorOuterContainer = styled.div<{ isOverflow?: boolean }>`
   width: 100%;
   position: relative;
   display: flex;
-  overflow: ${({ isOverflow }) => isOverflow && 'auto'};
+  overflow-y: ${({ isOverflow }) => isOverflow && 'auto'};
+  overflow-x: hidden;
 `;
 
 export interface EditorProps extends Theming {

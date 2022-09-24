@@ -18,6 +18,7 @@ import { TopBar } from '@/shared/components/TopBar';
 const Wrapper = styled.div<{ relationsOn?: boolean }>`
   flex: 1;
   width: 100%;
+  overflow: hidden;
   transition: ${vars.transition};
   background: ${({ theme, relationsOn }) =>
     relationsOn ? theme.background.mainFurthest : theme.background.mainFar};
@@ -103,7 +104,7 @@ const Label = styled.p`
 const Main = styled.div`
   height: calc(100vh - 60px);
   width: 100%;
-  overflow: auto;
+  overflow-y: auto;
   font-family: ${fontFamily};
 `;
 
@@ -112,6 +113,7 @@ const Menu = styled.div`
   font-family: ${fontFamilySans};
   gap: 12px;
   align-items: center;
+  position: relative;
   justify-content: flex-end;
 `;
 

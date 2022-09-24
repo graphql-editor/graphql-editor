@@ -15,7 +15,6 @@ const TopBarComponent = styled.div`
   align-items: center;
   padding: 8px 25px 8px;
   height: 60px;
-  margin-bottom: 20px;
   background-color: ${({ theme }) => theme.background.mainFar};
   border-bottom: 1px solid ${({ theme }) => theme.disabled}36;
 `;

@@ -22,6 +22,7 @@ const Main = styled.div<{ openedNode?: boolean }>`
   font-family: ${fontFamily};
   transition: opacity 0.25s ease-in-out;
   padding-bottom: 300px;
+  padding-top: 20px;
 `;
 
 const LineSpacer = styled.div`

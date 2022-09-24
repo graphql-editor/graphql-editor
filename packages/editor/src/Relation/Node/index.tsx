@@ -34,7 +34,6 @@ const Content = styled.div<ContentProps>`
   z-index: 1;
   flex: 1 0 auto;
   cursor: ${({ isSelected }) => (isSelected ? 'auto' : 'pointer')};
-  max-width: 400px;
   border-width: 1px;
   border-style: ${({ isLibrary }) => (isLibrary ? 'dashed' : 'solid')};
   border-color: ${({ theme, nodeType, isSelected }) =>
@@ -48,13 +47,12 @@ const Content = styled.div<ContentProps>`
 `;
 
 const NodeRelationFields = styled.div``;
-const NodeType = styled.div``;
 
 const NodeTitle = styled.div`
-  align-items: stretch;
+  align-items: center;
   color: ${({ theme }) => theme.backgroundedText};
   font-size: 14px;
-  padding: 10px 0;
+  height: 40px;
   display: flex;
 `;
 
@@ -153,17 +151,15 @@ export const Node: React.FC<NodeProps> = ({
           <NodeName>
             <NameInRelation>{field.name}</NameInRelation>
           </NodeName>
-          <NodeType>
-            <ActiveType type={field.type} />
-          </NodeType>
+          <ActiveType type={field.type} />
+          {!(!enums && field.data.type === TypeDefinition.EnumTypeDefinition) &&
+            (field?.args?.length || 0) > 10 && (
+              <NodeSearchFields
+                value={filteredFieldTypes}
+                handleSearch={handleSearch}
+              />
+            )}
         </NodeTitle>
-        {!(!enums && field.data.type === TypeDefinition.EnumTypeDefinition) &&
-          (field?.args?.length || 0) > 10 && (
-            <NodeSearchFields
-              value={filteredFieldTypes}
-              handleSearch={handleSearch}
-            />
-          )}
       </ContentWrapper>
     ),
     [field, theme, selectedNode, enums, filteredFieldTypes],

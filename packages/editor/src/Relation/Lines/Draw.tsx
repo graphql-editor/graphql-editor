@@ -26,7 +26,6 @@ export const Draw = ({
   inActiveColor,
   PortNumber,
   maxIndex,
-  hasSearch,
   relationNumber,
 }: {
   from?: HTMLDivElement;
@@ -35,7 +34,6 @@ export const Draw = ({
   inActiveColor: string;
   active?: boolean;
   inverse?: boolean;
-  hasSearch?: boolean;
   PortNumber: number;
   maxIndex: number;
   relationNumber: number;
@@ -46,9 +44,6 @@ export const Draw = ({
       RELATION_CONSTANTS.TOP_HEIGHT +
       PortNumber * RELATION_CONSTANTS.FIELD_HEIGHT +
       RELATION_CONSTANTS.FIELD_HEIGHT / 2;
-    if (hasSearch) {
-      pos = pos + RELATION_CONSTANTS.SEARCHBAR_HEIGHT;
-    }
     const f = {
       x: from.offsetLeft,
       y: from.offsetTop,

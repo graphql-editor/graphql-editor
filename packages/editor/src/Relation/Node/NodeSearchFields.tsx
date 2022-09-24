@@ -20,7 +20,10 @@ const StyledSearchInput = styled.input`
     color: ${({ theme }) => theme.disabled};
   }
 `;
-
+const Wrapper = styled.div`
+  margin-left: 20px;
+  flex: 1;
+`;
 type SearchInputProps = {
   handleSearch: (searchValue: string) => void;
   value: string;
@@ -29,13 +32,15 @@ type SearchInputProps = {
 export const NodeSearchFields: React.FC<SearchInputProps> = React.memo(
   ({ handleSearch, value }) => {
     return (
-      <StyledSearchInput
-        placeholder="Search..."
-        type="text"
-        value={value}
-        onClick={(e) => e.stopPropagation()}
-        onChange={(e) => handleSearch(e.target.value)}
-      />
+      <Wrapper>
+        <StyledSearchInput
+          placeholder="Search..."
+          type="text"
+          value={value}
+          onClick={(e) => e.stopPropagation()}
+          onChange={(e) => handleSearch(e.target.value)}
+        />
+      </Wrapper>
     );
   },
 );
