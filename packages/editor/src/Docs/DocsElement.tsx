@@ -17,7 +17,6 @@ const Wrapper = styled.div`
   font-size: 14px;
   padding: 40px 50px;
   max-width: 960px;
-  margin: auto;
 `;
 
 const Top = styled.div`

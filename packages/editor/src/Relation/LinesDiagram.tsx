@@ -8,7 +8,7 @@ import { sortByConnection } from './Algorithm';
 import { Lines, RelationPath } from '@/Relation/Lines';
 import { isScalarArgument } from '@/GraphQL/Resolve';
 import * as vars from '@/vars';
-import { ParserField, compileType, getTypeName } from 'graphql-js-tree';
+import { ParserField, getTypeName } from 'graphql-js-tree';
 import { useRouter } from '@/state/containers/router';
 
 const Main = styled.div`
@@ -34,7 +34,7 @@ const Main = styled.div`
     }
   }
 `;
-const NodePane = styled.div<{ maxCharsInLine: number }>`
+const NodePane = styled.div`
   align-self: center;
   flex-flow: column nowrap;
   margin: auto;
@@ -42,7 +42,6 @@ const NodePane = styled.div<{ maxCharsInLine: number }>`
   font-size: 12px;
   align-items: flex-end;
   display: flex;
-  width: ${({ maxCharsInLine }) => maxCharsInLine}ch;
   padding-bottom: 200px;
 `;
 let tRefs: Record<string, HTMLDivElement> = {};
@@ -214,26 +213,13 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
   }, [refs, relationDrawingNodesArray, refsLoaded]);
 
   const SvgLinesContainer = useMemo(() => {
+    console.log(relations);
     console.log('REDRAWING LINSES');
     return <Lines relations={relations} selectedNode={selectedNode?.field} />;
   }, [relations]);
 
-  const maximumCharsInLine = useMemo(
-    () => ({
-      parent: findMaxCharacters(relationDrawingNodes?.parent || []),
-      selected: findMaxCharacters(
-        relationDrawingNodes?.selected ? [relationDrawingNodes.selected] : [],
-      ),
-      children: findMaxCharacters(relationDrawingNodes?.children || []),
-    }),
-    [relationDrawingNodes],
-  );
-
   const NodesContainer = useMemo(() => {
     tRefs = {};
-    setRelations([]);
-    setRefs({});
-    setRefsLoaded(false);
     console.log('RELOADING CONTIAINRE');
     const libraryNodeNames = libraryTree.nodes.map((l) => l.name);
 
@@ -243,13 +229,27 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
           ? [...nodes].filter((e) => libraryNodeNames.includes(e.name))
           : [...nodes]
         : [];
+    const setRef = (n: ParserField, ref: HTMLDivElement) => {
+      tRefs[n.id] = ref;
+      const renderedRefs = Object.keys(tRefs).length;
+      const length =
+        (showRelatedTo ? relationDrawingNodes?.parent.length || 0 : 0) +
+        (relationDrawingNodes?.children.length || 0) +
+        1;
+      if (renderedRefs === length) {
+        if (refTimeout) {
+          clearTimeout(refTimeout);
+        }
+        refTimeout = setTimeout(() => {
+          setRefs(tRefs);
+          setRefsLoaded(true);
+        }, 10);
+      }
+    };
     return (
       <>
         {relationDrawingNodes?.parent.length && (
-          <NodePane
-            style={{ alignItems: 'start' }}
-            maxCharsInLine={maximumCharsInLine.parent}
-          >
+          <NodePane style={{ alignItems: 'start' }}>
             {filterNodes(relationDrawingNodes?.parent).map((n, i) => (
               <Node
                 enums={enumsOn}
@@ -267,26 +267,14 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
                 }
                 key={n.id}
                 setRef={(ref) => {
-                  tRefs[n.id] = ref;
-                  if (i === (relationDrawingNodes?.parent.length || 0) - 1) {
-                    if (refTimeout) {
-                      clearTimeout(refTimeout);
-                    }
-                    refTimeout = setTimeout(() => {
-                      setRefs(tRefs);
-                      setRefsLoaded(true);
-                    }, 10);
-                  }
+                  setRef(n, ref);
                 }}
                 field={n}
               />
             ))}
           </NodePane>
         )}
-        <NodePane
-          maxCharsInLine={maximumCharsInLine.selected}
-          style={{ zIndex: 2, alignItems: 'center' }}
-        >
+        <NodePane style={{ zIndex: 2, alignItems: 'center' }}>
           {relationDrawingNodes?.selected && (
             <Node
               enums={enumsOn}
@@ -308,20 +296,13 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
               }
               key={relationDrawingNodes.selected.id}
               setRef={(ref) => {
-                tRefs[relationDrawingNodes.selected.id] = ref;
-                if (refTimeout) {
-                  clearTimeout(refTimeout);
-                }
-                refTimeout = setTimeout(() => {
-                  setRefs(tRefs);
-                  setRefsLoaded(true);
-                }, 10);
+                setRef(relationDrawingNodes.selected, ref);
               }}
               field={relationDrawingNodes.selected}
             />
           )}
         </NodePane>
-        <NodePane maxCharsInLine={maximumCharsInLine.children}>
+        <NodePane>
           {filterNodes(relationDrawingNodes?.children)
             .sort((a, b) => {
               const aIndex =
@@ -352,16 +333,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
                 }
                 key={n.id}
                 setRef={(ref) => {
-                  tRefs[n.id] = ref;
-                  if (i === (relationDrawingNodes?.children.length || 0) - 1) {
-                    if (refTimeout) {
-                      clearTimeout(refTimeout);
-                    }
-                    refTimeout = setTimeout(() => {
-                      setRefs(tRefs);
-                      setRefsLoaded(true);
-                    }, 10);
-                  }
+                  setRef(n, ref);
                 }}
                 field={n}
               />
@@ -378,16 +350,3 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
     </Main>
   );
 };
-
-const findMaxCharacters = (nodes: ParserField[], padding = 20) =>
-  Math.max(
-    0,
-    ...nodes.map((n) =>
-      Math.max(
-        ...n.args.map(
-          (na) => na.name.length + compileType(na.type.fieldType).length,
-        ),
-        n.name.length + compileType(n.type.fieldType).length,
-      ),
-    ),
-  ) + padding;

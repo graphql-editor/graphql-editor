@@ -203,11 +203,6 @@ export const ActiveNode: React.FC<NodeProps> = ({
     setOpenedNode(undefined);
   }, [selectedNode]);
 
-  const inactiveClick = () => {
-    if (openedNode) {
-      setOpenedNode(undefined);
-    }
-  };
   const openedNodeNode = openedNode
     ? openedNode.type === 'directives'
       ? node.directives![openedNode.index]
@@ -253,7 +248,14 @@ export const ActiveNode: React.FC<NodeProps> = ({
       )}
       {openedNodeNode && openedNode && (
         <OpenedNode>
-          <GapBar onClick={inactiveClick} />
+          <GapBar
+            onClick={(e) => {
+              e.stopPropagation();
+              if (openedNode) {
+                setOpenedNode(undefined);
+              }
+            }}
+          />
           <NodeArea>
             <ActiveNode
               {...sharedProps}

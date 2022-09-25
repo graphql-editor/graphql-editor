@@ -25,6 +25,7 @@ const md = new Remarkable();
 
 const ListWrapper = styled.div`
   margin-bottom: 12px;
+  margin-left: 10px;
   flex: 1 1 auto;
   min-height: 0;
   word-wrap: normal;
@@ -35,7 +36,6 @@ const FieldsWrapper = styled.div`
   flex-direction: column;
   width: 90%;
   margin-bottom: 8px;
-  border-bottom: 1px solid ${({ theme }) => theme.disabled}36;
 `;
 
 const TitleWrapper = styled.div<{ isType: boolean }>`

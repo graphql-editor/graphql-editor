@@ -1,6 +1,7 @@
 import { RELATION_CONSTANTS } from '@/Relation/Lines/constants';
+import { useThrottledValue } from '@/shared/hooks/useThrottledValue';
 import styled from '@emotion/styled';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 const StyledSearchInput = styled.input`
   background-color: ${({ theme }) => theme.background.mainMiddle};
@@ -31,14 +32,22 @@ type SearchInputProps = {
 
 export const NodeSearchFields: React.FC<SearchInputProps> = React.memo(
   ({ handleSearch, value }) => {
+    const {
+      liveValue,
+      setValue,
+      value: delayedValue,
+    } = useThrottledValue({ initialValue: value });
+    useEffect(() => {
+      handleSearch(delayedValue || '');
+    }, [delayedValue]);
     return (
       <Wrapper>
         <StyledSearchInput
           placeholder="Search..."
           type="text"
-          value={value}
+          value={liveValue}
           onClick={(e) => e.stopPropagation()}
-          onChange={(e) => handleSearch(e.target.value)}
+          onChange={(e) => setValue(e.target.value)}
         />
       </Wrapper>
     );

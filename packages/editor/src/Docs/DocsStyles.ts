@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 
 export const DescText = styled.p`
-  margin-right: 8px;
+  margin: 0 10px;
   color: ${({ theme }) => theme.disabled};
 `;
 

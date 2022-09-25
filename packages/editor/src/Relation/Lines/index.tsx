@@ -46,6 +46,7 @@ export const Lines: React.FC<LinesProps> = ({
   }, [relations]);
 
   const RelationSVGS = useMemo(() => {
+    console.log(relations, 'Lines RelationSVGS', selectedNode);
     return relations?.map((r, index) => {
       const usedToIndexes: number[] = [];
       return r.from?.map((rf, relationNumber) => {
@@ -67,6 +68,7 @@ export const Lines: React.FC<LinesProps> = ({
           usedToIndexes.push(portNumber);
         }
         if (!showAllPaths && !fromField && !toField) return null;
+        console.log('DRAWS', rf.htmlNode, r.to.htmlNode);
         return (
           <Draw
             active={fromField || toField}
@@ -86,6 +88,6 @@ export const Lines: React.FC<LinesProps> = ({
       });
     });
   }, [relationContent]);
-
+  console.log(RelationSVGS);
   return <RelationsContainer>{RelationSVGS}</RelationsContainer>;
 };
