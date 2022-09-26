@@ -197,7 +197,6 @@ export const Graf: React.FC = () => {
       <Wrapper
         ref={wrapperRef}
         onClick={() => {
-          console.log('WRAPPERCLICK');
           setSelectedNode(undefined);
         }}
         data-cy={GraphQLEditorDomStructure.tree.elements.Graf.name}

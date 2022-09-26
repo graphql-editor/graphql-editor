@@ -13,7 +13,7 @@ import { useRouter } from '@/state/containers/router';
 
 const Main = styled.div`
   position: relative;
-  overflow-x: scroll;
+  overflow-x: visible;
   font-family: ${fontFamily};
   align-items: flex-start;
   display: flex;
@@ -56,9 +56,16 @@ const scrollToRef = (fieldName: string): unknown => {
   if (!ref) {
     return setTimeout(scrollToRef, 10);
   }
-  ref.scrollIntoView({
-    block: 'center',
+  const scrollableArea = ref.parentElement?.parentElement?.parentElement;
+  const scrollableAreaHeight = scrollableArea?.offsetHeight || 1;
+  const nodeHeight = ref.offsetHeight || 1;
+  const top =
+    nodeHeight > scrollableAreaHeight / 1.2
+      ? scrollableAreaHeight / 4.0
+      : scrollableAreaHeight / 2.0 - nodeHeight / 2.0;
+  scrollableArea?.scrollTo({
     behavior: 'smooth',
+    top: ref.offsetTop - top,
   });
 };
 
@@ -174,7 +181,6 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
 
   useLayoutEffect(() => {
     if (refsLoaded) {
-      console.log('RELOADING RELATIONS');
       setRelations(
         relationDrawingNodesArray
           .map((n) => ({
@@ -213,14 +219,16 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
   }, [refs, relationDrawingNodesArray, refsLoaded]);
 
   const SvgLinesContainer = useMemo(() => {
-    console.log(relations);
-    console.log('REDRAWING LINSES');
     return <Lines relations={relations} selectedNode={selectedNode?.field} />;
   }, [relations]);
 
+  useEffect(() => {
+    setRefsLoaded(false);
+    setRelations([]);
+  }, [routes.code]);
+
   const NodesContainer = useMemo(() => {
     tRefs = {};
-    console.log('RELOADING CONTIAINRE');
     const libraryNodeNames = libraryTree.nodes.map((l) => l.name);
 
     const filterNodes = (nodes?: ParserField[]) =>

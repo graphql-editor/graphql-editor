@@ -16,6 +16,7 @@ const TopBarComponent = styled.div`
   padding: 8px 25px 8px;
   height: 60px;
   background-color: ${({ theme }) => theme.background.mainFar};
+  position: relative;
   border-bottom: 1px solid ${({ theme }) => theme.disabled}36;
 `;
 const SortWrapper = styled.div`
