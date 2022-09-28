@@ -34,6 +34,7 @@ const Main = styled.div`
     }
   }
 `;
+
 const NodePane = styled.div`
   align-self: center;
   flex-flow: column nowrap;

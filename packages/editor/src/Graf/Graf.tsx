@@ -191,7 +191,6 @@ export const Graf: React.FC = () => {
     setTree,
     tree,
   ]);
-
   return (
     <>
       <Wrapper

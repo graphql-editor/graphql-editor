@@ -185,8 +185,9 @@ const useTreesStateContainer = createContainer(() => {
             );
           },
         );
+      } else {
+        setLockGraf(undefined);
       }
-      setLockGraf(undefined);
     } catch (error) {
       await GraphQLEditorWorker.validate(schema.code, schema.libraries).then(
         (errors) => {

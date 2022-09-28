@@ -16,7 +16,7 @@ export interface CodePaneOuterProps {
 export type CodePaneProps = {
   size: number | string;
   schema: string;
-  onChange: (v: string, isInvalid?: string) => void;
+  onChange: (v: string) => void;
   libraries?: string;
   fullScreen?: boolean;
 } & CodePaneOuterProps;

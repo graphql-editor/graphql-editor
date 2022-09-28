@@ -107,7 +107,6 @@ export const Editor = ({
   const {
     grafErrors,
     setGrafErrors,
-    setLockGraf,
     setLockCode,
     setGrafEditorErrors,
     setGrafErrorSchema,
@@ -306,12 +305,8 @@ export const Editor = ({
           >
             <CodePane
               size={!routes.pane ? 100000 : sidebarSize}
-              onChange={(v, isInvalid) => {
-                if (isInvalid) {
-                  setLockGraf(isInvalid);
-                  return;
-                }
-                setSchema({ ...schema, code: v, isTree: false }, !!isInvalid);
+              onChange={(v) => {
+                setSchema({ ...schema, code: v, isTree: false });
               }}
               schema={
                 schema.libraries && schemaType === 'library'
