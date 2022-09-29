@@ -145,7 +145,7 @@ render(<App />, document.getElementById('root'));
 ```tsx
 import React, { useState } from 'react';
 import { render } from 'react-dom';
-import { GraphQLGqlEditor, PassedSchema } from 'graphql-editor';
+import { GraphQLGqlEditor } from 'graphql-editor';
 
 const schema = `
 type Query{
@@ -187,7 +187,7 @@ render(<App />, document.getElementById('root'));
 | schema      | `PassedSchema`                                        | value of the schema        |
 | gql         | `string`                                              | value of the gql           |
 | placeholder | `string`                                              | placeholder - empty editor |
-| setGql      | `(props: PassedSchema, isInvalid?: boolean) => void;` | set value of the gql       |
+| setGql      | `(gql: string) => void;`                              | set value of the gql       |
 | readonly    | `boolean`                                             | lock editing               |
 | theme       | `EditorTheme`                                         | current theme              |
 
