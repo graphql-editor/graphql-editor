@@ -77,7 +77,7 @@ type Query{
 `,
   pizzaLibrary: `
 type Pizza{
-  name:String;
+  name: String
 }
 `,
 };
@@ -99,7 +99,7 @@ export const App = () => {
       }}
     >
       <GraphQLEditor
-        onSchemaChange={(props) => {
+        setSchema={(props) => {
           setMySchema(props);
         }}
         schema={mySchema}
