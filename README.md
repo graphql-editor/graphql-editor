@@ -145,7 +145,7 @@ render(<App />, document.getElementById('root'));
 ```tsx
 import React, { useState } from 'react';
 import { render } from 'react-dom';
-import { GraphQLEditor, PassedSchema } from 'graphql-editor';
+import { GraphQLGqlEditor, PassedSchema } from 'graphql-editor';
 
 const schema = `
 type Query{
@@ -180,7 +180,7 @@ render(<App />, document.getElementById('root'));
 
 ### GraphQLGqlEditor component props
 
-**GraphQLEditor**
+**GraphQLGqlEditor**
 
 | property    | type                                                  | description                |
 | ----------- | ----------------------------------------------------- | -------------------------- |
