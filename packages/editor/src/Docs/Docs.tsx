@@ -47,6 +47,9 @@ const SearchWrapper = styled.div`
   padding: 20px;
   position: sticky;
   width: 100%;
+  top: 0;
+  background: ${({ theme }) => theme.background.mainFurther};
+  z-index: 2;
 `;
 
 export const Docs = () => {

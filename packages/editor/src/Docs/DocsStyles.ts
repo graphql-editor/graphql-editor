@@ -34,11 +34,14 @@ export const Title = styled.div<{ subTitle: boolean }>`
   }
 `;
 
-export const DescWrapper = styled.div<{ isSvgVisible: boolean }>`
+export const DescWrapper = styled.div<{
+  isSvgVisible: boolean;
+  readonly?: boolean;
+}>`
   display: flex;
   flex-direction: row;
   align-items: center;
-  cursor: pointer;
+  cursor: ${({ readonly }) => (readonly ? 'auto' : 'pointer')};
 
   svg {
     opacity: ${({ isSvgVisible }) => (isSvgVisible ? 1 : 0)};

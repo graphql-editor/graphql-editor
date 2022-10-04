@@ -82,8 +82,9 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
         />
       ) : (
         <DescWrapper
+          readonly={readonly}
           isSvgVisible={!description}
-          onClick={() => setIsEdit(true)}
+          onClick={() => !readonly && setIsEdit(true)}
         >
           <DescText
             dangerouslySetInnerHTML={{

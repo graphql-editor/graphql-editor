@@ -11,7 +11,12 @@ import { darken, toHex } from 'color2k';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { getScalarFields } from '@/Graf/utils/getScalarFields';
 import { findInNodes } from '@/compare/compareNodes';
-import { ParserField } from 'graphql-js-tree';
+import {
+  Options,
+  ParserField,
+  createParserField,
+  TypeDefinition,
+} from 'graphql-js-tree';
 import styled from '@emotion/styled';
 import { ErrorLabel, ErrorWrapper } from '@/shared/components/ErrorStyles';
 import { PaintNodes } from '@/shared/components/PaintNodes/PaintNodes';
@@ -159,15 +164,21 @@ export const Graf: React.FC = () => {
             onInputCreate={(nodeToCreateInput) => {
               const allNodes = [...tree.nodes];
               const createdInput = JSON.parse(
-                JSON.stringify({
-                  ...node,
-                  args: getScalarFields(node, scalars),
-                  interfaces: [],
-                  directives: [],
-                  type: { name: 'input' },
-                  data: { type: 'InputObjectTypeDefinition' },
-                  name: nodeToCreateInput.name + 'Input',
-                }),
+                JSON.stringify(
+                  createParserField({
+                    args: getScalarFields(node, scalars),
+                    interfaces: [],
+                    directives: [],
+                    type: {
+                      fieldType: {
+                        name: 'input',
+                        type: Options.name,
+                      },
+                    },
+                    data: { type: TypeDefinition.InputObjectTypeDefinition },
+                    name: nodeToCreateInput.name + 'Input',
+                  }),
+                ),
               ) as ParserField;
               allNodes.push(createdInput);
               setSelectedNode({

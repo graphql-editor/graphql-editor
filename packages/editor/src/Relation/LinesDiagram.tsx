@@ -220,13 +220,14 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
   }, [refs, relationDrawingNodesArray, refsLoaded]);
 
   const SvgLinesContainer = useMemo(() => {
+    console.log('RERendering relations');
     return <Lines relations={relations} selectedNode={selectedNode?.field} />;
   }, [relations]);
 
   useEffect(() => {
     setRefsLoaded(false);
     setRelations([]);
-  }, [routes.code]);
+  }, [routes.code, selectedNode, enumsOn]);
 
   const NodesContainer = useMemo(() => {
     tRefs = {};

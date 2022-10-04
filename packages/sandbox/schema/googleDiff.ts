@@ -191,6 +191,13 @@ type Query{
 	): Direction
 }
 
+type OneType{
+	fff: String
+}
+
+type OtherType{
+	one: OneType
+}
 type User{
 	id: ID!
 	username: String!

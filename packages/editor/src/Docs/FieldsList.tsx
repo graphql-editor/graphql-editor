@@ -105,7 +105,9 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
             ) : (
               <DescWrapper
                 isSvgVisible={!arg.description}
+                readonly={readonly}
                 onClick={() => {
+                  if (readonly) return;
                   setEditedIdx(i);
                   setIsEdit(true);
                 }}

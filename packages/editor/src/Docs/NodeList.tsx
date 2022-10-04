@@ -13,7 +13,7 @@ const List = styled.div`
 const NodeText = styled.a<{ active?: boolean }>`
   font-family: ${fontFamilySans};
   font-weight: ${({ active }) => (active ? 'bold' : 'normal')};
-  color: ${({ theme, active }) => (active ? theme.active : theme.disabled)};
+  color: ${({ theme, active }) => (active ? theme.active : theme.inactive)};
   cursor: pointer;
   display: block;
   font-size: 14px;
@@ -23,12 +23,16 @@ const NodeText = styled.a<{ active?: boolean }>`
   }
 `;
 
-const Title = styled.div<{ open?: boolean; nodeInsideSelected?: boolean }>`
+const Title = styled.div<{
+  open?: boolean;
+  nodeInsideSelected?: boolean;
+  empty?: boolean;
+}>`
   font-family: ${fontFamilySans};
   font-weight: 600;
-  cursor: pointer;
-  color: ${({ theme, nodeInsideSelected }) =>
-    nodeInsideSelected ? theme.active : theme.text};
+  cursor: ${({ empty }) => (empty ? 'auto' : 'pointer')};
+  color: ${({ theme, nodeInsideSelected, empty }) =>
+    empty ? theme.disabled : nodeInsideSelected ? theme.active : theme.text};
   margin: 0;
   font-size: 14px;
   padding-bottom: 5px;
@@ -69,15 +73,17 @@ export const NodeList: React.FC<NodeListI> = ({
     !!selectedNode?.field?.name &&
     nodeList?.map((n) => n.name).includes(selectedNode?.field?.name);
   const open = expanded.includes(listTitle);
+  const empty = !nodeList?.length;
   return (
     <List>
       <Title
+        empty={empty}
         nodeInsideSelected={nodeInsideSelected}
         onClick={() => setExpanded(listTitle)}
         open={open}
       >
         <div>{listTitle}</div>
-        <Arrow size={14} />
+        {!empty && <Arrow size={14} />}
       </Title>
       {open &&
         nodeList &&
