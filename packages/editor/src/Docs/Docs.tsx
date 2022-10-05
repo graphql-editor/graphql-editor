@@ -1,6 +1,7 @@
 import { DocsElement } from '@/Docs/DocsElement';
 import { NodeList } from '@/Docs/NodeList';
 import { SearchInput } from '@/shared/components';
+import { useIO, KeyboardActions } from '@/shared/hooks/io';
 import { useTreesState } from '@/state/containers';
 import { useSortState } from '@/state/containers/sort';
 import styled from '@emotion/styled';
@@ -10,7 +11,7 @@ import {
   TypeDefinition,
   TypeSystemDefinition,
 } from 'graphql-js-tree';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -57,6 +58,16 @@ export const Docs = () => {
   const { sortAlphabetically } = useSortState();
   const [q, setQ] = useState('');
   const [listExpanded, setListExpanded] = useState<Array<string>>([]);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const { mount } = useIO();
+  useEffect(() => {
+    const mounted = mount({
+      [KeyboardActions.FindRelation]: () => {
+        searchRef.current?.focus();
+      },
+    });
+    return mounted.dispose;
+  }, []);
 
   const splittedNodes = useMemo(() => {
     const enumNodes: ParserField[] = [];
@@ -123,6 +134,7 @@ export const Docs = () => {
       <ListContainer>
         <SearchWrapper>
           <SearchInput
+            ref={searchRef}
             onChange={(e) => {
               setQ(e);
             }}

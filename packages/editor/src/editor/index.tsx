@@ -3,7 +3,6 @@ import { Editor, EditorProps } from './Editor';
 import {
   TreesStateProvider,
   ErrorsStateProvider,
-  IOStateProvider,
   ThemeProvider,
   RelationsProvider,
 } from '@/state/containers';
@@ -24,11 +23,9 @@ export const GraphQLEditor = ({ ...props }: EditorProps) => {
             <RelationsProvider>
               <SortStateProvider>
                 <LayoutStateProvider>
-                  <IOStateProvider>
-                    <ScThemeProvider theme={theme}>
-                      <Editor {...props} />
-                    </ScThemeProvider>
-                  </IOStateProvider>
+                  <ScThemeProvider theme={theme}>
+                    <Editor {...props} />
+                  </ScThemeProvider>
                 </LayoutStateProvider>
               </SortStateProvider>
             </RelationsProvider>
@@ -49,11 +46,9 @@ export const GraphQLGqlEditor = ({ ...props }: GqlEditorProps) => {
           <TreesStateProvider>
             <SortStateProvider>
               <LayoutStateProvider>
-                <IOStateProvider>
-                  <ScThemeProvider theme={theme}>
-                    <GqlEditor {...props} />
-                  </ScThemeProvider>
-                </IOStateProvider>
+                <ScThemeProvider theme={theme}>
+                  <GqlEditor {...props} />
+                </ScThemeProvider>
               </LayoutStateProvider>
             </SortStateProvider>
           </TreesStateProvider>

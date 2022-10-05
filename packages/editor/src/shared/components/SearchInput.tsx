@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { Plus, Search, X } from '@/shared/icons';
 import styled from '@emotion/styled';
 import * as vars from '@/vars';
@@ -61,41 +61,45 @@ const XIconContainer = styled(IconContainerStyle)`
   cursor: pointer;
 `;
 
-export const SearchInput: React.FC<MenuSearchProps> = ({
-  cypressName,
-  value,
-  onChange,
-  onClear,
-  onSubmit,
-  autoFocus = true,
-  placeholder = 'Search...',
-  icon = 'search',
-}) => {
-  const ref = useRef<HTMLInputElement>(null);
-  return (
-    <Wrapper data-cy={cypressName}>
-      <SearchIconContainer>
-        {icon === 'search' && <Search width={18} height={18} />}
-        {icon === 'add' && <Plus width={14} height={14} />}
-      </SearchIconContainer>
-      {value && (
-        <XIconContainer onClick={onClear}>
-          <X width={10} height={10} />
-        </XIconContainer>
-      )}
-      <Main
-        ref={ref}
-        autoFocus={autoFocus}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            onSubmit();
-          }
-        }}
-        placeholder={placeholder}
-        type="text"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      />
-    </Wrapper>
-  );
-};
+export const SearchInput = React.forwardRef<HTMLInputElement, MenuSearchProps>(
+  (
+    {
+      cypressName,
+      value,
+      onChange,
+      onClear,
+      onSubmit,
+      autoFocus = true,
+      placeholder = 'Search...',
+      icon = 'search',
+    },
+    ref,
+  ) => {
+    return (
+      <Wrapper data-cy={cypressName}>
+        <SearchIconContainer>
+          {icon === 'search' && <Search width={18} height={18} />}
+          {icon === 'add' && <Plus width={14} height={14} />}
+        </SearchIconContainer>
+        {value && (
+          <XIconContainer onClick={onClear}>
+            <X width={10} height={10} />
+          </XIconContainer>
+        )}
+        <Main
+          ref={ref}
+          autoFocus={autoFocus}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              onSubmit();
+            }
+          }}
+          placeholder={placeholder}
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+        />
+      </Wrapper>
+    );
+  },
+);

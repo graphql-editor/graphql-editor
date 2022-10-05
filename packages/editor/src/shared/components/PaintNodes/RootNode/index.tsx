@@ -40,6 +40,9 @@ const NodeName = styled.span`
   font-size: 14px;
   font-weight: 700;
   margin-right: 10px;
+  height: 34px;
+  display: flex;
+  align-items: center;
 `;
 
 const NodeBox = styled.div`

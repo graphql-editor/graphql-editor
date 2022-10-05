@@ -1,12 +1,13 @@
 import styled from '@emotion/styled';
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useErrorsState } from '@/state/containers';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { Heading } from '@/shared/components';
 import { SearchInput } from '@/shared/components';
 import { useSortState } from '@/state/containers/sort';
 import { SortNodes } from '@/Graf/Node/components/SortNodes';
+import { KeyboardActions, useIO } from '@/shared/hooks/io';
 
 const TopBarComponent = styled.div`
   display: flex;
@@ -31,6 +32,16 @@ export const TopBar: React.FC<{ heading: string }> = ({
 }) => {
   const { lockGraf } = useErrorsState();
   const { setFilterNodes, filterNodes } = useSortState();
+  const { mount } = useIO();
+  const ref = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    const mounted = mount({
+      [KeyboardActions.FindRelation]: () => {
+        ref.current?.focus();
+      },
+    });
+    return mounted.dispose;
+  }, []);
   return (
     <TopBarComponent>
       <Heading heading={heading} />
@@ -38,6 +49,7 @@ export const TopBar: React.FC<{ heading: string }> = ({
       {!lockGraf && !children && (
         <SortWrapper>
           <SearchInput
+            ref={ref}
             cypressName={
               GraphQLEditorDomStructure.tree.elements.Graf.searchInput
             }

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { settings } from './monaco';
 import { fontFamily } from '@/vars';
 import { useErrorsState, useTheme, useTreesState } from '@/state/containers';
@@ -8,6 +8,7 @@ import { theme as MonacoTheme } from '@/editor/code/monaco';
 import { OperationType } from 'graphql-js-tree';
 import { CodeContainer, ErrorLock } from '@/editor/code/style/Code';
 import { Maybe } from 'graphql-language-service';
+import { KeyboardActions, useIO } from '@/shared/hooks/io';
 
 export interface CodePaneOuterProps {
   readonly?: boolean;
@@ -29,6 +30,8 @@ export const CodePane = (props: CodePaneProps) => {
   const { theme } = useTheme();
   const { selectedNode, setSelectedNode, tree, libraryTree } = useTreesState();
   const { lockCode, errorRowNumber } = useErrorsState();
+  const { mount } = useIO();
+  const [temporaryString, setTemporaryString] = useState(schema);
 
   const ref: React.ForwardedRef<SchemaEditorApi> = React.createRef();
   const codeSettings = useMemo(
@@ -39,6 +42,15 @@ export const CodePane = (props: CodePaneProps) => {
     }),
     [readonly],
   );
+
+  useEffect(() => {
+    const mounted = mount({
+      [KeyboardActions.Save]: () => {
+        onChange(temporaryString);
+      },
+    });
+    return mounted.dispose;
+  }, [temporaryString]);
 
   useEffect(() => {
     if (ref.current) {
@@ -81,7 +93,6 @@ export const CodePane = (props: CodePaneProps) => {
     },
     [fullScreen, tree, libraryTree, setSelectedNode],
   );
-
   return (
     <CodeContainer
       data-cy={GraphQLEditorDomStructure.tree.elements.CodePane.name}
@@ -93,6 +104,9 @@ export const CodePane = (props: CodePaneProps) => {
           beforeMount={(monaco) =>
             monaco.editor.defineTheme('graphql-editor', MonacoTheme(theme))
           }
+          onChange={(v) => {
+            setTemporaryString(v || '');
+          }}
           onBlur={(v) => {
             if (props.readonly) return;
             if (v === schema) return;

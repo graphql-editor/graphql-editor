@@ -1,12 +1,8 @@
-import React, { useRef, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { fontFamily } from '@/vars';
 import { ActiveNode } from '@/Graf/Node';
 import { useTreesState } from '@/state/containers/trees';
-import {
-  KeyboardActions,
-  useErrorsState,
-  useIOState,
-} from '@/state/containers';
+import { useErrorsState } from '@/state/containers';
 import { darken, toHex } from 'color2k';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { getScalarFields } from '@/Graf/utils/getScalarFields';
@@ -21,6 +17,7 @@ import styled from '@emotion/styled';
 import { ErrorLabel, ErrorWrapper } from '@/shared/components/ErrorStyles';
 import { PaintNodes } from '@/shared/components/PaintNodes/PaintNodes';
 import { TopBar } from '@/shared/components/TopBar';
+import { KeyboardActions, useIO } from '@/shared/hooks/io';
 
 const Wrapper = styled.div`
   flex: 1;
@@ -73,8 +70,6 @@ const SubNodeContainer = styled.div`
 let snapLock = true;
 
 export const Graf: React.FC = () => {
-  const wrapperRef = useRef<HTMLDivElement>(null);
-
   const {
     libraryTree,
     tree,
@@ -89,7 +84,7 @@ export const Graf: React.FC = () => {
     scalars,
   } = useTreesState();
   const { lockGraf, grafErrors, errorsItems } = useErrorsState();
-  const { setActions } = useIOState();
+  const { mount } = useIO();
 
   useEffect(() => {
     if (snapLock) {
@@ -107,8 +102,7 @@ export const Graf: React.FC = () => {
   }, [tree]);
 
   useEffect(() => {
-    setActions((acts) => ({
-      ...acts,
+    const keyEvents = mount({
       [KeyboardActions.Undo]: () => {
         const p = past();
         if (p) {
@@ -123,16 +117,31 @@ export const Graf: React.FC = () => {
           setTree(JSON.parse(f));
         }
       },
-    }));
-  }, [snapshots]);
+      [KeyboardActions.Delete]: () => {
+        const deletedNode = tree.nodes.findIndex(
+          (n) => n === selectedNode?.field,
+        )!;
+        if (deletedNode === -1) return;
+        const allNodes = [...tree.nodes];
+        allNodes.splice(deletedNode, 1);
+        setSelectedNode(undefined);
+        setTree({ nodes: allNodes });
+      },
+    });
+    return keyEvents.dispose;
+  }, [snapshots, tree, selectedNode]);
 
-  const node = selectedNode?.field
-    ? findInNodes(tree.nodes, selectedNode.field) ||
-      findInNodes(libraryTree.nodes, selectedNode.field)
-    : undefined;
+  const node = useMemo(
+    () =>
+      selectedNode?.field
+        ? findInNodes(tree.nodes, selectedNode.field) ||
+          findInNodes(libraryTree.nodes, selectedNode.field)
+        : undefined,
+    [selectedNode?.field],
+  );
 
   const selectedNodeComponent = useMemo(() => {
-    if (node && wrapperRef.current) {
+    if (node) {
       return (
         <SubNodeContainer onClick={() => {}}>
           <ActiveNode
@@ -193,19 +202,10 @@ export const Graf: React.FC = () => {
       );
     }
     return null;
-  }, [
-    node,
-    wrapperRef.current,
-    readonly,
-    selectedNode,
-    setSelectedNode,
-    setTree,
-    tree,
-  ]);
+  }, [node, readonly, selectedNode, setSelectedNode, setTree, tree]);
   return (
     <>
       <Wrapper
-        ref={wrapperRef}
         onClick={() => {
           setSelectedNode(undefined);
         }}

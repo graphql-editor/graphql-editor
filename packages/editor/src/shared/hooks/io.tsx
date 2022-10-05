@@ -1,5 +1,3 @@
-import { createContainer } from 'unstated-next';
-import { useState, useEffect } from 'react';
 export enum KeyboardActions {
   Delete = 'Delete',
   Undo = 'Undo',
@@ -7,29 +5,24 @@ export enum KeyboardActions {
   Save = 'Save',
   FindRelation = 'FindRelation',
 }
-
-const useIOStateContainer = createContainer(() => {
-  const [actions, setActions] = useState<
-    Partial<Record<KeyboardActions, Function>>
-  >({});
-  const on = (action: KeyboardActions) => {
-    actions[action]?.();
-  };
-  useEffect(() => {
-    const handleKeyboard = (event: KeyboardEvent) => {
+export const useIO = () => {
+  const handleKeyboard =
+    (on: (action: KeyboardActions) => void) => (event: KeyboardEvent) => {
       const ctrl = event.ctrlKey || event.metaKey;
-      if (event.key === 'm') {
-      }
       if (event.key === 'Delete') {
+        event.preventDefault();
         on(KeyboardActions.Delete);
       }
       if (event.key === 'Backspace') {
+        event.preventDefault();
         on(KeyboardActions.Delete);
       }
       if (event.key === 'z' && ctrl && !event.shiftKey) {
+        event.preventDefault();
         on(KeyboardActions.Undo);
       }
       if (event.key === 'z' && ctrl && event.shiftKey) {
+        event.preventDefault();
         on(KeyboardActions.Redo);
       }
       if (event.key === 's' && ctrl) {
@@ -41,15 +34,15 @@ const useIOStateContainer = createContainer(() => {
         on(KeyboardActions.FindRelation);
       }
     };
-    document.addEventListener('keydown', handleKeyboard);
-    return () => {
-      document.removeEventListener('keydown', handleKeyboard);
+  const mount = (actions: Partial<Record<KeyboardActions, Function>>) => {
+    const handler = handleKeyboard((a) => actions[a]?.());
+    document.addEventListener('keydown', handler);
+    const dispose = () => {
+      document.removeEventListener('keydown', handler);
     };
-  }, [actions]);
-  return {
-    setActions,
+    return {
+      dispose,
+    };
   };
-});
-
-export const useIOState = useIOStateContainer.useContainer;
-export const IOStateProvider = useIOStateContainer.Provider;
+  return { mount };
+};
