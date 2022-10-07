@@ -13,10 +13,6 @@ export const useIO = () => {
         event.preventDefault();
         on(KeyboardActions.Delete);
       }
-      if (event.key === 'Backspace') {
-        event.preventDefault();
-        on(KeyboardActions.Delete);
-      }
       if (event.key === 'z' && ctrl && !event.shiftKey) {
         event.preventDefault();
         on(KeyboardActions.Undo);

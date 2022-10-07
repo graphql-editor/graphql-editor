@@ -220,7 +220,6 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
   }, [refs, relationDrawingNodesArray, refsLoaded]);
 
   const SvgLinesContainer = useMemo(() => {
-    console.log('RERendering relations');
     return <Lines relations={relations} selectedNode={selectedNode?.field} />;
   }, [relations]);
 
