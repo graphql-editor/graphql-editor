@@ -211,7 +211,7 @@ export const Graf: React.FC = () => {
         }}
         data-cy={GraphQLEditorDomStructure.tree.elements.Graf.name}
       >
-        <TopBar heading={lockGraf ? 'ERRORS' : 'DIAGRAM VIEW'} />
+        <TopBar heading={lockGraf ? 'ERRORS' : 'CREATOR VIEW'} />
         {selectedNodeComponent}
         {lockGraf ? (
           <ErrorWrapper>

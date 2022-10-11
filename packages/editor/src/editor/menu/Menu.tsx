@@ -204,7 +204,7 @@ export const Menu = ({
           isCollapsed={isCollapsed}
         >
           <Icons.DiagramView size={22} />
-          <p>Diagram View</p>
+          <p>Creator View</p>
         </MenuItem>
       )}
 
