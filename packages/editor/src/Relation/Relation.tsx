@@ -16,6 +16,8 @@ import * as vars from '@/vars';
 import { TopBar } from '@/shared/components/TopBar';
 
 const Wrapper = styled.div<{ relationsOn?: boolean }>`
+  display: flex;
+  flex-direction: column;
   flex: 1;
   width: 100%;
   overflow: hidden;
