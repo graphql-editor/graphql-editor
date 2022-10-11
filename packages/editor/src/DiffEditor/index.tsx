@@ -1,12 +1,12 @@
 import { DiffEditorPane } from '@/editor/code';
 import styled from '@emotion/styled';
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { Parser, TreeToGraphQL } from 'graphql-js-tree';
 import { useSortState } from '@/state/containers/sort';
 import { fontFamilySans } from '@/vars';
-import { Abc, Arrow } from '@/editor/icons';
+import { Abc } from '@/editor/icons';
 import { useTheme } from '@emotion/react';
-import { useOnClickOutside } from '@/Graf/Node/hooks';
+import { Select } from '@/shared/components/Select';
 
 interface DiffEditorProps {
   schemas: Record<string, string>;
@@ -25,6 +25,7 @@ const TopBar = styled.div`
   margin: 20px 20px 0px;
   justify-content: space-between;
   align-items: center;
+  position: relative;
 `;
 
 const Heading = styled.h1`
@@ -41,67 +42,36 @@ const LineSpacer = styled.div`
   margin: 20px 0;
 `;
 
-const SelectVersionWrapper = styled.div`
+const Selects = styled.div`
   display: flex;
-  flex-direction: row;
-  width: 50%;
-`;
-
-const Option = styled.div<{ idx?: number }>`
-  padding: 15px 15px 15px 20px;
-  color: ${({ theme }) => theme.text};
-  font-size: 14px;
-  font-family: ${fontFamilySans};
-  background-color: ${({ theme }) => theme.contra};
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 10px;
+  right: 16px;
   position: absolute;
-  top: ${({ idx }) => typeof idx === 'number' && (idx + 1) * 36}px;
-  left: 0;
-  width: 160px;
-  height: 36px;
-  cursor: pointer;
-  border-radius: ${({ idx }) => !idx && idx !== 0 && 4}px;
-  z-index: 100;
-  &:hover {
-    background-color: ${({ theme }) => theme.background.mainMiddle};
-  }
 `;
 
-const OptionsWrapper = styled.div`
-  position: relative;
+const AZContainer = styled.div`
   display: flex;
-  flex-direction: column;
-  align-self: flex-start;
-  margin-left: 16px;
-`;
-
-const IconWrapper = styled.div`
-  position: absolute;
-  top: 7.5px;
-  right: 20px;
-  z-index: 100;
 `;
 
 export const DiffEditor = ({ schemas }: DiffEditorProps) => {
   const { sortAlphabetically } = useSortState();
-  const { inactive, active, text } = useTheme();
-  const leftSelect = useRef<HTMLDivElement>(null);
-  const rightSelect = useRef<HTMLDivElement>(null);
-
-  useOnClickOutside(leftSelect, () => setIsLeftOpen(false));
-  useOnClickOutside(rightSelect, () => setIsRightOpen(false));
-
+  const { inactive, active } = useTheme();
   const [isSortActive, setIsSortActive] = useState(true);
-  const [choosenLeftVersion, setChoosenLeftVersion] = useState(
-    Object.keys(schemas)[Object.keys(schemas).length - 2],
-  );
-  const [choosenRightVersion, setChoosenRightVersion] = useState(
+  const [leftVersion, setLeftVersion] = useState(
     Object.keys(schemas)[Object.keys(schemas).length - 1],
   );
-  const [isLeftOpen, setIsLeftOpen] = useState(false);
-  const [isRightOpen, setIsRightOpen] = useState(false);
+  const [rightVersion, setRightVersion] = useState(
+    Object.keys(schemas)[Object.keys(schemas).length - 2],
+  );
+
+  const selectOptions = Object.keys(schemas).map((el) => {
+    return {
+      label: el,
+      value: el,
+    };
+  });
 
   const sortSchema = (schema: string) => {
     if (!schema) return '';
@@ -117,71 +87,34 @@ export const DiffEditor = ({ schemas }: DiffEditorProps) => {
     <Main>
       <TopBar>
         <Heading>DIFF VIEW</Heading>
-        <div onClick={() => setIsSortActive((s) => !s)}>
+        <Selects>
+          <Select
+            options={selectOptions}
+            onChange={setLeftVersion}
+            placeholder="Select version..."
+            value={leftVersion}
+          />
+          <Select
+            options={selectOptions}
+            onChange={setRightVersion}
+            placeholder="Select version..."
+            value={rightVersion}
+          />
+        </Selects>
+        <AZContainer onClick={() => setIsSortActive((s) => !s)}>
           <Abc size={28} fill={isSortActive ? active : inactive} />
-        </div>
+        </AZContainer>
       </TopBar>
-      <TopBar>
-        <SelectVersionWrapper>
-          <Heading>SELECT VERSION</Heading>
-          <OptionsWrapper ref={leftSelect}>
-            <Option onClick={() => setIsLeftOpen((lo) => !lo)}>
-              {choosenLeftVersion || 'Select version'}
-              <IconWrapper>
-                <Arrow size={12} fill={text} />
-              </IconWrapper>
-            </Option>
-            {isLeftOpen &&
-              Object.keys(schemas).map((s, i) => (
-                <Option
-                  idx={i}
-                  onClick={() => {
-                    setIsLeftOpen(false);
-                    setChoosenLeftVersion(s);
-                  }}
-                  key={i}
-                >
-                  {s}
-                </Option>
-              ))}
-          </OptionsWrapper>
-        </SelectVersionWrapper>
-        <SelectVersionWrapper>
-          <Heading>SELECT VERSION</Heading>
-          <OptionsWrapper ref={rightSelect}>
-            <Option onClick={() => setIsRightOpen((ro) => !ro)}>
-              {choosenRightVersion || 'Select version'}
-              <IconWrapper>
-                <Arrow size={12} fill={text} />
-              </IconWrapper>
-            </Option>
-            {isRightOpen &&
-              Object.keys(schemas).map((s, i) => (
-                <Option
-                  idx={i}
-                  onClick={() => {
-                    setIsRightOpen(false);
-                    setChoosenRightVersion(s);
-                  }}
-                  key={i}
-                >
-                  {s}
-                </Option>
-              ))}
-          </OptionsWrapper>
-        </SelectVersionWrapper>
-      </TopBar>
+
       <LineSpacer />
       <DiffEditorPane
         schema={
-          isSortActive
-            ? sortSchema(schemas[choosenLeftVersion])
-            : schemas[choosenLeftVersion]
+          isSortActive ? sortSchema(schemas[leftVersion]) : schemas[leftVersion]
         }
         newSchema={
           isSortActive
-            ? sortSchema(schemas[choosenRightVersion])
-            : schemas[choosenRightVersion]
+            ? sortSchema(schemas[rightVersion])
+            : schemas[rightVersion]
         }
         size={`100vw-50px`}
       />
