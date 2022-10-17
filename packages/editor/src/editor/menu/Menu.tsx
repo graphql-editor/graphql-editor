@@ -207,7 +207,7 @@ export const Menu = ({
           isCollapsed={isCollapsed}
         >
           <Icons.DiagramView size={22} />
-          <p>Creator View</p>
+          <p>Creator</p>
         </MenuItem>
       )}
 
@@ -221,7 +221,7 @@ export const Menu = ({
           isCollapsed={isCollapsed}
         >
           <Icons.RelationView size={22} />
-          <p>Relation View</p>
+          <p>Relation</p>
         </MenuItem>
       )}
       {!excludePanes.includes('docs') && (
@@ -234,7 +234,7 @@ export const Menu = ({
           isCollapsed={isCollapsed}
         >
           <Icons.DocsView size={22} />
-          <p>Documentation View</p>
+          <p>Documentation</p>
         </MenuItem>
       )}
       <BorderSpacer />
@@ -248,7 +248,7 @@ export const Menu = ({
           isCollapsed={isCollapsed}
         >
           <Icons.DiffView size={22} />
-          <p>Diff View</p>
+          <p>Diff</p>
         </MenuItem>
       )}
       <CollapseArrow
