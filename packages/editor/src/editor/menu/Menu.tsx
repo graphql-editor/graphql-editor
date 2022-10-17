@@ -172,6 +172,7 @@ export const Menu = ({
         isCollapsed={isCollapsed}
         isDisabled={activePane === 'diff'}
         data-tooltip="Toggle Code"
+        data-tour="toggle-code"
       >
         <div>
           <Icons.ToggleCode size={20} />
@@ -187,6 +188,7 @@ export const Menu = ({
           }}
           isCollapsed={isCollapsed}
           data-tooltip="Library Schema"
+          data-tour="library-schema"
         >
           <div>
             <Icons.Library size={22} />
@@ -200,7 +202,8 @@ export const Menu = ({
           data-cy={MenuChildren.diagram}
           className={activePane === 'diagram' ? 'active' : ''}
           onClick={() => setActivePane('diagram')}
-          data-tooltip="Diagram View"
+          data-tooltip="Creator"
+          data-tour="creator"
           isCollapsed={isCollapsed}
         >
           <Icons.DiagramView size={22} />
@@ -213,7 +216,8 @@ export const Menu = ({
           data-cy={MenuChildren.relation}
           className={activePane === 'relation' ? 'active' : ''}
           onClick={() => setActivePane('relation')}
-          data-tooltip="Relation View"
+          data-tooltip="Relation"
+          data-tour="relation"
           isCollapsed={isCollapsed}
         >
           <Icons.RelationView size={22} />
@@ -225,7 +229,8 @@ export const Menu = ({
           data-cy={MenuChildren.docs}
           className={activePane === 'docs' ? 'active' : ''}
           onClick={() => setActivePane('docs')}
-          data-tooltip="Documentation View"
+          data-tooltip="Documentation"
+          data-tour="documentation"
           isCollapsed={isCollapsed}
         >
           <Icons.DocsView size={22} />
@@ -238,7 +243,8 @@ export const Menu = ({
           data-cy={MenuChildren.diff}
           className={activePane === 'diff' ? 'active' : ''}
           onClick={() => setActivePane('diff')}
-          data-tooltip="Diff View"
+          data-tooltip="Diff"
+          data-tour="diff"
           isCollapsed={isCollapsed}
         >
           <Icons.DiffView size={22} />
