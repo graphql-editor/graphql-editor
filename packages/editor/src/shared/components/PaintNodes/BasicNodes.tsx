@@ -1,13 +1,13 @@
 import { PaintNode } from '@/shared/components/PaintNodes/PaintNode';
 import { useRelationsState } from '@/state/containers';
-import { fontFamily } from '@/vars';
+import { fontFamilySans } from '@/vars';
 import styled from '@emotion/styled';
 import React from 'react';
 
 const Main = styled.div`
   width: 100%;
   position: relative;
-  font-family: ${fontFamily};
+  font-family: ${fontFamilySans};
   align-items: flex-start;
   display: flex;
   padding: 20px;

@@ -84,7 +84,6 @@ const NodeContainer = styled.div`
   break-inside: avoid;
   height: 100%;
   background-color: ${({ theme }) => theme.background.mainMiddle};
-  max-width: 100%;
   display: flex;
   flex-flow: column nowrap;
 `;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { fontFamily } from '@/vars';
+import { fontFamilySans } from '@/vars';
 import styled from '@emotion/styled';
 
 const Input = styled.input`
@@ -8,7 +8,7 @@ const Input = styled.input`
   border-radius: 4px;
   color: ${({ theme }) => theme.text};
   min-width: 30px;
-  font-family: ${fontFamily};
+  font-family: ${fontFamilySans};
   font-size: 10px;
   text-align: center;
   padding: 2px 0;

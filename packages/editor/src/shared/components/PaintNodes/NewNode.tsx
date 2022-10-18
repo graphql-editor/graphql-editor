@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { ParserField } from 'graphql-js-tree';
-import { fontFamily, fontFamilySans, transition } from '@/vars';
+import { fontFamilySans, transition } from '@/vars';
 import { useTreesState } from '@/state/containers/trees';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import styled from '@emotion/styled';
@@ -80,7 +80,7 @@ const NodeCreate = styled.input<{
   padding: 0 23px 0 15px;
   outline: 0;
   border-radius: 4px;
-  font-family: ${fontFamily};
+  font-family: ${fontFamilySans};
   animation: init 0.25s ease-in-out;
 
   @keyframes init {

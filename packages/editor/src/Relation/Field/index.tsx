@@ -33,7 +33,7 @@ const Main = styled.div<{ isActive?: boolean }>`
 `;
 
 const Type = styled.div`
-  font-size: ${FIELD_TYPE_SIZE};
+  font-size: ${FIELD_TYPE_SIZE}px;
 `;
 
 type FieldProps = Pick<GrafFieldProps, 'node' | 'parentNodeTypeName'> & {

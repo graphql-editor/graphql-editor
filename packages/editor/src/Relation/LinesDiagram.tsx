@@ -1,5 +1,4 @@
 import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
-import { fontFamily } from '@/vars';
 import { useTreesState } from '@/state/containers/trees';
 import { useRelationsState } from '@/state/containers';
 import { Node } from './Node';
@@ -14,7 +13,7 @@ import { useRouter } from '@/state/containers/router';
 const Main = styled.div`
   position: relative;
   overflow-x: visible;
-  font-family: ${fontFamily};
+  font-family: ${vars.fontFamilySans};
   align-items: flex-start;
   display: flex;
   padding: 20px;

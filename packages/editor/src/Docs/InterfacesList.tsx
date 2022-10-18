@@ -1,10 +1,10 @@
 import React from 'react';
-import { fontFamily, transition } from '@/vars';
+import { fontFamilySans, transition } from '@/vars';
 import styled from '@emotion/styled';
 
 const Interface = styled.p`
   color: ${({ theme }) => theme.colors.interface};
-  font-family: ${fontFamily};
+  font-family: ${fontFamilySans};
   font-size: 14px;
   padding: 4px 12px;
   margin: 0;
@@ -28,7 +28,7 @@ const InterfacesWrapper = styled.div`
 
 const Title = styled.h3`
   color: ${({ theme }) => theme.disabled};
-  font-family: ${fontFamily};
+  font-family: ${fontFamilySans};
   font-size: 18px;
 `;
 

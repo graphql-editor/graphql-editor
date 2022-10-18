@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
-import { fontFamily } from '@/vars';
+import { fontFamily, fontFamilySans } from '@/vars';
 import { ActiveNode } from '@/Graf/Node';
 import { useTreesState } from '@/state/containers/trees';
 import { useErrorsState } from '@/state/containers';
@@ -57,13 +57,13 @@ const ErrorContainer = styled.div`
 
 const SubNodeContainer = styled.div`
   background-color: ${({ theme }) => theme.background.mainFurther};
-  font-family: ${fontFamily};
+  font-family: ${fontFamilySans};
   left: 0;
   top: 60px;
   bottom: 0;
   position: absolute;
   transition: max-width 0.5s ease-in-out;
-  width: 50%;
+  max-width: 50%;
   z-index: 2;
 `;
 

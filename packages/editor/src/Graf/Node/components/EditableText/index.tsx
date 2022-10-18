@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fontFamily } from '@/vars';
+import { fontFamilySans } from '@/vars';
 import { FIELD_NAME_SIZE } from '@/Graf/constants';
 import { useVisualState } from '@/state/containers';
 import styled from '@emotion/styled';
@@ -10,7 +10,7 @@ const Input = styled.input<{ isError?: boolean }>`
   color: ${({ theme, isError }) => (isError ? theme.error : theme.text)};
   min-width: auto;
   padding: 0;
-  font-family: ${fontFamily};
+  font-family: ${fontFamilySans};
   font-size: ${FIELD_NAME_SIZE}px;
 `;
 

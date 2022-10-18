@@ -44,26 +44,27 @@ const MainNodeArea = styled.div<MainNodeAreaProps>`
   transition: all 0.25s ease-in-out;
   display: flex;
   align-items: center;
-  color: ${({ theme }) => theme.backgroundedText};
-  font-size: 13px;
+  color: ${({ theme }) => theme.dimmed};
+  font-size: 12px;
+  font-weight: 500;
   font-family: ${fontFamilySans};
   padding: 0 15px;
   height: 36px;
   user-select: none;
-  border-width: 2px;
+  border-width: 1px;
   border-style: ${({ isLibrary }) => (isLibrary ? 'dashed' : 'solid')};
   border-color: ${({ theme, nodeType, isBaseNode, isError }) => {
     if (isError) return theme.background.error;
     if (isBaseNode) return theme.backgroundedText;
     return theme.backgrounds[nodeType]
-      ? theme.backgrounds[nodeType]
+      ? `${theme.backgrounds[nodeType]}14`
       : 'transparent';
   }};
   background-color: ${({ theme, nodeType, isDragNotAllowed, isLibrary }) => {
     if (isDragNotAllowed) return theme.disabled;
     if (isLibrary) return 'transparent';
     return theme.backgrounds[nodeType]
-      ? theme.backgrounds[nodeType]
+      ? `${theme.backgrounds[nodeType]}11`
       : 'transparent';
   }};
   opacity: ${({ isMatchedToSearch, isNotSelected, isRelatedNode }) => {
@@ -74,7 +75,13 @@ const MainNodeArea = styled.div<MainNodeAreaProps>`
   }};
 
   &:hover {
-    border-color: ${({ theme }) => theme.backgroundedText};
+    border-color: ${({ theme, nodeType, isBaseNode, isError }) => {
+      if (isError) return theme.background.error;
+      if (isBaseNode) return theme.backgroundedText;
+      return theme.backgrounds[nodeType]
+        ? `${theme.backgrounds[nodeType]}`
+        : 'transparent';
+    }};
   }
 `;
 

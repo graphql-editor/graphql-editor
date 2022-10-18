@@ -8,7 +8,7 @@ import {
   ParserField,
   createParserField,
 } from 'graphql-js-tree';
-import { fontFamily } from '@/vars';
+import { fontFamilySans } from '@/vars';
 import { useTreesState } from '@/state/containers/trees';
 import { useSortState } from '@/state/containers/sort';
 import styled from '@emotion/styled';
@@ -17,9 +17,9 @@ import { RootNode } from '@/shared/components/PaintNodes/RootNode';
 
 const Main = styled.div<{ openedNode?: boolean }>`
   width: 100%;
-  padding-left: ${({ openedNode }) => (openedNode ? '50%' : '0')};
+  /* padding-left: ${({ openedNode }) => (openedNode ? '50%' : '0')}; */
   position: relative;
-  font-family: ${fontFamily};
+  font-family: ${fontFamilySans};
   transition: opacity 0.25s ease-in-out;
   padding-bottom: 300px;
   padding-top: 20px;
