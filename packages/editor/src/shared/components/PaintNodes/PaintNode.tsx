@@ -53,19 +53,13 @@ const MainNodeArea = styled.div<MainNodeAreaProps>`
   user-select: none;
   border-width: 1px;
   border-style: ${({ isLibrary }) => (isLibrary ? 'dashed' : 'solid')};
-  border-color: ${({ theme, nodeType, isBaseNode, isError }) => {
-    if (isError) return theme.background.error;
-    if (isBaseNode) return theme.backgroundedText;
-    return theme.backgrounds[nodeType]
-      ? `${theme.backgrounds[nodeType]}14`
-      : 'transparent';
+  color: ${({ theme, nodeType, isBaseNode, isError }) => {
+    return theme.colors[nodeType] ? `${theme.colors[nodeType]}` : 'transparent';
   }};
   background-color: ${({ theme, nodeType, isDragNotAllowed, isLibrary }) => {
     if (isDragNotAllowed) return theme.disabled;
     if (isLibrary) return 'transparent';
-    return theme.backgrounds[nodeType]
-      ? `${theme.backgrounds[nodeType]}11`
-      : 'transparent';
+    return theme.background.mainClose;
   }};
   opacity: ${({ isMatchedToSearch, isNotSelected, isRelatedNode }) => {
     if (isRelatedNode) return 0.9;
@@ -74,6 +68,21 @@ const MainNodeArea = styled.div<MainNodeAreaProps>`
     return 1;
   }};
 
+  border-color: ${({
+    theme,
+    nodeType,
+    isBaseNode,
+    isLibrary,
+    isNotSelected,
+    isError,
+  }) => {
+    if (isError) return theme.background.error;
+    if (isBaseNode) return theme.backgroundedText;
+    if (!isLibrary) return 'transparent';
+    return theme.backgrounds[nodeType]
+      ? `${theme.backgrounds[nodeType]}`
+      : 'transparent';
+  }};
   &:hover {
     border-color: ${({ theme, nodeType, isBaseNode, isError }) => {
       if (isError) return theme.background.error;
