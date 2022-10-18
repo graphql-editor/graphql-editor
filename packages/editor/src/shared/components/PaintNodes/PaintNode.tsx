@@ -12,7 +12,7 @@ import {
 } from '@/shared/dnd';
 import styled from '@emotion/styled';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
-import { fontFamily } from '@/vars';
+import { fontFamilySans } from '@/vars';
 export interface NodeProps {
   node: ParserField;
   builtIn?: boolean;
@@ -45,8 +45,8 @@ const MainNodeArea = styled.div<MainNodeAreaProps>`
   display: flex;
   align-items: center;
   color: ${({ theme }) => theme.backgroundedText};
-  font-size: 12px;
-  font-family: ${fontFamily};
+  font-size: 13px;
+  font-family: ${fontFamilySans};
   padding: 0 15px;
   height: 36px;
   user-select: none;

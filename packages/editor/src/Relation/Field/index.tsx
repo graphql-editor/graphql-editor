@@ -8,7 +8,7 @@ import styled from '@emotion/styled';
 import { RELATION_CONSTANTS } from '@/Relation/Lines/constants';
 
 const Name = styled.div`
-  font-size: ${FIELD_NAME_SIZE};
+  font-size: ${FIELD_NAME_SIZE}px;
   margin-right: 30px;
   white-space: nowrap;
   min-width: 30px;
@@ -20,7 +20,6 @@ const Main = styled.div<{ isActive?: boolean }>`
   align-items: center;
   justify-content: space-between;
   height: ${RELATION_CONSTANTS.FIELD_HEIGHT}px;
-  font-size: 12px;
   padding: 0 12px;
   color: ${({ theme }) => theme.backgroundedText};
   margin: 0 -12px;

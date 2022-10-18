@@ -9,7 +9,7 @@ import {
 import React, { useMemo } from 'react';
 import { Field } from '../Field';
 import { FIELD_NAME_SIZE } from '@/Graf/constants';
-import { fontFamily } from '@/vars';
+import { fontFamilySans } from '@/vars';
 import styled from '@emotion/styled';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
 import { NodeSearchFields } from '@/Relation/Node/NodeSearchFields';
@@ -33,6 +33,8 @@ const Content = styled.div<ContentProps>`
   transition: 0.25s all ease-in-out;
   z-index: 1;
   flex: 1 0 auto;
+  font-family: ${fontFamilySans};
+  font-size: 14px;
   cursor: ${({ isSelected }) => (isSelected ? 'auto' : 'pointer')};
   border-width: 1px;
   border-style: ${({ isLibrary }) => (isLibrary ? 'dashed' : 'solid')};
@@ -52,6 +54,7 @@ const NodeTitle = styled.div`
   align-items: center;
   color: ${({ theme }) => theme.backgroundedText};
   font-size: 14px;
+  font-weight: 500;
   height: 40px;
   display: flex;
 `;
@@ -72,7 +75,7 @@ const NameInRelation = styled.span`
   color: ${({ theme }) => theme.text};
   min-width: auto;
   padding: 0;
-  font-family: ${fontFamily};
+  font-family: ${fontFamilySans};
   font-size: ${FIELD_NAME_SIZE};
 `;
 
