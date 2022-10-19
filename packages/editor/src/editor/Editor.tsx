@@ -128,8 +128,7 @@ export const Editor = ({
   const { isSortAlphabetically, sortByTypes, orderTypes, isUserOrder } =
     useSortState();
   const { setSidebarSize, sidebarSize } = useLayoutState();
-  const { routes, set, initialRoutingDone, setInitialRoutingDone } =
-    useRouter();
+  const { routes, set } = useRouter();
   const selectedNodeFromQuery = routes.n;
   const reset = () => {
     setSnapshots([]);
@@ -137,16 +136,6 @@ export const Editor = ({
     setGrafErrors(undefined);
   };
   useEffect(() => {
-    if (!selectedNodeFromQuery) {
-      setInitialRoutingDone(true);
-      return;
-    }
-    if (
-      selectedNodeFromQuery === selectedNode?.field?.id ||
-      initialRoutingDone
-    ) {
-      return;
-    }
     const field = tree.nodes
       .concat(libraryTree.nodes)
       .find((n) => n.id === selectedNodeFromQuery);
@@ -155,12 +144,8 @@ export const Editor = ({
         source: 'routing',
         field,
       });
-      setInitialRoutingDone(true);
     }
-    if (!field && tree.nodes.length > 0 && libraryTree.nodes.length > 0) {
-      setInitialRoutingDone(true);
-    }
-  }, [tree, libraryTree, selectedNodeFromQuery, initialRoutingDone]);
+  }, [tree, libraryTree, selectedNodeFromQuery]);
 
   useEffect(() => {
     isSortAlphabetically &&
@@ -250,20 +235,21 @@ export const Editor = ({
     }
     set({
       n: selectedNode?.field?.id,
+      source: 'internal',
     });
   }, [selectedNode]);
 
   useEffect(() => {
     if (routeState) {
-      set(routeState);
+      set({ ...routeState, source: 'external' });
     }
   }, [routeState]);
 
   useEffect(() => {
-    if (onRouteChange) {
+    if (onRouteChange && routes.source === 'internal') {
       onRouteChange(routes);
     }
-  }, [routes, onRouteChange]);
+  }, [routes]);
 
   return (
     <Main

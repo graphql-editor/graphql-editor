@@ -1,5 +1,5 @@
 //@ts-nocheck
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { GraphQLEditor, Colors, EditorRef } from 'graphql-editor';
 import * as schemas from '../schema';
 import { MainTheme, EditorRoutes } from 'graphql-editor';
@@ -11,8 +11,21 @@ export const googleState = () => {
     libraries: '',
   });
 
-  const [s2, setS2] = useState<EditorRoutes>();
+  const [routingSystem, setRoutingSystem] = useState<EditorRoutes>();
   const [s, setS] = useState<EditorRoutes>();
+
+  useEffect(() => {
+    if (routingSystem?.source === 'internal') {
+    }
+  }, [routingSystem]);
+  useEffect(() => {
+    const listener = (e: PopStateEvent) => {
+      const u = new URL(window.location.href);
+      u.searchParams.toString();
+    };
+    window.addEventListener('popstate', listener);
+    return () => window.removeEventListener('popstate', listener);
+  }, []);
 
   return (
     <div
@@ -29,6 +42,7 @@ export const googleState = () => {
         onClick={() =>
           setS({
             pane: 'docs',
+            n: '13bfdf3bad4d8d',
           })
         }
         style={{
@@ -48,7 +62,10 @@ export const googleState = () => {
         routeState={s}
         schema={currentSchema}
         sidebarExpanded
-        onRouteChange={(r) => setS2(r)}
+        onRouteChange={(r) => {
+          console.log(r);
+          setRoutingSystem(r);
+        }}
         setSchema={(s) => {
           setCurrentSchema(s);
         }}
