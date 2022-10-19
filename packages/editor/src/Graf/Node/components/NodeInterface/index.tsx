@@ -9,14 +9,15 @@ interface NodeInterfaceProps {
 }
 
 const NodeInterfaceBlock = styled.div`
-  padding: 3px 6px;
-  background-color: ${({ theme }) => theme.backgrounds.interface};
-  color: ${({ theme }) => theme.text};
+  padding: 5px 10px;
+  background-color: ${({ theme }) => theme.background.mainFar};
+  color: ${({ theme }) => theme.colors.interface};
   font-size: 10px;
   border-radius: 4px;
   position: relative;
   cursor: pointer;
-  margin: 5px;
+  margin-right: 4px;
+  margin-bottom: 4px;
 
   svg {
     display: none;

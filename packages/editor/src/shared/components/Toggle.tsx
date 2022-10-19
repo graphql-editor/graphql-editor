@@ -24,10 +24,10 @@ const Main = styled.div`
   cursor: pointer;
 `;
 const Text = styled.div<{ active?: boolean }>`
-  font-size: 12px;
+  font-size: 14px;
   line-height: 12px;
   color: ${({ theme, active }) => (active ? theme.text : theme.inactive)};
-  font-weight: bold;
+  font-weight: 400;
   transition: ${vars.transition};
 `;
 const ToggleWrapper = styled.div<{ active?: boolean }>`
@@ -45,7 +45,7 @@ const ToggleCircle = styled.div<{ active?: boolean }>`
   width: 16px;
   height: 16px;
   background-color: ${({ theme, active }) =>
-    active ? theme.backgrounds.type : theme.inactive};
+    active ? theme.colors.type : theme.inactive};
   position: absolute;
   border-radius: 8px;
   margin-left: ${({ active }) => (active ? '20px' : '2px')};

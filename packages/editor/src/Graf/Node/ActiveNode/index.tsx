@@ -86,6 +86,7 @@ const NodeContainer = styled.div`
   background-color: ${({ theme }) => theme.background.mainMiddle};
   display: flex;
   flex-flow: column nowrap;
+  box-shadow: ${({ theme }) => theme.background.mainFurther} 0 0 20px;
 `;
 
 const NodeFields = styled.div`
@@ -98,7 +99,9 @@ const NodeInterfaces = styled.div`
   display: flex;
   flex-flow: row wrap;
   align-items: flex-start;
+  padding: 5px;
   margin-bottom: 5px;
+  border-bottom: 1px solid ${({ theme }) => theme.background.mainClose};
 `;
 
 const DndContainer = styled.div`

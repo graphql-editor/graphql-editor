@@ -4,9 +4,9 @@ import { themed } from '@/Theming/utils';
 const rules = themed<monaco.editor.ITokenThemeRule[]>(
   ({ colors, text, info, success, inactive }) => [
     { token: 'keyword.gql', foreground: info },
-    { token: 'type.identifier.gql', foreground: success },
+    { token: 'type.identifier.gql', foreground: info },
     { token: 'key.identifier.gql', foreground: text },
-    { token: 'keyword', foreground: success },
+    { token: 'keyword', foreground: info },
     { token: 'annotation', foreground: text },
     { token: '', foreground: inactive },
     { token: 'string.md', foreground: inactive },

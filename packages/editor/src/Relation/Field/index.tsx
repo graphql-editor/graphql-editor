@@ -21,7 +21,7 @@ const Main = styled.div<{ isActive?: boolean }>`
   justify-content: space-between;
   height: ${RELATION_CONSTANTS.FIELD_HEIGHT}px;
   padding: 0 12px;
-  color: ${({ theme }) => theme.backgroundedText};
+  color: ${({ theme }) => theme.dimmed};
   margin: 0 -12px;
   transition: background-color 0.25s ease-in-out;
   cursor: pointer;

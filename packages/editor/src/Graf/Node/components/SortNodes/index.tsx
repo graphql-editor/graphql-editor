@@ -22,7 +22,7 @@ const Container = styled.div`
   border-radius: 4px;
   font-size: 14px;
   padding: 0 16px;
-  background-color: ${({ theme }) => theme.background.mainFurthest};
+  background-color: ${({ theme }) => theme.background.mainFurther};
 
   h4 {
     margin: 0;
@@ -62,7 +62,7 @@ const List = styled.div<{ isListVisible: boolean }>`
   opacity: ${({ isListVisible }) => (isListVisible ? 1 : 0)};
   pointer-events: ${({ isListVisible }) => (isListVisible ? 'auto' : 'none')};
   z-index: 2;
-  background-color: ${({ theme }) => theme.background.mainFurthest}f5;
+  background-color: ${({ theme }) => theme.background.mainFurther}f5;
   border-radius: 4px;
   padding: 20px 10px 0px;
   transition: opacity 0.25s ease;

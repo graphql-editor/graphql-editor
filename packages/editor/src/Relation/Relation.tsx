@@ -7,7 +7,6 @@ import styled from '@emotion/styled';
 import { LinesDiagram } from '@/Relation/LinesDiagram';
 import { toPng } from 'html-to-image';
 import { Clear, Export, Eye } from '@/editor/icons';
-import { useTheme } from '@emotion/react';
 import { ErrorLabel, ErrorWrapper } from '@/shared/components/ErrorStyles';
 import { useRouter } from '@/state/containers/router';
 import { PaintNodes } from '@/shared/components/PaintNodes/PaintNodes';
@@ -50,7 +49,7 @@ const IconWrapper = styled.div`
   color: ${({ theme }) => theme.inactive};
   font-family: ${fontFamilySans};
   cursor: pointer;
-  background-color: ${({ theme }) => theme.contra};
+  background-color: ${({ theme }) => theme.background.mainFurther};
   padding: 8px;
   border-radius: 4px;
   display: flex;
@@ -96,13 +95,6 @@ const TogglesWrapper = styled.div`
   border-right: 1px solid ${({ theme }) => theme.disabled}36;
 `;
 
-const Label = styled.p`
-  margin-left: 12px;
-  color: ${({ theme }) => theme.text};
-  font-family: ${fontFamilySans};
-  font-size: 12px;
-`;
-
 const Main = styled.div`
   height: calc(100vh - 60px);
   width: 100%;
@@ -133,7 +125,6 @@ export const Relation: React.FC = () => {
     setEnumsOn,
     enumsOn,
   } = useRelationsState();
-  const { text } = useTheme();
 
   const { filterNodes } = useSortState();
 
@@ -172,7 +163,6 @@ export const Relation: React.FC = () => {
         {selectedNode?.field && (
           <Menu>
             <TogglesWrapper>
-              <Label>View:</Label>
               <Toggle
                 toggled={showRelatedTo}
                 label="parent"
@@ -193,13 +183,13 @@ export const Relation: React.FC = () => {
               data-tooltip="Deselect node"
               onClick={(_e) => setSelectedNode(undefined)}
             >
-              <Clear size={22} fill={text} />
+              <Clear size={22} />
             </IconWrapper>
             <IconWrapper
               data-tooltip="Focus selected node"
               onClick={(_e) => setSelectedNode({ ...selectedNode })}
             >
-              <Eye size={22} fill={text} />
+              <Eye size={22} />
             </IconWrapper>
             {isLoading ? (
               <IconWrapper data-tooltip="Loading...">...</IconWrapper>
@@ -208,7 +198,7 @@ export const Relation: React.FC = () => {
                 data-tooltip="Export to png"
                 onClick={() => downloadPng()}
               >
-                <Export size={22} fill={text} />
+                <Export size={22} />
               </IconWrapper>
             )}
           </Menu>

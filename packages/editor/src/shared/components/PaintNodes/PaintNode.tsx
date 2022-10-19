@@ -46,10 +46,10 @@ const MainNodeArea = styled.div<MainNodeAreaProps>`
   align-items: center;
   color: ${({ theme }) => theme.dimmed};
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 400;
   font-family: ${fontFamilySans};
   padding: 0 15px;
-  height: 36px;
+  height: 40px;
   user-select: none;
   border-width: 1px;
   border-style: ${({ isLibrary }) => (isLibrary ? 'dashed' : 'solid')};
@@ -59,7 +59,7 @@ const MainNodeArea = styled.div<MainNodeAreaProps>`
   background-color: ${({ theme, nodeType, isDragNotAllowed, isLibrary }) => {
     if (isDragNotAllowed) return theme.disabled;
     if (isLibrary) return 'transparent';
-    return theme.background.mainClose;
+    return theme.background.mainMiddle;
   }};
   opacity: ${({ isMatchedToSearch, isNotSelected, isRelatedNode }) => {
     if (isRelatedNode) return 0.9;

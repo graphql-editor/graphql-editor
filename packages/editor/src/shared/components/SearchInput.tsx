@@ -20,7 +20,7 @@ const Wrapper = styled.div`
 `;
 
 const Main = styled.input`
-  background-color: ${({ theme }) => theme.background.mainFurthest};
+  background-color: ${({ theme }) => theme.background.mainFurther};
   border-radius: 5px;
   color: ${({ theme }) => theme.text};
   width: 100%;
