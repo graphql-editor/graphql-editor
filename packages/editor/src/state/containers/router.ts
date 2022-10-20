@@ -6,7 +6,6 @@ const defaultValues = {
   pane: 'diagram' as ActivePane,
   code: 'on' as 'on' | 'off',
   n: '',
-  source: 'internal' as 'internal' | 'external',
 };
 
 export type EditorRoutes = typeof defaultValues;

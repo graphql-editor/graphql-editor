@@ -130,21 +130,27 @@ export const Editor = ({
   const { setSidebarSize, sidebarSize } = useLayoutState();
   const { routes, set } = useRouter();
   const selectedNodeFromQuery = routes.n;
+
   const reset = () => {
     setSnapshots([]);
     setUndos([]);
     setGrafErrors(undefined);
   };
   useEffect(() => {
+    if (!selectedNodeFromQuery) {
+      setSelectedNode(undefined);
+      return;
+    }
     const field = tree.nodes
       .concat(libraryTree.nodes)
       .find((n) => n.id === selectedNodeFromQuery);
-    if (field) {
-      setSelectedNode({
-        source: 'routing',
-        field,
-      });
-    }
+
+    if (!field) return;
+
+    setSelectedNode({
+      source: 'routing',
+      field,
+    });
   }, [tree, libraryTree, selectedNodeFromQuery]);
 
   useEffect(() => {
@@ -235,18 +241,17 @@ export const Editor = ({
     }
     set({
       n: selectedNode?.field?.id,
-      source: 'internal',
     });
   }, [selectedNode]);
 
   useEffect(() => {
     if (routeState) {
-      set({ ...routeState, source: 'external' });
+      set({ ...routeState });
     }
   }, [routeState]);
 
   useEffect(() => {
-    if (onRouteChange && routes.source === 'internal') {
+    if (onRouteChange) {
       onRouteChange(routes);
     }
   }, [routes]);

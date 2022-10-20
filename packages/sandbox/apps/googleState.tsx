@@ -1,23 +1,35 @@
-//@ts-nocheck
-import React, { useCallback, useEffect, useState } from 'react';
-import { GraphQLEditor, Colors, EditorRef } from 'graphql-editor';
+import React, { useEffect, useState, useRef } from 'react';
+import { GraphQLEditor, Colors } from 'graphql-editor';
 import * as schemas from '../schema';
-import { MainTheme, EditorRoutes } from 'graphql-editor';
+import { EditorRoutes } from 'graphql-editor';
 import { PassedSchema } from 'graphql-editor';
+import { useRouter } from 'helpers/FakeRouter';
+
+const buttonStyle = {
+  position: 'absolute',
+  zIndex: 33,
+  top: '65px',
+  right: '15px',
+  padding: '10px',
+  color: '#ffffff',
+  cursor: 'pointer',
+  borderRadius: 4,
+  backgroundColor: Colors.blue,
+} as const;
 
 export const googleState = () => {
+  const firstRoute = useRef(true);
   const [currentSchema, setCurrentSchema] = useState<PassedSchema>({
     code: schemas.googleDirectionsNew,
     libraries: '',
   });
 
-  const [routingSystem, setRoutingSystem] = useState<EditorRoutes>();
-  const [s, setS] = useState<EditorRoutes>();
+  const [editorRoutes, setEditorRoutes] = useState<EditorRoutes>();
+  const {
+    changeRoute,
+    path: { pane, n, code },
+  } = useRouter();
 
-  useEffect(() => {
-    if (routingSystem?.source === 'internal') {
-    }
-  }, [routingSystem]);
   useEffect(() => {
     const listener = (e: PopStateEvent) => {
       const u = new URL(window.location.href);
@@ -40,31 +52,47 @@ export const googleState = () => {
     >
       <div
         onClick={() =>
-          setS({
-            pane: 'docs',
+          setEditorRoutes({
+            pane: 'relation',
             n: '13bfdf3bad4d8d',
+            code: 'on',
           })
         }
         style={{
-          position: 'absolute',
-          zIndex: 33,
-          top: '10px',
-          right: '10px',
-          padding: '10px 24px',
-          color: '#ffffff',
-          cursor: 'pointer',
-          background: Colors.blue,
+          ...buttonStyle,
         }}
       >
-        Move to docs
+        select node
+      </div>
+      <div
+        onClick={() =>
+          setEditorRoutes({
+            pane: 'relation',
+            n: '',
+            code: 'on',
+          })
+        }
+        style={{
+          ...buttonStyle,
+          backgroundColor: Colors.orange,
+          right: '130px',
+        }}
+      >
+        deselect node
       </div>
       <GraphQLEditor
-        routeState={s}
+        routeState={editorRoutes}
         schema={currentSchema}
         sidebarExpanded
-        onRouteChange={(r) => {
-          console.log(r);
-          setRoutingSystem(r);
+        onRouteChange={(routes) => {
+          if (!routes) return;
+          if (firstRoute.current) {
+            firstRoute.current = false;
+            if (pane || n || code)
+              setEditorRoutes({ pane, n, code } as EditorRoutes);
+            return;
+          }
+          changeRoute({ a: 'googleState', ...routes });
         }}
         setSchema={(s) => {
           setCurrentSchema(s);
