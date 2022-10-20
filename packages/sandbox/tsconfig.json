@@ -13,7 +13,8 @@
     "lib": ["es6", "es7", "esnext", "dom"],
     "outDir": "./lib",
     "baseUrl": "./",
-    "rootDir": "./"
+    "rootDir": "./",
+    "composite": true
   },
   "include": ["**/*.ts", "**/*.tsx"]
 }

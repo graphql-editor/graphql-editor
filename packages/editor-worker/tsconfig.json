@@ -11,6 +11,7 @@
     "noUnusedLocals": true,
     "esModuleInterop": true,
     "strict": true,
+    "composite": true,
     "outDir": "./lib",
     "lib": ["es6", "es7", "esnext", "dom"],
     "rootDir": "./",

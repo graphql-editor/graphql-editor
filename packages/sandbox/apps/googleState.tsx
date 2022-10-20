@@ -1,8 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { GraphQLEditor, Colors } from 'graphql-editor';
+import {
+  GraphQLEditor,
+  Colors,
+  PassedSchema,
+  EditorRoutes,
+} from 'graphql-editor';
 import * as schemas from '../schema';
-import { EditorRoutes } from 'graphql-editor';
-import { PassedSchema } from 'graphql-editor';
 import { useRouter } from 'helpers/FakeRouter';
 
 const buttonStyle = {
