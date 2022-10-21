@@ -21,10 +21,6 @@ export const useIO = () => {
         event.preventDefault();
         on(KeyboardActions.Redo);
       }
-      if (event.key === 's' && ctrl) {
-        event.preventDefault();
-        on(KeyboardActions.Save);
-      }
       if (event.key === 'f' && ctrl) {
         event.preventDefault();
         on(KeyboardActions.FindRelation);

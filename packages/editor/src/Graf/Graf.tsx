@@ -137,7 +137,7 @@ export const Graf: React.FC = () => {
         ? findInNodes(tree.nodes, selectedNode.field) ||
           findInNodes(libraryTree.nodes, selectedNode.field)
         : undefined,
-    [selectedNode?.field],
+    [selectedNode?.field, tree],
   );
 
   const selectedNodeComponent = useMemo(() => {
