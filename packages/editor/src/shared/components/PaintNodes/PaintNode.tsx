@@ -187,9 +187,7 @@ export const PaintNode: React.FC<NodeProps> = ({
       isError={errorNodeNames?.includes(node.name)}
       isMatchedToSearch={isMatchedToSearch}
       isNotSelected={
-        selectedNode?.field
-          ? !compareParserFields(node)(selectedNode.field)
-          : undefined
+        selectedNode?.field ? selectedNode.field.name !== node.name : undefined
       }
       isRelatedNode={
         selectedNode?.field &&

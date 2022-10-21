@@ -8,7 +8,7 @@ import { theme as MonacoTheme } from '@/editor/code/monaco';
 import { OperationType } from 'graphql-js-tree';
 import { CodeContainer, ErrorLock } from '@/editor/code/style/Code';
 import { Maybe } from 'graphql-language-service';
-import { KeyboardActions, useIO } from '@/shared/hooks/io';
+import { useDebouncedValue } from '@/shared/hooks/useDebouncedValue';
 
 export interface CodePaneOuterProps {
   readonly?: boolean;
@@ -30,8 +30,8 @@ export const CodePane = (props: CodePaneProps) => {
   const { theme } = useTheme();
   const { selectedNode, setSelectedNode, tree, libraryTree } = useTreesState();
   const { lockCode, errorRowNumber } = useErrorsState();
-  const { mount } = useIO();
   const [temporaryString, setTemporaryString] = useState(schema);
+  const debouncedTemporaryString = useDebouncedValue(temporaryString, 400);
 
   const ref: React.ForwardedRef<SchemaEditorApi> = React.createRef();
   const codeSettings = useMemo(
@@ -44,13 +44,8 @@ export const CodePane = (props: CodePaneProps) => {
   );
 
   useEffect(() => {
-    const mounted = mount({
-      [KeyboardActions.Save]: () => {
-        onChange(temporaryString);
-      },
-    });
-    return mounted.dispose;
-  }, [temporaryString]);
+    onChange(debouncedTemporaryString);
+  }, [debouncedTemporaryString]);
 
   useEffect(() => {
     if (ref.current) {
