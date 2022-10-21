@@ -145,7 +145,7 @@ export const Editor = ({
       .concat(libraryTree.nodes)
       .find((n) => n.id === selectedNodeFromQuery);
 
-    if (!field) return;
+    if (!field || field.id === selectedNode?.field?.id) return;
 
     setSelectedNode({
       source: 'routing',
