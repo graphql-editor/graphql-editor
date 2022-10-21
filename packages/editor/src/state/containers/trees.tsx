@@ -39,16 +39,12 @@ const useTreesStateContainer = createContainer(() => {
   const [scalars, setScalars] = useState(BuiltInScalars.map((a) => a.name));
   const [schemaType, setSchemaType] = useState<SchemaType>('user');
 
-  const { setLockGraf, setCodeErrors, transformCodeError, codeErrors } =
+  const { setLockGraf, setCodeErrors, transformCodeError} =
     useErrorsState();
 
   useEffect(() => {
     updateScallars();
   }, [tree]);
-
-  useEffect(() => {
-    codeErrors.length && setSelectedNode(undefined);
-  }, [codeErrors]);
 
   const updateNode = (n: ParserField) => {
     const id = generateNodeId(n.name, n.data.type, n.args);

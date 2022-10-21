@@ -1,7 +1,7 @@
 import { createContainer } from 'unstated-next';
 import React, { useEffect, useState } from 'react';
 import { EditorError } from '@/validation';
-import { ErrorItem } from '@/Graf/ErrorItem';
+import { ErrorItem } from '@/shared/errors/ErrorItem';
 const useErrorsStateContainer = createContainer(() => {
   const [codeErrors, setCodeErrors] = useState<EditorError[]>([]);
   const [grafEditorErrors, setGrafEditorErrors] = useState<EditorError[]>([]);

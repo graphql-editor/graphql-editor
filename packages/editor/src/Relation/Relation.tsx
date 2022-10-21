@@ -7,12 +7,11 @@ import styled from '@emotion/styled';
 import { LinesDiagram } from '@/Relation/LinesDiagram';
 import { toPng } from 'html-to-image';
 import { Clear, Export, Eye } from '@/editor/icons';
-import { ErrorLabel, ErrorWrapper } from '@/shared/components/ErrorStyles';
-import { useRouter } from '@/state/containers/router';
 import { PaintNodes } from '@/shared/components/PaintNodes/PaintNodes';
 import { useSortState } from '@/state/containers/sort';
 import * as vars from '@/vars';
 import { TopBar } from '@/shared/components/TopBar';
+import { ErrorsList } from '@/shared/errors/ErrorsList';
 
 const Wrapper = styled.div<{ relationsOn?: boolean }>`
   display: flex;
@@ -115,7 +114,6 @@ export const Relation: React.FC = () => {
   const mainRef = useRef<HTMLDivElement>(null);
   const { selectedNode, tree, libraryTree, setSelectedNode } = useTreesState();
   const { lockGraf, grafErrors, errorsItems } = useErrorsState();
-  const { set } = useRouter();
   const {
     setCurrentNodes,
     showRelatedTo,
@@ -207,16 +205,7 @@ export const Relation: React.FC = () => {
       <Main onClick={() => setSelectedNode(undefined)}>
         {!lockGraf && !selectedNode?.field && <PaintNodes disableOps />}
         {!lockGraf && selectedNode?.field && <LinesDiagram mainRef={mainRef} />}
-        {lockGraf && (
-          <ErrorWrapper
-            onClick={() => {
-              set({ code: 'on' });
-            }}
-          >
-            <ErrorLabel>{`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:`}</ErrorLabel>
-            {errorsItems}
-          </ErrorWrapper>
-        )}
+        {lockGraf && <ErrorsList>{errorsItems}</ErrorsList>}
         {grafErrors && <ErrorContainer>{grafErrors}</ErrorContainer>}
       </Main>
     </Wrapper>

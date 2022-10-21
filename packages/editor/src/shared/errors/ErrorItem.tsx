@@ -1,5 +1,4 @@
 import { useErrorsState } from '@/state/containers';
-import { fontFamily } from '@/vars';
 import styled from '@emotion/styled';
 import React from 'react';
 
@@ -8,26 +7,21 @@ type ErrorItemProps = {
 };
 
 const ButtonStyles = styled.button`
-  background-color: ${({ theme }) => theme.background.mainFurthest};
-  border: 1px solid ${({ theme }) => theme.error};
-  color: ${({ theme }) => theme.error};
+  border: 0;
+  background-color: ${({ theme }) => theme.background.mainMiddle};
+  color: ${({ theme }) => theme.text};
   padding: 10px 50px;
   cursor: pointer;
   text-transform: uppercase;
   border-radius: 4px;
 `;
 
-const Main = styled.div`
-  margin: 0 16px;
-`;
+const Main = styled.div``;
 
-const Message = styled.textarea`
-  font-family: ${fontFamily};
-  height: 180px;
-  font-size: 14px;
+const Message = styled.div`
   color: ${({ theme }) => theme.error};
-  background-color: ${({ theme }) => theme.background.mainFurthest};
-  border: 0;
+  background-color: transparent;
+  white-space: pre-line;
   width: 100%;
 `;
 
@@ -38,7 +32,7 @@ export const ErrorItem: React.FC<ErrorItemProps> = ({ error }) => {
 
   return (
     <Main>
-      <Message disabled value={error.replaceAll('\\', '') + '}'} />
+      <Message>{error.replaceAll('\\', '') + '}'}</Message>
       <ButtonStyles onClick={() => setErrorRowNumber(getRowNumber())}>
         Resolve error
       </ButtonStyles>

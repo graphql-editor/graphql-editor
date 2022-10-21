@@ -10,7 +10,8 @@
   "scripts": {
     "updatedeps": "npm i -w graphql-editor graphql-zeus@latest graphsource@latest",
     "lint": "eslint \"./src/**/*.{ts,js}\" --quiet --fix && prettier --write \"./src/**/*.{ts,js}\" ",
-    "run-all": "concurrently \"npm run start -w graphql-editor-worker\" \"npm run start -w graphql-editor\" \"npm run start -w sandbox\" "
+    "run-all": "npm run build --ws --if-present && concurrently \"npm run start -w graphql-editor-worker\" \"npm run start -w graphql-editor\" \"npm run start -w sandbox\" ",
+    "run-all-debug": "npm run build --ws --if-present && concurrently \"npm run start -w graphql-editor-worker\" \"npm run start -w graphql-editor\" \"npm run start -w sandbox\" \"firefox -start-debugger-server\" "
   },
   "resolutions": {
     "@types/react": "^16.9.11"

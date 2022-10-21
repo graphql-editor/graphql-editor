@@ -14,10 +14,10 @@ import {
   TypeDefinition,
 } from 'graphql-js-tree';
 import styled from '@emotion/styled';
-import { ErrorLabel, ErrorWrapper } from '@/shared/components/ErrorStyles';
 import { PaintNodes } from '@/shared/components/PaintNodes/PaintNodes';
 import { TopBar } from '@/shared/components/TopBar';
 import { KeyboardActions, useIO } from '@/shared/hooks/io';
+import { ErrorsList } from '@/shared/errors/ErrorsList';
 
 const Wrapper = styled.div`
   flex: 1;
@@ -213,14 +213,10 @@ export const Graf: React.FC = () => {
       >
         <TopBar heading={lockGraf ? 'ERRORS' : 'CREATOR VIEW'} />
         {selectedNodeComponent}
-        {lockGraf ? (
-          <ErrorWrapper>
-            <ErrorLabel>{`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:`}</ErrorLabel>
-            {errorsItems}
-          </ErrorWrapper>
-        ) : (
-          <Main>{!lockGraf && <PaintNodes />}</Main>
-        )}
+        {lockGraf && <ErrorsList> {errorsItems}</ErrorsList>}
+        <Main>
+          <PaintNodes />
+        </Main>
         {grafErrors && <ErrorContainer>{grafErrors}</ErrorContainer>}
       </Wrapper>
     </>

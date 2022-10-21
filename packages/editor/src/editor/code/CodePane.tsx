@@ -88,6 +88,7 @@ export const CodePane = (props: CodePaneProps) => {
     },
     [fullScreen, tree, libraryTree, setSelectedNode],
   );
+  // console.log(schema)
   return (
     <CodeContainer
       data-cy={GraphQLEditorDomStructure.tree.elements.CodePane.name}
@@ -103,9 +104,9 @@ export const CodePane = (props: CodePaneProps) => {
             setTemporaryString(v || '');
           }}
           onBlur={(v) => {
-            if (props.readonly) return;
-            if (v === schema) return;
-            onChange(v);
+            // if (props.readonly) return;
+            // if (v === schema) return;
+            // onChange(v);
           }}
           schema={schema}
           libraries={libraries}
