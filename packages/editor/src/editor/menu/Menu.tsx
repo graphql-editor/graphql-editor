@@ -142,7 +142,7 @@ export interface MenuProps {
   sidebarExpanded?: boolean;
   activePane?: ActivePane;
   excludePanes?: ActivePane[];
-  setActivePane: (pane: ActivePane) => void;
+  setActivePane: (pane?: ActivePane) => void;
 }
 
 const MenuChildren = GraphQLEditorDomStructure.tree.sidebar.menu.children;
@@ -201,7 +201,9 @@ export const Menu = ({
         <MenuItem
           data-cy={MenuChildren.diagram}
           className={activePane === 'diagram' ? 'active' : ''}
-          onClick={() => setActivePane('diagram')}
+          onClick={() =>
+            setActivePane(activePane === 'diagram' ? undefined : 'diagram')
+          }
           data-tooltip="Creator"
           data-tour="creator"
           isCollapsed={isCollapsed}

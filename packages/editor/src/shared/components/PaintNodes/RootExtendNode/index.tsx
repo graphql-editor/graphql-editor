@@ -115,22 +115,11 @@ export const RootExtendNode: React.FC<RootExtendNodeProps> = ({
       </NodeTopBar>
       <NodeBox>
         {node.args?.map((a, i) => {
-          return (
-            <PaintNode
-              isMatchedToSearch={a.name
-                .toLowerCase()
-                .includes(filterNodes.toLowerCase())}
-              key={a.name + i}
-              node={a}
-            />
-          );
+          return <PaintNode key={a.name + i} node={a} />;
         })}
         {libraryNode?.args?.map((a, i) => {
           return (
             <PaintNode
-              isMatchedToSearch={a.name
-                .toLowerCase()
-                .includes(filterNodes.toLowerCase())}
               isLibrary={true}
               key={a.name + i + node.args?.length}
               node={a}

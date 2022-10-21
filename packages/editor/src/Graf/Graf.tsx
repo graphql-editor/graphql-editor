@@ -17,7 +17,6 @@ import styled from '@emotion/styled';
 import { PaintNodes } from '@/shared/components/PaintNodes/PaintNodes';
 import { TopBar } from '@/shared/components/TopBar';
 import { KeyboardActions, useIO } from '@/shared/hooks/io';
-import { ErrorsList } from '@/shared/errors/ErrorsList';
 
 const Wrapper = styled.div`
   flex: 1;
@@ -56,14 +55,24 @@ const ErrorContainer = styled.div`
 `;
 
 const SubNodeContainer = styled.div`
-  background-color: ${({ theme }) => theme.background.mainFurther};
   font-family: ${fontFamilySans};
-  left: 0;
   top: 60px;
-  bottom: 0;
-  position: absolute;
   transition: max-width 0.5s ease-in-out;
   max-width: 50%;
+  bottom: 0;
+  left: 0;
+  top: 0;
+  position: absolute;
+  height: 100%;
+`;
+
+const SubNodeWrapper = styled.div`
+  width: 100%;
+  background-color: ${({ theme }) => theme.background.mainBlack}99;
+  bottom: 0;
+  left: 0;
+  top: 60px;
+  position: absolute;
   z-index: 2;
 `;
 
@@ -83,7 +92,7 @@ export const Graf: React.FC = () => {
     readonly,
     scalars,
   } = useTreesState();
-  const { lockGraf, grafErrors, errorsItems } = useErrorsState();
+  const { grafErrors } = useErrorsState();
   const { mount } = useIO();
 
   useEffect(() => {
@@ -143,62 +152,64 @@ export const Graf: React.FC = () => {
   const selectedNodeComponent = useMemo(() => {
     if (node) {
       return (
-        <SubNodeContainer onClick={() => {}}>
-          <ActiveNode
-            readonly={readonly}
-            onDelete={(nodeToDelete) => {
-              const deletedNode = tree.nodes.findIndex(
-                (n) => n === nodeToDelete,
-              )!;
-              const allNodes = [...tree.nodes];
-              allNodes.splice(deletedNode, 1);
-              setSelectedNode(undefined);
-              setTree({ nodes: allNodes });
-            }}
-            onDuplicate={(nodeToDuplicate) => {
-              const allNodes = [...tree.nodes];
-              const duplicatedNode = JSON.parse(
-                JSON.stringify({
-                  ...node,
-                  name: nodeToDuplicate?.name + 'Copy',
-                }),
-              ) as ParserField;
-              allNodes.push(duplicatedNode);
-              setSelectedNode({
-                field: duplicatedNode,
-                source: 'diagram',
-              });
-              setTree({ nodes: allNodes });
-            }}
-            onInputCreate={(nodeToCreateInput) => {
-              const allNodes = [...tree.nodes];
-              const createdInput = JSON.parse(
-                JSON.stringify(
-                  createParserField({
-                    args: getScalarFields(node, scalars),
-                    interfaces: [],
-                    directives: [],
-                    type: {
-                      fieldType: {
-                        name: 'input',
-                        type: Options.name,
-                      },
-                    },
-                    data: { type: TypeDefinition.InputObjectTypeDefinition },
-                    name: nodeToCreateInput.name + 'Input',
+        <SubNodeWrapper>
+          <SubNodeContainer>
+            <ActiveNode
+              readonly={readonly}
+              onDelete={(nodeToDelete) => {
+                const deletedNode = tree.nodes.findIndex(
+                  (n) => n === nodeToDelete,
+                )!;
+                const allNodes = [...tree.nodes];
+                allNodes.splice(deletedNode, 1);
+                setSelectedNode(undefined);
+                setTree({ nodes: allNodes });
+              }}
+              onDuplicate={(nodeToDuplicate) => {
+                const allNodes = [...tree.nodes];
+                const duplicatedNode = JSON.parse(
+                  JSON.stringify({
+                    ...node,
+                    name: nodeToDuplicate?.name + 'Copy',
                   }),
-                ),
-              ) as ParserField;
-              allNodes.push(createdInput);
-              setSelectedNode({
-                field: createdInput,
-                source: 'diagram',
-              });
-              setTree({ nodes: allNodes });
-            }}
-            node={node}
-          />
-        </SubNodeContainer>
+                ) as ParserField;
+                allNodes.push(duplicatedNode);
+                setSelectedNode({
+                  field: duplicatedNode,
+                  source: 'diagram',
+                });
+                setTree({ nodes: allNodes });
+              }}
+              onInputCreate={(nodeToCreateInput) => {
+                const allNodes = [...tree.nodes];
+                const createdInput = JSON.parse(
+                  JSON.stringify(
+                    createParserField({
+                      args: getScalarFields(node, scalars),
+                      interfaces: [],
+                      directives: [],
+                      type: {
+                        fieldType: {
+                          name: 'input',
+                          type: Options.name,
+                        },
+                      },
+                      data: { type: TypeDefinition.InputObjectTypeDefinition },
+                      name: nodeToCreateInput.name + 'Input',
+                    }),
+                  ),
+                ) as ParserField;
+                allNodes.push(createdInput);
+                setSelectedNode({
+                  field: createdInput,
+                  source: 'diagram',
+                });
+                setTree({ nodes: allNodes });
+              }}
+              node={node}
+            />
+          </SubNodeContainer>
+        </SubNodeWrapper>
       );
     }
     return null;
@@ -211,9 +222,8 @@ export const Graf: React.FC = () => {
         }}
         data-cy={GraphQLEditorDomStructure.tree.elements.Graf.name}
       >
-        <TopBar heading={lockGraf ? 'ERRORS' : 'CREATOR VIEW'} />
+        <TopBar heading="CREATOR VIEW" />
         {selectedNodeComponent}
-        {lockGraf && <ErrorsList> {errorsItems}</ErrorsList>}
         <Main>
           <PaintNodes />
         </Main>

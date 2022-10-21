@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { createContainer } from 'unstated-next';
 
 const defaultValues = {
-  pane: 'diagram' as ActivePane,
+  pane: 'diagram' as ActivePane | undefined,
   code: 'on' as 'on' | 'off',
   n: '',
 };

@@ -11,7 +11,6 @@ import { PaintNodes } from '@/shared/components/PaintNodes/PaintNodes';
 import { useSortState } from '@/state/containers/sort';
 import * as vars from '@/vars';
 import { TopBar } from '@/shared/components/TopBar';
-import { ErrorsList } from '@/shared/errors/ErrorsList';
 
 const Wrapper = styled.div<{ relationsOn?: boolean }>`
   display: flex;
@@ -113,7 +112,7 @@ const Menu = styled.div`
 export const Relation: React.FC = () => {
   const mainRef = useRef<HTMLDivElement>(null);
   const { selectedNode, tree, libraryTree, setSelectedNode } = useTreesState();
-  const { lockGraf, grafErrors, errorsItems } = useErrorsState();
+  const { grafErrors } = useErrorsState();
   const {
     setCurrentNodes,
     showRelatedTo,
@@ -157,7 +156,7 @@ export const Relation: React.FC = () => {
 
   return (
     <Wrapper relationsOn={!!selectedNode?.field}>
-      <TopBar heading={lockGraf ? 'ERRORS' : 'RELATION VIEW'}>
+      <TopBar heading="RELATION VIEW">
         {selectedNode?.field && (
           <Menu>
             <TogglesWrapper>
@@ -203,9 +202,8 @@ export const Relation: React.FC = () => {
         )}
       </TopBar>
       <Main onClick={() => setSelectedNode(undefined)}>
-        {!lockGraf && !selectedNode?.field && <PaintNodes disableOps />}
-        {!lockGraf && selectedNode?.field && <LinesDiagram mainRef={mainRef} />}
-        {lockGraf && <ErrorsList>{errorsItems}</ErrorsList>}
+        {!selectedNode?.field && <PaintNodes disableOps />}
+        {selectedNode?.field && <LinesDiagram mainRef={mainRef} />}
         {grafErrors && <ErrorContainer>{grafErrors}</ErrorContainer>}
       </Main>
     </Wrapper>

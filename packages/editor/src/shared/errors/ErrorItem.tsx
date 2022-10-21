@@ -29,10 +29,10 @@ export const ErrorItem: React.FC<ErrorItemProps> = ({ error }) => {
   const { setErrorRowNumber } = useErrorsState();
 
   const getRowNumber = () => parseInt(error.split(',')[1].split(':')[1]) + 1;
-
+  const cleanError = error.replaceAll('\\', '') + '}';
   return (
     <Main>
-      <Message>{error.replaceAll('\\', '') + '}'}</Message>
+      <Message>{cleanError}</Message>
       <ButtonStyles onClick={() => setErrorRowNumber(getRowNumber())}>
         Resolve error
       </ButtonStyles>

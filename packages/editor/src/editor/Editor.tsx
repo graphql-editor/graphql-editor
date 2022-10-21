@@ -21,6 +21,7 @@ import { Docs } from '@/Docs/Docs';
 import { useSortState } from '@/state/containers/sort';
 import styled from '@emotion/styled';
 import { useRouter, EditorRoutes } from '@/state/containers/router';
+import { ErrorsList } from '@/shared/errors/ErrorsList';
 
 const Main = styled.div`
   display: flex;
@@ -110,6 +111,8 @@ export const Editor = ({
     setLockCode,
     setGrafEditorErrors,
     setGrafErrorSchema,
+    lockGraf,
+    errorsItems,
   } = useErrorsState();
   const {
     tree,
@@ -248,13 +251,13 @@ export const Editor = ({
     if (routeState) {
       set({ ...routeState });
     }
-  }, [routeState]);
+  }, [routeState?.code, routeState?.n, routeState?.pane]);
 
   useEffect(() => {
     if (onRouteChange) {
       onRouteChange(routes);
     }
-  }, [routes]);
+  }, [routes.code, routes.pane, routes.n]);
 
   return (
     <Main
@@ -333,6 +336,7 @@ export const Editor = ({
       {routes.pane === 'diff' && diffSchemas && (
         <DiffEditor schemas={diffSchemas} />
       )}
+      {lockGraf && <ErrorsList> {errorsItems}</ErrorsList>}
     </Main>
   );
 };

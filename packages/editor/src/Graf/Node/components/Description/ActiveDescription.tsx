@@ -32,20 +32,7 @@ export const ActiveDescription: React.FC<{
   useEffect(() => {
     setText(value);
   }, [value]);
-  if (isLocked) {
-    if (!value) {
-      return <></>;
-    }
-    return (
-      <Main
-        disabled={true}
-        rows={1}
-        data-gramm_editor="false"
-        ref={DescriptionRef}
-        value={text}
-      />
-    );
-  }
+
   return (
     <Main
       rows={1}
@@ -60,11 +47,13 @@ export const ActiveDescription: React.FC<{
       }}
       onBlur={(e) => {
         e.currentTarget.style.height = 'auto';
+        if (isLocked) return;
         if (DescriptionRef.current) {
           onChange(text);
         }
       }}
       onChange={(e) => {
+        if (isLocked) return;
         setText(e.target.value);
         e.currentTarget.style.height = 'auto';
         e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';

@@ -42,9 +42,6 @@ export const googleState = () => {
     return () => window.removeEventListener('popstate', listener);
   }, []);
 
-  console.log(editorRoutes,pane,n,code)
-
-
   return (
     <div
       style={{

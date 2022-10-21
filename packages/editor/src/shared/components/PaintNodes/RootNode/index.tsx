@@ -88,15 +88,7 @@ export const RootNode: React.FC<RootNodeProps> = ({
   const paintedNodes = useMemo(() => {
     return sortNodes()
       ?.filter((a) => a.name.toLowerCase().includes(filterNodes.toLowerCase()))
-      .map((a) => (
-        <PaintNode
-          key={a.name}
-          node={a}
-          isMatchedToSearch={a.name
-            .toLowerCase()
-            .includes(filterNodes.toLowerCase())}
-        />
-      ));
+      .map((a) => <PaintNode key={a.name} node={a} />);
   }, [
     selectedNode,
     tree,
@@ -160,14 +152,7 @@ export const RootNode: React.FC<RootNodeProps> = ({
       <NodeBox>
         {schemaType === 'user' && paintedNodes}
         {libraryNode?.args?.map((a) => (
-          <PaintNode
-            isLibrary={true}
-            key={a.name}
-            node={a}
-            isMatchedToSearch={a.name
-              .toLowerCase()
-              .includes(filterNodes.toLowerCase())}
-          />
+          <PaintNode isLibrary={true} key={a.name} node={a} />
         ))}
       </NodeBox>
     </NodeContainer>

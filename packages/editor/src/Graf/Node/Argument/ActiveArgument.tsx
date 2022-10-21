@@ -107,6 +107,7 @@ export const ActiveArgument: React.FC<FieldProps> = ({
           value={resolveValueFromNode(node, parentNode)}
           style={{ marginLeft: 5 }}
           onChange={(v) => {
+            if (isLocked) return;
             node.args =
               placeStringInNode({
                 v,

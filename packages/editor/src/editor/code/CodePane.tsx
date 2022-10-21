@@ -31,7 +31,7 @@ export const CodePane = (props: CodePaneProps) => {
   const { selectedNode, setSelectedNode, tree, libraryTree } = useTreesState();
   const { lockCode, errorRowNumber } = useErrorsState();
   const [temporaryString, setTemporaryString] = useState(schema);
-  const debouncedTemporaryString = useDebouncedValue(temporaryString, 400);
+  const debouncedTemporaryString = useDebouncedValue(temporaryString, 1200);
 
   const ref: React.ForwardedRef<SchemaEditorApi> = React.createRef();
   const codeSettings = useMemo(
@@ -88,7 +88,6 @@ export const CodePane = (props: CodePaneProps) => {
     },
     [fullScreen, tree, libraryTree, setSelectedNode],
   );
-  // console.log(schema)
   return (
     <CodeContainer
       data-cy={GraphQLEditorDomStructure.tree.elements.CodePane.name}
@@ -101,12 +100,14 @@ export const CodePane = (props: CodePaneProps) => {
             monaco.editor.defineTheme('graphql-editor', MonacoTheme(theme))
           }
           onChange={(v) => {
+            if (props.readonly) return;
+            if (v === schema) return;
             setTemporaryString(v || '');
           }}
           onBlur={(v) => {
-            // if (props.readonly) return;
-            // if (v === schema) return;
-            // onChange(v);
+            if (props.readonly) return;
+            if (v === schema) return;
+            onChange(v);
           }}
           schema={schema}
           libraries={libraries}

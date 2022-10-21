@@ -17,7 +17,6 @@ export interface NodeProps {
   node: ParserField;
   builtIn?: boolean;
   isLibrary?: boolean;
-  isMatchedToSearch?: boolean;
   subNode?: boolean;
 }
 
@@ -30,8 +29,6 @@ interface MainNodeAreaProps {
   isDragNotAllowed?: boolean;
   isDragOver?: boolean;
   isError?: boolean;
-  isMatchedToSearch?: boolean;
-  isNotSelected?: boolean;
   isRelatedNode?: boolean;
 }
 
@@ -53,29 +50,20 @@ const MainNodeArea = styled.div<MainNodeAreaProps>`
   user-select: none;
   border-width: 1px;
   border-style: ${({ isLibrary }) => (isLibrary ? 'dashed' : 'solid')};
-  color: ${({ theme, nodeType, isBaseNode, isError }) => {
+  color: ${({ theme, nodeType }) => {
     return theme.colors[nodeType] ? `${theme.colors[nodeType]}` : 'transparent';
   }};
-  background-color: ${({ theme, nodeType, isDragNotAllowed, isLibrary }) => {
+  background-color: ${({ theme, isDragNotAllowed, isLibrary }) => {
     if (isDragNotAllowed) return theme.disabled;
     if (isLibrary) return 'transparent';
     return theme.background.mainMiddle;
   }};
-  opacity: ${({ isMatchedToSearch, isNotSelected, isRelatedNode }) => {
+  opacity: ${({ isRelatedNode }) => {
     if (isRelatedNode) return 0.9;
-    if (isNotSelected) return 0.4;
-    if (isMatchedToSearch === false) return 0.2;
     return 1;
   }};
 
-  border-color: ${({
-    theme,
-    nodeType,
-    isBaseNode,
-    isLibrary,
-    isNotSelected,
-    isError,
-  }) => {
+  border-color: ${({ theme, nodeType, isBaseNode, isLibrary, isError }) => {
     if (isError) return theme.background.error;
     if (isBaseNode) return theme.backgroundedText;
     if (!isLibrary) return 'transparent';
@@ -94,11 +82,7 @@ const MainNodeArea = styled.div<MainNodeAreaProps>`
   }
 `;
 
-export const PaintNode: React.FC<NodeProps> = ({
-  node,
-  isLibrary,
-  isMatchedToSearch,
-}) => {
+export const PaintNode: React.FC<NodeProps> = ({ node, isLibrary }) => {
   const thisNode = useRef<HTMLDivElement>(null);
   const { setSelectedNode, selectedNode, tree, setTree } = useTreesState();
   const { isNodeBaseType, setIsUserOrder } = useSortState();
@@ -185,10 +169,6 @@ export const PaintNode: React.FC<NodeProps> = ({
       isDragNotAllowed={isDragNotAllowed}
       isDragOver={isDragOver}
       isError={errorNodeNames?.includes(node.name)}
-      isMatchedToSearch={isMatchedToSearch}
-      isNotSelected={
-        selectedNode?.field ? selectedNode.field.name !== node.name : undefined
-      }
       isRelatedNode={
         selectedNode?.field &&
         node?.interfaces?.includes(selectedNode.field.name)

@@ -92,7 +92,9 @@ export const ActiveInputValue: React.FC<FieldProps> = ({
         <Type>
           <ActiveType
             onClick={() =>
-              setMenuOpen(menuOpen === 'type' ? undefined : 'type')
+              !isLocked
+                ? setMenuOpen(menuOpen === 'type' ? undefined : 'type')
+                : undefined
             }
             type={node.type}
             parentTypes={parentTypes}

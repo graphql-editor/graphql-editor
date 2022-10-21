@@ -173,7 +173,6 @@ export const ActiveNode: React.FC<NodeProps> = ({
 
   const isArgumentNode = [Instances.Directive].includes(node.data.type as any);
   const isLocked = !!sharedProps.readonly || isLibrary;
-
   const findNodeByField = (field?: ParserField) => {
     return field
       ? (tree.nodes.find(

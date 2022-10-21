@@ -4,7 +4,6 @@ import { useOnClickOutside } from '@/Graf/Node/hooks';
 import styled from '@emotion/styled';
 
 const Wrapper = styled.div`
-  z-index: 4;
   width: 220px;
   border-radius: 4px;
 `;

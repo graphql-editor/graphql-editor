@@ -45,8 +45,7 @@ const OptionsMenuContainer = styled.div`
 `;
 
 const TypeMenuContainer = styled.div`
-  position: absolute;
-  top: 32px;
+  position: fixed;
   z-index: 2;
 `;
 

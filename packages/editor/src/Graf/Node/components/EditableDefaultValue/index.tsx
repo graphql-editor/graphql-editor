@@ -39,7 +39,7 @@ export const EditableDefaultValue: React.FC<EditableDefaultValueProps> = ({
       <Input
         disabled={!onChange}
         value={editedValue}
-        style={{ width: `${editedValue.length + 3}ch`, ...style }}
+        style={{ width: `${editedValue.length + 5}ch`, ...style }}
         onBlur={checkEdit}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {

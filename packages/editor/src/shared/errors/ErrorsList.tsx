@@ -7,10 +7,10 @@ export const ErrorWrapper = styled.div`
   width: 100%;
   height: 100%;
   position: absolute;
-  top: 55px;
+  top: 0;
   font-size: 14px;
   left: 0;
-  background-color: ${({ theme }) => theme.background.mainBlack}bb;
+  background-color: ${({ theme }) => theme.background.mainBlack}99;
   cursor: default;
   color: ${({ theme }) => theme.error};
   z-index: 2;
@@ -21,7 +21,7 @@ export const ErrorInside = styled.div`
   overflow-y: auto;
   margin-left: auto;
   padding: 20px;
-  background-color: ${({ theme }) => theme.background.mainFurther};
+  background-color: ${({ theme }) => theme.background.mainBlack};
 `;
 
 export const ErrorLabel = styled.p`
