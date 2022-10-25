@@ -140,7 +140,7 @@ export const Graf: React.FC = () => {
       },
     });
     return keyEvents.dispose;
-  }, [snapshots, tree, selectedNode]);
+  }, [snapshots, tree, selectedNode, readonly]);
 
   const node = useMemo(
     () =>
