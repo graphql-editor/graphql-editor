@@ -127,14 +127,16 @@ export const Graf: React.FC = () => {
         }
       },
       [KeyboardActions.Delete]: () => {
-        const deletedNode = tree.nodes.findIndex(
-          (n) => n === selectedNode?.field,
-        )!;
-        if (deletedNode === -1) return;
-        const allNodes = [...tree.nodes];
-        allNodes.splice(deletedNode, 1);
-        setSelectedNode(undefined);
-        setTree({ nodes: allNodes });
+        if (!readonly) {
+          const deletedNode = tree.nodes.findIndex(
+            (n) => n === selectedNode?.field,
+          )!;
+          if (deletedNode === -1) return;
+          const allNodes = [...tree.nodes];
+          allNodes.splice(deletedNode, 1);
+          setSelectedNode(undefined);
+          setTree({ nodes: allNodes });
+        }
       },
     });
     return keyEvents.dispose;
