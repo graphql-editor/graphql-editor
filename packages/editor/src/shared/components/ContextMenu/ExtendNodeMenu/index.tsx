@@ -16,14 +16,16 @@ import {
   MenuItem,
 } from '@/Graf/Node/components';
 import { sortNodes } from '@/shared/components/ContextMenu/sort';
+import { useRouter } from '@/state/containers/router';
 
 interface ExtendNodeMenuProps {
   hideMenu: () => void;
 }
 
 export const ExtendNodeMenu: React.FC<ExtendNodeMenuProps> = ({ hideMenu }) => {
-  const { tree, setTree, libraryTree } = useTreesState();
+  const { tree, setTree, libraryTree, setSelectedNode } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
+  const { set } = useRouter();
   const creationNodes = useMemo(
     () =>
       tree.nodes
@@ -48,24 +50,25 @@ export const ExtendNodeMenu: React.FC<ExtendNodeMenuProps> = ({ hideMenu }) => {
   );
 
   const onClickFilteredNode = (f: ParserField) => {
-    tree.nodes.push(
-      createParserField({
-        data: {
-          type: ResolveExtension(f.data.type)!,
+    const extendNode = createParserField({
+      data: {
+        type: ResolveExtension(f.data.type)!,
+      },
+      description: undefined,
+      type: {
+        fieldType: {
+          name: TypeDefinitionDisplayMap[ResolveExtension(f.data.type)!],
+          type: Options.name,
         },
-        description: undefined,
-        type: {
-          fieldType: {
-            name: TypeDefinitionDisplayMap[ResolveExtension(f.data.type)!],
-            type: Options.name,
-          },
-        },
-        name: f.name,
-        args: [],
-        interfaces: [],
-        directives: [],
-      }),
-    );
+      },
+      name: f.name,
+      args: [],
+      interfaces: [],
+      directives: [],
+    });
+    tree.nodes.push(extendNode);
+    setSelectedNode({ field: extendNode, source: 'diagram' });
+    set({ n: extendNode.id });
     hideMenu();
     setTree({ ...tree });
   };
