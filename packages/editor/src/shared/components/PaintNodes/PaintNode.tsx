@@ -85,7 +85,8 @@ const MainNodeArea = styled.div<MainNodeAreaProps>`
 export const PaintNode: React.FC<NodeProps> = ({ node, isLibrary }) => {
   const thisNode = useRef<HTMLDivElement>(null);
   const { setSelectedNode, selectedNode, tree, setTree } = useTreesState();
-  const { isNodeBaseType, setIsUserOrder } = useSortState();
+  const { isNodeBaseType, setIsUserOrder, setIsSortAlphabetically } =
+    useSortState();
   const { theme } = useTheme();
   const { errorNodeNames } = useErrorsState();
   const {
@@ -115,6 +116,7 @@ export const PaintNode: React.FC<NodeProps> = ({ node, isLibrary }) => {
   ) => {
     e.stopPropagation();
     setIsUserOrder(true);
+    setIsSortAlphabetically(false);
     const startNodeName = e.dataTransfer?.getData('startName');
     if (endNodeName === startNodeName) return;
     const newTree = [...tree.nodes];

@@ -2,12 +2,14 @@ import styled from '@emotion/styled';
 
 import React, { useEffect, useRef } from 'react';
 import { useErrorsState } from '@/state/containers';
+import { useTheme } from '@emotion/react';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import { Heading } from '@/shared/components';
 import { SearchInput } from '@/shared/components';
 import { useSortState } from '@/state/containers/sort';
 import { SortNodes } from '@/Graf/Node/components/SortNodes';
 import { KeyboardActions, useIO } from '@/shared/hooks/io';
+import { Abc } from '@/editor/icons';
 
 const TopBarComponent = styled.div`
   display: flex;
@@ -26,13 +28,29 @@ const SortWrapper = styled.div`
   gap: 20px;
 `;
 
+const AZContainer = styled.div`
+  display: flex;
+  padding-left: 16px;
+  border-left: 1px solid ${({ theme }) => theme.disabled}36;
+  align-items: center;
+  cursor: pointer;
+`;
+
 export const TopBar: React.FC<{ heading: string }> = ({
   children,
   heading,
 }) => {
   const { lockGraf } = useErrorsState();
-  const { setFilterNodes, filterNodes } = useSortState();
+  const {
+    setFilterNodes,
+    filterNodes,
+    isSortAlphabetically,
+    setIsSortAlphabetically,
+    setIsUserOrder,
+  } = useSortState();
   const { mount } = useIO();
+  const { inactive, active } = useTheme();
+
   const ref = useRef<HTMLInputElement>(null);
   useEffect(() => {
     const mounted = mount({
@@ -61,6 +79,14 @@ export const TopBar: React.FC<{ heading: string }> = ({
             value={filterNodes}
             onChange={setFilterNodes}
           />
+          <AZContainer
+            onClick={() => {
+              setIsUserOrder(false);
+              setIsSortAlphabetically((prev) => !prev);
+            }}
+          >
+            <Abc size={28} fill={isSortAlphabetically ? active : inactive} />
+          </AZContainer>
           <SortNodes />
         </SortWrapper>
       )}
