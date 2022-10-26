@@ -5,6 +5,7 @@ import { useTreesState } from '@/state/containers/trees';
 import { GraphQLEditorDomStructure } from '@/domStructure';
 import styled from '@emotion/styled';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
+import { useRouter } from '@/state/containers/router';
 export interface NewNodeProps {
   node: ParserField;
   onCreate: (name: string) => ParserField;
@@ -103,12 +104,17 @@ export const NewNode: React.FC<NewNodeProps> = ({ node, onCreate }) => {
   const [isCreating, setIsCreating] = useState(false);
   const { libraryTree, tree, setTree, setSelectedNode, setCreatedNode } =
     useTreesState();
+  const { set } = useRouter();
+
   const isError =
     tree.nodes.map((n) => n.name).includes(newName) ||
     libraryTree.nodes.map((n) => n.name).includes(newName);
   const submit = () => {
     if (newName && !isError) {
       const n = onCreate(newName);
+      set({
+        n: n?.id,
+      });
       setCreatedNode(n);
       tree.nodes.push(n);
       setTree({ ...tree });
