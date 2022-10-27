@@ -17,7 +17,6 @@ import styled from '@emotion/styled';
 import { PaintNodes } from '@/shared/components/PaintNodes/PaintNodes';
 import { TopBar } from '@/shared/components/TopBar';
 import { KeyboardActions, useIO } from '@/shared/hooks/io';
-import { useRouter } from '@/state/containers/router';
 
 const Wrapper = styled.div`
   flex: 1;
@@ -93,7 +92,6 @@ export const Graf: React.FC = () => {
     readonly,
     scalars,
   } = useTreesState();
-  const { set } = useRouter();
 
   const { grafErrors } = useErrorsState();
   const { mount } = useIO();
@@ -182,9 +180,6 @@ export const Graf: React.FC = () => {
                   ),
                 ) as ParserField;
                 allNodes.push(duplicatedNode);
-                set({
-                  n: duplicatedNode?.id,
-                });
                 setSelectedNode({
                   field: duplicatedNode,
                   source: 'diagram',

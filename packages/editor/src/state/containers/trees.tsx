@@ -39,8 +39,7 @@ const useTreesStateContainer = createContainer(() => {
   const [scalars, setScalars] = useState(BuiltInScalars.map((a) => a.name));
   const [schemaType, setSchemaType] = useState<SchemaType>('user');
 
-  const { setLockGraf, setCodeErrors, transformCodeError} =
-    useErrorsState();
+  const { setLockGraf, setCodeErrors, transformCodeError } = useErrorsState();
 
   useEffect(() => {
     updateScallars();

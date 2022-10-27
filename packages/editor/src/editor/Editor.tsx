@@ -132,7 +132,6 @@ export const Editor = ({
     useSortState();
   const { setSidebarSize, sidebarSize } = useLayoutState();
   const { routes, set } = useRouter();
-  const selectedNodeFromQuery = routes.n;
 
   const reset = () => {
     setSnapshots([]);
@@ -140,21 +139,20 @@ export const Editor = ({
     setGrafErrors(undefined);
   };
   useEffect(() => {
-    if (!selectedNodeFromQuery) {
+    if (routes.source === 'internal') return;
+    if (!routes.n) {
       setSelectedNode(undefined);
       return;
     }
     const field = tree.nodes
       .concat(libraryTree.nodes)
-      .find((n) => n.id === selectedNodeFromQuery);
-
-    if (!field || field.id === selectedNode?.field?.id) return;
+      .find((n) => n.id === routes.n);
 
     setSelectedNode({
       source: 'routing',
       field,
     });
-  }, [tree, libraryTree, selectedNodeFromQuery]);
+  }, [tree, libraryTree, routes.n]);
 
   useEffect(() => {
     isSortAlphabetically &&
@@ -242,9 +240,12 @@ export const Editor = ({
     if (tree.initial || selectedNode?.source === 'routing') {
       return;
     }
-    set({
-      n: selectedNode?.field?.id,
-    });
+    set(
+      {
+        n: selectedNode?.field?.id,
+      },
+      'internal',
+    );
   }, [selectedNode]);
 
   useEffect(() => {
@@ -254,8 +255,10 @@ export const Editor = ({
   }, [routeState?.code, routeState?.n, routeState?.pane]);
 
   useEffect(() => {
-    if (onRouteChange) {
-      onRouteChange(routes);
+    if (onRouteChange && routes.source === 'internal') {
+      onRouteChange({
+        ...routes,
+      });
     }
   }, [routes.code, routes.pane, routes.n]);
 
@@ -272,16 +275,20 @@ export const Editor = ({
         toggleCode={routes.code === 'on'}
         sidebarExpanded={sidebarExpanded}
         setToggleCode={(e) =>
-          set({
-            ...routes,
-            code: routes.code === 'off' ? 'on' : 'off',
-          })
+          set(
+            {
+              ...routes,
+              code: routes.code === 'off' ? 'on' : 'off',
+              source: 'internal',
+            },
+            'internal',
+          )
         }
         activePane={routes.pane}
         excludePanes={diffSchemas ? undefined : ['diff']}
         setActivePane={(p) => {
           const newState: typeof routes = { ...routes, pane: p };
-          set(newState);
+          set(newState, 'internal');
         }}
       />
       {routes.code === 'on' && routes.pane !== 'diff' && (
