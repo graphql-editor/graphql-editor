@@ -65,9 +65,9 @@ export const ExtendNodeMenu: React.FC<ExtendNodeMenuProps> = ({ hideMenu }) => {
       directives: [],
     });
     tree.nodes.push(extendNode);
+    setTree({ ...tree });
     setSelectedNode({ field: extendNode, source: 'diagram' });
     hideMenu();
-    setTree({ ...tree });
   };
   return (
     <Menu

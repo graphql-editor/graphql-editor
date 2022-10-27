@@ -67,7 +67,6 @@
     "fuzzyjs": "^5.0.1",
     "graphql-js-tree": "^0.1.8",
     "graphql-language-service": "^3.1.4",
-    "graphsource": "^2.0.5",
     "re-resizable": "^6.9.1",
     "remarkable": "^2.0.1",
     "unstated-next": "^1.1.0"
