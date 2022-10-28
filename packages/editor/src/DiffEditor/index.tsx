@@ -53,6 +53,8 @@ const Selects = styled.div`
 
 const AZContainer = styled.div`
   display: flex;
+  cursor: pointer;
+  align-items: center;
 `;
 
 export const DiffEditor = ({ schemas }: DiffEditorProps) => {

@@ -107,7 +107,8 @@ export const PaintNode: React.FC<NodeProps> = ({
   const thisNode = useRef<HTMLDivElement>(null);
   const { setSelectedNode, selectedNode, tree, setTree, readonly } =
     useTreesState();
-  const { isNodeBaseType, setIsUserOrder } = useSortState();
+  const { isNodeBaseType, setIsUserOrder, setIsSortAlphabetically } =
+    useSortState();
   const { theme } = useTheme();
   const { errorNodeNames } = useErrorsState();
   const {
@@ -138,6 +139,7 @@ export const PaintNode: React.FC<NodeProps> = ({
   ) => {
     e.stopPropagation();
     setIsUserOrder(true);
+    setIsSortAlphabetically(false);
     const startNodeName = e.dataTransfer?.getData('startName');
     if (endNodeName === startNodeName) return;
     const newTree = [...tree.nodes];
