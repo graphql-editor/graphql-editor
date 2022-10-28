@@ -133,22 +133,40 @@ const getAcceptedDirectives = (f: ParserField): Directive[] => {
   const {
     data: { type },
   } = f;
-  if (type === TypeDefinition.ObjectTypeDefinition) {
+  if (
+    type === TypeDefinition.ObjectTypeDefinition ||
+    type === TypeExtension.ObjectTypeExtension
+  ) {
     return [Directive.OBJECT];
   }
-  if (type === TypeDefinition.EnumTypeDefinition) {
+  if (
+    type === TypeDefinition.EnumTypeDefinition ||
+    type === TypeExtension.EnumTypeExtension
+  ) {
     return [Directive.ENUM];
   }
-  if (type === TypeDefinition.InputObjectTypeDefinition) {
+  if (
+    type === TypeDefinition.InputObjectTypeDefinition ||
+    type === TypeExtension.InputObjectTypeExtension
+  ) {
     return [Directive.INPUT_OBJECT];
   }
-  if (type === TypeDefinition.InterfaceTypeDefinition) {
+  if (
+    type === TypeDefinition.InterfaceTypeDefinition ||
+    type === TypeExtension.InterfaceTypeExtension
+  ) {
     return [Directive.INTERFACE];
   }
-  if (type === TypeDefinition.ScalarTypeDefinition) {
+  if (
+    type === TypeDefinition.ScalarTypeDefinition ||
+    type === TypeExtension.ScalarTypeExtension
+  ) {
     return [Directive.SCALAR];
   }
-  if (type === TypeDefinition.UnionTypeDefinition) {
+  if (
+    type === TypeDefinition.UnionTypeDefinition ||
+    type === TypeExtension.UnionTypeExtension
+  ) {
     return [Directive.UNION];
   }
   if (type === TypeSystemDefinition.FieldDefinition) {

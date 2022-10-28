@@ -34,13 +34,11 @@ const useTreesStateContainer = createContainer(() => {
   const [snapshots, setSnapshots] = useState<string[]>([]);
   const [undos, setUndos] = useState<string[]>([]);
   const [selectedNode, setSelectedNode] = useState<SelectedNode>();
-  const [createdNode, setCreatedNode] = useState<ParserField>();
   const [readonly, setReadonly] = useState(false);
   const [scalars, setScalars] = useState(BuiltInScalars.map((a) => a.name));
   const [schemaType, setSchemaType] = useState<SchemaType>('user');
 
-  const { setLockGraf, setCodeErrors, transformCodeError} =
-    useErrorsState();
+  const { setLockGraf, setCodeErrors, transformCodeError } = useErrorsState();
 
   useEffect(() => {
     updateScallars();
@@ -204,8 +202,6 @@ const useTreesStateContainer = createContainer(() => {
     setLibraryTree,
     snapshots,
     setSnapshots,
-    createdNode,
-    setCreatedNode,
     selectedNode,
     setSelectedNode,
     past,

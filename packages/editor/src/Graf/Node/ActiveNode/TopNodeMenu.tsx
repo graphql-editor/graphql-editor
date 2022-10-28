@@ -87,6 +87,16 @@ export const TopNodeMenu: React.FC<{
     hideMenu();
   }, [closeMenu]);
 
+  useEffect(() => {
+    if (
+      node.args.length === 0 &&
+      node.data.type !== TypeDefinition.ScalarTypeDefinition &&
+      node.data.type !== TypeSystemDefinition.DirectiveDefinition
+    ) {
+      setMenuOpen('field');
+    }
+  }, [node.args.length, node.data.type]);
+
   const hideMenu = () => {
     setMenuOpen(undefined);
   };

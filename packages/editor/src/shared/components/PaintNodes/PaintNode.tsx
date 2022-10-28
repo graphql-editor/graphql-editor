@@ -13,11 +13,13 @@ import {
 import styled from '@emotion/styled';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
 import { fontFamilySans } from '@/vars';
+import { css } from '@emotion/react';
 export interface NodeProps {
   node: ParserField;
   builtIn?: boolean;
   isLibrary?: boolean;
   subNode?: boolean;
+  nodeIdx: number;
 }
 
 type NodeTypes = keyof EditorTheme['backgrounds'];
@@ -26,17 +28,15 @@ interface MainNodeAreaProps {
   nodeType: NodeTypes;
   isLibrary?: boolean;
   isBaseNode?: boolean;
-  isDragNotAllowed?: boolean;
-  isDragOver?: boolean;
   isError?: boolean;
   isRelatedNode?: boolean;
+  isDragNotAllowed?: boolean;
 }
 
 const MainNodeArea = styled.div<MainNodeAreaProps>`
   position: relative;
   border-color: transparent;
   border-radius: 4px;
-  margin-left: ${({ isDragOver }) => (isDragOver ? '40px' : '0')};
   cursor: pointer;
   transition: all 0.25s ease-in-out;
   display: flex;
@@ -82,9 +82,31 @@ const MainNodeArea = styled.div<MainNodeAreaProps>`
   }
 `;
 
-export const PaintNode: React.FC<NodeProps> = ({ node, isLibrary }) => {
+const DndWrapper = styled.div<{
+  isDragOver?: boolean;
+  isPaddingLeft?: boolean;
+}>`
+  gap: 15px 20px;
+  ${({ isDragOver, isPaddingLeft }) =>
+    isDragOver
+      ? isPaddingLeft
+        ? css`
+            padding-left: 40px;
+          `
+        : css`
+            padding-right: 40px;
+          `
+      : null};
+`;
+
+export const PaintNode: React.FC<NodeProps> = ({
+  node,
+  isLibrary,
+  nodeIdx,
+}) => {
   const thisNode = useRef<HTMLDivElement>(null);
-  const { setSelectedNode, selectedNode, tree, setTree } = useTreesState();
+  const { setSelectedNode, selectedNode, tree, setTree, readonly } =
+    useTreesState();
   const { isNodeBaseType, setIsUserOrder, setIsSortAlphabetically } =
     useSortState();
   const { theme } = useTheme();
@@ -94,6 +116,8 @@ export const PaintNode: React.FC<NodeProps> = ({ node, isLibrary }) => {
     dragOverStylesDiagram,
     dndType,
     setDndType,
+    startDragIdx,
+    setStartDragIdx,
   } = useLayoutState();
 
   useEffect(() => {
@@ -109,7 +133,6 @@ export const PaintNode: React.FC<NodeProps> = ({ node, isLibrary }) => {
       });
     }
   }, [selectedNode]);
-
   const dropHandler = (
     e: React.DragEvent<HTMLDivElement>,
     endNodeName: string,
@@ -137,10 +160,12 @@ export const PaintNode: React.FC<NodeProps> = ({ node, isLibrary }) => {
     dndType === dragOverStylesDiagram.nodeType;
 
   return (
-    <MainNodeArea
-      id={getTypeName(node.type.fieldType)}
-      draggable={!isNodeBaseType(node.type.operations)}
+    <DndWrapper
+      isDragOver={isDragOver}
+      isPaddingLeft={dragOverStylesDiagram?.isPaddingLeft}
+      draggable={!readonly && !isNodeBaseType(node.type.operations)}
       onDragStart={(e) => {
+        setStartDragIdx(nodeIdx);
         setDndType(node.data.type);
         dragStartHandler(e, node.name);
       }}
@@ -157,37 +182,41 @@ export const PaintNode: React.FC<NodeProps> = ({ node, isLibrary }) => {
         }
       }}
       onDragOver={(e) => {
+        if (nodeIdx === startDragIdx) return;
         setDragOverStylesDiagram({
           nodeName: node.name,
           nodeType: node.data.type,
+          isPaddingLeft: !!startDragIdx && startDragIdx > nodeIdx,
         });
-
         dragOverHandler(e);
       }}
-      data-cy={GraphQLEditorDomStructure.tree.elements.Graf.PaintNode}
-      nodeType={getTypeName(node.type.fieldType) as NodeTypes}
-      isLibrary={isLibrary}
-      isBaseNode={isNodeBaseType(node.type.operations)}
-      isDragNotAllowed={isDragNotAllowed}
-      isDragOver={isDragOver}
-      isError={errorNodeNames?.includes(node.name)}
-      isRelatedNode={
-        selectedNode?.field &&
-        node?.interfaces?.includes(selectedNode.field.name)
-      }
-      ref={thisNode}
-      onClick={(e) => {
-        e.stopPropagation();
-        setSelectedNode({
-          field: node,
-          source: 'diagram',
-        });
-      }}
     >
-      {errorNodeNames?.includes(node.name) && (
-        <Error fill={theme.background.error} style={{ marginRight: 8 }} />
-      )}
-      {node.name}
-    </MainNodeArea>
+      <MainNodeArea
+        id={getTypeName(node.type.fieldType)}
+        data-cy={GraphQLEditorDomStructure.tree.elements.Graf.PaintNode}
+        nodeType={getTypeName(node.type.fieldType) as NodeTypes}
+        isLibrary={isLibrary}
+        isBaseNode={isNodeBaseType(node.type.operations)}
+        isDragNotAllowed={isDragNotAllowed}
+        isError={errorNodeNames?.includes(node.name)}
+        isRelatedNode={
+          selectedNode?.field &&
+          node?.interfaces?.includes(selectedNode.field.name)
+        }
+        ref={thisNode}
+        onClick={(e) => {
+          e.stopPropagation();
+          setSelectedNode({
+            field: node,
+            source: 'diagram',
+          });
+        }}
+      >
+        {errorNodeNames?.includes(node.name) && (
+          <Error fill={theme.background.error} style={{ marginRight: 8 }} />
+        )}
+        {node.name}
+      </MainNodeArea>
+    </DndWrapper>
   );
 };

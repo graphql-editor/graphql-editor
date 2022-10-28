@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   GraphQLEditor,
   Colors,
@@ -7,6 +7,7 @@ import {
 } from 'graphql-editor';
 import * as schemas from '../schema';
 import { useRouter } from 'helpers/FakeRouter';
+import { ActivePane } from 'graphql-editor/lib/editor/menu/Menu';
 
 const buttonStyle = {
   position: 'absolute',
@@ -21,7 +22,6 @@ const buttonStyle = {
 } as const;
 
 export const googleState = () => {
-  const firstRoute = useRef(true);
   const [currentSchema, setCurrentSchema] = useState<PassedSchema>({
     code: schemas.googleDirectionsNew,
     libraries: '',
@@ -30,8 +30,16 @@ export const googleState = () => {
   const [editorRoutes, setEditorRoutes] = useState<EditorRoutes>();
   const {
     changeRoute,
-    path: { pane, n, code },
+    path: { code, pane, n },
   } = useRouter();
+
+  useEffect(() => {
+    setEditorRoutes({
+      code: code as 'on' | 'off' | undefined,
+      pane: pane as ActivePane | undefined,
+      n,
+    });
+  }, [code, pane, n]);
 
   useEffect(() => {
     const listener = (e: PopStateEvent) => {
@@ -55,7 +63,7 @@ export const googleState = () => {
     >
       <div
         onClick={() =>
-          setEditorRoutes({
+          changeRoute({
             pane: 'relation',
             n: '13bfdf3bad4d8d',
             code: 'on',
@@ -69,9 +77,9 @@ export const googleState = () => {
       </div>
       <div
         onClick={() =>
-          setEditorRoutes({
+          changeRoute({
             pane: 'relation',
-            n: '',
+            n: undefined,
             code: 'on',
           })
         }
@@ -88,13 +96,6 @@ export const googleState = () => {
         schema={currentSchema}
         sidebarExpanded
         onRouteChange={(routes) => {
-          if (!routes) return;
-          if (firstRoute.current) {
-            firstRoute.current = false;
-            if (pane || n || code)
-              setEditorRoutes({ pane, n, code } as EditorRoutes);
-            return;
-          }
           changeRoute({ a: 'googleState', ...routes });
         }}
         setSchema={(s) => {

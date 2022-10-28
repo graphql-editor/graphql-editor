@@ -92,6 +92,7 @@ export const Graf: React.FC = () => {
     readonly,
     scalars,
   } = useTreesState();
+
   const { grafErrors } = useErrorsState();
   const { mount } = useIO();
 
@@ -169,11 +170,14 @@ export const Graf: React.FC = () => {
               }}
               onDuplicate={(nodeToDuplicate) => {
                 const allNodes = [...tree.nodes];
+                const { id, ...rest } = node;
                 const duplicatedNode = JSON.parse(
-                  JSON.stringify({
-                    ...node,
-                    name: nodeToDuplicate?.name + 'Copy',
-                  }),
+                  JSON.stringify(
+                    createParserField({
+                      ...rest,
+                      name: nodeToDuplicate?.name + 'Copy',
+                    }),
+                  ),
                 ) as ParserField;
                 allNodes.push(duplicatedNode);
                 setSelectedNode({

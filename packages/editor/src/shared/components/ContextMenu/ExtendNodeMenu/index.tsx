@@ -22,7 +22,7 @@ interface ExtendNodeMenuProps {
 }
 
 export const ExtendNodeMenu: React.FC<ExtendNodeMenuProps> = ({ hideMenu }) => {
-  const { tree, setTree, libraryTree } = useTreesState();
+  const { tree, setTree, libraryTree, setSelectedNode } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   const creationNodes = useMemo(
     () =>
@@ -48,26 +48,26 @@ export const ExtendNodeMenu: React.FC<ExtendNodeMenuProps> = ({ hideMenu }) => {
   );
 
   const onClickFilteredNode = (f: ParserField) => {
-    tree.nodes.push(
-      createParserField({
-        data: {
-          type: ResolveExtension(f.data.type)!,
+    const extendNode = createParserField({
+      data: {
+        type: ResolveExtension(f.data.type)!,
+      },
+      description: undefined,
+      type: {
+        fieldType: {
+          name: TypeDefinitionDisplayMap[ResolveExtension(f.data.type)!],
+          type: Options.name,
         },
-        description: undefined,
-        type: {
-          fieldType: {
-            name: TypeDefinitionDisplayMap[ResolveExtension(f.data.type)!],
-            type: Options.name,
-          },
-        },
-        name: f.name,
-        args: [],
-        interfaces: [],
-        directives: [],
-      }),
-    );
-    hideMenu();
+      },
+      name: f.name,
+      args: [],
+      interfaces: [],
+      directives: [],
+    });
+    tree.nodes.push(extendNode);
     setTree({ ...tree });
+    setSelectedNode({ field: extendNode, source: 'diagram' });
+    hideMenu();
   };
   return (
     <Menu

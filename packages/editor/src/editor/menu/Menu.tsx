@@ -160,6 +160,8 @@ export const Menu = ({
     sidebarExpanded === true ? false : true,
   );
 
+  const activePaneToggle = (pane: ActivePane) => () =>
+    setActivePane(activePane === pane ? (toggleCode ? undefined : pane) : pane);
   return (
     <Sidebar isCollapsed={isCollapsed}>
       <MenuItem
@@ -201,9 +203,7 @@ export const Menu = ({
         <MenuItem
           data-cy={MenuChildren.diagram}
           className={activePane === 'diagram' ? 'active' : ''}
-          onClick={() =>
-            setActivePane(activePane === 'diagram' ? undefined : 'diagram')
-          }
+          onClick={activePaneToggle('diagram')}
           data-tooltip="Creator"
           data-tour="creator"
           isCollapsed={isCollapsed}
@@ -217,7 +217,7 @@ export const Menu = ({
         <MenuItem
           data-cy={MenuChildren.relation}
           className={activePane === 'relation' ? 'active' : ''}
-          onClick={() => setActivePane('relation')}
+          onClick={activePaneToggle('relation')}
           data-tooltip="Relation"
           data-tour="relation"
           isCollapsed={isCollapsed}
@@ -230,7 +230,7 @@ export const Menu = ({
         <MenuItem
           data-cy={MenuChildren.docs}
           className={activePane === 'docs' ? 'active' : ''}
-          onClick={() => setActivePane('docs')}
+          onClick={activePaneToggle('docs')}
           data-tooltip="Documentation"
           data-tour="documentation"
           isCollapsed={isCollapsed}
