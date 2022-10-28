@@ -34,6 +34,17 @@ const AZContainer = styled.div`
   border-left: 1px solid ${({ theme }) => theme.disabled}36;
   align-items: center;
   cursor: pointer;
+  :hover {
+    svg > path {
+      fill: ${({ theme }) => theme.active};
+    }
+    svg > g > path {
+      stroke: ${({ theme }) => theme.active};
+    }
+    svg > rect {
+      stroke: ${({ theme }) => theme.active};
+    }
+  }
 `;
 
 export const TopBar: React.FC<{ heading: string }> = ({
@@ -44,12 +55,11 @@ export const TopBar: React.FC<{ heading: string }> = ({
   const {
     setFilterNodes,
     filterNodes,
-    isSortAlphabetically,
     setIsSortAlphabetically,
     setIsUserOrder,
   } = useSortState();
   const { mount } = useIO();
-  const { inactive, active } = useTheme();
+  const { inactive } = useTheme();
 
   const ref = useRef<HTMLInputElement>(null);
   useEffect(() => {
@@ -85,7 +95,7 @@ export const TopBar: React.FC<{ heading: string }> = ({
               setIsSortAlphabetically((prev) => !prev);
             }}
           >
-            <Abc size={28} fill={isSortAlphabetically ? active : inactive} />
+            <Abc size={28} fill={inactive} />
           </AZContainer>
           <SortNodes />
         </SortWrapper>

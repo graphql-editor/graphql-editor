@@ -523,18 +523,20 @@ export const Abc = ({ size, fill = 'currentColor' }: IconProps) => (
       rx="2.5"
       stroke={fill || '#999999'}
     />
-    <path
-      d="M3.5 6L3.5 14.5L6 11.6667"
-      stroke={fill || '#999999'}
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-    <path
-      d="M3.5 14.5L1 11.6667"
-      stroke={fill || '#999999'}
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
+    <g>
+      <path
+        d="M3.5 6L3.5 14.5L6 11.6667"
+        stroke={fill || '#999999'}
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M3.5 14.5L1 11.6667"
+        stroke={fill || '#999999'}
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </g>
   </svg>
 );
 
