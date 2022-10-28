@@ -29,7 +29,7 @@ export const BasicNodes: React.FC = () => {
   return (
     <Main>
       {currentNodes.map((cn, idx) => (
-        <PaintNode node={cn} key={idx} />
+        <PaintNode node={cn} key={idx} nodeIdx={idx} />
       ))}
     </Main>
   );
