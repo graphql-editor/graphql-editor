@@ -115,7 +115,7 @@ export const RootExtendNode: React.FC<RootExtendNodeProps> = ({
       </NodeTopBar>
       <NodeBox>
         {node.args?.map((a, i) => {
-          return <PaintNode key={a.name + i} node={a} />;
+          return <PaintNode key={a.name + i} node={a} nodeIdx={i} />;
         })}
         {libraryNode?.args?.map((a, i) => {
           return (
@@ -123,6 +123,7 @@ export const RootExtendNode: React.FC<RootExtendNodeProps> = ({
               isLibrary={true}
               key={a.name + i + node.args?.length}
               node={a}
+              nodeIdx={i}
             />
           );
         })}

@@ -6,6 +6,7 @@ import { AllTypes } from 'graphql-js-tree';
 type DragOverStylesDiagram = {
   nodeName: string;
   nodeType?: string;
+  isPaddingLeft: boolean;
 };
 
 const useLayoutStateContainer = createContainer(() => {
@@ -14,6 +15,7 @@ const useLayoutStateContainer = createContainer(() => {
   const [dragOverStylesDiagram, setDragOverStylesDiagram] =
     useState<DragOverStylesDiagram>();
   const [dndType, setDndType] = useState<AllTypes | undefined>();
+  const [startDragIdx, setStartDragIdx] = useState<number>();
 
   useEffect(() => {
     const updateWindowDimensions = () => {
@@ -32,6 +34,8 @@ const useLayoutStateContainer = createContainer(() => {
     setDragOverStylesDiagram,
     dndType,
     setDndType,
+    startDragIdx,
+    setStartDragIdx,
   };
 });
 
