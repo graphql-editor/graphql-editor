@@ -105,7 +105,8 @@ export const PaintNode: React.FC<NodeProps> = ({
   nodeIdx,
 }) => {
   const thisNode = useRef<HTMLDivElement>(null);
-  const { setSelectedNode, selectedNode, tree, setTree } = useTreesState();
+  const { setSelectedNode, selectedNode, tree, setTree, readonly } =
+    useTreesState();
   const { isNodeBaseType, setIsUserOrder } = useSortState();
   const { theme } = useTheme();
   const { errorNodeNames } = useErrorsState();
@@ -160,7 +161,7 @@ export const PaintNode: React.FC<NodeProps> = ({
     <DndWrapper
       isDragOver={isDragOver}
       isPaddingLeft={dragOverStylesDiagram?.isPaddingLeft}
-      draggable={!isNodeBaseType(node.type.operations)}
+      draggable={!readonly && !isNodeBaseType(node.type.operations)}
       onDragStart={(e) => {
         setStartDragIdx(nodeIdx);
         setDndType(node.data.type);
