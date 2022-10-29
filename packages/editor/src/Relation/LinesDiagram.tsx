@@ -184,7 +184,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
       setRelations(
         relationDrawingNodesArray
           .map((n) => ({
-            to: { htmlNode: refs[n.id], field: n },
+            to: { htmlNode: refs[n.id], field: n, connectingField: n },
             fromLength: n.args?.length || 0,
             from: n.args
               ?.filter((a) =>
@@ -201,6 +201,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
                   htmlNode: refs[pn.id],
                   field: pn,
                   index,
+                  connectingField: a,
                 } as RelationPath;
               })
               .filter((o) => !!o),

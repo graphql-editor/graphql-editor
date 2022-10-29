@@ -21,6 +21,7 @@ export interface RelationPath {
   htmlNode: HTMLDivElement;
   field: ParserField;
   index: number;
+  connectingField: ParserField;
 }
 interface LinesProps {
   relations:
@@ -56,6 +57,7 @@ export const Lines: React.FC<LinesProps> = ({
         const fromField = comparator(rf.field);
         const toField = comparator(r.to.field);
         let portNumber = rf.index;
+        const relationType = rf.connectingField.type.fieldType;
         if (fromField) {
           portNumber =
             r.to.field.args?.findIndex(
@@ -69,6 +71,7 @@ export const Lines: React.FC<LinesProps> = ({
         if (!showAllPaths && !fromField && !toField) return null;
         return (
           <Draw
+            relationType={relationType}
             active={fromField || toField}
             inverse={fromField}
             relationNumber={relationNumber}

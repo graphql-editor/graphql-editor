@@ -1,3 +1,4 @@
+import { FieldType, Options } from 'graphql-js-tree';
 import React from 'react';
 import { RELATION_CONSTANTS } from './constants';
 
@@ -27,6 +28,7 @@ export const Draw = ({
   PortNumber,
   maxIndex,
   relationNumber,
+  relationType,
 }: {
   from?: HTMLDivElement;
   to?: HTMLDivElement;
@@ -37,6 +39,7 @@ export const Draw = ({
   PortNumber: number;
   maxIndex: number;
   relationNumber: number;
+  relationType: FieldType;
 }) => {
   const stroke = active ? color : `${inActiveColor}10`;
   if (from && to) {
@@ -97,12 +100,17 @@ export const Draw = ({
       bezierPoint2,
       bezierWeight,
     );
+    const isArray = isArrayType(relationType);
+    const fac = isArray ? 6 : 2;
 
     return (
       <>
         <path
           stroke={stroke}
-          strokeDasharray={inverse ? '5,5' : undefined}
+          strokeWidth={fac}
+          strokeDasharray={
+            relationType.type === Options.required ? undefined : '5,5'
+          }
           d={`M ${t.x} ${t.y}
            Q ${bezier1.x} ${bezier1.y} ${center.x} ${center.y}
            Q ${bezier2.x} ${bezier2.y} ${f.x} ${f.y}`}
@@ -113,3 +121,8 @@ export const Draw = ({
   }
   return <></>;
 };
+
+const isArrayType = (f: FieldType) =>
+  f.type === Options.required
+    ? f.nest.type === Options.array
+    : f.type === Options.array;
