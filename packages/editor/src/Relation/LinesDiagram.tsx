@@ -255,7 +255,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
     };
     return (
       <>
-        {relationDrawingNodes?.parent.length && (
+        {relationDrawingNodes?.parent.length ? (
           <NodePane style={{ alignItems: 'start', paddingRight: 0 }}>
             {filterNodes(relationDrawingNodes?.parent).map((n, i) => (
               <Node
@@ -280,7 +280,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
               />
             ))}
           </NodePane>
-        )}
+        ) : null}
         <NodePane
           style={{
             zIndex: 2,

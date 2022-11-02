@@ -93,14 +93,6 @@ const TogglesWrapper = styled.div`
   border-right: 1px solid ${({ theme }) => theme.disabled}36;
 `;
 
-const Main = styled.div`
-  height: calc(120vh - 60px);
-  width: 100%;
-  overflow: scroll;
-  font-family: ${fontFamily};
-  cursor: grab;
-`;
-
 const Menu = styled.div`
   display: flex;
   font-family: ${fontFamilySans};
@@ -110,8 +102,19 @@ const Menu = styled.div`
   justify-content: flex-end;
 `;
 
+type DragMode = 'grab' | 'auto' | 'grabbing';
+
+const Main = styled.div<{ dragMode: DragMode }>`
+  height: calc(120vh - 60px);
+  width: 100%;
+  overflow: scroll;
+  font-family: ${fontFamily};
+  cursor: ${({ dragMode }) => dragMode};
+`;
+
 export const Relation: React.FC = () => {
   const mainRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const { selectedNode, tree, libraryTree, setSelectedNode } = useTreesState();
   const { grafErrors } = useErrorsState();
   const {
@@ -127,6 +130,7 @@ export const Relation: React.FC = () => {
   const { filterNodes } = useSortState();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [dragMode, setDragMode] = useState<DragMode>('auto');
 
   useEffect(() => {
     const together = tree.nodes.concat(libraryTree.nodes);
@@ -155,10 +159,10 @@ export const Relation: React.FC = () => {
       });
   }, [mainRef]);
 
-  const containerRef = useRef<HTMLDivElement>(null);
   let pos = { top: 0, left: 0, x: 0, y: 0 };
 
-  const mouseDownHandler = function (e: React.MouseEvent) {
+  const mouseDownHandler = (e: React.MouseEvent) => {
+    setDragMode('grabbing');
     if (!containerRef.current) return;
     pos = {
       left: containerRef.current.scrollLeft,
@@ -170,7 +174,7 @@ export const Relation: React.FC = () => {
     document.addEventListener('mousemove', mouseMoveHandler);
     document.addEventListener('mouseup', mouseUpHandler);
   };
-  const mouseMoveHandler = function (e: MouseEvent) {
+  const mouseMoveHandler = (e: MouseEvent) => {
     e.preventDefault();
     if (!containerRef.current) return;
     const dx = e.clientX - pos.x;
@@ -180,7 +184,8 @@ export const Relation: React.FC = () => {
     containerRef.current.scrollLeft = pos.left - dx;
   };
 
-  const mouseUpHandler = function () {
+  const mouseUpHandler = () => {
+    setDragMode('auto');
     document.removeEventListener('mousemove', mouseMoveHandler);
     document.removeEventListener('mouseup', mouseUpHandler);
   };
@@ -232,7 +237,11 @@ export const Relation: React.FC = () => {
           </Menu>
         )}
       </TopBar>
-      <Main ref={containerRef} onMouseDown={(e) => mouseDownHandler(e)}>
+      <Main
+        dragMode={selectedNode?.field ? 'grab' : dragMode}
+        ref={containerRef}
+        onMouseDown={(e) => mouseDownHandler(e)}
+      >
         {!selectedNode?.field && <PaintNodes disableOps />}
         {selectedNode?.field && <LinesDiagram mainRef={mainRef} />}
         {grafErrors && <ErrorContainer>{grafErrors}</ErrorContainer>}
@@ -240,3 +249,5 @@ export const Relation: React.FC = () => {
     </Wrapper>
   );
 };
+// on scroll resize
+// on ctrl + - resize
