@@ -42,7 +42,7 @@ const NodePane = styled.div`
   font-size: 12px;
   align-items: flex-end;
   display: flex;
-  padding-bottom: 200px;
+  padding: 15vw;
 `;
 let tRefs: Record<string, HTMLDivElement> = {};
 let refTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
@@ -74,8 +74,7 @@ type LinesDiagramProps = {
 };
 
 export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
-  const { libraryTree, selectedNode, schemaType, tree, setSelectedNode } =
-    useTreesState();
+  const { libraryTree, selectedNode, schemaType, tree } = useTreesState();
   const { routes } = useRouter();
   const {
     refsLoaded,
@@ -257,7 +256,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
     return (
       <>
         {relationDrawingNodes?.parent.length && (
-          <NodePane style={{ alignItems: 'start' }}>
+          <NodePane style={{ alignItems: 'start', paddingRight: 0 }}>
             {filterNodes(relationDrawingNodes?.parent).map((n, i) => (
               <Node
                 enums={enumsOn}
@@ -282,7 +281,14 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
             ))}
           </NodePane>
         )}
-        <NodePane style={{ zIndex: 2, alignItems: 'center' }}>
+        <NodePane
+          style={{
+            zIndex: 2,
+            alignItems: 'center',
+            paddingRight: 0,
+            paddingLeft: 0,
+          }}
+        >
           {relationDrawingNodes?.selected && (
             <Node
               enums={enumsOn}
@@ -310,7 +316,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
             />
           )}
         </NodePane>
-        <NodePane>
+        <NodePane style={{ paddingLeft: 0 }}>
           {filterNodes(relationDrawingNodes?.children)
             .sort((a, b) => {
               const aIndex =
@@ -352,7 +358,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
   }, [schemaType, relationDrawingNodes, routes.code]);
 
   return (
-    <Main ref={mainRef} onClick={() => setSelectedNode(undefined)}>
+    <Main ref={mainRef}>
       {NodesContainer}
       {SvgLinesContainer}
     </Main>

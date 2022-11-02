@@ -94,10 +94,11 @@ const TogglesWrapper = styled.div`
 `;
 
 const Main = styled.div`
-  height: calc(100vh - 60px);
+  height: calc(120vh - 60px);
   width: 100%;
-  overflow-y: auto;
+  overflow: scroll;
   font-family: ${fontFamily};
+  cursor: grab;
 `;
 
 const Menu = styled.div`
@@ -154,6 +155,36 @@ export const Relation: React.FC = () => {
       });
   }, [mainRef]);
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  let pos = { top: 0, left: 0, x: 0, y: 0 };
+
+  const mouseDownHandler = function (e: React.MouseEvent) {
+    if (!containerRef.current) return;
+    pos = {
+      left: containerRef.current.scrollLeft,
+      top: containerRef.current.scrollTop,
+      x: e.clientX,
+      y: e.clientY,
+    };
+
+    document.addEventListener('mousemove', mouseMoveHandler);
+    document.addEventListener('mouseup', mouseUpHandler);
+  };
+  const mouseMoveHandler = function (e: MouseEvent) {
+    e.preventDefault();
+    if (!containerRef.current) return;
+    const dx = e.clientX - pos.x;
+    const dy = e.clientY - pos.y;
+
+    containerRef.current.scrollTop = pos.top - dy;
+    containerRef.current.scrollLeft = pos.left - dx;
+  };
+
+  const mouseUpHandler = function () {
+    document.removeEventListener('mousemove', mouseMoveHandler);
+    document.removeEventListener('mouseup', mouseUpHandler);
+  };
+
   return (
     <Wrapper relationsOn={!!selectedNode?.field}>
       <TopBar heading="RELATION VIEW">
@@ -201,7 +232,7 @@ export const Relation: React.FC = () => {
           </Menu>
         )}
       </TopBar>
-      <Main onClick={() => setSelectedNode(undefined)}>
+      <Main ref={containerRef} onMouseDown={(e) => mouseDownHandler(e)}>
         {!selectedNode?.field && <PaintNodes disableOps />}
         {selectedNode?.field && <LinesDiagram mainRef={mainRef} />}
         {grafErrors && <ErrorContainer>{grafErrors}</ErrorContainer>}
