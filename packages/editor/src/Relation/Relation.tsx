@@ -112,6 +112,11 @@ const Main = styled.div<{ dragMode: DragMode }>`
   cursor: ${({ dragMode }) => dragMode};
 `;
 
+const scaleStep =
+  (step = 0.015, max = 1.5, min = 0.3) =>
+  (scaleVector: number) =>
+    Math.max(min, Math.min(Math.round(scaleVector / step) * step, max));
+
 export const Relation: React.FC = () => {
   const mainRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -130,7 +135,8 @@ export const Relation: React.FC = () => {
   const { filterNodes } = useSortState();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [dragMode, setDragMode] = useState<DragMode>('auto');
+  const [dragMode, setDragMode] = useState<boolean>(false);
+  const [scaleFactor, setScaleFactor] = useState(1);
 
   useEffect(() => {
     const together = tree.nodes.concat(libraryTree.nodes);
@@ -162,7 +168,7 @@ export const Relation: React.FC = () => {
   let pos = { top: 0, left: 0, x: 0, y: 0 };
 
   const mouseDownHandler = (e: React.MouseEvent) => {
-    setDragMode('grabbing');
+    setDragMode(true);
     if (!containerRef.current) return;
     pos = {
       left: containerRef.current.scrollLeft,
@@ -185,9 +191,27 @@ export const Relation: React.FC = () => {
   };
 
   const mouseUpHandler = () => {
-    setDragMode('auto');
+    setDragMode(false);
     document.removeEventListener('mousemove', mouseMoveHandler);
     document.removeEventListener('mouseup', mouseUpHandler);
+  };
+
+  useEffect(() => {
+    document.addEventListener('wheel', scrollHandler);
+
+    return () => {
+      document.removeEventListener('wheel', scrollHandler);
+    };
+  }, [scaleFactor]);
+
+  const scrollHandler = (e: WheelEvent) => {
+    if (e.ctrlKey && containerRef.current) {
+      e.stopPropagation();
+      const zoomSpeed = e.deltaY / (4 / 0.015);
+      const zoomingFn = scaleStep(0.015, 1.5, 0.3);
+      setScaleFactor((prevValue) => zoomingFn(prevValue - zoomSpeed));
+      return false;
+    }
   };
 
   return (
@@ -238,16 +262,19 @@ export const Relation: React.FC = () => {
         )}
       </TopBar>
       <Main
-        dragMode={selectedNode?.field ? 'grab' : dragMode}
+        dragMode={dragMode ? 'grabbing' : selectedNode?.field ? 'grab' : 'auto'}
         ref={containerRef}
         onMouseDown={(e) => mouseDownHandler(e)}
       >
         {!selectedNode?.field && <PaintNodes disableOps />}
-        {selectedNode?.field && <LinesDiagram mainRef={mainRef} />}
+        {selectedNode?.field && (
+          <LinesDiagram
+            mainRef={mainRef}
+            scaleVector={selectedNode?.field ? scaleFactor : 1}
+          />
+        )}
         {grafErrors && <ErrorContainer>{grafErrors}</ErrorContainer>}
       </Main>
     </Wrapper>
   );
 };
-// on scroll resize
-// on ctrl + - resize
