@@ -102,6 +102,15 @@ const Menu = styled.div`
   justify-content: flex-end;
 `;
 
+const Text = styled.p`
+  font-size: 14px;
+  line-height: 40px;
+  color: ${({ theme }) => theme.text};
+  font-weight: 400;
+  padding-right: 12px;
+  border-right: 1px solid ${({ theme }) => theme.disabled}36;
+`;
+
 type DragMode = 'grab' | 'auto' | 'grabbing';
 
 const Main = styled.div<{ dragMode: DragMode }>`
@@ -219,6 +228,7 @@ export const Relation: React.FC = () => {
       <TopBar heading="RELATION VIEW">
         {selectedNode?.field && (
           <Menu>
+            <Text>{Math.round(scaleFactor * 100)}%</Text>
             <TogglesWrapper>
               <Toggle
                 toggled={showRelatedTo}
