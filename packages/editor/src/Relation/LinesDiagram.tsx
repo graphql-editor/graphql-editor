@@ -52,24 +52,19 @@ export type FilteredFieldsTypesProps = {
   searchValueEmpty: boolean;
 };
 
-const scrollToRef = (fieldName: string): unknown => {
-  const ref = tRefs[fieldName];
-  if (!ref) {
-    return setTimeout(scrollToRef, 10);
-  }
-  const scrollableArea = ref.parentElement?.parentElement?.parentElement;
-  const scrollableAreaHeight = scrollableArea?.offsetHeight || 1;
-  const nodeHeight = ref.offsetHeight || 1;
-  const top =
-    nodeHeight > scrollableAreaHeight / 1.2
-      ? scrollableAreaHeight / 4.0
-      : scrollableAreaHeight / 2.0 - nodeHeight / 2.0;
-  console.log('scroollin ');
-  scrollableArea?.scrollTo({
-    behavior: 'smooth',
-    top: ref.offsetTop - top,
-  });
-};
+// const scrollToRef = (fieldName: string): unknown => {
+//   const ref = tRefs[fieldName];
+//   if (!ref) {
+//     return setTimeout(scrollToRef, 10);
+//   }
+//   const scrollableArea = ref.parentElement?.parentElement?.parentElement;
+//   console.log('scrollableArea', scrollableArea);
+
+//   scrollableArea?.scrollTo({
+//     top: scrollableArea.scrollHeight / 2,
+//     left: scrollableArea.scrollLeft / 2,
+//   });
+// };
 
 type LinesDiagramProps = {
   mainRef: React.RefObject<HTMLDivElement>;
@@ -94,29 +89,10 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
   const [filteredFieldsTypes, setFilteredFieldsTypes] = useState<
     Record<string, string>
   >({});
-  const [scrolledTo, setScrolledTo] = useState('');
   const [relations, setRelations] =
     useState<
       { to: RelationPath; from: RelationPath[]; fromLength: number }[]
     >();
-  useEffect(() => {
-    if (scrolledTo == selectedNode?.field?.name) {
-      return;
-    }
-    if (selectedNode?.field && refsLoaded) {
-      scrollToRef(selectedNode.field.id);
-      setScrolledTo(selectedNode.field.id);
-    }
-  }, [refsLoaded]);
-  useEffect(() => {
-    if (!selectedNode) {
-      setFilteredFieldsTypes({});
-    } else {
-      if (selectedNode?.field?.name && refsLoaded) {
-        scrollToRef(selectedNode.field.id);
-      }
-    }
-  }, [selectedNode]);
 
   useEffect(() => {
     setRefsLoaded(false);

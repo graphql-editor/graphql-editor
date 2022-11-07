@@ -142,7 +142,7 @@ export const Relation: React.FC = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [draggingMode, setDraggingMode] = useState<DragMode>('grab');
-  // const [scaleFactor, setScaleFactor] = useState('100');
+  const [scaleFactor, setScaleFactor] = useState('100');
 
   useEffect(() => {
     const together = tree.nodes.concat(libraryTree.nodes);
@@ -176,7 +176,7 @@ export const Relation: React.FC = () => {
       <TopBar heading="RELATION VIEW">
         {selectedNode?.field && (
           <Menu>
-            <Text>{100}%</Text>
+            <Text>{scaleFactor}%</Text>
             <TogglesWrapper>
               <Toggle
                 toggled={showRelatedTo}
@@ -224,10 +224,14 @@ export const Relation: React.FC = () => {
         {selectedNode?.field && (
           <TransformWrapper
             wheel={{ activationKeys: ['Control'] }}
+            centerOnInit={true}
             initialScale={1}
             maxScale={1.5}
             minScale={0.3}
             limitToBounds={true}
+            onZoom={(e) => {
+              setScaleFactor((Math.max(e.state.scale, 0.3) * 100).toFixed());
+            }}
             panning={{
               velocityDisabled: true,
             }}

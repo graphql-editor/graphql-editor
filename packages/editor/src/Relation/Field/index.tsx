@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FIELD_NAME_SIZE, FIELD_TYPE_SIZE } from '@/Graf/constants';
 import { ActiveFieldName } from '@/Graf/Node/Field/FieldName';
 import { ActiveType } from '@/Graf/Node/Type';
@@ -45,17 +45,23 @@ type FieldProps = Pick<GrafFieldProps, 'node' | 'parentNodeTypeName'> & {
 
 export const Field: React.FC<FieldProps> = ({
   node,
-  parentNodeTypeName,
   onClick,
   active,
   showArgs,
   isPrimitive,
 }) => {
   const { parentTypes } = useTreesState();
+  const [isDragging, setIsDragging] = useState(false);
+
   return (
     <Main
       isActive={active}
-      onClick={(e) => {
+      onMouseDown={() => setIsDragging(true)}
+      onMouseUp={(e) => {
+        setTimeout(() => {
+          setIsDragging(false);
+        }, 50);
+        if (isDragging) return;
         if (active && !isPrimitive) {
           e.stopPropagation();
           onClick();
