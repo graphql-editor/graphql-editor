@@ -10,9 +10,7 @@ import * as vars from '@/vars';
 import { ParserField, getTypeName } from 'graphql-js-tree';
 import { useRouter } from '@/state/containers/router';
 
-const Main = styled.div<{
-  scaleVector: number;
-}>`
+const Main = styled.div`
   position: relative;
   overflow-x: visible;
   font-family: ${vars.fontFamilySans};
@@ -24,7 +22,6 @@ const Main = styled.div<{
   animation: show 1 0.5s ease-in-out;
   min-height: 100%;
   margin: auto;
-  transform: ${({ scaleVector }) => `scale(${scaleVector})`};
   @keyframes show {
     from {
       opacity: 0;
@@ -72,13 +69,9 @@ const scrollToRef = (fieldName: string): unknown => {
 
 type LinesDiagramProps = {
   mainRef: React.RefObject<HTMLDivElement>;
-  scaleVector: number;
 };
 
-export const LinesDiagram: React.FC<LinesDiagramProps> = ({
-  mainRef,
-  scaleVector,
-}) => {
+export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
   const { libraryTree, selectedNode, schemaType, tree } = useTreesState();
   const { routes } = useRouter();
   const {
@@ -363,7 +356,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
   }, [schemaType, relationDrawingNodes, routes.code]);
 
   return (
-    <Main ref={mainRef} scaleVector={scaleVector}>
+    <Main ref={mainRef}>
       {NodesContainer}
       {SvgLinesContainer}
     </Main>

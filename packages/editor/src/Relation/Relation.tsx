@@ -11,6 +11,10 @@ import { PaintNodes } from '@/shared/components/PaintNodes/PaintNodes';
 import { useSortState } from '@/state/containers/sort';
 import * as vars from '@/vars';
 import { TopBar } from '@/shared/components/TopBar';
+import {
+  TransformComponent,
+  TransformWrapper,
+} from '@pronestor/react-zoom-pan-pinch';
 
 const Wrapper = styled.div<{ relationsOn?: boolean }>`
   display: flex;
@@ -121,11 +125,6 @@ const Main = styled.div<{ dragMode: DragMode }>`
   cursor: ${({ dragMode }) => dragMode};
 `;
 
-const scaleStep =
-  (step = 0.015, max = 1.5, min = 0.3) =>
-  (scaleVector: number) =>
-    Math.max(min, Math.min(Math.round(scaleVector / step) * step, max));
-
 export const Relation: React.FC = () => {
   const mainRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -144,8 +143,6 @@ export const Relation: React.FC = () => {
   const { filterNodes } = useSortState();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [dragMode, setDragMode] = useState<boolean>(false);
-  const [scaleFactor, setScaleFactor] = useState(1);
 
   useEffect(() => {
     const together = tree.nodes.concat(libraryTree.nodes);
@@ -174,61 +171,12 @@ export const Relation: React.FC = () => {
       });
   }, [mainRef]);
 
-  let pos = { top: 0, left: 0, x: 0, y: 0 };
-
-  const mouseDownHandler = (e: React.MouseEvent) => {
-    setDragMode(true);
-    if (!containerRef.current) return;
-    pos = {
-      left: containerRef.current.scrollLeft,
-      top: containerRef.current.scrollTop,
-      x: e.clientX,
-      y: e.clientY,
-    };
-
-    document.addEventListener('mousemove', mouseMoveHandler);
-    document.addEventListener('mouseup', mouseUpHandler);
-  };
-  const mouseMoveHandler = (e: MouseEvent) => {
-    e.preventDefault();
-    if (!containerRef.current) return;
-    const dx = e.clientX - pos.x;
-    const dy = e.clientY - pos.y;
-
-    containerRef.current.scrollTop = pos.top - dy;
-    containerRef.current.scrollLeft = pos.left - dx;
-  };
-
-  const mouseUpHandler = () => {
-    setDragMode(false);
-    document.removeEventListener('mousemove', mouseMoveHandler);
-    document.removeEventListener('mouseup', mouseUpHandler);
-  };
-
-  useEffect(() => {
-    document.addEventListener('wheel', scrollHandler);
-
-    return () => {
-      document.removeEventListener('wheel', scrollHandler);
-    };
-  }, [scaleFactor]);
-
-  const scrollHandler = (e: WheelEvent) => {
-    if (e.ctrlKey && containerRef.current) {
-      e.stopPropagation();
-      const zoomSpeed = e.deltaY / (4 / 0.015);
-      const zoomingFn = scaleStep(0.015, 1.5, 0.3);
-      setScaleFactor((prevValue) => zoomingFn(prevValue - zoomSpeed));
-      return false;
-    }
-  };
-
   return (
     <Wrapper relationsOn={!!selectedNode?.field}>
       <TopBar heading="RELATION VIEW">
         {selectedNode?.field && (
           <Menu>
-            <Text>{Math.round(scaleFactor * 100)}%</Text>
+            <Text>100%</Text>
             <TogglesWrapper>
               <Toggle
                 toggled={showRelatedTo}
@@ -271,17 +219,14 @@ export const Relation: React.FC = () => {
           </Menu>
         )}
       </TopBar>
-      <Main
-        dragMode={dragMode ? 'grabbing' : selectedNode?.field ? 'grab' : 'auto'}
-        ref={containerRef}
-        onMouseDown={(e) => mouseDownHandler(e)}
-      >
+      <Main dragMode={'auto'} ref={containerRef}>
         {!selectedNode?.field && <PaintNodes disableOps />}
         {selectedNode?.field && (
-          <LinesDiagram
-            mainRef={mainRef}
-            scaleVector={selectedNode?.field ? scaleFactor : 1}
-          />
+          <TransformWrapper>
+            <TransformComponent>
+              <LinesDiagram mainRef={mainRef} />
+            </TransformComponent>
+          </TransformWrapper>
         )}
         {grafErrors && <ErrorContainer>{grafErrors}</ErrorContainer>}
       </Main>
