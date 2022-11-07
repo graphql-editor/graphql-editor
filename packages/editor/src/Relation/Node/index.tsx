@@ -6,7 +6,7 @@ import {
   getTypeName,
   compareParserFields,
 } from 'graphql-js-tree';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Field } from '../Field';
 import { FIELD_NAME_SIZE } from '@/Graf/constants';
 import { fontFamilySans } from '@/vars';
@@ -96,6 +96,8 @@ export const Node: React.FC<NodeProps> = ({
   filteredFieldTypes,
   setFilteredFieldsTypes,
 }) => {
+  const [drag, setDrag] = useState(false);
+  const [t, setT] = useState<ReturnType<typeof setTimeout>>();
   const { setSelectedNode, selectedNode, tree, libraryTree } = useTreesState();
   const isNodeActive =
     !!selectedNode?.field && compareParserFields(field)(selectedNode?.field);
@@ -181,8 +183,18 @@ export const Node: React.FC<NodeProps> = ({
           setRef(ref);
         }
       }}
-      onClick={(e) => {
-        e.stopPropagation();
+      onMouseDown={() => {
+        if (t) clearTimeout(t);
+        setDrag(false);
+      }}
+      onMouseMove={() =>
+        setT((oldT) => {
+          clearTimeout(oldT);
+          return setTimeout(() => setDrag(true), 10);
+        })
+      }
+      onMouseUp={(e) => {
+        if (drag) return;
         setSelectedNode({
           field: tree.nodes
             .concat(libraryTree.nodes)

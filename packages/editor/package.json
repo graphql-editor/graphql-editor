@@ -38,6 +38,7 @@
   "dependencies": {
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
+    "@pronestor/react-zoom-pan-pinch": "^2.4.3",
     "color2k": "^1.2.4",
     "fuzzyjs": "^5.0.1",
     "graphql-editor-worker": "^5.9.3",

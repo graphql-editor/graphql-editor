@@ -9,7 +9,10 @@ import { isScalarArgument } from '@/GraphQL/Resolve';
 import * as vars from '@/vars';
 import { ParserField, getTypeName } from 'graphql-js-tree';
 import { useRouter } from '@/state/containers/router';
-
+const Wrapper = styled.div`
+  width: 100%;
+  height: 100%;
+`;
 const Main = styled.div`
   position: relative;
   overflow-x: visible;
@@ -22,8 +25,6 @@ const Main = styled.div`
   animation: show 1 0.5s ease-in-out;
   min-height: 100%;
   margin: auto;
-  transition: ${vars.transition};
-
   @keyframes show {
     from {
       opacity: 0;
@@ -42,7 +43,7 @@ const NodePane = styled.div`
   font-size: 12px;
   align-items: flex-end;
   display: flex;
-  padding-bottom: 200px;
+  padding: 50vh 50vw;
 `;
 let tRefs: Record<string, HTMLDivElement> = {};
 let refTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
@@ -51,31 +52,26 @@ export type FilteredFieldsTypesProps = {
   searchValueEmpty: boolean;
 };
 
-const scrollToRef = (fieldName: string): unknown => {
-  const ref = tRefs[fieldName];
-  if (!ref) {
-    return setTimeout(scrollToRef, 10);
-  }
-  const scrollableArea = ref.parentElement?.parentElement?.parentElement;
-  const scrollableAreaHeight = scrollableArea?.offsetHeight || 1;
-  const nodeHeight = ref.offsetHeight || 1;
-  const top =
-    nodeHeight > scrollableAreaHeight / 1.2
-      ? scrollableAreaHeight / 4.0
-      : scrollableAreaHeight / 2.0 - nodeHeight / 2.0;
-  scrollableArea?.scrollTo({
-    behavior: 'smooth',
-    top: ref.offsetTop - top,
-  });
-};
+// const scrollToRef = (fieldName: string): unknown => {
+//   const ref = tRefs[fieldName];
+//   if (!ref) {
+//     return setTimeout(scrollToRef, 10);
+//   }
+//   const scrollableArea = ref.parentElement?.parentElement?.parentElement;
+//   console.log('scrollableArea', scrollableArea);
+
+//   scrollableArea?.scrollTo({
+//     top: scrollableArea.scrollHeight / 2,
+//     left: scrollableArea.scrollLeft / 2,
+//   });
+// };
 
 type LinesDiagramProps = {
   mainRef: React.RefObject<HTMLDivElement>;
 };
 
 export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
-  const { libraryTree, selectedNode, schemaType, tree, setSelectedNode } =
-    useTreesState();
+  const { libraryTree, selectedNode, schemaType, tree } = useTreesState();
   const { routes } = useRouter();
   const {
     refsLoaded,
@@ -93,29 +89,10 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
   const [filteredFieldsTypes, setFilteredFieldsTypes] = useState<
     Record<string, string>
   >({});
-  const [scrolledTo, setScrolledTo] = useState('');
   const [relations, setRelations] =
     useState<
       { to: RelationPath; from: RelationPath[]; fromLength: number }[]
     >();
-  useEffect(() => {
-    if (scrolledTo == selectedNode?.field?.name) {
-      return;
-    }
-    if (selectedNode?.field && refsLoaded) {
-      scrollToRef(selectedNode.field.id);
-      setScrolledTo(selectedNode.field.id);
-    }
-  }, [refsLoaded]);
-  useEffect(() => {
-    if (!selectedNode) {
-      setFilteredFieldsTypes({});
-    } else {
-      if (selectedNode?.field?.name && refsLoaded) {
-        scrollToRef(selectedNode.field.id);
-      }
-    }
-  }, [selectedNode]);
 
   useEffect(() => {
     setRefsLoaded(false);
@@ -257,8 +234,8 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
     };
     return (
       <>
-        {relationDrawingNodes?.parent.length && (
-          <NodePane style={{ alignItems: 'start' }}>
+        {relationDrawingNodes?.parent.length ? (
+          <NodePane style={{ alignItems: 'start', paddingRight: 0 }}>
             {filterNodes(relationDrawingNodes?.parent).map((n, i) => (
               <Node
                 enums={enumsOn}
@@ -282,8 +259,15 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
               />
             ))}
           </NodePane>
-        )}
-        <NodePane style={{ zIndex: 2, alignItems: 'center' }}>
+        ) : null}
+        <NodePane
+          style={{
+            zIndex: 2,
+            alignItems: 'center',
+            paddingRight: 0,
+            paddingLeft: 0,
+          }}
+        >
           {relationDrawingNodes?.selected && (
             <Node
               enums={enumsOn}
@@ -311,7 +295,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
             />
           )}
         </NodePane>
-        <NodePane>
+        <NodePane style={{ paddingLeft: 0 }}>
           {filterNodes(relationDrawingNodes?.children)
             .sort((a, b) => {
               const aIndex =
@@ -353,9 +337,11 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
   }, [schemaType, relationDrawingNodes, routes.code]);
 
   return (
-    <Main ref={mainRef} onClick={() => setSelectedNode(undefined)}>
-      {NodesContainer}
-      {SvgLinesContainer}
-    </Main>
+    <Wrapper>
+      <Main ref={mainRef}>
+        {NodesContainer}
+        {SvgLinesContainer}
+      </Main>
+    </Wrapper>
   );
 };

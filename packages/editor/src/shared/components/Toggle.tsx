@@ -19,7 +19,7 @@ const Main = styled.div`
   display: flex;
   gap: 5px;
   align-items: center;
-  margin: 0px 12px;
+  margin-right: 12px;
   height: 20px;
   cursor: pointer;
 `;

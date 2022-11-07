@@ -11,6 +11,11 @@ import { PaintNodes } from '@/shared/components/PaintNodes/PaintNodes';
 import { useSortState } from '@/state/containers/sort';
 import * as vars from '@/vars';
 import { TopBar } from '@/shared/components/TopBar';
+import {
+  ReactZoomPanPinchRef,
+  TransformComponent,
+  TransformWrapper,
+} from '@pronestor/react-zoom-pan-pinch';
 
 const Wrapper = styled.div<{ relationsOn?: boolean }>`
   display: flex;
@@ -93,13 +98,6 @@ const TogglesWrapper = styled.div`
   border-right: 1px solid ${({ theme }) => theme.disabled}36;
 `;
 
-const Main = styled.div`
-  height: calc(100vh - 60px);
-  width: 100%;
-  overflow-y: auto;
-  font-family: ${fontFamily};
-`;
-
 const Menu = styled.div`
   display: flex;
   font-family: ${fontFamilySans};
@@ -109,6 +107,24 @@ const Menu = styled.div`
   justify-content: flex-end;
 `;
 
+const Text = styled.p`
+  font-size: 14px;
+  line-height: 40px;
+  color: ${({ theme }) => theme.text};
+  font-weight: 400;
+  padding-right: 12px;
+  border-right: 1px solid ${({ theme }) => theme.disabled}36;
+`;
+
+type DragMode = 'grab' | 'auto' | 'grabbing';
+
+const Main = styled.div<{ dragMode: DragMode }>`
+  height: calc(120vh - 60px);
+  width: 100%;
+  font-family: ${fontFamily};
+  cursor: ${({ dragMode }) => dragMode};
+`;
+
 export const Relation: React.FC = () => {
   const mainRef = useRef<HTMLDivElement>(null);
   const { selectedNode, tree, libraryTree, setSelectedNode } = useTreesState();
@@ -116,6 +132,7 @@ export const Relation: React.FC = () => {
   const {
     setCurrentNodes,
     showRelatedTo,
+    refs,
     setShowRelatedTo,
     setBaseTypesOn,
     baseTypesOn,
@@ -126,6 +143,9 @@ export const Relation: React.FC = () => {
   const { filterNodes } = useSortState();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [draggingMode, setDraggingMode] = useState<DragMode>('grab');
+  const [scaleFactor, setScaleFactor] = useState('100');
+  const ref = useRef<ReactZoomPanPinchRef>(null);
 
   useEffect(() => {
     const together = tree.nodes.concat(libraryTree.nodes);
@@ -153,12 +173,20 @@ export const Relation: React.FC = () => {
         setIsLoading(false);
       });
   }, [mainRef]);
-
+  useEffect(() => {
+    if (selectedNode?.field && ref.current) {
+      const currentNode = refs[selectedNode.field.id]?.parentElement;
+      if (currentNode) {
+        ref.current.zoomToElement(currentNode, ref.current.state.scale, 1);
+      }
+    }
+  }, [selectedNode, ref, refs]);
   return (
     <Wrapper relationsOn={!!selectedNode?.field}>
       <TopBar heading="RELATION VIEW">
         {selectedNode?.field && (
           <Menu>
+            <Text>{scaleFactor}%</Text>
             <TogglesWrapper>
               <Toggle
                 toggled={showRelatedTo}
@@ -201,9 +229,37 @@ export const Relation: React.FC = () => {
           </Menu>
         )}
       </TopBar>
-      <Main onClick={() => setSelectedNode(undefined)}>
+      <Main dragMode={selectedNode?.field ? draggingMode : 'auto'}>
         {!selectedNode?.field && <PaintNodes disableOps />}
-        {selectedNode?.field && <LinesDiagram mainRef={mainRef} />}
+        {selectedNode?.field && (
+          <TransformWrapper
+            ref={ref}
+            wheel={{ activationKeys: ['Control'] }}
+            centerOnInit={true}
+            initialScale={1}
+            maxScale={1.5}
+            minScale={0.3}
+            limitToBounds={true}
+            onZoom={(e) => {
+              setScaleFactor((Math.max(e.state.scale, 0.3) * 100).toFixed());
+            }}
+            panning={{
+              velocityDisabled: true,
+            }}
+            onPanningStart={() => setDraggingMode('grabbing')}
+            onPanningStop={() => setDraggingMode('grab')}
+          >
+            <TransformComponent
+              wrapperStyle={{
+                overflow: 'scroll',
+                width: '100%',
+                height: '100%',
+              }}
+            >
+              <LinesDiagram mainRef={mainRef} />
+            </TransformComponent>
+          </TransformWrapper>
+        )}
         {grafErrors && <ErrorContainer>{grafErrors}</ErrorContainer>}
       </Main>
     </Wrapper>
