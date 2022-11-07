@@ -177,7 +177,7 @@ export const Relation: React.FC = () => {
     if (selectedNode?.field && ref.current) {
       const currentNode = refs[selectedNode.field.id]?.parentElement;
       if (currentNode) {
-        ref.current.zoomToElement(currentNode, ref.current.state.scale, 0);
+        ref.current.zoomToElement(currentNode, ref.current.state.scale, 1);
       }
     }
   }, [selectedNode, ref, refs]);
