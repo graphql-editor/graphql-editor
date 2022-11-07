@@ -51,17 +51,24 @@ export const Field: React.FC<FieldProps> = ({
   isPrimitive,
 }) => {
   const { parentTypes } = useTreesState();
-  const [isDragging, setIsDragging] = useState(false);
+  const [drag, setDrag] = useState(false);
+  const [t, setT] = useState<ReturnType<typeof setTimeout>>();
 
   return (
     <Main
       isActive={active}
-      onMouseDown={() => setIsDragging(true)}
+      onMouseDown={(e) => {
+        if (t) clearTimeout(t);
+        setDrag(false);
+      }}
+      onMouseMove={() =>
+        setT((oldT) => {
+          clearTimeout(oldT);
+          return setTimeout(() => setDrag(true), 10);
+        })
+      }
       onMouseUp={(e) => {
-        setTimeout(() => {
-          setIsDragging(false);
-        }, 50);
-        if (isDragging) return;
+        if (drag) return;
         if (active && !isPrimitive) {
           e.stopPropagation();
           onClick();

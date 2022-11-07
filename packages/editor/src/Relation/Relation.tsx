@@ -119,8 +119,9 @@ const Text = styled.p`
 type DragMode = 'grab' | 'auto' | 'grabbing';
 
 const Main = styled.div<{ dragMode: DragMode }>`
-  height: calc(120vh - 60px);
+  height: calc(100% - 60px);
   width: 100%;
+  position: relative;
   font-family: ${fontFamily};
   cursor: ${({ dragMode }) => dragMode};
 `;
@@ -132,12 +133,13 @@ export const Relation: React.FC = () => {
   const {
     setCurrentNodes,
     showRelatedTo,
-    refs,
+    refsLoaded,
     setShowRelatedTo,
     setBaseTypesOn,
     baseTypesOn,
     setEnumsOn,
     enumsOn,
+    refs,
   } = useRelationsState();
 
   const { filterNodes } = useSortState();
@@ -174,13 +176,21 @@ export const Relation: React.FC = () => {
       });
   }, [mainRef]);
   useEffect(() => {
-    if (selectedNode?.field && ref.current) {
-      const currentNode = refs[selectedNode.field.id]?.parentElement;
+    if (selectedNode?.field && ref.current && refsLoaded && refs) {
+      const currentNode = refs[selectedNode.field.id];
       if (currentNode) {
-        ref.current.zoomToElement(currentNode, ref.current.state.scale, 1);
+        const bb = currentNode.getBoundingClientRect();
+        if (bb.height > window.innerHeight / 1.2) {
+          const currentScale = ref.current.state.scale;
+          const newScaleFactor = window.innerHeight / 1.2 / bb.height;
+          const newScale = Math.max(0.3, currentScale * newScaleFactor);
+          ref.current.zoomToElement(currentNode as HTMLElement, newScale, 0);
+          return;
+        }
+        ref.current.zoomToElement(currentNode, ref.current.state.scale, 0);
       }
     }
-  }, [selectedNode, ref, refs]);
+  }, [selectedNode, ref, refsLoaded]);
   return (
     <Wrapper relationsOn={!!selectedNode?.field}>
       <TopBar heading="RELATION VIEW">
@@ -239,7 +249,7 @@ export const Relation: React.FC = () => {
             initialScale={1}
             maxScale={1.5}
             minScale={0.3}
-            limitToBounds={true}
+            limitToBounds={false}
             onZoom={(e) => {
               setScaleFactor((Math.max(e.state.scale, 0.3) * 100).toFixed());
             }}
@@ -251,7 +261,6 @@ export const Relation: React.FC = () => {
           >
             <TransformComponent
               wrapperStyle={{
-                overflow: 'scroll',
                 width: '100%',
                 height: '100%',
               }}

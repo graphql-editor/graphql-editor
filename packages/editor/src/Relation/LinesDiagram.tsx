@@ -52,20 +52,6 @@ export type FilteredFieldsTypesProps = {
   searchValueEmpty: boolean;
 };
 
-// const scrollToRef = (fieldName: string): unknown => {
-//   const ref = tRefs[fieldName];
-//   if (!ref) {
-//     return setTimeout(scrollToRef, 10);
-//   }
-//   const scrollableArea = ref.parentElement?.parentElement?.parentElement;
-//   console.log('scrollableArea', scrollableArea);
-
-//   scrollableArea?.scrollTo({
-//     top: scrollableArea.scrollHeight / 2,
-//     left: scrollableArea.scrollLeft / 2,
-//   });
-// };
-
 type LinesDiagramProps = {
   mainRef: React.RefObject<HTMLDivElement>;
 };
@@ -234,32 +220,30 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
     };
     return (
       <>
-        {relationDrawingNodes?.parent.length ? (
-          <NodePane style={{ alignItems: 'start', paddingRight: 0 }}>
-            {filterNodes(relationDrawingNodes?.parent).map((n, i) => (
-              <Node
-                enums={enumsOn}
-                filteredFieldTypes={filteredFieldsTypes[n.id] || ''}
-                setFilteredFieldsTypes={(q) =>
-                  setFilteredFieldsTypes((ftt) => ({
-                    ...ftt,
-                    [n.id]: q,
-                  }))
-                }
-                isLibrary={
-                  schemaType === 'library'
-                    ? true
-                    : libraryNodeNames.includes(n.name)
-                }
-                key={n.id}
-                setRef={(ref) => {
-                  setRef(n, ref);
-                }}
-                field={n}
-              />
-            ))}
-          </NodePane>
-        ) : null}
+        <NodePane style={{ alignItems: 'start', paddingRight: 0 }}>
+          {filterNodes(relationDrawingNodes?.parent).map((n, i) => (
+            <Node
+              enums={enumsOn}
+              filteredFieldTypes={filteredFieldsTypes[n.id] || ''}
+              setFilteredFieldsTypes={(q) =>
+                setFilteredFieldsTypes((ftt) => ({
+                  ...ftt,
+                  [n.id]: q,
+                }))
+              }
+              isLibrary={
+                schemaType === 'library'
+                  ? true
+                  : libraryNodeNames.includes(n.name)
+              }
+              key={n.id}
+              setRef={(ref) => {
+                setRef(n, ref);
+              }}
+              field={n}
+            />
+          ))}
+        </NodePane>
         <NodePane
           style={{
             zIndex: 2,
