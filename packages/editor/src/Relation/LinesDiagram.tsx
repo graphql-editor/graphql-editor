@@ -9,7 +9,10 @@ import { isScalarArgument } from '@/GraphQL/Resolve';
 import * as vars from '@/vars';
 import { ParserField, getTypeName } from 'graphql-js-tree';
 import { useRouter } from '@/state/containers/router';
-
+const Wrapper = styled.div`
+  width: 100%;
+  height: 100%;
+`;
 const Main = styled.div`
   position: relative;
   overflow-x: visible;
@@ -40,7 +43,7 @@ const NodePane = styled.div`
   font-size: 12px;
   align-items: flex-end;
   display: flex;
-  padding: 15vw;
+  padding: 50vh 50vw;
 `;
 let tRefs: Record<string, HTMLDivElement> = {};
 let refTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
@@ -61,6 +64,7 @@ const scrollToRef = (fieldName: string): unknown => {
     nodeHeight > scrollableAreaHeight / 1.2
       ? scrollableAreaHeight / 4.0
       : scrollableAreaHeight / 2.0 - nodeHeight / 2.0;
+  console.log('scroollin ');
   scrollableArea?.scrollTo({
     behavior: 'smooth',
     top: ref.offsetTop - top,
@@ -356,9 +360,11 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
   }, [schemaType, relationDrawingNodes, routes.code]);
 
   return (
-    <Main ref={mainRef}>
-      {NodesContainer}
-      {SvgLinesContainer}
-    </Main>
+    <Wrapper>
+      <Main ref={mainRef}>
+        {NodesContainer}
+        {SvgLinesContainer}
+      </Main>
+    </Wrapper>
   );
 };

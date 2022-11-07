@@ -12,7 +12,6 @@ import { useSortState } from '@/state/containers/sort';
 import * as vars from '@/vars';
 import { TopBar } from '@/shared/components/TopBar';
 import {
-  ReactZoomPanPinchRef,
   TransformComponent,
   TransformWrapper,
 } from '@pronestor/react-zoom-pan-pinch';
@@ -121,14 +120,12 @@ type DragMode = 'grab' | 'auto' | 'grabbing';
 const Main = styled.div<{ dragMode: DragMode }>`
   height: calc(120vh - 60px);
   width: 100%;
-  overflow: scroll;
   font-family: ${fontFamily};
   cursor: ${({ dragMode }) => dragMode};
 `;
 
 export const Relation: React.FC = () => {
   const mainRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<ReactZoomPanPinchRef>(null);
   const { selectedNode, tree, libraryTree, setSelectedNode } = useTreesState();
   const { grafErrors } = useErrorsState();
   const {
@@ -173,27 +170,6 @@ export const Relation: React.FC = () => {
         setIsLoading(false);
       });
   }, [mainRef]);
-
-  // const preventDefaultWheelZoom = (e: WheelEvent) => {
-  //   if (e.ctrlKey) {
-  //     e.preventDefault();
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   window.addEventListener('wheel', preventDefaultWheelZoom, {
-  //     passive: false,
-  //   });
-
-  //   return () => window.removeEventListener('wheel', preventDefaultWheelZoom);
-  // }, []);
-
-  // useEffect(() => {
-  //   if (!containerRef.current) return;
-  //   console.log('containerRef', containerRef);
-
-  //   setScaleFactor((containerRef.current.state.scale * 100).toFixed());
-  // }, [containerRef.current?.state]);
 
   return (
     <Wrapper relationsOn={!!selectedNode?.field}>
@@ -247,15 +223,24 @@ export const Relation: React.FC = () => {
         {!selectedNode?.field && <PaintNodes disableOps />}
         {selectedNode?.field && (
           <TransformWrapper
-            ref={containerRef}
             wheel={{ activationKeys: ['Control'] }}
             initialScale={1}
             maxScale={1.5}
             minScale={0.3}
+            limitToBounds={true}
+            panning={{
+              velocityDisabled: true,
+            }}
             onPanningStart={() => setDraggingMode('grabbing')}
             onPanningStop={() => setDraggingMode('grab')}
           >
-            <TransformComponent>
+            <TransformComponent
+              wrapperStyle={{
+                overflow: 'scroll',
+                width: '100%',
+                height: '100%',
+              }}
+            >
               <LinesDiagram mainRef={mainRef} />
             </TransformComponent>
           </TransformWrapper>
