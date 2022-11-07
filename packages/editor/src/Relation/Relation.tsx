@@ -12,6 +12,7 @@ import { useSortState } from '@/state/containers/sort';
 import * as vars from '@/vars';
 import { TopBar } from '@/shared/components/TopBar';
 import {
+  ReactZoomPanPinchRef,
   TransformComponent,
   TransformWrapper,
 } from '@pronestor/react-zoom-pan-pinch';
@@ -131,6 +132,7 @@ export const Relation: React.FC = () => {
   const {
     setCurrentNodes,
     showRelatedTo,
+    refs,
     setShowRelatedTo,
     setBaseTypesOn,
     baseTypesOn,
@@ -143,6 +145,7 @@ export const Relation: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [draggingMode, setDraggingMode] = useState<DragMode>('grab');
   const [scaleFactor, setScaleFactor] = useState('100');
+  const ref = useRef<ReactZoomPanPinchRef>(null);
 
   useEffect(() => {
     const together = tree.nodes.concat(libraryTree.nodes);
@@ -170,7 +173,14 @@ export const Relation: React.FC = () => {
         setIsLoading(false);
       });
   }, [mainRef]);
-
+  useEffect(() => {
+    if (selectedNode?.field && ref.current) {
+      const currentNode = refs[selectedNode.field.id]?.parentElement;
+      if (currentNode) {
+        ref.current.zoomToElement(currentNode, ref.current.state.scale, 0);
+      }
+    }
+  }, [selectedNode, ref, refs]);
   return (
     <Wrapper relationsOn={!!selectedNode?.field}>
       <TopBar heading="RELATION VIEW">
@@ -223,6 +233,7 @@ export const Relation: React.FC = () => {
         {!selectedNode?.field && <PaintNodes disableOps />}
         {selectedNode?.field && (
           <TransformWrapper
+            ref={ref}
             wheel={{ activationKeys: ['Control'] }}
             centerOnInit={true}
             initialScale={1}
