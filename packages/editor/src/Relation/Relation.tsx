@@ -12,6 +12,7 @@ import { useSortState } from '@/state/containers/sort';
 import * as vars from '@/vars';
 import { TopBar } from '@/shared/components/TopBar';
 import {
+  ReactZoomPanPinchRef,
   TransformComponent,
   TransformWrapper,
 } from '@pronestor/react-zoom-pan-pinch';
@@ -127,7 +128,7 @@ const Main = styled.div<{ dragMode: DragMode }>`
 
 export const Relation: React.FC = () => {
   const mainRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<ReactZoomPanPinchRef>(null);
   const { selectedNode, tree, libraryTree, setSelectedNode } = useTreesState();
   const { grafErrors } = useErrorsState();
   const {
@@ -143,6 +144,8 @@ export const Relation: React.FC = () => {
   const { filterNodes } = useSortState();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [draggingMode, setDraggingMode] = useState<DragMode>('grab');
+  // const [scaleFactor, setScaleFactor] = useState('100');
 
   useEffect(() => {
     const together = tree.nodes.concat(libraryTree.nodes);
@@ -171,12 +174,33 @@ export const Relation: React.FC = () => {
       });
   }, [mainRef]);
 
+  // const preventDefaultWheelZoom = (e: WheelEvent) => {
+  //   if (e.ctrlKey) {
+  //     e.preventDefault();
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   window.addEventListener('wheel', preventDefaultWheelZoom, {
+  //     passive: false,
+  //   });
+
+  //   return () => window.removeEventListener('wheel', preventDefaultWheelZoom);
+  // }, []);
+
+  // useEffect(() => {
+  //   if (!containerRef.current) return;
+  //   console.log('containerRef', containerRef);
+
+  //   setScaleFactor((containerRef.current.state.scale * 100).toFixed());
+  // }, [containerRef.current?.state]);
+
   return (
     <Wrapper relationsOn={!!selectedNode?.field}>
       <TopBar heading="RELATION VIEW">
         {selectedNode?.field && (
           <Menu>
-            <Text>100%</Text>
+            <Text>{100}%</Text>
             <TogglesWrapper>
               <Toggle
                 toggled={showRelatedTo}
@@ -219,10 +243,18 @@ export const Relation: React.FC = () => {
           </Menu>
         )}
       </TopBar>
-      <Main dragMode={'auto'} ref={containerRef}>
+      <Main dragMode={selectedNode?.field ? draggingMode : 'auto'}>
         {!selectedNode?.field && <PaintNodes disableOps />}
         {selectedNode?.field && (
-          <TransformWrapper>
+          <TransformWrapper
+            ref={containerRef}
+            wheel={{ activationKeys: ['Control'] }}
+            initialScale={1}
+            maxScale={1.5}
+            minScale={0.3}
+            onPanningStart={() => setDraggingMode('grabbing')}
+            onPanningStop={() => setDraggingMode('grab')}
+          >
             <TransformComponent>
               <LinesDiagram mainRef={mainRef} />
             </TransformComponent>
