@@ -190,7 +190,7 @@ export const Node: React.FC<NodeProps> = ({
       onMouseMove={() =>
         setT((oldT) => {
           clearTimeout(oldT);
-          return setTimeout(() => setDrag(true), 10);
+          return setTimeout(() => setDrag(true), 30);
         })
       }
       onMouseUp={(e) => {

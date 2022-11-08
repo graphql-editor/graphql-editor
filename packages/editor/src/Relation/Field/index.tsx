@@ -64,13 +64,12 @@ export const Field: React.FC<FieldProps> = ({
       onMouseMove={() =>
         setT((oldT) => {
           clearTimeout(oldT);
-          return setTimeout(() => setDrag(true), 10);
+          return setTimeout(() => setDrag(true), 30);
         })
       }
       onMouseUp={(e) => {
         if (drag) return;
         if (active && !isPrimitive) {
-          e.stopPropagation();
           onClick();
         }
       }}
