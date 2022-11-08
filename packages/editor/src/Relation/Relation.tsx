@@ -45,6 +45,11 @@ const ErrorContainer = styled.div`
   border: 1px solid ${({ theme }) => theme.error};
 `;
 
+const DeselectWrapper = styled.div`
+  padding-left: 12px;
+  border-left: 1px solid ${({ theme }) => theme.disabled}36;
+`;
+
 const IconWrapper = styled.div`
   position: relative;
   font-size: 12px;
@@ -59,6 +64,7 @@ const IconWrapper = styled.div`
   justify-content: center;
   align-items: center;
   width: 50px;
+  height: 38px;
   user-select: none;
 
   &[data-tooltip] {
@@ -237,12 +243,6 @@ export const Relation: React.FC = () => {
               />
             </TogglesWrapper>
             <IconWrapper
-              data-tooltip="Deselect node"
-              onClick={(_e) => setSelectedNode(undefined)}
-            >
-              <Clear size={22} />
-            </IconWrapper>
-            <IconWrapper
               data-tooltip="Focus selected node"
               onClick={(_e) => setSelectedNode({ ...selectedNode })}
             >
@@ -258,6 +258,14 @@ export const Relation: React.FC = () => {
                 <Export size={22} />
               </IconWrapper>
             )}
+            <DeselectWrapper>
+              <IconWrapper
+                data-tooltip="Deselect node"
+                onClick={(_e) => setSelectedNode(undefined)}
+              >
+                <Clear size={16} />
+              </IconWrapper>
+            </DeselectWrapper>
           </Menu>
         )}
       </TopBar>
