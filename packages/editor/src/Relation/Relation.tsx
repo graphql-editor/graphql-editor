@@ -128,6 +128,8 @@ const Main = styled.div<{ dragMode: DragMode }>`
 
 export const Relation: React.FC = () => {
   const mainRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
   const { selectedNode, tree, libraryTree, setSelectedNode } = useTreesState();
   const { grafErrors } = useErrorsState();
   const {
@@ -190,7 +192,27 @@ export const Relation: React.FC = () => {
         ref.current.zoomToElement(currentNode, ref.current.state.scale, 0);
       }
     }
-  }, [selectedNode, ref, refsLoaded]);
+  }, [selectedNode, ref, refs]);
+
+  const doubleClickHandler = () => {
+    setScaleFactor((prevState) =>
+      Math.min(parseInt(prevState) + 70, 150).toFixed(),
+    );
+  };
+
+  useEffect(() => {
+    if (!wrapperRef.current) return;
+    wrapperRef.current.addEventListener('dblclick', doubleClickHandler);
+
+    return () => {
+      if (!wrapperRef.current) return;
+      return wrapperRef.current.removeEventListener(
+        'dblclick',
+        doubleClickHandler,
+      );
+    };
+  }, []);
+
   return (
     <Wrapper relationsOn={!!selectedNode?.field}>
       <TopBar heading="RELATION VIEW">
@@ -239,7 +261,10 @@ export const Relation: React.FC = () => {
           </Menu>
         )}
       </TopBar>
-      <Main dragMode={selectedNode?.field ? draggingMode : 'auto'}>
+      <Main
+        dragMode={selectedNode?.field ? draggingMode : 'auto'}
+        ref={wrapperRef}
+      >
         {!selectedNode?.field && <PaintNodes disableOps />}
         {selectedNode?.field && (
           <TransformWrapper
