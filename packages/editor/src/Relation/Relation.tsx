@@ -198,7 +198,7 @@ export const Relation: React.FC = () => {
         ref.current.zoomToElement(currentNode, ref.current.state.scale, 0);
       }
     }
-  }, [selectedNode, ref, refs]);
+  }, [selectedNode, ref, refsLoaded]);
 
   const doubleClickHandler = () => {
     setScaleFactor((prevState) =>
