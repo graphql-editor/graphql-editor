@@ -45,6 +45,11 @@ const ErrorContainer = styled.div`
   border: 1px solid ${({ theme }) => theme.error};
 `;
 
+const DeselectWrapper = styled.div`
+  padding-left: 12px;
+  border-left: 1px solid ${({ theme }) => theme.disabled}36;
+`;
+
 const IconWrapper = styled.div`
   position: relative;
   font-size: 12px;
@@ -59,6 +64,7 @@ const IconWrapper = styled.div`
   justify-content: center;
   align-items: center;
   width: 50px;
+  height: 38px;
   user-select: none;
 
   &[data-tooltip] {
@@ -128,6 +134,8 @@ const Main = styled.div<{ dragMode: DragMode }>`
 
 export const Relation: React.FC = () => {
   const mainRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
   const { selectedNode, tree, libraryTree, setSelectedNode } = useTreesState();
   const { grafErrors } = useErrorsState();
   const {
@@ -190,7 +198,27 @@ export const Relation: React.FC = () => {
         ref.current.zoomToElement(currentNode, ref.current.state.scale, 0);
       }
     }
-  }, [selectedNode, ref, refsLoaded]);
+  }, [selectedNode, ref, refs]);
+
+  const doubleClickHandler = () => {
+    setScaleFactor((prevState) =>
+      Math.min(parseInt(prevState) + 70, 150).toFixed(),
+    );
+  };
+
+  useEffect(() => {
+    if (!wrapperRef.current) return;
+    wrapperRef.current.addEventListener('dblclick', doubleClickHandler);
+
+    return () => {
+      if (!wrapperRef.current) return;
+      return wrapperRef.current.removeEventListener(
+        'dblclick',
+        doubleClickHandler,
+      );
+    };
+  }, []);
+
   return (
     <Wrapper relationsOn={!!selectedNode?.field}>
       <TopBar heading="RELATION VIEW">
@@ -215,12 +243,6 @@ export const Relation: React.FC = () => {
               />
             </TogglesWrapper>
             <IconWrapper
-              data-tooltip="Deselect node"
-              onClick={(_e) => setSelectedNode(undefined)}
-            >
-              <Clear size={22} />
-            </IconWrapper>
-            <IconWrapper
               data-tooltip="Focus selected node"
               onClick={(_e) => setSelectedNode({ ...selectedNode })}
             >
@@ -236,10 +258,21 @@ export const Relation: React.FC = () => {
                 <Export size={22} />
               </IconWrapper>
             )}
+            <DeselectWrapper>
+              <IconWrapper
+                data-tooltip="Deselect node"
+                onClick={(_e) => setSelectedNode(undefined)}
+              >
+                <Clear size={16} />
+              </IconWrapper>
+            </DeselectWrapper>
           </Menu>
         )}
       </TopBar>
-      <Main dragMode={selectedNode?.field ? draggingMode : 'auto'}>
+      <Main
+        dragMode={selectedNode?.field ? draggingMode : 'auto'}
+        ref={wrapperRef}
+      >
         {!selectedNode?.field && <PaintNodes disableOps />}
         {selectedNode?.field && (
           <TransformWrapper
