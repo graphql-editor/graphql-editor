@@ -34,7 +34,7 @@ export const allApps = () => {
               justifyContent: 'center',
               alignItems: 'center',
               margin: 8,
-              color: DarkTheme.backgrounds.String,
+              color: DarkTheme.colors.scalar,
               border: `1px solid ${DarkTheme.disabled}`,
               textDecoration: 'none',
               cursor: 'pointer',

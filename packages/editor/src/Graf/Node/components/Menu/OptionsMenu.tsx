@@ -19,20 +19,20 @@ const Main = styled.div<{ isSelected?: boolean }>`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  color: ${({ theme, isSelected }) => (isSelected ? theme.success : 'inherit')};
+  color: ${({ theme, isSelected }) => (isSelected ? theme.active : 'inherit')};
 
   &:hover {
-    color: ${({ theme }) => theme.success};
+    color: ${({ theme }) => theme.active};
 
     .circle {
-      background-color: ${({ theme }) => theme.success};
-      border-color: ${({ theme }) => theme.success};
+      background-color: ${({ theme }) => theme.active};
+      border-color: ${({ theme }) => theme.active};
     }
   }
 
   .circle {
-    background-color: ${({ theme, isSelected }) => isSelected && theme.success};
-    border-color: ${({ theme, isSelected }) => isSelected && theme.success};
+    background-color: ${({ theme, isSelected }) => isSelected && theme.active};
+    border-color: ${({ theme, isSelected }) => isSelected && theme.active};
   }
 `;
 

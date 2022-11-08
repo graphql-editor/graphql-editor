@@ -113,7 +113,7 @@ export const TopNodeMenu: React.FC<{
             title="Click to add field"
           >
             <Plus
-              fill={menuOpen === 'field' ? theme.success : theme.text}
+              fill={menuOpen === 'field' ? theme.active : theme.text}
               height={ICON_SIZE}
               width={ICON_SIZE}
             />
@@ -137,7 +137,7 @@ export const TopNodeMenu: React.FC<{
             title="Click to implement interface"
           >
             <Interface
-              fill={menuOpen === 'interface' ? theme.success : theme.text}
+              fill={menuOpen === 'interface' ? theme.active : theme.text}
               height={ICON_SIZE}
               width={ICON_SIZE}
             />
@@ -158,7 +158,7 @@ export const TopNodeMenu: React.FC<{
           title="Click to add directive"
         >
           <Monkey
-            fill={menuOpen === 'directive' ? theme.success : theme.text}
+            fill={menuOpen === 'directive' ? theme.active : theme.text}
             height={ICON_SIZE}
             width={ICON_SIZE}
           />
@@ -185,7 +185,7 @@ export const TopNodeMenu: React.FC<{
           title="Click to mark all fields as required/non-required"
         >
           <Arrq
-            fill={menuOpen === 'required' ? theme.success : theme.text}
+            fill={menuOpen === 'required' ? theme.active : theme.text}
             height={ICON_SIZE}
             width={ICON_SIZE}
           />
@@ -209,7 +209,7 @@ export const TopNodeMenu: React.FC<{
             <Tick
               height={ICON_SIZE}
               width={ICON_SIZE}
-              fill={menuOpen === 'operations' ? theme.success : theme.text}
+              fill={menuOpen === 'operations' ? theme.active : theme.text}
             />
             {menuOpen === 'operations' && (
               <NodeMenuContainer>
@@ -227,7 +227,7 @@ export const TopNodeMenu: React.FC<{
         title="Click to see node actions"
       >
         <More
-          fill={menuOpen === 'options' ? theme.success : theme.text}
+          fill={menuOpen === 'options' ? theme.active : theme.text}
           height={ICON_SIZE}
           width={ICON_SIZE}
         />

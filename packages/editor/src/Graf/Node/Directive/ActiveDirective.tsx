@@ -22,7 +22,7 @@ const Name = styled.div`
 `;
 
 const DirectiveFieldContainer = styled(NodeFieldContainer)`
-  color: ${({ theme }) => theme.backgrounds.directive};
+  color: ${({ theme }) => theme.colors.directive};
 `;
 
 const OptionsMenuContainer = styled.div`

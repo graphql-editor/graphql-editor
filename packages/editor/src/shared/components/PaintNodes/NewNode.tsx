@@ -10,7 +10,7 @@ export interface NewNodeProps {
   onCreate: (name: string) => ParserField;
 }
 
-type NodeTypes = keyof EditorTheme['backgrounds'];
+type NodeTypes = keyof EditorTheme['colors'];
 
 const Container = styled.div`
   display: flex;
@@ -74,7 +74,7 @@ const NodeCreate = styled.input<{
 }>`
   color: ${({ theme }) => theme.text};
   background-color: ${({ theme }) => theme.background.mainFurthest};
-  border: 1px solid ${({ theme, nodeType }) => theme.backgrounds[nodeType]};
+  border: 1px solid ${({ theme, nodeType }) => theme.colors[nodeType]};
   display: flex;
   align-items: center;
   padding: 0 23px 0 15px;

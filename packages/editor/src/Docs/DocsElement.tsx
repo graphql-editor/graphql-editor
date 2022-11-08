@@ -41,7 +41,7 @@ interface DocsElementI {
 
 export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
   const { setSelectedNode, tree, setTree, readonly } = useTreesState();
-  const { backgroundedText } = useTheme();
+  const { text } = useTheme();
 
   const [isEdit, setIsEdit] = useState(false);
 
@@ -91,7 +91,7 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
               __html: description || 'No description',
             }}
           />
-          {!readonly && <Edit size={14} fill={backgroundedText} />}
+          {!readonly && <Edit size={14} fill={text} />}
         </DescWrapper>
       )}
       <Line />

@@ -18,7 +18,7 @@ const Content = styled.div`
 const Title = styled.div`
   padding: 16px;
   font-size: 14px;
-  color: ${({ theme }) => theme.info};
+  color: ${({ theme }) => theme.active};
 `;
 
 interface MenuProps

@@ -6,7 +6,7 @@ export const DescText = styled.p`
 `;
 
 export const FieldText = styled.p`
-  color: ${({ theme }) => theme.backgroundedText};
+  color: ${({ theme }) => theme.text};
   font-size: 14px;
   margin: 0;
   line-height: 1.6;
@@ -15,7 +15,7 @@ export const FieldText = styled.p`
 
 export const TypeText = styled.p<{ isScalar?: boolean }>`
   color: ${({ isScalar, theme: { colors } }) =>
-    isScalar ? colors.String : colors.type};
+    isScalar ? colors.scalar : colors.type};
   font-size: 14px;
   padding-left: 8px;
   margin: 0;
@@ -23,8 +23,7 @@ export const TypeText = styled.p<{ isScalar?: boolean }>`
 `;
 
 export const Title = styled.div<{ subTitle: boolean }>`
-  color: ${({ theme, subTitle }) =>
-    subTitle ? theme.disabled : theme.backgroundedText};
+  color: ${({ theme, subTitle }) => (subTitle ? theme.disabled : theme.text)};
   font-size: 18px;
   margin: ${({ subTitle }) => (subTitle ? '18px 0px' : '0px 0px 4px 0px')};
   font-weight: bold;

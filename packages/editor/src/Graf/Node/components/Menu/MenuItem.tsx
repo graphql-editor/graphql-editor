@@ -10,7 +10,7 @@ interface MenuItemProps {
   name?: string;
 }
 
-type NodeTypes = keyof EditorTheme['backgrounds'];
+type NodeTypes = keyof EditorTheme['colors'];
 
 const Main = styled.div`
   display: flex;

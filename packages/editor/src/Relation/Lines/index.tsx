@@ -77,7 +77,7 @@ export const Lines: React.FC<LinesProps> = ({
             relationNumber={relationNumber}
             color={(theme.colors as any)[getTypeName(rf.field.type.fieldType)]}
             inActiveColor={
-              (theme.backgrounds as any)[getTypeName(rf.field.type.fieldType)]
+              (theme.colors as any)[getTypeName(rf.field.type.fieldType)]
             }
             key={`${index}-${rf.index}-${rf.field.name}`}
             from={rf.htmlNode}

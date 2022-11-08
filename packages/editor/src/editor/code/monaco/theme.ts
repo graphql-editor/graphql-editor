@@ -2,19 +2,19 @@ import type * as monaco from 'monaco-editor';
 import { themed } from '@/Theming/utils';
 
 const rules = themed<monaco.editor.ITokenThemeRule[]>(
-  ({ colors, text, info, success, inactive }) => [
-    { token: 'keyword.gql', foreground: info },
-    { token: 'type.identifier.gql', foreground: info },
+  ({ colors, text, active, inactive }) => [
+    { token: 'keyword.gql', foreground: active },
+    { token: 'type.identifier.gql', foreground: active },
     { token: 'key.identifier.gql', foreground: text },
-    { token: 'keyword', foreground: info },
+    { token: 'keyword', foreground: active },
     { token: 'annotation', foreground: text },
     { token: '', foreground: inactive },
     { token: 'string.md', foreground: inactive },
-    { token: 'keyword.md', foreground: info, fontStyle: 'bold' },
+    { token: 'keyword.md', foreground: active, fontStyle: 'bold' },
     { token: 'string.gql', foreground: inactive },
     {
       token: 'string.quote.gql',
-      foreground: info,
+      foreground: active,
     },
     { token: 'comment.gql', foreground: inactive },
     {
@@ -26,7 +26,7 @@ const rules = themed<monaco.editor.ITokenThemeRule[]>(
 );
 
 const colors = themed<monaco.editor.IColors>(
-  ({ background: { mainFurther, error }, text, backgrounds: { scalar } }) => ({
+  ({ background: { mainFurther, error }, text, colors: { scalar } }) => ({
     'editor.foreground': text,
     'editor.background': mainFurther,
     'minimap.background': mainFurther,

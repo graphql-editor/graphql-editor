@@ -11,7 +11,7 @@ const ArgumentsWrapper = styled.div`
 
 const FieldDiv = styled.div`
   display: flex;
-  color: ${({ theme }) => theme.backgroundedText};
+  color: ${({ theme }) => theme.text};
   font-size: 14px;
   margin: 0;
   line-height: 1.6;

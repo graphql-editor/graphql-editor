@@ -14,7 +14,7 @@ import styled from '@emotion/styled';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
 import { NodeSearchFields } from '@/Relation/Node/NodeSearchFields';
 
-type NodeTypes = keyof EditorTheme['backgrounds'];
+type NodeTypes = keyof EditorTheme['colors'];
 
 interface ContentProps {
   nodeType: NodeTypes;
@@ -52,7 +52,7 @@ const NodeRelationFields = styled.div``;
 
 const NodeTitle = styled.div`
   align-items: center;
-  color: ${({ theme }) => theme.backgroundedText};
+  color: ${({ theme }) => theme.text};
   font-size: 14px;
   font-weight: 500;
   height: 40px;

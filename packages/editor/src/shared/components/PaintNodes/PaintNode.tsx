@@ -22,7 +22,7 @@ export interface NodeProps {
   nodeIdx: number;
 }
 
-type NodeTypes = keyof EditorTheme['backgrounds'];
+type NodeTypes = keyof EditorTheme['colors'];
 
 interface MainNodeAreaProps {
   nodeType: NodeTypes;
@@ -65,18 +65,16 @@ const MainNodeArea = styled.div<MainNodeAreaProps>`
 
   border-color: ${({ theme, nodeType, isBaseNode, isLibrary, isError }) => {
     if (isError) return theme.background.error;
-    if (isBaseNode) return theme.backgroundedText;
+    if (isBaseNode) return theme.text;
     if (!isLibrary) return 'transparent';
-    return theme.backgrounds[nodeType]
-      ? `${theme.backgrounds[nodeType]}`
-      : 'transparent';
+    return theme.colors[nodeType] ? `${theme.colors[nodeType]}` : 'transparent';
   }};
   &:hover {
     border-color: ${({ theme, nodeType, isBaseNode, isError }) => {
       if (isError) return theme.background.error;
-      if (isBaseNode) return theme.backgroundedText;
-      return theme.backgrounds[nodeType]
-        ? `${theme.backgrounds[nodeType]}`
+      if (isBaseNode) return theme.text;
+      return theme.colors[nodeType]
+        ? `${theme.colors[nodeType]}`
         : 'transparent';
     }};
   }

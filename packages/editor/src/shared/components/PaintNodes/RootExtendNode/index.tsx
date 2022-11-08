@@ -23,7 +23,7 @@ const NodeTopBar = styled.div`
   position: relative;
   font-size: 12px;
   margin: 0 20px 20px 0;
-  color: ${({ theme }) => theme.colors.Extend};
+  color: ${({ theme }) => theme.colors.extend};
 `;
 
 const NodeName = styled.span`

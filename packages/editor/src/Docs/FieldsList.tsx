@@ -49,7 +49,7 @@ interface FieldsListI {
 }
 
 export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
-  const { backgroundedText } = useTheme();
+  const { text } = useTheme();
   const { setTree, tree, readonly } = useTreesState();
 
   const [isEdit, setIsEdit] = useState(false);
@@ -117,7 +117,7 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
                     __html: md.render(arg.description || 'No description'),
                   }}
                 />
-                {!readonly && <Edit size={14} fill={backgroundedText} />}
+                {!readonly && <Edit size={14} fill={text} />}
               </DescWrapper>
             )}
           </FieldsWrapper>

@@ -11,7 +11,7 @@ interface TypedMenuItemProps {
   selected?: boolean;
 }
 
-type NodeTypes = keyof EditorTheme['backgrounds'];
+type NodeTypes = keyof EditorTheme['colors'];
 
 const Main = styled.div<{ isSelected?: boolean }>`
   display: flex;

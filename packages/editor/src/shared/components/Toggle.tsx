@@ -32,7 +32,7 @@ const Text = styled.div<{ active?: boolean }>`
 `;
 const ToggleWrapper = styled.div<{ active?: boolean }>`
   border: 1px solid
-    ${({ theme, active }) => (active ? theme.backgrounds.type : theme.inactive)};
+    ${({ theme, active }) => (active ? theme.active : theme.inactive)};
   border-radius: 10px;
   width: 40px;
   height: 20px;

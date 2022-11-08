@@ -15,7 +15,7 @@ export const Tick: React.FC<React.SVGProps<SVGSVGElement>> = ({
       {...props}
     >
       <path
-        fill={fill || theme.success}
+        fill={fill || theme.active}
         d="M3.834.271L2.119 2.007l-.963-.962-.395.395 1.358 1.362L4.229.663 3.834.271z"
       ></path>
     </svg>

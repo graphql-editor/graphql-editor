@@ -55,7 +55,7 @@ const OpenedNode = styled.div`
 const MainNodeArea = styled.div`
   position: relative;
   transition: border-color 0.25s ease-in-out;
-  border-color: ${({ theme }) => theme.success};
+  border-color: ${({ theme }) => theme.active};
   flex: 1;
   display: flex;
   flex-flow: column nowrap;
@@ -65,7 +65,7 @@ const MainNodeArea = styled.div`
 
   &.library-node-area {
     border-style: dotted;
-    border-color: ${({ theme }) => theme.success}33;
+    border-color: ${({ theme }) => theme.active}33;
   }
 
   @keyframes fadeIn {

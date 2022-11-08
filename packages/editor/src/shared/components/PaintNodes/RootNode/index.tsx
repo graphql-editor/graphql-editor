@@ -22,7 +22,7 @@ export interface RootNodeProps {
   readonly?: boolean;
 }
 
-type NodeTypes = keyof EditorTheme['backgrounds'];
+type NodeTypes = keyof EditorTheme['colors'];
 
 const NodeContainer = styled.div`
   margin: 0 25px;

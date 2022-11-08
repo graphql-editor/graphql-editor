@@ -19,7 +19,7 @@ const MenuItemText = styled.span`
   width: 100%;
 
   &:hover {
-    color: ${({ theme }) => theme.success};
+    color: ${({ theme }) => theme.active};
   }
 `;
 
