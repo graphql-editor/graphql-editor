@@ -7,7 +7,7 @@ export const CodeContainer = styled.div`
   overflow-x: hidden;
   display: flex;
   flex-flow: column;
-  border-right: 2px solid ${({ theme }) => theme.contra};
+  border-right: 2px solid ${({ theme }) => theme.moduleSeparator};
 
   &.monaco-scrollable-element {
     padding: 8px;

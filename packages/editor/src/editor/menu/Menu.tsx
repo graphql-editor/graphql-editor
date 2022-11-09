@@ -11,7 +11,7 @@ const Sidebar = styled.div<{ isCollapsed: boolean }>`
   color: ${({ theme }) => theme.disabled};
   font-size: 12px;
   z-index: 4;
-  border: 0 solid ${({ theme }) => theme.contra};
+  border: 0 solid ${({ theme }) => theme.moduleSeparator};
   border-right-width: 2px;
   position: relative;
   transition: width 0.5s ease-in-out;
@@ -35,7 +35,8 @@ const MenuItem = styled.div<{ isCollapsed: boolean; isDisabled?: boolean }>`
   user-select: none;
 
   &:hover {
-    background-color: ${({ theme, isDisabled }) => !isDisabled && theme.contra};
+    background-color: ${({ theme, isDisabled }) =>
+      !isDisabled && theme.moduleSeparator};
     color: ${({ isDisabled, theme }) =>
       isDisabled ? theme.disabled : '#e3f6fc'};
   }
@@ -128,7 +129,7 @@ const MenuItem = styled.div<{ isCollapsed: boolean; isDisabled?: boolean }>`
 `;
 
 const BorderSpacer = styled.div`
-  border-bottom: 2px solid ${({ theme }) => theme.contra};
+  border-bottom: 2px solid ${({ theme }) => theme.moduleSeparator};
   margin: 10px 0;
   height: 0;
   width: 100%;

@@ -12,6 +12,8 @@ const rules = themed<monaco.editor.ITokenThemeRule[]>(
     { token: 'string.md', foreground: inactive },
     { token: 'keyword.md', foreground: active, fontStyle: 'bold' },
     { token: 'string.gql', foreground: inactive },
+    { token: 'delimiter.square.gql', foreground: inactive },
+    { token: 'delimiter.curly.gql', foreground: inactive },
     {
       token: 'string.quote.gql',
       foreground: active,

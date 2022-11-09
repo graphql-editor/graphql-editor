@@ -12,7 +12,7 @@ export const allApps = () => {
         height: '100%',
         justifyContent: 'center',
         paddingTop: 32,
-        backgroundColor: DarkTheme.contra,
+        backgroundColor: DarkTheme.background.mainFurther,
         overflowY: 'auto',
       }}
     >
