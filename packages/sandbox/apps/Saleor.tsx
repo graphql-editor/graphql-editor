@@ -29,3 +29,5 @@ export const Saleor = () => {
     </div>
   );
 };
+
+Saleor.description = 'GraphQL schema of a big e-commerce service Saleor.';

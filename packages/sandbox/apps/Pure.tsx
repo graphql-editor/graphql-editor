@@ -31,3 +31,4 @@ export const Pure = () => {
     </div>
   );
 };
+Pure.description = 'Empty GraphQL Schema.';

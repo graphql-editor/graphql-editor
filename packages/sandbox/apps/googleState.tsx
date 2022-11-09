@@ -109,3 +109,6 @@ export const googleState = () => {
     </div>
   );
 };
+
+googleState.description =
+  'Google Directions GraphQL Schema. Contains diffs and router.';

@@ -34,3 +34,6 @@ export const libraries = () => {
     </div>
   );
 };
+
+libraries.description =
+  'Part of the schema of a company manager SaaS with diffs.';

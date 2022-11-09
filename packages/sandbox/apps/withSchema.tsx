@@ -28,3 +28,5 @@ export const withSchema = () => {
     </div>
   );
 };
+
+withSchema.description = 'Part schema of a big delivery service Deliverer.';

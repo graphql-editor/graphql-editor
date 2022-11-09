@@ -47,3 +47,5 @@ export const googlediff = () => {
     </div>
   );
 };
+
+googlediff.description = 'Google Directions GraphQL Schema.';

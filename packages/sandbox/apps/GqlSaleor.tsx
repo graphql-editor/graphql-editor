@@ -24,3 +24,4 @@ export const GqlSaleor = () => {
     </div>
   );
 };
+GqlSaleor.description = 'GQL for schema of a big e-commerce service Saleor.';

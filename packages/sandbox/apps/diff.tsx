@@ -32,3 +32,5 @@ export const diff = () => {
     </div>
   );
 };
+
+diff.description = 'User Auth GraphQL Schema with diffs';

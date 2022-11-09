@@ -29,3 +29,5 @@ export const github = () => {
     </div>
   );
 };
+
+github.description = 'Github GraphQL API v4 full schema.';

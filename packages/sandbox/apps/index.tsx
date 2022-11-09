@@ -1,6 +1,5 @@
 export * from './error';
 export * from './Pure';
-export * from './SetSchema';
 export * from './withSchema';
 export * from './github';
 export * from './diff';
@@ -10,7 +9,5 @@ export * from './googlediff';
 export * from './googleState';
 export * from './libraries';
 export * from './Light';
-export * from './ThemeChange';
 export * from './readonly';
 export * from './Saleor';
-export * from './allApps';

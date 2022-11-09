@@ -29,3 +29,5 @@ export const error = () => {
     </div>
   );
 };
+
+error.description = 'GraphQL schema that contains errors.';

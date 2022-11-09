@@ -33,3 +33,6 @@ export const Light = () => {
     </div>
   );
 };
+
+Light.description =
+  'Part schema of a big delivery service Deliverer in Light theme';

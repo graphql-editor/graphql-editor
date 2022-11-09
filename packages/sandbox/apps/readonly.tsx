@@ -30,3 +30,6 @@ export const readonly = () => {
     </div>
   );
 };
+
+readonly.description =
+  'Part schema of a big delivery service Deliverer in readonly mode';

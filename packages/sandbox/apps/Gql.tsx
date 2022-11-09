@@ -24,3 +24,5 @@ export const Gql = () => {
     </div>
   );
 };
+
+Gql.description = 'GQL for part schema of a big delivery service Deliverer.';
