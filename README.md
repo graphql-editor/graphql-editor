@@ -10,28 +10,20 @@ With GraphQL Editor you can create visual diagrams without writing any code or p
 
 Here is a [cloud version](https://graphqleditor.com) of GraphQL Editor.
 
-## Docs
+## SaaS Docs
 
-Here is a [guide](https://guide.graphqleditor.com) for GraphQL Editor.
+Here is a [guide](https://guide.graphqleditor.com) for GraphQL Editor SaaS
 
 ## How it works
 
 Create GraphQL nodes and connect them to generate a database schema. You can also use builtin text IDE with GraphQL syntax validation
 
-### Creator/Editor
-
-![GraphQL Editor](assets/graphql-editor.png)
-
-### Relations
-
-![GraphQL Editor](assets/graph-relation.png)
+[<img src="assets/demo.gif">](http://graphqleditor.com/)
 
 ## Table of contents
 
-- [Docs](#docs)
+- [SaaS Docs](#saas-docs)
 - [How it works](#how-it-works)
-  - [Creator/Editor](#creatoreditor)
-  - [Relations](#relations)
 - [Table of contents](#table-of-contents)
 - [License](#license)
 - [Installation](#installation)
@@ -45,6 +37,7 @@ Create GraphQL nodes and connect them to generate a database schema. You can als
 - [Team](#team)
 - [Underlying Parsing technology](#underlying-parsing-technology)
 - [GraphQL Tutorials](#graphql-tutorials)
+- [Authors](#authors)
 
 ## License
 
@@ -99,7 +92,7 @@ export const App = () => {
       }}
     >
       <GraphQLEditor
-        onSchemaChange={(props) => {
+        setSchema={(props) => {
           setMySchema(props);
         }}
         schema={mySchema}
@@ -115,17 +108,17 @@ render(<App />, document.getElementById('root'));
 
 **GraphQLEditor**
 
-| property      | type                                                      | description                |
-| ------------- | --------------------------------------------------------- | -------------------------- |
-| schema        | `PassedSchema`                                            | value of the schema        |
-| setSchema     | `(props: PassedSchema, isInvalid?: boolean) => void;`     | set value of the schema    |
-| readonly      | `boolean`                                                 | lock editing               |
-| diffSchemas   | `{ oldSchema: PassedSchema; newSchema: PassedSchema}`     | view state                 |
-| theme         | `EditorTheme`                                             | current theme              |
-| state         | `{ pane: ActivePane, code: boolean }`                     | view state                 |
-| onStateChange | `( state?:{ pane: ActivePane, code: boolean } ) => void;` | on state changed           |
-| onTreeChange  | `(tree: ParserTree) => void`                              | on tree state changed      |
-| placeholder   | `string`                                                  | placeholder - empty editor |
+| property      | type                                                  | description                                                                            | required | default   |
+| ------------- | ----------------------------------------------------- | -------------------------------------------------------------------------------------- | -------- | --------- |
+| schema        | `PassedSchema`                                        | value of the schema                                                                    | true     |           |
+| setSchema     | `(props: PassedSchema, isInvalid?: boolean) => void;` | Function to be called when schema is set by the editor                                 | true     |           |
+| readonly      | `boolean`                                             | lock editing                                                                           | false    | false     |
+| diffSchemas   | `Record<string, string>`                              | Record containing graphql schemas with "name" as a key and graphql schema as a "value" | false    |           |
+| theme         | `EditorTheme`                                         | current theme                                                                          |          | MainTheme |
+| routeState    | `EditorRoutes`                                        | listen to route changes. Don't bind it with routeState though!                         | false    |           |
+| onStateChange | `( r: EditorRoutes ) => void;`                        | on route state changed                                                                 | false    |           |
+| onTreeChange  | `(tree: ParserTree) => void`                          | Function that could be fired if tree changes                                           | false    |           |
+| placeholder   | `string`                                              | placeholder - empty editor                                                             | false    |           |
 
 **PassedSchema**
 
@@ -136,7 +129,7 @@ render(<App />, document.getElementById('root'));
 
 **ActivePane**
 
-`"relation" | "diagram" | "hierarchy"`
+`"relation" | "diagram" | "diff"`
 
 ## GraphQL Gql Editor
 
@@ -155,7 +148,7 @@ type Query{
 
 export const App = () => {
   const [gql, setGql] = useState('');
-  return (
+  return ( ||
     <div
       style={{
         flex: 1,
@@ -182,14 +175,14 @@ render(<App />, document.getElementById('root'));
 
 **GraphQLEditor**
 
-| property    | type                                                  | description                |
-| ----------- | ----------------------------------------------------- | -------------------------- |
-| schema      | `PassedSchema`                                        | value of the schema        |
-| gql         | `string`                                              | value of the gql           |
-| placeholder | `string`                                              | placeholder - empty editor |
-| setGql      | `(props: PassedSchema, isInvalid?: boolean) => void;` | set value of the gql       |
-| readonly    | `boolean`                                             | lock editing               |
-| theme       | `EditorTheme`                                         | current theme              |
+| property    | type                                                  | description                | required | default   |
+| ----------- | ----------------------------------------------------- | -------------------------- | -------- | --------- |
+| schema      | `PassedSchema`                                        | value of the schema        | true     |           |
+| gql         | `string`                                              | value of the gql           | true     |           |
+| placeholder | `string`                                              | placeholder - empty editor | false    | undefined |
+| setGql      | `(props: PassedSchema, isInvalid?: boolean) => void;` | set value of the gql       | true     | undefined |
+| readonly    | `boolean`                                             | lock editing               | false    | false     |
+| theme       | `EditorTheme`                                         | current theme              | false    | MainTheme |
 
 ## Support
 
@@ -205,8 +198,12 @@ Whole graphql-editor parsing stuff is based on underlying [zeus](https://github.
 
 ## GraphQL Tutorials
 
-Interactive GraphQL Tutorial [here](https://app.graphqleditor.com/?step=intro)
+[Interactive GraphQL Tutorial](https://app.graphqleditor.com/?step=intro)
 
-GraphQL Editor Guide [here](https://guide.graphqleditor.com/)
+[GraphQL Blog](https://blog.graphqleditor.com/)
 
-GraphQL Blog [here](https://blog.graphqleditor.com/)
+## Authors
+
+- [Artur Czemiel](https://github.com/aexol)
+- [GraphQL Editor](https://graphqleditor.com)
+- [Aexol](https://aexol.com)
