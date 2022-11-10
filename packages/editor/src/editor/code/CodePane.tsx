@@ -44,7 +44,9 @@ export const CodePane = (props: CodePaneProps) => {
   );
 
   useEffect(() => {
-    onChange(debouncedTemporaryString);
+    if (temporaryString !== schema) {
+      onChange(debouncedTemporaryString);
+    }
   }, [debouncedTemporaryString]);
 
   useEffect(() => {
