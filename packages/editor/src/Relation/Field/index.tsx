@@ -70,7 +70,7 @@ export const Field: React.FC<FieldProps> = ({
       onMouseUp={(e) => {
         if (drag) return;
         if (active && !isPrimitive) {
-          onClick();
+          setTimeout(onClick, 2);
         }
       }}
     >

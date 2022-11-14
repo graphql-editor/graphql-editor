@@ -1,4 +1,3 @@
-import { isScalarArgument } from '@/GraphQL/Resolve/Resolve';
 import {
   ScalarTypes,
   ParserField,
@@ -26,5 +25,3 @@ export const BuiltInScalars = [
       name: t,
     } as ParserField),
 );
-
-isScalarArgument;

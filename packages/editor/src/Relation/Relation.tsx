@@ -16,6 +16,7 @@ import {
   TransformComponent,
   TransformWrapper,
 } from '@pronestor/react-zoom-pan-pinch';
+import { Minus, Plus } from '@/shared/icons';
 
 const Wrapper = styled.div<{ relationsOn?: boolean }>`
   display: flex;
@@ -50,6 +51,50 @@ const DeselectWrapper = styled.div`
   border-left: 1px solid ${({ theme }) => theme.disabled}36;
 `;
 
+const TooltippedZoom = styled.div`
+  position: relative;
+  font-size: 12px;
+  font-weight: 500;
+  background: transparent;
+  width: 50px;
+  border: 0;
+  text-align: center;
+  color: ${({ theme }) => theme.inactive};
+  font-family: ${fontFamilySans};
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 10px;
+  &[data-tooltip] {
+    &:after {
+      content: attr(data-tooltip);
+      position: absolute;
+      pointer-events: none;
+      top: 44px;
+      right: 0px;
+      width: max-content;
+      color: ${({ theme }) => theme.text};
+      font-weight: 400;
+      background: #000000;
+      border: 1px solid ${({ theme }) => theme.dimmed};
+      text-align: center;
+      padding: 5px 12px;
+      z-index: 100;
+      opacity: 0;
+      transition: opacity 0.25s ease-in-out;
+    }
+
+    &:hover {
+      &:after {
+        opacity: 1;
+        color: #e3f6fc;
+      }
+    }
+  }
+`;
 const IconWrapper = styled.div`
   position: relative;
   font-size: 12px;
@@ -66,6 +111,10 @@ const IconWrapper = styled.div`
   width: 50px;
   height: 38px;
   user-select: none;
+  transition: ${vars.transition};
+  :hover {
+    background-color: ${({ theme }) => theme.background.mainFurthest};
+  }
 
   &[data-tooltip] {
     &:after {
@@ -102,6 +151,8 @@ const TogglesWrapper = styled.div`
   justify-content: center;
   align-items: center;
   border-right: 1px solid ${({ theme }) => theme.disabled}36;
+  border-left: 1px solid ${({ theme }) => theme.disabled}36;
+  padding-left: 20px;
 `;
 
 const Menu = styled.div`
@@ -111,15 +162,6 @@ const Menu = styled.div`
   align-items: center;
   position: relative;
   justify-content: flex-end;
-`;
-
-const Text = styled.p`
-  font-size: 14px;
-  line-height: 40px;
-  color: ${({ theme }) => theme.text};
-  font-weight: 400;
-  padding-right: 12px;
-  border-right: 1px solid ${({ theme }) => theme.disabled}36;
 `;
 
 type DragMode = 'grab' | 'auto' | 'grabbing';
@@ -157,6 +199,9 @@ export const Relation: React.FC = () => {
   const [scaleFactor, setScaleFactor] = useState('100');
   const ref = useRef<ReactZoomPanPinchRef>(null);
 
+  useEffect(() => {
+    if (!selectedNode) setScaleFactor('100');
+  }, [selectedNode]);
   useEffect(() => {
     const together = tree.nodes.concat(libraryTree.nodes);
     const filtered = together.filter((tn) =>
@@ -219,12 +264,37 @@ export const Relation: React.FC = () => {
     };
   }, []);
 
+  const step = 0.2;
   return (
     <Wrapper relationsOn={!!selectedNode?.field}>
       <TopBar heading="RELATION VIEW">
         {selectedNode?.field && (
           <Menu>
-            <Text>{scaleFactor}%</Text>
+            <IconWrapper
+              data-tooltip="Zoom out"
+              onClick={() => {
+                setScaleFactor((prevState) =>
+                  Math.max(parseInt(prevState) - step * 100, 30).toFixed(),
+                );
+                ref.current?.zoomOut(step);
+              }}
+            >
+              <Minus width={16} height={16} />
+            </IconWrapper>
+            <TooltippedZoom data-tooltip="Ctrl/Cmd + Scroll to zoom in/out">
+              <span>{scaleFactor + '%'}</span>
+            </TooltippedZoom>
+            <IconWrapper
+              data-tooltip="Zoom in"
+              onClick={() => {
+                ref.current?.zoomIn(step);
+                setScaleFactor((prevState) =>
+                  Math.min(parseInt(prevState) + step * 100, 150).toFixed(),
+                );
+              }}
+            >
+              <Plus width={16} height={16} />
+            </IconWrapper>
             <TogglesWrapper>
               <Toggle
                 toggled={showRelatedTo}

@@ -5,7 +5,6 @@ import {
   ValueDefinition,
   Directive,
   ScalarTypes,
-  Value,
   Instances,
   TypeExtension,
   getTypeName,
@@ -195,22 +194,22 @@ export const ResolveDirectives = (
     );
 };
 
-export const isScalarArgument = (field: ParserField) => {
+export const isScalarArgument = (field: ParserField, scalarTypes: string[]) => {
   const typeName = getTypeName(field.type.fieldType);
   if (typeName === ScalarTypes.Boolean) {
-    return Value.BooleanValue;
+    return true;
   }
   if (typeName === ScalarTypes.Float) {
-    return Value.FloatValue;
+    return true;
   }
   if (typeName === ScalarTypes.ID) {
-    return Value.StringValue;
+    return true;
   }
   if (typeName === ScalarTypes.Int) {
-    return Value.IntValue;
+    return true;
   }
   if (typeName === ScalarTypes.String) {
-    return Value.StringValue;
+    return true;
   }
-  return;
+  return scalarTypes.includes(typeName);
 };

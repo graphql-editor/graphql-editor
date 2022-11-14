@@ -46,6 +46,8 @@ export const NodeSearchFields: React.FC<SearchInputProps> = React.memo(
           placeholder="Search..."
           type="text"
           value={liveValue}
+          onMouseUp={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
           onClick={(e) => e.stopPropagation()}
           onChange={(e) => setValue(e.target.value)}
         />

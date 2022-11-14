@@ -7,7 +7,7 @@ import { sortByConnection } from './Algorithm';
 import { Lines, RelationPath } from '@/Relation/Lines';
 import { isScalarArgument } from '@/GraphQL/Resolve';
 import * as vars from '@/vars';
-import { ParserField, getTypeName } from 'graphql-js-tree';
+import { ParserField, getTypeName, TypeDefinition } from 'graphql-js-tree';
 import { useRouter } from '@/state/containers/router';
 const Wrapper = styled.div`
   width: 100%;
@@ -56,6 +56,14 @@ type LinesDiagramProps = {
   mainRef: React.RefObject<HTMLDivElement>;
 };
 
+const passScalars = (pass: boolean, scalars: string[]) => (n: ParserField) =>
+  !pass
+    ? {
+        ...n,
+        args: n.args?.filter((a) => !isScalarArgument(a, scalars)),
+      }
+    : n;
+
 export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
   const { libraryTree, selectedNode, schemaType, tree } = useTreesState();
   const { routes } = useRouter();
@@ -91,20 +99,19 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
             .includes(filteredFieldsTypes['' + selectedNode.field?.id] || ''),
         ),
       };
-      const selected = !baseTypesOn
-        ? {
-            ...selectedNode.field,
-            args: selectedNode.field.args?.filter((a) => !isScalarArgument(a)),
-          }
-        : selectedNode.field;
       const together = tree.nodes.concat(libraryTree.nodes);
-      const based = !baseTypesOn
-        ? together.map((n) => ({
-            ...n,
-            args: n.args?.filter((a) => !isScalarArgument(a)),
-          }))
-        : together;
-      const relatedNodes = based
+      const scalarTypes = together
+        .filter((n) => n.data.type === TypeDefinition.ScalarTypeDefinition)
+        .map((n) => n.name);
+      const filterScalars = passScalars(baseTypesOn, scalarTypes);
+
+      const togetherFiltered = together
+        .map(filterScalars)
+        .filter((n) => !scalarTypes.includes(n.name));
+
+      const selected = filterScalars(selectedNode.field);
+
+      const relatedNodes = togetherFiltered
         .filter((n) =>
           compareNode.args?.find(
             (a) => getTypeName(a.type.fieldType) === n.name,
@@ -113,7 +120,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
         .filter((n) => n.name !== selectedNode.field?.name);
       const relatedNames = relatedNodes.map((r) => r.name);
       const relatedToNodes = showRelatedTo
-        ? based
+        ? togetherFiltered
             .filter((n) =>
               n.args?.find(
                 (arg) =>
@@ -123,12 +130,10 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({ mainRef }) => {
             .filter((n) => n.name !== selectedNode.field?.name)
             .filter((n) => !relatedNames.includes(n.name))
         : [];
-      const resorted = sortByConnection(relatedNodes);
-      const resortedRelatedTo = sortByConnection(relatedToNodes);
       setRelationDrawingNodes({
-        parent: resortedRelatedTo,
+        parent: sortByConnection(relatedToNodes),
         selected,
-        children: resorted,
+        children: sortByConnection(relatedNodes),
       });
       return;
     }
