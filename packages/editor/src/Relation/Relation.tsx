@@ -170,6 +170,7 @@ const Main = styled.div<{ dragMode: DragMode }>`
   height: calc(100% - 60px);
   width: 100%;
   position: relative;
+  overflow-y: auto;
   font-family: ${fontFamily};
   cursor: ${({ dragMode }) => dragMode};
 `;
