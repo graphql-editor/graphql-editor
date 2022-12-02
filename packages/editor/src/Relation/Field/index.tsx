@@ -11,7 +11,6 @@ const Name = styled.div`
   font-size: ${FIELD_NAME_SIZE}px;
   margin-right: 30px;
   white-space: nowrap;
-  min-width: 30px;
 `;
 
 const Main = styled.div<{ isActive?: boolean }>`

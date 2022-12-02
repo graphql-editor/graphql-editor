@@ -49,7 +49,7 @@ export const EditableText: React.FC<{
   }, [value]);
   useEffect(() => {
     setW(spanRef.current?.offsetWidth || w);
-  }, [spanRef.current?.offsetWidth]);
+  }, [editedValue]);
   return (
     <>
       {onChange ? (

@@ -7,7 +7,7 @@ const Input = styled.input`
   background: ${({ theme }) => theme.background.mainFurthest}44;
   border-radius: 4px;
   color: ${({ theme }) => theme.text};
-  min-width: 30px;
+  min-width: 1ch;
   font-family: ${fontFamilySans};
   font-size: 10px;
   text-align: center;

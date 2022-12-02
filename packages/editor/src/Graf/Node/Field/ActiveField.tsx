@@ -30,7 +30,6 @@ const Name = styled.div`
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  min-width: 30px;
 `;
 
 const Type = styled.div`
