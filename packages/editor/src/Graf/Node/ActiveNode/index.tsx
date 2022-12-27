@@ -23,7 +23,7 @@ import { TopNodeMenu } from '@/Graf/Node/ActiveNode/TopNodeMenu';
 import { ChangeAllRelatedNodes, isExtensionNode } from '@/GraphQL/Resolve';
 import { ActiveArgument } from '@/Graf/Node/Argument';
 import { useVisualState } from '@/state/containers';
-import { GraphQLEditorDomStructure } from '@/domStructure';
+
 import {
   dragLeaveHandler,
   dragOverHandler,
@@ -220,7 +220,6 @@ export const ActiveNode: React.FC<NodeProps> = ({
       className={`NodeBackground-${getTypeName(node.type.fieldType)} ${
         DOM.classes.node
       } ${DOM.classes.nodeSelected}`}
-      data-cy={GraphQLEditorDomStructure.tree.elements.Graf.ActiveNode.name}
     >
       <ActiveDescription
         onChange={(d) => {

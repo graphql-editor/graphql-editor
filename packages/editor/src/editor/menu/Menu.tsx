@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import * as Icons from '../icons';
-import { GraphQLEditorDomStructure } from '@/domStructure';
+
 import { useTreesState } from '@/state/containers';
 import styled from '@emotion/styled';
 import { fontFamilySans } from '@/vars';
@@ -146,8 +146,6 @@ export interface MenuProps {
   setActivePane: (pane?: ActivePane) => void;
 }
 
-const MenuChildren = GraphQLEditorDomStructure.tree.sidebar.menu.children;
-
 export const Menu = ({
   toggleCode,
   setToggleCode,
@@ -166,7 +164,6 @@ export const Menu = ({
   return (
     <Sidebar isCollapsed={isCollapsed}>
       <MenuItem
-        data-cy={MenuChildren.code}
         className={toggleCode ? 'toggle-active' : ''}
         onClick={() => {
           if (activePane === 'diff') return;
@@ -184,7 +181,6 @@ export const Menu = ({
       </MenuItem>
       {libraryTree.nodes.length > 0 && (
         <MenuItem
-          data-cy={MenuChildren.diff}
           className={schemaType === 'library' ? 'toggle-active' : ''}
           onClick={() => {
             switchSchema();
@@ -202,7 +198,6 @@ export const Menu = ({
       <BorderSpacer />
       {!excludePanes.includes('diagram') && (
         <MenuItem
-          data-cy={MenuChildren.diagram}
           className={activePane === 'diagram' ? 'active' : ''}
           onClick={activePaneToggle('diagram')}
           data-tooltip="Creator"
@@ -216,7 +211,6 @@ export const Menu = ({
 
       {!excludePanes.includes('relation') && (
         <MenuItem
-          data-cy={MenuChildren.relation}
           className={activePane === 'relation' ? 'active' : ''}
           onClick={activePaneToggle('relation')}
           data-tooltip="Relation"
@@ -229,7 +223,6 @@ export const Menu = ({
       )}
       {!excludePanes.includes('docs') && (
         <MenuItem
-          data-cy={MenuChildren.docs}
           className={activePane === 'docs' ? 'active' : ''}
           onClick={activePaneToggle('docs')}
           data-tooltip="Documentation"
@@ -243,7 +236,6 @@ export const Menu = ({
       <BorderSpacer />
       {!excludePanes.includes('diff') && (
         <MenuItem
-          data-cy={MenuChildren.diff}
           className={activePane === 'diff' ? 'active' : ''}
           onClick={() => setActivePane('diff')}
           data-tooltip="Diff"

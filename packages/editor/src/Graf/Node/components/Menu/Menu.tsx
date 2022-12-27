@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { GraphQLEditorDomStructure } from '@/domStructure';
+
 import { useOnClickOutside } from '@/Graf/Node/hooks';
 import styled from '@emotion/styled';
 
@@ -41,14 +41,7 @@ export const Menu: React.FC<MenuProps> = ({
   return (
     <Wrapper {...props} ref={menuRef}>
       <Content>
-        <Title
-          data-cy={
-            GraphQLEditorDomStructure.tree.elements.Graf.ActiveNode.TopNodeMenu
-              .searchableMenu.title
-          }
-        >
-          {menuName}
-        </Title>
+        <Title>{menuName}</Title>
         {children}
       </Content>
     </Wrapper>

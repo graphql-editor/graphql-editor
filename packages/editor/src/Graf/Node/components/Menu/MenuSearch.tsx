@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { GraphQLEditorDomStructure } from '@/domStructure';
+
 import styled from '@emotion/styled';
 import { Search, Plus, X } from '@/shared/icons';
 
@@ -9,7 +9,6 @@ interface MenuSearchProps {
   onClear: () => void;
   onSubmit: () => void;
   autoFocus?: boolean;
-  cypressName?: string;
   placeholder?: string;
   icon?: 'search' | 'add';
 }
@@ -66,7 +65,6 @@ const XIconContainer = styled.span`
 `;
 
 export const MenuSearch: React.FC<MenuSearchProps> = ({
-  cypressName,
   value,
   onChange,
   onClear,
@@ -77,13 +75,7 @@ export const MenuSearch: React.FC<MenuSearchProps> = ({
 }) => {
   const ref = useRef<HTMLInputElement>(null);
   return (
-    <Wrapper
-      data-cy={
-        cypressName ||
-        GraphQLEditorDomStructure.tree.elements.Graf.ActiveNode.TopNodeMenu
-          .searchableMenu.searchInput
-      }
-    >
+    <Wrapper>
       <SearchIconContainer>
         {icon === 'search' && <Search width={14} height={14} />}
         {icon === 'add' && <Plus width={14} height={14} />}

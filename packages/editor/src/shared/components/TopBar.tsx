@@ -3,9 +3,8 @@ import styled from '@emotion/styled';
 import React, { useEffect, useRef } from 'react';
 import { useErrorsState } from '@/state/containers';
 import { useTheme } from '@emotion/react';
-import { GraphQLEditorDomStructure } from '@/domStructure';
+
 import { Heading } from '@/shared/components';
-import { SearchInput } from '@/shared/components';
 import { useSortState } from '@/state/containers/sort';
 import { SortNodes } from '@/Graf/Node/components/SortNodes';
 import { KeyboardActions, useIO } from '@/shared/hooks/io';
@@ -52,12 +51,7 @@ export const TopBar: React.FC<{ heading: string }> = ({
   heading,
 }) => {
   const { lockGraf } = useErrorsState();
-  const {
-    setFilterNodes,
-    filterNodes,
-    setIsSortAlphabetically,
-    setIsUserOrder,
-  } = useSortState();
+  const { setIsSortAlphabetically, setIsUserOrder } = useSortState();
   const { mount } = useIO();
   const { inactive } = useTheme();
 
@@ -76,19 +70,6 @@ export const TopBar: React.FC<{ heading: string }> = ({
       {children}
       {!lockGraf && !children && (
         <SortWrapper>
-          <SearchInput
-            ref={ref}
-            cypressName={
-              GraphQLEditorDomStructure.tree.elements.Graf.searchInput
-            }
-            autoFocus={false}
-            onClear={() => {
-              setFilterNodes('');
-            }}
-            onSubmit={() => {}}
-            value={filterNodes}
-            onChange={setFilterNodes}
-          />
           <AZContainer
             onClick={() => {
               setIsUserOrder(false);

@@ -21,10 +21,7 @@ const interpolate = (p1: Point, p2: Point, weight: number) => {
 export const Draw = ({
   from,
   to,
-  active,
-  inverse,
   color,
-  inActiveColor,
   PortNumber,
   maxIndex,
   relationNumber,
@@ -33,15 +30,12 @@ export const Draw = ({
   from?: HTMLDivElement;
   to?: HTMLDivElement;
   color: string;
-  inActiveColor: string;
-  active?: boolean;
-  inverse?: boolean;
   PortNumber: number;
   maxIndex: number;
   relationNumber: number;
   relationType: FieldType;
 }) => {
-  const stroke = active ? color : `${inActiveColor}10`;
+  const stroke = color;
   if (from && to) {
     let pos =
       RELATION_CONSTANTS.TOP_HEIGHT +
@@ -101,7 +95,7 @@ export const Draw = ({
       bezierWeight,
     );
     const isArray = isArrayType(relationType);
-    const fac = isArray ? 6 : 2;
+    const fac = isArray ? 6 : 3;
 
     return (
       <>

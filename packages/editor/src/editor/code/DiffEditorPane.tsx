@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { theme as MonacoTheme, diffEditorSettings } from './monaco';
-import { GraphQLEditorDomStructure } from '@/domStructure';
+
 import { fontFamily } from '@/vars';
 import { useTheme } from '@/state/containers';
 import { SchemaDiffEditor } from '@/editor/code/guild';
@@ -28,9 +28,7 @@ export const DiffEditorPane = ({ schema, newSchema }: DiffEditorPaneProps) => {
   return (
     <>
       {theme && (
-        <CodeContainer
-          data-cy={GraphQLEditorDomStructure.tree.elements.DiffEditor.name}
-        >
+        <CodeContainer>
           <SchemaDiffEditor
             height="100%"
             beforeMount={(monaco) =>

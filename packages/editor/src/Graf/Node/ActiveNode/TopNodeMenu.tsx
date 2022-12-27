@@ -21,7 +21,7 @@ import {
   NodeFieldsRequiredMenu,
 } from '@/shared/components/ContextMenu';
 import { useTreesState } from '@/state/containers/trees';
-import { GraphQLEditorDomStructure } from '@/domStructure';
+
 import { useTheme } from '@/state/containers';
 import { getScalarFields } from '@/Graf/utils/getScalarFields';
 import styled from '@emotion/styled';
@@ -58,8 +58,6 @@ const NodeIconArea = styled.div`
 `;
 
 const ICON_SIZE = 14;
-const cyMenu =
-  GraphQLEditorDomStructure.tree.elements.Graf.ActiveNode.TopNodeMenu;
 export const TopNodeMenu: React.FC<{
   node: ParserField;
   onDelete: () => void;
@@ -106,7 +104,6 @@ export const TopNodeMenu: React.FC<{
       {node.data.type !== TypeDefinition.ScalarTypeDefinition &&
         node.data.type !== ValueDefinition.EnumValueDefinition && (
           <NodeIconArea
-            data-cy={cyMenu.CreateField}
             onClick={() => {
               setMenuOpen('field');
             }}
@@ -133,7 +130,6 @@ export const TopNodeMenu: React.FC<{
             onClick={() => {
               setMenuOpen('interface');
             }}
-            data-cy={cyMenu.Implement}
             title="Click to implement interface"
           >
             <Interface
@@ -154,7 +150,6 @@ export const TopNodeMenu: React.FC<{
           onClick={() => {
             setMenuOpen('directive');
           }}
-          data-cy={cyMenu.Directive}
           title="Click to add directive"
         >
           <Monkey
@@ -181,7 +176,6 @@ export const TopNodeMenu: React.FC<{
           onClick={() => {
             setMenuOpen('required');
           }}
-          data-cy={cyMenu.Required}
           title="Click to mark all fields as required/non-required"
         >
           <Arrq
@@ -203,7 +197,6 @@ export const TopNodeMenu: React.FC<{
             onClick={() => {
               setMenuOpen('operations');
             }}
-            data-cy={cyMenu.Operations}
             title="Click set schema query, mutation, subscription"
           >
             <Tick
@@ -223,7 +216,6 @@ export const TopNodeMenu: React.FC<{
         onClick={() => {
           setMenuOpen('options');
         }}
-        data-cy={cyMenu.Options}
         title="Click to see node actions"
       >
         <More

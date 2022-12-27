@@ -4,7 +4,7 @@ import { ActiveNode } from '@/Graf/Node';
 import { useTreesState } from '@/state/containers/trees';
 import { useErrorsState } from '@/state/containers';
 import { darken, toHex } from 'color2k';
-import { GraphQLEditorDomStructure } from '@/domStructure';
+
 import { getScalarFields } from '@/Graf/utils/getScalarFields';
 import { findInNodes } from '@/compare/compareNodes';
 import {
@@ -14,7 +14,6 @@ import {
   TypeDefinition,
 } from 'graphql-js-tree';
 import styled from '@emotion/styled';
-import { PaintNodes } from '@/shared/components/PaintNodes/PaintNodes';
 import { TopBar } from '@/shared/components/TopBar';
 import { KeyboardActions, useIO } from '@/shared/hooks/io';
 
@@ -226,13 +225,10 @@ export const Graf: React.FC = () => {
         onClick={() => {
           setSelectedNode(undefined);
         }}
-        data-cy={GraphQLEditorDomStructure.tree.elements.Graf.name}
       >
         <TopBar heading="CREATOR VIEW" />
         {selectedNodeComponent}
-        <Main>
-          <PaintNodes />
-        </Main>
+        <Main></Main>
         {grafErrors && <ErrorContainer>{grafErrors}</ErrorContainer>}
       </Wrapper>
     </>

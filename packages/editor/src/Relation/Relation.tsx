@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { fontFamily, fontFamilySans } from '@/vars';
 import { useTreesState } from '@/state/containers/trees';
 import { useErrorsState, useRelationsState } from '@/state/containers';
@@ -7,8 +13,6 @@ import styled from '@emotion/styled';
 import { LinesDiagram } from '@/Relation/LinesDiagram';
 import { toPng } from 'html-to-image';
 import { Clear, Export, Eye } from '@/editor/icons';
-import { PaintNodes } from '@/shared/components/PaintNodes/PaintNodes';
-import { useSortState } from '@/state/containers/sort';
 import * as vars from '@/vars';
 import { TopBar } from '@/shared/components/TopBar';
 import {
@@ -17,16 +21,17 @@ import {
   TransformWrapper,
 } from '@pronestor/react-zoom-pan-pinch';
 import { Minus, Plus } from '@/shared/icons';
+import { TypeDefinition } from 'graphql-js-tree';
+import { NodeNavigation } from '@/shared/NodeNavigation';
 
-const Wrapper = styled.div<{ relationsOn?: boolean }>`
+const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
   width: 100%;
   overflow: hidden;
   transition: ${vars.transition};
-  background: ${({ theme, relationsOn }) =>
-    relationsOn ? theme.background.mainFurthest : theme.background.mainFar};
+  background: ${({ theme }) => theme.background.mainFurthest};
 `;
 
 const ErrorContainer = styled.div`
@@ -170,8 +175,9 @@ const Main = styled.div<{ dragMode: DragMode }>`
   height: calc(100% - 60px);
   width: 100%;
   position: relative;
-  overflow-y: auto;
+  display: flex;
   font-family: ${fontFamily};
+  justify-content: flex-end;
   cursor: ${({ dragMode }) => dragMode};
 `;
 
@@ -181,19 +187,8 @@ export const Relation: React.FC = () => {
 
   const { selectedNode, tree, libraryTree, setSelectedNode } = useTreesState();
   const { grafErrors } = useErrorsState();
-  const {
-    setCurrentNodes,
-    showRelatedTo,
-    refsLoaded,
-    setShowRelatedTo,
-    setBaseTypesOn,
-    baseTypesOn,
-    setEnumsOn,
-    enumsOn,
-    refs,
-  } = useRelationsState();
-
-  const { filterNodes } = useSortState();
+  const { setBaseTypesOn, baseTypesOn, setEnumsOn, enumsOn } =
+    useRelationsState();
 
   const [isLoading, setIsLoading] = useState(false);
   const [draggingMode, setDraggingMode] = useState<DragMode>('grab');
@@ -203,13 +198,6 @@ export const Relation: React.FC = () => {
   useEffect(() => {
     if (!selectedNode) setScaleFactor('100');
   }, [selectedNode]);
-  useEffect(() => {
-    const together = tree.nodes.concat(libraryTree.nodes);
-    const filtered = together.filter((tn) =>
-      tn.name.toLowerCase().includes(filterNodes.toLowerCase()),
-    );
-    setCurrentNodes(filtered);
-  }, [tree, libraryTree, filterNodes]);
 
   const downloadPng = useCallback(() => {
     setIsLoading(true);
@@ -229,7 +217,10 @@ export const Relation: React.FC = () => {
         setIsLoading(false);
       });
   }, [mainRef]);
-  useEffect(() => {
+  const zoomPanPinch = (
+    refs: Record<string, HTMLElement>,
+    refsLoaded: boolean,
+  ) => {
     if (selectedNode?.field && ref.current && refsLoaded && refs) {
       const currentNode = refs[selectedNode.field.id];
       if (currentNode) {
@@ -238,13 +229,23 @@ export const Relation: React.FC = () => {
           const currentScale = ref.current.state.scale;
           const newScaleFactor = window.innerHeight / 1.2 / bb.height;
           const newScale = Math.max(0.3, currentScale * newScaleFactor);
-          ref.current.zoomToElement(currentNode as HTMLElement, newScale, 0);
+          ref.current.zoomToElement(
+            currentNode as HTMLElement,
+            newScale,
+            300,
+            'easeInOutQuad',
+          );
           return;
         }
-        ref.current.zoomToElement(currentNode, ref.current.state.scale, 0);
+        ref.current.zoomToElement(
+          currentNode,
+          ref.current.state.scale,
+          300,
+          'easeOutQuint',
+        );
       }
     }
-  }, [selectedNode, ref, refsLoaded]);
+  };
 
   const doubleClickHandler = () => {
     setScaleFactor((prevState) =>
@@ -265,70 +266,41 @@ export const Relation: React.FC = () => {
     };
   }, []);
 
+  const typeNodes = useMemo(() => {
+    return tree.nodes
+      .concat(libraryTree.nodes)
+      .filter(
+        (n) =>
+          n.data.type === TypeDefinition.ObjectTypeDefinition ||
+          n.data.type === TypeDefinition.UnionTypeDefinition ||
+          n.data.type === TypeDefinition.InterfaceTypeDefinition,
+      );
+  }, [tree, libraryTree]);
+  const singleNodes = useMemo(() => {
+    return tree.nodes
+      .concat(libraryTree.nodes)
+      .filter(
+        (n) =>
+          n.data.type === TypeDefinition.InputObjectTypeDefinition ||
+          n.data.type === TypeDefinition.ScalarTypeDefinition ||
+          n.data.type === TypeDefinition.EnumTypeDefinition,
+      );
+  }, [tree, libraryTree]);
+  singleNodes;
   const step = 0.2;
   return (
-    <Wrapper relationsOn={!!selectedNode?.field}>
+    <Wrapper>
       <TopBar heading="RELATION VIEW">
-        {selectedNode?.field && (
-          <Menu>
-            <IconWrapper
-              data-tooltip="Zoom out"
-              onClick={() => {
-                setScaleFactor((prevState) =>
-                  Math.max(parseInt(prevState) - step * 100, 30).toFixed(),
-                );
-                ref.current?.zoomOut(step);
-              }}
-            >
-              <Minus width={16} height={16} />
-            </IconWrapper>
-            <TooltippedZoom data-tooltip="Ctrl/Cmd + Scroll to zoom in/out">
-              <span>{scaleFactor + '%'}</span>
-            </TooltippedZoom>
-            <IconWrapper
-              data-tooltip="Zoom in"
-              onClick={() => {
-                ref.current?.zoomIn(step);
-                setScaleFactor((prevState) =>
-                  Math.min(parseInt(prevState) + step * 100, 150).toFixed(),
-                );
-              }}
-            >
-              <Plus width={16} height={16} />
-            </IconWrapper>
-            <TogglesWrapper>
-              <Toggle
-                toggled={showRelatedTo}
-                label="parent"
-                onToggle={() => setShowRelatedTo(!showRelatedTo)}
-              />
-              <Toggle
-                toggled={baseTypesOn}
-                label="scalars"
-                onToggle={() => setBaseTypesOn(!baseTypesOn)}
-              />
-              <Toggle
-                toggled={enumsOn}
-                label="enums"
-                onToggle={() => setEnumsOn(!enumsOn)}
-              />
-            </TogglesWrapper>
+        <Menu>
+          {selectedNode?.field && (
             <IconWrapper
               data-tooltip="Focus selected node"
               onClick={(_e) => setSelectedNode({ ...selectedNode })}
             >
               <Eye size={22} />
             </IconWrapper>
-            {isLoading ? (
-              <IconWrapper data-tooltip="Loading...">...</IconWrapper>
-            ) : (
-              <IconWrapper
-                data-tooltip="Export to png"
-                onClick={() => downloadPng()}
-              >
-                <Export size={22} />
-              </IconWrapper>
-            )}
+          )}
+          {selectedNode?.field && (
             <DeselectWrapper>
               <IconWrapper
                 data-tooltip="Deselect node"
@@ -337,42 +309,91 @@ export const Relation: React.FC = () => {
                 <Clear size={16} />
               </IconWrapper>
             </DeselectWrapper>
-          </Menu>
-        )}
+          )}
+          <IconWrapper
+            data-tooltip="Zoom out"
+            onClick={() => {
+              setScaleFactor((prevState) =>
+                Math.max(parseInt(prevState) - step * 100, 30).toFixed(),
+              );
+              ref.current?.zoomOut(step);
+            }}
+          >
+            <Minus width={16} height={16} />
+          </IconWrapper>
+          <TooltippedZoom data-tooltip="Ctrl/Cmd + Scroll to zoom in/out">
+            <span>{scaleFactor + '%'}</span>
+          </TooltippedZoom>
+          <IconWrapper
+            data-tooltip="Zoom in"
+            onClick={() => {
+              ref.current?.zoomIn(step);
+              setScaleFactor((prevState) =>
+                Math.min(parseInt(prevState) + step * 100, 150).toFixed(),
+              );
+            }}
+          >
+            <Plus width={16} height={16} />
+          </IconWrapper>
+          <TogglesWrapper>
+            <Toggle
+              toggled={baseTypesOn}
+              label="scalars"
+              onToggle={() => setBaseTypesOn(!baseTypesOn)}
+            />
+            <Toggle
+              toggled={enumsOn}
+              label="enums"
+              onToggle={() => setEnumsOn(!enumsOn)}
+            />
+          </TogglesWrapper>
+          {isLoading ? (
+            <IconWrapper data-tooltip="Loading...">...</IconWrapper>
+          ) : (
+            <IconWrapper
+              data-tooltip="Export to png"
+              onClick={() => downloadPng()}
+            >
+              <Export size={22} />
+            </IconWrapper>
+          )}
+        </Menu>
       </TopBar>
       <Main
         dragMode={selectedNode?.field ? draggingMode : 'auto'}
         ref={wrapperRef}
       >
-        {!selectedNode?.field && <PaintNodes disableOps />}
-        {selectedNode?.field && (
-          <TransformWrapper
-            ref={ref}
-            wheel={{ activationKeys: ['Control'] }}
-            centerOnInit={true}
-            initialScale={1}
-            maxScale={1.5}
-            minScale={0.3}
-            limitToBounds={false}
-            onZoom={(e) => {
-              setScaleFactor((Math.max(e.state.scale, 0.3) * 100).toFixed());
+        <TransformWrapper
+          ref={ref}
+          wheel={{ activationKeys: ['Control'] }}
+          centerOnInit={true}
+          initialScale={1}
+          maxScale={1.5}
+          minScale={0.3}
+          limitToBounds={false}
+          onZoom={(e) => {
+            setScaleFactor((Math.max(e.state.scale, 0.3) * 100).toFixed());
+          }}
+          panning={{
+            velocityDisabled: true,
+          }}
+          onPanningStart={() => setDraggingMode('grabbing')}
+          onPanningStop={() => setDraggingMode('grab')}
+        >
+          <TransformComponent
+            wrapperStyle={{
+              flex: 1,
+              height: '100%',
             }}
-            panning={{
-              velocityDisabled: true,
-            }}
-            onPanningStart={() => setDraggingMode('grabbing')}
-            onPanningStop={() => setDraggingMode('grab')}
           >
-            <TransformComponent
-              wrapperStyle={{
-                width: '100%',
-                height: '100%',
-              }}
-            >
-              <LinesDiagram mainRef={mainRef} />
-            </TransformComponent>
-          </TransformWrapper>
-        )}
+            <LinesDiagram
+              zoomPanPinch={zoomPanPinch}
+              nodes={typeNodes}
+              mainRef={mainRef}
+            />
+          </TransformComponent>
+        </TransformWrapper>
+        <NodeNavigation />
         {grafErrors && <ErrorContainer>{grafErrors}</ErrorContainer>}
       </Main>
     </Wrapper>

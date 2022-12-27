@@ -231,7 +231,6 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
           const type = schema.getType(typeName);
           if (type?.astNode?.loc) {
             const range = locToRange(type.astNode.loc);
-            editorRef?.setSelection(range);
             editorRef?.revealPositionInCenter(
               { column: 0, lineNumber: range.startLineNumber },
               0,
@@ -249,7 +248,6 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
 
               if (field?.astNode?.loc) {
                 const range = locToRange(field.astNode.loc);
-                editorRef?.setSelection(range);
                 editorRef?.revealPositionInCenter(
                   { column: 0, lineNumber: range.startLineNumber },
                   0,

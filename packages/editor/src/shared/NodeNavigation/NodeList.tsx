@@ -17,7 +17,9 @@ const NodeText = styled.a<{ active?: boolean }>`
   cursor: pointer;
   display: block;
   font-size: 14px;
+  border-left: ${({ theme }) => theme.inactive} 1px solid;
   padding: 8px 15px 8px 10px;
+  margin-left: 1rem;
   &:hover {
     color: ${({ theme }) => theme.active};
   }

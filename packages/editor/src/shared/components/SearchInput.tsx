@@ -9,7 +9,6 @@ interface MenuSearchProps {
   onClear: () => void;
   onSubmit: () => void;
   autoFocus?: boolean;
-  cypressName: string;
   placeholder?: string;
   icon?: 'search' | 'add';
 }
@@ -64,7 +63,6 @@ const XIconContainer = styled(IconContainerStyle)`
 export const SearchInput = React.forwardRef<HTMLInputElement, MenuSearchProps>(
   (
     {
-      cypressName,
       value,
       onChange,
       onClear,
@@ -76,7 +74,7 @@ export const SearchInput = React.forwardRef<HTMLInputElement, MenuSearchProps>(
     ref,
   ) => {
     return (
-      <Wrapper data-cy={cypressName}>
+      <Wrapper>
         <SearchIconContainer>
           {icon === 'search' && <Search width={18} height={18} />}
           {icon === 'add' && <Plus width={14} height={14} />}

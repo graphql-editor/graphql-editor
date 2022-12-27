@@ -1,5 +1,5 @@
 import { Draw } from './Draw';
-import { ParserField, getTypeName, compareParserFields } from 'graphql-js-tree';
+import { ParserField, getTypeName } from 'graphql-js-tree';
 import React, { useMemo } from 'react';
 import { useTheme } from '@/state/containers';
 import styled from '@emotion/styled';
@@ -15,6 +15,12 @@ const RelationsContainer = styled.svg`
   transform: translatez(0);
   margin: -20px;
   overflow: visible;
+  path {
+    pointer-events: stroke;
+    :hover {
+      stroke: ${({ theme }) => theme.text};
+    }
+  }
 `;
 
 export interface RelationPath {
@@ -28,14 +34,9 @@ interface LinesProps {
     | { to: RelationPath; from: RelationPath[]; fromLength: number }[]
     | undefined;
   selectedNode?: ParserField;
-  showAllPaths?: boolean;
 }
 
-export const Lines: React.FC<LinesProps> = ({
-  relations,
-  selectedNode,
-  showAllPaths,
-}) => {
+export const Lines: React.FC<LinesProps> = ({ relations, selectedNode }) => {
   const { theme } = useTheme();
 
   // For optimization purposes
@@ -48,37 +49,22 @@ export const Lines: React.FC<LinesProps> = ({
 
   const RelationSVGS = useMemo(() => {
     return relations?.map((r, index) => {
-      const usedToIndexes: number[] = [];
       return r.from?.map((rf, relationNumber) => {
-        if (!selectedNode) {
-          return null;
-        }
-        const comparator = compareParserFields(selectedNode);
-        const fromField = comparator(rf.field);
-        const toField = comparator(r.to.field);
         let portNumber = rf.index;
         const relationType = rf.connectingField.type.fieldType;
-        if (fromField) {
-          portNumber =
-            r.to.field.args?.findIndex(
-              (fa, argIndex) =>
-                getTypeName(fa.type.fieldType) === rf.field.name &&
-                !usedToIndexes.includes(argIndex),
-            ) || 0;
-          portNumber = portNumber === -1 ? 0 : portNumber;
-          usedToIndexes.push(portNumber);
+        if (selectedNode) {
+          if (
+            rf.field.id !== selectedNode.id &&
+            r.to.field.id !== selectedNode.id
+          ) {
+            return null;
+          }
         }
-        if (!showAllPaths && !fromField && !toField) return null;
         return (
           <Draw
             relationType={relationType}
-            active={fromField || toField}
-            inverse={fromField}
             relationNumber={relationNumber}
             color={(theme.colors as any)[getTypeName(rf.field.type.fieldType)]}
-            inActiveColor={
-              (theme.colors as any)[getTypeName(rf.field.type.fieldType)]
-            }
             key={`${index}-${rf.index}-${rf.field.name}`}
             from={rf.htmlNode}
             to={r.to.htmlNode}
@@ -88,6 +74,6 @@ export const Lines: React.FC<LinesProps> = ({
         );
       });
     });
-  }, [relationContent]);
+  }, [relationContent, selectedNode]);
   return <RelationsContainer>{RelationSVGS}</RelationsContainer>;
 };

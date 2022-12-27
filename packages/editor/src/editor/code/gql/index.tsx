@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { fontFamily } from '@/vars';
 import { useErrorsState, useTheme, useTreesState } from '@/state/containers';
-import { GraphQLEditorDomStructure } from '@/domStructure';
+
 import { SchemaEditorApi } from '@/editor/code/guild';
 import { settings, theme as MonacoTheme } from '@/editor/code/monaco';
 import { GqlSchemaEditor } from '@/editor/code/guild/editor/GqlSchemaEditor';
@@ -57,9 +57,7 @@ export const GqlCodePane = (props: GqlCodePaneProps) => {
   }, [errorRowNumber]);
 
   return (
-    <CodeContainer
-      data-cy={GraphQLEditorDomStructure.tree.elements.CodePane.name}
-    >
+    <CodeContainer>
       {theme && (
         <GqlSchemaEditor
           setGql={(e) => {

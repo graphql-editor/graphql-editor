@@ -13,7 +13,7 @@ import {
   VisualStateProvider,
   useLayoutState,
 } from '@/state/containers';
-import { GraphQLEditorDomStructure } from '@/domStructure';
+
 import { DiffEditor } from '@/DiffEditor';
 import { Relation } from '@/Relation/Relation';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
@@ -264,7 +264,6 @@ export const Editor = ({
 
   return (
     <Main
-      data-cy={GraphQLEditorDomStructure.tree.editor}
       onKeyDown={(e) => {
         if (e.key.toLowerCase() === 'f' && (e.metaKey || e.ctrlKey)) {
           e.preventDefault();
@@ -302,7 +301,6 @@ export const Editor = ({
         >
           <Sidebar
             className={!routes.pane ? 'full-screen-container' : undefined}
-            data-cy={GraphQLEditorDomStructure.tree.sidebar.name}
           >
             <CodePane
               size={!routes.pane ? 100000 : sidebarSize}

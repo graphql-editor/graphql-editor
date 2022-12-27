@@ -10,8 +10,8 @@ type ValuesType = {
 };
 
 const defaultValues: ValuesType = {
-  pane: 'diagram',
-  code: 'on' as 'on' | 'off',
+  pane: 'relation',
+  code: 'off' as 'on' | 'off',
   source: 'internal',
 };
 

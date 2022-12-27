@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { settings } from './monaco';
 import { fontFamily } from '@/vars';
 import { useErrorsState, useTheme, useTreesState } from '@/state/containers';
-import { GraphQLEditorDomStructure } from '@/domStructure';
+
 import { SchemaEditorApi, SchemaEditor } from '@/editor/code/guild';
 import { theme as MonacoTheme } from '@/editor/code/monaco';
 import { OperationType } from 'graphql-js-tree';
@@ -91,9 +91,7 @@ export const CodePane = (props: CodePaneProps) => {
     [fullScreen, tree, libraryTree, setSelectedNode],
   );
   return (
-    <CodeContainer
-      data-cy={GraphQLEditorDomStructure.tree.elements.CodePane.name}
-    >
+    <CodeContainer>
       {theme && (
         <SchemaEditor
           height="100%"

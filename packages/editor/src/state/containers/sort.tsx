@@ -31,7 +31,6 @@ const useSortStateContainer = createContainer(() => {
   const [orderTypes, setOrderTypes] = useState<OrderType[]>(defaultOrderTypes);
   const [isInit, setIsInit] = useState(true);
   const [isUserOrder, setIsUserOrder] = useState(false);
-  const [filterNodes, setFilterNodes] = useState('');
 
   const sortByTypes = (a: ParserField, b: ParserField) => {
     const bValue = orderTypes.find((t) => t.name === b.data.type)
@@ -94,8 +93,6 @@ const useSortStateContainer = createContainer(() => {
     isNodeBaseType,
     isUserOrder,
     setIsUserOrder,
-    filterNodes,
-    setFilterNodes,
   };
 });
 

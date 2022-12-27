@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { GqlCodePane } from './code';
 import { PassedSchema, Theming } from '@/Models';
 import { useTreesState, useTheme, useLayoutState } from '@/state/containers';
-import { GraphQLEditorDomStructure } from '@/domStructure';
+
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
 import styled from '@emotion/styled';
 
@@ -52,7 +52,6 @@ export const GqlEditor = ({
 
   return (
     <Main
-      data-cy={GraphQLEditorDomStructure.tree.editor}
       onKeyDown={(e) => {
         if (e.key.toLowerCase() === 'f' && (e.metaKey || e.ctrlKey)) {
           e.preventDefault();

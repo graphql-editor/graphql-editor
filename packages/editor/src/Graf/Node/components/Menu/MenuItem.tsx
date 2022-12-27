@@ -1,6 +1,6 @@
 import React from 'react';
 import { ParserField, getTypeName } from 'graphql-js-tree';
-import { GraphQLEditorDomStructure } from '@/domStructure';
+
 import styled from '@emotion/styled';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
 
@@ -32,13 +32,7 @@ const MenuItemText = styled.span<{ nodeType: NodeTypes }>`
 
 export const MenuItem: React.FC<MenuItemProps> = ({ node, onClick, name }) => {
   return (
-    <Main
-      onClick={onClick}
-      data-cy={
-        GraphQLEditorDomStructure.tree.elements.Graf.ActiveNode.TopNodeMenu
-          .searchableMenu.optionToSelect
-      }
-    >
+    <Main onClick={onClick}>
       <MenuItemText nodeType={getTypeName(node.type.fieldType) as NodeTypes}>
         {name || node.name}
       </MenuItemText>

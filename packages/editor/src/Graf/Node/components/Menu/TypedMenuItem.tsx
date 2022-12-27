@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { GraphQLEditorDomStructure } from '@/domStructure';
+
 import styled from '@emotion/styled';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
 
@@ -58,15 +58,7 @@ export const TypedMenuItem: React.FC<TypedMenuItemProps> = ({
   }, [selected]);
 
   return (
-    <Main
-      ref={ref}
-      isSelected={selected}
-      onClick={onClick}
-      data-cy={
-        GraphQLEditorDomStructure.tree.elements.Graf.ActiveNode.TopNodeMenu
-          .searchableMenu.optionToSelect
-      }
-    >
+    <Main ref={ref} isSelected={selected} onClick={onClick}>
       {name && <MenuItemName>{name}</MenuItemName>}
       <MenuItemType nodeType={dataType as NodeTypes}>{type}</MenuItemType>
     </Main>
