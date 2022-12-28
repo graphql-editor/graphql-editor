@@ -6,6 +6,7 @@ import { useTreesState } from '@/state/containers/trees';
 import { FieldProps as GrafFieldProps } from '@/Graf/Node/models';
 import styled from '@emotion/styled';
 import { RELATION_CONSTANTS } from '@/Relation/Lines/constants';
+import { Arrow } from '@/editor/icons';
 
 const Name = styled.div`
   font-size: ${FIELD_NAME_SIZE}px;
@@ -36,43 +37,25 @@ const Type = styled.div`
 `;
 
 type FieldProps = Pick<GrafFieldProps, 'node' | 'parentNodeTypeName'> & {
-  onClick: () => void;
   active?: boolean;
   isPrimitive?: boolean;
   showArgs?: boolean;
 };
 
-export const Field: React.FC<FieldProps> = ({
-  node,
-  onClick,
-  active,
-  showArgs,
-  isPrimitive,
-}) => {
-  const { parentTypes } = useTreesState();
-  const [drag, setDrag] = useState(false);
-  const [t, setT] = useState<ReturnType<typeof setTimeout>>();
+export const Field: React.FC<FieldProps> = ({ node, active, showArgs }) => {
+  const { parentTypes, selectFieldParent } = useTreesState();
+  const [expandedArgs, setExpandedArgs] = useState(false);
 
   return (
-    <Main
-      isActive={active}
-      onMouseDown={(e) => {
-        if (t) clearTimeout(t);
-        setDrag(false);
-      }}
-      onMouseMove={() =>
-        setT((oldT) => {
-          clearTimeout(oldT);
-          return setTimeout(() => setDrag(true), 30);
-        })
-      }
-      onMouseUp={(e) => {
-        if (drag) return;
-        if (active && !isPrimitive) {
-          setTimeout(onClick, 2);
-        }
-      }}
-    >
+    <Main isActive={active}>
+      {!!node.args.length && (
+        <OpenFields
+          expanded={expandedArgs}
+          onClick={() => setExpandedArgs(!expandedArgs)}
+        >
+          <Arrow size={14} />
+        </OpenFields>
+      )}
       <Name>
         <ActiveFieldName
           data={node.data}
@@ -83,7 +66,9 @@ export const Field: React.FC<FieldProps> = ({
       </Name>
       <Type>
         <ActiveType
-          onClick={() => {}}
+          onClick={() => {
+            active && selectFieldParent(node);
+          }}
           type={node.type}
           parentTypes={parentTypes}
         />
@@ -91,3 +76,12 @@ export const Field: React.FC<FieldProps> = ({
     </Main>
   );
 };
+
+const OpenFields = styled.div<{ expanded?: boolean }>`
+  position: absolute;
+  left: -1rem;
+  transform: translate(-100%);
+  svg {
+    rotate: ${({ expanded }) => (expanded ? '0' : '-90deg')};
+  }
+`;

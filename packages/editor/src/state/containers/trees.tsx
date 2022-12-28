@@ -1,5 +1,5 @@
 import { createContainer } from 'unstated-next';
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import {
   ParserTree,
   ParserField,
@@ -43,6 +43,10 @@ const useTreesStateContainer = createContainer(() => {
   useEffect(() => {
     updateScallars();
   }, [tree]);
+
+  const allNodes = useMemo(() => {
+    return tree.nodes.concat(libraryTree.nodes);
+  }, [libraryTree, tree]);
 
   const updateNode = (n: ParserField) => {
     const id = generateNodeId(n.name, n.data.type, n.args);
@@ -194,6 +198,19 @@ const useTreesStateContainer = createContainer(() => {
       );
     }
   };
+  const selectByTypeName = (typeName: string) => {
+    let n = allNodes.find((tn) => tn.name === typeName);
+    setSelectedNode(
+      n && {
+        field: n,
+        source: 'relation',
+      },
+    );
+  };
+  const selectFieldParent = (field: ParserField) => {
+    const fieldParentName = getTypeName(field.type.fieldType);
+    selectByTypeName(fieldParentName);
+  };
 
   return {
     tree,
@@ -217,6 +234,8 @@ const useTreesStateContainer = createContainer(() => {
     readonly,
     setReadonly,
     updateNode,
+    selectByTypeName,
+    selectFieldParent,
   };
 });
 

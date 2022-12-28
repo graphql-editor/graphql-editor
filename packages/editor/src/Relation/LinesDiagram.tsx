@@ -20,7 +20,7 @@ const Main = styled.div`
   align-items: flex-start;
   display: flex;
   padding: 20px;
-  gap: 10rem;
+  gap: 20rem;
   flex-wrap: nowrap;
   animation: show 1 0.5s ease-in-out;
   min-height: 100%;
@@ -38,6 +38,7 @@ const Main = styled.div`
 const NodePane = styled.div`
   align-self: center;
   flex-flow: column nowrap;
+  gap: 2rem;
   margin: auto;
   z-index: 1;
   font-size: 12px;

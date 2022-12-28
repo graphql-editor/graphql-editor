@@ -16,25 +16,58 @@ export const layerSort = (nodes: ParserField[]) => {
 };
 const resort = (nodes: ParserField[]) => {
   const pushNodesOut = (nds: ParserField[]): ParserField[][] => {
-    const copiedNodes = [...nds];
+    const fieldNames = nds.flatMap((n) => ({
+      n,
+      args: n.args.map((a) => getTypeName(a.type.fieldType)),
+    }));
+    const fields = fieldNames.reduce<Record<string, number>>((a, b) => {
+      b.args.map((arg) => {
+        a[arg] = (a[arg] || 0) + 1;
+      });
+      return a;
+    }, {});
     const filtered: ParserField[] = [];
-    nds.forEach((nd) => {
-      const args = nd.args.map((a) => getTypeName(a.type.fieldType));
-      args
-        .filter((a) => a !== nd.name)
-        .forEach((a) => {
-          const hasIndex = copiedNodes.findIndex((cn) => cn.name === a);
-          if (hasIndex > -1) {
-            filtered.push(copiedNodes.splice(hasIndex, 1)[0]);
-          }
-        });
+    const sortedEntries = Object.entries(fields).sort(([k1, v1], [k2, v2]) =>
+      v2 === v1 ? 0 : v2 > v1 ? 1 : -1,
+    );
+    const childrenFields: ParserField[] = [];
+    const powerFields: ParserField[] = [];
+    const entriesSet = Object.keys(fields);
+    sortedEntries.forEach(([f, power]) => {
+      const node = nds.find((nd) => nd.name === f);
+      if (node) {
+        const hasFieldsWithRelations = node.args.some((a) =>
+          entriesSet.includes(getTypeName(a.type.fieldType)),
+        );
+        if (!hasFieldsWithRelations) {
+          childrenFields.push(node);
+        } else if (power > 5) {
+          powerFields.push(node);
+        }
+        filtered.push(node);
+      }
     });
-
-    if (filtered.length === nds.length) return [nds];
+    if (filtered.length === nds.length) {
+      if (childrenFields.length) {
+        const childrenNames = childrenFields.map((f) => f.name);
+        const powerNames = powerFields.map((f) => f.name);
+        return [
+          nds.filter(
+            (n) =>
+              !childrenNames.includes(n.name) && !powerNames.includes(n.name),
+          ),
+          powerFields,
+          childrenFields,
+        ];
+      }
+      return [nds];
+    }
     if (filtered.length === 0) {
       return [nds];
     }
-    return [copiedNodes, ...pushNodesOut(filtered)];
+    const filteredNames = filtered.map((f) => f.name);
+    const base = nds.filter((n) => !filteredNames.includes(n.name));
+    return [base, ...pushNodesOut(filtered)];
   };
   return pushNodesOut(nodes);
 };

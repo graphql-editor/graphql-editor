@@ -2,8 +2,8 @@ import { createContainer } from 'unstated-next';
 import { useState } from 'react';
 
 const useRelationsContainer = createContainer(() => {
-  const [baseTypesOn, setBaseTypesOn] = useState(false);
-  const [enumsOn, setEnumsOn] = useState(false);
+  const [baseTypesOn, setBaseTypesOn] = useState(true);
+  const [enumsOn, setEnumsOn] = useState(true);
 
   return {
     setBaseTypesOn,

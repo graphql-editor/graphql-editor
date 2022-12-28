@@ -13,28 +13,32 @@ import { fontFamilySans } from '@/vars';
 import styled from '@emotion/styled';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
 import { NodeSearchFields } from '@/Relation/Node/NodeSearchFields';
+import { TopNodeMenu } from '@/Relation/Node/TopNodeMenu';
 
 type NodeTypes = keyof EditorTheme['colors'];
 
 interface ContentProps {
   nodeType: NodeTypes;
   isSelected?: boolean;
+  isRelated?: boolean;
   isLibrary?: boolean;
+  readOnly?: boolean;
   args: number;
 }
 
 const Content = styled.div<ContentProps>`
   background-color: ${({ theme }) => `${theme.background.mainFurther}ee`};
   padding: 12px;
+  position: relative;
   text-overflow: ellipsis;
   border-radius: 10px;
-  overflow: hidden;
   margin: 15px;
   transition: 0.25s all ease-in-out;
   z-index: 1;
   flex: 1 0 auto;
   font-family: ${fontFamilySans};
   font-size: 14px;
+  opacity: ${({ isRelated }) => (isRelated ? 1.0 : 0.5)};
   cursor: ${({ isSelected }) => (isSelected ? 'auto' : 'pointer')};
   border-width: 1px;
   border-style: ${({ isLibrary }) => (isLibrary ? 'dashed' : 'solid')};
@@ -81,6 +85,7 @@ const NameInRelation = styled.span`
 
 interface NodeProps {
   field: ParserField;
+  readOnly?: boolean;
   isLibrary?: boolean;
   enums?: boolean;
   setRef: (instance: HTMLDivElement) => void;
@@ -95,6 +100,7 @@ export const Node: React.FC<NodeProps> = ({
   enums,
   filteredFieldTypes,
   setFilteredFieldsTypes,
+  readOnly,
 }) => {
   const [drag, setDrag] = useState(false);
   const [t, setT] = useState<ReturnType<typeof setTimeout>>();
@@ -120,18 +126,6 @@ export const Node: React.FC<NodeProps> = ({
       <NodeRelationFields>
         {nodeArgs?.map((a) => (
           <Field
-            onClick={() => {
-              const allNodes = tree.nodes.concat(libraryTree.nodes);
-              let n = allNodes.find(
-                (tn) => tn.name === getTypeName(a.type.fieldType),
-              );
-              setSelectedNode(
-                n && {
-                  field: n,
-                  source: 'relation',
-                },
-              );
-            }}
             active={
               isNodeActive &&
               field.data.type !== TypeDefinition.EnumTypeDefinition
@@ -169,13 +163,25 @@ export const Node: React.FC<NodeProps> = ({
     ),
     [field, theme, selectedNode, enums, filteredFieldTypes],
   );
+  const isSelected = selectedNode?.field?.name === field.name;
 
   return (
     <Content
       args={
         selectedNode?.field?.name === field.name ? nodeArgs?.length || 0 : 0
       }
-      isSelected={selectedNode?.field?.name === field.name}
+      isRelated={
+        selectedNode?.field
+          ? isSelected ||
+            nodeArgs
+              .map((na) => getTypeName(na.type.fieldType))
+              .includes(selectedNode.field.name) ||
+            selectedNode?.field?.args
+              .map((a) => getTypeName(a.type.fieldType))
+              .includes(field.name)
+          : true
+      }
+      isSelected={isSelected}
       isLibrary={isLibrary}
       nodeType={getTypeName(field.type.fieldType) as NodeTypes}
       ref={(ref) => {
@@ -205,8 +211,30 @@ export const Node: React.FC<NodeProps> = ({
         });
       }}
     >
+      {isSelected && (
+        <TopMenuWrapper
+          onMouseDown={(e) => {
+            e.stopPropagation();
+          }}
+          onMouseMove={(e) => e.stopPropagation()}
+          onMouseUp={(e) => {
+            e.stopPropagation();
+          }}
+        >
+          <TopNodeMenu node={field} onDelete={() => {}} />
+        </TopMenuWrapper>
+      )}
       {NodeContent}
       {RelationFields}
     </Content>
   );
 };
+
+const TopMenuWrapper = styled.div`
+  position: absolute;
+  transform: translate(100%);
+  right: -0.2rem;
+  background-color: ${({ theme }) => theme.background.mainFurthest};
+  z-index: 2;
+  top: 0;
+`;
