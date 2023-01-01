@@ -148,7 +148,7 @@ type Query{
 
 export const App = () => {
   const [gql, setGql] = useState('');
-  return ( ||
+  return (
     <div
       style={{
         flex: 1,
