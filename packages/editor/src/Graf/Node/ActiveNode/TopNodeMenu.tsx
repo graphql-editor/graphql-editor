@@ -35,10 +35,9 @@ type PossibleMenus =
   | 'required';
 
 const NodeMenuContainer = styled.div`
-  position: absolute;
-  top: 35px;
+  position: fixed;
   z-index: 2;
-  right: 5px;
+  transform: translate(calc(50% + 7px), calc(50% + 21px));
 `;
 
 const NodeIconArea = styled.div`

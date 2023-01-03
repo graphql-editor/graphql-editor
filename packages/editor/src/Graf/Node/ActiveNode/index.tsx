@@ -46,6 +46,7 @@ const OpenedNode = styled.div`
   height: 100%;
   width: 100%;
   display: flex;
+  pointer-events: none;
 `;
 
 const MainNodeArea = styled.div`
@@ -78,11 +79,13 @@ const MainNodeArea = styled.div`
 const NodeContainer = styled.div`
   position: relative;
   break-inside: avoid;
-  height: 100%;
-  min-width: 300px;
-  background-color: ${({ theme }) => theme.background.mainMiddle};
+  min-width: 24rem;
+  background-color: ${({ theme }) => theme.background.mainFurther};
   display: flex;
   flex-flow: column nowrap;
+  border-radius: 1rem;
+  margin: 1rem;
+  pointer-events: all;
   box-shadow: ${({ theme }) => theme.background.mainFurther} 0 0 20px;
 `;
 
@@ -110,6 +113,7 @@ const DndContainer = styled.div`
 const GapBar = styled.div`
   width: 100%;
   height: 100%;
+  pointer-events: all;
   background-color: ${({ theme }) => theme.background.mainFurthest}99;
   transition: 0.25s background-color ease-in-out;
 
@@ -124,7 +128,6 @@ const NodeArea = styled.div`
   left: 20%;
   position: absolute;
   height: 100%;
-  box-shadow: ${({ theme }) => theme.background.mainFurthest} 0 0 20px;
 `;
 
 const EditableTitle: React.CSSProperties = {
@@ -472,9 +475,9 @@ export const ActiveNode: React.FC<NodeProps> = ({
               </DndContainer>
             );
           })}
-          <div style={{ marginBottom: 400 }} />
         </NodeFields>
       </MainNodeArea>
+      <div style={{ marginBottom: '1rem' }} />
     </NodeContainer>
   );
 };

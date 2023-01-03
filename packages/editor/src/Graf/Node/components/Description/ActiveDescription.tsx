@@ -3,7 +3,7 @@ import styled from '@emotion/styled';
 import { fontFamilySans } from '@/vars';
 
 const Main = styled.textarea`
-  background: ${({ theme }) => theme.background.mainFurther};
+  background: ${({ theme }) => theme.background.mainFurthest};
   color: ${({ theme }) => theme.text};
   padding: 10px;
   font-size: 12px;
@@ -11,8 +11,10 @@ const Main = styled.textarea`
   resize: none;
   outline: none;
   cursor: pointer;
-  margin: 5px;
-  border-radius: 5px;
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+  border-color: ${({ theme }) => theme.active};
+  border-width: 1px;
   font-family: ${fontFamilySans};
   &:focus {
     cursor: auto;

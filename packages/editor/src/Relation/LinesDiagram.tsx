@@ -58,7 +58,7 @@ export type FilteredFieldsTypesProps = {
 type LinesDiagramProps = {
   mainRef: React.RefObject<HTMLDivElement>;
   nodes: ParserField[];
-  isPanning?: boolean;
+  panState?: 'grabbing' | 'grab' | 'auto';
   zoomPanPinch?: (refs: Record<string, HTMLElement>) => void;
 };
 
@@ -73,7 +73,7 @@ const passScalars = (pass: boolean, scalars: string[]) => (n: ParserField) =>
 export const LinesDiagram: React.FC<LinesDiagramProps> = ({
   mainRef,
   nodes,
-  isPanning,
+  panState,
   zoomPanPinch,
 }) => {
   const { selectedNode, schemaType, libraryTree } = useTreesState();
@@ -107,7 +107,6 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
     const scalarTypes = nodes
       .filter((n) => n.data.type === TypeDefinition.ScalarTypeDefinition)
       .map((n) => n.name);
-    console.log(scalarTypes);
     const filterScalars = passScalars(baseTypesOn, scalarTypes);
 
     const togetherFiltered = nodes
@@ -193,7 +192,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
           <NodePane key={i}>
             {nodesArray.map((n) => (
               <Node
-                drag={isPanning}
+                panState={panState}
                 enums={enumsOn}
                 filteredFieldTypes={filteredFieldsTypes[n.id] || ''}
                 setFilteredFieldsTypes={(q) =>
@@ -223,6 +222,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
     relationDrawingNodes,
     relationDrawingNodesArray,
     routes.code,
+    panState,
   ]);
 
   return (

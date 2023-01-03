@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FIELD_NAME_SIZE, FIELD_TYPE_SIZE } from '@/Graf/constants';
 import { useTreesState } from '@/state/containers/trees';
 import { FieldProps as GrafFieldProps } from '@/Graf/Node/models';
 import styled from '@emotion/styled';
 import { RELATION_CONSTANTS } from '@/Relation/Lines/constants';
-import { NodeChangeFieldTypeMenu } from '@/shared/components/ContextMenu';
-import { TypeSystemDefinition, ValueDefinition } from 'graphql-js-tree';
+import { TypeSystemDefinition } from 'graphql-js-tree';
 import { ActiveType } from '@/Relation/Node/ActiveType';
 import { ActiveFieldName } from '@/Relation/Field/ActiveFieldName';
 
@@ -37,42 +36,20 @@ const Type = styled.div`
   margin-right: auto;
 `;
 
-type FieldProps = Pick<
-  GrafFieldProps,
-  'node' | 'parentNodeTypeName' | 'parentNode'
-> & {
+type FieldProps = Pick<GrafFieldProps, 'node'> & {
   active?: boolean;
   isPrimitive?: boolean;
   showArgs?: boolean;
   readOnly?: boolean;
-  index: number;
 };
 
-export const Field: React.FC<FieldProps> = ({
-  node,
-  active,
-  showArgs,
-  readOnly,
-  index,
-  parentNode,
-}) => {
-  console.log(node.name, active);
-  const { parentTypes, updateNode } = useTreesState();
-  const [menuOpen, setMenuOpen] = useState<'type' | 'options'>();
-  const isEnumValue = node.data.type === ValueDefinition.EnumValueDefinition;
+export const Field: React.FC<FieldProps> = ({ node, active, readOnly }) => {
+  const { parentTypes } = useTreesState();
   return (
     <Main isActive={active}>
       <Name>
         <ActiveFieldName
           active={active}
-          afterChange={
-            readOnly
-              ? undefined
-              : (newName) => {
-                  node.name = newName;
-                  updateNode(node);
-                }
-          }
           data={node.data}
           name={
             node.data.type !== TypeSystemDefinition.UnionMemberDefinition
@@ -84,34 +61,8 @@ export const Field: React.FC<FieldProps> = ({
         />
       </Name>
       <Type>
-        {!isEnumValue && (
-          <ActiveType
-            onClick={
-              !readOnly
-                ? () => setMenuOpen(menuOpen === 'type' ? undefined : 'type')
-                : undefined
-            }
-            type={node.type}
-            parentTypes={parentTypes}
-          />
-        )}
-        {active && menuOpen === 'type' && (
-          <TypeMenuContainer>
-            <NodeChangeFieldTypeMenu
-              node={parentNode}
-              fieldIndex={index}
-              hideMenu={() => {
-                setMenuOpen(undefined);
-              }}
-            />
-          </TypeMenuContainer>
-        )}
+        <ActiveType type={node.type} parentTypes={parentTypes} />
       </Type>
     </Main>
   );
 };
-
-const TypeMenuContainer = styled.div`
-  position: fixed;
-  z-index: 2;
-`;

@@ -12,7 +12,6 @@ import { fontFamilySans } from '@/vars';
 import styled from '@emotion/styled';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
 import { NodeSearchFields } from '@/Relation/Node/NodeSearchFields';
-import { TopNodeMenu } from '@/Relation/Node/TopNodeMenu';
 import { ActiveType } from '@/Relation/Node/ActiveType';
 
 type NodeTypes = keyof EditorTheme['colors'];
@@ -93,7 +92,7 @@ interface NodeProps {
   setRef: (instance: HTMLDivElement) => void;
   filteredFieldTypes: string;
   setFilteredFieldsTypes: (q: string) => void;
-  drag?: boolean;
+  panState?: 'grab' | 'auto' | 'grabbing';
 }
 
 export const Node: React.FC<NodeProps> = ({
@@ -104,7 +103,7 @@ export const Node: React.FC<NodeProps> = ({
   filteredFieldTypes,
   setFilteredFieldsTypes,
   readOnly,
-  drag,
+  panState,
 }) => {
   const { setSelectedNode, selectedNode, tree, libraryTree } = useTreesState();
   const isNodeActive =
@@ -128,8 +127,6 @@ export const Node: React.FC<NodeProps> = ({
       <NodeRelationFields>
         {nodeArgs?.map((a, i) => (
           <Field
-            index={i}
-            parentNode={field}
             active={
               isNodeActive &&
               field.data.type !== TypeDefinition.EnumTypeDefinition
@@ -137,7 +134,6 @@ export const Node: React.FC<NodeProps> = ({
             readOnly={readOnly}
             key={a.name}
             node={a}
-            parentNodeTypeName={getTypeName(field.type.fieldType)}
           />
         ))}
       </NodeRelationFields>
@@ -195,7 +191,8 @@ export const Node: React.FC<NodeProps> = ({
         }
       }}
       onClick={(e) => {
-        if (drag) return;
+        if (panState === 'grabbing') return;
+        e.stopPropagation();
         setSelectedNode({
           field: tree.nodes
             .concat(libraryTree.nodes)
@@ -206,30 +203,8 @@ export const Node: React.FC<NodeProps> = ({
         });
       }}
     >
-      {isSelected && (
-        <TopMenuWrapper
-          onMouseDown={(e) => {
-            e.stopPropagation();
-          }}
-          onMouseMove={(e) => e.stopPropagation()}
-          onMouseUp={(e) => {
-            e.stopPropagation();
-          }}
-        >
-          <TopNodeMenu node={field} onDelete={() => {}} />
-        </TopMenuWrapper>
-      )}
       {NodeContent}
       {RelationFields}
     </Content>
   );
 };
-
-const TopMenuWrapper = styled.div`
-  position: absolute;
-  transform: translate(-100%);
-  left: -0.2rem;
-  background-color: ${({ theme }) => theme.background.mainFurthest};
-  z-index: 2;
-  top: 0;
-`;

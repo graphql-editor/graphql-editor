@@ -188,8 +188,14 @@ export const Relation: React.FC = () => {
 
   const { selectedNode, tree, libraryTree, setSelectedNode } = useTreesState();
   const { grafErrors } = useErrorsState();
-  const { setBaseTypesOn, baseTypesOn, setEnumsOn, enumsOn } =
-    useRelationsState();
+  const {
+    setBaseTypesOn,
+    baseTypesOn,
+    setEnumsOn,
+    enumsOn,
+    editMode,
+    setEditMode,
+  } = useRelationsState();
 
   const [isLoading, setIsLoading] = useState(false);
   const [draggingMode, setDraggingMode] = useState<DragMode>('grab');
@@ -239,7 +245,7 @@ export const Relation: React.FC = () => {
           currentNode,
           ref.current.state.scale,
           300,
-          'easeOutQuint',
+          'easeInOutQuad',
         );
       }
     }
@@ -335,6 +341,11 @@ export const Relation: React.FC = () => {
           </IconWrapper>
           <TogglesWrapper>
             <Toggle
+              toggled={editMode}
+              label="edit mode"
+              onToggle={() => setEditMode(!editMode)}
+            />
+            <Toggle
               toggled={baseTypesOn}
               label="scalars"
               onToggle={() => setBaseTypesOn(!baseTypesOn)}
@@ -361,6 +372,7 @@ export const Relation: React.FC = () => {
         dragMode={selectedNode?.field ? draggingMode : 'auto'}
         ref={wrapperRef}
       >
+        {editMode && selectedNode?.field && <Graf node={selectedNode.field} />}
         <TransformWrapper
           ref={ref}
           wheel={{ activationKeys: ['Control'] }}
@@ -374,8 +386,9 @@ export const Relation: React.FC = () => {
           panning={{
             velocityDisabled: true,
           }}
-          onPanningStart={() => setDraggingMode('grabbing')}
-          onPanningStop={() => setDraggingMode('grab')}
+          onPanningStart={() => setDraggingMode('grab')}
+          onPanning={() => setDraggingMode('grabbing')}
+          onPanningStop={() => setTimeout(() => setDraggingMode('auto'), 1)}
         >
           <TransformComponent
             wrapperStyle={{
@@ -383,18 +396,30 @@ export const Relation: React.FC = () => {
               height: '100%',
             }}
           >
-            <LinesDiagram
-              zoomPanPinch={zoomPanPinch}
-              isPanning={draggingMode === 'grabbing'}
-              nodes={typeNodes}
-              mainRef={mainRef}
-            />
+            <Deselect
+              onMouseUp={() => {
+                console.log('Deselect', draggingMode);
+                if (draggingMode !== 'grabbing') {
+                  setSelectedNode({ source: 'relation', field: undefined });
+                }
+              }}
+            >
+              <LinesDiagram
+                zoomPanPinch={zoomPanPinch}
+                panState={draggingMode}
+                nodes={typeNodes}
+                mainRef={mainRef}
+              />
+            </Deselect>
           </TransformComponent>
         </TransformWrapper>
         <NodeNavigation />
         {grafErrors && <ErrorContainer>{grafErrors}</ErrorContainer>}
-        {selectedNode?.field && <Graf node={selectedNode.field} />}
       </Main>
     </Wrapper>
   );
 };
+const Deselect = styled.div`
+  height: 100%;
+  width: 100%;
+`;

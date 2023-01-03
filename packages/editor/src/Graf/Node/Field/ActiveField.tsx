@@ -22,7 +22,7 @@ import { FieldProps } from '@/Graf/Node/models';
 import { NodeFieldPortPlaceholder } from '@/Graf/Node';
 import styled from '@emotion/styled';
 import { ActiveType } from '@/Relation/Node/ActiveType';
-import { ActiveFieldName } from '@/Relation/Field/ActiveFieldName';
+import { ActiveGrafFieldName } from '@/Graf/Node/Field/ActiveGrafFieldName';
 
 const Name = styled.div`
   font-size: ${FIELD_NAME_SIZE};
@@ -37,10 +37,9 @@ const Type = styled.div`
 `;
 
 const OptionsMenuContainer = styled.div`
-  position: absolute;
-  top: 32px;
-  right: 5px;
+  position: fixed;
   z-index: 2;
+  transform: translate(calc(50%), calc(50% + 21px));
 `;
 
 const TypeMenuContainer = styled.div`
@@ -82,7 +81,7 @@ export const ActiveField: React.FC<FieldProps> = ({
         )}
       <Title>
         <Name>
-          <ActiveFieldName
+          <ActiveGrafFieldName
             afterChange={
               isLocked
                 ? undefined

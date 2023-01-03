@@ -23,37 +23,14 @@ export const ActiveFieldName: React.FC<
   if (args && args.length > 0) {
     return (
       <Main>
-        <EditableText
-          value={name}
-          onChange={active ? afterChange : undefined}
-        />
-        (
-        {afterChange &&
-          args.map((a, i) => (
-            <Indent key={a.name}>
-              <EditableText
-                onChange={
-                  active && afterChange
-                    ? (newName) => {
-                        args[i].name = newName;
-                        afterChange(name);
-                      }
-                    : undefined
-                }
-                value={a.name}
-              />
-              :<ActiveType type={a.type} parentTypes={parentTypes} />
-              {i < args.length - 1 && <span>,</span>}
-            </Indent>
-          ))}
-        {!afterChange &&
-          args.map((a, i) => (
-            <Indent key={a.name}>
-              <span>{a.name}</span>
-              :<ActiveType type={a.type} parentTypes={parentTypes} />
-              {i < args.length - 1 && <span>,</span>}
-            </Indent>
-          ))}
+        <EditableText value={name} />(
+        {args.map((a, i) => (
+          <Indent key={a.name}>
+            <span>{a.name}</span>
+            :<ActiveType type={a.type} parentTypes={parentTypes} />
+            {i < args.length - 1 && <span>,</span>}
+          </Indent>
+        ))}
         )
       </Main>
     );

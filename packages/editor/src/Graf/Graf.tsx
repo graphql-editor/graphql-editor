@@ -22,17 +22,18 @@ const SubNodeContainer = styled.div`
   left: 0;
   top: 0;
   position: absolute;
+  pointer-events: none;
   height: 100%;
 `;
 
 const SubNodeWrapper = styled.div`
   width: 100%;
-  background-color: ${({ theme }) => theme.background.mainBlack}99;
   bottom: 0;
   left: 0;
-  top: 60px;
+  top: 0;
   position: absolute;
   z-index: 2;
+  pointer-events: none;
 `;
 
 let snapLock = true;
@@ -101,14 +102,7 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
   }, [snapshots, tree, selectedNode, readonly]);
 
   return (
-    <SubNodeWrapper
-      onClick={() =>
-        setSelectedNode({
-          source: 'diagram',
-          field: undefined,
-        })
-      }
-    >
+    <SubNodeWrapper>
       <SubNodeContainer>
         <ActiveNode
           readonly={readonly}
