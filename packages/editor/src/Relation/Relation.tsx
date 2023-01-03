@@ -10,7 +10,6 @@ import { useTreesState } from '@/state/containers/trees';
 import { useErrorsState, useRelationsState } from '@/state/containers';
 import { Toggle } from '@/shared/components';
 import styled from '@emotion/styled';
-import { LinesDiagram } from '@/Relation/LinesDiagram';
 import { toPng } from 'html-to-image';
 import { Clear, Export, Eye } from '@/editor/icons';
 import * as vars from '@/vars';
@@ -23,6 +22,8 @@ import {
 import { Minus, Plus } from '@/shared/icons';
 import { TypeDefinition } from 'graphql-js-tree';
 import { NodeNavigation } from '@/shared/NodeNavigation';
+import { LinesDiagram } from '@/Relation/LinesDiagram';
+import { Graf } from '@/Graf/Graf';
 
 const Wrapper = styled.div`
   display: flex;
@@ -217,11 +218,8 @@ export const Relation: React.FC = () => {
         setIsLoading(false);
       });
   }, [mainRef]);
-  const zoomPanPinch = (
-    refs: Record<string, HTMLElement>,
-    refsLoaded: boolean,
-  ) => {
-    if (selectedNode?.field && ref.current && refsLoaded && refs) {
+  const zoomPanPinch = (refs: Record<string, HTMLElement>) => {
+    if (selectedNode?.field && ref.current && refs) {
       const currentNode = refs[selectedNode.field.id];
       if (currentNode) {
         const bb = currentNode.getBoundingClientRect();
@@ -366,7 +364,6 @@ export const Relation: React.FC = () => {
         <TransformWrapper
           ref={ref}
           wheel={{ activationKeys: ['Control'] }}
-          centerOnInit={true}
           initialScale={1}
           maxScale={1.5}
           minScale={0.3}
@@ -388,6 +385,7 @@ export const Relation: React.FC = () => {
           >
             <LinesDiagram
               zoomPanPinch={zoomPanPinch}
+              isPanning={draggingMode === 'grabbing'}
               nodes={typeNodes}
               mainRef={mainRef}
             />
@@ -395,6 +393,7 @@ export const Relation: React.FC = () => {
         </TransformWrapper>
         <NodeNavigation />
         {grafErrors && <ErrorContainer>{grafErrors}</ErrorContainer>}
+        {selectedNode?.field && <Graf node={selectedNode.field} />}
       </Main>
     </Wrapper>
   );

@@ -26,6 +26,7 @@ export const Draw = ({
   maxIndex,
   relationNumber,
   relationType,
+  onClick,
 }: {
   from?: HTMLDivElement;
   to?: HTMLDivElement;
@@ -34,6 +35,7 @@ export const Draw = ({
   maxIndex: number;
   relationNumber: number;
   relationType: FieldType;
+  onClick: () => void;
 }) => {
   const stroke = color;
   if (from && to) {
@@ -95,21 +97,29 @@ export const Draw = ({
       bezierWeight,
     );
     const isArray = isArrayType(relationType);
-    const fac = isArray ? 6 : 3;
+    const fac = isArray ? 7 : 4;
 
     return (
       <>
-        <path
-          stroke={stroke}
-          strokeWidth={fac}
-          strokeDasharray={
-            relationType.type === Options.required ? undefined : '5,5'
-          }
-          d={`M ${t.x} ${t.y}
+        <g onClick={onClick}>
+          <path
+            stroke={stroke}
+            strokeWidth={fac}
+            strokeDasharray={
+              relationType.type === Options.required ? undefined : '5,5'
+            }
+            d={`M ${t.x} ${t.y}
            Q ${bezier1.x} ${bezier1.y} ${center.x} ${center.y}
            Q ${bezier2.x} ${bezier2.y} ${f.x} ${f.y}`}
-        />
-        <circle fill={stroke} stroke={stroke} r={7} cx={f.x + 2} cy={f.y + 2} />
+          />
+          <circle
+            fill={stroke}
+            stroke={stroke}
+            r={7}
+            cx={f.x + 2}
+            cy={f.y + 2}
+          />
+        </g>
       </>
     );
   }

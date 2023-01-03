@@ -1,4 +1,3 @@
-import { ActiveType } from '@/Graf/Node/Type';
 import { useTheme, useTreesState } from '@/state/containers';
 import {
   ParserField,
@@ -6,7 +5,7 @@ import {
   getTypeName,
   compareParserFields,
 } from 'graphql-js-tree';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Field } from '../Field';
 import { FIELD_NAME_SIZE } from '@/Graf/constants';
 import { fontFamilySans } from '@/vars';
@@ -14,6 +13,7 @@ import styled from '@emotion/styled';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
 import { NodeSearchFields } from '@/Relation/Node/NodeSearchFields';
 import { TopNodeMenu } from '@/Relation/Node/TopNodeMenu';
+import { ActiveType } from '@/Relation/Node/ActiveType';
 
 type NodeTypes = keyof EditorTheme['colors'];
 
@@ -34,10 +34,12 @@ const Content = styled.div<ContentProps>`
   border-radius: 10px;
   margin: 15px;
   transition: 0.25s all ease-in-out;
+  pointer-events: all;
   z-index: 1;
   flex: 1 0 auto;
   font-family: ${fontFamilySans};
   font-size: 14px;
+  max-width: 66vw;
   opacity: ${({ isRelated }) => (isRelated ? 1.0 : 0.5)};
   cursor: ${({ isSelected }) => (isSelected ? 'auto' : 'pointer')};
   border-width: 1px;
@@ -91,6 +93,7 @@ interface NodeProps {
   setRef: (instance: HTMLDivElement) => void;
   filteredFieldTypes: string;
   setFilteredFieldsTypes: (q: string) => void;
+  drag?: boolean;
 }
 
 export const Node: React.FC<NodeProps> = ({
@@ -101,9 +104,8 @@ export const Node: React.FC<NodeProps> = ({
   filteredFieldTypes,
   setFilteredFieldsTypes,
   readOnly,
+  drag,
 }) => {
-  const [drag, setDrag] = useState(false);
-  const [t, setT] = useState<ReturnType<typeof setTimeout>>();
   const { setSelectedNode, selectedNode, tree, libraryTree } = useTreesState();
   const isNodeActive =
     !!selectedNode?.field && compareParserFields(field)(selectedNode?.field);
@@ -124,12 +126,15 @@ export const Node: React.FC<NodeProps> = ({
 
     return (
       <NodeRelationFields>
-        {nodeArgs?.map((a) => (
+        {nodeArgs?.map((a, i) => (
           <Field
+            index={i}
+            parentNode={field}
             active={
               isNodeActive &&
               field.data.type !== TypeDefinition.EnumTypeDefinition
             }
+            readOnly={readOnly}
             key={a.name}
             node={a}
             parentNodeTypeName={getTypeName(field.type.fieldType)}
@@ -189,17 +194,7 @@ export const Node: React.FC<NodeProps> = ({
           setRef(ref);
         }
       }}
-      onMouseDown={() => {
-        if (t) clearTimeout(t);
-        setDrag(false);
-      }}
-      onMouseMove={() =>
-        setT((oldT) => {
-          clearTimeout(oldT);
-          return setTimeout(() => setDrag(true), 30);
-        })
-      }
-      onMouseUp={(e) => {
+      onClick={(e) => {
         if (drag) return;
         setSelectedNode({
           field: tree.nodes
@@ -232,8 +227,8 @@ export const Node: React.FC<NodeProps> = ({
 
 const TopMenuWrapper = styled.div`
   position: absolute;
-  transform: translate(100%);
-  right: -0.2rem;
+  transform: translate(-100%);
+  left: -0.2rem;
   background-color: ${({ theme }) => theme.background.mainFurthest};
   z-index: 2;
   top: 0;

@@ -3,14 +3,12 @@ import { Menu } from './menu/Menu';
 import { CodePane } from './code';
 import { PassedSchema, Theming } from '@/Models';
 import { DynamicResize } from './code/Components';
-import { Graf } from '@/Graf/Graf';
 import { ParserTree } from 'graphql-js-tree';
 import { GraphQLEditorWorker } from 'graphql-editor-worker';
 import {
   useErrorsState,
   useTreesState,
   useTheme,
-  VisualStateProvider,
   useLayoutState,
 } from '@/state/containers';
 
@@ -319,18 +317,9 @@ export const Editor = ({
           </Sidebar>
         </DynamicResize>
       )}
-      {routes.pane === 'diagram' && (
-        <ErrorOuterContainer isOverflow>
-          <VisualStateProvider>
-            <Graf />
-          </VisualStateProvider>
-        </ErrorOuterContainer>
-      )}
       {routes.pane === 'relation' && (
         <ErrorOuterContainer>
-          <VisualStateProvider>
-            <Relation />
-          </VisualStateProvider>
+          <Relation />
         </ErrorOuterContainer>
       )}
       {routes.pane === 'docs' && (

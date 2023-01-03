@@ -1,6 +1,6 @@
 import React from 'react';
 import { ParserField } from 'graphql-js-tree';
-import { EditableText } from '@/Graf/Node/components';
+import { EditableText } from '@/Relation/Node/EditableText';
 export const ActiveArgumentName: React.FC<{
   afterChange: (newName: string) => void;
   node: ParserField;

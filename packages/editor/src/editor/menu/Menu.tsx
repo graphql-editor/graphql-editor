@@ -136,7 +136,7 @@ const BorderSpacer = styled.div`
 `;
 
 export type ActiveSource = 'diagram' | 'relation' | 'docs' | 'code' | 'routing';
-export type ActivePane = 'diagram' | 'diff' | 'relation' | 'docs';
+export type ActivePane = 'diff' | 'relation' | 'docs';
 export interface MenuProps {
   setToggleCode: (v: boolean) => void;
   toggleCode: boolean;
@@ -196,19 +196,6 @@ export const Menu = ({
         </MenuItem>
       )}
       <BorderSpacer />
-      {!excludePanes.includes('diagram') && (
-        <MenuItem
-          className={activePane === 'diagram' ? 'active' : ''}
-          onClick={activePaneToggle('diagram')}
-          data-tooltip="Creator"
-          data-tour="creator"
-          isCollapsed={isCollapsed}
-        >
-          <Icons.DiagramView size={22} />
-          <p>Creator</p>
-        </MenuItem>
-      )}
-
       {!excludePanes.includes('relation') && (
         <MenuItem
           className={activePane === 'relation' ? 'active' : ''}

@@ -12,17 +12,11 @@ import { ActiveField } from '@/Graf/Node/Field';
 import { ActiveDirective } from '@/Graf/Node/Directive';
 import { ActiveInputValue } from '@/Graf/Node/InputValue';
 import { DOM } from '@/Graf/DOM';
-import { ActiveType } from '@/Graf/Node/Type';
-import {
-  ActiveDescription,
-  NodeInterface,
-  EditableText,
-} from '@/Graf/Node/components';
+import { ActiveDescription, NodeInterface } from '@/Graf/Node/components';
 import { useTreesState } from '@/state/containers/trees';
 import { TopNodeMenu } from '@/Graf/Node/ActiveNode/TopNodeMenu';
 import { ChangeAllRelatedNodes, isExtensionNode } from '@/GraphQL/Resolve';
 import { ActiveArgument } from '@/Graf/Node/Argument';
-import { useVisualState } from '@/state/containers';
 
 import {
   dragLeaveHandler,
@@ -31,6 +25,8 @@ import {
 } from '@/shared/dnd';
 import styled from '@emotion/styled';
 import { NodeName, NodeTitle, NodeType } from '@/Graf/Node/SharedNode';
+import { ActiveType } from '@/Relation/Node/ActiveType';
+import { EditableText } from '@/Relation/Node/EditableText';
 
 interface NodeProps {
   node: ParserField;
@@ -159,7 +155,6 @@ export const ActiveNode: React.FC<NodeProps> = ({
     readonly,
     updateNode,
   } = useTreesState();
-  const { draggingAllowed } = useVisualState();
 
   const isLibrary = !!libraryTree.nodes.find(
     (lN) => lN.name === node.name && lN.data.type === node.data.type,
@@ -435,7 +430,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                 className={a.name === dragOverName ? `drag-over` : ''}
               >
                 <div
-                  draggable={draggingAllowed && !readonly}
+                  draggable={!readonly}
                   onDragStart={(e) => {
                     dragStartHandler(e, a.name);
                   }}

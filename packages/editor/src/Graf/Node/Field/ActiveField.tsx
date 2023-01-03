@@ -5,8 +5,6 @@ import {
   ValueDefinition,
 } from 'graphql-js-tree';
 import { FIELD_NAME_SIZE, FIELD_TYPE_SIZE } from '@/Graf/constants';
-import { ActiveFieldName } from './FieldName';
-import { ActiveType } from '@/Graf/Node/Type';
 import {
   NodeChangeFieldTypeMenu,
   NodeTypeOptionsMenu,
@@ -23,6 +21,8 @@ import {
 import { FieldProps } from '@/Graf/Node/models';
 import { NodeFieldPortPlaceholder } from '@/Graf/Node';
 import styled from '@emotion/styled';
+import { ActiveType } from '@/Relation/Node/ActiveType';
+import { ActiveFieldName } from '@/Relation/Field/ActiveFieldName';
 
 const Name = styled.div`
   font-size: ${FIELD_NAME_SIZE};

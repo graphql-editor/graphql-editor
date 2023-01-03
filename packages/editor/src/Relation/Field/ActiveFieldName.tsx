@@ -1,38 +1,39 @@
 import React from 'react';
 import { ParserField } from 'graphql-js-tree';
-import { ActiveType } from '@/Graf/Node/Type';
-import { EditableText } from '@/Graf/Node/components';
 import styled from '@emotion/styled';
+import { EditableText } from '@/Relation/Node/EditableText';
+import { ActiveType } from '@/Relation/Node/ActiveType';
 
 const Main = styled.div`
   display: flex;
   flex-flow: row nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 `;
 
 const Indent = styled.div`
   margin-left: 2px;
-  text-overflow: ellipsis;
-  overflow: hidden;
 `;
 
 export const ActiveFieldName: React.FC<
   Pick<ParserField, 'name' | 'args' | 'data'> & {
     afterChange?: (newName: string) => void;
     parentTypes?: Record<string, string>;
+    active?: boolean;
   }
-> = ({ args, data, name, afterChange, parentTypes }) => {
+> = ({ args, data, name, afterChange, parentTypes, active }) => {
   if (args && args.length > 0) {
     return (
       <Main>
-        <EditableText value={name} onChange={afterChange} />(
+        <EditableText
+          value={name}
+          onChange={active ? afterChange : undefined}
+        />
+        (
         {afterChange &&
           args.map((a, i) => (
             <Indent key={a.name}>
               <EditableText
                 onChange={
-                  afterChange
+                  active && afterChange
                     ? (newName) => {
                         args[i].name = newName;
                         afterChange(name);

@@ -17,13 +17,11 @@ const Input = styled.input`
 interface EditableDefaultValueProps {
   value: string;
   onChange?: (value: string) => void;
-  autoFocus?: boolean;
   style?: React.CSSProperties;
 }
 export const EditableDefaultValue: React.FC<EditableDefaultValueProps> = ({
   value,
   onChange,
-  autoFocus,
   style = {},
 }) => {
   const [editedValue, setEditedValue] = useState(value);

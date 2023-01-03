@@ -11,7 +11,15 @@ import {
   DetailMenuItem,
   Menu,
 } from '@/Graf/Node/components';
-import { More, Interface, Monkey, Plus, Tick, Arrq } from '@/shared/icons';
+import {
+  More,
+  Interface,
+  Monkey,
+  Plus,
+  Tick,
+  Arrq,
+  MoreValues,
+} from '@/shared/icons';
 import {
   NodeAddDirectiveMenu,
   NodeDirectiveOptionsMenu,
@@ -38,7 +46,8 @@ const NodeMenuContainer = styled.div`
   position: absolute;
   top: 0;
   z-index: 2;
-  left: 2.4rem;
+  transform: translate(-100%);
+  left: -0.2rem;
 `;
 
 const NodeIconArea = styled.div`
@@ -261,6 +270,9 @@ export const TopNodeMenu: React.FC<{
             </Menu>
           </NodeMenuContainer>
         )}
+      </NodeIconArea>
+      <NodeIconArea onClick={() => {}} title="Click to see node creator">
+        <MoreValues fill={theme.text} height={ICON_SIZE} width={ICON_SIZE} />
       </NodeIconArea>
     </>
   );

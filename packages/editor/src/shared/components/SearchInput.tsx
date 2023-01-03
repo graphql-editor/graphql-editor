@@ -8,7 +8,6 @@ interface MenuSearchProps {
   onChange: (v: string) => void;
   onClear: () => void;
   onSubmit: () => void;
-  autoFocus?: boolean;
   placeholder?: string;
   icon?: 'search' | 'add';
 }
@@ -67,7 +66,6 @@ export const SearchInput = React.forwardRef<HTMLInputElement, MenuSearchProps>(
       onChange,
       onClear,
       onSubmit,
-      autoFocus = true,
       placeholder = 'Search...',
       icon = 'search',
     },
@@ -86,7 +84,6 @@ export const SearchInput = React.forwardRef<HTMLInputElement, MenuSearchProps>(
         )}
         <Main
           ref={ref}
-          autoFocus={autoFocus}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               onSubmit();

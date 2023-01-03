@@ -20,7 +20,7 @@ const Main = styled.div`
   align-items: flex-start;
   display: flex;
   padding: 20px;
-  gap: 20rem;
+  gap: 4rem;
   flex-wrap: nowrap;
   animation: show 1 0.5s ease-in-out;
   min-height: 100%;
@@ -45,6 +45,7 @@ const NodePane = styled.div`
   align-items: flex-end;
   display: flex;
   padding: 10vh 0;
+  pointer-events: none;
 `;
 let tRefs: Record<string, HTMLDivElement> = {};
 let tRefsToLoad = 0;
@@ -57,10 +58,8 @@ export type FilteredFieldsTypesProps = {
 type LinesDiagramProps = {
   mainRef: React.RefObject<HTMLDivElement>;
   nodes: ParserField[];
-  zoomPanPinch?: (
-    refs: Record<string, HTMLElement>,
-    refsLoaded: boolean,
-  ) => void;
+  isPanning?: boolean;
+  zoomPanPinch?: (refs: Record<string, HTMLElement>) => void;
 };
 
 const passScalars = (pass: boolean, scalars: string[]) => (n: ParserField) =>
@@ -74,6 +73,7 @@ const passScalars = (pass: boolean, scalars: string[]) => (n: ParserField) =>
 export const LinesDiagram: React.FC<LinesDiagramProps> = ({
   mainRef,
   nodes,
+  isPanning,
   zoomPanPinch,
 }) => {
   const { selectedNode, schemaType, libraryTree } = useTreesState();
@@ -97,14 +97,17 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
     >();
 
   useEffect(() => {
-    zoomPanPinch?.(refs, refsLoaded);
-  }, [selectedNode, refsLoaded]);
+    if (refsLoaded) {
+      zoomPanPinch?.(refs);
+    }
+  }, [selectedNode?.field, refsLoaded]);
 
   useEffect(() => {
     setRefsLoaded(false);
     const scalarTypes = nodes
       .filter((n) => n.data.type === TypeDefinition.ScalarTypeDefinition)
       .map((n) => n.name);
+    console.log(scalarTypes);
     const filterScalars = passScalars(baseTypesOn, scalarTypes);
 
     const togetherFiltered = nodes
@@ -155,7 +158,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
   }, [refs, refsLoaded]);
 
   const SvgLinesContainer = useMemo(() => {
-    return <Lines relations={relations} selectedNode={selectedNode?.field} />;
+    return <Lines relations={relations} />;
   }, [relations, selectedNode]);
 
   useEffect(() => {
@@ -186,10 +189,11 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
     };
     return (
       <>
-        {relationDrawingNodes?.map((nodesArray) => (
-          <NodePane>
+        {relationDrawingNodes?.map((nodesArray, i) => (
+          <NodePane key={i}>
             {nodesArray.map((n) => (
               <Node
+                drag={isPanning}
                 enums={enumsOn}
                 filteredFieldTypes={filteredFieldsTypes[n.id] || ''}
                 setFilteredFieldsTypes={(q) =>

@@ -8,7 +8,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "ttsc --build tsconfig.build.json",
+    "build": "rimraf lib tsconfig.build.tsbuildinfo && ttsc --build tsconfig.build.json",
     "start": "ttsc --build tsconfig.build.json --watch",
     "test": "jest",
     "domTree": "tree src/domStructure/domStructure.treelang -f ts > src/domStructure/domStructure.ts",

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { getTypeName } from 'graphql-js-tree';
-import { ActiveType } from '@/Graf/Node/Type';
 import {
   NodeChangeFieldTypeMenu,
   NodeTypeOptionsMenu,
@@ -21,6 +20,7 @@ import { FieldProps } from '@/Graf/Node/models';
 import { FIELD_TYPE_SIZE } from '@/Graf/constants';
 import { NodeFieldPortPlaceholder } from '@/Graf/Node';
 import styled from '@emotion/styled';
+import { ActiveType } from '@/Relation/Node/ActiveType';
 
 const Name = styled.div`
   margin-right: 4px;

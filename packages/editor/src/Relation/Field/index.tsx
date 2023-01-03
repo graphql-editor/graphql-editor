@@ -1,24 +1,24 @@
 import React, { useState } from 'react';
 import { FIELD_NAME_SIZE, FIELD_TYPE_SIZE } from '@/Graf/constants';
-import { ActiveFieldName } from '@/Graf/Node/Field/FieldName';
-import { ActiveType } from '@/Graf/Node/Type';
 import { useTreesState } from '@/state/containers/trees';
 import { FieldProps as GrafFieldProps } from '@/Graf/Node/models';
 import styled from '@emotion/styled';
 import { RELATION_CONSTANTS } from '@/Relation/Lines/constants';
-import { Arrow } from '@/editor/icons';
+import { NodeChangeFieldTypeMenu } from '@/shared/components/ContextMenu';
+import { TypeSystemDefinition, ValueDefinition } from 'graphql-js-tree';
+import { ActiveType } from '@/Relation/Node/ActiveType';
+import { ActiveFieldName } from '@/Relation/Field/ActiveFieldName';
 
 const Name = styled.div`
   font-size: ${FIELD_NAME_SIZE}px;
-  margin-right: 30px;
   white-space: nowrap;
 `;
 
 const Main = styled.div<{ isActive?: boolean }>`
   position: relative;
   display: flex;
+  gap: 0.5rem;
   align-items: center;
-  justify-content: space-between;
   height: ${RELATION_CONSTANTS.FIELD_HEIGHT}px;
   padding: 0 12px;
   color: ${({ theme }) => theme.dimmed};
@@ -34,54 +34,84 @@ const Main = styled.div<{ isActive?: boolean }>`
 
 const Type = styled.div`
   font-size: ${FIELD_TYPE_SIZE}px;
+  margin-right: auto;
 `;
 
-type FieldProps = Pick<GrafFieldProps, 'node' | 'parentNodeTypeName'> & {
+type FieldProps = Pick<
+  GrafFieldProps,
+  'node' | 'parentNodeTypeName' | 'parentNode'
+> & {
   active?: boolean;
   isPrimitive?: boolean;
   showArgs?: boolean;
+  readOnly?: boolean;
+  index: number;
 };
 
-export const Field: React.FC<FieldProps> = ({ node, active, showArgs }) => {
-  const { parentTypes, selectFieldParent } = useTreesState();
-  const [expandedArgs, setExpandedArgs] = useState(false);
-
+export const Field: React.FC<FieldProps> = ({
+  node,
+  active,
+  showArgs,
+  readOnly,
+  index,
+  parentNode,
+}) => {
+  console.log(node.name, active);
+  const { parentTypes, updateNode } = useTreesState();
+  const [menuOpen, setMenuOpen] = useState<'type' | 'options'>();
+  const isEnumValue = node.data.type === ValueDefinition.EnumValueDefinition;
   return (
     <Main isActive={active}>
-      {!!node.args.length && (
-        <OpenFields
-          expanded={expandedArgs}
-          onClick={() => setExpandedArgs(!expandedArgs)}
-        >
-          <Arrow size={14} />
-        </OpenFields>
-      )}
       <Name>
         <ActiveFieldName
+          active={active}
+          afterChange={
+            readOnly
+              ? undefined
+              : (newName) => {
+                  node.name = newName;
+                  updateNode(node);
+                }
+          }
           data={node.data}
-          name={node.name}
-          args={showArgs ? node.args : []}
+          name={
+            node.data.type !== TypeSystemDefinition.UnionMemberDefinition
+              ? node.name
+              : ''
+          }
+          args={node.args}
           parentTypes={parentTypes}
         />
       </Name>
       <Type>
-        <ActiveType
-          onClick={() => {
-            active && selectFieldParent(node);
-          }}
-          type={node.type}
-          parentTypes={parentTypes}
-        />
+        {!isEnumValue && (
+          <ActiveType
+            onClick={
+              !readOnly
+                ? () => setMenuOpen(menuOpen === 'type' ? undefined : 'type')
+                : undefined
+            }
+            type={node.type}
+            parentTypes={parentTypes}
+          />
+        )}
+        {active && menuOpen === 'type' && (
+          <TypeMenuContainer>
+            <NodeChangeFieldTypeMenu
+              node={parentNode}
+              fieldIndex={index}
+              hideMenu={() => {
+                setMenuOpen(undefined);
+              }}
+            />
+          </TypeMenuContainer>
+        )}
       </Type>
     </Main>
   );
 };
 
-const OpenFields = styled.div<{ expanded?: boolean }>`
-  position: absolute;
-  left: -1rem;
-  transform: translate(-100%);
-  svg {
-    rotate: ${({ expanded }) => (expanded ? '0' : '-90deg')};
-  }
+const TypeMenuContainer = styled.div`
+  position: fixed;
+  z-index: 2;
 `;

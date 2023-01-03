@@ -1,7 +1,7 @@
 import { Draw } from './Draw';
 import { ParserField, getTypeName } from 'graphql-js-tree';
 import React, { useMemo } from 'react';
-import { useTheme } from '@/state/containers';
+import { useTheme, useTreesState } from '@/state/containers';
 import styled from '@emotion/styled';
 
 const RelationsContainer = styled.svg`
@@ -15,10 +15,17 @@ const RelationsContainer = styled.svg`
   transform: translatez(0);
   margin: -20px;
   overflow: visible;
-  path {
+  g {
     pointer-events: stroke;
     :hover {
-      stroke: ${({ theme }) => theme.text};
+      path {
+        cursor: pointer;
+        stroke: ${({ theme }) => theme.text};
+      }
+      circle {
+        fill: ${({ theme }) => theme.text};
+        cursor: pointer;
+      }
     }
   }
 `;
@@ -33,11 +40,11 @@ interface LinesProps {
   relations:
     | { to: RelationPath; from: RelationPath[]; fromLength: number }[]
     | undefined;
-  selectedNode?: ParserField;
 }
 
-export const Lines: React.FC<LinesProps> = ({ relations, selectedNode }) => {
+export const Lines: React.FC<LinesProps> = ({ relations }) => {
   const { theme } = useTheme();
+  const { selectedNode, setSelectedNode } = useTreesState();
 
   // For optimization purposes
   const relationContent = useMemo(() => {
@@ -52,14 +59,16 @@ export const Lines: React.FC<LinesProps> = ({ relations, selectedNode }) => {
       return r.from?.map((rf, relationNumber) => {
         let portNumber = rf.index;
         const relationType = rf.connectingField.type.fieldType;
-        if (selectedNode) {
+        if (selectedNode?.field) {
           if (
-            rf.field.id !== selectedNode.id &&
-            r.to.field.id !== selectedNode.id
+            rf.field.id !== selectedNode.field.id &&
+            r.to.field.id !== selectedNode.field.id
           ) {
             return null;
           }
         }
+        const clickRelation =
+          selectedNode?.field === rf.field ? r.to.field : rf.field;
         return (
           <Draw
             relationType={relationType}
@@ -68,6 +77,9 @@ export const Lines: React.FC<LinesProps> = ({ relations, selectedNode }) => {
             key={`${index}-${rf.index}-${rf.field.name}`}
             from={rf.htmlNode}
             to={r.to.htmlNode}
+            onClick={() =>
+              setSelectedNode({ source: 'relation', field: clickRelation })
+            }
             PortNumber={portNumber}
             maxIndex={r.from.length}
           />
