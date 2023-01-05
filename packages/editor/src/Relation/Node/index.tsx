@@ -12,7 +12,7 @@ import { fontFamilySans } from '@/vars';
 import styled from '@emotion/styled';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
 import { NodeSearchFields } from '@/Relation/Node/NodeSearchFields';
-import { ActiveType } from '@/Relation/Node/ActiveType';
+import { ActiveType } from '@/Relation/Field/ActiveType';
 
 type NodeTypes = keyof EditorTheme['colors'];
 
@@ -26,11 +26,11 @@ interface ContentProps {
 }
 
 const Content = styled.div<ContentProps>`
-  background-color: ${({ theme }) => `${theme.background.mainFurther}ee`};
+  background-color: ${({ theme }) => `${theme.background.mainFurther}`};
   padding: 12px;
   position: relative;
   text-overflow: ellipsis;
-  border-radius: 10px;
+  border-radius: 0.75rem;
   margin: 15px;
   transition: 0.25s all ease-in-out;
   pointer-events: all;
@@ -46,7 +46,7 @@ const Content = styled.div<ContentProps>`
   border-color: ${({ theme, nodeType, isSelected }) =>
     theme.colors[nodeType] && isSelected
       ? theme.colors[nodeType]
-      : `${theme.hover}00`};
+      : `${theme.background.mainMiddle}`};
   &:hover {
     border-color: ${({ theme, nodeType }) =>
       theme.colors[nodeType] ? theme.colors[nodeType] : `${theme.hover}00`};

@@ -4,7 +4,7 @@ import {
   TypeSystemDefinition,
   ValueDefinition,
 } from 'graphql-js-tree';
-import { FIELD_NAME_SIZE, FIELD_TYPE_SIZE } from '@/Graf/constants';
+import { GRAF_FIELD_NAME_SIZE, GRAF_FIELD_TYPE_SIZE } from '@/Graf/constants';
 import {
   NodeChangeFieldTypeMenu,
   NodeTypeOptionsMenu,
@@ -16,24 +16,22 @@ import {
   Menu,
   MenuScrollingArea,
   NodeFieldContainer,
-  Title,
 } from '@/Graf/Node/components';
 import { FieldProps } from '@/Graf/Node/models';
 import { NodeFieldPortPlaceholder } from '@/Graf/Node';
 import styled from '@emotion/styled';
-import { ActiveType } from '@/Relation/Node/ActiveType';
 import { ActiveGrafFieldName } from '@/Graf/Node/Field/ActiveGrafFieldName';
+import { ActiveGrafType } from '@/Graf/Node/Field/ActiveGrafType';
 
 const Name = styled.div`
-  font-size: ${FIELD_NAME_SIZE};
+  font-size: ${GRAF_FIELD_NAME_SIZE};
   margin-right: 4px;
-  overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 `;
 
 const Type = styled.div`
-  font-size: ${FIELD_TYPE_SIZE};
+  font-size: ${GRAF_FIELD_TYPE_SIZE};
 `;
 
 const OptionsMenuContainer = styled.div`
@@ -68,63 +66,62 @@ export const ActiveField: React.FC<FieldProps> = ({
     <NodeFieldContainer
       className={`${inputOpen || menuOpen || outputOpen ? 'Active' : ''}`}
     >
+      <Name>
+        <ActiveGrafFieldName
+          afterChange={
+            isLocked
+              ? undefined
+              : (newName) => {
+                  node.name = newName;
+                  updateNode(node);
+                }
+          }
+          data={node.data}
+          name={
+            node.data.type !== TypeSystemDefinition.UnionMemberDefinition
+              ? node.name
+              : ''
+          }
+          args={node.args}
+          parentTypes={parentTypes}
+        />
+      </Name>
+      <Type>
+        {!isEnumValue && (
+          <ActiveGrafType
+            onClick={
+              !readonly
+                ? () => setMenuOpen(menuOpen === 'type' ? undefined : 'type')
+                : undefined
+            }
+            type={node.type}
+            parentTypes={parentTypes}
+          />
+        )}
+        {menuOpen === 'type' && (
+          <TypeMenuContainer>
+            <NodeChangeFieldTypeMenu
+              node={parentNode}
+              fieldIndex={indexInParentNode}
+              hideMenu={() => {
+                setMenuOpen(undefined);
+              }}
+            />
+          </TypeMenuContainer>
+        )}
+      </Type>
+      <div style={{ marginLeft: 'auto' }} />
       {!inputDisabled &&
         node.data.type !== TypeSystemDefinition.UnionMemberDefinition && (
           <FieldPort
             onClick={onInputClick}
             open={inputOpen}
             info={{
-              message: 'Edit field arguments',
+              message: 'Field arguments and directives',
               placement: 'left',
             }}
           />
         )}
-      <Title>
-        <Name>
-          <ActiveGrafFieldName
-            afterChange={
-              isLocked
-                ? undefined
-                : (newName) => {
-                    node.name = newName;
-                    updateNode(node);
-                  }
-            }
-            data={node.data}
-            name={
-              node.data.type !== TypeSystemDefinition.UnionMemberDefinition
-                ? node.name
-                : ''
-            }
-            args={node.args}
-            parentTypes={parentTypes}
-          />
-        </Name>
-        <Type>
-          {!isEnumValue && (
-            <ActiveType
-              onClick={
-                !readonly
-                  ? () => setMenuOpen(menuOpen === 'type' ? undefined : 'type')
-                  : undefined
-              }
-              type={node.type}
-              parentTypes={parentTypes}
-            />
-          )}
-          {menuOpen === 'type' && (
-            <TypeMenuContainer>
-              <NodeChangeFieldTypeMenu
-                node={parentNode}
-                fieldIndex={indexInParentNode}
-                hideMenu={() => {
-                  setMenuOpen(undefined);
-                }}
-              />
-            </TypeMenuContainer>
-          )}
-        </Type>
-      </Title>
       {!isLocked && (
         <FieldPort
           icons={{ closed: 'More', open: 'More' }}

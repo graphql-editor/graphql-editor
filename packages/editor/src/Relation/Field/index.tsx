@@ -1,17 +1,11 @@
 import React from 'react';
-import { FIELD_NAME_SIZE, FIELD_TYPE_SIZE } from '@/Graf/constants';
 import { useTreesState } from '@/state/containers/trees';
 import { FieldProps as GrafFieldProps } from '@/Graf/Node/models';
 import styled from '@emotion/styled';
 import { RELATION_CONSTANTS } from '@/Relation/Lines/constants';
 import { TypeSystemDefinition } from 'graphql-js-tree';
-import { ActiveType } from '@/Relation/Node/ActiveType';
 import { ActiveFieldName } from '@/Relation/Field/ActiveFieldName';
-
-const Name = styled.div`
-  font-size: ${FIELD_NAME_SIZE}px;
-  white-space: nowrap;
-`;
+import { ActiveType } from '@/Relation/Field/ActiveType';
 
 const Main = styled.div<{ isActive?: boolean }>`
   position: relative;
@@ -31,11 +25,6 @@ const Main = styled.div<{ isActive?: boolean }>`
   }
 `;
 
-const Type = styled.div`
-  font-size: ${FIELD_TYPE_SIZE}px;
-  margin-right: auto;
-`;
-
 type FieldProps = Pick<GrafFieldProps, 'node'> & {
   active?: boolean;
   isPrimitive?: boolean;
@@ -47,22 +36,18 @@ export const Field: React.FC<FieldProps> = ({ node, active, readOnly }) => {
   const { parentTypes } = useTreesState();
   return (
     <Main isActive={active}>
-      <Name>
-        <ActiveFieldName
-          active={active}
-          data={node.data}
-          name={
-            node.data.type !== TypeSystemDefinition.UnionMemberDefinition
-              ? node.name
-              : ''
-          }
-          args={node.args}
-          parentTypes={parentTypes}
-        />
-      </Name>
-      <Type>
-        <ActiveType type={node.type} parentTypes={parentTypes} />
-      </Type>
+      <ActiveFieldName
+        active={active}
+        data={node.data}
+        name={
+          node.data.type !== TypeSystemDefinition.UnionMemberDefinition
+            ? node.name
+            : ''
+        }
+        args={node.args}
+        parentTypes={parentTypes}
+      />
+      <ActiveType type={node.type} parentTypes={parentTypes} />
     </Main>
   );
 };

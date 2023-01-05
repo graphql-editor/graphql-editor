@@ -25,12 +25,12 @@ export const NodeAddDirectiveMenu: React.FC<NodeAddDirectiveMenuProps> = ({
   node,
   hideMenu,
 }) => {
-  const { tree, libraryTree, setTree } = useTreesState();
+  const { tree, libraryTree, setTree, allNodes } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const creationNodes = useMemo(
-    () => ResolveDirectives(node, tree.nodes.concat(libraryTree.nodes)) || [],
-    [tree.nodes, libraryTree.nodes],
+    () => ResolveDirectives(node, allNodes) || [],
+    [allNodes],
   );
   const filteredNodes = useMemo(
     () => sortNodes(menuSearchValue, creationNodes),

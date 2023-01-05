@@ -7,6 +7,7 @@ const Main = styled.div`
   align-items: center;
   color: ${({ theme }) => theme.text};
   margin: 0;
+  padding-left: 1rem;
   transition: background-color 0.25s ease-in-out;
 
   .opener-icon {
@@ -19,7 +20,6 @@ const Main = styled.div`
     background-color: ${({ theme }) => theme.background.mainClose};
   }
   &:hover .node-field-port {
-    background-color: ${({ theme }) => theme.background.mainFurther}88;
     .opener-icon {
       opacity: 0.5;
 

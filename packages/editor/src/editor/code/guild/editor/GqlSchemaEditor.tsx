@@ -4,7 +4,7 @@ import type * as monaco from 'monaco-editor';
 import { EnrichedLanguageService } from './EnrichedLanguageService';
 import { GraphQLError, GraphQLSchema } from 'graphql';
 import { SchemaServicesOptions } from './use-schema-services';
-import { useErrorsState, useTheme, useTreesState } from '@/state/containers';
+import { useErrorsState, useTheme } from '@/state/containers';
 import { theme as MonacoTheme } from '@/editor/code/monaco';
 import { findCurrentNodeName } from '@/editor/code/guild/editor/onCursor';
 import { useGqlServices } from '@/editor/code/guild/editor/use-gql-services';
@@ -35,7 +35,6 @@ function BaseGqlEditor(
     editorRef,
     onValidate,
   } = useGqlServices(props);
-  const { schemaType } = useTreesState();
   const { lockCode, grafEditorErrors, setErrorNodeNames, grafErrorSchema } =
     useErrorsState();
 
@@ -66,7 +65,7 @@ function BaseGqlEditor(
   useEffect(() => {
     if (editorRef)
       editorRef?.revealPositionInCenter({ column: 0, lineNumber: 0 });
-  }, [editorRef, schemaType]);
+  }, [editorRef]);
 
   const { theme } = useTheme();
 

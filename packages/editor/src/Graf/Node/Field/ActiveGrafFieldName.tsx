@@ -1,8 +1,8 @@
 import React from 'react';
 import { ParserField } from 'graphql-js-tree';
 import styled from '@emotion/styled';
-import { EditableText } from '@/Relation/Node/EditableText';
-import { ActiveType } from '@/Relation/Node/ActiveType';
+import { EditableText } from '@/Graf/Node/Field/EditableText';
+import { ActiveGrafType } from '@/Graf/Node/Field/ActiveGrafType';
 
 const Main = styled.div`
   display: flex;
@@ -42,7 +42,7 @@ export const ActiveGrafFieldName: React.FC<
                 }
                 value={a.name}
               />
-              :<ActiveType type={a.type} parentTypes={parentTypes} />
+              :<ActiveGrafType type={a.type} parentTypes={parentTypes} />
               {i < args.length - 1 && <span>,</span>}
             </Indent>
           ))}
@@ -50,7 +50,7 @@ export const ActiveGrafFieldName: React.FC<
           args.map((a, i) => (
             <Indent key={a.name}>
               <span>{a.name}</span>
-              :<ActiveType type={a.type} parentTypes={parentTypes} />
+              :<ActiveGrafType type={a.type} parentTypes={parentTypes} />
               {i < args.length - 1 && <span>,</span>}
             </Indent>
           ))}

@@ -17,16 +17,3 @@ export const compileScalarTypes = (type: ParserField['type']) => {
   }
   return typeName;
 };
-
-export const enrichWithScalarColors = <T extends { scalar: string }>(
-  dict: T,
-) => {
-  return {
-    ...dict,
-    [ScalarTypes.Boolean]: dict.scalar,
-    [ScalarTypes.Float]: dict.scalar,
-    [ScalarTypes.ID]: dict.scalar,
-    [ScalarTypes.Int]: dict.scalar,
-    [ScalarTypes.String]: dict.scalar,
-  };
-};

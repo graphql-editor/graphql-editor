@@ -37,7 +37,7 @@ export const GqlEditor = ({
 }: GqlEditorProps) => {
   const { setTheme } = useTheme();
 
-  const { setReadonly, schemaType, readonly } = useTreesState();
+  const { setReadonly, readonly } = useTreesState();
   const { sidebarSize } = useLayoutState();
 
   useEffect(() => {
@@ -48,7 +48,7 @@ export const GqlEditor = ({
 
   useEffect(() => {
     setReadonly(!!editorReadOnly);
-  }, [editorReadOnly, schemaType]);
+  }, [editorReadOnly]);
 
   return (
     <Main

@@ -22,29 +22,27 @@ interface ExtendNodeMenuProps {
 }
 
 export const ExtendNodeMenu: React.FC<ExtendNodeMenuProps> = ({ hideMenu }) => {
-  const { tree, setTree, libraryTree, setSelectedNode } = useTreesState();
+  const { tree, allNodes, setTree, setSelectedNode } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   const creationNodes = useMemo(
     () =>
-      tree.nodes
-        .concat(libraryTree.nodes)
-        .filter(
-          (a) =>
-            ![
-              TypeExtension.EnumTypeExtension,
-              TypeExtension.InputObjectTypeExtension,
-              TypeExtension.InterfaceTypeExtension,
-              TypeExtension.ObjectTypeExtension,
-              TypeExtension.ScalarTypeExtension,
-              TypeExtension.UnionTypeExtension,
-              TypeSystemDefinition.DirectiveDefinition,
-            ].find((o) => a.data.type === o),
-        ) || [],
-    [tree.nodes, libraryTree.nodes],
+      allNodes.filter(
+        (a) =>
+          ![
+            TypeExtension.EnumTypeExtension,
+            TypeExtension.InputObjectTypeExtension,
+            TypeExtension.InterfaceTypeExtension,
+            TypeExtension.ObjectTypeExtension,
+            TypeExtension.ScalarTypeExtension,
+            TypeExtension.UnionTypeExtension,
+            TypeSystemDefinition.DirectiveDefinition,
+          ].find((o) => a.data.type === o),
+      ) || [],
+    [allNodes],
   );
   const filteredNodes = useMemo(
     () => sortNodes(menuSearchValue, creationNodes),
-    [tree.nodes, libraryTree.nodes, menuSearchValue],
+    [allNodes, menuSearchValue],
   );
 
   const onClickFilteredNode = (f: ParserField) => {

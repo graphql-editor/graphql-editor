@@ -4,4 +4,3 @@ export * from './FieldPort';
 export * from './Menu';
 export * from './NodeFieldContainer';
 export * from './NodeInterface';
-export * from './Title';

@@ -1,8 +1,8 @@
 import React from 'react';
 import { ParserField } from 'graphql-js-tree';
 import styled from '@emotion/styled';
-import { EditableText } from '@/Relation/Node/EditableText';
-import { ActiveType } from '@/Relation/Node/ActiveType';
+import { FIELD_NAME_SIZE } from '@/Graf/constants';
+import { ActiveType } from '@/Relation/Field/ActiveType';
 
 const Main = styled.div`
   display: flex;
@@ -11,6 +11,10 @@ const Main = styled.div`
 
 const Indent = styled.div`
   margin-left: 2px;
+`;
+const Name = styled.div`
+  font-size: ${FIELD_NAME_SIZE};
+  color: ${({ theme }) => theme.text};
 `;
 
 export const ActiveFieldName: React.FC<
@@ -23,7 +27,7 @@ export const ActiveFieldName: React.FC<
   if (args && args.length > 0) {
     return (
       <Main>
-        <EditableText value={name} />(
+        <Name>{name}</Name>
         {args.map((a, i) => (
           <Indent key={a.name}>
             <span>{a.name}</span>
@@ -31,9 +35,8 @@ export const ActiveFieldName: React.FC<
             {i < args.length - 1 && <span>,</span>}
           </Indent>
         ))}
-        )
       </Main>
     );
   }
-  return <EditableText value={name} onChange={afterChange} />;
+  return <Name>{name}</Name>;
 };

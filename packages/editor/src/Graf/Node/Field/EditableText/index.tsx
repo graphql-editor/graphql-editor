@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { fontFamilySans } from '@/vars';
-import { FIELD_NAME_SIZE } from '@/Graf/constants';
 import styled from '@emotion/styled';
+import { GRAF_FIELD_NAME_SIZE } from '@/Graf/constants';
 
 const Input = styled.input<{ isError?: boolean }>`
   border: 0;
@@ -10,7 +10,7 @@ const Input = styled.input<{ isError?: boolean }>`
   min-width: auto;
   padding: 0;
   font-family: ${fontFamilySans};
-  font-size: ${FIELD_NAME_SIZE}px;
+  font-size: ${GRAF_FIELD_NAME_SIZE}px;
 `;
 
 export const EditableText: React.FC<{
@@ -85,5 +85,5 @@ const HiddenSpan = styled.span`
   padding: 0;
   font-family: ${fontFamilySans};
   position: absolute;
-  font-size: ${FIELD_NAME_SIZE}px;
+  font-size: ${GRAF_FIELD_NAME_SIZE}px;
 `;

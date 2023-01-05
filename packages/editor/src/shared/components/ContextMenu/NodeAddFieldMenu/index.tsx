@@ -23,7 +23,7 @@ export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({
   node,
   hideMenu,
 }) => {
-  const { tree, libraryTree, updateNode } = useTreesState();
+  const { allNodes, updateNode } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -34,12 +34,12 @@ export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({
   }, [menuSearchValue]);
 
   const creationNodes = useMemo(
-    () => ResolveCreateField(node, tree.nodes.concat(libraryTree.nodes)) || [],
-    [tree.nodes, libraryTree.nodes],
+    () => ResolveCreateField(node, allNodes) || [],
+    [allNodes],
   );
   const filteredNodes = useMemo(
     () => sortNodes(menuSearchValue, creationNodes),
-    [tree.nodes, libraryTree.nodes, menuSearchValue],
+    [creationNodes, menuSearchValue],
   );
 
   const fNLength = filteredNodes?.length || 1;

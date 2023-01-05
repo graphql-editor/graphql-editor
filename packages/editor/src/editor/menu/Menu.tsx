@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import * as Icons from '../icons';
 
-import { useTreesState } from '@/state/containers';
 import styled from '@emotion/styled';
 import { fontFamilySans } from '@/vars';
 import { CollapseArrow } from '@/editor/menu/CollapseArrow';
 
 const Sidebar = styled.div<{ isCollapsed: boolean }>`
-  background: ${({ theme }) => theme.background.mainFurthest};
+  background: ${({ theme }) => theme.background.mainFurther};
   color: ${({ theme }) => theme.disabled};
-  font-size: 12px;
   z-index: 4;
   border: 0 solid ${({ theme }) => theme.moduleSeparator};
   border-right-width: 2px;
@@ -154,7 +152,6 @@ export const Menu = ({
   excludePanes = [],
   sidebarExpanded,
 }: MenuProps) => {
-  const { libraryTree, switchSchema, schemaType } = useTreesState();
   const [isCollapsed, setIsCollapsed] = useState(
     sidebarExpanded === true ? false : true,
   );
@@ -179,22 +176,6 @@ export const Menu = ({
         </div>
         <p>Toggle Code</p>
       </MenuItem>
-      {libraryTree.nodes.length > 0 && (
-        <MenuItem
-          className={schemaType === 'library' ? 'toggle-active' : ''}
-          onClick={() => {
-            switchSchema();
-          }}
-          isCollapsed={isCollapsed}
-          data-tooltip="Library Schema"
-          data-tour="library-schema"
-        >
-          <div>
-            <Icons.Library size={22} />
-          </div>
-          <p>Library Schema</p>
-        </MenuItem>
-      )}
       <BorderSpacer />
       {!excludePanes.includes('relation') && (
         <MenuItem

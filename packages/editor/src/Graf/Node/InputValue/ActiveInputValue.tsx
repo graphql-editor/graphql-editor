@@ -12,15 +12,14 @@ import {
   Menu,
   MenuScrollingArea,
   NodeFieldContainer,
-  Title,
 } from '@/Graf/Node/components';
 import { ConvertValueNodeToString, placeStringInNode } from '@/GraphQL/Convert';
 import { useTreesState } from '@/state/containers/trees';
 import { FieldProps } from '@/Graf/Node/models';
-import { FIELD_TYPE_SIZE } from '@/Graf/constants';
+import { GRAF_FIELD_TYPE_SIZE } from '@/Graf/constants';
 import { NodeFieldPortPlaceholder } from '@/Graf/Node';
 import styled from '@emotion/styled';
-import { ActiveType } from '@/Relation/Node/ActiveType';
+import { ActiveGrafType } from '@/Graf/Node/Field/ActiveGrafType';
 
 const Name = styled.div`
   margin-right: 4px;
@@ -28,7 +27,7 @@ const Name = styled.div`
 `;
 
 const Type = styled.div`
-  font-size: ${FIELD_TYPE_SIZE};
+  font-size: ${GRAF_FIELD_TYPE_SIZE};
 `;
 
 const OptionsMenuContainer = styled.div`
@@ -64,66 +63,52 @@ export const ActiveInputValue: React.FC<FieldProps> = ({
     <NodeFieldContainer
       className={`${inputOpen || outputOpen || menuOpen ? 'Active' : ''}`}
     >
-      {!inputDisabled && !isLocked ? (
-        <FieldPort
-          onClick={onInputClick}
-          open={inputOpen}
-          info={{
-            message: 'Edit input value directives',
-            placement: 'left',
-          }}
-        />
-      ) : (
-        <NodeFieldPortPlaceholder />
-      )}
-      <Title>
-        <Name>
-          {isLocked && <span>{node.name}</span>}
-          {!isLocked && (
-            <ActiveInputValueName
-              afterChange={(newName) => {
-                node.name = newName;
-                updateNode(node);
-              }}
-              node={node}
-            />
-          )}
-        </Name>
-        <Type>
-          <ActiveType
-            onClick={() =>
-              !isLocked
-                ? setMenuOpen(menuOpen === 'type' ? undefined : 'type')
-                : undefined
-            }
-            type={node.type}
-            parentTypes={parentTypes}
+      <Name>
+        {isLocked && <span>{node.name}</span>}
+        {!isLocked && (
+          <ActiveInputValueName
+            afterChange={(newName) => {
+              node.name = newName;
+              updateNode(node);
+            }}
+            node={node}
           />
-          {menuOpen === 'type' && (
-            <TypeMenuContainer>
-              <NodeChangeFieldTypeMenu
-                node={parentNode}
-                fieldIndex={indexInParentNode}
-                hideMenu={() => {
-                  setMenuOpen(undefined);
-                }}
-              />
-            </TypeMenuContainer>
-          )}
-        </Type>
-        <EditableDefaultValue
-          value={ConvertValueNodeToString(node)}
-          style={{ fontSize: 10, marginLeft: 5 }}
-          onChange={
-            isLocked
-              ? undefined
-              : (v) => {
-                  node.args = [...(placeStringInNode({ v, node }) || [])];
-                  updateNode(node);
-                }
+        )}
+      </Name>
+      <Type>
+        <ActiveGrafType
+          onClick={() =>
+            !isLocked
+              ? setMenuOpen(menuOpen === 'type' ? undefined : 'type')
+              : undefined
           }
+          type={node.type}
+          parentTypes={parentTypes}
         />
-      </Title>
+        {menuOpen === 'type' && (
+          <TypeMenuContainer>
+            <NodeChangeFieldTypeMenu
+              node={parentNode}
+              fieldIndex={indexInParentNode}
+              hideMenu={() => {
+                setMenuOpen(undefined);
+              }}
+            />
+          </TypeMenuContainer>
+        )}
+      </Type>
+      <EditableDefaultValue
+        value={ConvertValueNodeToString(node)}
+        style={{ fontSize: 10, marginLeft: 5 }}
+        onChange={
+          isLocked
+            ? undefined
+            : (v) => {
+                node.args = [...(placeStringInNode({ v, node }) || [])];
+                updateNode(node);
+              }
+        }
+      />
       {!isLocked && (
         <FieldPort
           icons={{ closed: 'More', open: 'More' }}

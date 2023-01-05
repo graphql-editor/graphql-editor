@@ -21,18 +21,18 @@ import {
 } from '@pronestor/react-zoom-pan-pinch';
 import { Minus, Plus } from '@/shared/icons';
 import { TypeDefinition } from 'graphql-js-tree';
-import { NodeNavigation } from '@/shared/NodeNavigation';
 import { LinesDiagram } from '@/Relation/LinesDiagram';
 import { Graf } from '@/Graf/Graf';
 
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
+  position: relative;
   flex: 1;
   width: 100%;
   overflow: hidden;
   transition: ${vars.transition};
-  background: ${({ theme }) => theme.background.mainFurthest};
+  background: ${({ theme }) => theme.background.mainFurther};
 `;
 
 const ErrorContainer = styled.div`
@@ -48,7 +48,7 @@ const ErrorContainer = styled.div`
   font-family: ${fontFamily};
   letter-spacing: 1;
   color: ${({ theme }) => theme.text};
-  background-color: ${({ theme }) => theme.background.mainFurthest};
+  background-color: ${({ theme }) => theme.background.mainFurther};
   border: 1px solid ${({ theme }) => theme.error};
 `;
 
@@ -173,7 +173,7 @@ const Menu = styled.div`
 type DragMode = 'grab' | 'auto' | 'grabbing';
 
 const Main = styled.div<{ dragMode: DragMode }>`
-  height: calc(100% - 60px);
+  height: 100%;
   width: 100%;
   position: relative;
   display: flex;
@@ -186,7 +186,7 @@ export const Relation: React.FC = () => {
   const mainRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const { selectedNode, tree, libraryTree, setSelectedNode } = useTreesState();
+  const { selectedNode, allNodes, setSelectedNode } = useTreesState();
   const { grafErrors } = useErrorsState();
   const {
     setBaseTypesOn,
@@ -271,30 +271,26 @@ export const Relation: React.FC = () => {
   }, []);
 
   const typeNodes = useMemo(() => {
-    return tree.nodes
-      .concat(libraryTree.nodes)
-      .filter(
-        (n) =>
-          n.data.type === TypeDefinition.ObjectTypeDefinition ||
-          n.data.type === TypeDefinition.UnionTypeDefinition ||
-          n.data.type === TypeDefinition.InterfaceTypeDefinition,
-      );
-  }, [tree, libraryTree]);
+    return allNodes.filter(
+      (n) =>
+        n.data.type === TypeDefinition.ObjectTypeDefinition ||
+        n.data.type === TypeDefinition.UnionTypeDefinition ||
+        n.data.type === TypeDefinition.InterfaceTypeDefinition,
+    );
+  }, [allNodes]);
   const singleNodes = useMemo(() => {
-    return tree.nodes
-      .concat(libraryTree.nodes)
-      .filter(
-        (n) =>
-          n.data.type === TypeDefinition.InputObjectTypeDefinition ||
-          n.data.type === TypeDefinition.ScalarTypeDefinition ||
-          n.data.type === TypeDefinition.EnumTypeDefinition,
-      );
-  }, [tree, libraryTree]);
+    return allNodes.filter(
+      (n) =>
+        n.data.type === TypeDefinition.InputObjectTypeDefinition ||
+        n.data.type === TypeDefinition.ScalarTypeDefinition ||
+        n.data.type === TypeDefinition.EnumTypeDefinition,
+    );
+  }, [allNodes]);
   singleNodes;
   const step = 0.2;
   return (
     <Wrapper>
-      <TopBar heading="RELATION VIEW">
+      <TopBar>
         <Menu>
           {selectedNode?.field && (
             <IconWrapper
@@ -413,7 +409,6 @@ export const Relation: React.FC = () => {
             </Deselect>
           </TransformComponent>
         </TransformWrapper>
-        <NodeNavigation />
         {grafErrors && <ErrorContainer>{grafErrors}</ErrorContainer>}
       </Main>
     </Wrapper>

@@ -18,22 +18,21 @@ interface NodeImplementInterfacesMenuProps {
 export const NodeImplementInterfacesMenu: React.FC<
   NodeImplementInterfacesMenuProps
 > = ({ node, hideMenu }) => {
-  const { tree, libraryTree, updateNode } = useTreesState();
+  const { tree, allNodes, updateNode } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const creationNodes = useMemo(
     () =>
-      ResolveImplementInterface(
-        node,
-        tree.nodes.concat(libraryTree.nodes),
-      )?.filter((a) => !node.interfaces?.includes(a.name)) || [],
-    [tree.nodes, libraryTree.nodes],
+      ResolveImplementInterface(node, allNodes)?.filter(
+        (a) => !node.interfaces?.includes(a.name),
+      ) || [],
+    [allNodes],
   );
 
   const filteredNodes = useMemo(
     () => sortNodes(menuSearchValue, creationNodes),
-    [tree.nodes, libraryTree.nodes, menuSearchValue],
+    [creationNodes, menuSearchValue],
   );
 
   useEffect(() => {

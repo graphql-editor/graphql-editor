@@ -3,7 +3,6 @@ import styled from '@emotion/styled';
 export const NodeName = styled.div`
   margin-right: 10px;
   color: ${({ theme }) => theme.text};
-  font-size: 12px;
   padding: 5px 0 5px 10px;
   user-select: none;
 `;
@@ -19,7 +18,6 @@ export const NodeTitle = styled.div`
   display: flex;
   align-items: stretch;
   color: ${({ theme }) => theme.text};
-  font-size: 14px;
   padding: 5px 10px 5px 10px;
   user-select: none;
 `;

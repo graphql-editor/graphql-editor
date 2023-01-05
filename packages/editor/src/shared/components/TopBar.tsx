@@ -4,7 +4,6 @@ import React, { useEffect, useRef } from 'react';
 import { useErrorsState } from '@/state/containers';
 import { useTheme } from '@emotion/react';
 
-import { Heading } from '@/shared/components';
 import { useSortState } from '@/state/containers/sort';
 import { SortNodes } from '@/Graf/Node/components/SortNodes';
 import { KeyboardActions, useIO } from '@/shared/hooks/io';
@@ -13,13 +12,14 @@ import { Abc } from '@/editor/icons';
 const TopBarComponent = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   padding: 8px 25px 8px;
   height: 60px;
-  background-color: ${({ theme }) => theme.background.mainFar};
-  position: relative;
-  border-bottom: 1px solid ${({ theme }) => theme.disabled}36;
+  position: absolute;
+  z-index: 2;
+  width: 100%;
+  background-color: ${({ theme }) => theme.background.mainFurther}ee;
 `;
 const SortWrapper = styled.div`
   display: flex;
@@ -46,10 +46,7 @@ const AZContainer = styled.div`
   }
 `;
 
-export const TopBar: React.FC<{ heading: string }> = ({
-  children,
-  heading,
-}) => {
+export const TopBar: React.FC = ({ children }) => {
   const { lockGraf } = useErrorsState();
   const { setIsSortAlphabetically, setIsUserOrder } = useSortState();
   const { mount } = useIO();
@@ -66,7 +63,6 @@ export const TopBar: React.FC<{ heading: string }> = ({
   }, []);
   return (
     <TopBarComponent>
-      <Heading heading={heading} />
       {children}
       {!lockGraf && !children && (
         <SortWrapper>

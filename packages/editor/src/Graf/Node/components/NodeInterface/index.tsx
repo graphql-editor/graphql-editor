@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { X } from '@/shared/icons';
-import { useTheme } from '@/state/containers';
 import styled from '@emotion/styled';
+import { NodeImplementInterfacesMenu } from '@/shared/components/ContextMenu';
+import { ParserField } from 'graphql-js-tree';
+import { transition } from '@/vars';
 
 interface NodeInterfaceProps {
   onDelete: () => void;
@@ -9,16 +11,12 @@ interface NodeInterfaceProps {
 }
 
 const NodeInterfaceBlock = styled.div`
-  padding: 5px 10px;
-  background-color: ${({ theme }) => theme.background.mainFar};
+  padding: 0.25rem 0.5rem;
   color: ${({ theme }) => theme.colors.interface};
-  font-size: 10px;
-  border-radius: 4px;
+  font-size: 12px;
+  border-radius: 0.25rem;
   position: relative;
   cursor: pointer;
-  margin-right: 4px;
-  margin-bottom: 4px;
-
   svg {
     display: none;
     margin-left: 5px;
@@ -36,33 +34,11 @@ const NodeInterfaceBlock = styled.div`
   }
 `;
 
-const DeleteInterface = styled.div`
-  opacity: 0;
-  position: absolute;
-  pointer-events: none;
-  cursor: pointer;
-  top: -17px;
-  right: 0;
-  font-size: 8px;
-  width: 200px;
-  text-align: right;
-
-  &:hover {
-    opacity: 1;
-  }
-
-  svg {
-    fill: red;
-  }
-`;
-
 export const NodeInterface: React.FC<NodeInterfaceProps> = ({
   onDelete,
   children,
   isLocked,
 }) => {
-  const { theme } = useTheme();
-
   return (
     <NodeInterfaceBlock
       onClick={(e) => {
@@ -73,11 +49,63 @@ export const NodeInterface: React.FC<NodeInterfaceProps> = ({
         onDelete();
       }}
     >
-      {!isLocked && <DeleteInterface>Click to delete</DeleteInterface>}
-      <span>
-        {children}
-        {!isLocked && <X fill={theme.error} />}
-      </span>
+      {children}
+      {!isLocked && <X width={12} />}
     </NodeInterfaceBlock>
   );
 };
+
+interface CreateNodeInterfaceProps {
+  isLocked?: boolean;
+  node: ParserField;
+}
+const CreateNodeInterfaceBlock = styled.div`
+  padding: 0.25rem 0.5rem;
+  font-size: 12px;
+  color: ${({ theme }) => theme.disabled};
+  border-radius: 0.25rem;
+  position: relative;
+  cursor: pointer;
+  border: 1px dashed currentColor;
+  transition: ${transition};
+  svg {
+    fill: ${({ theme }) => theme.colors.interface};
+  }
+  :hover {
+    color: ${({ theme }) => theme.colors.interface};
+  }
+`;
+
+export const CreateNodeInterface: React.FC<CreateNodeInterfaceProps> = ({
+  node,
+  isLocked,
+}) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+  return (
+    <CreateNodeInterfaceBlock
+      onClick={(e) => {
+        if (isLocked) {
+          return;
+        }
+        e.stopPropagation();
+        setMenuOpen(true);
+      }}
+    >
+      Implement interface
+      {menuOpen && (
+        <NodeMenuContainer>
+          <NodeImplementInterfacesMenu
+            node={node}
+            hideMenu={() => setMenuOpen(false)}
+          />
+        </NodeMenuContainer>
+      )}
+    </CreateNodeInterfaceBlock>
+  );
+};
+
+const NodeMenuContainer = styled.div`
+  position: fixed;
+  z-index: 2;
+  transform: translate(-0.25rem, 0.5rem);
+`;

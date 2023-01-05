@@ -20,17 +20,17 @@ interface NodeChangeFieldTypeMenuProps {
 export const NodeChangeFieldTypeMenu: React.FC<
   NodeChangeFieldTypeMenuProps
 > = ({ node, fieldIndex, hideMenu }) => {
-  const { tree, libraryTree, updateNode } = useTreesState();
+  const { updateNode, allNodes } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const creationNodes = useMemo(
-    () => ResolveCreateField(node, tree.nodes.concat(libraryTree.nodes)) || [],
-    [tree.nodes, libraryTree.nodes],
+    () => ResolveCreateField(node, allNodes) || [],
+    [allNodes, node],
   );
   const filteredNodes = useMemo(
     () => sortNodes(menuSearchValue, creationNodes),
-    [tree.nodes, libraryTree.nodes, menuSearchValue],
+    [creationNodes, menuSearchValue],
   );
 
   useEffect(() => {

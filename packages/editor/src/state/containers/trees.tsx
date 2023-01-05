@@ -15,8 +15,6 @@ import { PassedSchema } from '@/Models';
 import { useErrorsState } from '@/state/containers';
 import { ActiveSource } from '@/editor/menu/Menu';
 
-type SchemaType = 'user' | 'library';
-
 type SelectedNode = {
   field?: ParserField;
   source: ActiveSource;
@@ -36,7 +34,6 @@ const useTreesStateContainer = createContainer(() => {
   const [selectedNode, setSelectedNode] = useState<SelectedNode>();
   const [readonly, setReadonly] = useState(false);
   const [scalars, setScalars] = useState(BuiltInScalars.map((a) => a.name));
-  const [schemaType, setSchemaType] = useState<SchemaType>('user');
 
   const { setLockGraf, setCodeErrors, transformCodeError } = useErrorsState();
 
@@ -47,6 +44,26 @@ const useTreesStateContainer = createContainer(() => {
   const allNodes = useMemo(() => {
     return tree.nodes.concat(libraryTree.nodes);
   }, [libraryTree, tree]);
+
+  const parentTypes = useMemo(
+    () => ({
+      ...allNodes.reduce(
+        (obj: Record<string, string>, item: ParserField) =>
+          Object.assign(obj, { [item.name]: getTypeName(item.type.fieldType) }),
+        {},
+      ),
+    }),
+    [allNodes],
+  );
+
+  const libraryNodeIds = useMemo(
+    () => libraryTree.nodes.map((n) => n.id),
+    [libraryTree],
+  );
+  const isLibrary = useCallback(
+    (id: string) => libraryNodeIds.includes(id),
+    [libraryNodeIds],
+  );
 
   const updateNode = (n: ParserField) => {
     const id = generateNodeId(n.name, n.data.type, n.args);
@@ -92,11 +109,6 @@ const useTreesStateContainer = createContainer(() => {
     setScalars((prevValue) => [...prevValue, ...ownScalars]);
   };
 
-  const switchSchema = () => {
-    setSelectedNode(undefined);
-    setSchemaType(schemaType === 'library' ? 'user' : 'library');
-  };
-
   const past = () => {
     const p = snapshots.pop();
     if (p) {
@@ -125,19 +137,6 @@ const useTreesStateContainer = createContainer(() => {
       }
     }
   }, [selectedNode]);
-
-  const parentTypes = {
-    ...tree.nodes.reduce(
-      (obj: Record<string, string>, item: ParserField) =>
-        Object.assign(obj, { [item.name]: getTypeName(item.type.fieldType) }),
-      {},
-    ),
-    ...libraryTree.nodes.reduce(
-      (obj: Record<string, string>, item: ParserField) =>
-        Object.assign(obj, { [item.name]: getTypeName(item.type.fieldType) }),
-      {},
-    ),
-  };
 
   const generateTreeFromSchema = async (schema: PassedSchema) => {
     if (!schema.code) {
@@ -171,21 +170,15 @@ const useTreesStateContainer = createContainer(() => {
           },
         );
       }
-      if (schemaType === 'user') {
-        await GraphQLEditorWorker.validate(schema.code, schema.libraries).then(
-          (errors) => {
-            const tranformedErrors = transformCodeError(errors);
-            setCodeErrors(tranformedErrors);
-            setLockGraf(
-              tranformedErrors
-                .map((e) => JSON.stringify(e, null, 4))
-                .join('\n'),
-            );
-          },
-        );
-      } else {
-        setLockGraf(undefined);
-      }
+      await GraphQLEditorWorker.validate(schema.code, schema.libraries).then(
+        (errors) => {
+          const tranformedErrors = transformCodeError(errors);
+          setCodeErrors(tranformedErrors);
+          setLockGraf(
+            tranformedErrors.map((e) => JSON.stringify(e, null, 4)).join('\n'),
+          );
+        },
+      );
     } catch (error) {
       await GraphQLEditorWorker.validate(schema.code, schema.libraries).then(
         (errors) => {
@@ -213,6 +206,7 @@ const useTreesStateContainer = createContainer(() => {
   };
 
   return {
+    allNodes,
     tree,
     setTree,
     libraryTree,
@@ -228,14 +222,13 @@ const useTreesStateContainer = createContainer(() => {
     relatedToSelected,
     parentTypes,
     scalars,
-    schemaType,
-    switchSchema,
     generateTreeFromSchema,
     readonly,
     setReadonly,
     updateNode,
     selectByTypeName,
     selectFieldParent,
+    isLibrary,
   };
 });
 

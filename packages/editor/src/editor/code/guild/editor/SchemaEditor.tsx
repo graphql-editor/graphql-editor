@@ -8,7 +8,7 @@ import {
   SchemaServicesOptions,
   useSchemaServices,
 } from './use-schema-services';
-import { useErrorsState, useTheme, useTreesState } from '@/state/containers';
+import { useErrorsState, useTheme } from '@/state/containers';
 import { theme as MonacoTheme } from '@/editor/code/monaco';
 import { findCurrentNodeName } from '@/editor/code/guild/editor/onCursor';
 
@@ -37,7 +37,6 @@ function BaseSchemaEditor(
     setSchema,
     onValidate,
   } = useSchemaServices(props);
-  const { schemaType } = useTreesState();
   const { lockCode, grafEditorErrors, setErrorNodeNames, grafErrorSchema } =
     useErrorsState();
 
@@ -68,7 +67,7 @@ function BaseSchemaEditor(
   useEffect(() => {
     if (editorRef)
       editorRef?.revealPositionInCenter({ column: 0, lineNumber: 0 });
-  }, [editorRef, schemaType]);
+  }, [editorRef]);
 
   const { theme } = useTheme();
 

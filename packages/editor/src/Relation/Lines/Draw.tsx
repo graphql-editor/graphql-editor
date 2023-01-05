@@ -97,7 +97,7 @@ export const Draw = ({
       bezierWeight,
     );
     const isArray = isArrayType(relationType);
-    const fac = isArray ? 7 : 4;
+    const fac = isArray ? 5 : 2;
 
     return (
       <>

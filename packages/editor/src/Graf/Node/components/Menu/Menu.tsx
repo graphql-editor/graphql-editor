@@ -9,7 +9,7 @@ const Wrapper = styled.div`
 `;
 
 const Content = styled.div`
-  background: ${({ theme }) => theme.background.mainFurther};
+  background: ${({ theme }) => theme.background.mainFar};
   border-radius: 4px;
   padding: 0;
   box-shadow: ${({ theme }) => theme.shadow};

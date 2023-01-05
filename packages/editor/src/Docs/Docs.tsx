@@ -1,6 +1,5 @@
 import { DocsElement } from '@/Docs/DocsElement';
 import { useIO, KeyboardActions } from '@/shared/hooks/io';
-import { NodeNavigation } from '@/shared/NodeNavigation';
 import { useTreesState } from '@/state/containers';
 import styled from '@emotion/styled';
 
@@ -19,7 +18,7 @@ const Wrapper = styled.div`
 const SelectedNodeWrapper = styled.div`
   flex: 1;
   overflow-y: auto;
-  background-color: ${({ theme }) => theme.background.mainFar};
+  background-color: ${({ theme }) => theme.background.mainFurther};
   overflow-x: hidden;
   height: 100%;
 `;
@@ -41,7 +40,6 @@ export const Docs = () => {
       <SelectedNodeWrapper>
         {selectedNode?.field && <DocsElement node={selectedNode.field} />}
       </SelectedNodeWrapper>
-      <NodeNavigation />
     </Wrapper>
   );
 };

@@ -20,6 +20,7 @@ import { useSortState } from '@/state/containers/sort';
 import styled from '@emotion/styled';
 import { useRouter, EditorRoutes } from '@/state/containers/router';
 import { ErrorsList } from '@/shared/errors/ErrorsList';
+import { NodeNavigation } from '@/shared/NodeNavigation';
 
 const Main = styled.div`
   display: flex;
@@ -114,13 +115,12 @@ export const Editor = ({
   } = useErrorsState();
   const {
     tree,
-    libraryTree,
+    allNodes,
     setTree,
     setSnapshots,
     setUndos,
     setLibraryTree,
     setReadonly,
-    schemaType,
     generateTreeFromSchema,
     selectedNode,
     setSelectedNode,
@@ -142,15 +142,13 @@ export const Editor = ({
       setSelectedNode(undefined);
       return;
     }
-    const field = tree.nodes
-      .concat(libraryTree.nodes)
-      .find((n) => n.id === routes.n);
+    const field = allNodes.find((n) => n.id === routes.n);
 
     setSelectedNode({
       source: 'routing',
       field,
     });
-  }, [tree, libraryTree, routes.n]);
+  }, [allNodes, routes.n]);
 
   useEffect(() => {
     isSortAlphabetically &&
@@ -167,12 +165,8 @@ export const Editor = ({
   }, [theme]);
 
   useEffect(() => {
-    if (schemaType === 'library') {
-      setReadonly(true);
-      return;
-    }
     setReadonly(!!editorReadOnly);
-  }, [editorReadOnly, schemaType]);
+  }, [editorReadOnly]);
 
   useEffect(() => {
     if (schema.libraries) {
@@ -305,13 +299,9 @@ export const Editor = ({
               onChange={(v) => {
                 setSchema({ ...schema, code: v, isTree: false });
               }}
-              schema={
-                schema.libraries && schemaType === 'library'
-                  ? schema.libraries
-                  : schema.code
-              }
+              schema={schema.code}
               fullScreen={!routes.pane}
-              libraries={schemaType === 'library' ? '' : schema.libraries}
+              libraries={schema.libraries}
               readonly={readonly}
             />
           </Sidebar>
@@ -320,11 +310,13 @@ export const Editor = ({
       {routes.pane === 'relation' && (
         <ErrorOuterContainer>
           <Relation />
+          <NodeNavigation />
         </ErrorOuterContainer>
       )}
       {routes.pane === 'docs' && (
         <ErrorOuterContainer>
           <Docs />
+          <NodeNavigation />
         </ErrorOuterContainer>
       )}
       {routes.pane === 'diff' && diffSchemas && (

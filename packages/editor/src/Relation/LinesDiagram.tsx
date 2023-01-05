@@ -76,7 +76,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
   panState,
   zoomPanPinch,
 }) => {
-  const { selectedNode, schemaType, libraryTree } = useTreesState();
+  const { selectedNode, libraryTree, isLibrary } = useTreesState();
   const { routes } = useRouter();
   const { baseTypesOn, enumsOn } = useRelationsState();
 
@@ -170,7 +170,6 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
     tRefsToLoad =
       relationDrawingNodes?.map((rdn) => rdn.length).reduce((a, b) => a + b) ||
       0;
-    const libraryNodeNames = libraryTree.nodes.map((l) => l.name);
 
     const setRef = (n: ParserField, ref: HTMLDivElement) => {
       if (tRefs[n.id]) return;
@@ -201,11 +200,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
                     [n.id]: q,
                   }))
                 }
-                isLibrary={
-                  schemaType === 'library'
-                    ? true
-                    : libraryNodeNames.includes(n.name)
-                }
+                isLibrary={isLibrary(n.id)}
                 key={n.id}
                 setRef={(ref) => {
                   setRef(n, ref);
@@ -218,7 +213,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
       </>
     );
   }, [
-    schemaType,
+    isLibrary,
     relationDrawingNodes,
     relationDrawingNodesArray,
     routes.code,

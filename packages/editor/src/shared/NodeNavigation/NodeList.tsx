@@ -5,11 +5,6 @@ import styled from '@emotion/styled';
 import { fontFamilySans } from '@/vars';
 import { Arrow } from '@/editor/icons';
 
-const List = styled.div`
-  text-align: left;
-  padding: 10px;
-`;
-
 const NodeText = styled.a<{ active?: boolean }>`
   font-family: ${fontFamilySans};
   font-weight: ${({ active }) => (active ? 'bold' : 'normal')};
@@ -18,7 +13,7 @@ const NodeText = styled.a<{ active?: boolean }>`
   display: block;
   font-size: 14px;
   border-left: ${({ theme }) => theme.inactive} 1px solid;
-  padding: 8px 15px 8px 10px;
+  padding: 0.5rem;
   margin-left: 1rem;
   &:hover {
     color: ${({ theme }) => theme.active};
@@ -77,7 +72,7 @@ export const NodeList: React.FC<NodeListI> = ({
   const open = expanded.includes(listTitle);
   const empty = !nodeList?.length;
   return (
-    <List>
+    <>
       <Title
         empty={empty}
         nodeInsideSelected={nodeInsideSelected}
@@ -106,6 +101,6 @@ export const NodeList: React.FC<NodeListI> = ({
             {node.name}
           </NodeText>
         ))}
-    </List>
+    </>
   );
 };

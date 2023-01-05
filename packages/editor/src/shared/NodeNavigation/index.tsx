@@ -24,8 +24,9 @@ const ListContainer = styled.div`
   overflow-y: scroll;
   overflow-x: hidden;
   background: ${({ theme }) => theme.background.mainFurther};
+  border-left: ${({ theme }) => theme.moduleSeparator} 2px solid;
   height: 100%;
-  width: 24rem;
+  width: 18rem;
 `;
 const SearchWrapper = styled.div`
   padding: 20px;
@@ -37,10 +38,19 @@ const SearchWrapper = styled.div`
 `;
 
 export const NodeNavigation = () => {
-  const { tree, libraryTree, schemaType } = useTreesState();
+  const { allNodes } = useTreesState();
   const { sortAlphabetically } = useSortState();
   const [q, setQ] = useState('');
-  const [listExpanded, setListExpanded] = useState<Array<string>>([]);
+  const [listExpanded, setListExpanded] = useState<Array<string>>([
+    'Types',
+    'Schema',
+    'Interface',
+    'Inputs',
+    'Enums',
+    'Scalars',
+    'Unions',
+    'Directives',
+  ]);
   const searchRef = useRef<HTMLInputElement>(null);
   const { mount } = useIO();
   useEffect(() => {
@@ -61,10 +71,6 @@ export const NodeNavigation = () => {
     const interfaceNodes: ParserField[] = [];
     const schemaNodes: ParserField[] = [];
     const directivesNodes: ParserField[] = [];
-    const allNodes =
-      schemaType === 'library'
-        ? [...libraryTree.nodes]
-        : [...tree.nodes, ...libraryTree.nodes];
     const filteredNodes = allNodes.filter((n) =>
       n.name.toLowerCase().includes(q.toLowerCase()),
     );
@@ -110,7 +116,7 @@ export const NodeNavigation = () => {
       schemaNodes,
       directivesNodes,
     };
-  }, [tree, libraryTree, schemaType, q]);
+  }, [allNodes, q]);
 
   return (
     <ListContainer>

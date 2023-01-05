@@ -16,16 +16,17 @@ const Main = styled.div`
   display: flex;
   width: 100%;
   flex-direction: column;
-  background-color: ${({ theme }) => theme.background.mainFurthest};
+  background-color: ${({ theme }) => theme.background.mainFurther};
 `;
 
 const TopBar = styled.div`
   display: flex;
   flex-direction: row;
-  margin: 20px 20px 0px;
+  padding: 1rem 1rem 0px;
   justify-content: space-between;
   align-items: center;
   position: relative;
+  border-bottom: 2px solid ${({ theme }) => theme.moduleSeparator};
 `;
 
 const Heading = styled.h1`
@@ -33,13 +34,6 @@ const Heading = styled.h1`
   font-weight: 500;
   color: ${({ theme }) => theme.inactive};
   font-family: ${fontFamilySans};
-`;
-
-const LineSpacer = styled.div`
-  width: 100%;
-  height: 0;
-  border-bottom: 1px solid ${({ theme }) => theme.disabled}36;
-  margin: 20px 0;
 `;
 
 const Selects = styled.div`
@@ -107,8 +101,6 @@ export const DiffEditor = ({ schemas }: DiffEditorProps) => {
           <Abc size={28} fill={isSortActive ? active : inactive} />
         </AZContainer>
       </TopBar>
-
-      <LineSpacer />
       <DiffEditorPane
         schema={
           isSortActive ? sortSchema(schemas[leftVersion]) : schemas[leftVersion]

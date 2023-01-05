@@ -5,20 +5,20 @@ import {
   ParserField,
   TypeSystemDefinition,
   Instances,
+  Options,
+  compileType,
 } from 'graphql-js-tree';
 import {
   MenuScrollingArea,
   DetailMenuItem,
   Menu,
 } from '@/Graf/Node/components';
-import { More, Interface, Monkey, Plus, Tick, Arrq } from '@/shared/icons';
+import { More, Monkey, Plus, Tick } from '@/shared/icons';
 import {
   NodeAddDirectiveMenu,
   NodeDirectiveOptionsMenu,
-  NodeImplementInterfacesMenu,
   NodeAddFieldMenu,
   NodeOperationsMenu,
-  NodeFieldsRequiredMenu,
 } from '@/shared/components/ContextMenu';
 import { useTreesState } from '@/state/containers/trees';
 
@@ -31,8 +31,7 @@ type PossibleMenus =
   | 'interface'
   | 'directive'
   | 'options'
-  | 'operations'
-  | 'required';
+  | 'operations';
 
 const NodeMenuContainer = styled.div`
   position: fixed;
@@ -63,7 +62,7 @@ export const TopNodeMenu: React.FC<{
   onDuplicate?: () => void;
   onInputCreate?: () => void;
 }> = ({ node, onDelete, onDuplicate, onInputCreate }) => {
-  const { setSelectedNode, scalars } = useTreesState();
+  const { scalars, tree, setTree } = useTreesState();
   const { theme } = useTheme();
 
   const [menuOpen, setMenuOpen] = useState<PossibleMenus>();
@@ -121,29 +120,6 @@ export const TopNodeMenu: React.FC<{
           </NodeIconArea>
         )}
 
-      {(node.data.type === TypeDefinition.ObjectTypeDefinition ||
-        node.data.type === TypeDefinition.InterfaceTypeDefinition) && (
-        <>
-          {/* TODO: Implement operations menu */}
-          <NodeIconArea
-            onClick={() => {
-              setMenuOpen('interface');
-            }}
-            title="Click to implement interface"
-          >
-            <Interface
-              fill={menuOpen === 'interface' ? theme.active : theme.text}
-              height={ICON_SIZE}
-              width={ICON_SIZE}
-            />
-            {menuOpen === 'interface' && (
-              <NodeMenuContainer>
-                <NodeImplementInterfacesMenu node={node} hideMenu={hideMenu} />
-              </NodeMenuContainer>
-            )}
-          </NodeIconArea>
-        </>
-      )}
       {node.data.type !== Instances.Directive && (
         <NodeIconArea
           onClick={() => {
@@ -168,25 +144,6 @@ export const TopNodeMenu: React.FC<{
                 <NodeDirectiveOptionsMenu node={node} hideMenu={hideMenu} />
               </NodeMenuContainer>
             )}
-        </NodeIconArea>
-      )}
-      {isRequiredMenuValid() && (
-        <NodeIconArea
-          onClick={() => {
-            setMenuOpen('required');
-          }}
-          title="Click to mark all fields as required/non-required"
-        >
-          <Arrq
-            fill={menuOpen === 'required' ? theme.active : theme.text}
-            height={ICON_SIZE}
-            width={ICON_SIZE}
-          />
-          {menuOpen === 'required' && (
-            <NodeMenuContainer>
-              <NodeFieldsRequiredMenu hideMenu={hideMenu} node={node} />
-            </NodeMenuContainer>
-          )}
         </NodeIconArea>
       )}
       {node.data.type === TypeDefinition.ObjectTypeDefinition && (
@@ -244,16 +201,52 @@ export const TopNodeMenu: React.FC<{
                       onInputCreate();
                     }}
                   >
-                    Create node input
+                    Create input from node
                   </DetailMenuItem>
                 )}
-                <DetailMenuItem
-                  onClick={() => {
-                    setSelectedNode(undefined);
-                  }}
-                >
-                  Deselect node
-                </DetailMenuItem>
+                {isRequiredMenuValid() && (
+                  <>
+                    <DetailMenuItem
+                      onClick={() => {
+                        node.args?.forEach((arg) => {
+                          if (arg.type.fieldType.type === Options.required) {
+                            arg.type.fieldType = {
+                              ...arg.type.fieldType.nest,
+                            };
+                          }
+                        });
+                        const idx = tree.nodes.findIndex(
+                          (n) => n.name === node.name,
+                        );
+                        tree.nodes.splice(idx, 1, node);
+                        setTree({ nodes: tree.nodes }, false);
+                      }}
+                    >
+                      Make all fields optional
+                    </DetailMenuItem>
+                    <DetailMenuItem
+                      onClick={() => {
+                        node.args?.forEach((arg) => {
+                          const argType = compileType(arg.type.fieldType);
+                          if (!argType.endsWith('!')) {
+                            arg.type.fieldType = {
+                              type: Options.required,
+                              nest: arg.type.fieldType,
+                            };
+                          }
+                        });
+
+                        const idx = tree.nodes.findIndex(
+                          (n) => n.name === node.name,
+                        );
+                        tree.nodes.splice(idx, 1, node);
+                        setTree({ nodes: tree.nodes }, false);
+                      }}
+                    >
+                      Make all fields required
+                    </DetailMenuItem>
+                  </>
+                )}
               </MenuScrollingArea>
             </Menu>
           </NodeMenuContainer>

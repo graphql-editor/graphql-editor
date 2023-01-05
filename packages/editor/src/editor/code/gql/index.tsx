@@ -26,7 +26,7 @@ export type GqlCodePaneProps = {
 export const GqlCodePane = (props: GqlCodePaneProps) => {
   const { schema, readonly, onChange, gql } = props;
   const { theme } = useTheme();
-  const { selectedNode, setSelectedNode, tree, libraryTree } = useTreesState();
+  const { selectedNode, setSelectedNode, allNodes } = useTreesState();
   const { lockCode, errorRowNumber } = useErrorsState();
 
   const ref: React.ForwardedRef<SchemaEditorApi> = React.createRef();
@@ -76,7 +76,6 @@ export const GqlCodePane = (props: GqlCodePaneProps) => {
           options={codeSettings}
           select={(e) => {
             if (e) {
-              const allNodes = tree.nodes.concat(libraryTree.nodes);
               const n = allNodes.find((an) => an.name === e);
               setSelectedNode(
                 n && {

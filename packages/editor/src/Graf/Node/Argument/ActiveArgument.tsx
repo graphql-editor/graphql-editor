@@ -14,7 +14,6 @@ import {
   Menu,
   MenuScrollingArea,
   NodeFieldContainer,
-  Title,
 } from '@/Graf/Node/components';
 import {
   ConvertValueToEditableString,
@@ -24,9 +23,10 @@ import { useTreesState } from '@/state/containers/trees';
 import { FieldProps } from '@/Graf/Node/models';
 import styled from '@emotion/styled';
 import { NodeFieldPortPlaceholder } from '@/Graf/Node';
+import { GRAF_FIELD_NAME_SIZE } from '@/Graf/constants';
 
 const Name = styled.div`
-  font-size: 10px;
+  font-size: ${GRAF_FIELD_NAME_SIZE}px;
   margin-right: 4px;
   overflow: hidden;
 `;
@@ -90,33 +90,31 @@ export const ActiveArgument: React.FC<FieldProps> = ({
       ) : (
         <NodeFieldPortPlaceholder />
       )}
-      <Title>
-        <Name>
-          {isLocked && <span>{node.name}</span>}
-          {!isLocked && (
-            <ActiveArgumentName
-              afterChange={(newName) => {
-                node.name = newName;
-                updateNode(node);
-              }}
-              node={node}
-            />
-          )}
-        </Name>
-        <EditableDefaultValue
-          value={resolveValueFromNode(node, parentNode)}
-          style={{ marginLeft: 5 }}
-          onChange={(v) => {
-            if (isLocked) return;
-            node.args =
-              placeStringInNode({
-                v,
-                node,
-              }) || [];
-            updateNode(node);
-          }}
-        />
-      </Title>
+      <Name>
+        {isLocked && <span>{node.name}</span>}
+        {!isLocked && (
+          <ActiveArgumentName
+            afterChange={(newName) => {
+              node.name = newName;
+              updateNode(node);
+            }}
+            node={node}
+          />
+        )}
+      </Name>
+      <EditableDefaultValue
+        value={resolveValueFromNode(node, parentNode)}
+        style={{ marginLeft: 5 }}
+        onChange={(v) => {
+          if (isLocked) return;
+          node.args =
+            placeStringInNode({
+              v,
+              node,
+            }) || [];
+          updateNode(node);
+        }}
+      />
       {!isLocked && node.data.type === TypeDefinition.InterfaceTypeDefinition && (
         <FieldPort
           icons={{ closed: 'More', open: 'More' }}

@@ -7,7 +7,6 @@ import {
   Menu,
   MenuScrollingArea,
   NodeFieldContainer,
-  Title,
 } from '@/Graf/Node/components';
 import { FieldProps } from '@/Graf/Node/models';
 import { NodeFieldPortPlaceholder } from '@/Graf/Node';
@@ -62,9 +61,7 @@ export const ActiveDirective: React.FC<FieldProps> = ({
       ) : (
         <NodeFieldPortPlaceholder />
       )}
-      <Title>
-        <Name>{ConvertValueToEditableString(node)}</Name>
-      </Title>
+      <Name>{ConvertValueToEditableString(node)}</Name>
       {!isLocked && (
         <FieldPort
           icons={{ closed: 'More', open: 'More' }}

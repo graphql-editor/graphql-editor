@@ -12,7 +12,11 @@ import { ActiveField } from '@/Graf/Node/Field';
 import { ActiveDirective } from '@/Graf/Node/Directive';
 import { ActiveInputValue } from '@/Graf/Node/InputValue';
 import { DOM } from '@/Graf/DOM';
-import { ActiveDescription, NodeInterface } from '@/Graf/Node/components';
+import {
+  ActiveDescription,
+  CreateNodeInterface,
+  NodeInterface,
+} from '@/Graf/Node/components';
 import { useTreesState } from '@/state/containers/trees';
 import { TopNodeMenu } from '@/Graf/Node/ActiveNode/TopNodeMenu';
 import { ChangeAllRelatedNodes, isExtensionNode } from '@/GraphQL/Resolve';
@@ -25,8 +29,8 @@ import {
 } from '@/shared/dnd';
 import styled from '@emotion/styled';
 import { NodeName, NodeTitle, NodeType } from '@/Graf/Node/SharedNode';
-import { ActiveType } from '@/Relation/Node/ActiveType';
-import { EditableText } from '@/Relation/Node/EditableText';
+import { EditableText } from '@/Graf/Node/Field/EditableText';
+import { ActiveGrafType } from '@/Graf/Node/Field/ActiveGrafType';
 
 interface NodeProps {
   node: ParserField;
@@ -83,10 +87,10 @@ const NodeContainer = styled.div`
   background-color: ${({ theme }) => theme.background.mainFurther};
   display: flex;
   flex-flow: column nowrap;
-  border-radius: 1rem;
+  border-radius: 0.75rem;
   margin: 1rem;
   pointer-events: all;
-  box-shadow: ${({ theme }) => theme.background.mainFurther} 0 0 20px;
+  border: 1px solid ${({ theme }) => theme.active};
 `;
 
 const NodeFields = styled.div`
@@ -95,12 +99,12 @@ const NodeFields = styled.div`
 `;
 
 const NodeInterfaces = styled.div`
-  max-width: 600px;
+  max-width: 100%;
   display: flex;
   flex-flow: row wrap;
+  overflow-x: scroll;
   align-items: flex-start;
-  padding: 5px;
-  margin-bottom: 5px;
+  padding: 1rem;
   border-bottom: 1px solid ${({ theme }) => theme.background.mainClose};
 `;
 
@@ -131,8 +135,7 @@ const NodeArea = styled.div`
 `;
 
 const EditableTitle: React.CSSProperties = {
-  fontSize: 14,
-  fontWeight: 'bold',
+  fontWeight: 500,
 };
 
 export const ActiveNode: React.FC<NodeProps> = ({
@@ -150,40 +153,34 @@ export const ActiveNode: React.FC<NodeProps> = ({
   const [dragOverName, setDragOverName] = useState('');
 
   const {
-    libraryTree,
+    allNodes,
     tree,
     setSelectedNode,
     selectedNode,
     parentTypes,
     readonly,
     updateNode,
+    isLibrary,
   } = useTreesState();
 
-  const isLibrary = !!libraryTree.nodes.find(
-    (lN) => lN.name === node.name && lN.data.type === node.data.type,
-  );
   const isInputNode = [
     TypeSystemDefinition.FieldDefinition,
     TypeSystemDefinition.DirectiveDefinition,
     TypeDefinition.InputObjectTypeDefinition,
     TypeExtension.InputObjectTypeExtension,
-    Instances.Directive,
   ].includes(node.data.type as any);
+  const libraryNode = isLibrary(node.id);
+  console.log(libraryNode);
 
-  const isArgumentNode = [Instances.Directive].includes(node.data.type as any);
-  const isLocked = !!sharedProps.readonly || isLibrary;
+  const isArgumentNode = Instances.Directive === node.data.type;
+  const isLocked = !!sharedProps.readonly || libraryNode;
   const findNodeByField = (field?: ParserField) => {
     return field
-      ? (tree.nodes.find(
+      ? allNodes.find(
           (n) =>
             n.name === getTypeName(field.type.fieldType) &&
             !isExtensionNode(n.data.type!),
-        ) ||
-          libraryTree.nodes.find(
-            (n) =>
-              n.name === getTypeName(field.type.fieldType) &&
-              !isExtensionNode(n.data.type!),
-          ))!
+        )
       : undefined;
   };
 
@@ -227,8 +224,10 @@ export const ActiveNode: React.FC<NodeProps> = ({
         isLocked={isLocked}
         value={node.description || ''}
       />
-      {!!node.interfaces?.length && (
+      {(node.data.type === TypeDefinition.ObjectTypeDefinition ||
+        node.data.type === TypeDefinition.InterfaceTypeDefinition) && (
         <NodeInterfaces>
+          <CreateNodeInterface node={node} isLocked={isLocked} />
           {node.interfaces.map((i) => (
             <NodeInterface
               key={i}
@@ -288,7 +287,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
         </OpenedNode>
       )}
       <MainNodeArea
-        className={isLibrary ? 'library-node-area' : undefined}
+        className={libraryNode ? 'library-node-area' : undefined}
         onClick={(e) => {
           e.stopPropagation();
         }}
@@ -312,9 +311,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                   (pt) => pt !== node.name,
                 )}
                 onChange={(v) => {
-                  const isError =
-                    tree.nodes.map((n) => n.name).includes(v) ||
-                    libraryTree.nodes.map((n) => n.name).includes(v);
+                  const isError = allNodes.map((n) => n.name).includes(v);
                   if (isError) {
                     return;
                   }
@@ -340,7 +337,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
             )}
           </NodeName>
           <NodeType>
-            <ActiveType type={node.type} />
+            <ActiveGrafType type={node.type} />
           </NodeType>
           {!isLocked && (
             <TopNodeMenu
@@ -354,13 +351,8 @@ export const ActiveNode: React.FC<NodeProps> = ({
         </NodeTitle>
         <NodeFields>
           {node.directives?.map((d, i) => {
-            const outputDisabled = !(
-              tree.nodes.find(
-                (n) => n.name === getTypeName(d.type.fieldType),
-              ) ||
-              libraryTree.nodes.find(
-                (n) => n.name === getTypeName(d.type.fieldType),
-              )
+            const outputDisabled = !allNodes.find(
+              (n) => n.name === getTypeName(d.type.fieldType),
             );
             return (
               <ActiveDirective
@@ -401,13 +393,8 @@ export const ActiveNode: React.FC<NodeProps> = ({
             );
           })}
           {node.args?.map((a, i) => {
-            const outputDisabled = !(
-              tree.nodes.find(
-                (n) => n.name === getTypeName(a.type.fieldType),
-              ) ||
-              libraryTree.nodes.find(
-                (n) => n.name === getTypeName(a.type.fieldType),
-              )
+            const outputDisabled = !allNodes.find(
+              (n) => n.name === getTypeName(a.type.fieldType),
             );
             const Component = isArgumentNode
               ? ActiveArgument

@@ -28,7 +28,7 @@ export type CodePaneProps = {
 export const CodePane = (props: CodePaneProps) => {
   const { schema, readonly, onChange, libraries, fullScreen } = props;
   const { theme } = useTheme();
-  const { selectedNode, setSelectedNode, tree, libraryTree } = useTreesState();
+  const { selectedNode, setSelectedNode, allNodes } = useTreesState();
   const { lockCode, errorRowNumber } = useErrorsState();
   const [temporaryString, setTemporaryString] = useState(schema);
   const debouncedTemporaryString = useDebouncedValue(temporaryString, 1200);
@@ -74,7 +74,6 @@ export const CodePane = (props: CodePaneProps) => {
     ) => {
       if (fullScreen) return;
       if (e) {
-        const allNodes = tree.nodes.concat(libraryTree.nodes);
         const op =
           typeof e === 'object' && e.operation
             ? (e.operation.toLowerCase() as OperationType)
@@ -88,7 +87,7 @@ export const CodePane = (props: CodePaneProps) => {
         });
       }
     },
-    [fullScreen, tree, libraryTree, setSelectedNode],
+    [fullScreen, allNodes, setSelectedNode],
   );
   return (
     <CodeContainer>

@@ -6,4 +6,3 @@ export * from './NodeDirectiveOptionsMenu';
 export * from './NodeImplementInterfaceMenu';
 export * from './NodeOperationsMenu';
 export * from './NodeTypeOptionsMenu';
-export * from './NodeFieldsRequiredMenu';
