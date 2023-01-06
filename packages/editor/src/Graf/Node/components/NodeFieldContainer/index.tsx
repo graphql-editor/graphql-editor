@@ -24,9 +24,8 @@ const Main = styled.div`
     border: 1px solid ${({ theme }) => theme.background.mainMiddle};
     .node-field-port {
       display: flex;
-      background-color: ${({ theme }) => theme.background.mainFurther}88;
       .opener-icon {
-        opacity: 0.9;
+        opacity: 1;
 
         &:hover {
           opacity: 1;
@@ -36,7 +35,6 @@ const Main = styled.div`
   }
 
   &.Active .node-field-port {
-    background-color: ${({ theme }) => theme.background.mainFurther};
     .opener-icon {
       opacity: 1;
     }

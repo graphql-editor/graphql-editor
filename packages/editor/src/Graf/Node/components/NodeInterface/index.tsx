@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { X } from '@/shared/icons';
 import styled from '@emotion/styled';
 import { NodeImplementInterfacesMenu } from '@/shared/components/ContextMenu';
 import { ParserField } from 'graphql-js-tree';
@@ -10,13 +9,14 @@ interface NodeInterfaceProps {
   isLocked?: boolean;
 }
 
-const NodeInterfaceBlock = styled.div`
+const NodeInterfaceBlock = styled.div<{ isLocked?: boolean }>`
   padding: 0.25rem 0.5rem;
   color: ${({ theme }) => theme.colors.interface};
   font-size: 12px;
   border-radius: 0.25rem;
   position: relative;
   cursor: pointer;
+  border: 1px solid currentColor;
   svg {
     display: none;
     margin-left: 5px;
@@ -24,6 +24,8 @@ const NodeInterfaceBlock = styled.div`
   }
 
   &:hover {
+    border: 1px ${({ isLocked }) => (isLocked ? 'solid' : 'dashed')}
+      currentColor;
     & > div {
       opacity: 1;
     }
@@ -41,6 +43,7 @@ export const NodeInterface: React.FC<NodeInterfaceProps> = ({
 }) => {
   return (
     <NodeInterfaceBlock
+      title="Click to remove"
       onClick={(e) => {
         if (isLocked) {
           return;
@@ -50,7 +53,6 @@ export const NodeInterface: React.FC<NodeInterfaceProps> = ({
       }}
     >
       {children}
-      {!isLocked && <X width={12} />}
     </NodeInterfaceBlock>
   );
 };

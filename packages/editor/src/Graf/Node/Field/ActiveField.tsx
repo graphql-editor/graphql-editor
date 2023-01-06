@@ -1,9 +1,5 @@
 import React, { useState } from 'react';
-import {
-  getTypeName,
-  TypeSystemDefinition,
-  ValueDefinition,
-} from 'graphql-js-tree';
+import { TypeSystemDefinition, ValueDefinition } from 'graphql-js-tree';
 import {
   NodeChangeFieldTypeMenu,
   NodeTypeOptionsMenu,
@@ -20,6 +16,8 @@ import { FieldProps } from '@/Graf/Node/models';
 import styled from '@emotion/styled';
 import { ActiveGrafFieldName } from '@/Graf/Node/Field/ActiveGrafFieldName';
 import { ActiveGrafType } from '@/Graf/Node/Field/ActiveGrafType';
+import { ArrowLeft } from '@/editor/icons';
+import { transition } from '@/vars';
 
 const OptionsMenuContainer = styled.div`
   position: fixed;
@@ -146,17 +144,22 @@ export const ActiveField: React.FC<FieldProps> = ({
               )}
             </FieldPort>
           )}
-        {!outputDisabled && (
-          <FieldPort
-            onClick={onOutputClick}
-            open={outputOpen}
-            info={{
-              message: `Expand ${getTypeName(node.type.fieldType)} details`,
-              placement: 'right',
-            }}
-          />
-        )}
       </Actions>
+      <OuterActions>
+        {!outputDisabled && (
+          <OutputArrow
+            className="node-field-port"
+            onClick={onOutputClick}
+            // info={{
+            //   message: `Expand ${getTypeName(node.type.fieldType)} details`,
+            //   placement: 'right',
+            // }}
+            opened={outputOpen}
+          >
+            <ArrowLeft size={12} />
+          </OutputArrow>
+        )}
+      </OuterActions>
     </NodeFieldContainer>
   );
 };
@@ -171,4 +174,27 @@ const Actions = styled.div`
   transform: translateY(-100%);
   pointer-events: none;
   z-index: 2;
+`;
+
+const OuterActions = styled.div`
+  display: flex;
+  position: absolute;
+  right: 0;
+  transform: translateX(100%);
+  pointer-events: none;
+  z-index: 2;
+`;
+
+const OutputArrow = styled.div<{ opened?: boolean }>`
+  pointer-events: all;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  svg {
+    fill: ${({ theme }) => theme.text};
+    rotate: ${({ opened }) => (opened ? '270deg' : '180deg')};
+    transition: ${transition};
+  }
 `;
