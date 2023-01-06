@@ -15,7 +15,6 @@ import { KeyboardActions, useIO } from '@/shared/hooks/io';
 
 const SubNodeContainer = styled.div`
   font-family: ${fontFamilySans};
-  top: 60px;
   transition: max-width 0.5s ease-in-out;
   max-width: 50%;
   bottom: 0;
@@ -23,6 +22,7 @@ const SubNodeContainer = styled.div`
   top: 0;
   position: absolute;
   pointer-events: none;
+  padding: 2rem;
   height: 100%;
 `;
 

@@ -3,14 +3,13 @@ import { ParserField } from 'graphql-js-tree';
 import styled from '@emotion/styled';
 import { EditableText } from '@/Graf/Node/Field/EditableText';
 import { ActiveGrafType } from '@/Graf/Node/Field/ActiveGrafType';
+import { GRAF_FIELD_NAME_SIZE } from '@/Graf/constants';
 
 const Main = styled.div`
   display: flex;
-  flex-flow: row nowrap;
-`;
-
-const Indent = styled.div`
-  margin-left: 2px;
+  flex-flow: row wrap;
+  font-size: ${GRAF_FIELD_NAME_SIZE}px;
+  gap: 0.1rem;
 `;
 
 export const ActiveGrafFieldName: React.FC<
@@ -30,7 +29,7 @@ export const ActiveGrafFieldName: React.FC<
         (
         {afterChange &&
           args.map((a, i) => (
-            <Indent key={a.name}>
+            <React.Fragment key={a.name}>
               <EditableText
                 onChange={
                   active && afterChange
@@ -44,15 +43,15 @@ export const ActiveGrafFieldName: React.FC<
               />
               :<ActiveGrafType type={a.type} parentTypes={parentTypes} />
               {i < args.length - 1 && <span>,</span>}
-            </Indent>
+            </React.Fragment>
           ))}
         {!afterChange &&
           args.map((a, i) => (
-            <Indent key={a.name}>
+            <React.Fragment key={a.name}>
               <span>{a.name}</span>
               :<ActiveGrafType type={a.type} parentTypes={parentTypes} />
               {i < args.length - 1 && <span>,</span>}
-            </Indent>
+            </React.Fragment>
           ))}
         )
       </Main>

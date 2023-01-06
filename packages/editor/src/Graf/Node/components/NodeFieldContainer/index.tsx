@@ -2,29 +2,35 @@ import styled from '@emotion/styled';
 import React from 'react';
 
 const Main = styled.div`
-  position: relative;
+  /* position: relative; */
   display: flex;
   align-items: center;
+  gap: 1rem;
   color: ${({ theme }) => theme.text};
   margin: 0;
-  padding-left: 1rem;
-  transition: background-color 0.25s ease-in-out;
+  padding: 0.5rem 1rem;
+  transition: border-color 0.25s ease-in-out;
+  border: 1px solid ${({ theme }) => theme.background.mainMiddle}00;
 
   .opener-icon {
     transition: all 0.25s ease-in-out;
     opacity: 0;
   }
-
-  &.Active,
-  &:hover {
-    background-color: ${({ theme }) => theme.background.mainClose};
+  .node-field-port {
+    display: none;
   }
-  &:hover .node-field-port {
-    .opener-icon {
-      opacity: 0.5;
 
-      &:hover {
-        opacity: 1;
+  :hover {
+    border: 1px solid ${({ theme }) => theme.background.mainMiddle};
+    .node-field-port {
+      display: flex;
+      background-color: ${({ theme }) => theme.background.mainFurther}88;
+      .opener-icon {
+        opacity: 0.9;
+
+        &:hover {
+          opacity: 1;
+        }
       }
     }
   }

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Menu } from './menu/Menu';
 import { CodePane } from './code';
-import { PassedSchema, Theming } from '@/Models';
+import { PassedSchema } from '@/Models';
 import { DynamicResize } from './code/Components';
 import { ParserTree } from 'graphql-js-tree';
 import { GraphQLEditorWorker } from 'graphql-editor-worker';
@@ -68,7 +68,7 @@ const ErrorOuterContainer = styled.div<{ isOverflow?: boolean }>`
   overflow-x: hidden;
 `;
 
-export interface EditorProps extends Theming {
+export interface EditorProps {
   // Code in editor is readonly
   readonly?: boolean;
   // Code and libraries

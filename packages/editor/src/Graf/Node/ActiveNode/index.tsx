@@ -11,7 +11,6 @@ import {
 import { ActiveField } from '@/Graf/Node/Field';
 import { ActiveDirective } from '@/Graf/Node/Directive';
 import { ActiveInputValue } from '@/Graf/Node/InputValue';
-import { DOM } from '@/Graf/DOM';
 import {
   ActiveDescription,
   CreateNodeInterface,
@@ -28,9 +27,12 @@ import {
   dragStartHandler,
 } from '@/shared/dnd';
 import styled from '@emotion/styled';
-import { NodeName, NodeTitle, NodeType } from '@/Graf/Node/SharedNode';
 import { EditableText } from '@/Graf/Node/Field/EditableText';
 import { ActiveGrafType } from '@/Graf/Node/Field/ActiveGrafType';
+import {
+  CreateNodeDirective,
+  DirectivePlacement,
+} from '@/Graf/Node/components/DirectivePlacement';
 
 interface NodeProps {
   node: ParserField;
@@ -62,12 +64,6 @@ const MainNodeArea = styled.div`
   flex-flow: column nowrap;
   animation-name: fadeIn;
   animation-duration: 0.25s;
-  overflow-y: auto;
-
-  &.library-node-area {
-    border-style: dotted;
-    border-color: ${({ theme }) => theme.active}33;
-  }
 
   @keyframes fadeIn {
     0% {
@@ -84,11 +80,11 @@ const NodeContainer = styled.div`
   position: relative;
   break-inside: avoid;
   min-width: 24rem;
+  max-height: 100%;
   background-color: ${({ theme }) => theme.background.mainFurther};
   display: flex;
   flex-flow: column nowrap;
   border-radius: 0.75rem;
-  margin: 1rem;
   pointer-events: all;
   border: 1px solid ${({ theme }) => theme.active};
 `;
@@ -98,11 +94,22 @@ const NodeFields = styled.div`
   overflow-y: auto;
 `;
 
+const DirectivePlacements = styled.div`
+  max-width: 100%;
+  display: flex;
+  flex-flow: row wrap;
+  overflow-x: scroll;
+  align-items: flex-start;
+  padding: 1rem;
+  gap: 1rem;
+  border-bottom: 1px solid ${({ theme }) => theme.background.mainClose};
+`;
 const NodeInterfaces = styled.div`
   max-width: 100%;
   display: flex;
   flex-flow: row wrap;
   overflow-x: scroll;
+  gap: 1rem;
   align-items: flex-start;
   padding: 1rem;
   border-bottom: 1px solid ${({ theme }) => theme.background.mainClose};
@@ -129,9 +136,18 @@ const GapBar = styled.div`
 const NodeArea = styled.div`
   min-width: 80%;
   max-width: 50vw;
-  left: 20%;
+  left: 10%;
   position: absolute;
   height: 100%;
+`;
+export const NodeName = styled.div`
+  margin-right: 10px;
+  color: ${({ theme }) => theme.text};
+  user-select: none;
+`;
+
+export const NodeType = styled.div`
+  margin-right: auto;
 `;
 
 const EditableTitle: React.CSSProperties = {
@@ -212,9 +228,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
 
   return (
     <NodeContainer
-      className={`NodeBackground-${getTypeName(node.type.fieldType)} ${
-        DOM.classes.node
-      } ${DOM.classes.nodeSelected}`}
+      className={`NodeBackground-${getTypeName(node.type.fieldType)}`}
     >
       <ActiveDescription
         onChange={(d) => {
@@ -224,6 +238,25 @@ export const ActiveNode: React.FC<NodeProps> = ({
         isLocked={isLocked}
         value={node.description || ''}
       />
+      {node.data.type === TypeSystemDefinition.DirectiveDefinition && (
+        <DirectivePlacements>
+          <CreateNodeDirective node={node} isLocked={isLocked} />
+          {node.type.directiveOptions?.map((d, i) => (
+            <DirectivePlacement
+              key={d}
+              isLocked={isLocked}
+              onDelete={() => {
+                node.type.directiveOptions = node.type.directiveOptions?.filter(
+                  (oldDirective) => oldDirective !== d,
+                );
+                updateNode(node);
+              }}
+            >
+              {d}
+            </DirectivePlacement>
+          ))}
+        </DirectivePlacements>
+      )}
       {(node.data.type === TypeDefinition.ObjectTypeDefinition ||
         node.data.type === TypeDefinition.InterfaceTypeDefinition) && (
         <NodeInterfaces>
@@ -287,7 +320,6 @@ export const ActiveNode: React.FC<NodeProps> = ({
         </OpenedNode>
       )}
       <MainNodeArea
-        className={libraryNode ? 'library-node-area' : undefined}
         onClick={(e) => {
           e.stopPropagation();
         }}
@@ -468,3 +500,11 @@ export const ActiveNode: React.FC<NodeProps> = ({
     </NodeContainer>
   );
 };
+
+const NodeTitle = styled.div`
+  display: flex;
+  align-items: stretch;
+  color: ${({ theme }) => theme.text};
+  padding: 1rem;
+  user-select: none;
+`;

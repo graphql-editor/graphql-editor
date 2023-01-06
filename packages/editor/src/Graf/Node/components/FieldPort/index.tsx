@@ -17,14 +17,13 @@ interface FieldPortProps {
 
 const Main = styled.div`
   position: relative;
-  width: 30px;
-  height: 30px;
-  font-size: 7px;
+  width: 2rem;
+  height: 2rem;
   align-items: center;
-  display: flex;
   justify-content: center;
   cursor: pointer;
   transition: all 0.25s ease-in-out;
+  pointer-events: all;
 `;
 
 export const FieldPort: React.FC<FieldPortProps> = ({

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { GqlCodePane } from './code';
-import { PassedSchema, Theming } from '@/Models';
+import { PassedSchema } from '@/Models';
 import { useTreesState, useTheme, useLayoutState } from '@/state/containers';
 
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
@@ -15,7 +15,7 @@ const Main = styled.div`
   overflow-y: clip;
 `;
 
-export interface GqlEditorProps extends Theming {
+export interface GqlEditorProps {
   readonly?: boolean;
   placeholder?: string;
   schema: PassedSchema;

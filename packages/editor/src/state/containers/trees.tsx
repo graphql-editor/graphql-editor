@@ -18,6 +18,7 @@ import { ActiveSource } from '@/editor/menu/Menu';
 type SelectedNode = {
   field?: ParserField;
   source: ActiveSource;
+  justCreated?: boolean;
 };
 
 type TreeWithSource = ParserTree & { schema: boolean; initial: boolean };

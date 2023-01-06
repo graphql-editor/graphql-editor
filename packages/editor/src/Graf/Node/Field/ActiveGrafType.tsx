@@ -9,7 +9,7 @@ export const ActiveGrafType: React.FC<
     parentTypes?: Record<string, string>;
     onClick?: () => void;
   }
-> = ({ type, parentTypes, onClick }) => {
+> = ({ type, parentTypes, onClick, children }) => {
   let compiledType = compileTypeOptions({ type });
   const {
     theme: { colors },
@@ -32,7 +32,8 @@ export const ActiveGrafType: React.FC<
       cursor={onClick ? 'pointer' : 'auto'}
       onClick={onClick}
     >
-      {compiledType}
+      <span>{compiledType}</span>
+      {children}
     </Type>
   );
 };
@@ -41,4 +42,5 @@ const Type = styled.a<{ color: string; cursor: 'pointer' | 'auto' }>`
   color: ${({ color }) => color};
   cursor: ${({ cursor }) => cursor};
   font-size: ${GRAF_FIELD_TYPE_SIZE}px;
+  position: relative;
 `;

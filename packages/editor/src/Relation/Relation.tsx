@@ -23,6 +23,7 @@ import { Minus, Plus } from '@/shared/icons';
 import { TypeDefinition } from 'graphql-js-tree';
 import { LinesDiagram } from '@/Relation/LinesDiagram';
 import { Graf } from '@/Graf/Graf';
+import { NewNode } from '@/shared/components/NewNode';
 
 const Wrapper = styled.div`
   display: flex;
@@ -310,6 +311,7 @@ export const Relation: React.FC = () => {
               </IconWrapper>
             </DeselectWrapper>
           )}
+          {!selectedNode?.field && <NewNode />}
           <IconWrapper
             data-tooltip="Zoom out"
             onClick={() => {
