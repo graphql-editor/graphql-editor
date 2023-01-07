@@ -18,6 +18,7 @@ import { ActiveGrafFieldName } from '@/Graf/Node/Field/ActiveGrafFieldName';
 import { ActiveGrafType } from '@/Graf/Node/Field/ActiveGrafType';
 import { ArrowLeft } from '@/editor/icons';
 import { transition } from '@/vars';
+import { Arrq } from '@/shared/icons';
 
 const OptionsMenuContainer = styled.div`
   position: fixed;
@@ -90,6 +91,29 @@ export const ActiveField: React.FC<FieldProps> = ({
           )}
         </ActiveGrafType>
       )}
+      {!isLocked &&
+        !isEnumValue &&
+        node.data.type !== TypeSystemDefinition.UnionMemberDefinition && (
+          <RequiredTypes
+            className="node-field-port"
+            opened={menuOpen === 'options'}
+            onClick={() => {
+              setMenuOpen(menuOpen === 'options' ? undefined : 'options');
+            }}
+          >
+            <Arrq width={12} />
+            {menuOpen === 'options' && (
+              <OptionsMenuContainer>
+                <NodeTypeOptionsMenu
+                  hideMenu={() => {
+                    setMenuOpen(undefined);
+                  }}
+                  node={node}
+                />
+              </OptionsMenuContainer>
+            )}
+          </RequiredTypes>
+        )}
       <Actions>
         {!inputDisabled &&
           node.data.type !== TypeSystemDefinition.UnionMemberDefinition && (
@@ -123,27 +147,6 @@ export const ActiveField: React.FC<FieldProps> = ({
             )}
           </FieldPort>
         )}
-        {!isLocked &&
-          !isEnumValue &&
-          node.data.type !== TypeSystemDefinition.UnionMemberDefinition && (
-            <FieldPort
-              icons={{ closed: 'Arrq', open: 'Arrq' }}
-              onClick={() => {
-                setMenuOpen(menuOpen === 'options' ? undefined : 'options');
-              }}
-            >
-              {menuOpen === 'options' && (
-                <OptionsMenuContainer>
-                  <NodeTypeOptionsMenu
-                    hideMenu={() => {
-                      setMenuOpen(undefined);
-                    }}
-                    node={node}
-                  />
-                </OptionsMenuContainer>
-              )}
-            </FieldPort>
-          )}
       </Actions>
       <OuterActions>
         {!outputDisabled && (
@@ -183,6 +186,19 @@ const OuterActions = styled.div`
   transform: translateX(100%);
   pointer-events: none;
   z-index: 2;
+`;
+
+const RequiredTypes = styled.div<{ opened?: boolean }>`
+  pointer-events: all;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  svg {
+    fill: ${({ theme, opened }) => (opened ? theme.active : theme.text)};
+    transition: ${transition};
+  }
 `;
 
 const OutputArrow = styled.div<{ opened?: boolean }>`

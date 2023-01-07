@@ -9,7 +9,7 @@ interface NodeDirectiveProps {
   isLocked?: boolean;
 }
 
-const NodeDirectiveBlock = styled.div`
+const NodeDirectiveBlock = styled.div<{ isLocked?: boolean }>`
   padding: 0.25rem 0.5rem;
   color: ${({ theme }) => theme.colors.directive};
   font-size: 12px;
@@ -17,8 +17,11 @@ const NodeDirectiveBlock = styled.div`
   position: relative;
   cursor: pointer;
   transition: ${transition};
-  :hover {
-    color: ${({ theme }) => theme.error};
+  cursor: pointer;
+  border: 1px solid currentColor;
+  &:hover {
+    border: 1px ${({ isLocked }) => (isLocked ? 'solid' : 'dashed')}
+      currentColor;
   }
 `;
 

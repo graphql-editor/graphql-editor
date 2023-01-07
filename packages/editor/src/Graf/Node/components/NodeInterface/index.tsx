@@ -17,22 +17,9 @@ const NodeInterfaceBlock = styled.div<{ isLocked?: boolean }>`
   position: relative;
   cursor: pointer;
   border: 1px solid currentColor;
-  svg {
-    display: none;
-    margin-left: 5px;
-    fill: ${({ theme }) => theme.error};
-  }
-
   &:hover {
     border: 1px ${({ isLocked }) => (isLocked ? 'solid' : 'dashed')}
       currentColor;
-    & > div {
-      opacity: 1;
-    }
-
-    svg {
-      display: inline;
-    }
   }
 `;
 
