@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import styled from '@emotion/styled';
-import { NodeImplementInterfacesMenu } from '@/shared/components/ContextMenu';
+import {
+  ContextMenu,
+  NodeImplementInterfacesMenu,
+} from '@/shared/components/ContextMenu';
 import { ParserField } from 'graphql-js-tree';
 import { transition } from '@/vars';
 
@@ -71,30 +74,31 @@ export const CreateNodeInterface: React.FC<CreateNodeInterfaceProps> = ({
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   return (
-    <CreateNodeInterfaceBlock
-      onClick={(e) => {
-        if (isLocked) {
-          return;
-        }
-        e.stopPropagation();
-        setMenuOpen(true);
-      }}
-    >
-      Implement interface
-      {menuOpen && (
-        <NodeMenuContainer>
-          <NodeImplementInterfacesMenu
-            node={node}
-            hideMenu={() => setMenuOpen(false)}
-          />
-        </NodeMenuContainer>
+    <ContextMenu
+      isOpen={menuOpen}
+      close={() => setMenuOpen(false)}
+      Trigger={({ triggerProps }) => (
+        <CreateNodeInterfaceBlock
+          {...triggerProps}
+          onClick={(e) => {
+            if (isLocked) {
+              return;
+            }
+            e.stopPropagation();
+            setMenuOpen(true);
+          }}
+        >
+          Implement interface
+        </CreateNodeInterfaceBlock>
       )}
-    </CreateNodeInterfaceBlock>
+    >
+      {({ layerProps }) => (
+        <NodeImplementInterfacesMenu
+          {...layerProps}
+          node={node}
+          hideMenu={() => setMenuOpen(false)}
+        />
+      )}
+    </ContextMenu>
   );
 };
-
-const NodeMenuContainer = styled.div`
-  position: fixed;
-  z-index: 2;
-  transform: translate(-0.25rem, 0.5rem);
-`;

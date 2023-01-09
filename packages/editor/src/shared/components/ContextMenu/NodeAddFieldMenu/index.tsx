@@ -19,10 +19,10 @@ interface NodeAddFieldMenuProps {
   hideMenu: () => void;
 }
 
-export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({
-  node,
-  hideMenu,
-}) => {
+export const NodeAddFieldMenu = React.forwardRef<
+  HTMLDivElement,
+  NodeAddFieldMenuProps
+>(({ node, hideMenu, ...props }, ref) => {
   const { allNodes, updateNode } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -73,9 +73,11 @@ export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({
 
   return (
     <Menu
+      {...props}
       menuName={'Create Field'}
       onScroll={(e) => e.stopPropagation()}
       hideMenu={hideMenu}
+      ref={ref}
     >
       <MenuSearch
         onSubmit={() => {
@@ -117,4 +119,4 @@ export const NodeAddFieldMenu: React.FC<NodeAddFieldMenuProps> = ({
       </MenuScrollingArea>
     </Menu>
   );
-};
+});

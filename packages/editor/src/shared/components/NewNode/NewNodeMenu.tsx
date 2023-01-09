@@ -18,9 +18,10 @@ interface NodeChangeFieldTypeMenuProps {
   hideMenu: () => void;
 }
 
-export const NewNodeMenu: React.FC<NodeChangeFieldTypeMenuProps> = ({
-  hideMenu,
-}) => {
+export const NewNodeMenu = React.forwardRef<
+  HTMLDivElement,
+  NodeChangeFieldTypeMenuProps
+>(({ hideMenu, ...props }, ref) => {
   const { setTree, tree, setSelectedNode } = useTreesState();
   const [nodeName, setNodeName] = useState('');
   const [creating, setCreating] = useState<
@@ -82,6 +83,8 @@ export const NewNodeMenu: React.FC<NodeChangeFieldTypeMenuProps> = ({
   return (
     <NodeMenuContainer>
       <Menu
+        {...props}
+        ref={ref}
         menuName={'New Node'}
         onScroll={(e) => e.stopPropagation()}
         hideMenu={hideMenu}
@@ -130,7 +133,7 @@ export const NewNodeMenu: React.FC<NodeChangeFieldTypeMenuProps> = ({
       </Menu>
     </NodeMenuContainer>
   );
-};
+});
 const CreateNodeItem = styled.div<{ type: string }>`
   display: flex;
   justify-content: space-between;

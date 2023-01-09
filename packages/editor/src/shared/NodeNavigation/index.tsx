@@ -141,6 +141,7 @@ export const NodeNavigation = () => {
           }
           nodeList={splittedNodes?.schemaNodes}
           listTitle="Schema"
+          colorKey="type"
         />
         <NodeList
           expanded={listExpanded}
@@ -151,6 +152,7 @@ export const NodeNavigation = () => {
           }
           nodeList={splittedNodes?.typeNodes}
           listTitle="Types"
+          colorKey="type"
         />
         <NodeList
           expanded={listExpanded}
@@ -161,6 +163,7 @@ export const NodeNavigation = () => {
           }
           nodeList={splittedNodes?.interfaceNodes}
           listTitle="Interface"
+          colorKey="interface"
         />
         <NodeList
           expanded={listExpanded}
@@ -171,6 +174,7 @@ export const NodeNavigation = () => {
           }
           nodeList={splittedNodes?.inputNodes}
           listTitle="Inputs"
+          colorKey="input"
         />
         <NodeList
           expanded={listExpanded}
@@ -181,6 +185,7 @@ export const NodeNavigation = () => {
           }
           nodeList={splittedNodes?.enumNodes}
           listTitle="Enums"
+          colorKey="enum"
         />
         <NodeList
           expanded={listExpanded}
@@ -191,6 +196,7 @@ export const NodeNavigation = () => {
           }
           nodeList={splittedNodes?.scalarNodes}
           listTitle="Scalars"
+          colorKey="scalar"
         />
         <NodeList
           expanded={listExpanded}
@@ -201,6 +207,7 @@ export const NodeNavigation = () => {
           }
           nodeList={splittedNodes?.unionNodes}
           listTitle="Unions"
+          colorKey="union"
         />
         <NodeList
           expanded={listExpanded}
@@ -211,6 +218,7 @@ export const NodeNavigation = () => {
           }
           nodeList={splittedNodes?.directivesNodes}
           listTitle="Directives"
+          colorKey="directive"
         />
       </ListWrapper>
     </ListContainer>

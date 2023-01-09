@@ -2,15 +2,11 @@ import React, { useEffect, useState, DragEvent } from 'react';
 import {
   ParserField,
   TypeSystemDefinition,
-  Instances,
   TypeDefinition,
-  TypeExtension,
   getTypeName,
   compareParserFields,
 } from 'graphql-js-tree';
 import { ActiveField } from '@/Graf/Node/Field';
-import { ActiveDirective } from '@/Graf/Node/Directive';
-import { ActiveInputValue } from '@/Graf/Node/InputValue';
 import {
   ActiveDescription,
   CreateNodeInterface,
@@ -19,7 +15,6 @@ import {
 import { useTreesState } from '@/state/containers/trees';
 import { TopNodeMenu } from '@/Graf/Node/ActiveNode/TopNodeMenu';
 import { ChangeAllRelatedNodes, isExtensionNode } from '@/GraphQL/Resolve';
-import { ActiveArgument } from '@/Graf/Node/Argument';
 
 import {
   dragLeaveHandler,
@@ -64,6 +59,7 @@ const MainNodeArea = styled.div`
   flex-flow: column nowrap;
   animation-name: fadeIn;
   animation-duration: 0.25s;
+  overflow-y: hidden;
 
   @keyframes fadeIn {
     0% {
@@ -77,7 +73,7 @@ const MainNodeArea = styled.div`
 `;
 
 const NodeContainer = styled.div`
-  position: relative;
+  /* position: relative; */
   break-inside: avoid;
   min-width: 24rem;
   max-height: 100%;
@@ -89,10 +85,12 @@ const NodeContainer = styled.div`
   border: 1px solid ${({ theme }) => theme.active};
 `;
 
-const NodeFields = styled.div`
-  flex: 1;
+const NodeFieldsContainer = styled.div`
   overflow-y: auto;
+  flex: 1;
 `;
+
+const NodeFields = styled.div``;
 
 const DirectivePlacements = styled.div`
   max-width: 100%;
@@ -136,8 +134,9 @@ const GapBar = styled.div`
 const NodeArea = styled.div`
   min-width: 80%;
   max-width: 50vw;
-  left: 10%;
+  left: 30%;
   position: absolute;
+  padding: 2rem;
   height: 100%;
 `;
 export const NodeName = styled.div`
@@ -179,17 +178,8 @@ export const ActiveNode: React.FC<NodeProps> = ({
     isLibrary,
   } = useTreesState();
 
-  const isInputNode = [
-    TypeSystemDefinition.FieldDefinition,
-    TypeSystemDefinition.DirectiveDefinition,
-    TypeDefinition.InputObjectTypeDefinition,
-    TypeExtension.InputObjectTypeExtension,
-  ].includes(node.data.type as any);
   const libraryNode = isLibrary(node.id);
-  console.log(libraryNode);
-
-  const isArgumentNode = Instances.Directive === node.data.type;
-  const isLocked = !!sharedProps.readonly || libraryNode;
+  const isLocked = !!sharedProps.readonly || libraryNode || readonly;
   const findNodeByField = (field?: ParserField) => {
     return field
       ? allNodes.find(
@@ -381,120 +371,117 @@ export const ActiveNode: React.FC<NodeProps> = ({
             />
           )}
         </NodeTitle>
-        <NodeFields>
-          {node.directives?.map((d, i) => {
-            const outputDisabled = !allNodes.find(
-              (n) => n.name === getTypeName(d.type.fieldType),
-            );
-            return (
-              <ActiveDirective
-                isLocked={isLocked}
-                indexInParentNode={i}
-                parentNode={node}
-                parentNodeTypeName={getTypeName(node.type.fieldType)}
-                key={d.name + i}
-                onInputClick={() => {
-                  setOpenedNode((oN) =>
-                    oN?.index === i && oN.type === 'directives'
-                      ? undefined
-                      : { type: 'directives', index: i },
-                  );
-                }}
-                onOutputClick={() => {
-                  setOpenedNode((oN) =>
-                    oN?.index === i && oN.type === 'directiveOutput'
-                      ? undefined
-                      : { type: 'directiveOutput', index: i },
-                  );
-                }}
-                node={d}
-                inputOpen={
-                  openedNode?.type === 'directives' && openedNode?.index === i
-                }
-                outputDisabled={outputDisabled}
-                outputOpen={
-                  openedNode?.type === 'directiveOutput' &&
-                  openedNode?.index === i
-                }
-                onDelete={() => {
-                  setOpenedNode(undefined);
-                  node.directives!.splice(i, 1);
-                  updateNode(node);
-                }}
-              />
-            );
-          })}
-          {node.args?.map((a, i) => {
-            const outputDisabled = !allNodes.find(
-              (n) => n.name === getTypeName(a.type.fieldType),
-            );
-            const Component = isArgumentNode
-              ? ActiveArgument
-              : isInputNode
-              ? ActiveInputValue
-              : ActiveField;
-            return (
-              <DndContainer
-                key={a.name}
-                id={a.name}
-                onDrop={(e) => {
-                  setDragOverName('');
-                  dropHandler(e, a.name);
-                }}
-                onDragEnd={() => setDragOverName('')}
-                onDragLeave={(e) => {
-                  dragLeaveHandler(e);
-                }}
-                onDragOver={(e) => {
-                  setDragOverName(a.name);
-                  dragOverHandler(e);
-                }}
-                className={a.name === dragOverName ? `drag-over` : ''}
-              >
-                <div
-                  draggable={!readonly}
-                  onDragStart={(e) => {
-                    dragStartHandler(e, a.name);
+        <NodeFieldsContainer>
+          <NodeFields>
+            {node.directives?.map((d, i) => {
+              const outputDisabled = !allNodes.find(
+                (n) => n.name === getTypeName(d.type.fieldType),
+              );
+              return (
+                <ActiveField
+                  isLocked={isLocked}
+                  indexInParentNode={i}
+                  parentNode={node}
+                  parentNodeTypeName={getTypeName(node.type.fieldType)}
+                  key={d.name + i}
+                  onInputClick={() => {
+                    setOpenedNode((oN) =>
+                      oN?.index === i && oN.type === 'directives'
+                        ? undefined
+                        : { type: 'directives', index: i },
+                    );
                   }}
+                  onOutputClick={() => {
+                    setOpenedNode((oN) =>
+                      oN?.index === i && oN.type === 'directiveOutput'
+                        ? undefined
+                        : { type: 'directiveOutput', index: i },
+                    );
+                  }}
+                  node={d}
+                  inputOpen={
+                    openedNode?.type === 'directives' && openedNode?.index === i
+                  }
+                  outputDisabled={outputDisabled}
+                  outputOpen={
+                    openedNode?.type === 'directiveOutput' &&
+                    openedNode?.index === i
+                  }
+                  onDelete={() => {
+                    setOpenedNode(undefined);
+                    node.directives!.splice(i, 1);
+                    updateNode(node);
+                  }}
+                />
+              );
+            })}
+            {node.args?.map((a, i) => {
+              const outputDisabled = !allNodes.find(
+                (n) => n.name === getTypeName(a.type.fieldType),
+              );
+              return (
+                <DndContainer
+                  key={a.name}
+                  id={a.name}
+                  onDrop={(e) => {
+                    setDragOverName('');
+                    dropHandler(e, a.name);
+                  }}
+                  onDragEnd={() => setDragOverName('')}
+                  onDragLeave={(e) => {
+                    dragLeaveHandler(e);
+                  }}
+                  onDragOver={(e) => {
+                    setDragOverName(a.name);
+                    dragOverHandler(e);
+                  }}
+                  className={a.name === dragOverName ? `drag-over` : ''}
                 >
-                  <Component
-                    indexInParentNode={i}
-                    parentNode={node}
-                    isLocked={isLocked}
-                    parentNodeTypeName={getTypeName(node.type.fieldType)}
-                    key={a.name}
-                    onInputClick={() => {
-                      setOpenedNode((oN) =>
-                        oN?.index === i && oN.type === 'args'
-                          ? undefined
-                          : { type: 'args', index: i },
-                      );
+                  <div
+                    draggable={!isLocked}
+                    onDragStart={(e) => {
+                      dragStartHandler(e, a.name);
                     }}
-                    onOutputClick={() => {
-                      setOpenedNode((oN) =>
-                        oN?.index === i && oN.type === 'output'
-                          ? undefined
-                          : { type: 'output', index: i },
-                      );
-                    }}
-                    node={a}
-                    inputOpen={
-                      openedNode?.type === 'args' && openedNode?.index === i
-                    }
-                    outputDisabled={outputDisabled}
-                    outputOpen={
-                      openedNode?.type === 'output' && openedNode?.index === i
-                    }
-                    onDelete={() => {
-                      node.args!.splice(i, 1);
-                      updateNode(node);
-                    }}
-                  />
-                </div>
-              </DndContainer>
-            );
-          })}
-        </NodeFields>
+                  >
+                    <ActiveField
+                      indexInParentNode={i}
+                      parentNode={node}
+                      isLocked={isLocked}
+                      parentNodeTypeName={getTypeName(node.type.fieldType)}
+                      key={a.name}
+                      onInputClick={() => {
+                        setOpenedNode((oN) =>
+                          oN?.index === i && oN.type === 'args'
+                            ? undefined
+                            : { type: 'args', index: i },
+                        );
+                      }}
+                      onOutputClick={() => {
+                        setOpenedNode((oN) =>
+                          oN?.index === i && oN.type === 'output'
+                            ? undefined
+                            : { type: 'output', index: i },
+                        );
+                      }}
+                      node={a}
+                      inputOpen={
+                        openedNode?.type === 'args' && openedNode?.index === i
+                      }
+                      outputDisabled={outputDisabled}
+                      outputOpen={
+                        openedNode?.type === 'output' && openedNode?.index === i
+                      }
+                      onDelete={() => {
+                        node.args!.splice(i, 1);
+                        updateNode(node);
+                      }}
+                    />
+                  </div>
+                </DndContainer>
+              );
+            })}
+          </NodeFields>
+        </NodeFieldsContainer>
       </MainNodeArea>
       <div style={{ marginBottom: '1rem' }} />
     </NodeContainer>

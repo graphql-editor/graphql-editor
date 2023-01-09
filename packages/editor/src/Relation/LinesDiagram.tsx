@@ -13,7 +13,7 @@ const Wrapper = styled.div`
   width: 100%;
   height: 100%;
 `;
-const Main = styled.div`
+const Main = styled.div<{ clickable?: boolean }>`
   position: relative;
   overflow-x: visible;
   font-family: ${vars.fontFamilySans};
@@ -25,6 +25,7 @@ const Main = styled.div`
   animation: show 1 0.5s ease-in-out;
   min-height: 100%;
   margin: auto;
+  pointer-events: ${({ clickable }) => (clickable ? 'all' : 'none')};
   @keyframes show {
     from {
       opacity: 0;
@@ -45,7 +46,6 @@ const NodePane = styled.div`
   align-items: flex-end;
   display: flex;
   padding: 10vh 0;
-  pointer-events: none;
 `;
 let tRefs: Record<string, HTMLDivElement> = {};
 let tRefsToLoad = 0;
@@ -191,7 +191,6 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
           <NodePane key={i}>
             {nodesArray.map((n) => (
               <Node
-                panState={panState}
                 enums={enumsOn}
                 filteredFieldTypes={filteredFieldsTypes[n.id] || ''}
                 setFilteredFieldsTypes={(q) =>
@@ -212,17 +211,11 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
         ))}
       </>
     );
-  }, [
-    isLibrary,
-    relationDrawingNodes,
-    relationDrawingNodesArray,
-    routes.code,
-    panState,
-  ]);
+  }, [isLibrary, relationDrawingNodes, relationDrawingNodesArray, routes.code]);
 
   return (
     <Wrapper>
-      <Main ref={mainRef}>
+      <Main clickable={panState !== 'grabbing'} ref={mainRef}>
         {NodesContainer}
         {SvgLinesContainer}
       </Main>

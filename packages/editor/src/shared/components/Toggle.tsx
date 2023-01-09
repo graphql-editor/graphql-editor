@@ -1,3 +1,4 @@
+import { Tick } from '@/shared/icons';
 import * as vars from '@/vars';
 import styled from '@emotion/styled';
 import React from 'react';
@@ -10,7 +11,7 @@ export const Toggle: React.FC<{
     <Main onClick={() => onToggle()}>
       {label && <Text active={toggled}>{label}</Text>}
       <ToggleWrapper active={toggled}>
-        <ToggleCircle active={toggled} />
+        <Tick width={20} />
       </ToggleWrapper>
     </Main>
   );
@@ -31,23 +32,19 @@ const Text = styled.div<{ active?: boolean }>`
   transition: ${vars.transition};
 `;
 const ToggleWrapper = styled.div<{ active?: boolean }>`
-  border: 1px solid
+  border: 2px solid
     ${({ theme, active }) => (active ? theme.active : theme.inactive)};
-  border-radius: 10px;
-  width: 40px;
+  border-radius: 2px;
+  width: 20px;
   height: 20px;
   position: relative;
   display: flex;
   align-items: center;
   transition: ${vars.transition};
-`;
-const ToggleCircle = styled.div<{ active?: boolean }>`
-  width: 16px;
-  height: 16px;
-  background-color: ${({ theme, active }) =>
-    active ? theme.colors.type : theme.inactive};
-  position: absolute;
-  border-radius: 8px;
-  margin-left: ${({ active }) => (active ? '20px' : '2px')};
-  transition: ${vars.transition};
+  svg {
+    stroke: ${({ theme, active }) => (active ? theme.active : theme.inactive)};
+    opacity: ${({ active }) => (active ? 1 : 0)};
+    transition: ${vars.transition};
+    stroke-width: 2px;
+  }
 `;

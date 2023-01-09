@@ -1,3 +1,4 @@
+export * from './ContextMenu';
 export * from './ExtendNodeMenu';
 export * from './NodeAddDirectiveMenu';
 export * from './NodeAddFieldMenu';

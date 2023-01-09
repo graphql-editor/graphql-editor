@@ -15,34 +15,36 @@ const configureOpts = (node: ParserField) => {
   });
   return opts;
 };
-export const NodeDirectiveOptionsMenu: React.FC<NodeDirectiveOptionsMenuProps> =
-  ({ node, hideMenu }) => {
-    const { tree, setTree } = useTreesState();
-    const [opts, setOpts] = useState(configureOpts(node));
-    useEffect(() => {
-      setOpts(configureOpts(node));
-    }, [node.type.directiveOptions]);
-    return (
-      <OptionsMenu
-        hideMenu={hideMenu}
-        options={opts}
-        menuName={'Add directive'}
-        onCheck={(o) => {
-          const turnOff = !!node.type.directiveOptions?.includes(
-            o as Directive,
+export const NodeDirectiveOptionsMenu = React.forwardRef<
+  HTMLDivElement,
+  NodeDirectiveOptionsMenuProps
+>(({ node, hideMenu, ...props }, ref) => {
+  const { tree, setTree } = useTreesState();
+  const [opts, setOpts] = useState(configureOpts(node));
+  useEffect(() => {
+    setOpts(configureOpts(node));
+  }, [node.type.directiveOptions]);
+  return (
+    <OptionsMenu
+      {...props}
+      ref={ref}
+      hideMenu={hideMenu}
+      options={opts}
+      menuName={'Add directive'}
+      onCheck={(o) => {
+        const turnOff = !!node.type.directiveOptions?.includes(o as Directive);
+        if (turnOff) {
+          node.type.directiveOptions = node.type.directiveOptions?.filter(
+            (opt) => opt !== o,
           );
-          if (turnOff) {
-            node.type.directiveOptions = node.type.directiveOptions?.filter(
-              (opt) => opt !== o,
-            );
-          } else {
-            node.type.directiveOptions = [
-              ...(node.type.directiveOptions || []),
-              o as Directive,
-            ];
-          }
-          setTree({ ...tree });
-        }}
-      />
-    );
-  };
+        } else {
+          node.type.directiveOptions = [
+            ...(node.type.directiveOptions || []),
+            o as Directive,
+          ];
+        }
+        setTree({ ...tree });
+      }}
+    />
+  );
+});

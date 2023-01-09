@@ -13,4 +13,8 @@ Feature: Easiliy navigate using sidebar
         Given User has the schema graph view opened
         When He clicks diff view
         Then He is navigated to the diff view
+    Scenario: User wants to hide/show sidebar
+        Given User has the sidebar opened
+        When user clicks an arrow caret on the sidebar
+        Then Sidebar shrinks
    

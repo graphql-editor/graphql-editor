@@ -24,6 +24,7 @@ export const EditableDefaultValue: React.FC<EditableDefaultValueProps> = ({
   onChange,
   style = {},
 }) => {
+  console.log(value);
   const [editedValue, setEditedValue] = useState(value);
   const checkEdit = () => {
     if (onChange) {

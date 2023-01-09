@@ -1,3 +1,4 @@
+import { ContextMenu } from '@/shared/components/ContextMenu';
 import { NewNodeMenu } from '@/shared/components/NewNode/NewNodeMenu';
 import { Plus } from '@/shared/icons';
 import styled from '@emotion/styled';
@@ -7,10 +8,19 @@ export const NewNode: React.FC = () => {
   const [open, setOpen] = useState(false);
   return (
     <MainContent onClick={() => setOpen(true)}>
-      <Main>
-        <span>New node</span> <Plus />
-      </Main>
-      {open && <NewNodeMenu hideMenu={() => setOpen(false)} />}
+      <ContextMenu
+        isOpen={open}
+        close={() => setOpen(false)}
+        Trigger={({ triggerProps }) => (
+          <Main {...triggerProps}>
+            <span>New node</span> <Plus />
+          </Main>
+        )}
+      >
+        {({ layerProps }) => (
+          <NewNodeMenu {...layerProps} hideMenu={() => setOpen(false)} />
+        )}
+      </ContextMenu>
     </MainContent>
   );
 };

@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import styled from '@emotion/styled';
-import { NodeDirectiveOptionsMenu } from '@/shared/components/ContextMenu';
+import {
+  ContextMenu,
+  NodeDirectiveOptionsMenu,
+} from '@/shared/components/ContextMenu';
 import { ParserField } from 'graphql-js-tree';
 import { transition } from '@/vars';
 
@@ -72,30 +75,33 @@ export const CreateNodeDirective: React.FC<CreateNodeDirectiveProps> = ({
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   return (
-    <CreateDirectiveBlock
-      onClick={(e) => {
-        if (isLocked) {
-          return;
-        }
-        e.stopPropagation();
-        setMenuOpen(true);
-      }}
+    <ContextMenu
+      isOpen={menuOpen}
+      close={() => setMenuOpen(false)}
+      Trigger={({ triggerProps }) => (
+        <CreateDirectiveBlock
+          {...triggerProps}
+          onClick={(e) => {
+            if (isLocked) {
+              return;
+            }
+            e.stopPropagation();
+            setMenuOpen(true);
+          }}
+        >
+          Add placement
+        </CreateDirectiveBlock>
+      )}
     >
-      Add placement
-      {menuOpen && (
-        <NodeMenuContainer>
+      {({ layerProps }) => {
+        return (
           <NodeDirectiveOptionsMenu
+            {...layerProps}
             node={node}
             hideMenu={() => setMenuOpen(false)}
           />
-        </NodeMenuContainer>
-      )}
-    </CreateDirectiveBlock>
+        );
+      }}
+    </ContextMenu>
   );
 };
-
-const NodeMenuContainer = styled.div`
-  position: fixed;
-  z-index: 2;
-  transform: translate(-0.25rem, 0.5rem);
-`;

@@ -1,23 +1,13 @@
 import React from 'react';
-import { useTheme } from '@/state/containers';
-export const Tick: React.FC<React.SVGProps<SVGSVGElement>> = ({
-  fill,
-  ...props
-}) => {
-  const { theme } = useTheme();
+export const Tick: React.FC<React.SVGProps<SVGSVGElement>> = ({ ...props }) => {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="6"
-      height="6"
-      fill="none"
-      viewBox="0 0 5 3"
       {...props}
+      fill="none"
+      viewBox="0 0 16 16"
+      xmlns="http://www.w3.org/2000/svg"
     >
-      <path
-        fill={fill || theme.active}
-        d="M3.834.271L2.119 2.007l-.963-.962-.395.395 1.358 1.362L4.229.663 3.834.271z"
-      ></path>
+      <path d="M5 8l2 2 3.75-4.333" strokeLinecap="round" />
     </svg>
   );
 };

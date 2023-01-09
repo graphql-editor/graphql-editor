@@ -4,6 +4,7 @@ import React from 'react';
 
 interface FieldPortProps {
   onClick: () => void;
+  children?: React.ReactNode;
   open?: boolean;
   icons?: {
     closed: keyof typeof Icons;
@@ -17,8 +18,8 @@ interface FieldPortProps {
 
 const Main = styled.div`
   position: relative;
-  width: 2rem;
-  height: 2rem;
+  padding: 0.5rem;
+  margin: -0.5rem 0;
   align-items: center;
   justify-content: center;
   cursor: pointer;
@@ -26,23 +27,33 @@ const Main = styled.div`
   pointer-events: all;
 `;
 
-export const FieldPort: React.FC<FieldPortProps> = ({
-  children,
-  onClick,
-  open,
-  info,
-  icons = { closed: 'Plus', open: 'Minus' },
-}) => {
-  const OpenComponent = Icons[icons.open];
-  const ClosedComponent = Icons[icons.closed];
-  return (
-    <Main title={info?.message} className="node-field-port" onClick={onClick}>
-      {open ? (
-        <OpenComponent className="opener-icon" height={10} width={10} />
-      ) : (
-        <ClosedComponent className="opener-icon" height={12} width={12} />
-      )}
-      {children}
-    </Main>
-  );
-};
+export const FieldPort = React.forwardRef<HTMLDivElement, FieldPortProps>(
+  (
+    {
+      children,
+      onClick,
+      open,
+      info,
+      icons = { closed: 'Plus', open: 'Minus' },
+    },
+    ref,
+  ) => {
+    const OpenComponent = Icons[icons.open];
+    const ClosedComponent = Icons[icons.closed];
+    return (
+      <Main
+        ref={ref}
+        title={info?.message}
+        className="node-field-port"
+        onClick={onClick}
+      >
+        {open ? (
+          <OpenComponent className="opener-icon" height={10} width={10} />
+        ) : (
+          <ClosedComponent className="opener-icon" height={12} width={12} />
+        )}
+        {children}
+      </Main>
+    );
+  },
+);

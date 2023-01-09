@@ -42,6 +42,11 @@ Feature: Easiliy navigate in Relation view
     Scenario: User doesnt see the new node menu
         Given User is in the schema graph view with edit mode off
         Then New node button should not be visible
+    Scenario: User wants to navigate via relation link to the field type
+        Given User is in the schema graph view with edit mode off
+        And has selected a node
+        When User clicks the line connected to the field
+        Then It navigates them to the clicked link node
     Scenario: User wants to create a node
         Given User is in the schema graph view with edit mode off
         When He clicks new node

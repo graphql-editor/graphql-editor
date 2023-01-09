@@ -16,7 +16,7 @@ import { KeyboardActions, useIO } from '@/shared/hooks/io';
 const SubNodeContainer = styled.div`
   font-family: ${fontFamilySans};
   transition: max-width 0.5s ease-in-out;
-  max-width: 50%;
+  max-width: 80%;
   bottom: 0;
   left: 0;
   top: 0;
@@ -33,6 +33,7 @@ const SubNodeWrapper = styled.div`
   top: 0;
   position: absolute;
   z-index: 2;
+  overflow-x: auto;
   pointer-events: none;
 `;
 

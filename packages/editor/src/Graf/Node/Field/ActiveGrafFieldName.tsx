@@ -13,12 +13,13 @@ const Main = styled.div`
 `;
 
 export const ActiveGrafFieldName: React.FC<
-  Pick<ParserField, 'name' | 'args' | 'data'> & {
+  Pick<ParserField, 'name' | 'args'> & {
     afterChange?: (newName: string) => void;
     parentTypes?: Record<string, string>;
     active?: boolean;
+    setParentDraggable?: (drag: boolean) => void;
   }
-> = ({ args, data, name, afterChange, parentTypes, active }) => {
+> = ({ args, name, afterChange, parentTypes, active, setParentDraggable }) => {
   if (args && args.length > 0) {
     return (
       <Main>
@@ -31,6 +32,7 @@ export const ActiveGrafFieldName: React.FC<
           args.map((a, i) => (
             <React.Fragment key={a.name}>
               <EditableText
+                setParentDraggable={setParentDraggable}
                 onChange={
                   active && afterChange
                     ? (newName) => {

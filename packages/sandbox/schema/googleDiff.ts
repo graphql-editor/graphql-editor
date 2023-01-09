@@ -113,7 +113,9 @@ enum CacheControlScope{
 
 scalar Date
 
-type DriveStep implements StepNode{
+type DriveStep implements StepNode @cacheControl(
+	maxAge: 12321
+){
 	stepTravelMode: String!
 	stepDistance: TypedData!
 	stepDuration: TypedData!
@@ -305,7 +307,9 @@ enum CacheControlScope{
 
 scalar Date
 
-type DriveStep implements StepNode{
+type DriveStep implements StepNode @cacheControl(
+	maxAge: 12321
+){
 	stepTravelMode: String!
 	stepDistance: TypedData!
 	stepDuration: TypedData!
@@ -315,7 +319,6 @@ type DriveStep implements StepNode{
 	stepInstruction: String!
 	maneuver: String
 }
-
 type TransitData{
 	headSign: String!
 	tripName: String!

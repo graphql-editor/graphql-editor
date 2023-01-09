@@ -9,4 +9,8 @@ Feature: Easiliy navigate using node navigation
         Given User is in the any view except full screen code with schema opened
         When He inputs a node name
         Then Nodes are filtered in node navigation
+    Scenario: User wants to select a node
+        Given User is in the any view except full screen code with schema opened
+        When They select a node in node navigation
+        Then Node is selected
    

@@ -395,8 +395,7 @@ export const Relation: React.FC = () => {
             }}
           >
             <Deselect
-              onMouseUp={() => {
-                console.log('Deselect', draggingMode);
+              onMouseUp={(e) => {
                 if (draggingMode !== 'grabbing') {
                   setSelectedNode({ source: 'relation', field: undefined });
                 }

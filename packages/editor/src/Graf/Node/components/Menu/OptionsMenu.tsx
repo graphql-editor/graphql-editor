@@ -47,26 +47,21 @@ const Circle = styled.div`
   transition: 0.25s background-color ease-in-out;
 `;
 
-export const OptionsMenu: React.FC<OptionsMenuProps> = ({
-  children,
-  options,
-  onCheck,
-  hideMenu,
-  menuName,
-  ...props
-}) => {
-  return (
-    <Menu menuName={menuName} hideMenu={hideMenu} {...props}>
-      {Object.keys(options).map((n) => {
-        return (
-          <DetailMenuItem key={n} onClick={() => onCheck(n)}>
-            <Main isSelected={options[n]}>
-              <span>{n}</span>
-              <Circle className="circle" />
-            </Main>
-          </DetailMenuItem>
-        );
-      })}
-    </Menu>
-  );
-};
+export const OptionsMenu = React.forwardRef<HTMLDivElement, OptionsMenuProps>(
+  ({ children, options, onCheck, hideMenu, menuName, ...props }, ref) => {
+    return (
+      <Menu menuName={menuName} hideMenu={hideMenu} {...props} ref={ref}>
+        {Object.keys(options).map((n) => {
+          return (
+            <DetailMenuItem key={n} onClick={() => onCheck(n)}>
+              <Main isSelected={options[n]}>
+                <span>{n}</span>
+                <Circle className="circle" />
+              </Main>
+            </DetailMenuItem>
+          );
+        })}
+      </Menu>
+    );
+  },
+);

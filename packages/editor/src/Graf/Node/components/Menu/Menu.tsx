@@ -1,11 +1,13 @@
-import React, { useRef } from 'react';
+import React from 'react';
 
-import { useOnClickOutside } from '@/Graf/Node/hooks';
 import styled from '@emotion/styled';
+import { fontFamilySans } from '@/vars';
 
 const Wrapper = styled.div`
   width: 220px;
   border-radius: 4px;
+  font-family: ${fontFamilySans};
+  z-index: 22;
 `;
 
 const Content = styled.div`
@@ -30,20 +32,15 @@ interface MenuProps
   menuName: string;
 }
 
-export const Menu: React.FC<MenuProps> = ({
-  children,
-  hideMenu,
-  menuName,
-  ...props
-}) => {
-  const menuRef = useRef<HTMLDivElement>(null);
-  useOnClickOutside(menuRef, () => hideMenu());
-  return (
-    <Wrapper {...props} ref={menuRef}>
-      <Content>
-        <Title>{menuName}</Title>
-        {children}
-      </Content>
-    </Wrapper>
-  );
-};
+export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
+  ({ children, hideMenu, menuName, ...props }, ref) => {
+    return (
+      <Wrapper {...props} ref={ref}>
+        <Content>
+          <Title>{menuName}</Title>
+          {children}
+        </Content>
+      </Wrapper>
+    );
+  },
+);

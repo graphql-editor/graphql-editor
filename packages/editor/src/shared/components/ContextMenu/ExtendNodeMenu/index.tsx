@@ -21,7 +21,10 @@ interface ExtendNodeMenuProps {
   hideMenu: () => void;
 }
 
-export const ExtendNodeMenu: React.FC<ExtendNodeMenuProps> = ({ hideMenu }) => {
+export const ExtendNodeMenu = React.forwardRef<
+  HTMLDivElement,
+  ExtendNodeMenuProps
+>(({ hideMenu, ...props }, ref) => {
   const { tree, allNodes, setTree, setSelectedNode } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   const creationNodes = useMemo(
@@ -69,9 +72,11 @@ export const ExtendNodeMenu: React.FC<ExtendNodeMenuProps> = ({ hideMenu }) => {
   };
   return (
     <Menu
+      {...props}
       menuName={'Extend node'}
       onScroll={(e) => e.stopPropagation()}
       hideMenu={hideMenu}
+      ref={ref}
     >
       <MenuSearch
         onSubmit={() => {
@@ -96,4 +101,4 @@ export const ExtendNodeMenu: React.FC<ExtendNodeMenuProps> = ({ hideMenu }) => {
       </MenuScrollingArea>
     </Menu>
   );
-};
+});

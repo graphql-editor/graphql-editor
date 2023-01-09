@@ -17,9 +17,10 @@ interface NodeChangeFieldTypeMenuProps {
   hideMenu: () => void;
 }
 
-export const NodeChangeFieldTypeMenu: React.FC<
+export const NodeChangeFieldTypeMenu = React.forwardRef<
+  HTMLDivElement,
   NodeChangeFieldTypeMenuProps
-> = ({ node, fieldIndex, hideMenu }) => {
+>(({ node, fieldIndex, hideMenu, ...props }, ref) => {
   const { updateNode, allNodes } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -53,6 +54,8 @@ export const NodeChangeFieldTypeMenu: React.FC<
   };
   return (
     <Menu
+      {...props}
+      ref={ref}
       menuName={'Change type'}
       onScroll={(e) => e.stopPropagation()}
       hideMenu={hideMenu}
@@ -87,4 +90,4 @@ export const NodeChangeFieldTypeMenu: React.FC<
       </MenuScrollingArea>
     </Menu>
   );
-};
+});

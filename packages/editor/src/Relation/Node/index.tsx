@@ -29,11 +29,10 @@ const Content = styled.div<ContentProps>`
   background-color: ${({ theme }) => `${theme.background.mainFurther}`};
   padding: 12px;
   position: relative;
-  text-overflow: ellipsis;
+  text-rendering: optimizeSpeed;
   border-radius: 0.75rem;
   margin: 15px;
   transition: 0.25s all ease-in-out;
-  pointer-events: all;
   z-index: 1;
   flex: 1 0 auto;
   font-family: ${fontFamilySans};
@@ -92,7 +91,6 @@ interface NodeProps {
   setRef: (instance: HTMLDivElement) => void;
   filteredFieldTypes: string;
   setFilteredFieldsTypes: (q: string) => void;
-  panState?: 'grab' | 'auto' | 'grabbing';
 }
 
 export const Node: React.FC<NodeProps> = ({
@@ -103,7 +101,6 @@ export const Node: React.FC<NodeProps> = ({
   filteredFieldTypes,
   setFilteredFieldsTypes,
   readOnly,
-  panState,
 }) => {
   const { setSelectedNode, selectedNode, tree, libraryTree } = useTreesState();
   const isNodeActive =
@@ -191,7 +188,6 @@ export const Node: React.FC<NodeProps> = ({
         }
       }}
       onClick={(e) => {
-        if (panState === 'grabbing') return;
         e.stopPropagation();
         setSelectedNode({
           field: tree.nodes

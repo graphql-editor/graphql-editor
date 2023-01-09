@@ -21,10 +21,10 @@ interface NodeAddDirectiveMenuProps {
   hideMenu: () => void;
 }
 
-export const NodeAddDirectiveMenu: React.FC<NodeAddDirectiveMenuProps> = ({
-  node,
-  hideMenu,
-}) => {
+export const NodeAddDirectiveMenu = React.forwardRef<
+  HTMLDivElement,
+  NodeAddDirectiveMenuProps
+>(({ node, hideMenu, ...props }, ref) => {
   const { tree, libraryTree, setTree, allNodes } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -73,6 +73,8 @@ export const NodeAddDirectiveMenu: React.FC<NodeAddDirectiveMenuProps> = ({
   };
   return (
     <Menu
+      {...props}
+      ref={ref}
       menuName={'Add directive'}
       onScroll={(e) => e.stopPropagation()}
       hideMenu={hideMenu}
@@ -107,4 +109,4 @@ export const NodeAddDirectiveMenu: React.FC<NodeAddDirectiveMenuProps> = ({
       </MenuScrollingArea>
     </Menu>
   );
-};
+});

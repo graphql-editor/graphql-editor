@@ -15,9 +15,10 @@ interface NodeImplementInterfacesMenuProps {
   hideMenu: () => void;
 }
 
-export const NodeImplementInterfacesMenu: React.FC<
+export const NodeImplementInterfacesMenu = React.forwardRef<
+  HTMLDivElement,
   NodeImplementInterfacesMenuProps
-> = ({ node, hideMenu }) => {
+>(({ node, hideMenu, ...props }, ref) => {
   const { tree, allNodes, updateNode } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -76,9 +77,11 @@ export const NodeImplementInterfacesMenu: React.FC<
   };
   return (
     <Menu
+      {...props}
       menuName={'Implement interface'}
       onScroll={(e) => e.stopPropagation()}
       hideMenu={() => hideMenu()}
+      ref={ref}
     >
       <MenuSearch
         onSubmit={() => {
@@ -110,4 +113,4 @@ export const NodeImplementInterfacesMenu: React.FC<
       </MenuScrollingArea>
     </Menu>
   );
-};
+});

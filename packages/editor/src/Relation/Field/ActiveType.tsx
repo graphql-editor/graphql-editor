@@ -1,35 +1,28 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ParserField } from 'graphql-js-tree';
 import { compileScalarTypes, compileTypeOptions } from '@/GraphQL/Compile';
-import { useTheme } from '@/state/containers';
+import styled from '@emotion/styled';
 export const ActiveType: React.FC<
   Pick<ParserField, 'type'> & {
     parentTypes?: Record<string, string>;
     onClick?: () => void;
   }
 > = ({ type, parentTypes, onClick }) => {
-  let compiledType = compileTypeOptions({ type });
-  const {
-    theme: { colors },
-  } = useTheme();
-
-  const getTypeColor = () => {
-    const t = compileScalarTypes(type);
-    if (t in colors) {
-      return (colors as any)[t] as string;
-    }
-    if (parentTypes && t in parentTypes) {
-      return (colors as any)[parentTypes[t]];
-    }
-    return '#fff';
-  };
-
+  let compiledType = useMemo(() => compileTypeOptions({ type }), [type]);
+  const sType = useMemo(() => compileScalarTypes(type), [type]);
+  const color = parentTypes?.[sType] ? parentTypes[sType] : sType;
   return (
-    <a
-      onClick={onClick}
-      style={{ color: getTypeColor(), cursor: onClick ? 'pointer' : 'auto' }}
-    >
+    <AType onClick={onClick} color={color} clickable={!!onClick}>
       {compiledType}
-    </a>
+    </AType>
   );
 };
+
+const AType = styled.a<{ clickable?: boolean; color?: string }>`
+  color: ${({ color, theme }) =>
+    color
+      ? theme.colors[color as keyof typeof theme.colors]
+        ? theme.colors[color as keyof typeof theme.colors]
+        : theme.text
+      : theme.text};
+`;
