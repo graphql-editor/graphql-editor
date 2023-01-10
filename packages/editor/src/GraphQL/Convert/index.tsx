@@ -36,12 +36,10 @@ export const ConvertStringToObject = (
         field: ${fieldType} = ${value}
     }
 `;
-  console.log(computeString);
   const TranslatedString = Parser.parse(computeString);
   const translationNode = TranslatedString.nodes.find(
     (n) => n.name === 'Translate',
   );
-  console.log(translationNode);
   if (!translationNode || !translationNode.args) {
     return;
   }

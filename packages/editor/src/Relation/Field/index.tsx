@@ -27,18 +27,14 @@ const Main = styled.div<{ isActive?: boolean }>`
 
 type FieldProps = Pick<GrafFieldProps, 'node'> & {
   active?: boolean;
-  isPrimitive?: boolean;
   showArgs?: boolean;
-  readOnly?: boolean;
 };
 
-export const Field: React.FC<FieldProps> = ({ node, active, readOnly }) => {
+export const Field: React.FC<FieldProps> = ({ node, active }) => {
   const { parentTypes } = useTreesState();
   return (
     <Main isActive={active}>
       <ActiveFieldName
-        active={active}
-        data={node.data}
         name={
           node.data.type !== TypeSystemDefinition.UnionMemberDefinition
             ? node.name

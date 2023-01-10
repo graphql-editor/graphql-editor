@@ -18,8 +18,7 @@ export const EditableText: React.FC<{
   onChange?: (value: string) => void;
   style?: React.CSSProperties;
   exclude?: string[];
-  setParentDraggable?: (drag: boolean) => void;
-}> = ({ value, onChange, style = {}, exclude = [], setParentDraggable }) => {
+}> = ({ value, onChange, style = {}, exclude = [] }) => {
   const [editedValue, setEditedValue] = useState('');
   const [isError, setIsError] = useState(false);
   const [w, setW] = useState(20);
@@ -27,7 +26,6 @@ export const EditableText: React.FC<{
   const inputRef = useRef<HTMLInputElement>(null);
   const checkEdit = () => {
     inputRef.current?.blur();
-    setParentDraggable?.(true);
     if (isError) {
       setEditedValue(value);
       return;
@@ -57,18 +55,13 @@ export const EditableText: React.FC<{
             ref={inputRef}
             isError={isError}
             value={editedValue}
-            draggable
-            onDragStart={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setParentDraggable?.(false);
-            }}
             pattern="[_A-Za-z][_0-9A-Za-z]*"
             style={{ width: `${w}px`, ...style }}
             title={isError ? 'Name already exists' : 'rename'}
             onBlur={(e) => {
               checkEdit();
             }}
+            onClick={(e) => (e.target as any).focus()}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 checkEdit();
@@ -93,5 +86,6 @@ const HiddenSpan = styled.span`
   font-family: ${fontFamilySans};
   left: 0;
   position: absolute;
+  pointer-events: none;
   font-size: ${GRAF_FIELD_NAME_SIZE}px;
 `;

@@ -18,12 +18,10 @@ const Name = styled.div`
 `;
 
 export const ActiveFieldName: React.FC<
-  Pick<ParserField, 'name' | 'args' | 'data'> & {
-    afterChange?: (newName: string) => void;
+  Pick<ParserField, 'name' | 'args'> & {
     parentTypes?: Record<string, string>;
-    active?: boolean;
   }
-> = ({ args, data, name, afterChange, parentTypes, active }) => {
+> = ({ args, name, parentTypes }) => {
   if (args && args.length > 0) {
     return (
       <Main>

@@ -24,6 +24,12 @@ module.exports = {
     extensions: ['.mjs', '.js', '.jsx', '.ts', '.tsx'],
     mainFields: ['module', 'browser', 'main'],
     plugins: [new TsConfigPathsPlugin({})],
+    alias: {
+      'react-dom': path.join(
+        __dirname,
+        '../../node_modules/react-dom/profiling',
+      ),
+    },
   },
   module: {
     rules: [

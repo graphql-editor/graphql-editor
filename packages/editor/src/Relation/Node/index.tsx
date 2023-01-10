@@ -128,7 +128,6 @@ export const Node: React.FC<NodeProps> = ({
               isNodeActive &&
               field.data.type !== TypeDefinition.EnumTypeDefinition
             }
-            readOnly={readOnly}
             key={a.name}
             node={a}
           />

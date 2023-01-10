@@ -17,9 +17,8 @@ export const ActiveGrafFieldName: React.FC<
     afterChange?: (newName: string) => void;
     parentTypes?: Record<string, string>;
     active?: boolean;
-    setParentDraggable?: (drag: boolean) => void;
   }
-> = ({ args, name, afterChange, parentTypes, active, setParentDraggable }) => {
+> = ({ args, name, afterChange, parentTypes, active }) => {
   if (args && args.length > 0) {
     return (
       <Main>
@@ -32,7 +31,6 @@ export const ActiveGrafFieldName: React.FC<
           args.map((a, i) => (
             <React.Fragment key={a.name}>
               <EditableText
-                setParentDraggable={setParentDraggable}
                 onChange={
                   active && afterChange
                     ? (newName) => {
