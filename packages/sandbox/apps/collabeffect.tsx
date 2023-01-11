@@ -62,7 +62,6 @@ type Person{
 }
 `,
 ];
-removal.reverse();
 
 export const CollabEffect = () => {
   const [currentSchema, setCurrentSchema] = useState<PassedSchema>({
