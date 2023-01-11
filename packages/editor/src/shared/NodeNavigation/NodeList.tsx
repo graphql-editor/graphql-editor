@@ -51,22 +51,13 @@ const Title = styled.div<{
   svg {
     fill: ${({ theme }) => theme.dimmed};
     transition: ${transition};
-    transform: ${({ open }) => (open ? 'scaleY(1.0)' : 'scaleY(-1.0)')};
+    transform-origin: 50%;
+    transform: ${({ open }) => (open ? 'rotate(0deg)' : 'rotate(-90deg)')};
   }
 `;
 
-type ListTitle =
-  | 'Schema'
-  | 'Types'
-  | 'Interface'
-  | 'Inputs'
-  | 'Enums'
-  | 'Scalars'
-  | 'Unions'
-  | 'Directives';
-
 interface NodeListI {
-  listTitle: ListTitle;
+  listTitle: string;
   nodeList?: ParserField[];
   expanded: Array<string>;
   setExpanded: (e: string) => void;

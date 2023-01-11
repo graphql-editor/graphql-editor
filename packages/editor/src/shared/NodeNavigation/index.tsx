@@ -3,18 +3,20 @@ import { useIO, KeyboardActions } from '@/shared/hooks/io';
 import { NodeList } from '@/shared/NodeNavigation/NodeList';
 import { useTreesState } from '@/state/containers';
 import { useSortState } from '@/state/containers/sort';
+import { fontFamilySans } from '@/vars';
 import styled from '@emotion/styled';
 
 import {
   ParserField,
   TypeDefinition,
   TypeSystemDefinition,
+  TypeExtension,
 } from 'graphql-js-tree';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 const ListWrapper = styled.div`
   width: 100%;
-  padding: 0 20px 100px;
+  padding: 0 1rem 100px;
   position: relative;
 `;
 
@@ -26,15 +28,25 @@ const ListContainer = styled.div`
   background: ${({ theme }) => theme.background.mainFurther};
   border-left: ${({ theme }) => theme.moduleSeparator} 2px solid;
   height: 100%;
-  width: 18rem;
+  width: 24rem;
 `;
 const SearchWrapper = styled.div`
-  padding: 20px;
+  padding: 1rem;
   position: sticky;
   width: 100%;
   top: 0;
   background: ${({ theme }) => theme.background.mainFurther};
   z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+`;
+const Header = styled.div`
+  font-size: 16px;
+  font-family: ${fontFamilySans};
+  font-weight: 500;
+  color: ${({ theme }) => theme.dimmed};
+  white-space: nowrap;
 `;
 
 export const NodeNavigation = () => {
@@ -50,6 +62,7 @@ export const NodeNavigation = () => {
     'Scalars',
     'Unions',
     'Directives',
+    'Type Extensions',
   ]);
   const searchRef = useRef<HTMLInputElement>(null);
   const { mount } = useIO();
@@ -71,6 +84,14 @@ export const NodeNavigation = () => {
     const interfaceNodes: ParserField[] = [];
     const schemaNodes: ParserField[] = [];
     const directivesNodes: ParserField[] = [];
+
+    const extEnumNodes: ParserField[] = [];
+    const extUnionNodes: ParserField[] = [];
+    const extInputNodes: ParserField[] = [];
+    const extScalarNodes: ParserField[] = [];
+    const extTypeNodes: ParserField[] = [];
+    const extInterfaceNodes: ParserField[] = [];
+
     const filteredNodes = allNodes.nodes.filter((n) =>
       n.name.toLowerCase().includes(q.toLowerCase()),
     );
@@ -78,6 +99,24 @@ export const NodeNavigation = () => {
     filteredNodes.sort(sortAlphabetically);
     filteredNodes.forEach((node) => {
       switch (node.data.type) {
+        case TypeExtension.ObjectTypeExtension:
+          extTypeNodes.push(node);
+          break;
+        case TypeExtension.EnumTypeExtension:
+          extEnumNodes.push(node);
+          break;
+        case TypeExtension.InputObjectTypeExtension:
+          extInputNodes.push(node);
+          break;
+        case TypeExtension.InterfaceTypeExtension:
+          extInterfaceNodes.push(node);
+          break;
+        case TypeExtension.ScalarTypeExtension:
+          extScalarNodes.push(node);
+          break;
+        case TypeExtension.UnionTypeExtension:
+          extUnionNodes.push(node);
+          break;
         case TypeDefinition.EnumTypeDefinition:
           enumNodes.push(node);
           break;
@@ -115,12 +154,19 @@ export const NodeNavigation = () => {
       interfaceNodes,
       schemaNodes,
       directivesNodes,
+      extEnumNodes,
+      extInputNodes,
+      extInterfaceNodes,
+      extScalarNodes,
+      extTypeNodes,
+      extUnionNodes,
     };
   }, [allNodes, q]);
 
   return (
     <ListContainer>
       <SearchWrapper>
+        <Header>Navigation</Header>
         <SearchInput
           ref={searchRef}
           onChange={(e) => {
@@ -220,6 +266,19 @@ export const NodeNavigation = () => {
           listTitle="Directives"
           colorKey="directive"
         />
+        {!!splittedNodes.extTypeNodes.length && (
+          <NodeList
+            expanded={listExpanded}
+            setExpanded={(e) =>
+              setListExpanded((le) =>
+                le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+              )
+            }
+            nodeList={splittedNodes?.extTypeNodes}
+            listTitle="Type Extensions"
+            colorKey="type"
+          />
+        )}
       </ListWrapper>
     </ListContainer>
   );

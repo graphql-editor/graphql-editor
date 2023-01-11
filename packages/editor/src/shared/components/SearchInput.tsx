@@ -18,7 +18,7 @@ const Wrapper = styled.div`
 `;
 
 const Main = styled.input`
-  background-color: ${({ theme }) => theme.background.mainFurther};
+  background-color: ${({ theme }) => theme.background.mainFurthers};
   border-radius: 5px;
   color: ${({ theme }) => theme.text};
   width: 100%;

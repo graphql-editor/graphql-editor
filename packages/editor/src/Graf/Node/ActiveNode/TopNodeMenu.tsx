@@ -7,6 +7,8 @@ import {
   Instances,
   Options,
   compileType,
+  createParserField,
+  TypeDefinitionDisplayMap,
 } from 'graphql-js-tree';
 import {
   MenuScrollingArea,
@@ -26,6 +28,7 @@ import { useTreesState } from '@/state/containers/trees';
 import { useTheme } from '@/state/containers';
 import { getScalarFields } from '@/Graf/utils/getScalarFields';
 import styled from '@emotion/styled';
+import { ResolveExtension } from '@/GraphQL/Resolve';
 
 type PossibleMenus =
   | 'field'
@@ -56,7 +59,8 @@ export const TopNodeMenu: React.FC<{
   onDuplicate?: () => void;
   onInputCreate?: () => void;
 }> = ({ node, onDelete, onDuplicate, onInputCreate }) => {
-  const { scalars, tree, setTree, selectedNode } = useTreesState();
+  const { scalars, tree, setTree, selectedNode, setSelectedNode } =
+    useTreesState();
   const { theme } = useTheme();
 
   const [menuOpen, setMenuOpen] = useState<PossibleMenus>();
@@ -213,6 +217,33 @@ export const TopNodeMenu: React.FC<{
           <Menu {...layerProps} menuName={'Node options'} hideMenu={hideMenu}>
             <MenuScrollingArea>
               <DetailMenuItem onClick={onDelete}>Delete node</DetailMenuItem>
+              <DetailMenuItem
+                onClick={() => {
+                  const extendNode = createParserField({
+                    data: {
+                      type: ResolveExtension(node.data.type)!,
+                    },
+                    description: undefined,
+                    type: {
+                      fieldType: {
+                        name: TypeDefinitionDisplayMap[
+                          ResolveExtension(node.data.type)!
+                        ],
+                        type: Options.name,
+                      },
+                    },
+                    name: node.name,
+                    args: [],
+                    interfaces: [],
+                    directives: [],
+                  });
+                  tree.nodes.push(extendNode);
+                  setTree({ ...tree });
+                  setSelectedNode({ field: extendNode, source: 'diagram' });
+                }}
+              >
+                Extend node
+              </DetailMenuItem>
               {onDuplicate && (
                 <DetailMenuItem
                   onClick={() => {

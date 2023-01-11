@@ -60,21 +60,19 @@ const DeselectWrapper = styled.div`
 
 const TooltippedZoom = styled.div`
   position: relative;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   background: transparent;
-  width: 50px;
+  width: 3rem;
   border: 0;
   text-align: center;
   color: ${({ theme }) => theme.inactive};
   font-family: ${fontFamilySans};
   cursor: pointer;
-  padding: 8px;
   border-radius: 4px;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-right: 10px;
   &[data-tooltip] {
     &:after {
       content: attr(data-tooltip);
@@ -109,18 +107,11 @@ const IconWrapper = styled.div`
   color: ${({ theme }) => theme.inactive};
   font-family: ${fontFamilySans};
   cursor: pointer;
-  background-color: ${({ theme }) => theme.background.mainFurther};
-  padding: 8px;
-  border-radius: 4px;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 50px;
-  height: 38px;
   user-select: none;
   transition: ${vars.transition};
   :hover {
-    background-color: ${({ theme }) => theme.background.mainFurthest};
+    color: ${({ theme }) => theme.text};
   }
 
   &[data-tooltip] {
@@ -152,14 +143,27 @@ const IconWrapper = styled.div`
 `;
 
 const TogglesWrapper = styled.div`
-  height: 40px;
   align-self: center;
   display: flex;
   justify-content: center;
   align-items: center;
-  border-right: 1px solid ${({ theme }) => theme.disabled}36;
-  border-left: 1px solid ${({ theme }) => theme.disabled}36;
-  padding-left: 20px;
+  padding: 0.5rem 1rem;
+  background-color: ${({ theme }) => theme.background.mainCloser};
+  border-radius: 2px;
+  gap: 1rem;
+`;
+const ZoomWrapper = styled.div`
+  align-self: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background-color: ${({ theme }) => theme.background.mainFurthers};
+  border-color: ${({ theme }) => theme.background.mainCloser};
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 2px;
+  gap: 1rem;
 `;
 
 const Menu = styled.div`
@@ -313,31 +317,33 @@ export const Relation: React.FC = () => {
             </DeselectWrapper>
           )}
           {!selectedNode?.field && !readonly && <NewNode />}
-          <IconWrapper
-            data-tooltip="Zoom out"
-            onClick={() => {
-              setScaleFactor((prevState) =>
-                Math.max(parseInt(prevState) - step * 100, 30).toFixed(),
-              );
-              ref.current?.zoomOut(step);
-            }}
-          >
-            <Minus width={16} height={16} />
-          </IconWrapper>
-          <TooltippedZoom data-tooltip="Ctrl/Cmd + Scroll to zoom in/out">
-            <span>{scaleFactor + '%'}</span>
-          </TooltippedZoom>
-          <IconWrapper
-            data-tooltip="Zoom in"
-            onClick={() => {
-              ref.current?.zoomIn(step);
-              setScaleFactor((prevState) =>
-                Math.min(parseInt(prevState) + step * 100, 150).toFixed(),
-              );
-            }}
-          >
-            <Plus width={16} height={16} />
-          </IconWrapper>
+          <ZoomWrapper>
+            <IconWrapper
+              data-tooltip="Zoom out"
+              onClick={() => {
+                setScaleFactor((prevState) =>
+                  Math.max(parseInt(prevState) - step * 100, 30).toFixed(),
+                );
+                ref.current?.zoomOut(step);
+              }}
+            >
+              <Minus width={16} height={16} />
+            </IconWrapper>
+            <TooltippedZoom data-tooltip="Ctrl/Cmd + Scroll to zoom in/out">
+              <span>{scaleFactor + '%'}</span>
+            </TooltippedZoom>
+            <IconWrapper
+              data-tooltip="Zoom in"
+              onClick={() => {
+                ref.current?.zoomIn(step);
+                setScaleFactor((prevState) =>
+                  Math.min(parseInt(prevState) + step * 100, 150).toFixed(),
+                );
+              }}
+            >
+              <Plus width={16} height={16} />
+            </IconWrapper>
+          </ZoomWrapper>
           <TogglesWrapper>
             <Toggle
               toggled={editMode}

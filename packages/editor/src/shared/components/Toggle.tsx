@@ -20,15 +20,13 @@ const Main = styled.div`
   display: flex;
   gap: 5px;
   align-items: center;
-  margin-right: 12px;
-  height: 20px;
   cursor: pointer;
 `;
 const Text = styled.div<{ active?: boolean }>`
-  font-size: 14px;
+  font-size: 13px;
   line-height: 12px;
   color: ${({ theme, active }) => (active ? theme.text : theme.inactive)};
-  font-weight: 400;
+  font-weight: 500;
   transition: ${vars.transition};
 `;
 const ToggleWrapper = styled.div<{ active?: boolean }>`
