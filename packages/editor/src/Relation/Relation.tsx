@@ -187,7 +187,7 @@ export const Relation: React.FC = () => {
   const mainRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const { selectedNode, allNodes, setSelectedNode } = useTreesState();
+  const { selectedNode, allNodes, setSelectedNode, readonly } = useTreesState();
   const { grafErrors } = useErrorsState();
   const {
     setBaseTypesOn,
@@ -311,7 +311,7 @@ export const Relation: React.FC = () => {
               </IconWrapper>
             </DeselectWrapper>
           )}
-          {!selectedNode?.field && <NewNode />}
+          {!selectedNode?.field && !readonly && <NewNode />}
           <IconWrapper
             data-tooltip="Zoom out"
             onClick={() => {

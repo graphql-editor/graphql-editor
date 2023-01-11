@@ -11,3 +11,4 @@ export * from './libraries';
 export * from './Light';
 export * from './readonly';
 export * from './Saleor';
+export * from './collabeffect';

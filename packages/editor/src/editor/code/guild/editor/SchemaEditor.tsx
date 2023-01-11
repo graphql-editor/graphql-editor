@@ -111,6 +111,7 @@ function BaseSchemaEditor(
         setEditor(editor);
         props.onMount && props.onMount(editor, monaco);
       }}
+      keepCurrentModel
       onValidate={onValidate}
       onChange={(newValue, ev) => {
         props.onChange && props.onChange(newValue, ev);

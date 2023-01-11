@@ -21,6 +21,7 @@ import { monacoSetDecorations } from '@/editor/code/monaco/decorations';
 import { useTheme } from '@/state/containers';
 import { findCurrentNodeName } from '@/editor/code/guild/editor/onCursor';
 import { Maybe } from 'graphql-language-service';
+import { diffChars } from 'diff';
 
 export type SchemaEditorApi = {
   jumpToType(typeName: string): void;
@@ -66,6 +67,8 @@ const compileSchema = ({
 }) => {
   return [schema, libraries || ''].join('\n');
 };
+
+let cursor: monaco.IPosition;
 
 export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
   const [editorRef, setEditor] =
@@ -168,10 +171,64 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
         languageService.getHoverProvider(options.hoverProviders || []),
       );
 
+      const cursorPreserveDisposable = editorRef.onDidChangeCursorPosition(
+        (e) => {
+          if (e.reason === 3) {
+            cursor = e.position;
+          }
+        },
+      );
+      const changeModelContentDisposable = editorRef.onDidChangeModelContent(
+        (e) => {
+          const model = editorRef.getModel();
+          if (!model) return;
+          const index = model.getOffsetAt(cursor) || 0;
+          let changedIndex = index;
+          console.log(index);
+          e.changes.forEach((change) => {
+            const diff = diffChars(
+              options.schema?.replaceAll('\t', '  ') || '',
+              change.text.replaceAll('\t', '  '),
+            );
+            let currentIndex = 0;
+            diff.forEach((d) => {
+              const count = d.count;
+              if (!count) return;
+              const start = currentIndex;
+              const end = currentIndex + count;
+              if (d.removed) {
+                console.log('R', start, end, index);
+                if (end <= index) {
+                  changedIndex -= count;
+                } else {
+                  if (start < index) {
+                    changedIndex -= index - start;
+                  }
+                }
+              } else if (d.added) {
+                console.log('A', start, end, index);
+                if (start < index) {
+                  changedIndex += count;
+                }
+              }
+              console.log(changedIndex);
+              currentIndex += count;
+            });
+          });
+          const newPosition = model.getPositionAt(changedIndex);
+          if (newPosition) {
+            cursor = { ...newPosition };
+            editorRef.setPosition(newPosition);
+          }
+        },
+      );
+
       return () => {
         onCursorChangeDisposable && onCursorChangeDisposable.dispose();
         hoverDisposable && hoverDisposable.dispose();
         definitionProviderDisposable && definitionProviderDisposable.dispose();
+        cursorPreserveDisposable && cursorPreserveDisposable.dispose();
+        changeModelContentDisposable && changeModelContentDisposable.dispose();
       };
     }
 

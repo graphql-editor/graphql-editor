@@ -1,6 +1,6 @@
 {
   "name": "graphql-editor",
-  "version": "6.0.5",
+  "version": "6.0.6",
   "private": false,
   "license": "MIT",
   "description": "Visual node editor for GraphQL",
@@ -40,6 +40,7 @@
     "@emotion/styled": "^11.9.3",
     "@pronestor/react-zoom-pan-pinch": "^2.4.3",
     "color2k": "^1.2.4",
+    "diff": "^5.1.0",
     "fuzzyjs": "^5.0.1",
     "graphql-editor-worker": "^5.9.3",
     "graphql-js-tree": "^0.1.9",
@@ -57,6 +58,7 @@
     }
   },
   "devDependencies": {
+    "@types/diff": "^5.0.2",
     "@types/react-transition-group": "^4.4.5"
   }
 }
