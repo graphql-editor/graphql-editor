@@ -1,10 +1,8 @@
-//@ts-nocheck
 import React, { useEffect, useState } from 'react';
 import { GraphQLEditor } from 'graphql-editor';
-import { MainTheme } from 'graphql-editor';
 import { PassedSchema } from 'graphql-editor';
 
-const schemas = [
+const adding = [
   `
 type Person{
   name: String!
@@ -35,10 +33,40 @@ type Person{
 }
 `,
 ];
+const removal = [
+  `
+type Person{
+  name: String!
+  age: Int
+  firstName: String
+  lastName:String
+}
+`,
+  `
+type Person{
+  name: String!
+  age: Int
+  firstName: String
+}
+`,
+  `
+type Person{
+  name: String!
+  age: Int
+}
+`,
+
+  `
+type Person{
+  name: String!
+}
+`,
+];
+removal.reverse();
 
 export const CollabEffect = () => {
   const [currentSchema, setCurrentSchema] = useState<PassedSchema>({
-    code: schemas[0],
+    code: adding[0],
     libraries: '',
   });
   useEffect(() => {
@@ -46,15 +74,15 @@ export const CollabEffect = () => {
       () =>
         setCurrentSchema((cs) => ({
           ...cs,
-          code: schemas[1],
+          code: adding[1],
         })),
-      15000,
+      5000,
     );
     setTimeout(
       () =>
         setCurrentSchema((cs) => ({
           ...cs,
-          code: schemas[2],
+          code: adding[2],
         })),
       10000,
     );
@@ -62,9 +90,9 @@ export const CollabEffect = () => {
       () =>
         setCurrentSchema((cs) => ({
           ...cs,
-          code: schemas[3],
+          code: adding[3],
         })),
-      5000,
+      15000,
     );
   }, []);
   return (
@@ -83,22 +111,6 @@ export const CollabEffect = () => {
         sidebarExpanded
         setSchema={(s) => {
           setCurrentSchema(s);
-        }}
-        diffSchemas={{
-          '1.0': schemas.googleDirectionsNew,
-          '1.1': schemas.googleDirectionsOld,
-          '1.2': schemas.googleDirectionsNew,
-          '2.0': schemas.googleDirectionsOld,
-          '2.5': schemas.googleDirectionsNew,
-          '3.1': schemas.googleDirectionsOld,
-          '3.2': schemas.googleDirectionsNew,
-          '3.3': schemas.googleDirectionsOld,
-          '3.4': schemas.googleDirectionsNew,
-          '3.5': schemas.googleDirectionsOld,
-          '3.6': schemas.googleDirectionsNew,
-          '4.0': schemas.googleDirectionsOld,
-          '5.0': schemas.googleDirectionsNew,
-          '10.0': schemas.googleDirectionsOld,
         }}
       />
     </div>

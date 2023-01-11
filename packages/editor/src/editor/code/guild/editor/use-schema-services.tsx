@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import type * as monaco from 'monaco-editor';
 import {
   DecorationsSource,
@@ -21,7 +21,7 @@ import { monacoSetDecorations } from '@/editor/code/monaco/decorations';
 import { useTheme } from '@/state/containers';
 import { findCurrentNodeName } from '@/editor/code/guild/editor/onCursor';
 import { Maybe } from 'graphql-language-service';
-import { diffChars } from 'diff';
+import { getNewCursorIndex } from '@/editor/code/guild/editor/onCursor/compare';
 
 export type SchemaEditorApi = {
   jumpToType(typeName: string): void;
@@ -68,7 +68,7 @@ const compileSchema = ({
   return [schema, libraries || ''].join('\n');
 };
 
-let cursor: monaco.IPosition;
+let cursorIndex = -1;
 
 export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
   const [editorRef, setEditor] =
@@ -76,6 +76,7 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
   const [codeErrors, setCodeErrors] = React.useState<EditorError[]>([]);
   const [decorationIds, setDecorationIds] = React.useState<string[]>([]);
   const [monacoRef, setMonaco] = React.useState<typeof monaco | null>(null);
+  const previousSchema = usePrevious(options.schema);
   const { theme } = useTheme();
   // move to worker
   const languageService = React.useMemo(() => {
@@ -94,6 +95,23 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
       })
     );
   }, [options.libraries, options.schema]);
+
+  React.useEffect(() => {
+    const model = editorRef?.getModel();
+    console.log('REMOTE CHANGE');
+    if (!model) return;
+    let changedIndex = cursorIndex;
+    changedIndex = getNewCursorIndex({
+      oldSchema: previousSchema || '',
+      newSchema: options.schema || '',
+      cursorIndex,
+    });
+    const newPosition = model.getPositionAt(changedIndex);
+    if (newPosition) {
+      cursorIndex = changedIndex;
+      editorRef?.setPosition(newPosition);
+    }
+  }, [options.schema]);
 
   React.useEffect(() => {
     if (monacoRef && editorRef) {
@@ -174,51 +192,7 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
       const cursorPreserveDisposable = editorRef.onDidChangeCursorPosition(
         (e) => {
           if (e.reason === 3) {
-            cursor = e.position;
-          }
-        },
-      );
-      const changeModelContentDisposable = editorRef.onDidChangeModelContent(
-        (e) => {
-          const model = editorRef.getModel();
-          if (!model) return;
-          const index = model.getOffsetAt(cursor) || 0;
-          let changedIndex = index;
-          console.log(index);
-          e.changes.forEach((change) => {
-            const diff = diffChars(
-              options.schema?.replaceAll('\t', '  ') || '',
-              change.text.replaceAll('\t', '  '),
-            );
-            let currentIndex = 0;
-            diff.forEach((d) => {
-              const count = d.count;
-              if (!count) return;
-              const start = currentIndex;
-              const end = currentIndex + count;
-              if (d.removed) {
-                console.log('R', start, end, index);
-                if (end <= index) {
-                  changedIndex -= count;
-                } else {
-                  if (start < index) {
-                    changedIndex -= index - start;
-                  }
-                }
-              } else if (d.added) {
-                console.log('A', start, end, index);
-                if (start < index) {
-                  changedIndex += count;
-                }
-              }
-              console.log(changedIndex);
-              currentIndex += count;
-            });
-          });
-          const newPosition = model.getPositionAt(changedIndex);
-          if (newPosition) {
-            cursor = { ...newPosition };
-            editorRef.setPosition(newPosition);
+            cursorIndex = editorRef.getModel()?.getOffsetAt(e.position) || -1;
           }
         },
       );
@@ -228,7 +202,6 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
         hoverDisposable && hoverDisposable.dispose();
         definitionProviderDisposable && definitionProviderDisposable.dispose();
         cursorPreserveDisposable && cursorPreserveDisposable.dispose();
-        changeModelContentDisposable && changeModelContentDisposable.dispose();
       };
     }
 
@@ -333,3 +306,10 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
     } as SchemaEditorApi,
   };
 };
+function usePrevious<T>(value: T) {
+  const ref = useRef<T>();
+  React.useEffect(() => {
+    ref.current = value; //assign the value of ref to the argument
+  }, [value]); //this code will run when the value of 'value' changes
+  return ref.current; //in the end, return the current ref value.
+}
