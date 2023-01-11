@@ -21,7 +21,7 @@ import { monacoSetDecorations } from '@/editor/code/monaco/decorations';
 import { useTheme } from '@/state/containers';
 import { findCurrentNodeName } from '@/editor/code/guild/editor/onCursor';
 import { Maybe } from 'graphql-language-service';
-import { getNewCursorIndex } from '@/editor/code/guild/editor/onCursor/compare';
+import { moveCursor } from '@/editor/code/guild/editor/onCursor/compare';
 
 export type SchemaEditorApi = {
   jumpToType(typeName: string): void;
@@ -68,8 +68,9 @@ const compileSchema = ({
   return [schema, libraries || ''].join('\n');
 };
 
-let cursorIndex = -1;
-
+const cursorIndex = {
+  index: -1,
+};
 export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
   const [editorRef, setEditor] =
     React.useState<monaco.editor.IStandaloneCodeEditor | null>(null);
@@ -98,19 +99,13 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
 
   React.useEffect(() => {
     const model = editorRef?.getModel();
-    console.log('REMOTE CHANGE');
-    if (!model) return;
-    let changedIndex = cursorIndex;
-    changedIndex = getNewCursorIndex({
-      oldSchema: previousSchema || '',
-      newSchema: options.schema || '',
+    if (!model || !editorRef) return;
+    moveCursor({
       cursorIndex,
+      editorRef,
+      newText: options.schema || '',
+      previousText: previousSchema || '',
     });
-    const newPosition = model.getPositionAt(changedIndex);
-    if (newPosition) {
-      cursorIndex = changedIndex;
-      editorRef?.setPosition(newPosition);
-    }
   }, [options.schema]);
 
   React.useEffect(() => {
@@ -192,7 +187,8 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
       const cursorPreserveDisposable = editorRef.onDidChangeCursorPosition(
         (e) => {
           if (e.reason === 3) {
-            cursorIndex = editorRef.getModel()?.getOffsetAt(e.position) || -1;
+            cursorIndex.index =
+              editorRef.getModel()?.getOffsetAt(e.position) || -1;
           }
         },
       );

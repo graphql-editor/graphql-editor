@@ -1,4 +1,5 @@
 import { diffChars } from 'diff';
+import type * as monaco from 'monaco-editor';
 
 export const getNewCursorIndex = ({
   oldSchema,
@@ -9,11 +10,9 @@ export const getNewCursorIndex = ({
   newSchema: string;
   cursorIndex: number;
 }) => {
-  console.time('diffs');
   const diff = diffChars(oldSchema, newSchema, {
     ignoreCase: true,
   });
-  console.timeEnd('diffs');
   let currentIndex = 0;
   let changedIndex = cursorIndex;
   diff.forEach((d) => {
@@ -38,4 +37,30 @@ export const getNewCursorIndex = ({
     currentIndex += count;
   });
   return changedIndex;
+};
+
+export const moveCursor = ({
+  cursorIndex,
+  editorRef,
+  newText,
+  previousText,
+}: {
+  cursorIndex: { index: number };
+  previousText: string;
+  newText: string;
+  editorRef: monaco.editor.IStandaloneCodeEditor;
+}) => {
+  const model = editorRef?.getModel();
+  if (!model) return;
+  let changedIndex = cursorIndex.index;
+  changedIndex = getNewCursorIndex({
+    oldSchema: previousText || '',
+    newSchema: newText || '',
+    cursorIndex: cursorIndex.index,
+  });
+  const newPosition = model.getPositionAt(changedIndex);
+  if (newPosition) {
+    cursorIndex.index = changedIndex;
+    editorRef?.setPosition(newPosition);
+  }
 };

@@ -2,37 +2,37 @@ import React, { useEffect, useState } from 'react';
 import { GraphQLEditor } from 'graphql-editor';
 import { PassedSchema } from 'graphql-editor';
 
-const adding = [
-  `
-type Person{
-  name: String!
-  firstName: String
-  age: Int
-}
-`,
-  `
-type Person{
-  name: String!
-  age: Int
-  firstName: String
-}
-`,
-  `
-type Person{
-  name: String!
-  age: Int
-  firstName: String
-  lastName:String
-}
-`,
+// const adding = [
+//   `
+// type Person{
+//   name: String!
+//   firstName: String
+//   age: Int
+// }
+// `,
+//   `
+// type Person{
+//   name: String!
+//   age: Int
+//   firstName: String
+// }
+// `,
+//   `
+// type Person{
+//   name: String!
+//   age: Int
+//   firstName: String
+//   lastName:String
+// }
+// `,
 
-  `
-type Person{
-  name: String!
-  firstName: String
-}
-`,
-];
+//   `
+// type Person{
+//   name: String!
+//   firstName: String
+// }
+// `,
+// ];
 const removal = [
   `
 type Person{
@@ -66,7 +66,7 @@ removal.reverse();
 
 export const CollabEffect = () => {
   const [currentSchema, setCurrentSchema] = useState<PassedSchema>({
-    code: adding[0],
+    code: removal[0],
     libraries: '',
   });
   useEffect(() => {
@@ -74,7 +74,7 @@ export const CollabEffect = () => {
       () =>
         setCurrentSchema((cs) => ({
           ...cs,
-          code: adding[1],
+          code: removal[1],
         })),
       5000,
     );
@@ -82,7 +82,7 @@ export const CollabEffect = () => {
       () =>
         setCurrentSchema((cs) => ({
           ...cs,
-          code: adding[2],
+          code: removal[2],
         })),
       10000,
     );
@@ -90,7 +90,7 @@ export const CollabEffect = () => {
       () =>
         setCurrentSchema((cs) => ({
           ...cs,
-          code: adding[3],
+          code: removal[3],
         })),
       15000,
     );
