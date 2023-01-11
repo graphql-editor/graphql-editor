@@ -34,7 +34,7 @@ export const NodeAddFieldMenu = React.forwardRef<
   }, [menuSearchValue]);
 
   const creationNodes = useMemo(
-    () => ResolveCreateField(node, allNodes) || [],
+    () => ResolveCreateField(node, allNodes.nodes) || [],
     [allNodes],
   );
   const filteredNodes = useMemo(

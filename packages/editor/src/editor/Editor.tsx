@@ -142,7 +142,7 @@ export const Editor = ({
       setSelectedNode(undefined);
       return;
     }
-    const field = allNodes.find((n) => n.id === routes.n);
+    const field = allNodes.nodes.find((n) => n.id === routes.n);
 
     setSelectedNode({
       source: 'routing',

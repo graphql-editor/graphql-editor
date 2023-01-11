@@ -25,7 +25,7 @@ export const NodeImplementInterfacesMenu = React.forwardRef<
 
   const creationNodes = useMemo(
     () =>
-      ResolveImplementInterface(node, allNodes)?.filter(
+      ResolveImplementInterface(node, allNodes.nodes)?.filter(
         (a) => !node.interfaces?.includes(a.name),
       ) || [],
     [allNodes],

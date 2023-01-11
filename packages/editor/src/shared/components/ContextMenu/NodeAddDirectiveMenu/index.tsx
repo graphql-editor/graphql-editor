@@ -29,12 +29,12 @@ export const NodeAddDirectiveMenu = React.forwardRef<
   const [menuSearchValue, setMenuSearchValue] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const creationNodes = useMemo(
-    () => ResolveDirectives(node, allNodes) || [],
+    () => ResolveDirectives(node, allNodes.nodes) || [],
     [allNodes],
   );
   const filteredNodes = useMemo(
     () => sortNodes(menuSearchValue, creationNodes),
-    [tree.nodes, libraryTree.nodes, menuSearchValue],
+    [tree, libraryTree, menuSearchValue],
   );
   useEffect(() => {
     if (!menuSearchValue) {

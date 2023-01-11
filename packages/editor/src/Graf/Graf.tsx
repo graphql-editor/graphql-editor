@@ -12,6 +12,7 @@ import {
 } from 'graphql-js-tree';
 import styled from '@emotion/styled';
 import { KeyboardActions, useIO } from '@/shared/hooks/io';
+import { DraggableProvider } from '@/Graf/state/draggable';
 
 const SubNodeContainer = styled.div`
   font-family: ${fontFamilySans};
@@ -101,67 +102,69 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
     });
     return keyEvents.dispose;
   }, [snapshots, tree, selectedNode, readonly]);
-
+  console.log('RELATION', node);
   return (
     <SubNodeWrapper>
       <SubNodeContainer>
-        <ActiveNode
-          readonly={readonly}
-          onDelete={(nodeToDelete) => {
-            const deletedNode = tree.nodes.findIndex(
-              (n) => n === nodeToDelete,
-            )!;
-            const allNodes = [...tree.nodes];
-            allNodes.splice(deletedNode, 1);
-            setSelectedNode(undefined);
-            setTree({ nodes: allNodes });
-          }}
-          onDuplicate={(nodeToDuplicate) => {
-            const allNodes = [...tree.nodes];
-            const { id, ...rest } = node;
-            const duplicatedNode = JSON.parse(
-              JSON.stringify(
-                createParserField({
-                  ...rest,
-                  name: nodeToDuplicate?.name + 'Copy',
-                }),
-              ),
-            ) as ParserField;
-            allNodes.push(duplicatedNode);
-            setSelectedNode({
-              field: duplicatedNode,
-              source: 'diagram',
-            });
-            setTree({ nodes: allNodes });
-          }}
-          onInputCreate={(nodeToCreateInput) => {
-            const allNodes = [...tree.nodes];
-            const createdInput = JSON.parse(
-              JSON.stringify(
-                createParserField({
-                  args: getScalarFields(node, scalars),
-                  interfaces: [],
-                  directives: [],
-                  type: {
-                    fieldType: {
-                      name: 'input',
-                      type: Options.name,
+        <DraggableProvider>
+          <ActiveNode
+            readonly={readonly}
+            onDelete={(nodeToDelete) => {
+              const deletedNode = tree.nodes.findIndex(
+                (n) => n === nodeToDelete,
+              )!;
+              const allNodes = [...tree.nodes];
+              allNodes.splice(deletedNode, 1);
+              setSelectedNode(undefined);
+              setTree({ nodes: allNodes });
+            }}
+            onDuplicate={(nodeToDuplicate) => {
+              const allNodes = [...tree.nodes];
+              const { id, ...rest } = node;
+              const duplicatedNode = JSON.parse(
+                JSON.stringify(
+                  createParserField({
+                    ...rest,
+                    name: nodeToDuplicate?.name + 'Copy',
+                  }),
+                ),
+              ) as ParserField;
+              allNodes.push(duplicatedNode);
+              setSelectedNode({
+                field: duplicatedNode,
+                source: 'diagram',
+              });
+              setTree({ nodes: allNodes });
+            }}
+            onInputCreate={(nodeToCreateInput) => {
+              const allNodes = [...tree.nodes];
+              const createdInput = JSON.parse(
+                JSON.stringify(
+                  createParserField({
+                    args: getScalarFields(node, scalars),
+                    interfaces: [],
+                    directives: [],
+                    type: {
+                      fieldType: {
+                        name: 'input',
+                        type: Options.name,
+                      },
                     },
-                  },
-                  data: { type: TypeDefinition.InputObjectTypeDefinition },
-                  name: nodeToCreateInput.name + 'Input',
-                }),
-              ),
-            ) as ParserField;
-            allNodes.push(createdInput);
-            setSelectedNode({
-              field: createdInput,
-              source: 'diagram',
-            });
-            setTree({ nodes: allNodes });
-          }}
-          node={node}
-        />
+                    data: { type: TypeDefinition.InputObjectTypeDefinition },
+                    name: nodeToCreateInput.name + 'Input',
+                  }),
+                ),
+              ) as ParserField;
+              allNodes.push(createdInput);
+              setSelectedNode({
+                field: createdInput,
+                source: 'diagram',
+              });
+              setTree({ nodes: allNodes });
+            }}
+            node={node}
+          />
+        </DraggableProvider>
       </SubNodeContainer>
     </SubNodeWrapper>
   );

@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 
 import styled from '@emotion/styled';
-import { Search, Plus, X } from '@/shared/icons';
+import { Search, X } from '@/shared/icons';
 
 interface MenuSearchProps {
   value: string;
@@ -15,23 +15,25 @@ interface MenuSearchProps {
 const Wrapper = styled.div`
   position: relative;
   max-width: 100%;
-  padding: 0 16px;
+  margin-bottom: 1rem;
+  padding: 0 1rem;
+  gap: 0.5rem;
+  display: flex;
 `;
 
-const Main = styled.input`
-  background-color: ${({ theme }) => theme.background.mainFurther};
+const Main = styled.input<{ searching?: boolean }>`
+  background-color: ${({ theme }) => theme.background.mainFurthers};
   border-radius: 5px;
   color: ${({ theme }) => theme.text};
-  border: 0;
-  width: 100%;
+  width: auto;
+  flex: 1;
   min-width: 0;
-  height: 36px;
-  padding: 0 12px 0 28px;
+  padding: 0.5rem 1rem 0.5rem
+    ${({ searching }) => (searching ? '2rem' : '0.5rem')};
   font-size: 14px;
   outline: 0;
   position: relative;
-  margin-bottom: 10px;
-  border-bottom: 1px solid ${({ theme }) => theme.background.mainClose};
+  border: 1px solid ${({ theme }) => theme.background.mainClose};
 
   &::placeholder {
     color: ${({ theme }) => theme.disabled};
@@ -43,24 +45,28 @@ const Main = styled.input`
 
 const SearchIconContainer = styled.span`
   position: absolute;
-  height: 36px;
-  width: 30px;
+  height: 100%;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  padding: 0 0.5rem;
   z-index: 1;
+  svg {
+    color: ${({ theme }) => theme.disabled};
+  }
 `;
 
 const XIconContainer = styled.span`
-  position: absolute;
-  height: 36px;
-  width: 36px;
   right: 12px;
+  cursor: pointer;
+  position: absolute;
+  height: 100%;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  cursor: pointer;
+  padding: 0 0.5rem;
   z-index: 1;
+  svg {
+    color: ${({ theme }) => theme.disabled};
+  }
 `;
 
 export const MenuSearch: React.FC<MenuSearchProps> = ({
@@ -74,16 +80,19 @@ export const MenuSearch: React.FC<MenuSearchProps> = ({
   const ref = useRef<HTMLInputElement>(null);
   return (
     <Wrapper>
-      <SearchIconContainer>
-        {icon === 'search' && <Search width={14} height={14} />}
-        {icon === 'add' && <Plus width={14} height={14} />}
-      </SearchIconContainer>
+      {icon === 'search' && (
+        <SearchIconContainer>
+          <Search width={14} height={14} />
+        </SearchIconContainer>
+      )}
       {value && (
         <XIconContainer onClick={onClear}>
           <X width={10} height={10} />
         </XIconContainer>
       )}
       <Main
+        autoFocus
+        searching={icon === 'search'}
         ref={ref}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {

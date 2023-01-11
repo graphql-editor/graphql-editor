@@ -79,8 +79,8 @@ export const CodePane = (props: CodePaneProps) => {
             ? (e.operation.toLowerCase() as OperationType)
             : undefined;
         const n = op
-          ? allNodes.find((an) => an.type.operations?.includes(op))
-          : allNodes.find((an) => an.name === e);
+          ? allNodes.nodes.find((an) => an.type.operations?.includes(op))
+          : allNodes.nodes.find((an) => an.name === e);
         setSelectedNode({
           source: 'code',
           field: n,

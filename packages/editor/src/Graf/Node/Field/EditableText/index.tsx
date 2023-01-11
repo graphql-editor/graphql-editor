@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { fontFamilySans } from '@/vars';
 import styled from '@emotion/styled';
 import { GRAF_FIELD_NAME_SIZE } from '@/Graf/constants';
+import { useDraggable } from '@/Graf/state/draggable';
 
 const Input = styled.input<{ isError?: boolean }>`
   border: 0;
@@ -20,12 +21,14 @@ export const EditableText: React.FC<{
   exclude?: string[];
 }> = ({ value, onChange, style = {}, exclude = [] }) => {
   const [editedValue, setEditedValue] = useState('');
+  const { setDraggable } = useDraggable();
   const [isError, setIsError] = useState(false);
   const [w, setW] = useState(20);
   const spanRef = useRef<HTMLSpanElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const checkEdit = () => {
     inputRef.current?.blur();
+    setDraggable(true);
     if (isError) {
       setEditedValue(value);
       return;
@@ -58,6 +61,8 @@ export const EditableText: React.FC<{
             pattern="[_A-Za-z][_0-9A-Za-z]*"
             style={{ width: `${w}px`, ...style }}
             title={isError ? 'Name already exists' : 'rename'}
+            onFocus={() => setDraggable(false)}
+            onMouseDown={() => setDraggable(false)}
             onBlur={(e) => {
               checkEdit();
             }}

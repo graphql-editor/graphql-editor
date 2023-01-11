@@ -28,6 +28,7 @@ import {
   CreateNodeDirective,
   DirectivePlacement,
 } from '@/Graf/Node/components/DirectivePlacement';
+import { DraggableProvider, useDraggable } from '@/Graf/state/draggable';
 
 interface NodeProps {
   node: ParserField;
@@ -166,6 +167,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
     index: number;
   }>();
   const [dragOverName, setDragOverName] = useState('');
+  const { draggable } = useDraggable();
 
   const {
     allNodes,
@@ -182,7 +184,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
   const isLocked = !!sharedProps.readonly || libraryNode || readonly;
   const findNodeByField = (field?: ParserField) => {
     return field
-      ? allNodes.find(
+      ? allNodes.nodes.find(
           (n) =>
             n.name === getTypeName(field.type.fieldType) &&
             !isExtensionNode(n.data.type!),
@@ -278,34 +280,36 @@ export const ActiveNode: React.FC<NodeProps> = ({
             }}
           />
           <NodeArea>
-            <ActiveNode
-              {...sharedProps}
-              readonly={isLocked}
-              parentNode={
-                openedNode.type === 'args' || openedNode.type === 'directives'
-                  ? node
-                  : undefined
-              }
-              node={openedNodeNode}
-              onDuplicate={undefined}
-              onInputCreate={undefined}
-              onDelete={() => {
-                if (openedNode.type === 'directives') {
-                  node.directives!.splice(openedNode.index, 1);
+            <DraggableProvider>
+              <ActiveNode
+                {...sharedProps}
+                readonly={isLocked}
+                parentNode={
+                  openedNode.type === 'args' || openedNode.type === 'directives'
+                    ? node
+                    : undefined
                 }
-                if (openedNode.type === 'args') {
-                  node.args!.splice(openedNode.index, 1);
-                }
-                if (
-                  openedNode.type === 'output' ||
-                  openedNode.type === 'directiveOutput'
-                ) {
-                  sharedProps.onDelete(openedNodeNode);
-                  return;
-                }
-                updateNode(node);
-              }}
-            />
+                node={openedNodeNode}
+                onDuplicate={undefined}
+                onInputCreate={undefined}
+                onDelete={() => {
+                  if (openedNode.type === 'directives') {
+                    node.directives!.splice(openedNode.index, 1);
+                  }
+                  if (openedNode.type === 'args') {
+                    node.args!.splice(openedNode.index, 1);
+                  }
+                  if (
+                    openedNode.type === 'output' ||
+                    openedNode.type === 'directiveOutput'
+                  ) {
+                    sharedProps.onDelete(openedNodeNode);
+                    return;
+                  }
+                  updateNode(node);
+                }}
+              />
+            </DraggableProvider>
           </NodeArea>
         </OpenedNode>
       )}
@@ -333,7 +337,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                   (pt) => pt !== node.name,
                 )}
                 onChange={(v) => {
-                  const isError = allNodes.map((n) => n.name).includes(v);
+                  const isError = allNodes.nodes.map((n) => n.name).includes(v);
                   if (isError) {
                     return;
                   }
@@ -374,7 +378,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
         <NodeFieldsContainer>
           <NodeFields>
             {node.directives?.map((d, i) => {
-              const outputDisabled = !allNodes.find(
+              const outputDisabled = !allNodes.nodes.find(
                 (n) => n.name === getTypeName(d.type.fieldType),
               );
               return (
@@ -416,7 +420,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
               );
             })}
             {node.args?.map((a, i) => {
-              const outputDisabled = !allNodes.find(
+              const outputDisabled = !allNodes.nodes.find(
                 (n) => n.name === getTypeName(a.type.fieldType),
               );
               return (
@@ -438,7 +442,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                   className={a.name === dragOverName ? `drag-over` : ''}
                 >
                   <div
-                    draggable={!isLocked}
+                    draggable={!isLocked && draggable}
                     onDragStart={(e) => {
                       dragStartHandler(e, a.name);
                     }}

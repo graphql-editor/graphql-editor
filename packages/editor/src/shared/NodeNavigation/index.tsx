@@ -71,7 +71,7 @@ export const NodeNavigation = () => {
     const interfaceNodes: ParserField[] = [];
     const schemaNodes: ParserField[] = [];
     const directivesNodes: ParserField[] = [];
-    const filteredNodes = allNodes.filter((n) =>
+    const filteredNodes = allNodes.nodes.filter((n) =>
       n.name.toLowerCase().includes(q.toLowerCase()),
     );
 

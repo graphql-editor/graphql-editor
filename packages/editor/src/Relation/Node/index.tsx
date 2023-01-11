@@ -113,9 +113,10 @@ export const Node: React.FC<NodeProps> = ({
       : field.args?.filter((n) =>
           n.name.toLowerCase().includes(filteredFieldTypes),
         );
-  }, [filteredFieldTypes, field.args]);
+  }, [filteredFieldTypes, JSON.stringify(field.args)]);
 
   const RelationFields = useMemo(() => {
+    console.log('FIELDS CHANGED');
     if (!enums && field.data.type === TypeDefinition.EnumTypeDefinition) {
       return <NodeRelationFields></NodeRelationFields>;
     }
@@ -134,7 +135,7 @@ export const Node: React.FC<NodeProps> = ({
         ))}
       </NodeRelationFields>
     );
-  }, [field, isNodeActive, theme, nodeArgs, enums]);
+  }, [field, isNodeActive, theme, JSON.stringify(nodeArgs), enums]);
 
   const handleSearch = (searchValue?: string) => {
     setFilteredFieldsTypes(searchValue?.toLowerCase() || '');

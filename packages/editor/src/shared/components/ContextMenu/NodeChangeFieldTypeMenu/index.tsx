@@ -26,7 +26,7 @@ export const NodeChangeFieldTypeMenu = React.forwardRef<
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const creationNodes = useMemo(
-    () => ResolveCreateField(node, allNodes) || [],
+    () => ResolveCreateField(node, allNodes.nodes) || [],
     [allNodes, node],
   );
   const filteredNodes = useMemo(

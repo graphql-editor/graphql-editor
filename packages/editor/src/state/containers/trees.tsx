@@ -43,12 +43,13 @@ const useTreesStateContainer = createContainer(() => {
   }, [tree]);
 
   const allNodes = useMemo(() => {
-    return tree.nodes.concat(libraryTree.nodes);
+    console.log('TREE CHANGED');
+    return { nodes: tree.nodes.concat(libraryTree.nodes) };
   }, [libraryTree, tree]);
 
   const parentTypes = useMemo(
     () => ({
-      ...allNodes.reduce(
+      ...allNodes.nodes.reduce(
         (obj: Record<string, string>, item: ParserField) =>
           Object.assign(obj, { [item.name]: getTypeName(item.type.fieldType) }),
         {},
@@ -71,8 +72,14 @@ const useTreesStateContainer = createContainer(() => {
     const shouldBeReselected = n.id === selectedNode?.field?.id && id !== n.id;
     n.id = id;
     setTree({ ...tree });
+    console.log(n);
     if (shouldBeReselected) {
-      setSelectedNode({ source: 'diagram', field: n });
+      setSelectedNode({
+        source: 'diagram',
+        field: {
+          ...n,
+        },
+      });
     }
   };
 
@@ -193,7 +200,7 @@ const useTreesStateContainer = createContainer(() => {
     }
   };
   const selectByTypeName = (typeName: string) => {
-    let n = allNodes.find((tn) => tn.name === typeName);
+    let n = allNodes.nodes.find((tn) => tn.name === typeName);
     setSelectedNode(
       n && {
         field: n,

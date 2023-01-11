@@ -272,7 +272,8 @@ export const Relation: React.FC = () => {
   }, []);
 
   const typeNodes = useMemo(() => {
-    return allNodes.filter(
+    console.log('TYPE NODES');
+    return allNodes.nodes.filter(
       (n) =>
         n.data.type === TypeDefinition.ObjectTypeDefinition ||
         n.data.type === TypeDefinition.UnionTypeDefinition ||
@@ -280,7 +281,7 @@ export const Relation: React.FC = () => {
     );
   }, [allNodes]);
   const singleNodes = useMemo(() => {
-    return allNodes.filter(
+    return allNodes.nodes.filter(
       (n) =>
         n.data.type === TypeDefinition.InputObjectTypeDefinition ||
         n.data.type === TypeDefinition.ScalarTypeDefinition ||

@@ -76,7 +76,7 @@ export const GqlCodePane = (props: GqlCodePaneProps) => {
           options={codeSettings}
           select={(e) => {
             if (e) {
-              const n = allNodes.find((an) => an.name === e);
+              const n = allNodes.nodes.find((an) => an.name === e);
               setSelectedNode(
                 n && {
                   source: 'code',

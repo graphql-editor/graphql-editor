@@ -8,8 +8,11 @@ export const ActiveType: React.FC<
     onClick?: () => void;
   }
 > = ({ type, parentTypes, onClick }) => {
-  let compiledType = useMemo(() => compileTypeOptions({ type }), [type]);
-  const sType = useMemo(() => compileScalarTypes(type), [type]);
+  let compiledType = useMemo(
+    () => compileTypeOptions({ type }),
+    [JSON.stringify(type)],
+  );
+  const sType = useMemo(() => compileScalarTypes(type), [JSON.stringify(type)]);
   const color = parentTypes?.[sType] ? parentTypes[sType] : sType;
   return (
     <AType onClick={onClick} color={color} clickable={!!onClick}>

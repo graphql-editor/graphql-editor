@@ -10,8 +10,11 @@ export const ActiveGrafType = React.forwardRef<
     onClick?: () => void;
   }
 >(({ type, parentTypes, onClick, children }, ref) => {
-  let compiledType = useMemo(() => compileTypeOptions({ type }), [type]);
-  const sType = useMemo(() => compileScalarTypes(type), [type]);
+  let compiledType = useMemo(
+    () => compileTypeOptions({ type }),
+    [JSON.stringify(type)],
+  );
+  const sType = useMemo(() => compileScalarTypes(type), [JSON.stringify(type)]);
   const color = parentTypes?.[sType] ? parentTypes[sType] : sType;
 
   return (

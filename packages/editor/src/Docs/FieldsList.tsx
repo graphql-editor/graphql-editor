@@ -64,7 +64,7 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
         setTree(tree);
       }
     },
-    [node, tree.nodes],
+    [node, tree],
   );
 
   return (

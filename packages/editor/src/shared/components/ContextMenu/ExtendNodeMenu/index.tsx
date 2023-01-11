@@ -29,7 +29,7 @@ export const ExtendNodeMenu = React.forwardRef<
   const [menuSearchValue, setMenuSearchValue] = useState('');
   const creationNodes = useMemo(
     () =>
-      allNodes.filter(
+      allNodes.nodes.filter(
         (a) =>
           ![
             TypeExtension.EnumTypeExtension,
