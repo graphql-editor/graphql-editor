@@ -395,17 +395,17 @@ export const Relation: React.FC = () => {
           onPanning={() => setDraggingMode('grabbing')}
           onPanningStop={() => setTimeout(() => setDraggingMode('auto'), 1)}
         >
-          <TransformComponent
-            wrapperStyle={{
-              flex: 1,
-              height: '100%',
+          <Deselect
+            onMouseUp={(e) => {
+              if (draggingMode !== 'grabbing') {
+                setSelectedNode({ source: 'relation', field: undefined });
+              }
             }}
           >
-            <Deselect
-              onMouseUp={(e) => {
-                if (draggingMode !== 'grabbing') {
-                  setSelectedNode({ source: 'relation', field: undefined });
-                }
+            <TransformComponent
+              wrapperStyle={{
+                flex: 1,
+                height: '100%',
               }}
             >
               <LinesDiagram
@@ -414,8 +414,8 @@ export const Relation: React.FC = () => {
                 nodes={typeNodes}
                 mainRef={mainRef}
               />
-            </Deselect>
-          </TransformComponent>
+            </TransformComponent>
+          </Deselect>
         </TransformWrapper>
         {grafErrors && <ErrorContainer>{grafErrors}</ErrorContainer>}
       </Main>
