@@ -10,7 +10,9 @@ export interface Routes {
 
 export const useRouter = () => {
   const resolvePath = () => {
-    const { code, pane, n } = qs.parse(window.location.search) as Routes;
+    const { code, pane, n } = qs.default.parse(
+      window.location.search,
+    ) as Routes;
     return {
       code,
       pane,

@@ -65,7 +65,7 @@
     "@emotion/styled": "^11.9.3",
     "color2k": "^1.2.4",
     "fuzzyjs": "^5.0.1",
-    "graphql-language-service": "^3.1.4",
+    "graphql-language-service": "3.1.4",
     "re-resizable": "^6.9.1",
     "remarkable": "^2.0.1",
     "unstated-next": "^1.1.0"

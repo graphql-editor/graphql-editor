@@ -217,7 +217,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
       ? findNodeByField(node.directives![openedNode.index])
       : findNodeByField(node.args![openedNode.index])
     : undefined;
-
+  console.log(node);
   return (
     <NodeContainer
       className={`NodeBackground-${getTypeName(node.type.fieldType)}`}
