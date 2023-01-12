@@ -107,7 +107,7 @@ const NodeInterfaces = styled.div`
   max-width: 100%;
   display: flex;
   flex-flow: row wrap;
-  overflow-x: scroll;
+  overflow-x: auto;
   gap: 1rem;
   align-items: flex-start;
   padding: 1rem;

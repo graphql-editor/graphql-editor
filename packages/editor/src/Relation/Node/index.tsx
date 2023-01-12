@@ -116,7 +116,6 @@ export const Node: React.FC<NodeProps> = ({
   }, [filteredFieldTypes, JSON.stringify(field.args)]);
 
   const RelationFields = useMemo(() => {
-    console.log('FIELDS CHANGED');
     if (!enums && field.data.type === TypeDefinition.EnumTypeDefinition) {
       return <NodeRelationFields></NodeRelationFields>;
     }

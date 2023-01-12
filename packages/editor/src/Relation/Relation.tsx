@@ -276,7 +276,6 @@ export const Relation: React.FC = () => {
   }, []);
 
   const typeNodes = useMemo(() => {
-    console.log('TYPE NODES');
     return allNodes.nodes.filter(
       (n) =>
         n.data.type === TypeDefinition.ObjectTypeDefinition ||
