@@ -477,6 +477,25 @@ export const ActiveNode: React.FC<NodeProps> = ({
                         openedNode?.type === 'output' && openedNode?.index === i
                       }
                       onDelete={() => {
+                        if (
+                          node.data.type ===
+                          TypeDefinition.InterfaceTypeDefinition
+                        ) {
+                          const nodesWithThisInterface = allNodes.nodes.filter(
+                            (el) => el.interfaces.includes(node.name),
+                          );
+                          const changedNodes = nodesWithThisInterface.map(
+                            (n) => {
+                              const foundArgIdx = n.args.findIndex(
+                                (arg) => arg.name === a.name,
+                              );
+                              n.args.splice(foundArgIdx, 1);
+                              return n;
+                            },
+                          );
+                          changedNodes.forEach(updateNode);
+                        }
+
                         node.args!.splice(i, 1);
                         updateNode(node);
                       }}
