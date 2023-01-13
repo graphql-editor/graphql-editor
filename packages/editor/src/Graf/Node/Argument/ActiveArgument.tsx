@@ -148,6 +148,7 @@ export const ActiveArgument: React.FC<FieldProps> = ({
               <NodeTypeOptionsMenu
                 hideMenu={() => setOptionsMenuOpen(false)}
                 node={node}
+                parentNode={parentNode}
               />
             </OptionsMenuContainer>
           )}

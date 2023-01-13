@@ -13,6 +13,7 @@ import { changeTypeName } from '@/utils';
 
 interface NodeChangeFieldTypeMenuProps {
   node: ParserField;
+  nodeName: string;
   fieldIndex: number;
   hideMenu: () => void;
 }
@@ -20,7 +21,7 @@ interface NodeChangeFieldTypeMenuProps {
 export const NodeChangeFieldTypeMenu = React.forwardRef<
   HTMLDivElement,
   NodeChangeFieldTypeMenuProps
->(({ node, fieldIndex, hideMenu, ...props }, ref) => {
+>(({ node, nodeName, fieldIndex, hideMenu, ...props }, ref) => {
   const { updateNode, allNodes } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -50,10 +51,12 @@ export const NodeChangeFieldTypeMenu = React.forwardRef<
         const nodesWithThisInterface = allNodes.nodes.filter((el) =>
           el.interfaces.includes(node.name),
         );
-        nodesWithThisInterface.forEach((el) => {
-          el.args[fieldIndex].data.type = f.data.type;
-          changeTypeName(el.args[fieldIndex].type.fieldType, f.name);
-          updateNode(el);
+
+        nodesWithThisInterface.forEach((n) => {
+          const foundArgIdx = n.args.findIndex((arg) => arg.name === nodeName);
+          n.args[foundArgIdx].data.type = f.data.type;
+          changeTypeName(n.args[foundArgIdx].type.fieldType, f.name);
+          updateNode(n);
         });
       }
 

@@ -5,10 +5,12 @@ import {
   compileType,
   getTypeName,
   decompileType,
+  TypeDefinition,
 } from 'graphql-js-tree';
 import { useTreesState } from '@/state/containers/trees';
 interface NodeTypeOptionsMenuProps {
   node: ParserField;
+  parentNode: ParserField;
   hideMenu: () => void;
 }
 
@@ -33,8 +35,8 @@ const configureNode = (node: ParserField, optionString: string) => {
 export const NodeTypeOptionsMenu = React.forwardRef<
   HTMLDivElement,
   NodeTypeOptionsMenuProps
->(({ node, hideMenu, ...props }, ref) => {
-  const { updateNode } = useTreesState();
+>(({ node, parentNode, hideMenu, ...props }, ref) => {
+  const { updateNode, allNodes } = useTreesState();
   const [opts, setOpts] = useState(configureOpts(node));
   useEffect(() => {
     setOpts(configureOpts(node));
@@ -47,6 +49,17 @@ export const NodeTypeOptionsMenu = React.forwardRef<
       hideMenu={hideMenu}
       options={opts}
       onCheck={(o) => {
+        if (parentNode.data.type === TypeDefinition.InterfaceTypeDefinition) {
+          const nodesWithThisInterface = allNodes.nodes.filter((el) =>
+            el.interfaces.includes(parentNode.name),
+          );
+          nodesWithThisInterface.forEach((n) => {
+            const foundNode = n.args.find((arg) => arg.name === node.name)!;
+            configureNode(foundNode, o);
+            updateNode(n);
+          });
+        }
+
         configureNode(node, o);
         updateNode(node);
       }}

@@ -119,6 +119,7 @@ export const ActiveField: React.FC<FieldProps> = ({
               {...layerProps}
               node={parentNode}
               fieldIndex={indexInParentNode}
+              nodeName={node.name}
               hideMenu={() => {
                 setMenuOpen(undefined);
               }}
@@ -169,6 +170,7 @@ export const ActiveField: React.FC<FieldProps> = ({
                     setMenuOpen(undefined);
                   }}
                   node={node}
+                  parentNode={parentNode}
                 />
               )}
             </ContextMenu>
