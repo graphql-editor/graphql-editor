@@ -96,7 +96,7 @@ export const ActiveArgument: React.FC<FieldProps> = ({
           <ActiveArgumentName
             afterChange={(newName) => {
               node.name = newName;
-              updateNode(node);
+              updateNode(node, parentNode);
             }}
             node={node}
           />
@@ -112,30 +112,31 @@ export const ActiveArgument: React.FC<FieldProps> = ({
               v,
               node,
             }) || [];
-          updateNode(node);
+          updateNode(node, parentNode);
         }}
       />
-      {!isLocked && node.data.type === TypeDefinition.InterfaceTypeDefinition && (
-        <FieldPort
-          icons={{ closed: 'More', open: 'More' }}
-          onClick={() => {
-            setDetailsMenuOpen(!detailsMenuOpen);
-          }}
-        >
-          {detailsMenuOpen && (
-            <OptionsMenuContainer>
-              <Menu
-                menuName={'Node options'}
-                hideMenu={() => setDetailsMenuOpen(false)}
-              >
-                <MenuScrollingArea>
-                  <DetailMenuItem onClick={onDelete}>Delete</DetailMenuItem>
-                </MenuScrollingArea>
-              </Menu>
-            </OptionsMenuContainer>
-          )}
-        </FieldPort>
-      )}
+      {!isLocked &&
+        node.data.type === TypeDefinition.InterfaceTypeDefinition && (
+          <FieldPort
+            icons={{ closed: 'More', open: 'More' }}
+            onClick={() => {
+              setDetailsMenuOpen(!detailsMenuOpen);
+            }}
+          >
+            {detailsMenuOpen && (
+              <OptionsMenuContainer>
+                <Menu
+                  menuName={'Node options'}
+                  hideMenu={() => setDetailsMenuOpen(false)}
+                >
+                  <MenuScrollingArea>
+                    <DetailMenuItem onClick={onDelete}>Delete</DetailMenuItem>
+                  </MenuScrollingArea>
+                </Menu>
+              </OptionsMenuContainer>
+            )}
+          </FieldPort>
+        )}
       {!isLocked && (
         <FieldPort
           icons={{ closed: 'Arrq', open: 'Arrq' }}
@@ -148,6 +149,7 @@ export const ActiveArgument: React.FC<FieldProps> = ({
               <NodeTypeOptionsMenu
                 hideMenu={() => setOptionsMenuOpen(false)}
                 node={node}
+                parentNode={parentNode}
               />
             </OptionsMenuContainer>
           )}

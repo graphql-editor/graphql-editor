@@ -31,6 +31,7 @@ import {
   placeStringInNode,
 } from '@/GraphQL/Convert';
 import { ActiveDirectiveName } from '@/Graf/Node/Field/ActiveDirectiveName';
+import { InterfaceBall } from '@/shared/components';
 
 export const ActiveField: React.FC<FieldProps> = ({
   node,
@@ -42,10 +43,11 @@ export const ActiveField: React.FC<FieldProps> = ({
   onOutputClick,
   indexInParentNode,
   parentNode,
-  isLocked,
+  isLocked: _isLocked,
   onDelete,
 }) => {
-  const { parentTypes, readonly, updateNode } = useTreesState();
+  const { parentTypes, readonly, updateNode, allNodes, setSelectedNode } =
+    useTreesState();
   const [menuOpen, setMenuOpen] = useState<'options' | 'details' | 'type'>();
   const isEnumValue = node.data.type === ValueDefinition.EnumValueDefinition;
   const isInputValue =
@@ -53,6 +55,8 @@ export const ActiveField: React.FC<FieldProps> = ({
     node.data.type === Instances.Argument;
   const isArgumentNode = node.data.type === Instances.Argument;
   const isDirectiveNode = node.data.type === Instances.Directive;
+  const isFromInterface = !!node.fromInterface;
+  const isLocked = _isLocked || isFromInterface;
 
   return (
     <NodeFieldContainer active={!!(inputOpen || menuOpen || outputOpen)}>
@@ -67,7 +71,7 @@ export const ActiveField: React.FC<FieldProps> = ({
                 ? undefined
                 : (newName) => {
                     node.name = newName;
-                    updateNode(node);
+                    updateNode(node, parentNode);
                   }
             }
             name={node.name}
@@ -104,6 +108,23 @@ export const ActiveField: React.FC<FieldProps> = ({
           )}
         </ContextMenu>
       )}
+      {node.fromInterface && (
+        <InterfaceBall
+          name={`Field from interface: ${node.fromInterface}`}
+          onClick={() => {
+            const foundInterface = allNodes.nodes.find((el) =>
+              node.fromInterface?.includes(el.name),
+            );
+            if (!foundInterface) return;
+            setSelectedNode({
+              source: 'diagram',
+              field: { ...foundInterface },
+            });
+          }}
+        >
+          .
+        </InterfaceBall>
+      )}
       {!isLocked &&
         !isEnumValue &&
         !isArgumentNode &&
@@ -130,6 +151,7 @@ export const ActiveField: React.FC<FieldProps> = ({
                     setMenuOpen(undefined);
                   }}
                   node={node}
+                  parentNode={parentNode}
                 />
               )}
             </ContextMenu>
@@ -153,10 +175,10 @@ export const ActiveField: React.FC<FieldProps> = ({
                         v,
                         node,
                       }) || [];
-                    updateNode(node);
+                    updateNode(node, parentNode);
                   }
                   node.args = [...(placeStringInNode({ v, node }) || [])];
-                  updateNode(node);
+                  updateNode(node, parentNode);
                 }
           }
         />

@@ -5,6 +5,7 @@ import {
   getTypeName,
   Options,
   ParserField,
+  TypeDefinition,
 } from 'graphql-js-tree';
 import { useTreesState } from '@/state/containers/trees';
 import {
@@ -53,6 +54,32 @@ export const NodeAddFieldMenu = React.forwardRef<
     if (existingNodes.length > 0) {
       newName = `${newName}${existingNodes.length}`;
     }
+
+    if (node.data.type === TypeDefinition.InterfaceTypeDefinition) {
+      const nodesWithThisInterface = allNodes.nodes.filter((el) =>
+        el.interfaces.includes(node.name),
+      );
+      nodesWithThisInterface.forEach((el) => {
+        el.args?.push(
+          createParserField({
+            ...f,
+            directives: [],
+            interfaces: [],
+            args: [],
+            fromInterface: [node.name],
+            type: {
+              fieldType: {
+                name: f.name,
+                type: Options.name,
+              },
+            },
+            name: newName,
+          }),
+        );
+        updateNode(el);
+      });
+    }
+
     node.args?.push(
       createParserField({
         ...f,

@@ -9,6 +9,7 @@ import {
 import { useTreesState } from '@/state/containers/trees';
 interface NodeTypeOptionsMenuProps {
   node: ParserField;
+  parentNode: ParserField;
   hideMenu: () => void;
 }
 
@@ -33,7 +34,7 @@ const configureNode = (node: ParserField, optionString: string) => {
 export const NodeTypeOptionsMenu = React.forwardRef<
   HTMLDivElement,
   NodeTypeOptionsMenuProps
->(({ node, hideMenu, ...props }, ref) => {
+>(({ node, parentNode, hideMenu, ...props }, ref) => {
   const { updateNode } = useTreesState();
   const [opts, setOpts] = useState(configureOpts(node));
   useEffect(() => {
@@ -48,7 +49,7 @@ export const NodeTypeOptionsMenu = React.forwardRef<
       options={opts}
       onCheck={(o) => {
         configureNode(node, o);
-        updateNode(node);
+        updateNode(node, parentNode);
       }}
     />
   );

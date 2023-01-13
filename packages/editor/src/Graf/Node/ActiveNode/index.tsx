@@ -181,7 +181,8 @@ export const ActiveNode: React.FC<NodeProps> = ({
   } = useTreesState();
 
   const libraryNode = isLibrary(node.id);
-  const isLocked = !!sharedProps.readonly || libraryNode || readonly;
+  const isLocked =
+    !!sharedProps.readonly || libraryNode || readonly || !!node.fromInterface;
   const findNodeByField = (field?: ParserField) => {
     return field
       ? allNodes.nodes.find(
@@ -225,7 +226,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
       <ActiveDescription
         onChange={(d) => {
           node.description = d;
-          updateNode(node);
+          updateNode(node, parentNode);
         }}
         isLocked={isLocked}
         value={node.description || ''}
@@ -241,7 +242,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                 node.type.directiveOptions = node.type.directiveOptions?.filter(
                   (oldDirective) => oldDirective !== d,
                 );
-                updateNode(node);
+                updateNode(node, parentNode);
               }}
             >
               {d}
@@ -261,7 +262,10 @@ export const ActiveNode: React.FC<NodeProps> = ({
                 node.interfaces = node.interfaces?.filter(
                   (oldInterface) => oldInterface !== i,
                 );
-                updateNode(node);
+                node.args = node.args.filter(
+                  (arg) => !arg.fromInterface?.includes(i),
+                );
+                updateNode(node, parentNode);
               }}
             >
               {i}
@@ -306,7 +310,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                     sharedProps.onDelete(openedNodeNode);
                     return;
                   }
-                  updateNode(node);
+                  updateNode(node, parentNode);
                 }}
               />
             </DraggableProvider>
@@ -341,6 +345,31 @@ export const ActiveNode: React.FC<NodeProps> = ({
                   if (isError) {
                     return;
                   }
+
+                  if (
+                    node.data.type === TypeDefinition.InterfaceTypeDefinition
+                  ) {
+                    const nodesWithThisInterface = allNodes.nodes.filter((el) =>
+                      el.interfaces.includes(node.name),
+                    );
+
+                    nodesWithThisInterface.forEach((el) => {
+                      el.args.forEach((arg) => {
+                        if (arg.fromInterface?.includes(node.name)) {
+                          arg.fromInterface = arg.fromInterface.filter(
+                            (i) => i !== node.name,
+                          );
+                          arg.fromInterface.push(v);
+                        }
+                      });
+                      el.interfaces = el.interfaces.filter(
+                        (i) => i !== node.name,
+                      );
+                      el.interfaces.push(v);
+                      updateNode(el);
+                    });
+                  }
+
                   //TODO: Change the node name
                   ChangeAllRelatedNodes({
                     newName: v,
@@ -351,7 +380,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                     ? compareParserFields(node)(selectedNode.field)
                     : false;
                   node.name = v;
-                  updateNode(node);
+                  updateNode(node, parentNode);
                   if (reselect && selectedNode) {
                     setSelectedNode({
                       field: node,
@@ -476,6 +505,27 @@ export const ActiveNode: React.FC<NodeProps> = ({
                         openedNode?.type === 'output' && openedNode?.index === i
                       }
                       onDelete={() => {
+                        if (
+                          node.data.type ===
+                          TypeDefinition.InterfaceTypeDefinition
+                        ) {
+                          const nodesWithThisInterface = allNodes.nodes.filter(
+                            (el) => el.interfaces.includes(node.name),
+                          );
+                          const changedNodes = nodesWithThisInterface.map(
+                            (n) => {
+                              const foundArgIdx = n.args.findIndex(
+                                (arg) => arg.name === a.name,
+                              );
+                              n.args.splice(foundArgIdx, 1);
+                              return n;
+                            },
+                          );
+                          changedNodes.forEach((changedNode) =>
+                            updateNode(changedNode),
+                          );
+                        }
+
                         node.args!.splice(i, 1);
                         updateNode(node);
                       }}

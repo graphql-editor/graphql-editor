@@ -67,9 +67,27 @@ const useTreesStateContainer = createContainer(() => {
     [libraryNodeIds],
   );
 
-  const updateNode = (n: ParserField) => {
+  const updateNode = (n: ParserField, parentNode?: ParserField) => {
     const id = generateNodeId(n.name, n.data.type, n.args);
     const shouldBeReselected = n.id === selectedNode?.field?.id && id !== n.id;
+
+    if (parentNode?.data.type === TypeDefinition.InterfaceTypeDefinition) {
+      const nodesWithThisInterface = allNodes.nodes.filter((el) =>
+        el.interfaces.includes(parentNode.name),
+      );
+
+      nodesWithThisInterface.forEach((nodeWithInterface) => {
+        const foundArgIdx = nodeWithInterface.args.findIndex(
+          (arg) => arg.id === n.id,
+        );
+
+        nodeWithInterface.args[foundArgIdx] = {
+          ...nodeWithInterface.args[foundArgIdx],
+          ...n,
+        };
+      });
+    }
+
     n.id = id;
     setTree({ ...tree });
     console.log(n);

@@ -70,7 +70,9 @@ export const NodeImplementInterfacesMenu = React.forwardRef<
     computeInterfaces([f.name]);
     node.interfaces.push(...interfacesToPush);
     const argsToPush =
-      f.args?.filter((a) => !node.args?.find((na) => na.name === a.name)) || [];
+      f.args
+        ?.filter((a) => !node.args?.find((na) => na.name === a.name))
+        .map((el) => ({ ...el, fromInterface: [f.name] })) || [];
     node.args = node.args?.concat(argsToPush);
     hideMenu();
     updateNode(node);
