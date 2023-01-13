@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ResolveCreateField } from '@/GraphQL/Resolve';
-import { getTypeName, ParserField } from 'graphql-js-tree';
+import { getTypeName, ParserField, TypeDefinition } from 'graphql-js-tree';
 import { useTreesState } from '@/state/containers/trees';
 import {
   Menu,
@@ -46,11 +46,22 @@ export const NodeChangeFieldTypeMenu = React.forwardRef<
 
   const onNodeClick = (f: ParserField) => {
     if (node.args) {
+      if (node.data.type === TypeDefinition.InterfaceTypeDefinition) {
+        const nodesWithThisInterface = allNodes.nodes.filter((el) =>
+          el.interfaces.includes(node.name),
+        );
+        nodesWithThisInterface.forEach((el) => {
+          el.args[fieldIndex].data.type = f.data.type;
+          changeTypeName(el.args[fieldIndex].type.fieldType, f.name);
+          updateNode(el);
+        });
+      }
+
       node.args[fieldIndex].data.type = f.data.type;
       changeTypeName(node.args[fieldIndex].type.fieldType, f.name);
+      updateNode(node);
     }
     hideMenu();
-    updateNode(node);
   };
   return (
     <Menu
