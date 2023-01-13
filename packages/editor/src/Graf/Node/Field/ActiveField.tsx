@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   Instances,
+  TypeDefinition,
   TypeSystemDefinition,
   ValueDefinition,
 } from 'graphql-js-tree';
@@ -17,6 +18,7 @@ import {
   Menu,
   MenuScrollingArea,
   NodeFieldContainer,
+  NodeInterface,
 } from '@/Graf/Node/components';
 import { FieldProps } from '@/Graf/Node/models';
 import styled from '@emotion/styled';
@@ -42,10 +44,11 @@ export const ActiveField: React.FC<FieldProps> = ({
   onOutputClick,
   indexInParentNode,
   parentNode,
-  isLocked,
+  isLocked: _isLocked,
   onDelete,
 }) => {
-  const { parentTypes, readonly, updateNode } = useTreesState();
+  const { parentTypes, readonly, updateNode, allNodes, setSelectedNode } =
+    useTreesState();
   const [menuOpen, setMenuOpen] = useState<'options' | 'details' | 'type'>();
   const isEnumValue = node.data.type === ValueDefinition.EnumValueDefinition;
   const isInputValue =
@@ -53,6 +56,8 @@ export const ActiveField: React.FC<FieldProps> = ({
     node.data.type === Instances.Argument;
   const isArgumentNode = node.data.type === Instances.Argument;
   const isDirectiveNode = node.data.type === Instances.Directive;
+  const isFromInterface = !!node.fromInterface;
+  const isLocked = _isLocked || isFromInterface;
 
   return (
     <NodeFieldContainer active={!!(inputOpen || menuOpen || outputOpen)}>
@@ -66,6 +71,23 @@ export const ActiveField: React.FC<FieldProps> = ({
               isLocked || isArgumentNode
                 ? undefined
                 : (newName) => {
+                    if (
+                      parentNode.data.type ===
+                      TypeDefinition.InterfaceTypeDefinition
+                    ) {
+                      const nodesWithThisInterface = allNodes.nodes.filter(
+                        (el) => el.interfaces.includes(parentNode.name),
+                      );
+                      const changedNodes = nodesWithThisInterface.map((n) => {
+                        const foundFieldIdx = n.args.findIndex(
+                          (arg) => arg.name === node.name,
+                        );
+                        const newNode = { ...n };
+                        newNode.args[foundFieldIdx].name = newName;
+                        return newNode;
+                      });
+                      changedNodes.forEach(updateNode);
+                    }
                     node.name = newName;
                     updateNode(node);
                   }
@@ -103,6 +125,23 @@ export const ActiveField: React.FC<FieldProps> = ({
             />
           )}
         </ContextMenu>
+      )}
+      {node.fromInterface && (
+        <NodeInterface
+          onDelete={() => {
+            const foundInterface = allNodes.nodes.find((el) =>
+              node.fromInterface?.includes(el.name),
+            );
+            if (!foundInterface) return;
+
+            setSelectedNode({
+              source: 'diagram',
+              field: { ...foundInterface },
+            });
+          }}
+        >
+          {node.fromInterface}
+        </NodeInterface>
       )}
       {!isLocked &&
         !isEnumValue &&
