@@ -10,6 +10,7 @@ import {
   generateNodeId,
   createParserField,
   Options,
+  TypeExtension,
 } from 'graphql-js-tree';
 import { GraphQLEditorWorker } from 'graphql-editor-worker';
 import { BuiltInScalars, isExtensionNode } from '@/GraphQL/Resolve';
@@ -24,6 +25,7 @@ import {
   updateInterfaceNode,
 } from '@/state/containers/trees/interfaceMutations';
 import { ChangeAllRelatedNodes } from '@/state/containers/trees/Related';
+import { filterNotNull } from '@/state/containers/trees/shared';
 
 type SelectedNode = {
   field?: ParserField;
@@ -224,11 +226,10 @@ const useTreesStateContainer = createContainer(() => {
 
   const deleteFieldFromNode = (n: ParserField, i: number) => {
     const argName = n.args[i].name;
-    n.args.splice(i, 1);
     if (n.data.type === TypeDefinition.InterfaceTypeDefinition) {
       deleteFieldFromInterface(tree.nodes, n, argName);
-      return;
     }
+    n.args.splice(i, 1);
     updateNode(n);
   };
 
@@ -292,13 +293,19 @@ const useTreesStateContainer = createContainer(() => {
     const deletedNode = tree.nodes.findIndex((n) => n === node)!;
     const allNodes = [...tree.nodes];
     // co jak usuwamy extension interface
+    if (node.data.type === TypeExtension.InterfaceTypeExtension) {
+    }
     allNodes.splice(deletedNode, 1);
     tree.nodes.forEach((n) => {
-      n.args.forEach((a) => {
-        const tName = getTypeName(a.type.fieldType);
-        if (tName === node.name && !isExtensionNode(node.data.type)) {
-        }
-      });
+      n.args = n.args
+        .filter((a) => {
+          const tName = getTypeName(a.type.fieldType);
+          if (tName === node.name && !isExtensionNode(node.data.type)) {
+            return null;
+          }
+          return a;
+        })
+        .filter(filterNotNull);
     });
     setSelectedNode(undefined);
     setTree({ nodes: allNodes });

@@ -1,3 +1,4 @@
+import { filterNotNull } from '@/state/containers/trees/shared';
 import {
   ParserField,
   createParserField,
@@ -29,11 +30,6 @@ export const deleteFieldFromInterface = (
   nodes
     .filter((n) => n.interfaces.includes(updatedInterfaceNode.name))
     .forEach((nodeWithThisInterface) => {
-      console.log(
-        nodeWithThisInterface.name,
-        'Implements',
-        updateInterfaceNode.name,
-      );
       nodeWithThisInterface.args = nodeWithThisInterface.args
         .map((a) => {
           if (a.name !== fieldName || !a.fromInterface) return a;
@@ -160,7 +156,3 @@ export const deleteInterfaceNode = (
   nodes: ParserField[],
   node: ParserField,
 ) => {};
-
-function filterNotNull<T>(t: T | null): t is T {
-  return t !== null;
-}
