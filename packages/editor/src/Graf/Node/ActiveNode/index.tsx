@@ -4,7 +4,6 @@ import {
   TypeSystemDefinition,
   TypeDefinition,
   getTypeName,
-  compareParserFields,
 } from 'graphql-js-tree';
 import { ActiveField } from '@/Graf/Node/Field';
 import {
@@ -14,7 +13,7 @@ import {
 } from '@/Graf/Node/components';
 import { useTreesState } from '@/state/containers/trees';
 import { TopNodeMenu } from '@/Graf/Node/ActiveNode/TopNodeMenu';
-import { ChangeAllRelatedNodes, isExtensionNode } from '@/GraphQL/Resolve';
+import { isExtensionNode } from '@/GraphQL/Resolve';
 
 import {
   dragLeaveHandler,
@@ -171,12 +170,13 @@ export const ActiveNode: React.FC<NodeProps> = ({
 
   const {
     allNodes,
-    tree,
-    setSelectedNode,
     selectedNode,
     parentTypes,
     readonly,
     updateNode,
+    deleteFieldFromNode,
+    updateFieldOnNode,
+    renameNode,
     isLibrary,
   } = useTreesState();
 
@@ -217,7 +217,6 @@ export const ActiveNode: React.FC<NodeProps> = ({
       ? findNodeByField(node.directives![openedNode.index])
       : findNodeByField(node.args![openedNode.index])
     : undefined;
-  console.log(node);
   return (
     <NodeContainer
       className={`NodeBackground-${getTypeName(node.type.fieldType)}`}
@@ -336,28 +335,8 @@ export const ActiveNode: React.FC<NodeProps> = ({
                 exclude={Object.keys(parentTypes).filter(
                   (pt) => pt !== node.name,
                 )}
-                onChange={(v) => {
-                  const isError = allNodes.nodes.map((n) => n.name).includes(v);
-                  if (isError) {
-                    return;
-                  }
-                  //TODO: Change the node name
-                  ChangeAllRelatedNodes({
-                    newName: v,
-                    nodes: tree.nodes,
-                    oldName: node.name,
-                  });
-                  const reselect = selectedNode?.field
-                    ? compareParserFields(node)(selectedNode.field)
-                    : false;
-                  node.name = v;
-                  updateNode(node);
-                  if (reselect && selectedNode) {
-                    setSelectedNode({
-                      field: node,
-                      source: 'diagram',
-                    });
-                  }
+                onChange={(newName) => {
+                  renameNode(node, newName);
                 }}
               />
             )}
@@ -388,6 +367,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                   parentNode={node}
                   parentNodeTypeName={getTypeName(node.type.fieldType)}
                   key={d.name + i}
+                  updateNode={updateNode}
                   onInputClick={() => {
                     setOpenedNode((oN) =>
                       oN?.index === i && oN.type === 'directives'
@@ -453,6 +433,9 @@ export const ActiveNode: React.FC<NodeProps> = ({
                       isLocked={isLocked}
                       parentNodeTypeName={getTypeName(node.type.fieldType)}
                       key={a.name}
+                      updateNode={(f) => {
+                        updateFieldOnNode(node, i, f);
+                      }}
                       onInputClick={() => {
                         setOpenedNode((oN) =>
                           oN?.index === i && oN.type === 'args'
@@ -476,8 +459,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                         openedNode?.type === 'output' && openedNode?.index === i
                       }
                       onDelete={() => {
-                        node.args!.splice(i, 1);
-                        updateNode(node);
+                        deleteFieldFromNode(node, i);
                       }}
                     />
                   </div>

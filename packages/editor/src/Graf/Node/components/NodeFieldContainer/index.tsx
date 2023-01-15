@@ -1,7 +1,9 @@
 import styled from '@emotion/styled';
-import React from 'react';
 
-const Main = styled.div<{ active?: boolean }>`
+export const NodeFieldContainer = styled.div<{
+  active?: boolean;
+  fromInterface?: boolean;
+}>`
   /* position: relative; */
   display: flex;
   align-items: center;
@@ -36,16 +38,3 @@ const Main = styled.div<{ active?: boolean }>`
     }
   }
 `;
-
-export const NodeFieldContainer: React.FC<
-  React.DetailedHTMLProps<
-    React.HTMLAttributes<HTMLDivElement>,
-    HTMLDivElement
-  > & { active?: boolean }
-> = ({ children, className = '', ...props }) => {
-  return (
-    <Main className={className} {...props}>
-      {children}
-    </Main>
-  );
-};

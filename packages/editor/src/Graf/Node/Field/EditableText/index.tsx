@@ -4,7 +4,7 @@ import styled from '@emotion/styled';
 import { GRAF_FIELD_NAME_SIZE } from '@/Graf/constants';
 import { useDraggable } from '@/Graf/state/draggable';
 
-const Input = styled.input<{ isError?: boolean }>`
+const Input = styled.input<{ isError?: boolean; isEditable?: boolean }>`
   border: 0;
   background-color: transparent;
   color: ${({ theme, isError }) => (isError ? theme.error : theme.text)};

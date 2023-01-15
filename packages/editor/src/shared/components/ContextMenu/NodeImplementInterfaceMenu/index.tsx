@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ResolveImplementInterface } from '@/GraphQL/Resolve';
-import { getTypeName, ParserField, TypeDefinition } from 'graphql-js-tree';
+import { getTypeName, ParserField } from 'graphql-js-tree';
 import { useTreesState } from '@/state/containers/trees';
 import {
   Menu,
@@ -19,7 +19,7 @@ export const NodeImplementInterfacesMenu = React.forwardRef<
   HTMLDivElement,
   NodeImplementInterfacesMenuProps
 >(({ node, hideMenu, ...props }, ref) => {
-  const { tree, allNodes, updateNode } = useTreesState();
+  const { allNodes, implementInterface } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -47,33 +47,8 @@ export const NodeImplementInterfacesMenu = React.forwardRef<
     (selectedIndex < 0 ? fNLength - selectedIndex : selectedIndex) % fNLength;
 
   const onNodeClick = (f: ParserField) => {
-    if (!node.interfaces) {
-      node.interfaces = [];
-    }
-    const interfacesToPush: string[] = [];
-    const allInterfaces = tree.nodes.filter(
-      (ni) => ni.data.type === TypeDefinition.InterfaceTypeDefinition,
-    );
-    const computeInterfaces = (interfaces: string[]) => {
-      interfacesToPush.push(
-        ...interfaces.filter((ii) => !interfacesToPush.includes(ii)),
-      );
-      for (const i of interfaces) {
-        const hasInterface = allInterfaces.find(
-          (interfaceObject) => interfaceObject.name === i,
-        )!;
-        if (hasInterface?.interfaces && hasInterface.interfaces.length) {
-          computeInterfaces(hasInterface.interfaces);
-        }
-      }
-    };
-    computeInterfaces([f.name]);
-    node.interfaces.push(...interfacesToPush);
-    const argsToPush =
-      f.args?.filter((a) => !node.args?.find((na) => na.name === a.name)) || [];
-    node.args = node.args?.concat(argsToPush);
+    implementInterface(node, f);
     hideMenu();
-    updateNode(node);
   };
   return (
     <Menu

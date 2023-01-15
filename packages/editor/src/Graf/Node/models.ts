@@ -13,5 +13,6 @@ export interface FieldProps {
   parentNodeTypeName: string;
   indexInParentNode: number;
   onDelete: () => void;
+  updateNode: (f: ParserField) => void;
   setParentDraggable?: (drag: boolean) => void;
 }

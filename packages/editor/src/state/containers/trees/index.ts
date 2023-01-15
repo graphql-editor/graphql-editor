@@ -8,12 +8,22 @@ import {
   getTypeName,
   compareParserFields,
   generateNodeId,
+  createParserField,
+  Options,
 } from 'graphql-js-tree';
 import { GraphQLEditorWorker } from 'graphql-editor-worker';
-import { BuiltInScalars } from '@/GraphQL/Resolve';
+import { BuiltInScalars, isExtensionNode } from '@/GraphQL/Resolve';
 import { PassedSchema } from '@/Models';
 import { useErrorsState } from '@/state/containers';
 import { ActiveSource } from '@/editor/menu/Menu';
+import {
+  deImplementInterfaceOnNode,
+  deleteFieldFromInterface,
+  implementInterfaceOnNode,
+  renameInterfaceNode,
+  updateInterfaceNode,
+} from '@/state/containers/trees/interfaceMutations';
+import { ChangeAllRelatedNodes } from '@/state/containers/trees/Related';
 
 type SelectedNode = {
   field?: ParserField;
@@ -72,7 +82,6 @@ const useTreesStateContainer = createContainer(() => {
     const shouldBeReselected = n.id === selectedNode?.field?.id && id !== n.id;
     n.id = id;
     setTree({ ...tree });
-    console.log(n);
     if (shouldBeReselected) {
       setSelectedNode({
         source: 'diagram',
@@ -213,6 +222,99 @@ const useTreesStateContainer = createContainer(() => {
     selectByTypeName(fieldParentName);
   };
 
+  const deleteFieldFromNode = (n: ParserField, i: number) => {
+    const argName = n.args[i].name;
+    n.args.splice(i, 1);
+    if (n.data.type === TypeDefinition.InterfaceTypeDefinition) {
+      deleteFieldFromInterface(tree.nodes, n, argName);
+      return;
+    }
+    updateNode(n);
+  };
+
+  const updateFieldOnNode = (
+    node: ParserField,
+    i: number,
+    updatedField: ParserField,
+  ) => {
+    node.args[i] = updatedField;
+    if (node.data.type === TypeDefinition.InterfaceTypeDefinition) {
+      updateInterfaceNode(tree.nodes, node);
+    }
+    updateNode(node);
+  };
+
+  const addFieldToNode = (
+    node: ParserField,
+    { id, ...f }: ParserField,
+    name?: string,
+  ) => {
+    let newName = name || f.name[0].toLowerCase() + f.name.slice(1);
+    const existingNodes =
+      node.args?.filter((a) => a.name.match(`${newName}\d?`)) || [];
+    if (existingNodes.length > 0) {
+      newName = `${newName}${existingNodes.length}`;
+    }
+    node.args?.push(
+      createParserField({
+        ...f,
+        directives: [],
+        interfaces: [],
+        args: [],
+        type: {
+          fieldType: {
+            name: f.name,
+            type: Options.name,
+          },
+        },
+        name: newName,
+      }),
+    );
+    updateNode(node);
+  };
+  const renameNode = (node: ParserField, newName: string) => {
+    const isError = allNodes.nodes.map((n) => n.name).includes(newName);
+    if (isError) {
+      return;
+    }
+    if (node.data.type === TypeDefinition.InterfaceTypeDefinition) {
+      renameInterfaceNode(tree.nodes, newName, node.name);
+    }
+    ChangeAllRelatedNodes({
+      newName,
+      nodes: tree.nodes,
+      oldName: node.name,
+    });
+    node.name = newName;
+    updateNode(node);
+  };
+  const removeNode = (node: ParserField) => {
+    const deletedNode = tree.nodes.findIndex((n) => n === node)!;
+    const allNodes = [...tree.nodes];
+    // co jak usuwamy extension interface
+    allNodes.splice(deletedNode, 1);
+    tree.nodes.forEach((n) => {
+      n.args.forEach((a) => {
+        const tName = getTypeName(a.type.fieldType);
+        if (tName === node.name && !isExtensionNode(node.data.type)) {
+        }
+      });
+    });
+    setSelectedNode(undefined);
+    setTree({ nodes: allNodes });
+  };
+  const implementInterface = (
+    node: ParserField,
+    interfaceNode: ParserField,
+  ) => {
+    implementInterfaceOnNode(tree.nodes, node, interfaceNode);
+    updateNode(node);
+  };
+  const deImplementInterface = (node: ParserField, interfaceName: string) => {
+    deImplementInterfaceOnNode(tree.nodes, node, interfaceName);
+    updateNode(node);
+  };
+
   return {
     allNodes,
     tree,
@@ -237,6 +339,14 @@ const useTreesStateContainer = createContainer(() => {
     selectByTypeName,
     selectFieldParent,
     isLibrary,
+    /// new mutations
+    deleteFieldFromNode,
+    updateFieldOnNode,
+    addFieldToNode,
+    renameNode,
+    removeNode,
+    implementInterface,
+    deImplementInterface,
   };
 });
 

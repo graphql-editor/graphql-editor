@@ -44,8 +44,9 @@ export const ActiveField: React.FC<FieldProps> = ({
   parentNode,
   isLocked,
   onDelete,
+  updateNode,
 }) => {
-  const { parentTypes, readonly, updateNode } = useTreesState();
+  const { parentTypes, readonly } = useTreesState();
   const [menuOpen, setMenuOpen] = useState<'options' | 'details' | 'type'>();
   const isEnumValue = node.data.type === ValueDefinition.EnumValueDefinition;
   const isInputValue =
@@ -53,9 +54,13 @@ export const ActiveField: React.FC<FieldProps> = ({
     node.data.type === Instances.Argument;
   const isArgumentNode = node.data.type === Instances.Argument;
   const isDirectiveNode = node.data.type === Instances.Directive;
-
+  const isFromInterface = !!node.fromInterface?.length;
+  console.log(node.fromInterface);
   return (
-    <NodeFieldContainer active={!!(inputOpen || menuOpen || outputOpen)}>
+    <NodeFieldContainer
+      fromInterface={!!node.fromInterface?.length}
+      active={!!(inputOpen || menuOpen || outputOpen)}
+    >
       {isDirectiveNode && (
         <ActiveDirectiveName name={ConvertValueToEditableString(node)} />
       )}
@@ -63,7 +68,7 @@ export const ActiveField: React.FC<FieldProps> = ({
         !isDirectiveNode && (
           <ActiveGrafFieldName
             afterChange={
-              isLocked || isArgumentNode
+              isLocked || isArgumentNode || isFromInterface
                 ? undefined
                 : (newName) => {
                     node.name = newName;
@@ -75,39 +80,50 @@ export const ActiveField: React.FC<FieldProps> = ({
             parentTypes={parentTypes}
           />
         )}
-      {!isEnumValue && !isArgumentNode && !isDirectiveNode && (
-        <ContextMenu
-          isOpen={menuOpen === 'type'}
-          close={() => setMenuOpen(undefined)}
-          Trigger={({ triggerProps }) => (
-            <ActiveGrafType
-              {...triggerProps}
-              onClick={
-                !readonly && !isLocked
-                  ? () => setMenuOpen(menuOpen === 'type' ? undefined : 'type')
-                  : undefined
-              }
-              type={node.type}
-              parentTypes={parentTypes}
-            ></ActiveGrafType>
-          )}
-        >
-          {({ layerProps }) => (
-            <NodeChangeFieldTypeMenu
-              {...layerProps}
-              node={parentNode}
-              fieldIndex={indexInParentNode}
-              hideMenu={() => {
-                setMenuOpen(undefined);
-              }}
-            />
-          )}
-        </ContextMenu>
+      {isFromInterface && (
+        <ActiveGrafType
+          type={node.type}
+          parentTypes={parentTypes}
+        ></ActiveGrafType>
       )}
+      {!isEnumValue &&
+        !isArgumentNode &&
+        !isDirectiveNode &&
+        !isFromInterface && (
+          <ContextMenu
+            isOpen={menuOpen === 'type'}
+            close={() => setMenuOpen(undefined)}
+            Trigger={({ triggerProps }) => (
+              <ActiveGrafType
+                {...triggerProps}
+                onClick={
+                  !readonly && !isLocked
+                    ? () =>
+                        setMenuOpen(menuOpen === 'type' ? undefined : 'type')
+                    : undefined
+                }
+                type={node.type}
+                parentTypes={parentTypes}
+              ></ActiveGrafType>
+            )}
+          >
+            {({ layerProps }) => (
+              <NodeChangeFieldTypeMenu
+                {...layerProps}
+                node={parentNode}
+                fieldIndex={indexInParentNode}
+                hideMenu={() => {
+                  setMenuOpen(undefined);
+                }}
+              />
+            )}
+          </ContextMenu>
+        )}
       {!isLocked &&
         !isEnumValue &&
         !isArgumentNode &&
         !isDirectiveNode &&
+        !isFromInterface &&
         node.data.type !== TypeSystemDefinition.UnionMemberDefinition && (
           <Actions>
             <ContextMenu

@@ -52,6 +52,7 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
     future,
     readonly,
     scalars,
+    removeNode,
   } = useTreesState();
 
   const { mount } = useIO();
@@ -102,22 +103,13 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
     });
     return keyEvents.dispose;
   }, [snapshots, tree, selectedNode, readonly]);
-  console.log('RELATION', node);
   return (
     <SubNodeWrapper>
       <SubNodeContainer>
         <DraggableProvider>
           <ActiveNode
             readonly={readonly}
-            onDelete={(nodeToDelete) => {
-              const deletedNode = tree.nodes.findIndex(
-                (n) => n === nodeToDelete,
-              )!;
-              const allNodes = [...tree.nodes];
-              allNodes.splice(deletedNode, 1);
-              setSelectedNode(undefined);
-              setTree({ nodes: allNodes });
-            }}
+            onDelete={removeNode}
             onDuplicate={(nodeToDuplicate) => {
               const allNodes = [...tree.nodes];
               const { id, ...rest } = node;

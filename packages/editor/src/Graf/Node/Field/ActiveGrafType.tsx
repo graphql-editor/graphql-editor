@@ -21,7 +21,7 @@ export const ActiveGrafType = React.forwardRef<
     <Type
       ref={ref}
       color={color}
-      cursor={onClick ? 'pointer' : 'auto'}
+      cursor={onClick ? 'pointer' : 'default'}
       onClick={onClick}
     >
       <span>{compiledType}</span>
@@ -30,7 +30,7 @@ export const ActiveGrafType = React.forwardRef<
   );
 });
 
-const Type = styled.a<{ color: string; cursor: 'pointer' | 'auto' }>`
+const Type = styled.a<{ color: string; cursor: 'pointer' | 'default' }>`
   color: ${({ color, theme }) =>
     color
       ? theme.colors[color as keyof typeof theme.colors]
