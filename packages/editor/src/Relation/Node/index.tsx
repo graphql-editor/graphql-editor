@@ -63,6 +63,11 @@ const NodeTitle = styled.div`
   display: flex;
 `;
 
+const FromLibrary = styled(NodeTitle)`
+  color: ${({ theme }) => theme.salmon};
+  height: auto;
+`;
+
 const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -198,6 +203,7 @@ export const Node: React.FC<NodeProps> = ({
         });
       }}
     >
+      {isLibrary && <FromLibrary>External library</FromLibrary>}
       {NodeContent}
       {RelationFields}
     </Content>
