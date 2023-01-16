@@ -66,6 +66,9 @@ const NodeTitle = styled.div`
 const FromLibrary = styled(NodeTitle)`
   color: ${({ theme }) => theme.salmon};
   height: auto;
+  position: absolute;
+  top: -22px;
+  right: 1px;
 `;
 
 const ContentWrapper = styled.div`
