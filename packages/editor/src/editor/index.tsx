@@ -12,6 +12,7 @@ import { SortStateProvider } from '@/state/containers/sort';
 import { GqlEditor, GqlEditorProps } from '@/editor/GqlEditor';
 import { MainTheme } from '@/gshared/theme/MainTheme';
 import { RouterProvider, EditorRoutes } from '@/state/containers/router';
+import { EmbeddedEditor, EmbeddedEditorProps } from '@/editor/EmbeddedEditor';
 
 export const GraphQLEditor = ({ ...props }: EditorProps) => {
   const theme = props.theme || MainTheme;
@@ -25,6 +26,29 @@ export const GraphQLEditor = ({ ...props }: EditorProps) => {
                 <LayoutStateProvider>
                   <ScThemeProvider theme={theme}>
                     <Editor {...props} />
+                  </ScThemeProvider>
+                </LayoutStateProvider>
+              </SortStateProvider>
+            </RelationsProvider>
+          </TreesStateProvider>
+        </ErrorsStateProvider>
+      </RouterProvider>
+    </ThemeProvider>
+  );
+};
+
+export const EmbeddedGraphQLEditor = ({ ...props }: EmbeddedEditorProps) => {
+  const theme = props.theme || MainTheme;
+  return (
+    <ThemeProvider initialState={theme}>
+      <RouterProvider>
+        <ErrorsStateProvider>
+          <TreesStateProvider>
+            <RelationsProvider>
+              <SortStateProvider>
+                <LayoutStateProvider>
+                  <ScThemeProvider theme={theme}>
+                    <EmbeddedEditor {...props} />
                   </ScThemeProvider>
                 </LayoutStateProvider>
               </SortStateProvider>

@@ -12,3 +12,4 @@ export * from './Light';
 export * from './readonly';
 export * from './Saleor';
 export * from './collabeffect';
+export * from './embeddedEditor';
