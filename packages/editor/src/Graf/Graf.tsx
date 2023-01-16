@@ -23,7 +23,7 @@ const SubNodeContainer = styled.div`
   top: 0;
   position: absolute;
   pointer-events: none;
-  padding: 2rem;
+  padding: 3.5rem 2rem;
   height: 100%;
 `;
 
