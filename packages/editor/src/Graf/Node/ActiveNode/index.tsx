@@ -316,6 +316,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
           e.stopPropagation();
         }}
       >
+        {libraryNode && <FromLibrary>External library</FromLibrary>}
         <NodeTitle>
           <NodeName>
             {parentNode && (
@@ -475,4 +476,9 @@ const NodeTitle = styled.div`
   color: ${({ theme }) => theme.text};
   padding: 1rem;
   user-select: none;
+`;
+
+const FromLibrary = styled(NodeTitle)`
+  padding: 1rem 1rem 0;
+  color: ${({ theme }) => theme.salmon};
 `;
