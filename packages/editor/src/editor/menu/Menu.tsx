@@ -156,8 +156,6 @@ export const Menu = ({
     sidebarExpanded === true ? false : true,
   );
 
-  const activePaneToggle = (pane: ActivePane) => () =>
-    setActivePane(activePane === pane ? (toggleCode ? undefined : pane) : pane);
   return (
     <Sidebar isCollapsed={isCollapsed}>
       <MenuItem
@@ -180,7 +178,7 @@ export const Menu = ({
       {!excludePanes.includes('relation') && (
         <MenuItem
           className={activePane === 'relation' ? 'active' : ''}
-          onClick={activePaneToggle('relation')}
+          onClick={() => setActivePane('relation')}
           data-tooltip="Relation"
           data-tour="relation"
           isCollapsed={isCollapsed}
@@ -192,7 +190,7 @@ export const Menu = ({
       {!excludePanes.includes('docs') && (
         <MenuItem
           className={activePane === 'docs' ? 'active' : ''}
-          onClick={activePaneToggle('docs')}
+          onClick={() => setActivePane('docs')}
           data-tooltip="Documentation"
           data-tour="documentation"
           isCollapsed={isCollapsed}
