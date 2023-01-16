@@ -34,8 +34,7 @@ export const ActiveGrafFieldName: React.FC<
                 onChange={
                   active && afterChange
                     ? (newName) => {
-                        args[i].name = newName;
-                        afterChange(name);
+                        afterChange(newName);
                       }
                     : undefined
                 }

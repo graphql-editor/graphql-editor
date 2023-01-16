@@ -175,7 +175,6 @@ export const ActiveNode: React.FC<NodeProps> = ({
     readonly,
     updateNode,
     deleteFieldFromNode,
-    updateFieldOnNode,
     renameNode,
     isLibrary,
   } = useTreesState();
@@ -367,7 +366,6 @@ export const ActiveNode: React.FC<NodeProps> = ({
                   parentNode={node}
                   parentNodeTypeName={getTypeName(node.type.fieldType)}
                   key={d.name + i}
-                  updateNode={updateNode}
                   onInputClick={() => {
                     setOpenedNode((oN) =>
                       oN?.index === i && oN.type === 'directives'
@@ -433,9 +431,6 @@ export const ActiveNode: React.FC<NodeProps> = ({
                       isLocked={isLocked}
                       parentNodeTypeName={getTypeName(node.type.fieldType)}
                       key={a.name}
-                      updateNode={(f) => {
-                        updateFieldOnNode(node, i, f);
-                      }}
                       onInputClick={() => {
                         setOpenedNode((oN) =>
                           oN?.index === i && oN.type === 'args'

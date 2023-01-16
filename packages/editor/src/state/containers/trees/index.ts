@@ -18,11 +18,12 @@ import { PassedSchema } from '@/Models';
 import { useErrorsState } from '@/state/containers';
 import { ActiveSource } from '@/editor/menu/Menu';
 import {
+  changeInterfaceField,
   deImplementInterfaceOnNode,
   deleteFieldFromInterface,
   implementInterfaceOnNode,
   renameInterfaceNode,
-  updateInterfaceNode,
+  updateInterfaceNodeAddField,
 } from '@/state/containers/trees/interfaceMutations';
 import { ChangeAllRelatedNodes } from '@/state/containers/trees/Related';
 import { filterNotNull } from '@/state/containers/trees/shared';
@@ -55,7 +56,6 @@ const useTreesStateContainer = createContainer(() => {
   }, [tree]);
 
   const allNodes = useMemo(() => {
-    console.log('TREE CHANGED');
     return { nodes: tree.nodes.concat(libraryTree.nodes) };
   }, [libraryTree, tree]);
 
@@ -238,9 +238,12 @@ const useTreesStateContainer = createContainer(() => {
     i: number,
     updatedField: ParserField,
   ) => {
-    node.args[i] = updatedField;
+    const oldField = JSON.parse(JSON.stringify(node.args[i]));
     if (node.data.type === TypeDefinition.InterfaceTypeDefinition) {
-      updateInterfaceNode(tree.nodes, node);
+      changeInterfaceField(tree.nodes, node, oldField, updatedField);
+      node.args[i] = updatedField;
+    } else {
+      node.args[i] = updatedField;
     }
     updateNode(node);
   };
@@ -271,6 +274,9 @@ const useTreesStateContainer = createContainer(() => {
         name: newName,
       }),
     );
+    if (node.data.type === TypeDefinition.InterfaceTypeDefinition) {
+      updateInterfaceNodeAddField(tree.nodes, node);
+    }
     updateNode(node);
   };
   const renameNode = (node: ParserField, newName: string) => {

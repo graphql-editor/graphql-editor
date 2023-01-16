@@ -1,11 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ResolveCreateField } from '@/GraphQL/Resolve';
-import {
-  createParserField,
-  getTypeName,
-  Options,
-  ParserField,
-} from 'graphql-js-tree';
+import { getTypeName, ParserField } from 'graphql-js-tree';
 import { useTreesState } from '@/state/containers/trees';
 import {
   Menu,
@@ -23,7 +18,7 @@ export const NodeAddFieldMenu = React.forwardRef<
   HTMLDivElement,
   NodeAddFieldMenuProps
 >(({ node, hideMenu, ...props }, ref) => {
-  const { allNodes, updateNode } = useTreesState();
+  const { allNodes, addFieldToNode } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -46,31 +41,6 @@ export const NodeAddFieldMenu = React.forwardRef<
   const selectedNodeIndex =
     (selectedIndex < 0 ? fNLength - selectedIndex : selectedIndex) % fNLength;
 
-  const onNodeClick = ({ id, ...f }: ParserField, name?: string) => {
-    let newName = name || f.name[0].toLowerCase() + f.name.slice(1);
-    const existingNodes =
-      node.args?.filter((a) => a.name.match(`${newName}\d?`)) || [];
-    if (existingNodes.length > 0) {
-      newName = `${newName}${existingNodes.length}`;
-    }
-    node.args?.push(
-      createParserField({
-        ...f,
-        directives: [],
-        interfaces: [],
-        args: [],
-        type: {
-          fieldType: {
-            name: f.name,
-            type: Options.name,
-          },
-        },
-        name: newName,
-      }),
-    );
-    updateNode(node);
-  };
-
   return (
     <Menu
       {...props}
@@ -82,7 +52,8 @@ export const NodeAddFieldMenu = React.forwardRef<
       <MenuSearch
         onSubmit={() => {
           if (filteredNodes && filteredNodes.length > 0) {
-            onNodeClick(
+            addFieldToNode(
+              node,
               filteredNodes[selectedNodeIndex],
               menuSearchValue.split(' ')[0],
             );
@@ -112,7 +83,7 @@ export const NodeAddFieldMenu = React.forwardRef<
             dataType={getTypeName(f.type.fieldType)}
             selected={i === selectedNodeIndex}
             onClick={() => {
-              onNodeClick(f, menuSearchValue.split(' ')[0]);
+              addFieldToNode(node, f, menuSearchValue.split(' ')[0]);
             }}
           />
         ))}

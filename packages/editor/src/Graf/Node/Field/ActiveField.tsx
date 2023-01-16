@@ -44,9 +44,8 @@ export const ActiveField: React.FC<FieldProps> = ({
   parentNode,
   isLocked,
   onDelete,
-  updateNode,
 }) => {
-  const { parentTypes, readonly } = useTreesState();
+  const { parentTypes, readonly, updateFieldOnNode } = useTreesState();
   const [menuOpen, setMenuOpen] = useState<'options' | 'details' | 'type'>();
   const isEnumValue = node.data.type === ValueDefinition.EnumValueDefinition;
   const isInputValue =
@@ -55,7 +54,6 @@ export const ActiveField: React.FC<FieldProps> = ({
   const isArgumentNode = node.data.type === Instances.Argument;
   const isDirectiveNode = node.data.type === Instances.Directive;
   const isFromInterface = !!node.fromInterface?.length;
-  console.log(node.fromInterface);
   return (
     <NodeFieldContainer
       fromInterface={!!node.fromInterface?.length}
@@ -71,8 +69,10 @@ export const ActiveField: React.FC<FieldProps> = ({
               isLocked || isArgumentNode || isFromInterface
                 ? undefined
                 : (newName) => {
-                    node.name = newName;
-                    updateNode(node);
+                    updateFieldOnNode(parentNode, indexInParentNode, {
+                      ...node,
+                      name: newName,
+                    });
                   }
             }
             name={node.name}
@@ -164,15 +164,19 @@ export const ActiveField: React.FC<FieldProps> = ({
               ? undefined
               : (v) => {
                   if (isArgumentNode) {
-                    node.args =
-                      placeStringInNode({
-                        v,
-                        node,
-                      }) || [];
-                    updateNode(node);
+                    updateFieldOnNode(parentNode, indexInParentNode, {
+                      ...node,
+                      args:
+                        placeStringInNode({
+                          v,
+                          node,
+                        }) || [],
+                    });
                   }
-                  node.args = [...(placeStringInNode({ v, node }) || [])];
-                  updateNode(node);
+                  updateFieldOnNode(parentNode, indexInParentNode, {
+                    ...node,
+                    args: [...(placeStringInNode({ v, node }) || [])],
+                  });
                 }
           }
         />

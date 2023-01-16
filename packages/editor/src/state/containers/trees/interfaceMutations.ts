@@ -5,7 +5,7 @@ import {
   TypeDefinition,
 } from 'graphql-js-tree';
 
-const updateNodeByInterface =
+const updateNodeByInterfaceAddField =
   (interfaceNode: ParserField) => (node: ParserField) => {
     interfaceNode.args.forEach((ia) => {
       const sameFieldInNode = node.args.findIndex((na) => na.name === ia.name);
@@ -18,7 +18,6 @@ const updateNodeByInterface =
         );
         return;
       }
-      node.args[sameFieldInNode] = createParserField({ ...ia });
     });
   };
 
@@ -37,7 +36,7 @@ export const deleteFieldFromInterface = (
           return {
             ...a,
             fromInterface: a.fromInterface.filter(
-              (ai) => ai !== updateInterfaceNode.name,
+              (ai) => ai !== updatedInterfaceNode.name,
             ),
           };
         })
@@ -45,11 +44,39 @@ export const deleteFieldFromInterface = (
     });
 };
 
-export const updateInterfaceNode = (nodes: ParserField[], n: ParserField) => {
-  const updateWithInterface = updateNodeByInterface(n);
+export const updateInterfaceNodeAddField = (
+  nodes: ParserField[],
+  interfaceNode: ParserField,
+) => {
+  const updateWithInterface = updateNodeByInterfaceAddField(interfaceNode);
   nodes
-    .filter((n) => n.interfaces.includes(n.name))
+    .filter((n) => n.interfaces.includes(interfaceNode.name))
     .forEach(updateWithInterface);
+};
+const replaceField =
+  (oldField: ParserField, newField: ParserField) => (node: ParserField) => {
+    const fieldToChange = node.args.findIndex(
+      (na) => na.name === oldField.name,
+    );
+    const argToChange = node.args[fieldToChange];
+    if (node.args[fieldToChange] && argToChange.fromInterface) {
+      node.args[fieldToChange] = createParserField({
+        ...newField,
+        fromInterface: [...argToChange.fromInterface],
+      });
+    }
+  };
+
+export const changeInterfaceField = (
+  nodes: ParserField[],
+  interfaceNode: ParserField,
+  oldField: ParserField,
+  newField: ParserField,
+) => {
+  const updateWithOldField = replaceField(oldField, newField);
+  nodes
+    .filter((n) => n.interfaces.includes(interfaceNode.name))
+    .forEach(updateWithOldField);
 };
 
 export const renameInterfaceNode = (
@@ -70,37 +97,46 @@ export const renameInterfaceNode = (
       });
     });
 };
-const computeConnectedInterfaces = (
+const getAllConnectedInterfaces = (
   nodes: ParserField[],
   interfaces: string[],
-  interfacesToPush: string[],
 ) => {
-  const allInterfaces = nodes.filter(
-    (ni) => ni.data.type === TypeDefinition.InterfaceTypeDefinition,
-  );
-  interfacesToPush.push(
-    ...interfaces.filter((ii) => !interfacesToPush.includes(ii)),
-  );
-  for (const i of interfaces) {
-    const hasInterface = allInterfaces.find(
-      (interfaceObject) => interfaceObject.name === i,
-    )!;
-    if (hasInterface?.interfaces && hasInterface.interfaces.length) {
-      computeConnectedInterfaces(
-        nodes,
-        hasInterface.interfaces,
-        interfacesToPush,
-      );
+  const computedInterfaces: string[] = [];
+  const computeConnectedInterfaces = (
+    nodes: ParserField[],
+    interfaces: string[],
+    interfacesToPush: string[],
+  ) => {
+    const allInterfaces = nodes.filter(
+      (ni) => ni.data.type === TypeDefinition.InterfaceTypeDefinition,
+    );
+    interfacesToPush.push(
+      ...interfaces.filter((ii) => !interfacesToPush.includes(ii)),
+    );
+    for (const i of interfaces) {
+      const hasInterface = allInterfaces.find(
+        (interfaceObject) => interfaceObject.name === i,
+      )!;
+      if (hasInterface?.interfaces && hasInterface.interfaces.length) {
+        computeConnectedInterfaces(
+          nodes,
+          hasInterface.interfaces,
+          interfacesToPush,
+        );
+      }
     }
-  }
+  };
+  computeConnectedInterfaces(nodes, interfaces, computedInterfaces);
+  return computedInterfaces;
 };
 export const implementInterfaceOnNode = (
   nodes: ParserField[],
   node: ParserField,
   interfaceNode: ParserField,
 ) => {
-  const interfacesToPush: string[] = [];
-  computeConnectedInterfaces(nodes, [interfaceNode.name], interfacesToPush);
+  const interfacesToPush = getAllConnectedInterfaces(nodes, [
+    interfaceNode.name,
+  ]);
   node.interfaces.push(...interfacesToPush);
   const argsToPush =
     interfaceNode.args?.filter(
@@ -130,8 +166,9 @@ export const deImplementInterfaceOnNode = (
   node: ParserField,
   interfaceName: string,
 ) => {
-  const interfacesToDeImplement: string[] = [];
-  computeConnectedInterfaces(nodes, [interfaceName], interfacesToDeImplement);
+  const interfacesToDeImplement = getAllConnectedInterfaces(nodes, [
+    interfaceName,
+  ]);
   node.interfaces = node.interfaces.filter(
     (ni) => !interfacesToDeImplement.includes(ni),
   );
