@@ -78,7 +78,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
 }) => {
   const { selectedNode, libraryTree, isLibrary } = useTreesState();
   const { routes } = useRouter();
-  const { baseTypesOn, enumsOn } = useRelationsState();
+  const { baseTypesOn } = useRelationsState();
 
   const [refs, setRefs] = useState<Record<string, HTMLDivElement>>({});
   const [refsLoaded, setRefsLoaded] = useState(false);
@@ -114,7 +114,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
       .filter((n) => !scalarTypes.includes(n.name));
     setRelationDrawingNodes(layerSort(togetherFiltered));
     return;
-  }, [nodes, libraryTree, filteredFieldsTypes, baseTypesOn, enumsOn]);
+  }, [nodes, libraryTree, filteredFieldsTypes, baseTypesOn]);
 
   useLayoutEffect(() => {
     if (refsLoaded && relationDrawingNodesArray) {
@@ -163,7 +163,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
   useEffect(() => {
     setRefsLoaded(false);
     setRelations([]);
-  }, [routes.code, enumsOn]);
+  }, [routes.code]);
 
   const NodesContainer = useMemo(() => {
     tRefs = {};
@@ -191,7 +191,6 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
           <NodePane key={i}>
             {nodesArray.map((n) => (
               <Node
-                enums={enumsOn}
                 filteredFieldTypes={filteredFieldsTypes[n.id] || ''}
                 setFilteredFieldsTypes={(q) =>
                   setFilteredFieldsTypes((ftt) => ({

@@ -186,8 +186,7 @@ export const Relation: React.FC = () => {
 
   const { selectedNode, allNodes, setSelectedNode } = useTreesState();
   const { grafErrors } = useErrorsState();
-  const { setBaseTypesOn, baseTypesOn, setEnumsOn, enumsOn } =
-    useRelationsState();
+  const { setBaseTypesOn, baseTypesOn } = useRelationsState();
   const [isLoading, setIsLoading] = useState(false);
   const [draggingMode, setDraggingMode] = useState<DragMode>('grab');
   const [scaleFactor, setScaleFactor] = useState('100');
@@ -323,11 +322,6 @@ export const Relation: React.FC = () => {
               toggled={baseTypesOn}
               label="scalars"
               onToggle={() => setBaseTypesOn(!baseTypesOn)}
-            />
-            <Toggle
-              toggled={enumsOn}
-              label="enums"
-              onToggle={() => setEnumsOn(!enumsOn)}
             />
           </TogglesWrapper>
           {isLoading ? (
