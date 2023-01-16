@@ -176,6 +176,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
     updateNode,
     deleteFieldFromNode,
     renameNode,
+    deImplementInterface,
     isLibrary,
   } = useTreesState();
 
@@ -255,7 +256,8 @@ export const ActiveNode: React.FC<NodeProps> = ({
             <NodeInterface
               key={i}
               isLocked={isLocked}
-              onDelete={() => {
+              onDelete={() => deImplementInterface(node, i)}
+              onDetach={() => {
                 node.interfaces = node.interfaces?.filter(
                   (oldInterface) => oldInterface !== i,
                 );

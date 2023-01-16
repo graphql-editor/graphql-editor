@@ -6,9 +6,15 @@ import {
 } from '@/shared/components/ContextMenu';
 import { ParserField } from 'graphql-js-tree';
 import { transition } from '@/vars';
+import {
+  DetailMenuItem,
+  Menu,
+  MenuScrollingArea,
+} from '@/Graf/Node/components/Menu';
 
 interface NodeInterfaceProps {
   onDelete: () => void;
+  onDetach: () => void;
   isLocked?: boolean;
 }
 
@@ -28,22 +34,53 @@ const NodeInterfaceBlock = styled.div<{ isLocked?: boolean }>`
 
 export const NodeInterface: React.FC<NodeInterfaceProps> = ({
   onDelete,
+  onDetach,
   children,
   isLocked,
 }) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [, setSelectedIndex] = useState(0);
   return (
-    <NodeInterfaceBlock
-      title="Click to remove"
-      onClick={(e) => {
-        if (isLocked) {
-          return;
-        }
-        e.stopPropagation();
-        onDelete();
-      }}
+    <ContextMenu
+      isOpen={menuOpen}
+      close={() => setMenuOpen(false)}
+      Trigger={({ triggerProps }) => (
+        <NodeInterfaceBlock
+          {...triggerProps}
+          title="Click to remove"
+          onClick={(e) => {
+            if (isLocked) {
+              return;
+            }
+            e.stopPropagation();
+            setMenuOpen(true);
+          }}
+        >
+          {children}
+        </NodeInterfaceBlock>
+      )}
     >
-      {children}
-    </NodeInterfaceBlock>
+      {({ layerProps }) => (
+        <Menu
+          {...layerProps}
+          menuName={'Detach interface'}
+          onScroll={(e) => e.stopPropagation()}
+          hideMenu={() => setMenuOpen(false)}
+        >
+          <MenuScrollingArea
+            controls={{
+              arrowDown: () => setSelectedIndex((s) => (s + 1) % 2),
+              arrowUp: () => setSelectedIndex((s) => (s - 1) % 2),
+            }}
+          >
+            <DetailMenuItem onClick={onDetach}>Detach interface</DetailMenuItem>
+            <DetailMenuItem onClick={onDelete}>
+              Detach interface and remove fields
+            </DetailMenuItem>
+          </MenuScrollingArea>
+        </Menu>
+      )}
+    </ContextMenu>
   );
 };
 

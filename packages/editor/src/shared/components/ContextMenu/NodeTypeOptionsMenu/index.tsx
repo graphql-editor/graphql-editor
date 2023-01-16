@@ -5,11 +5,12 @@ import {
   compileType,
   getTypeName,
   decompileType,
+  FieldType,
 } from 'graphql-js-tree';
-import { useTreesState } from '@/state/containers/trees';
 interface NodeTypeOptionsMenuProps {
   node: ParserField;
   hideMenu: () => void;
+  onCheck: (f: FieldType) => void;
 }
 
 const configureOpts = (node: ParserField) => {
@@ -25,16 +26,10 @@ const configureOpts = (node: ParserField) => {
   };
   return opts;
 };
-const configureNode = (node: ParserField, optionString: string) => {
-  node.type.fieldType = decompileType(optionString);
-  return;
-};
-
 export const NodeTypeOptionsMenu = React.forwardRef<
   HTMLDivElement,
   NodeTypeOptionsMenuProps
->(({ node, hideMenu, ...props }, ref) => {
-  const { updateNode } = useTreesState();
+>(({ node, hideMenu, onCheck, ...props }, ref) => {
   const [opts, setOpts] = useState(configureOpts(node));
   useEffect(() => {
     setOpts(configureOpts(node));
@@ -47,8 +42,7 @@ export const NodeTypeOptionsMenu = React.forwardRef<
       hideMenu={hideMenu}
       options={opts}
       onCheck={(o) => {
-        configureNode(node, o);
-        updateNode(node);
+        onCheck(decompileType(o));
       }}
     />
   );

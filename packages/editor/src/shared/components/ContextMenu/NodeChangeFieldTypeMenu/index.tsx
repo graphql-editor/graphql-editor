@@ -9,19 +9,19 @@ import {
   TypedMenuItem,
 } from '@/Graf/Node/components';
 import { sortNodes } from '@/shared/components/ContextMenu/sort';
-import { changeTypeName } from '@/utils';
 
 interface NodeChangeFieldTypeMenuProps {
   node: ParserField;
   fieldIndex: number;
   hideMenu: () => void;
+  onSelectType: (f: ParserField) => void;
 }
 
 export const NodeChangeFieldTypeMenu = React.forwardRef<
   HTMLDivElement,
   NodeChangeFieldTypeMenuProps
->(({ node, fieldIndex, hideMenu, ...props }, ref) => {
-  const { updateNode, allNodes } = useTreesState();
+>(({ node, fieldIndex, hideMenu, onSelectType, ...props }, ref) => {
+  const { allNodes } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -45,12 +45,8 @@ export const NodeChangeFieldTypeMenu = React.forwardRef<
     (selectedIndex < 0 ? fNLength - selectedIndex : selectedIndex) % fNLength;
 
   const onNodeClick = (f: ParserField) => {
-    if (node.args) {
-      node.args[fieldIndex].data.type = f.data.type;
-      changeTypeName(node.args[fieldIndex].type.fieldType, f.name);
-    }
+    onSelectType(f);
     hideMenu();
-    updateNode(node);
   };
   return (
     <Menu

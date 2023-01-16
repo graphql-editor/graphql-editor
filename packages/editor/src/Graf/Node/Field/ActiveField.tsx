@@ -31,6 +31,7 @@ import {
   placeStringInNode,
 } from '@/GraphQL/Convert';
 import { ActiveDirectiveName } from '@/Graf/Node/Field/ActiveDirectiveName';
+import { changeTypeName } from '@/utils';
 
 export const ActiveField: React.FC<FieldProps> = ({
   node,
@@ -111,6 +112,21 @@ export const ActiveField: React.FC<FieldProps> = ({
               <NodeChangeFieldTypeMenu
                 {...layerProps}
                 node={parentNode}
+                onSelectType={(f) => {
+                  updateFieldOnNode(parentNode, indexInParentNode, {
+                    ...node,
+                    data: {
+                      type: f.data.type,
+                    },
+                    type: {
+                      ...node.type,
+                      fieldType: changeTypeName(
+                        parentNode.args[indexInParentNode].type.fieldType,
+                        f.name,
+                      ),
+                    },
+                  });
+                }}
                 fieldIndex={indexInParentNode}
                 hideMenu={() => {
                   setMenuOpen(undefined);
@@ -142,6 +158,15 @@ export const ActiveField: React.FC<FieldProps> = ({
               {({ layerProps }) => (
                 <NodeTypeOptionsMenu
                   {...layerProps}
+                  onCheck={(fieldType) => {
+                    updateFieldOnNode(parentNode, indexInParentNode, {
+                      ...node,
+                      type: {
+                        ...node.type,
+                        fieldType,
+                      },
+                    });
+                  }}
                   hideMenu={() => {
                     setMenuOpen(undefined);
                   }}
