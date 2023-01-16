@@ -16,23 +16,18 @@ export const ActiveGrafFieldName: React.FC<
   Pick<ParserField, 'name' | 'args'> & {
     afterChange?: (newName: string) => void;
     parentTypes?: Record<string, string>;
-    active?: boolean;
   }
-> = ({ args, name, afterChange, parentTypes, active }) => {
+> = ({ args, name, afterChange, parentTypes }) => {
   if (args && args.length > 0) {
     return (
       <Main>
-        <EditableText
-          value={name}
-          onChange={active ? afterChange : undefined}
-        />
-        (
+        <EditableText value={name} onChange={afterChange} />(
         {afterChange &&
           args.map((a, i) => (
             <React.Fragment key={a.name}>
               <EditableText
                 onChange={
-                  active && afterChange
+                  afterChange
                     ? (newName) => {
                         args[i].name = newName;
                         afterChange(name);
