@@ -11,7 +11,7 @@ import { useErrorsState, useRelationsState } from '@/state/containers';
 import { Toggle } from '@/shared/components';
 import styled from '@emotion/styled';
 import { toPng } from 'html-to-image';
-import { Clear, Export, Eye } from '@/editor/icons';
+import { Clear, Export } from '@/editor/icons';
 import * as vars from '@/vars';
 import { TopBar } from '@/shared/components/TopBar';
 import {
@@ -21,9 +21,7 @@ import {
 } from '@pronestor/react-zoom-pan-pinch';
 import { Minus, Plus } from '@/shared/icons';
 import { TypeDefinition } from 'graphql-js-tree';
-import { LinesDiagram } from '@/Relation/LinesDiagram';
-import { Graf } from '@/Graf/Graf';
-import { NewNode } from '@/shared/components/NewNode';
+import { LinesDiagram } from '@/EmbeddedEditor/LinesDiagram';
 
 const Wrapper = styled.div`
   display: flex;
@@ -51,11 +49,6 @@ const ErrorContainer = styled.div`
   color: ${({ theme }) => theme.text};
   background-color: ${({ theme }) => theme.background.mainFurther};
   border: 1px solid ${({ theme }) => theme.error};
-`;
-
-const DeselectWrapper = styled.div`
-  padding-left: 12px;
-  border-left: 1px solid ${({ theme }) => theme.disabled}36;
 `;
 
 const TooltippedZoom = styled.div`
@@ -191,17 +184,10 @@ export const Relation: React.FC = () => {
   const mainRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const { selectedNode, allNodes, setSelectedNode, readonly } = useTreesState();
+  const { selectedNode, allNodes, setSelectedNode } = useTreesState();
   const { grafErrors } = useErrorsState();
-  const {
-    setBaseTypesOn,
-    baseTypesOn,
-    setEnumsOn,
-    enumsOn,
-    editMode,
-    setEditMode,
-  } = useRelationsState();
-
+  const { setBaseTypesOn, baseTypesOn, setEnumsOn, enumsOn } =
+    useRelationsState();
   const [isLoading, setIsLoading] = useState(false);
   const [draggingMode, setDraggingMode] = useState<DragMode>('grab');
   const [scaleFactor, setScaleFactor] = useState('100');
@@ -299,23 +285,12 @@ export const Relation: React.FC = () => {
         <Menu>
           {selectedNode?.field && (
             <IconWrapper
-              data-tooltip="Focus selected node"
-              onClick={(_e) => setSelectedNode({ ...selectedNode })}
+              data-tooltip="Deselect node"
+              onClick={(_e) => setSelectedNode(undefined)}
             >
-              <Eye size={22} />
+              <Clear size={16} />
             </IconWrapper>
           )}
-          {selectedNode?.field && (
-            <DeselectWrapper>
-              <IconWrapper
-                data-tooltip="Deselect node"
-                onClick={(_e) => setSelectedNode(undefined)}
-              >
-                <Clear size={16} />
-              </IconWrapper>
-            </DeselectWrapper>
-          )}
-          {!selectedNode?.field && !readonly && <NewNode />}
           <ZoomWrapper>
             <IconWrapper
               data-tooltip="Zoom out"
@@ -345,11 +320,6 @@ export const Relation: React.FC = () => {
           </ZoomWrapper>
           <TogglesWrapper>
             <Toggle
-              toggled={editMode}
-              label="edit mode"
-              onToggle={() => setEditMode(!editMode)}
-            />
-            <Toggle
               toggled={baseTypesOn}
               label="scalars"
               onToggle={() => setBaseTypesOn(!baseTypesOn)}
@@ -376,7 +346,6 @@ export const Relation: React.FC = () => {
         dragMode={selectedNode?.field ? draggingMode : 'auto'}
         ref={wrapperRef}
       >
-        {editMode && selectedNode?.field && <Graf node={selectedNode.field} />}
         <TransformWrapper
           ref={ref}
           wheel={{ activationKeys: ['Control'] }}
@@ -398,6 +367,7 @@ export const Relation: React.FC = () => {
             wrapperStyle={{
               flex: 1,
               height: '100%',
+              cursor: draggingMode,
             }}
           >
             <Deselect
@@ -421,6 +391,7 @@ export const Relation: React.FC = () => {
     </Wrapper>
   );
 };
+
 const Deselect = styled.div`
   height: 100%;
   width: 100%;
