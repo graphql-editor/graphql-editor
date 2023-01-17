@@ -161,7 +161,7 @@ export const Menu = ({
       <MenuItem
         className={toggleCode ? 'toggle-active' : ''}
         onClick={() => {
-          if (activePane === 'diff') return;
+          if (!activePane || activePane === 'diff') return;
           setToggleCode(!toggleCode);
         }}
         isCollapsed={isCollapsed}
@@ -178,7 +178,13 @@ export const Menu = ({
       {!excludePanes.includes('relation') && (
         <MenuItem
           className={activePane === 'relation' ? 'active' : ''}
-          onClick={() => setActivePane('relation')}
+          onClick={() => {
+            if (activePane === 'relation' && toggleCode) {
+              setActivePane(undefined);
+              return;
+            }
+            setActivePane('relation');
+          }}
           data-tooltip="Relation"
           data-tour="relation"
           isCollapsed={isCollapsed}
@@ -190,7 +196,13 @@ export const Menu = ({
       {!excludePanes.includes('docs') && (
         <MenuItem
           className={activePane === 'docs' ? 'active' : ''}
-          onClick={() => setActivePane('docs')}
+          onClick={() => {
+            if (activePane === 'docs' && toggleCode) {
+              setActivePane(undefined);
+              return;
+            }
+            setActivePane('docs');
+          }}
           data-tooltip="Documentation"
           data-tour="documentation"
           isCollapsed={isCollapsed}

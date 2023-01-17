@@ -102,9 +102,9 @@ const DirectivePlacements = styled.div`
   gap: 1rem;
   border-bottom: 1px solid ${({ theme }) => theme.background.mainClose};
 `;
-const NodeInterfaces = styled.div`
+const NodeInterfaces = styled.div<{ isHidden?: boolean }>`
+  display: ${({ isHidden }) => (isHidden ? 'none' : 'flex')};
   max-width: 100%;
-  display: flex;
   flex-flow: row wrap;
   overflow-x: auto;
   gap: 1rem;
@@ -250,8 +250,10 @@ export const ActiveNode: React.FC<NodeProps> = ({
       )}
       {(node.data.type === TypeDefinition.ObjectTypeDefinition ||
         node.data.type === TypeDefinition.InterfaceTypeDefinition) && (
-        <NodeInterfaces>
-          <CreateNodeInterface node={node} isLocked={isLocked} />
+        <NodeInterfaces isHidden={libraryNode && !node.interfaces.length}>
+          {!libraryNode && (
+            <CreateNodeInterface node={node} isLocked={isLocked} />
+          )}
           {node.interfaces.map((i) => (
             <NodeInterface
               key={i}
