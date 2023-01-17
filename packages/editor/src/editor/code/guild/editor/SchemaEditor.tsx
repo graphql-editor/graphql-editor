@@ -13,6 +13,7 @@ import { theme as MonacoTheme } from '@/editor/code/monaco';
 import { findCurrentNodeName } from '@/editor/code/guild/editor/onCursor';
 
 export type SchemaEditorProps = SchemaServicesOptions & {
+  isLocalChange?: boolean;
   onBlur?: (value: string) => void;
   onLanguageServiceReady?: (languageService: EnrichedLanguageService) => void;
   onSchemaChange?: (schema: GraphQLSchema, sdl: string) => void;

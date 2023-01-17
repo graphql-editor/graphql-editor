@@ -32,6 +32,7 @@ export const CodePane = (props: CodePaneProps) => {
   const { lockCode, errorRowNumber } = useErrorsState();
   const [temporaryString, setTemporaryString] = useState(schema);
   const debouncedTemporaryString = useDebouncedValue(temporaryString, 1200);
+  const [isLocalChange, setIsLocalChange] = useState(false);
 
   const ref: React.ForwardedRef<SchemaEditorApi> = React.createRef();
   const codeSettings = useMemo(
@@ -44,7 +45,12 @@ export const CodePane = (props: CodePaneProps) => {
   );
 
   useEffect(() => {
+    setIsLocalChange(false);
+  }, [schema]);
+
+  useEffect(() => {
     if (temporaryString !== schema) {
+      setIsLocalChange(true);
       onChange(debouncedTemporaryString);
     }
   }, [debouncedTemporaryString]);
@@ -112,6 +118,7 @@ export const CodePane = (props: CodePaneProps) => {
           libraries={libraries}
           options={codeSettings}
           select={selectFunction}
+          isLocalChange={isLocalChange}
         />
       )}
       {lockCode && (

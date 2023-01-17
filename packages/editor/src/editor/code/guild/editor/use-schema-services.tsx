@@ -31,6 +31,7 @@ export type SchemaEditorApi = {
 };
 
 export type SchemaServicesOptions = {
+  isLocalChange?: boolean;
   schema?: string;
   libraries?: string;
   hoverProviders?: HoverSource[];
@@ -99,7 +100,8 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
 
   React.useEffect(() => {
     const model = editorRef?.getModel();
-    if (!model || !editorRef) return;
+
+    if (!model || !editorRef || options.isLocalChange) return;
     moveCursor({
       cursorIndex,
       editorRef,
