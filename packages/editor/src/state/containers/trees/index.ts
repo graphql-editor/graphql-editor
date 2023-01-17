@@ -11,6 +11,7 @@ import {
   createParserField,
   Options,
   TypeExtension,
+  TypeSystemDefinition,
 } from 'graphql-js-tree';
 import { GraphQLEditorWorker } from 'graphql-editor-worker';
 import { BuiltInScalars, isExtensionNode } from '@/GraphQL/Resolve';
@@ -78,11 +79,14 @@ const useTreesStateContainer = createContainer(() => {
     (id: string) => libraryNodeIds.includes(id),
     [libraryNodeIds],
   );
-
-  const updateNode = (n: ParserField) => {
+  const regenerateId = (n: ParserField) => {
     const id = generateNodeId(n.name, n.data.type, n.args);
     const shouldBeReselected = n.id === selectedNode?.field?.id && id !== n.id;
     n.id = id;
+    return { id, shouldBeReselected };
+  };
+  const updateNode = (n: ParserField) => {
+    const { shouldBeReselected } = regenerateId(n);
     setTree({ ...tree });
     if (shouldBeReselected) {
       setSelectedNode({
@@ -230,6 +234,7 @@ const useTreesStateContainer = createContainer(() => {
       deleteFieldFromInterface(tree.nodes, n, argName);
     }
     n.args.splice(i, 1);
+    regenerateId(n);
     updateNode(n);
   };
 
@@ -245,6 +250,7 @@ const useTreesStateContainer = createContainer(() => {
     } else {
       node.args[i] = updatedField;
     }
+    regenerateId(node);
     updateNode(node);
   };
 
@@ -276,6 +282,19 @@ const useTreesStateContainer = createContainer(() => {
     );
     if (node.data.type === TypeDefinition.InterfaceTypeDefinition) {
       updateInterfaceNodeAddField(tree.nodes, node);
+    }
+    if (node.data.type === TypeSystemDefinition.FieldDefinition) {
+      // tu zrobic dodawanie do fielda
+      let parentIndex = -1;
+      const parentNode = tree.nodes.find((n, i) => {
+        if (n.args.some((a) => a.id === node.id)) {
+          parentIndex = i;
+          return true;
+        }
+      });
+      if (parentNode) {
+        updateFieldOnNode(parentNode, parentIndex, { ...node });
+      }
     }
     updateNode(node);
   };

@@ -35,7 +35,10 @@ interface NodeProps {
   onDuplicate?: (node: ParserField) => void;
   onInputCreate?: (node: ParserField) => void;
   readonly?: boolean;
-  parentNode?: ParserField;
+  parentNode?: {
+    node: ParserField;
+    indexInParent: number;
+  };
 }
 
 const OpenedNode = styled.div`
@@ -178,6 +181,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
     renameNode,
     deImplementInterface,
     isLibrary,
+    updateFieldOnNode,
   } = useTreesState();
 
   const libraryNode = isLibrary(node.id);
@@ -286,7 +290,10 @@ export const ActiveNode: React.FC<NodeProps> = ({
                 readonly={isLocked}
                 parentNode={
                   openedNode.type === 'args' || openedNode.type === 'directives'
-                    ? node
+                    ? {
+                        indexInParent: openedNode.index,
+                        node: node,
+                      }
                     : undefined
                 }
                 node={openedNodeNode}
@@ -324,7 +331,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
             {parentNode && (
               <EditableText
                 style={EditableTitle}
-                value={`${parentNode.name}.`}
+                value={`${parentNode.node.name}.`}
               />
             )}
             {isLocked && (
@@ -338,6 +345,17 @@ export const ActiveNode: React.FC<NodeProps> = ({
                   (pt) => pt !== node.name,
                 )}
                 onChange={(newName) => {
+                  if (parentNode) {
+                    updateFieldOnNode(
+                      parentNode.node,
+                      parentNode.indexInParent,
+                      {
+                        ...node,
+                        name: newName,
+                      },
+                    );
+                    return;
+                  }
                   renameNode(node, newName);
                 }}
               />
@@ -349,7 +367,14 @@ export const ActiveNode: React.FC<NodeProps> = ({
           {!isLocked && (
             <TopNodeMenu
               {...sharedProps}
-              onDelete={() => sharedProps.onDelete(node)}
+              onDelete={() =>
+                parentNode
+                  ? deleteFieldFromNode(
+                      parentNode.node,
+                      parentNode.indexInParent,
+                    )
+                  : sharedProps.onDelete(node)
+              }
               onDuplicate={() => sharedProps.onDuplicate?.(node)}
               onInputCreate={() => sharedProps.onInputCreate?.(node)}
               node={node}
@@ -457,6 +482,19 @@ export const ActiveNode: React.FC<NodeProps> = ({
                         openedNode?.type === 'output' && openedNode?.index === i
                       }
                       onDelete={() => {
+                        if (parentNode) {
+                          updateFieldOnNode(
+                            parentNode.node,
+                            parentNode.indexInParent,
+                            {
+                              ...parentNode.node,
+                              args: parentNode.node.args.filter(
+                                (a, i) => i !== parentNode.indexInParent,
+                              ),
+                            },
+                          );
+                          return;
+                        }
                         deleteFieldFromNode(node, i);
                       }}
                     />

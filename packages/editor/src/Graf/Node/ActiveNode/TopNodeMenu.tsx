@@ -55,10 +55,11 @@ const NodeIconArea = styled.div`
 const ICON_SIZE = 14;
 export const TopNodeMenu: React.FC<{
   node: ParserField;
+  parentNode?: ParserField;
   onDelete: () => void;
   onDuplicate?: () => void;
   onInputCreate?: () => void;
-}> = ({ node, onDelete, onDuplicate, onInputCreate }) => {
+}> = ({ node, parentNode, onDelete, onDuplicate, onInputCreate }) => {
   const { scalars, tree, setTree, selectedNode, setSelectedNode } =
     useTreesState();
   const { theme } = useTheme();
