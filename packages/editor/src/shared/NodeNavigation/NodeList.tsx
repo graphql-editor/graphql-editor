@@ -3,28 +3,8 @@ import { compareParserFields, ParserField } from 'graphql-js-tree';
 import React from 'react';
 import styled from '@emotion/styled';
 import { fontFamilySans, transition } from '@/vars';
-import { Arrow } from '@/editor/icons';
+import { Arrow, Eye } from '@/editor/icons';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
-
-const NodeText = styled.a<{
-  active?: boolean;
-  color: keyof EditorTheme['colors'];
-}>`
-  font-family: ${fontFamilySans};
-  font-weight: ${({ active }) => (active ? 'bold' : 'normal')};
-  color: ${({ theme, active, color }) =>
-    active ? theme.colors[color] : theme.inactive};
-  cursor: pointer;
-  display: block;
-  font-size: 14px;
-  border-left: ${({ theme, color }) => theme.colors[color]} 1px solid;
-  padding: 0.5rem 1rem;
-  margin-left: 1rem;
-  transition: ${transition};
-  &:hover {
-    color: ${({ theme, color }) => theme.colors[color]};
-  }
-`;
 
 const Title = styled.div<{
   open?: boolean;
@@ -44,6 +24,7 @@ const Title = styled.div<{
   margin: 0;
   font-size: 14px;
   padding-bottom: 5px;
+  margin-right: 3px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -56,12 +37,53 @@ const Title = styled.div<{
   }
 `;
 
+const NavSingleBox = styled.a<{
+  active?: boolean;
+  color: keyof EditorTheme['colors'];
+}>`
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-left: ${({ theme, color }) => theme.colors[color]} 1px solid;
+  padding: 0.5rem 0 0.5rem 1rem;
+  margin-left: 1rem;
+`;
+
+const NodeName = styled.span<{
+  active?: boolean;
+  color: keyof EditorTheme['colors'];
+}>`
+  font-family: ${fontFamilySans};
+  font-weight: ${({ active }) => (active ? 'bold' : 'normal')};
+  color: ${({ theme, active, color }) =>
+    active ? theme.colors[color] : theme.inactive};
+  font-size: 14px;
+  transition: ${transition};
+
+  &:hover {
+    color: ${({ theme, color }) => theme.colors[color]};
+  }
+`;
+
+const IconContainer = styled.div<{ color: keyof EditorTheme['colors'] }>`
+  display: flex;
+  transition: ${transition};
+  color: ${({ theme }) => theme.inactive};
+  padding: 3px;
+
+  &:hover {
+    color: ${({ theme, color }) => theme.colors[color]};
+  }
+`;
+
 interface NodeListI {
   listTitle: string;
   nodeList?: ParserField[];
   expanded: Array<string>;
   setExpanded: (e: string) => void;
   colorKey: keyof EditorTheme['colors'];
+  toggleable?: true;
 }
 
 export const NodeList: React.FC<NodeListI> = ({
@@ -70,6 +92,7 @@ export const NodeList: React.FC<NodeListI> = ({
   setExpanded,
   expanded,
   colorKey,
+  toggleable,
 }) => {
   const { selectedNode, setSelectedNode } = useTreesState();
   const nodeInsideSelected =
@@ -77,6 +100,11 @@ export const NodeList: React.FC<NodeListI> = ({
     nodeList?.map((n) => n.name).includes(selectedNode?.field?.name);
   const open = expanded.includes(listTitle);
   const empty = !nodeList?.length;
+
+  const toggleVisibility = (node: ParserField) => {
+    console.log('ąnode', node);
+  };
+
   return (
     <>
       <Title
@@ -92,7 +120,7 @@ export const NodeList: React.FC<NodeListI> = ({
       {open &&
         nodeList &&
         nodeList.map((node, i) => (
-          <NodeText
+          <NavSingleBox
             color={colorKey}
             key={i}
             onClick={() => {
@@ -106,8 +134,27 @@ export const NodeList: React.FC<NodeListI> = ({
               !!compareParserFields(node)(selectedNode.field)
             }
           >
-            {node.name}
-          </NodeText>
+            <NodeName
+              color={colorKey}
+              active={
+                selectedNode?.field &&
+                !!compareParserFields(node)(selectedNode.field)
+              }
+            >
+              {node.name}
+            </NodeName>
+            {toggleable && (
+              <IconContainer
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleVisibility(node);
+                }}
+                color={colorKey}
+              >
+                <Eye size={16} />
+              </IconContainer>
+            )}
+          </NavSingleBox>
         ))}
     </>
   );

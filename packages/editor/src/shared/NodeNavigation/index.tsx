@@ -84,7 +84,6 @@ export const NodeNavigation = () => {
     const interfaceNodes: ParserField[] = [];
     const schemaNodes: ParserField[] = [];
     const directivesNodes: ParserField[] = [];
-
     const extEnumNodes: ParserField[] = [];
     const extUnionNodes: ParserField[] = [];
     const extInputNodes: ParserField[] = [];
@@ -186,6 +185,7 @@ export const NodeNavigation = () => {
             )
           }
           nodeList={splittedNodes?.schemaNodes}
+          toggleable
           listTitle="Schema"
           colorKey="type"
         />
@@ -197,6 +197,7 @@ export const NodeNavigation = () => {
             )
           }
           nodeList={splittedNodes?.typeNodes}
+          toggleable
           listTitle="Types"
           colorKey="type"
         />
@@ -208,8 +209,21 @@ export const NodeNavigation = () => {
             )
           }
           nodeList={splittedNodes?.interfaceNodes}
+          toggleable
           listTitle="Interface"
           colorKey="interface"
+        />
+        <NodeList
+          expanded={listExpanded}
+          setExpanded={(e) =>
+            setListExpanded((le) =>
+              le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+            )
+          }
+          nodeList={splittedNodes?.unionNodes}
+          toggleable
+          listTitle="Unions"
+          colorKey="union"
         />
         <NodeList
           expanded={listExpanded}
@@ -243,17 +257,6 @@ export const NodeNavigation = () => {
           nodeList={splittedNodes?.scalarNodes}
           listTitle="Scalars"
           colorKey="scalar"
-        />
-        <NodeList
-          expanded={listExpanded}
-          setExpanded={(e) =>
-            setListExpanded((le) =>
-              le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
-            )
-          }
-          nodeList={splittedNodes?.unionNodes}
-          listTitle="Unions"
-          colorKey="union"
         />
         <NodeList
           expanded={listExpanded}

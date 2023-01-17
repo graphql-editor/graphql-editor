@@ -190,12 +190,11 @@ const Main = styled.div<{ dragMode: DragMode }>`
 export const Relation: React.FC = () => {
   const mainRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-
-  const { selectedNode, allNodes, setSelectedNode, readonly } = useTreesState();
+  const { allNodesFiltered, selectedNode, setSelectedNode, readonly } =
+    useTreesState();
   const { grafErrors } = useErrorsState();
   const { setBaseTypesOn, baseTypesOn, editMode, setEditMode } =
     useRelationsState();
-
   const [isLoading, setIsLoading] = useState(false);
   const [draggingMode, setDraggingMode] = useState<DragMode>('grab');
   const [scaleFactor, setScaleFactor] = useState('100');
@@ -270,22 +269,13 @@ export const Relation: React.FC = () => {
   }, []);
 
   const typeNodes = useMemo(() => {
-    return allNodes.nodes.filter(
+    return allNodesFiltered.nodes.filter(
       (n) =>
         n.data.type === TypeDefinition.ObjectTypeDefinition ||
         n.data.type === TypeDefinition.UnionTypeDefinition ||
         n.data.type === TypeDefinition.InterfaceTypeDefinition,
     );
-  }, [allNodes]);
-  const singleNodes = useMemo(() => {
-    return allNodes.nodes.filter(
-      (n) =>
-        n.data.type === TypeDefinition.InputObjectTypeDefinition ||
-        n.data.type === TypeDefinition.ScalarTypeDefinition ||
-        n.data.type === TypeDefinition.EnumTypeDefinition,
-    );
-  }, [allNodes]);
-  singleNodes;
+  }, [allNodesFiltered]);
   const step = 0.2;
   return (
     <Wrapper>

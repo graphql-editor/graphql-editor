@@ -28,6 +28,7 @@ import {
 } from '@/state/containers/trees/interfaceMutations';
 import { ChangeAllRelatedNodes } from '@/state/containers/trees/Related';
 import { filterNotNull } from '@/state/containers/trees/shared';
+import { useFilteredNodes } from '@/shared/hooks';
 
 type SelectedNode = {
   field?: ParserField;
@@ -49,16 +50,15 @@ const useTreesStateContainer = createContainer(() => {
   const [selectedNode, setSelectedNode] = useState<SelectedNode>();
   const [readonly, setReadonly] = useState(false);
   const [scalars, setScalars] = useState(BuiltInScalars.map((a) => a.name));
-
   const { setLockGraf, setCodeErrors, transformCodeError } = useErrorsState();
+  const allNodes = useMemo(() => {
+    return { nodes: tree.nodes.concat(libraryTree.nodes) };
+  }, [libraryTree, tree]);
+  const { allNodesFiltered } = useFilteredNodes(allNodes);
 
   useEffect(() => {
     updateScallars();
   }, [tree]);
-
-  const allNodes = useMemo(() => {
-    return { nodes: tree.nodes.concat(libraryTree.nodes) };
-  }, [libraryTree, tree]);
 
   const parentTypes = useMemo(
     () => ({
@@ -349,6 +349,7 @@ const useTreesStateContainer = createContainer(() => {
 
   return {
     allNodes,
+    allNodesFiltered,
     tree,
     setTree,
     libraryTree,
