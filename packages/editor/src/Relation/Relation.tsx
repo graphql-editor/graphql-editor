@@ -396,6 +396,7 @@ export const Relation: React.FC = () => {
                 }
               }}
             >
+              <DeselectOverlay />
               <LinesDiagram
                 zoomPanPinch={zoomPanPinch}
                 panState={draggingMode}
@@ -413,4 +414,13 @@ export const Relation: React.FC = () => {
 const Deselect = styled.div`
   height: 100%;
   width: 100%;
+  position: relative;
+`;
+
+const DeselectOverlay = styled.div`
+  position: absolute;
+  top: -1000px;
+  left: -1000px;
+  height: calc(100% + 2000px);
+  width: calc(100% + 2000px);
 `;
