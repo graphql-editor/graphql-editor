@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import MonacoEditor, { EditorProps } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
 import { EnrichedLanguageService } from './EnrichedLanguageService';
@@ -27,6 +27,7 @@ function BaseSchemaEditor(
   props: SchemaEditorProps,
   ref: React.ForwardedRef<SchemaEditorApi>,
 ) {
+  const isFromLocalChange = useRef(false);
   const {
     languageService,
     setMonaco,
@@ -36,7 +37,13 @@ function BaseSchemaEditor(
     editorRef,
     setSchema,
     onValidate,
-  } = useSchemaServices(props);
+  } = useSchemaServices({
+    ...props,
+    schemaObj: {
+      code: props.schema,
+      isFromLocalChange: isFromLocalChange.current,
+    },
+  });
   const { lockCode, grafEditorErrors, setErrorNodeNames, grafErrorSchema } =
     useErrorsState();
 
@@ -114,6 +121,13 @@ function BaseSchemaEditor(
       keepCurrentModel
       onValidate={onValidate}
       onChange={(newValue, ev) => {
+        const isChangedFromOutside = ev.changes
+          .map((c) =>
+            'forceMoveMarkers' in c ? (c as any).forceMoveMarkers : undefined,
+          )
+          .reduce((a, b) => a || b);
+        isFromLocalChange.current = !isChangedFromOutside;
+
         props.onChange && props.onChange(newValue, ev);
         if (newValue) {
           setSchema(newValue)

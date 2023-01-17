@@ -71,21 +71,28 @@ const compileSchema = ({
 const cursorIndex = {
   index: -1,
 };
-export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
+export const useSchemaServices = (
+  options: Omit<SchemaServicesOptions, 'schema'> & {
+    schemaObj: {
+      code?: string;
+      isFromLocalChange?: boolean;
+    };
+  } = { schemaObj: {} },
+) => {
   const [editorRef, setEditor] =
     React.useState<monaco.editor.IStandaloneCodeEditor | null>(null);
   const [codeErrors, setCodeErrors] = React.useState<EditorError[]>([]);
   const [decorationIds, setDecorationIds] = React.useState<string[]>([]);
   const [monacoRef, setMonaco] = React.useState<typeof monaco | null>(null);
-  const previousSchema = usePrevious(options.schema);
+  const previousSchema = usePrevious(options.schemaObj.code);
   const { theme } = useTheme();
   // move to worker
   const languageService = React.useMemo(() => {
     return (
       options.sharedLanguageService ||
       new EnrichedLanguageService({
-        schemaString: options.schema
-          ? compileSchema({ ...options, schema: options.schema })
+        schemaString: options.schemaObj.code
+          ? compileSchema({ ...options, schema: options.schemaObj.code })
           : undefined,
         schemaConfig: {
           buildSchemaOptions: {
@@ -95,18 +102,18 @@ export const useSchemaServices = (options: SchemaServicesOptions = {}) => {
         },
       })
     );
-  }, [options.libraries, options.schema]);
+  }, [options.libraries, options.schemaObj.code]);
 
   React.useEffect(() => {
     const model = editorRef?.getModel();
-    if (!model || !editorRef) return;
+    if (!model || !editorRef || options.schemaObj.isFromLocalChange) return;
     moveCursor({
       cursorIndex,
       editorRef,
-      newText: options.schema || '',
+      newText: options.schemaObj.code || '',
       previousText: previousSchema || '',
     });
-  }, [options.schema]);
+  }, [options.schemaObj.code]);
 
   React.useEffect(() => {
     if (monacoRef && editorRef) {

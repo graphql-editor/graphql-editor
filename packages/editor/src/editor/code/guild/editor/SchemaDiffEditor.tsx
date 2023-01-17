@@ -16,8 +16,14 @@ function BaseSchemaDiffEditor(
     modified: SchemaEditorApi;
   }>,
 ) {
-  const originalSchemaService = useSchemaServices(props);
-  const modifiedSchemaService = useSchemaServices(props);
+  const originalSchemaService = useSchemaServices({
+    ...props,
+    schemaObj: { code: props.schema },
+  });
+  const modifiedSchemaService = useSchemaServices({
+    ...props,
+    schemaObj: { code: props.schema },
+  });
 
   React.useImperativeHandle(
     ref,
