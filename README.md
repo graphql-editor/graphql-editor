@@ -17,9 +17,7 @@ Here is a [guide](https://guide.graphqleditor.com) for GraphQL Editor SaaS
 ## How it works
 
 Create GraphQL nodes and connect them to generate a database schema. You can also use builtin text IDE with GraphQL syntax validation
-
-[<img src="assets/demo.gif">](http://graphqleditor.com/)
-
+![](/assets/demo.gif)
 ## Table of contents
 
 - [SaaS Docs](#saas-docs)
@@ -183,6 +181,38 @@ render(<App />, document.getElementById('root'));
 | setGql      | `(props: PassedSchema, isInvalid?: boolean) => void;` | set value of the gql       | true     | undefined |
 | readonly    | `boolean`                                             | lock editing               | false    | false     |
 | theme       | `EditorTheme`                                         | current theme              | false    | MainTheme |
+
+### GraphQL Embedded Readonly Editor
+
+If you only want to view the schema and embed it somewhere in your app you can use our embedded editor for that  reason
+
+```tsx
+import React from 'react';
+import { EmbeddedGraphQLEditor } from 'graphql-editor';
+import * as schemas from '../schema';
+
+export const embeddedEditor = () => {
+  return (
+    <div
+      style={{
+        flex: 1,
+        width: '100%',
+        height: '100%',
+        alignSelf: 'stretch',
+        display: 'flex',
+        position: 'relative',
+      }}
+    >
+      <EmbeddedGraphQLEditor
+        schema={{
+          code: schemas.googleDirectionsNew,
+          libraries: '',
+        }}
+      />
+    </div>
+  );
+};
+```
 
 ## Support
 
