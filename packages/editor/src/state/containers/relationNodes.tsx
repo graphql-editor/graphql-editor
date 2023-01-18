@@ -53,12 +53,15 @@ const useRelationNodes = createContainer(() => {
     [],
   );
 
-  const toggleNodeVisibility = (node: ParserField) => {
-    const newArr = [...nodesVisibilityArr];
-    const foundIdx = newArr.findIndex((el) => el.id === node.id);
-    newArr[foundIdx].isHidden = !newArr[foundIdx].isHidden;
-    setNodesVisibilityArr(newArr);
-  };
+  const toggleNodeVisibility = useCallback(
+    (node: ParserField) => {
+      const newArr = [...nodesVisibilityArr];
+      const foundIdx = newArr.findIndex((el) => el.id === node.id);
+      newArr[foundIdx].isHidden = !newArr[foundIdx].isHidden;
+      setNodesVisibilityArr(newArr);
+    },
+    [nodesVisibilityArr],
+  );
 
   return {
     filteredRelationNodes,

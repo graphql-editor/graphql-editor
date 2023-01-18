@@ -99,7 +99,7 @@ export const NodeList: React.FC<NodeListI> = ({
   colorKey,
   toggleable,
 }) => {
-  const { selectedNode, setSelectedNode } = useTreesState();
+  const { selectedNode, setSelectedNode, allNodes } = useTreesState();
   const { toggleNodeVisibility } = useRelationNodesState();
   const nodeInsideSelected =
     !!selectedNode?.field?.name &&
@@ -126,8 +126,9 @@ export const NodeList: React.FC<NodeListI> = ({
             color={colorKey}
             key={i}
             onClick={() => {
+              const foundNode = allNodes.nodes.find((el) => el.id === node.id);
               setSelectedNode({
-                field: node,
+                field: foundNode,
                 source: 'docs',
               });
             }}
