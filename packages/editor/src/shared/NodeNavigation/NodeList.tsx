@@ -1,4 +1,4 @@
-import { useTreesState } from '@/state/containers';
+import { useRelationNodesState, useTreesState } from '@/state/containers';
 import { compareParserFields, ParserField } from 'graphql-js-tree';
 import React from 'react';
 import styled from '@emotion/styled';
@@ -99,8 +99,8 @@ export const NodeList: React.FC<NodeListI> = ({
   colorKey,
   toggleable,
 }) => {
-  const { selectedNode, setSelectedNode, toggleNodeVisibility } =
-    useTreesState();
+  const { selectedNode, setSelectedNode } = useTreesState();
+  const { toggleNodeVisibility } = useRelationNodesState();
   const nodeInsideSelected =
     !!selectedNode?.field?.name &&
     nodeList?.map((n) => n.name).includes(selectedNode?.field?.name);
@@ -150,7 +150,11 @@ export const NodeList: React.FC<NodeListI> = ({
                 isHidden={node.isHidden}
                 color={colorKey}
                 onClick={(e) => {
-                  e.stopPropagation();
+                  !node.isHidden && e.stopPropagation();
+
+                  selectedNode?.field?.id === node.id &&
+                    setSelectedNode(undefined);
+
                   toggleNodeVisibility(node);
                 }}
               >

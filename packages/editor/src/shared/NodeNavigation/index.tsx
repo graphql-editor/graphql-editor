@@ -2,7 +2,7 @@ import { Eye } from '@/editor/icons';
 import { SearchInput } from '@/shared/components';
 import { useIO, KeyboardActions } from '@/shared/hooks/io';
 import { NodeList } from '@/shared/NodeNavigation/NodeList';
-import { useTreesState } from '@/state/containers';
+import { useRelationNodesState, useTreesState } from '@/state/containers';
 import { useSortState } from '@/state/containers/sort';
 import { fontFamilySans } from '@/vars';
 import styled from '@emotion/styled';
@@ -71,8 +71,9 @@ const Header = styled.div`
 `;
 
 export const NodeNavigation = () => {
-  const { allNodes, nodesVisibilityArr, hideRelationNodes, showRelationNodes } =
-    useTreesState();
+  const { allNodes } = useTreesState();
+  const { nodesVisibilityArr, hideRelationNodes, showRelationNodes } =
+    useRelationNodesState();
   const { sortAlphabetically } = useSortState();
   const [q, setQ] = useState('');
   const [listExpanded, setListExpanded] = useState<Array<string>>([

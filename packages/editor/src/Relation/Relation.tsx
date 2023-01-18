@@ -1,7 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { fontFamily, fontFamilySans } from '@/vars';
 import { useTreesState } from '@/state/containers/trees';
-import { useErrorsState, useRelationsState } from '@/state/containers';
+import {
+  useErrorsState,
+  useRelationNodesState,
+  useRelationsState,
+} from '@/state/containers';
 import { Toggle } from '@/shared/components';
 import styled from '@emotion/styled';
 import { toPng } from 'html-to-image';
@@ -183,8 +187,8 @@ const Main = styled.div<{ dragMode: DragMode }>`
 export const Relation: React.FC = () => {
   const mainRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const { filteredRelationNodes, selectedNode, setSelectedNode, readonly } =
-    useTreesState();
+  const { selectedNode, setSelectedNode, readonly } = useTreesState();
+  const { filteredRelationNodes } = useRelationNodesState();
   const { grafErrors } = useErrorsState();
   const { setBaseTypesOn, baseTypesOn, editMode, setEditMode } =
     useRelationsState();

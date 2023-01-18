@@ -1,5 +1,7 @@
+import { createContainer } from 'unstated-next';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTreesState } from '@/state/containers/trees';
 import { AllTypes, ParserField, TypeDefinition } from 'graphql-js-tree';
-import { useEffect, useMemo, useState } from 'react';
 
 export const toggleableTypes: AllTypes[] = [
   TypeDefinition.ObjectTypeDefinition,
@@ -7,7 +9,9 @@ export const toggleableTypes: AllTypes[] = [
   TypeDefinition.InterfaceTypeDefinition,
 ];
 
-export const useFilteredNodes = (allNodes: { nodes: ParserField[] }) => {
+const useRelationNodes = createContainer(() => {
+  const { allNodes, setSelectedNode } = useTreesState();
+
   const relationNodes = useMemo(
     () => allNodes.nodes.filter((n) => toggleableTypes.includes(n.data.type)),
     [allNodes],
@@ -34,14 +38,20 @@ export const useFilteredNodes = (allNodes: { nodes: ParserField[] }) => {
     });
   }, [nodesVisibilityArr]);
 
-  const hideRelationNodes = () =>
+  const hideRelationNodes = useCallback(() => {
     setNodesVisibilityArr((prev) =>
       prev.map((el) => ({ id: el.id, isHidden: true })),
     );
-  const showRelationNodes = () =>
-    setNodesVisibilityArr((prev) =>
-      prev.map((el) => ({ id: el.id, isHidden: false })),
-    );
+    setSelectedNode(undefined);
+  }, []);
+
+  const showRelationNodes = useCallback(
+    () =>
+      setNodesVisibilityArr((prev) =>
+        prev.map((el) => ({ id: el.id, isHidden: false })),
+      ),
+    [],
+  );
 
   const toggleNodeVisibility = (node: ParserField) => {
     const newArr = [...nodesVisibilityArr];
@@ -57,4 +67,7 @@ export const useFilteredNodes = (allNodes: { nodes: ParserField[] }) => {
     showRelationNodes,
     toggleNodeVisibility,
   };
-};
+});
+
+export const useRelationNodesState = useRelationNodes.useContainer;
+export const RelationNodesProvider = useRelationNodes.Provider;

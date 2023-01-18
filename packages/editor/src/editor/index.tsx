@@ -5,6 +5,7 @@ import {
   ErrorsStateProvider,
   ThemeProvider,
   RelationsProvider,
+  RelationNodesProvider,
 } from '@/state/containers';
 import { ThemeProvider as ScThemeProvider } from '@emotion/react';
 import { LayoutStateProvider } from '@/state/containers/layout';
@@ -24,9 +25,11 @@ export const GraphQLEditor = ({ ...props }: EditorProps) => {
             <RelationsProvider>
               <SortStateProvider>
                 <LayoutStateProvider>
-                  <ScThemeProvider theme={theme}>
-                    <Editor {...props} />
-                  </ScThemeProvider>
+                  <RelationNodesProvider>
+                    <ScThemeProvider theme={theme}>
+                      <Editor {...props} />
+                    </ScThemeProvider>
+                  </RelationNodesProvider>
                 </LayoutStateProvider>
               </SortStateProvider>
             </RelationsProvider>
@@ -47,9 +50,11 @@ export const EmbeddedGraphQLEditor = ({ ...props }: EmbeddedEditorProps) => {
             <RelationsProvider>
               <SortStateProvider>
                 <LayoutStateProvider>
-                  <ScThemeProvider theme={theme}>
-                    <EmbeddedEditor {...props} />
-                  </ScThemeProvider>
+                  <RelationNodesProvider>
+                    <ScThemeProvider theme={theme}>
+                      <EmbeddedEditor {...props} />
+                    </ScThemeProvider>
+                  </RelationNodesProvider>
                 </LayoutStateProvider>
               </SortStateProvider>
             </RelationsProvider>

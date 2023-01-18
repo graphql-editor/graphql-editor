@@ -28,7 +28,6 @@ import {
 } from '@/state/containers/trees/interfaceMutations';
 import { ChangeAllRelatedNodes } from '@/state/containers/trees/Related';
 import { filterNotNull } from '@/state/containers/trees/shared';
-import { useFilteredNodes } from '@/shared/hooks';
 
 type SelectedNode = {
   field?: ParserField;
@@ -54,13 +53,6 @@ const useTreesStateContainer = createContainer(() => {
   const allNodes = useMemo(() => {
     return { nodes: tree.nodes.concat(libraryTree.nodes) };
   }, [libraryTree, tree]);
-  const {
-    filteredRelationNodes,
-    toggleNodeVisibility,
-    nodesVisibilityArr,
-    hideRelationNodes,
-    showRelationNodes,
-  } = useFilteredNodes(allNodes);
 
   useEffect(() => {
     updateScallars();
@@ -355,11 +347,6 @@ const useTreesStateContainer = createContainer(() => {
 
   return {
     allNodes,
-    nodesVisibilityArr,
-    filteredRelationNodes,
-    hideRelationNodes,
-    showRelationNodes,
-    toggleNodeVisibility,
     tree,
     setTree,
     libraryTree,
