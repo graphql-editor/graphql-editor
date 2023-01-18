@@ -1,13 +1,11 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { fontFamily, fontFamilySans } from '@/vars';
 import { useTreesState } from '@/state/containers/trees';
-import { useErrorsState, useRelationsState } from '@/state/containers';
+import {
+  useErrorsState,
+  useRelationNodesState,
+  useRelationsState,
+} from '@/state/containers';
 import { Toggle } from '@/shared/components';
 import styled from '@emotion/styled';
 import { toPng } from 'html-to-image';
@@ -20,7 +18,6 @@ import {
   TransformWrapper,
 } from '@pronestor/react-zoom-pan-pinch';
 import { Minus, Plus } from '@/shared/icons';
-import { TypeDefinition } from 'graphql-js-tree';
 import { LinesDiagram } from '@/Relation/LinesDiagram';
 import { Graf } from '@/Graf/Graf';
 import { NewNode } from '@/shared/components/NewNode';
@@ -190,12 +187,11 @@ const Main = styled.div<{ dragMode: DragMode }>`
 export const Relation: React.FC = () => {
   const mainRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-
-  const { selectedNode, allNodes, setSelectedNode, readonly } = useTreesState();
+  const { selectedNode, setSelectedNode, readonly } = useTreesState();
+  const { filteredRelationNodes } = useRelationNodesState();
   const { grafErrors } = useErrorsState();
   const { setBaseTypesOn, baseTypesOn, editMode, setEditMode } =
     useRelationsState();
-
   const [isLoading, setIsLoading] = useState(false);
   const [draggingMode, setDraggingMode] = useState<DragMode>('grab');
   const [scaleFactor, setScaleFactor] = useState('100');
@@ -269,23 +265,6 @@ export const Relation: React.FC = () => {
     };
   }, []);
 
-  const typeNodes = useMemo(() => {
-    return allNodes.nodes.filter(
-      (n) =>
-        n.data.type === TypeDefinition.ObjectTypeDefinition ||
-        n.data.type === TypeDefinition.UnionTypeDefinition ||
-        n.data.type === TypeDefinition.InterfaceTypeDefinition,
-    );
-  }, [allNodes]);
-  const singleNodes = useMemo(() => {
-    return allNodes.nodes.filter(
-      (n) =>
-        n.data.type === TypeDefinition.InputObjectTypeDefinition ||
-        n.data.type === TypeDefinition.ScalarTypeDefinition ||
-        n.data.type === TypeDefinition.EnumTypeDefinition,
-    );
-  }, [allNodes]);
-  singleNodes;
   const step = 0.2;
   return (
     <Wrapper>
@@ -400,7 +379,7 @@ export const Relation: React.FC = () => {
               <LinesDiagram
                 zoomPanPinch={zoomPanPinch}
                 panState={draggingMode}
-                nodes={typeNodes}
+                nodes={filteredRelationNodes}
                 mainRef={mainRef}
               />
             </Deselect>

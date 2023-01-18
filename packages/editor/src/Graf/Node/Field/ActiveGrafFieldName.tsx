@@ -25,16 +25,7 @@ export const ActiveGrafFieldName: React.FC<
         {afterChange &&
           args.map((a, i) => (
             <React.Fragment key={a.name}>
-              <EditableText
-                onChange={
-                  afterChange
-                    ? (newName) => {
-                        afterChange(newName);
-                      }
-                    : undefined
-                }
-                value={a.name}
-              />
+              <span>{a.name}</span>
               :<ActiveGrafType type={a.type} parentTypes={parentTypes} />
               {i < args.length - 1 && <span>,</span>}
             </React.Fragment>

@@ -9,12 +9,14 @@ const Main = styled.div`
   flex-flow: row nowrap;
 `;
 
-const Indent = styled.div`
-  margin-left: 2px;
-`;
 const Name = styled.div`
   font-size: ${FIELD_NAME_SIZE};
   color: ${({ theme }) => theme.text};
+  margin-right: 2px;
+`;
+
+const Comma = styled.span`
+  padding: 0 2px;
 `;
 
 export const ActiveFieldName: React.FC<
@@ -26,13 +28,19 @@ export const ActiveFieldName: React.FC<
     return (
       <Main>
         <Name>{name}</Name>
-        {args.map((a, i) => (
-          <Indent key={a.name}>
-            <span>{a.name}</span>
-            :<ActiveType type={a.type} parentTypes={parentTypes} />
-            {i < args.length - 1 && <span>,</span>}
-          </Indent>
-        ))}
+        {args && (
+          <>
+            {'('}
+            {args.map((a, i) => (
+              <div key={a.name}>
+                <span>{a.name}</span>
+                :<ActiveType type={a.type} parentTypes={parentTypes} />
+                {i < args.length - 1 && <Comma>,</Comma>}
+              </div>
+            ))}
+            {')'}
+          </>
+        )}
       </Main>
     );
   }

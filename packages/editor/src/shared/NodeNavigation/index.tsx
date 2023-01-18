@@ -1,7 +1,8 @@
+import { Eye, EyeOff } from '@/editor/icons';
 import { SearchInput } from '@/shared/components';
 import { useIO, KeyboardActions } from '@/shared/hooks/io';
 import { NodeList } from '@/shared/NodeNavigation/NodeList';
-import { useTreesState } from '@/state/containers';
+import { useRelationNodesState, useTreesState } from '@/state/containers';
 import { useSortState } from '@/state/containers/sort';
 import { fontFamilySans } from '@/vars';
 import styled from '@emotion/styled';
@@ -30,27 +31,50 @@ const ListContainer = styled.div`
   height: 100%;
   width: 24rem;
 `;
-const SearchWrapper = styled.div`
-  padding: 1rem;
+const TopMenusWrapper = styled.div`
   position: sticky;
   width: 100%;
   top: 0;
   background: ${({ theme }) => theme.background.mainFurther};
   z-index: 2;
+  padding: 1rem;
+`;
+const SearchWrapper = styled.div`
+  width: 100%;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  justify-content: space-between;
+  margin-bottom: 1rem;
 `;
+
+const VisibilityBox = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  align-items: center;
+  font-family: ${fontFamilySans};
+  font-size: 14px;
+  color: ${({ theme }) => theme.inactive};
+  svg {
+    stroke-width: 2px;
+    cursor: pointer;
+  }
+`;
+
 const Header = styled.div`
   font-size: 16px;
   font-family: ${fontFamilySans};
   font-weight: 500;
   color: ${({ theme }) => theme.dimmed};
   white-space: nowrap;
+  margin-bottom: 1rem;
 `;
 
 export const NodeNavigation = () => {
   const { allNodes } = useTreesState();
+  const { nodesVisibilityArr, hideRelationNodes, showRelationNodes } =
+    useRelationNodesState();
   const { sortAlphabetically } = useSortState();
   const [q, setQ] = useState('');
   const [listExpanded, setListExpanded] = useState<Array<string>>([
@@ -66,6 +90,10 @@ export const NodeNavigation = () => {
   ]);
   const searchRef = useRef<HTMLInputElement>(null);
   const { mount } = useIO();
+
+  const allVisible = !nodesVisibilityArr.some((n) => n.isHidden);
+  console.log(allVisible, nodesVisibilityArr);
+
   useEffect(() => {
     const mounted = mount({
       [KeyboardActions.FindRelation]: () => {
@@ -84,7 +112,6 @@ export const NodeNavigation = () => {
     const interfaceNodes: ParserField[] = [];
     const schemaNodes: ParserField[] = [];
     const directivesNodes: ParserField[] = [];
-
     const extEnumNodes: ParserField[] = [];
     const extUnionNodes: ParserField[] = [];
     const extInputNodes: ParserField[] = [];
@@ -92,9 +119,12 @@ export const NodeNavigation = () => {
     const extTypeNodes: ParserField[] = [];
     const extInterfaceNodes: ParserField[] = [];
 
-    const filteredNodes = allNodes.nodes.filter((n) =>
-      n.name.toLowerCase().includes(q.toLowerCase()),
-    );
+    const filteredNodes = allNodes.nodes
+      .filter((n) => n.name.toLowerCase().includes(q.toLowerCase()))
+      .map((el) => {
+        const foundNode = nodesVisibilityArr.find((el2) => el2.id === el.id);
+        return { ...el, isHidden: foundNode?.isHidden || false };
+      });
 
     filteredNodes.sort(sortAlphabetically);
     filteredNodes.forEach((node) => {
@@ -161,22 +191,37 @@ export const NodeNavigation = () => {
       extTypeNodes,
       extUnionNodes,
     };
-  }, [allNodes, q]);
+  }, [allNodes, nodesVisibilityArr, q]);
 
   return (
     <ListContainer>
-      <SearchWrapper>
+      <TopMenusWrapper>
         <Header>Navigation</Header>
-        <SearchInput
-          ref={searchRef}
-          onChange={(e) => {
-            setQ(e);
-          }}
-          value={q}
-          onClear={() => setQ('')}
-          onSubmit={() => {}}
-        />
-      </SearchWrapper>
+        <SearchWrapper>
+          <SearchInput
+            ref={searchRef}
+            onChange={(e) => {
+              setQ(e);
+            }}
+            value={q}
+            onClear={() => setQ('')}
+            onSubmit={() => {}}
+          />
+          <>
+            {allVisible ? (
+              <VisibilityBox onClick={hideRelationNodes}>
+                <span>hide all</span>
+                <EyeOff size={18} />
+              </VisibilityBox>
+            ) : (
+              <VisibilityBox onClick={showRelationNodes}>
+                <span>show all</span>
+                <Eye size={18} />
+              </VisibilityBox>
+            )}
+          </>
+        </SearchWrapper>
+      </TopMenusWrapper>
       <ListWrapper>
         <NodeList
           expanded={listExpanded}
@@ -186,6 +231,7 @@ export const NodeNavigation = () => {
             )
           }
           nodeList={splittedNodes?.schemaNodes}
+          visibleInRelationView
           listTitle="Schema"
           colorKey="type"
         />
@@ -197,6 +243,7 @@ export const NodeNavigation = () => {
             )
           }
           nodeList={splittedNodes?.typeNodes}
+          visibleInRelationView
           listTitle="Types"
           colorKey="type"
         />
@@ -208,8 +255,21 @@ export const NodeNavigation = () => {
             )
           }
           nodeList={splittedNodes?.interfaceNodes}
+          visibleInRelationView
           listTitle="Interface"
           colorKey="interface"
+        />
+        <NodeList
+          expanded={listExpanded}
+          setExpanded={(e) =>
+            setListExpanded((le) =>
+              le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+            )
+          }
+          nodeList={splittedNodes?.unionNodes}
+          visibleInRelationView
+          listTitle="Unions"
+          colorKey="union"
         />
         <NodeList
           expanded={listExpanded}
@@ -243,17 +303,6 @@ export const NodeNavigation = () => {
           nodeList={splittedNodes?.scalarNodes}
           listTitle="Scalars"
           colorKey="scalar"
-        />
-        <NodeList
-          expanded={listExpanded}
-          setExpanded={(e) =>
-            setListExpanded((le) =>
-              le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
-            )
-          }
-          nodeList={splittedNodes?.unionNodes}
-          listTitle="Unions"
-          colorKey="union"
         />
         <NodeList
           expanded={listExpanded}

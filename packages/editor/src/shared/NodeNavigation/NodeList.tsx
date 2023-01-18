@@ -1,30 +1,10 @@
-import { useTreesState } from '@/state/containers';
+import { useRelationNodesState, useTreesState } from '@/state/containers';
 import { compareParserFields, ParserField } from 'graphql-js-tree';
 import React from 'react';
 import styled from '@emotion/styled';
 import { fontFamilySans, transition } from '@/vars';
-import { Arrow } from '@/editor/icons';
+import { Arrow, Eye, EyeOff, SixDots } from '@/editor/icons';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
-
-const NodeText = styled.a<{
-  active?: boolean;
-  color: keyof EditorTheme['colors'];
-}>`
-  font-family: ${fontFamilySans};
-  font-weight: ${({ active }) => (active ? 'bold' : 'normal')};
-  color: ${({ theme, active, color }) =>
-    active ? theme.colors[color] : theme.inactive};
-  cursor: pointer;
-  display: block;
-  font-size: 14px;
-  border-left: ${({ theme, color }) => theme.colors[color]} 1px solid;
-  padding: 0.5rem 1rem;
-  margin-left: 1rem;
-  transition: ${transition};
-  &:hover {
-    color: ${({ theme, color }) => theme.colors[color]};
-  }
-`;
 
 const Title = styled.div<{
   open?: boolean;
@@ -44,6 +24,7 @@ const Title = styled.div<{
   margin: 0;
   font-size: 14px;
   padding-bottom: 5px;
+  margin-right: 3px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -56,12 +37,79 @@ const Title = styled.div<{
   }
 `;
 
+const NavSingleBox = styled.a<{
+  active?: boolean;
+  color: keyof EditorTheme['colors'];
+}>`
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-left: ${({ theme, color }) => theme.colors[color]} 1px solid;
+  padding: 0.5rem 0 0.5rem 1rem;
+  margin-left: 1rem;
+  transition: ${transition};
+  :hover {
+    svg {
+      opacity: 1;
+    }
+  }
+`;
+
+const NodeName = styled.span<{
+  active?: boolean;
+  color: keyof EditorTheme['colors'];
+  isHidden?: boolean;
+}>`
+  font-family: ${fontFamilySans};
+  font-weight: ${({ active }) => (active ? 'bold' : 'normal')};
+  color: ${({ theme, active, color }) =>
+    active ? theme.colors[color] : theme.inactive};
+  font-size: 14px;
+  transition: ${transition};
+  opacity: ${({ isHidden }) => (isHidden ? 0.25 : 1)};
+
+  &:hover {
+    color: ${({ theme, color }) => theme.colors[color]};
+  }
+`;
+
+const IconContainer = styled.div<{
+  isHidden?: boolean;
+}>`
+  display: flex;
+  transition: ${transition};
+  color: ${({ theme }) => theme.disabled};
+  svg {
+    stroke-width: 2px;
+    opacity: ${({ isHidden }) => (isHidden ? 0.25 : 0.5)};
+
+    transition: ${transition};
+  }
+`;
+
+const ExternalLibrary = styled.span`
+  color: ${({ theme }) => theme.salmon};
+  font-weight: 500;
+  font-size: 10px;
+`;
+
+const Actions = styled.div`
+  margin-left: auto;
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+`;
+
+type ToggleableParserField = ParserField & { isHidden?: boolean };
+
 interface NodeListI {
   listTitle: string;
-  nodeList?: ParserField[];
+  nodeList?: ToggleableParserField[];
   expanded: Array<string>;
   setExpanded: (e: string) => void;
   colorKey: keyof EditorTheme['colors'];
+  visibleInRelationView?: true;
 }
 
 export const NodeList: React.FC<NodeListI> = ({
@@ -70,13 +118,17 @@ export const NodeList: React.FC<NodeListI> = ({
   setExpanded,
   expanded,
   colorKey,
+  visibleInRelationView,
 }) => {
-  const { selectedNode, setSelectedNode } = useTreesState();
+  const { selectedNode, setSelectedNode, allNodes, isLibrary } =
+    useTreesState();
+  const { toggleNodeVisibility, focusNode } = useRelationNodesState();
   const nodeInsideSelected =
     !!selectedNode?.field?.name &&
     nodeList?.map((n) => n.name).includes(selectedNode?.field?.name);
   const open = expanded.includes(listTitle);
   const empty = !nodeList?.length;
+
   return (
     <>
       <Title
@@ -92,12 +144,13 @@ export const NodeList: React.FC<NodeListI> = ({
       {open &&
         nodeList &&
         nodeList.map((node, i) => (
-          <NodeText
+          <NavSingleBox
             color={colorKey}
             key={i}
             onClick={() => {
+              const foundNode = allNodes.nodes.find((el) => el.id === node.id);
               setSelectedNode({
-                field: node,
+                field: foundNode,
                 source: 'docs',
               });
             }}
@@ -106,8 +159,48 @@ export const NodeList: React.FC<NodeListI> = ({
               !!compareParserFields(node)(selectedNode.field)
             }
           >
-            {node.name}
-          </NodeText>
+            <NodeName
+              isHidden={node.isHidden}
+              color={colorKey}
+              active={
+                selectedNode?.field &&
+                !!compareParserFields(node)(selectedNode.field)
+              }
+            >
+              {node.name}
+              {isLibrary(node.id) && (
+                <ExternalLibrary> External library</ExternalLibrary>
+              )}
+            </NodeName>
+            <Actions>
+              {visibleInRelationView && (
+                <IconContainer
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedNode({ source: 'relation', field: node });
+                    focusNode(node);
+                  }}
+                >
+                  <SixDots size={18} />
+                </IconContainer>
+              )}
+              {visibleInRelationView && (
+                <IconContainer
+                  isHidden={node.isHidden}
+                  onClick={(e) => {
+                    e.stopPropagation();
+
+                    selectedNode?.field?.id === node.id &&
+                      setSelectedNode(undefined);
+
+                    toggleNodeVisibility(node);
+                  }}
+                >
+                  {node.isHidden ? <EyeOff size={18} /> : <Eye size={18} />}
+                </IconContainer>
+              )}
+            </Actions>
+          </NavSingleBox>
         ))}
     </>
   );
