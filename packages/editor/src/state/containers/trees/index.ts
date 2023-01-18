@@ -54,7 +54,13 @@ const useTreesStateContainer = createContainer(() => {
   const allNodes = useMemo(() => {
     return { nodes: tree.nodes.concat(libraryTree.nodes) };
   }, [libraryTree, tree]);
-  const { allNodesFiltered } = useFilteredNodes(allNodes);
+  const {
+    filteredRelationNodes,
+    toggleNodeVisibility,
+    nodesVisibilityArr,
+    hideRelationNodes,
+    showRelationNodes,
+  } = useFilteredNodes(allNodes);
 
   useEffect(() => {
     updateScallars();
@@ -349,7 +355,11 @@ const useTreesStateContainer = createContainer(() => {
 
   return {
     allNodes,
-    allNodesFiltered,
+    nodesVisibilityArr,
+    filteredRelationNodes,
+    hideRelationNodes,
+    showRelationNodes,
+    toggleNodeVisibility,
     tree,
     setTree,
     libraryTree,

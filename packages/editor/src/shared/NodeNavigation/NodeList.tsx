@@ -66,20 +66,25 @@ const NodeName = styled.span<{
   }
 `;
 
-const IconContainer = styled.div<{ color: keyof EditorTheme['colors'] }>`
+const IconContainer = styled.div<{
+  isHidden?: boolean;
+  color: keyof EditorTheme['colors'];
+}>`
   display: flex;
   transition: ${transition};
-  color: ${({ theme }) => theme.inactive};
-  padding: 3px;
-
-  &:hover {
-    color: ${({ theme, color }) => theme.colors[color]};
+  color: ${({ theme, isHidden, color }) =>
+    isHidden ? theme.inactive : theme.colors[color]};
+  svg {
+    transition: ${transition};
+    stroke-width: ${({ isHidden }) => (isHidden ? 'unset' : '2px')};
   }
 `;
 
+type ToggleableParserField = ParserField & { isHidden?: boolean };
+
 interface NodeListI {
   listTitle: string;
-  nodeList?: ParserField[];
+  nodeList?: ToggleableParserField[];
   expanded: Array<string>;
   setExpanded: (e: string) => void;
   colorKey: keyof EditorTheme['colors'];
@@ -94,16 +99,13 @@ export const NodeList: React.FC<NodeListI> = ({
   colorKey,
   toggleable,
 }) => {
-  const { selectedNode, setSelectedNode } = useTreesState();
+  const { selectedNode, setSelectedNode, toggleNodeVisibility } =
+    useTreesState();
   const nodeInsideSelected =
     !!selectedNode?.field?.name &&
     nodeList?.map((n) => n.name).includes(selectedNode?.field?.name);
   const open = expanded.includes(listTitle);
   const empty = !nodeList?.length;
-
-  const toggleVisibility = (node: ParserField) => {
-    console.log('ąnode', node);
-  };
 
   return (
     <>
@@ -145,13 +147,14 @@ export const NodeList: React.FC<NodeListI> = ({
             </NodeName>
             {toggleable && (
               <IconContainer
+                isHidden={node.isHidden}
+                color={colorKey}
                 onClick={(e) => {
                   e.stopPropagation();
-                  toggleVisibility(node);
+                  toggleNodeVisibility(node);
                 }}
-                color={colorKey}
               >
-                <Eye size={16} />
+                <Eye size={20} />
               </IconContainer>
             )}
           </NavSingleBox>

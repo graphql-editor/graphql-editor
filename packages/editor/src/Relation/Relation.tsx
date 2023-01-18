@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { fontFamily, fontFamilySans } from '@/vars';
 import { useTreesState } from '@/state/containers/trees';
 import { useErrorsState, useRelationsState } from '@/state/containers';
@@ -20,7 +14,6 @@ import {
   TransformWrapper,
 } from '@pronestor/react-zoom-pan-pinch';
 import { Minus, Plus } from '@/shared/icons';
-import { TypeDefinition } from 'graphql-js-tree';
 import { LinesDiagram } from '@/Relation/LinesDiagram';
 import { Graf } from '@/Graf/Graf';
 import { NewNode } from '@/shared/components/NewNode';
@@ -190,7 +183,7 @@ const Main = styled.div<{ dragMode: DragMode }>`
 export const Relation: React.FC = () => {
   const mainRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const { allNodesFiltered, selectedNode, setSelectedNode, readonly } =
+  const { filteredRelationNodes, selectedNode, setSelectedNode, readonly } =
     useTreesState();
   const { grafErrors } = useErrorsState();
   const { setBaseTypesOn, baseTypesOn, editMode, setEditMode } =
@@ -268,14 +261,6 @@ export const Relation: React.FC = () => {
     };
   }, []);
 
-  const typeNodes = useMemo(() => {
-    return allNodesFiltered.nodes.filter(
-      (n) =>
-        n.data.type === TypeDefinition.ObjectTypeDefinition ||
-        n.data.type === TypeDefinition.UnionTypeDefinition ||
-        n.data.type === TypeDefinition.InterfaceTypeDefinition,
-    );
-  }, [allNodesFiltered]);
   const step = 0.2;
   return (
     <Wrapper>
@@ -390,7 +375,7 @@ export const Relation: React.FC = () => {
               <LinesDiagram
                 zoomPanPinch={zoomPanPinch}
                 panState={draggingMode}
-                nodes={typeNodes}
+                nodes={filteredRelationNodes}
                 mainRef={mainRef}
               />
             </Deselect>
