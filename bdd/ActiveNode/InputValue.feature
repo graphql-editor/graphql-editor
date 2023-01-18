@@ -5,6 +5,7 @@ Feature: Input Value
 
     Scenario: Adding an input value to a field
         Given a user has a GraphQL scheme open in the editor
+        And some inputs exists
 
         When the user selects a field in the scheme
         And the user clicks the "+" button to add a new input value
