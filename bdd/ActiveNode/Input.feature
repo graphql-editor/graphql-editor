@@ -4,9 +4,11 @@ Feature: Input
 
     Scenario: Creating an input
         Given a user has a GraphQL scheme open in the editor
+        And He is in code pane
 
-        When the user clicks the "+" button to create a new input
-        And the user enters "inputName" as the input name and selects "String" as the field type
+        When the user creates input 
+        And input name is "submitForm"
+        And add field "name" with type String
 
-        Then a new input named "inputName" with a field of type "String" should be added to the scheme
-        And the generated code for the input should include the field of type "String"
+        Then a new input named "submitForm"  with field "name" should be added to the scheme
+        And user should be able to add submitForm input to his nodes

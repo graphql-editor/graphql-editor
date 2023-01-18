@@ -4,7 +4,9 @@ Feature: Easiliy control enum active node
 
     Scenario: User wants to create a value of an enum
 
-        Given User is in the schema graph view edit mode is on and enum node is selected
+        Given User is in the schema graph view 
+        And edit mode is on 
+        And enum node is selected
 
         When He clicks create field
 
