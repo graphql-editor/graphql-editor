@@ -88,6 +88,12 @@ const IconContainer = styled.div<{
   }
 `;
 
+const ExternalLibrary = styled.span`
+  color: ${({ theme }) => theme.salmon};
+  font-weight: 500;
+  font-size: 10px;
+`;
+
 type ToggleableParserField = ParserField & { isHidden?: boolean };
 
 interface NodeListI {
@@ -107,7 +113,8 @@ export const NodeList: React.FC<NodeListI> = ({
   colorKey,
   visibleInRelationView,
 }) => {
-  const { selectedNode, setSelectedNode, allNodes } = useTreesState();
+  const { selectedNode, setSelectedNode, allNodes, isLibrary } =
+    useTreesState();
   const { toggleNodeVisibility } = useRelationNodesState();
   const nodeInsideSelected =
     !!selectedNode?.field?.name &&
@@ -154,6 +161,9 @@ export const NodeList: React.FC<NodeListI> = ({
               }
             >
               {node.name}
+              {isLibrary(node.id) && (
+                <ExternalLibrary> External library</ExternalLibrary>
+              )}
             </NodeName>
             {visibleInRelationView && (
               <IconContainer
