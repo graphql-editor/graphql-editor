@@ -117,43 +117,46 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
   }, [nodes, libraryTree, filteredFieldsTypes, baseTypesOn]);
 
   useLayoutEffect(() => {
-    if (refsLoaded && relationDrawingNodesArray) {
-      setRelations(
-        relationDrawingNodesArray
-          .map((n) => ({
-            to: { htmlNode: refs[n.id], field: n, connectingField: n },
-            fromLength: n.args?.length || 0,
-            from: n.args
-              ?.filter((a) =>
-                a.name.toLowerCase().includes(filteredFieldsTypes[n.id] || ''),
-              )
-              .map((a, index) => {
-                const pn = relationDrawingNodesArray.find(
-                  (nf) => nf.name === getTypeName(a.type.fieldType),
-                );
-                if (!pn) {
-                  return;
-                }
-                return {
-                  htmlNode: refs[pn.id],
-                  field: pn,
-                  index,
-                  connectingField: a,
-                } as RelationPath;
-              })
-              .filter((o) => !!o),
-          }))
-          .filter((n) => n.from)
-          .map(
-            (n) =>
-              n as {
-                from: RelationPath[];
-                to: RelationPath;
-                fromLength: number;
-              },
-          ),
-      );
+    if (!refsLoaded || !relationDrawingNodesArray) {
+      setRelations([]);
+      return;
     }
+
+    setRelations(
+      relationDrawingNodesArray
+        .map((n) => ({
+          to: { htmlNode: refs[n.id], field: n, connectingField: n },
+          fromLength: n.args?.length || 0,
+          from: n.args
+            ?.filter((a) =>
+              a.name.toLowerCase().includes(filteredFieldsTypes[n.id] || ''),
+            )
+            .map((a, index) => {
+              const pn = relationDrawingNodesArray.find(
+                (nf) => nf.name === getTypeName(a.type.fieldType),
+              );
+              if (!pn) {
+                return;
+              }
+              return {
+                htmlNode: refs[pn.id],
+                field: pn,
+                index,
+                connectingField: a,
+              } as RelationPath;
+            })
+            .filter((o) => !!o),
+        }))
+        .filter((n) => n.from)
+        .map(
+          (n) =>
+            n as {
+              from: RelationPath[];
+              to: RelationPath;
+              fromLength: number;
+            },
+        ),
+    );
   }, [refs, refsLoaded]);
 
   const SvgLinesContainer = useMemo(() => {

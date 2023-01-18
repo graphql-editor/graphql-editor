@@ -1,7 +1,8 @@
+import { Eye } from '@/editor/icons';
 import { SearchInput } from '@/shared/components';
 import { useIO, KeyboardActions } from '@/shared/hooks/io';
 import { NodeList } from '@/shared/NodeNavigation/NodeList';
-import { useTreesState } from '@/state/containers';
+import { useRelationNodesState, useTreesState } from '@/state/containers';
 import { useSortState } from '@/state/containers/sort';
 import { fontFamilySans } from '@/vars';
 import styled from '@emotion/styled';
@@ -41,6 +42,26 @@ const SearchWrapper = styled.div`
   align-items: center;
   gap: 0.5rem;
 `;
+
+const VisibilityBox = styled(SearchWrapper)`
+  padding: 0 1rem 1rem;
+  top: 68px;
+  justify-content: flex-end;
+  gap: 0.5rem;
+
+  svg {
+    cursor: pointer;
+  }
+
+  div:first-of-type svg {
+    color: ${({ theme }) => theme.colors.type};
+    stroke-width: 2px;
+  }
+  div:last-of-type svg {
+    color: ${({ theme }) => theme.inactive};
+  }
+`;
+
 const Header = styled.div`
   font-size: 16px;
   font-family: ${fontFamilySans};
@@ -51,6 +72,8 @@ const Header = styled.div`
 
 export const NodeNavigation = () => {
   const { allNodes } = useTreesState();
+  const { nodesVisibilityArr, hideRelationNodes, showRelationNodes } =
+    useRelationNodesState();
   const { sortAlphabetically } = useSortState();
   const [q, setQ] = useState('');
   const [listExpanded, setListExpanded] = useState<Array<string>>([
@@ -84,7 +107,6 @@ export const NodeNavigation = () => {
     const interfaceNodes: ParserField[] = [];
     const schemaNodes: ParserField[] = [];
     const directivesNodes: ParserField[] = [];
-
     const extEnumNodes: ParserField[] = [];
     const extUnionNodes: ParserField[] = [];
     const extInputNodes: ParserField[] = [];
@@ -92,9 +114,12 @@ export const NodeNavigation = () => {
     const extTypeNodes: ParserField[] = [];
     const extInterfaceNodes: ParserField[] = [];
 
-    const filteredNodes = allNodes.nodes.filter((n) =>
-      n.name.toLowerCase().includes(q.toLowerCase()),
-    );
+    const filteredNodes = allNodes.nodes
+      .filter((n) => n.name.toLowerCase().includes(q.toLowerCase()))
+      .map((el) => {
+        const foundNode = nodesVisibilityArr.find((el2) => el2.id === el.id);
+        return { ...el, isHidden: foundNode?.isHidden || false };
+      });
 
     filteredNodes.sort(sortAlphabetically);
     filteredNodes.forEach((node) => {
@@ -161,7 +186,7 @@ export const NodeNavigation = () => {
       extTypeNodes,
       extUnionNodes,
     };
-  }, [allNodes, q]);
+  }, [allNodes, nodesVisibilityArr, q]);
 
   return (
     <ListContainer>
@@ -177,6 +202,14 @@ export const NodeNavigation = () => {
           onSubmit={() => {}}
         />
       </SearchWrapper>
+      <VisibilityBox>
+        <div onClick={showRelationNodes}>
+          <Eye size={20} />
+        </div>
+        <div onClick={hideRelationNodes}>
+          <Eye size={20} />
+        </div>
+      </VisibilityBox>
       <ListWrapper>
         <NodeList
           expanded={listExpanded}
@@ -186,6 +219,7 @@ export const NodeNavigation = () => {
             )
           }
           nodeList={splittedNodes?.schemaNodes}
+          toggleable
           listTitle="Schema"
           colorKey="type"
         />
@@ -197,6 +231,7 @@ export const NodeNavigation = () => {
             )
           }
           nodeList={splittedNodes?.typeNodes}
+          toggleable
           listTitle="Types"
           colorKey="type"
         />
@@ -208,8 +243,21 @@ export const NodeNavigation = () => {
             )
           }
           nodeList={splittedNodes?.interfaceNodes}
+          toggleable
           listTitle="Interface"
           colorKey="interface"
+        />
+        <NodeList
+          expanded={listExpanded}
+          setExpanded={(e) =>
+            setListExpanded((le) =>
+              le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+            )
+          }
+          nodeList={splittedNodes?.unionNodes}
+          toggleable
+          listTitle="Unions"
+          colorKey="union"
         />
         <NodeList
           expanded={listExpanded}
@@ -243,17 +291,6 @@ export const NodeNavigation = () => {
           nodeList={splittedNodes?.scalarNodes}
           listTitle="Scalars"
           colorKey="scalar"
-        />
-        <NodeList
-          expanded={listExpanded}
-          setExpanded={(e) =>
-            setListExpanded((le) =>
-              le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
-            )
-          }
-          nodeList={splittedNodes?.unionNodes}
-          listTitle="Unions"
-          colorKey="union"
         />
         <NodeList
           expanded={listExpanded}
