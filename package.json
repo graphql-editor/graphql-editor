@@ -42,6 +42,7 @@
     "@typescript-eslint/parser": "^4.31.1",
     "concurrently": "^7.3.0",
     "cz-conventional-changelog": "^3.3.0",
+    "bddx": "^0.1.5",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
@@ -63,7 +64,6 @@
   "dependencies": {
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
-    "bddx": "^0.1.5",
     "color2k": "^1.2.4",
     "fuzzyjs": "^5.0.1",
     "graphql-language-service": "3.1.4",
