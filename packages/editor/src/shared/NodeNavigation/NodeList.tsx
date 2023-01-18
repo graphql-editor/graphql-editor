@@ -3,7 +3,7 @@ import { compareParserFields, ParserField } from 'graphql-js-tree';
 import React from 'react';
 import styled from '@emotion/styled';
 import { fontFamilySans, transition } from '@/vars';
-import { Arrow, Eye } from '@/editor/icons';
+import { Arrow, Eye, EyeOff } from '@/editor/icons';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
 
 const Title = styled.div<{
@@ -48,11 +48,18 @@ const NavSingleBox = styled.a<{
   border-left: ${({ theme, color }) => theme.colors[color]} 1px solid;
   padding: 0.5rem 0 0.5rem 1rem;
   margin-left: 1rem;
+  transition: ${transition};
+  :hover {
+    svg {
+      opacity: 1;
+    }
+  }
 `;
 
 const NodeName = styled.span<{
   active?: boolean;
   color: keyof EditorTheme['colors'];
+  isHidden?: boolean;
 }>`
   font-family: ${fontFamilySans};
   font-weight: ${({ active }) => (active ? 'bold' : 'normal')};
@@ -60,6 +67,7 @@ const NodeName = styled.span<{
     active ? theme.colors[color] : theme.inactive};
   font-size: 14px;
   transition: ${transition};
+  opacity: ${({ isHidden }) => (isHidden ? 0.25 : 1)};
 
   &:hover {
     color: ${({ theme, color }) => theme.colors[color]};
@@ -68,15 +76,15 @@ const NodeName = styled.span<{
 
 const IconContainer = styled.div<{
   isHidden?: boolean;
-  color: keyof EditorTheme['colors'];
 }>`
   display: flex;
   transition: ${transition};
-  color: ${({ theme, isHidden, color }) =>
-    isHidden ? theme.inactive : theme.colors[color]};
+  color: ${({ theme }) => theme.disabled};
   svg {
+    stroke-width: 2px;
+    opacity: ${({ isHidden }) => (isHidden ? 0.25 : 0.5)};
+
     transition: ${transition};
-    stroke-width: ${({ isHidden }) => (isHidden ? 'unset' : '2px')};
   }
 `;
 
@@ -88,7 +96,7 @@ interface NodeListI {
   expanded: Array<string>;
   setExpanded: (e: string) => void;
   colorKey: keyof EditorTheme['colors'];
-  toggleable?: true;
+  visibleInRelationView?: true;
 }
 
 export const NodeList: React.FC<NodeListI> = ({
@@ -97,7 +105,7 @@ export const NodeList: React.FC<NodeListI> = ({
   setExpanded,
   expanded,
   colorKey,
-  toggleable,
+  visibleInRelationView,
 }) => {
   const { selectedNode, setSelectedNode, allNodes } = useTreesState();
   const { toggleNodeVisibility } = useRelationNodesState();
@@ -138,6 +146,7 @@ export const NodeList: React.FC<NodeListI> = ({
             }
           >
             <NodeName
+              isHidden={node.isHidden}
               color={colorKey}
               active={
                 selectedNode?.field &&
@@ -146,12 +155,11 @@ export const NodeList: React.FC<NodeListI> = ({
             >
               {node.name}
             </NodeName>
-            {toggleable && (
+            {visibleInRelationView && (
               <IconContainer
                 isHidden={node.isHidden}
-                color={colorKey}
                 onClick={(e) => {
-                  !node.isHidden && e.stopPropagation();
+                  e.stopPropagation();
 
                   selectedNode?.field?.id === node.id &&
                     setSelectedNode(undefined);
@@ -159,7 +167,7 @@ export const NodeList: React.FC<NodeListI> = ({
                   toggleNodeVisibility(node);
                 }}
               >
-                <Eye size={20} />
+                {node.isHidden ? <EyeOff size={18} /> : <Eye size={18} />}
               </IconContainer>
             )}
           </NavSingleBox>

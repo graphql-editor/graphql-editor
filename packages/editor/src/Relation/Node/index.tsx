@@ -13,6 +13,7 @@ import styled from '@emotion/styled';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
 import { NodeSearchFields } from '@/Relation/Node/NodeSearchFields';
 import { ActiveType } from '@/Relation/Field/ActiveType';
+import { DiagramView } from '@/editor/icons';
 
 type NodeTypes = keyof EditorTheme['colors'];
 
@@ -64,7 +65,7 @@ const NodeTitle = styled.div`
 `;
 
 const FromLibrary = styled(NodeTitle)`
-  color: ${({ theme }) => theme.salmon};
+  color: ${({ theme }) => theme.inactive};
   height: auto;
   position: absolute;
   top: -22px;
@@ -206,7 +207,11 @@ export const Node: React.FC<NodeProps> = ({
         });
       }}
     >
-      {isLibrary && <FromLibrary>External library</FromLibrary>}
+      {isLibrary && (
+        <FromLibrary title="from external library">
+          <DiagramView size={18} />
+        </FromLibrary>
+      )}
       {NodeContent}
       {RelationFields}
     </Content>

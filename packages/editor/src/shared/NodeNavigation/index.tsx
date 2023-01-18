@@ -1,4 +1,4 @@
-import { Eye } from '@/editor/icons';
+import { Eye, EyeOff } from '@/editor/icons';
 import { SearchInput } from '@/shared/components';
 import { useIO, KeyboardActions } from '@/shared/hooks/io';
 import { NodeList } from '@/shared/NodeNavigation/NodeList';
@@ -31,34 +31,34 @@ const ListContainer = styled.div`
   height: 100%;
   width: 24rem;
 `;
-const SearchWrapper = styled.div`
-  padding: 1rem;
+const TopMenusWrapper = styled.div`
   position: sticky;
   width: 100%;
   top: 0;
   background: ${({ theme }) => theme.background.mainFurther};
   z-index: 2;
+  padding: 1rem;
+`;
+const SearchWrapper = styled.div`
+  width: 100%;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  justify-content: space-between;
+  margin-bottom: 1rem;
 `;
 
-const VisibilityBox = styled(SearchWrapper)`
-  padding: 0 1rem 1rem;
-  top: 68px;
+const VisibilityBox = styled.div`
+  display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
-
+  align-items: center;
+  font-family: ${fontFamilySans};
+  font-size: 14px;
+  color: ${({ theme }) => theme.inactive};
   svg {
-    cursor: pointer;
-  }
-
-  div:first-of-type svg {
-    color: ${({ theme }) => theme.colors.type};
     stroke-width: 2px;
-  }
-  div:last-of-type svg {
-    color: ${({ theme }) => theme.inactive};
+    cursor: pointer;
   }
 `;
 
@@ -68,6 +68,7 @@ const Header = styled.div`
   font-weight: 500;
   color: ${({ theme }) => theme.dimmed};
   white-space: nowrap;
+  margin-bottom: 1rem;
 `;
 
 export const NodeNavigation = () => {
@@ -89,6 +90,10 @@ export const NodeNavigation = () => {
   ]);
   const searchRef = useRef<HTMLInputElement>(null);
   const { mount } = useIO();
+
+  const allVisible = !nodesVisibilityArr.some((n) => n.isHidden);
+  console.log(allVisible, nodesVisibilityArr);
+
   useEffect(() => {
     const mounted = mount({
       [KeyboardActions.FindRelation]: () => {
@@ -190,26 +195,33 @@ export const NodeNavigation = () => {
 
   return (
     <ListContainer>
-      <SearchWrapper>
+      <TopMenusWrapper>
         <Header>Navigation</Header>
-        <SearchInput
-          ref={searchRef}
-          onChange={(e) => {
-            setQ(e);
-          }}
-          value={q}
-          onClear={() => setQ('')}
-          onSubmit={() => {}}
-        />
-      </SearchWrapper>
-      <VisibilityBox>
-        <div onClick={showRelationNodes}>
-          <Eye size={20} />
-        </div>
-        <div onClick={hideRelationNodes}>
-          <Eye size={20} />
-        </div>
-      </VisibilityBox>
+        <SearchWrapper>
+          <SearchInput
+            ref={searchRef}
+            onChange={(e) => {
+              setQ(e);
+            }}
+            value={q}
+            onClear={() => setQ('')}
+            onSubmit={() => {}}
+          />
+          <>
+            {allVisible ? (
+              <VisibilityBox onClick={hideRelationNodes}>
+                <span>hide all</span>
+                <EyeOff size={18} />
+              </VisibilityBox>
+            ) : (
+              <VisibilityBox onClick={showRelationNodes}>
+                <span>show all</span>
+                <Eye size={18} />
+              </VisibilityBox>
+            )}
+          </>
+        </SearchWrapper>
+      </TopMenusWrapper>
       <ListWrapper>
         <NodeList
           expanded={listExpanded}
@@ -219,7 +231,7 @@ export const NodeNavigation = () => {
             )
           }
           nodeList={splittedNodes?.schemaNodes}
-          toggleable
+          visibleInRelationView
           listTitle="Schema"
           colorKey="type"
         />
@@ -231,7 +243,7 @@ export const NodeNavigation = () => {
             )
           }
           nodeList={splittedNodes?.typeNodes}
-          toggleable
+          visibleInRelationView
           listTitle="Types"
           colorKey="type"
         />
@@ -243,7 +255,7 @@ export const NodeNavigation = () => {
             )
           }
           nodeList={splittedNodes?.interfaceNodes}
-          toggleable
+          visibleInRelationView
           listTitle="Interface"
           colorKey="interface"
         />
@@ -255,7 +267,7 @@ export const NodeNavigation = () => {
             )
           }
           nodeList={splittedNodes?.unionNodes}
-          toggleable
+          visibleInRelationView
           listTitle="Unions"
           colorKey="union"
         />

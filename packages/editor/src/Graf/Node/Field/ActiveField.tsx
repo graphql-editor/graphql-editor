@@ -22,7 +22,7 @@ import { FieldProps } from '@/Graf/Node/models';
 import styled from '@emotion/styled';
 import { ActiveGrafFieldName } from '@/Graf/Node/Field/ActiveGrafFieldName';
 import { ActiveGrafType } from '@/Graf/Node/Field/ActiveGrafType';
-import { ArrowLeft } from '@/editor/icons';
+import { ArrowLeft, Library } from '@/editor/icons';
 import { transition } from '@/vars';
 import {
   ConvertArgumentNodeToString,
@@ -82,10 +82,13 @@ export const ActiveField: React.FC<FieldProps> = ({
           />
         )}
       {isFromInterface && (
-        <ActiveGrafType
-          type={node.type}
-          parentTypes={parentTypes}
-        ></ActiveGrafType>
+        <>
+          <ActiveGrafType
+            type={node.type}
+            parentTypes={parentTypes}
+          ></ActiveGrafType>
+          <Library size={16} />
+        </>
       )}
       {!isEnumValue &&
         !isArgumentNode &&
@@ -209,6 +212,7 @@ export const ActiveField: React.FC<FieldProps> = ({
       <Actions toRight>
         {!inputDisabled &&
           !isArgumentNode &&
+          !isFromInterface &&
           node.data.type !== TypeSystemDefinition.UnionMemberDefinition && (
             <FieldPort
               onClick={onInputClick}
@@ -219,7 +223,7 @@ export const ActiveField: React.FC<FieldProps> = ({
               }}
             />
           )}
-        {!isLocked && (
+        {!isLocked && !isFromInterface && (
           <ContextMenu
             isOpen={menuOpen === 'details'}
             close={() => setMenuOpen(undefined)}
