@@ -3,7 +3,7 @@ import { compareParserFields, ParserField } from 'graphql-js-tree';
 import React from 'react';
 import styled from '@emotion/styled';
 import { fontFamilySans, transition } from '@/vars';
-import { Arrow, Eye, EyeOff } from '@/editor/icons';
+import { Arrow, Eye, EyeOff, SixDots } from '@/editor/icons';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
 
 const Title = styled.div<{
@@ -94,6 +94,13 @@ const ExternalLibrary = styled.span`
   font-size: 10px;
 `;
 
+const Actions = styled.div`
+  margin-left: auto;
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+`;
+
 type ToggleableParserField = ParserField & { isHidden?: boolean };
 
 interface NodeListI {
@@ -115,7 +122,7 @@ export const NodeList: React.FC<NodeListI> = ({
 }) => {
   const { selectedNode, setSelectedNode, allNodes, isLibrary } =
     useTreesState();
-  const { toggleNodeVisibility } = useRelationNodesState();
+  const { toggleNodeVisibility, focusNode } = useRelationNodesState();
   const nodeInsideSelected =
     !!selectedNode?.field?.name &&
     nodeList?.map((n) => n.name).includes(selectedNode?.field?.name);
@@ -165,21 +172,34 @@ export const NodeList: React.FC<NodeListI> = ({
                 <ExternalLibrary> External library</ExternalLibrary>
               )}
             </NodeName>
-            {visibleInRelationView && (
-              <IconContainer
-                isHidden={node.isHidden}
-                onClick={(e) => {
-                  e.stopPropagation();
+            <Actions>
+              {visibleInRelationView && (
+                <IconContainer
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedNode({ source: 'relation', field: node });
+                    focusNode(node);
+                  }}
+                >
+                  <SixDots size={18} />
+                </IconContainer>
+              )}
+              {visibleInRelationView && (
+                <IconContainer
+                  isHidden={node.isHidden}
+                  onClick={(e) => {
+                    e.stopPropagation();
 
-                  selectedNode?.field?.id === node.id &&
-                    setSelectedNode(undefined);
+                    selectedNode?.field?.id === node.id &&
+                      setSelectedNode(undefined);
 
-                  toggleNodeVisibility(node);
-                }}
-              >
-                {node.isHidden ? <EyeOff size={18} /> : <Eye size={18} />}
-              </IconContainer>
-            )}
+                    toggleNodeVisibility(node);
+                  }}
+                >
+                  {node.isHidden ? <EyeOff size={18} /> : <Eye size={18} />}
+                </IconContainer>
+              )}
+            </Actions>
           </NavSingleBox>
         ))}
     </>

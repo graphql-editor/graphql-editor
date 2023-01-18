@@ -1,7 +1,12 @@
 import { createContainer } from 'unstated-next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTreesState } from '@/state/containers/trees';
-import { AllTypes, ParserField, TypeDefinition } from 'graphql-js-tree';
+import {
+  AllTypes,
+  getTypeName,
+  ParserField,
+  TypeDefinition,
+} from 'graphql-js-tree';
 
 export const toggleableTypes: AllTypes[] = [
   TypeDefinition.ObjectTypeDefinition,
@@ -52,6 +57,26 @@ const useRelationNodes = createContainer(() => {
       ),
     [],
   );
+  const focusNode = useCallback(
+    (n: ParserField) => {
+      const types = n.args.map((a) => getTypeName(a.type.fieldType));
+      const children = allNodes.nodes.filter((an) => types.includes(an.name));
+      const parents = allNodes.nodes.filter((an) =>
+        an.args.some((a) => getTypeName(a.type.fieldType) === n.name),
+      );
+      const visibleIds = children
+        .map((c) => c.id)
+        .concat(parents.map((p) => p.id))
+        .concat([n.id]);
+      setNodesVisibilityArr((prev) =>
+        prev.map((el) => ({
+          id: el.id,
+          isHidden: !visibleIds.includes(el.id),
+        })),
+      );
+    },
+    [allNodes],
+  );
 
   const toggleNodeVisibility = useCallback(
     (node: ParserField) => {
@@ -69,6 +94,7 @@ const useRelationNodes = createContainer(() => {
     hideRelationNodes,
     showRelationNodes,
     toggleNodeVisibility,
+    focusNode,
   };
 });
 
