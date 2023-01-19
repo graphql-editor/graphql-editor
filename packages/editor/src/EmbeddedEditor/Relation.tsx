@@ -357,6 +357,7 @@ export const Relation: React.FC = () => {
                 panState={draggingMode}
                 nodes={filteredRelationNodes}
                 mainRef={mainRef}
+                panRef={ref}
               />
             </Deselect>
           </TransformComponent>

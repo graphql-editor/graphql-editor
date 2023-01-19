@@ -1,4 +1,10 @@
-import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTreesState } from '@/state/containers/trees';
 import { useRelationsState } from '@/state/containers';
 import { Node } from './Node';
@@ -9,6 +15,7 @@ import { isScalarArgument } from '@/GraphQL/Resolve';
 import * as vars from '@/vars';
 import { ParserField, getTypeName, TypeDefinition } from 'graphql-js-tree';
 import { useRouter } from '@/state/containers/router';
+import { ReactZoomPanPinchRef } from '@pronestor/react-zoom-pan-pinch';
 const Wrapper = styled.div`
   width: 100%;
   height: 100%;
@@ -57,6 +64,7 @@ export type FilteredFieldsTypesProps = {
 
 type LinesDiagramProps = {
   mainRef: React.RefObject<HTMLDivElement>;
+  panRef: React.RefObject<ReactZoomPanPinchRef>;
   nodes: ParserField[];
   panState?: 'grabbing' | 'grab' | 'auto';
   zoomPanPinch?: (refs: Record<string, HTMLElement>) => void;
@@ -72,6 +80,7 @@ const passScalars = (pass: boolean, scalars: string[]) => (n: ParserField) =>
 
 export const LinesDiagram: React.FC<LinesDiagramProps> = ({
   mainRef,
+  panRef,
   nodes,
   panState,
   zoomPanPinch,
@@ -79,9 +88,9 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
   const { selectedNode, libraryTree, isLibrary } = useTreesState();
   const { routes } = useRouter();
   const { baseTypesOn } = useRelationsState();
-
   const [refs, setRefs] = useState<Record<string, HTMLDivElement>>({});
   const [refsLoaded, setRefsLoaded] = useState(false);
+  const isOnMountCentered = useRef(false);
   const [relationDrawingNodes, setRelationDrawingNodes] =
     useState<ParserField[][]>();
   const relationDrawingNodesArray = useMemo(() => {
@@ -167,6 +176,18 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
     setRefsLoaded(false);
     setRelations([]);
   }, [routes.code]);
+
+  useEffect(() => {
+    if (isOnMountCentered.current) return;
+    if (selectedNode) {
+      isOnMountCentered.current = true;
+      return;
+    }
+    if (!panRef.current || !refsLoaded) return;
+
+    isOnMountCentered.current = true;
+    panRef.current.centerView();
+  }, [panRef.current, refsLoaded, selectedNode]);
 
   const NodesContainer = useMemo(() => {
     tRefs = {};
