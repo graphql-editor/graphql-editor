@@ -10,7 +10,8 @@
   "scripts": {
     "lint": "eslint \"./src/**/*.{ts,js}\" --quiet --fix && prettier --write \"./src/**/*.{ts,js}\" ",
     "run-all": "npm run build --ws --if-present && concurrently \"npm run start -w graphql-editor-worker\" \"npm run start -w graphql-editor\" \"npm run start -w sandbox\" ",
-    "run-all-debug": "npm run build --ws --if-present && concurrently \"npm run start -w graphql-editor-worker\" \"npm run start -w graphql-editor\" \"npm run start -w sandbox\" \"firefox -start-debugger-server\" "
+    "run-all-debug": "npm run build --ws --if-present && concurrently \"npm run start -w graphql-editor-worker\" \"npm run start -w graphql-editor\" \"npm run start -w sandbox\" \"firefox -start-debugger-server\" ",
+    "regenerate-icons": "npm run run -w svg-ts-sync -- ./svg ./packages/editor/src/icons"
   },
   "resolutions": {
     "@types/react": "^16.9.11"
@@ -39,9 +40,9 @@
     "@types/remarkable": "^2.0.3",
     "@typescript-eslint/eslint-plugin": "^4.31.1",
     "@typescript-eslint/parser": "^4.31.1",
+    "bddx": "^0.1.5",
     "concurrently": "^7.3.0",
     "cz-conventional-changelog": "^3.3.0",
-    "bddx": "^0.1.5",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
@@ -79,6 +80,7 @@
     "packages": [
       "./packages/editor-worker",
       "./packages/editor",
+      "./packages/svg-ts-sync",
       "./packages/sandbox"
     ]
   }
