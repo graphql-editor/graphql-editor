@@ -227,9 +227,7 @@ export const Menu = ({
       <CollapseArrow
         isCollapsed={isCollapsed}
         toggle={() => setIsCollapsed((prev) => !prev)}
-      >
-        <Icons.ArrowLeft size={11} />
-      </CollapseArrow>
+      />
     </Sidebar>
   );
 };
