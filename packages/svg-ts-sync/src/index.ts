@@ -11,13 +11,18 @@ const transformToTsx = (
   newName: string,
 ) => {
   const f = fs.readFileSync(filePath, 'utf-8').toString();
-  const newContent = transform.sync(f, {
-    typescript: true,
-    exportType: 'named',
-    namedExport: newName,
-  });
+  const newContent = fillStrokeToCurrentColor(
+    transform.sync(f, {
+      typescript: true,
+      exportType: 'named',
+      namedExport: newName,
+    }),
+  );
   fs.writeFileSync(newFilePath, newContent);
 };
+
+const fillStrokeToCurrentColor = (str: string) =>
+  str.replace(/(stroke|fill)\="(?!none)([^"]*)"/, '$1="currentColor"');
 
 const bseCwd = path.join('..', '..');
 const camelCased = (str: string) =>
