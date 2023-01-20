@@ -14,6 +14,9 @@ export const ConvertArgumentNodeToString = (node: ParserField) => {
   return equalSplit.join(':');
 };
 export const ConvertValueNodeToString = (node: ParserField) => {
+  if (!node.args) {
+    return '';
+  }
   if (!node.args.length) {
     return '';
   }

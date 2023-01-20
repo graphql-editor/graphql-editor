@@ -484,19 +484,6 @@ export const ActiveNode: React.FC<NodeProps> = ({
                         openedNode?.type === 'output' && openedNode?.index === i
                       }
                       onDelete={() => {
-                        if (parentNode) {
-                          updateFieldOnNode(
-                            parentNode.node,
-                            parentNode.indexInParent,
-                            {
-                              ...parentNode.node,
-                              args: parentNode.node.args.filter(
-                                (a, i) => i !== parentNode.indexInParent,
-                              ),
-                            },
-                          );
-                          return;
-                        }
                         deleteFieldFromNode(node, i);
                       }}
                     />

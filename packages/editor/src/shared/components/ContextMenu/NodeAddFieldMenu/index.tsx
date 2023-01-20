@@ -1,6 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ResolveCreateField } from '@/GraphQL/Resolve';
-import { getTypeName, ParserField } from 'graphql-js-tree';
+import {
+  createParserField,
+  getTypeName,
+  ParserField,
+  TypeSystemDefinition,
+  ValueDefinition,
+} from 'graphql-js-tree';
 import { useTreesState } from '@/state/containers/trees';
 import {
   Menu,
@@ -52,6 +58,14 @@ export const NodeAddFieldMenu = React.forwardRef<
       <MenuSearch
         onSubmit={() => {
           if (filteredNodes && filteredNodes.length > 0) {
+            const addedNode = createParserField(
+              JSON.parse(
+                JSON.stringify(filteredNodes[selectedNodeIndex]),
+              ) as ParserField,
+            );
+            if (node.data.type === TypeSystemDefinition.FieldDefinition) {
+              addedNode.data.type = ValueDefinition.InputValueDefinition;
+            }
             addFieldToNode(
               node,
               filteredNodes[selectedNodeIndex],
@@ -83,7 +97,10 @@ export const NodeAddFieldMenu = React.forwardRef<
             dataType={getTypeName(f.type.fieldType)}
             selected={i === selectedNodeIndex}
             onClick={() => {
-              addFieldToNode(node, f, menuSearchValue.split(' ')[0]);
+              const addedNode = createParserField(
+                JSON.parse(JSON.stringify(f)) as ParserField,
+              );
+              addFieldToNode(node, addedNode, menuSearchValue.split(' ')[0]);
             }}
           />
         ))}

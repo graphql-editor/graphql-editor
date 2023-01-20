@@ -92,7 +92,6 @@ export const NodeNavigation = () => {
   const { mount } = useIO();
 
   const allVisible = !nodesVisibilityArr.some((n) => n.isHidden);
-  console.log(allVisible, nodesVisibilityArr);
 
   useEffect(() => {
     const mounted = mount({

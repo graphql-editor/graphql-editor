@@ -97,9 +97,6 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
     return relationDrawingNodes?.flatMap((r) => r);
   }, [relationDrawingNodes]);
 
-  const [filteredFieldsTypes, setFilteredFieldsTypes] = useState<
-    Record<string, string>
-  >({});
   const [relations, setRelations] =
     useState<
       { to: RelationPath; from: RelationPath[]; fromLength: number }[]
@@ -123,7 +120,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
       .filter((n) => !scalarTypes.includes(n.name));
     setRelationDrawingNodes(layerSort(togetherFiltered));
     return;
-  }, [nodes, libraryTree, filteredFieldsTypes, baseTypesOn]);
+  }, [nodes, libraryTree, baseTypesOn]);
 
   useLayoutEffect(() => {
     if (!refsLoaded || !relationDrawingNodesArray) {
@@ -137,9 +134,6 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
           to: { htmlNode: refs[n.id], field: n, connectingField: n },
           fromLength: n.args?.length || 0,
           from: n.args
-            ?.filter((a) =>
-              a.name.toLowerCase().includes(filteredFieldsTypes[n.id] || ''),
-            )
             .map((a, index) => {
               const pn = relationDrawingNodesArray.find(
                 (nf) => nf.name === getTypeName(a.type.fieldType),
@@ -215,13 +209,6 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
           <NodePane key={i}>
             {nodesArray.map((n) => (
               <Node
-                filteredFieldTypes={filteredFieldsTypes[n.id] || ''}
-                setFilteredFieldsTypes={(q) =>
-                  setFilteredFieldsTypes((ftt) => ({
-                    ...ftt,
-                    [n.id]: q,
-                  }))
-                }
                 isLibrary={isLibrary(n.id)}
                 key={n.id}
                 setRef={(ref) => {

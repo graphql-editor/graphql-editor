@@ -8,26 +8,13 @@ import {
   getTypeName,
   compareParserFields,
   generateNodeId,
-  createParserField,
-  Options,
-  TypeExtension,
-  TypeSystemDefinition,
+  mutate,
 } from 'graphql-js-tree';
 import { GraphQLEditorWorker } from 'graphql-editor-worker';
-import { BuiltInScalars, isExtensionNode } from '@/GraphQL/Resolve';
+import { BuiltInScalars } from '@/GraphQL/Resolve';
 import { PassedSchema } from '@/Models';
 import { useErrorsState } from '@/state/containers';
 import { ActiveSource } from '@/editor/menu/Menu';
-import {
-  changeInterfaceField,
-  deImplementInterfaceOnNode,
-  deleteFieldFromInterface,
-  implementInterfaceOnNode,
-  renameInterfaceNode,
-  updateInterfaceNodeAddField,
-} from '@/state/containers/trees/interfaceMutations';
-import { ChangeAllRelatedNodes } from '@/state/containers/trees/Related';
-import { filterNotNull } from '@/state/containers/trees/shared';
 
 type SelectedNode = {
   field?: ParserField;
@@ -57,6 +44,11 @@ const useTreesStateContainer = createContainer(() => {
   useEffect(() => {
     updateScallars();
   }, [tree]);
+
+  const mutationRoot = useMemo(
+    () => mutate(tree, allNodes.nodes),
+    [tree, allNodes],
+  );
 
   const parentTypes = useMemo(
     () => ({
@@ -227,12 +219,7 @@ const useTreesStateContainer = createContainer(() => {
   };
 
   const deleteFieldFromNode = (n: ParserField, i: number) => {
-    const argName = n.args[i].name;
-    if (n.data.type === TypeDefinition.InterfaceTypeDefinition) {
-      deleteFieldFromInterface(tree.nodes, n, argName);
-    }
-    n.args.splice(i, 1);
-    regenerateId(n);
+    mutationRoot.deleteFieldFromNode(n, i);
     updateNode(n);
   };
 
@@ -241,59 +228,21 @@ const useTreesStateContainer = createContainer(() => {
     i: number,
     updatedField: ParserField,
   ) => {
-    const oldField = JSON.parse(JSON.stringify(node.args[i]));
-    if (node.data.type === TypeDefinition.InterfaceTypeDefinition) {
-      changeInterfaceField(tree.nodes, node, oldField, updatedField);
-      node.args[i] = updatedField;
-    } else {
-      node.args[i] = updatedField;
-    }
-    regenerateId(node);
+    mutationRoot.updateFieldOnNode(node, i, updatedField);
     updateNode(node);
   };
 
-  const addFieldToNode = (
-    node: ParserField,
-    { id, ...f }: ParserField,
-    name?: string,
-  ) => {
+  const addFieldToNode = (node: ParserField, f: ParserField, name?: string) => {
     let newName = name || f.name[0].toLowerCase() + f.name.slice(1);
     const existingNodes =
       node.args?.filter((a) => a.name.match(`${newName}\d?`)) || [];
     if (existingNodes.length > 0) {
       newName = `${newName}${existingNodes.length}`;
     }
-    node.args?.push(
-      createParserField({
-        ...f,
-        directives: [],
-        interfaces: [],
-        args: [],
-        type: {
-          fieldType: {
-            name: f.name,
-            type: Options.name,
-          },
-        },
-        name: newName,
-      }),
-    );
-    if (node.data.type === TypeDefinition.InterfaceTypeDefinition) {
-      updateInterfaceNodeAddField(tree.nodes, node);
-    }
-    if (node.data.type === TypeSystemDefinition.FieldDefinition) {
-      // tu zrobic dodawanie do fielda
-      let parentIndex = -1;
-      const parentNode = tree.nodes.find((n, i) => {
-        if (n.args.some((a) => a.id === node.id)) {
-          parentIndex = i;
-          return true;
-        }
-      });
-      if (parentNode) {
-        updateFieldOnNode(parentNode, parentIndex, { ...node });
-      }
-    }
+    mutationRoot.addFieldToNode(node, {
+      ...f,
+      name: newName,
+    });
     updateNode(node);
   };
   const renameNode = (node: ParserField, newName: string) => {
@@ -301,47 +250,29 @@ const useTreesStateContainer = createContainer(() => {
     if (isError) {
       return;
     }
-    if (node.data.type === TypeDefinition.InterfaceTypeDefinition) {
-      renameInterfaceNode(tree.nodes, newName, node.name);
-    }
-    ChangeAllRelatedNodes({
-      newName,
-      nodes: tree.nodes,
-      oldName: node.name,
-    });
-    node.name = newName;
+    mutationRoot.renameNode(node, newName);
     updateNode(node);
   };
   const removeNode = (node: ParserField) => {
-    const deletedNode = tree.nodes.findIndex((n) => n === node)!;
-    const allNodes = [...tree.nodes];
-    // co jak usuwamy extension interface
-    if (node.data.type === TypeExtension.InterfaceTypeExtension) {
+    const deselect = node.id === selectedNode?.field?.id;
+    mutationRoot.removeNode(node);
+    setTree({ ...tree });
+    if (deselect) {
+      setSelectedNode({
+        source: 'relation',
+        field: undefined,
+      });
     }
-    allNodes.splice(deletedNode, 1);
-    tree.nodes.forEach((n) => {
-      n.args = n.args
-        .filter((a) => {
-          const tName = getTypeName(a.type.fieldType);
-          if (tName === node.name && !isExtensionNode(node.data.type)) {
-            return null;
-          }
-          return a;
-        })
-        .filter(filterNotNull);
-    });
-    setSelectedNode(undefined);
-    setTree({ nodes: allNodes });
   };
   const implementInterface = (
     node: ParserField,
     interfaceNode: ParserField,
   ) => {
-    implementInterfaceOnNode(tree.nodes, node, interfaceNode);
+    mutationRoot.implementInterface(node, interfaceNode);
     updateNode(node);
   };
   const deImplementInterface = (node: ParserField, interfaceName: string) => {
-    deImplementInterfaceOnNode(tree.nodes, node, interfaceName);
+    mutationRoot.deImplementInterface(node, interfaceName);
     updateNode(node);
   };
 
