@@ -2,7 +2,7 @@ import { ArrowLeft } from '@/editor/icons';
 import styled from '@emotion/styled';
 import React from 'react';
 
-const Container = styled.div<{ isCollapsed: boolean }>`
+const Container = styled.div<{ isCollapsed: boolean; isRight?: true }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -14,9 +14,10 @@ const Container = styled.div<{ isCollapsed: boolean }>`
   background-color: ${({ theme }) => theme.background.mainMiddle};
   position: absolute;
   z-index: 5;
-  right: 0;
   top: 50%;
-  transform: translate(50%, -50%);
+  right: ${({ isRight }) => (isRight ? 'unset' : 0)};
+  left: ${({ isRight }) => (isRight ? 0 : 'unset')};
+  translate: ${({ isRight }) => (isRight ? '-50% -50%' : '50% -50%')};
   color: ${({ theme }) => theme.disabled};
   transition: color 0.25s ease;
 
@@ -27,22 +28,30 @@ const Container = styled.div<{ isCollapsed: boolean }>`
   svg {
     width: 6px;
     height: 11px;
-    transform: ${({ isCollapsed }) =>
-      isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)'};
+    transform: ${({ isCollapsed, isRight }) => {
+      if (isRight) return isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)';
+      return isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)';
+    }};
   }
 `;
 
 interface CollapseArrowProps {
   isCollapsed: boolean;
   toggle: () => void;
+  isRight?: true;
 }
 
 export const CollapseArrow: React.FC<CollapseArrowProps> = ({
   isCollapsed,
   toggle,
+  isRight,
 }) => {
   return (
-    <Container isCollapsed={isCollapsed} onClick={() => toggle()}>
+    <Container
+      isRight={isRight}
+      isCollapsed={isCollapsed}
+      onClick={() => toggle()}
+    >
       <ArrowLeft size={11} />
     </Container>
   );

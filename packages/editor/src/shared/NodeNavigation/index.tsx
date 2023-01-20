@@ -1,4 +1,5 @@
 import { Eye, EyeOff } from '@/editor/icons';
+import { CollapseArrow } from '@/editor/menu/CollapseArrow';
 import { SearchInput } from '@/shared/components';
 import { useIO, KeyboardActions } from '@/shared/hooks/io';
 import { NodeList } from '@/shared/NodeNavigation/NodeList';
@@ -15,22 +16,29 @@ import {
 } from 'graphql-js-tree';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
+const Container = styled.div`
+  position: relative;
+`;
+
+const ListContainer = styled.div<{ isCollapsed: boolean }>`
+  display: flex;
+  flex-flow: column nowrap;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: ${({ theme }) => theme.background.mainFurther};
+  border-left: ${({ theme }) => theme.moduleSeparator} 2px solid;
+  height: 100%;
+  transition: width 0.5s ease-in-out;
+  width: ${({ isCollapsed }) => (isCollapsed ? '64px' : '24rem')};
+  overflow: ${({ isCollapsed }) => (isCollapsed ? 'hidden' : 'initial')};
+`;
+
 const ListWrapper = styled.div`
   width: 100%;
   padding: 0 1rem 100px;
   position: relative;
 `;
 
-const ListContainer = styled.div`
-  display: flex;
-  flex-flow: column nowrap;
-  overflow-y: scroll;
-  overflow-x: hidden;
-  background: ${({ theme }) => theme.background.mainFurther};
-  border-left: ${({ theme }) => theme.moduleSeparator} 2px solid;
-  height: 100%;
-  width: 24rem;
-`;
 const TopMenusWrapper = styled.div`
   position: sticky;
   width: 100%;
@@ -71,12 +79,30 @@ const Header = styled.div`
   margin-bottom: 1rem;
 `;
 
+const Expanded = styled.div<{ isCollapsed: boolean }>`
+  opacity: ${({ isCollapsed }) => (isCollapsed ? 0 : 1)};
+  visibility: ${({ isCollapsed }) => (isCollapsed ? 'hidden' : 'visible')};
+  transition: opacity 0.5s ease;
+`;
+
+const VerticalTitle = styled(Header)<{ isCollapsed: boolean }>`
+  display: ${({ isCollapsed }) => (isCollapsed ? 'flex' : 'none')};
+  align-items: center;
+  margin-top: 1rem;
+  writing-mode: tb-rl;
+  text-orientation: upright;
+  letter-spacing: 4px;
+  opacity: ${({ isCollapsed }) => (isCollapsed ? 1 : 0)};
+  transition: opacity 1s ease;
+`;
+
 export const NodeNavigation = () => {
   const { allNodes } = useTreesState();
   const { nodesVisibilityArr, hideRelationNodes, showRelationNodes } =
     useRelationNodesState();
   const { sortAlphabetically } = useSortState();
   const [q, setQ] = useState('');
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [listExpanded, setListExpanded] = useState<Array<string>>([
     'Types',
     'Schema',
@@ -194,141 +220,151 @@ export const NodeNavigation = () => {
   }, [allNodes, nodesVisibilityArr, q]);
 
   return (
-    <ListContainer>
-      <TopMenusWrapper>
-        <Header>Navigation</Header>
-        <SearchWrapper>
-          <SearchInput
-            ref={searchRef}
-            onChange={(e) => {
-              setQ(e);
-            }}
-            value={q}
-            onClear={() => setQ('')}
-            onSubmit={() => {}}
-          />
-          <>
-            {allVisible ? (
-              <VisibilityBox onClick={hideRelationNodes}>
-                <span>hide all</span>
-                <EyeOff size={18} />
-              </VisibilityBox>
-            ) : (
-              <VisibilityBox onClick={showRelationNodes}>
-                <span>show all</span>
-                <Eye size={18} />
-              </VisibilityBox>
+    <Container>
+      <ListContainer isCollapsed={isCollapsed}>
+        <CollapseArrow
+          isCollapsed={isCollapsed}
+          isRight
+          toggle={() => setIsCollapsed((prev) => !prev)}
+        />
+        <VerticalTitle isCollapsed={isCollapsed}>Navigation</VerticalTitle>
+        <Expanded isCollapsed={isCollapsed}>
+          <TopMenusWrapper>
+            <Header>Navigation</Header>
+            <SearchWrapper>
+              <SearchInput
+                ref={searchRef}
+                onChange={(e) => {
+                  setQ(e);
+                }}
+                value={q}
+                onClear={() => setQ('')}
+                onSubmit={() => {}}
+              />
+              <>
+                {allVisible ? (
+                  <VisibilityBox onClick={hideRelationNodes}>
+                    <span>hide all</span>
+                    <EyeOff size={18} />
+                  </VisibilityBox>
+                ) : (
+                  <VisibilityBox onClick={showRelationNodes}>
+                    <span>show all</span>
+                    <Eye size={18} />
+                  </VisibilityBox>
+                )}
+              </>
+            </SearchWrapper>
+          </TopMenusWrapper>
+          <ListWrapper>
+            <NodeList
+              expanded={listExpanded}
+              setExpanded={(e) =>
+                setListExpanded((le) =>
+                  le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+                )
+              }
+              nodeList={splittedNodes?.schemaNodes}
+              visibleInRelationView
+              listTitle="Schema"
+              colorKey="type"
+            />
+            <NodeList
+              expanded={listExpanded}
+              setExpanded={(e) =>
+                setListExpanded((le) =>
+                  le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+                )
+              }
+              nodeList={splittedNodes?.typeNodes}
+              visibleInRelationView
+              listTitle="Types"
+              colorKey="type"
+            />
+            <NodeList
+              expanded={listExpanded}
+              setExpanded={(e) =>
+                setListExpanded((le) =>
+                  le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+                )
+              }
+              nodeList={splittedNodes?.interfaceNodes}
+              visibleInRelationView
+              listTitle="Interface"
+              colorKey="interface"
+            />
+            <NodeList
+              expanded={listExpanded}
+              setExpanded={(e) =>
+                setListExpanded((le) =>
+                  le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+                )
+              }
+              nodeList={splittedNodes?.unionNodes}
+              visibleInRelationView
+              listTitle="Unions"
+              colorKey="union"
+            />
+            <NodeList
+              expanded={listExpanded}
+              setExpanded={(e) =>
+                setListExpanded((le) =>
+                  le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+                )
+              }
+              nodeList={splittedNodes?.inputNodes}
+              listTitle="Inputs"
+              colorKey="input"
+            />
+            <NodeList
+              expanded={listExpanded}
+              setExpanded={(e) =>
+                setListExpanded((le) =>
+                  le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+                )
+              }
+              nodeList={splittedNodes?.enumNodes}
+              listTitle="Enums"
+              colorKey="enum"
+            />
+            <NodeList
+              expanded={listExpanded}
+              setExpanded={(e) =>
+                setListExpanded((le) =>
+                  le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+                )
+              }
+              nodeList={splittedNodes?.scalarNodes}
+              listTitle="Scalars"
+              colorKey="scalar"
+            />
+            <NodeList
+              expanded={listExpanded}
+              setExpanded={(e) =>
+                setListExpanded((le) =>
+                  le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+                )
+              }
+              nodeList={splittedNodes?.directivesNodes}
+              listTitle="Directives"
+              colorKey="directive"
+            />
+            {!!splittedNodes.extTypeNodes.length && (
+              <NodeList
+                expanded={listExpanded}
+                setExpanded={(e) =>
+                  setListExpanded((le) =>
+                    le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+                  )
+                }
+                nodeList={splittedNodes?.extTypeNodes}
+                listTitle="Type Extensions"
+                colorKey="type"
+              />
             )}
-          </>
-        </SearchWrapper>
-      </TopMenusWrapper>
-      <ListWrapper>
-        <NodeList
-          expanded={listExpanded}
-          setExpanded={(e) =>
-            setListExpanded((le) =>
-              le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
-            )
-          }
-          nodeList={splittedNodes?.schemaNodes}
-          visibleInRelationView
-          listTitle="Schema"
-          colorKey="type"
-        />
-        <NodeList
-          expanded={listExpanded}
-          setExpanded={(e) =>
-            setListExpanded((le) =>
-              le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
-            )
-          }
-          nodeList={splittedNodes?.typeNodes}
-          visibleInRelationView
-          listTitle="Types"
-          colorKey="type"
-        />
-        <NodeList
-          expanded={listExpanded}
-          setExpanded={(e) =>
-            setListExpanded((le) =>
-              le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
-            )
-          }
-          nodeList={splittedNodes?.interfaceNodes}
-          visibleInRelationView
-          listTitle="Interface"
-          colorKey="interface"
-        />
-        <NodeList
-          expanded={listExpanded}
-          setExpanded={(e) =>
-            setListExpanded((le) =>
-              le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
-            )
-          }
-          nodeList={splittedNodes?.unionNodes}
-          visibleInRelationView
-          listTitle="Unions"
-          colorKey="union"
-        />
-        <NodeList
-          expanded={listExpanded}
-          setExpanded={(e) =>
-            setListExpanded((le) =>
-              le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
-            )
-          }
-          nodeList={splittedNodes?.inputNodes}
-          listTitle="Inputs"
-          colorKey="input"
-        />
-        <NodeList
-          expanded={listExpanded}
-          setExpanded={(e) =>
-            setListExpanded((le) =>
-              le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
-            )
-          }
-          nodeList={splittedNodes?.enumNodes}
-          listTitle="Enums"
-          colorKey="enum"
-        />
-        <NodeList
-          expanded={listExpanded}
-          setExpanded={(e) =>
-            setListExpanded((le) =>
-              le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
-            )
-          }
-          nodeList={splittedNodes?.scalarNodes}
-          listTitle="Scalars"
-          colorKey="scalar"
-        />
-        <NodeList
-          expanded={listExpanded}
-          setExpanded={(e) =>
-            setListExpanded((le) =>
-              le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
-            )
-          }
-          nodeList={splittedNodes?.directivesNodes}
-          listTitle="Directives"
-          colorKey="directive"
-        />
-        {!!splittedNodes.extTypeNodes.length && (
-          <NodeList
-            expanded={listExpanded}
-            setExpanded={(e) =>
-              setListExpanded((le) =>
-                le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
-              )
-            }
-            nodeList={splittedNodes?.extTypeNodes}
-            listTitle="Type Extensions"
-            colorKey="type"
-          />
-        )}
-      </ListWrapper>
-    </ListContainer>
+          </ListWrapper>
+        </Expanded>
+      </ListContainer>
+    </Container>
   );
 };
