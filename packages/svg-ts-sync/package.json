@@ -1,0 +1,23 @@
+{
+  "name": "svg-ts-sync",
+  "version": "0.0.2",
+  "private": false,
+  "license": "MIT",
+  "description": "Sync folders with svg's to react typescript components",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "start": "tsc --watch",
+    "build": "tsc",
+    "run": "node lib/index.js"
+  },
+  "type": "module",
+  "dependencies": {
+    "@svgr/core": "^6.5.1"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}

@@ -15,7 +15,6 @@ import {
   DetailMenuItem,
   Menu,
 } from '@/Graf/Node/components';
-import { More, Monkey, Plus, Tick } from '@/shared/icons';
 import {
   NodeAddDirectiveMenu,
   NodeDirectiveOptionsMenu,
@@ -24,11 +23,14 @@ import {
   ContextMenu,
 } from '@/shared/components/ContextMenu';
 import { useTreesState } from '@/state/containers/trees';
-
-import { useTheme } from '@/state/containers';
 import { getScalarFields } from '@/Graf/utils/getScalarFields';
 import styled from '@emotion/styled';
 import { ResolveExtension } from '@/GraphQL/Resolve';
+import { At } from '@/icons/At';
+import { Plus } from '@/icons/Plus';
+import { CheckSquareEmpty } from '@/icons/CheckSquareEmpty';
+import { Menu as MenuIcon } from '@/icons/Menu';
+import { transition } from '@/vars';
 
 type PossibleMenus =
   | 'field'
@@ -36,7 +38,7 @@ type PossibleMenus =
   | 'directive'
   | 'options'
   | 'operations';
-const NodeIconArea = styled.div`
+const NodeIconArea = styled.div<{ opened?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -47,12 +49,14 @@ const NodeIconArea = styled.div`
   background-color: transparent;
   cursor: pointer;
   border-radius: 12px;
+  transition: ${transition};
   &:hover {
     background-color: ${({ theme }) => theme.background.mainFurthest};
+    color: ${({ theme }) => theme.active};
   }
+  color: ${({ opened, theme }) => (opened ? theme.active : theme.disabled)};
 `;
 
-const ICON_SIZE = 14;
 export const TopNodeMenu: React.FC<{
   node: ParserField;
   parentNode?: ParserField;
@@ -62,7 +66,6 @@ export const TopNodeMenu: React.FC<{
 }> = ({ node, parentNode, onDelete, onDuplicate, onInputCreate }) => {
   const { scalars, tree, setTree, selectedNode, setSelectedNode } =
     useTreesState();
-  const { theme } = useTheme();
 
   const [menuOpen, setMenuOpen] = useState<PossibleMenus>();
   const [closeMenu, setCloseMenu] = useState(false);
@@ -106,12 +109,9 @@ export const TopNodeMenu: React.FC<{
                   setMenuOpen('field');
                 }}
                 title="Click to add field"
+                opened={menuOpen === 'field'}
               >
-                <Plus
-                  fill={menuOpen === 'field' ? theme.active : theme.text}
-                  height={ICON_SIZE}
-                  width={ICON_SIZE}
-                />
+                <Plus />
               </NodeIconArea>
             )}
           >
@@ -136,12 +136,9 @@ export const TopNodeMenu: React.FC<{
                 setMenuOpen('directive');
               }}
               title="Click to add directive"
+              opened={menuOpen === 'directive'}
             >
-              <Monkey
-                fill={menuOpen === 'directive' ? theme.active : theme.text}
-                height={ICON_SIZE}
-                width={ICON_SIZE}
-              />
+              <At />
             </NodeIconArea>
           )}
         >
@@ -175,14 +172,10 @@ export const TopNodeMenu: React.FC<{
               onClick={() => {
                 setMenuOpen('operations');
               }}
+              opened={menuOpen === 'operations'}
               title="Click set schema query, mutation, subscription"
             >
-              <Tick
-                height={ICON_SIZE}
-                width={ICON_SIZE}
-                strokeWidth={2}
-                stroke={menuOpen === 'operations' ? theme.active : theme.text}
-              />
+              <CheckSquareEmpty />
             </NodeIconArea>
           )}
         >
@@ -205,12 +198,9 @@ export const TopNodeMenu: React.FC<{
               setMenuOpen('options');
             }}
             title="Click to see node actions"
+            opened={menuOpen === 'options'}
           >
-            <More
-              fill={menuOpen === 'options' ? theme.active : theme.text}
-              height={ICON_SIZE}
-              width={ICON_SIZE}
-            />
+            <MenuIcon />
           </NodeIconArea>
         )}
       >

@@ -307,15 +307,10 @@ export const Editor = ({
           </Sidebar>
         </DynamicResize>
       )}
-      {routes.pane === 'relation' && (
+      {(routes.pane === 'relation' || routes.pane === 'docs') && (
         <ErrorOuterContainer>
-          <Relation />
-          <NodeNavigation />
-        </ErrorOuterContainer>
-      )}
-      {routes.pane === 'docs' && (
-        <ErrorOuterContainer>
-          <Docs />
+          {routes.pane === 'relation' && <Relation />}
+          {routes.pane === 'docs' && <Docs />}
           <NodeNavigation />
         </ErrorOuterContainer>
       )}

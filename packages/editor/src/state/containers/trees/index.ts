@@ -7,27 +7,13 @@ import {
   Parser,
   getTypeName,
   compareParserFields,
-  generateNodeId,
-  createParserField,
-  Options,
-  TypeExtension,
-  TypeSystemDefinition,
+  mutate,
 } from 'graphql-js-tree';
 import { GraphQLEditorWorker } from 'graphql-editor-worker';
-import { BuiltInScalars, isExtensionNode } from '@/GraphQL/Resolve';
+import { BuiltInScalars } from '@/GraphQL/Resolve';
 import { PassedSchema } from '@/Models';
 import { useErrorsState } from '@/state/containers';
 import { ActiveSource } from '@/editor/menu/Menu';
-import {
-  changeInterfaceField,
-  deImplementInterfaceOnNode,
-  deleteFieldFromInterface,
-  implementInterfaceOnNode,
-  renameInterfaceNode,
-  updateInterfaceNodeAddField,
-} from '@/state/containers/trees/interfaceMutations';
-import { ChangeAllRelatedNodes } from '@/state/containers/trees/Related';
-import { filterNotNull } from '@/state/containers/trees/shared';
 
 type SelectedNode = {
   field?: ParserField;
@@ -36,6 +22,7 @@ type SelectedNode = {
 };
 
 type TreeWithSource = ParserTree & { schema: boolean; initial: boolean };
+let snapLock = true;
 
 const useTreesStateContainer = createContainer(() => {
   const [tree, _setTree] = useState<TreeWithSource>({
@@ -58,6 +45,11 @@ const useTreesStateContainer = createContainer(() => {
     updateScallars();
   }, [tree]);
 
+  const mutationRoot = useMemo(
+    () => mutate(tree, allNodes.nodes),
+    [tree, allNodes],
+  );
+
   const parentTypes = useMemo(
     () => ({
       ...allNodes.nodes.reduce(
@@ -77,21 +69,19 @@ const useTreesStateContainer = createContainer(() => {
     (id: string) => libraryNodeIds.includes(id),
     [libraryNodeIds],
   );
-  const regenerateId = (n: ParserField) => {
-    const id = generateNodeId(n.name, n.data.type, n.args);
-    const shouldBeReselected = n.id === selectedNode?.field?.id && id !== n.id;
-    n.id = id;
-    return { id, shouldBeReselected };
-  };
-  const updateNode = (n: ParserField) => {
-    const { shouldBeReselected } = regenerateId(n);
+
+  const updateNode = (node: ParserField, fn: () => void) => {
+    makeSnapshot();
+    const currentNodeId = node.id;
+    fn();
     setTree({ ...tree });
-    if (shouldBeReselected) {
+    if (
+      currentNodeId === selectedNode?.field?.id &&
+      node.id !== currentNodeId
+    ) {
       setSelectedNode({
         source: 'diagram',
-        field: {
-          ...n,
-        },
+        field: node,
       });
     }
   };
@@ -135,7 +125,7 @@ const useTreesStateContainer = createContainer(() => {
     if (p) {
       setUndos((u) => [...u, p]);
       setSnapshots([...snapshots]);
-      return p;
+      return JSON.parse(p) as SnapshotType;
     }
   };
 
@@ -144,7 +134,38 @@ const useTreesStateContainer = createContainer(() => {
     if (p) {
       setUndos([...undos]);
       setSnapshots((s) => [...s, p]);
-      return p;
+      return JSON.parse(p) as SnapshotType;
+    }
+  };
+
+  const makeSnapshot = () => {
+    if (snapLock) {
+      snapLock = false;
+      return;
+    }
+    const copyTree = JSON.stringify({ tree, selectedNode });
+    if (snapshots.length === 0) {
+      setSnapshots([copyTree]);
+      return;
+    }
+    if (snapshots[snapshots.length - 1] !== copyTree) {
+      setSnapshots([...snapshots, copyTree]);
+    }
+  };
+  const undo = () => {
+    const p = past();
+    if (p) {
+      snapLock = true;
+      setTree(p.tree);
+      setSelectedNode(p.selectedNode);
+    }
+  };
+  const redo = () => {
+    const f = future();
+    if (f) {
+      snapLock = true;
+      setTree(f.tree);
+      setSelectedNode(f.selectedNode);
     }
   };
 
@@ -227,13 +248,7 @@ const useTreesStateContainer = createContainer(() => {
   };
 
   const deleteFieldFromNode = (n: ParserField, i: number) => {
-    const argName = n.args[i].name;
-    if (n.data.type === TypeDefinition.InterfaceTypeDefinition) {
-      deleteFieldFromInterface(tree.nodes, n, argName);
-    }
-    n.args.splice(i, 1);
-    regenerateId(n);
-    updateNode(n);
+    updateNode(n, () => mutationRoot.deleteFieldFromNode(n, i));
   };
 
   const updateFieldOnNode = (
@@ -241,108 +256,55 @@ const useTreesStateContainer = createContainer(() => {
     i: number,
     updatedField: ParserField,
   ) => {
-    const oldField = JSON.parse(JSON.stringify(node.args[i]));
-    if (node.data.type === TypeDefinition.InterfaceTypeDefinition) {
-      changeInterfaceField(tree.nodes, node, oldField, updatedField);
-      node.args[i] = updatedField;
-    } else {
-      node.args[i] = updatedField;
-    }
-    regenerateId(node);
-    updateNode(node);
+    updateNode(node, () =>
+      mutationRoot.updateFieldOnNode(node, i, updatedField),
+    );
   };
 
-  const addFieldToNode = (
-    node: ParserField,
-    { id, ...f }: ParserField,
-    name?: string,
-  ) => {
-    let newName = name || f.name[0].toLowerCase() + f.name.slice(1);
-    const existingNodes =
-      node.args?.filter((a) => a.name.match(`${newName}\d?`)) || [];
-    if (existingNodes.length > 0) {
-      newName = `${newName}${existingNodes.length}`;
-    }
-    node.args?.push(
-      createParserField({
-        ...f,
-        directives: [],
-        interfaces: [],
-        args: [],
-        type: {
-          fieldType: {
-            name: f.name,
-            type: Options.name,
-          },
-        },
-        name: newName,
-      }),
-    );
-    if (node.data.type === TypeDefinition.InterfaceTypeDefinition) {
-      updateInterfaceNodeAddField(tree.nodes, node);
-    }
-    if (node.data.type === TypeSystemDefinition.FieldDefinition) {
-      // tu zrobic dodawanie do fielda
-      let parentIndex = -1;
-      const parentNode = tree.nodes.find((n, i) => {
-        if (n.args.some((a) => a.id === node.id)) {
-          parentIndex = i;
-          return true;
-        }
-      });
-      if (parentNode) {
-        updateFieldOnNode(parentNode, parentIndex, { ...node });
+  const addFieldToNode = (node: ParserField, f: ParserField, name?: string) => {
+    updateNode(node, () => {
+      let newName = name || f.name[0].toLowerCase() + f.name.slice(1);
+      const existingNodes =
+        node.args?.filter((a) => a.name.match(`${newName}\d?`)) || [];
+      if (existingNodes.length > 0) {
+        newName = `${newName}${existingNodes.length}`;
       }
-    }
-    updateNode(node);
+      mutationRoot.addFieldToNode(node, {
+        ...f,
+        name: newName,
+      });
+    });
   };
   const renameNode = (node: ParserField, newName: string) => {
     const isError = allNodes.nodes.map((n) => n.name).includes(newName);
     if (isError) {
       return;
     }
-    if (node.data.type === TypeDefinition.InterfaceTypeDefinition) {
-      renameInterfaceNode(tree.nodes, newName, node.name);
-    }
-    ChangeAllRelatedNodes({
-      newName,
-      nodes: tree.nodes,
-      oldName: node.name,
-    });
-    node.name = newName;
-    updateNode(node);
+    updateNode(node, () => mutationRoot.renameNode(node, newName));
   };
   const removeNode = (node: ParserField) => {
-    const deletedNode = tree.nodes.findIndex((n) => n === node)!;
-    const allNodes = [...tree.nodes];
-    // co jak usuwamy extension interface
-    if (node.data.type === TypeExtension.InterfaceTypeExtension) {
+    const deselect = node.id === selectedNode?.field?.id;
+    mutationRoot.removeNode(node);
+    setTree({ ...tree });
+    if (deselect) {
+      setSelectedNode({
+        source: 'relation',
+        field: undefined,
+      });
     }
-    allNodes.splice(deletedNode, 1);
-    tree.nodes.forEach((n) => {
-      n.args = n.args
-        .filter((a) => {
-          const tName = getTypeName(a.type.fieldType);
-          if (tName === node.name && !isExtensionNode(node.data.type)) {
-            return null;
-          }
-          return a;
-        })
-        .filter(filterNotNull);
-    });
-    setSelectedNode(undefined);
-    setTree({ nodes: allNodes });
   };
   const implementInterface = (
     node: ParserField,
     interfaceNode: ParserField,
   ) => {
-    implementInterfaceOnNode(tree.nodes, node, interfaceNode);
-    updateNode(node);
+    updateNode(node, () =>
+      mutationRoot.implementInterface(node, interfaceNode),
+    );
   };
   const deImplementInterface = (node: ParserField, interfaceName: string) => {
-    deImplementInterfaceOnNode(tree.nodes, node, interfaceName);
-    updateNode(node);
+    updateNode(node, () =>
+      mutationRoot.deImplementInterface(node, interfaceName),
+    );
   };
 
   return {
@@ -358,6 +320,9 @@ const useTreesStateContainer = createContainer(() => {
     past,
     undos,
     setUndos,
+    undo,
+    redo,
+    makeSnapshot,
     future,
     relatedToSelected,
     parentTypes,
@@ -382,3 +347,8 @@ const useTreesStateContainer = createContainer(() => {
 
 export const useTreesState = useTreesStateContainer.useContainer;
 export const TreesStateProvider = useTreesStateContainer.Provider;
+
+type SnapshotType = {
+  tree: ParserTree;
+  selectedNode: SelectedNode;
+};

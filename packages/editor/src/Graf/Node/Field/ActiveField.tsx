@@ -22,7 +22,6 @@ import { FieldProps } from '@/Graf/Node/models';
 import styled from '@emotion/styled';
 import { ActiveGrafFieldName } from '@/Graf/Node/Field/ActiveGrafFieldName';
 import { ActiveGrafType } from '@/Graf/Node/Field/ActiveGrafType';
-import { ArrowLeft, Library } from '@/editor/icons';
 import { transition } from '@/vars';
 import {
   ConvertArgumentNodeToString,
@@ -32,6 +31,8 @@ import {
 } from '@/GraphQL/Convert';
 import { ActiveDirectiveName } from '@/Graf/Node/Field/ActiveDirectiveName';
 import { changeTypeName } from '@/utils';
+import { Lock } from '@/icons/Lock';
+import { ChevronLeft } from '@/icons/ChevronLeft';
 
 export const ActiveField: React.FC<FieldProps> = ({
   node,
@@ -87,7 +88,7 @@ export const ActiveField: React.FC<FieldProps> = ({
             type={node.type}
             parentTypes={parentTypes}
           ></ActiveGrafType>
-          <Library size={16} />
+          <Lock />
         </>
       )}
       {!isEnumValue &&
@@ -260,7 +261,7 @@ export const ActiveField: React.FC<FieldProps> = ({
             // }}
             opened={outputOpen}
           >
-            <ArrowLeft size={12} />
+            <ChevronLeft />
           </OutputArrow>
         )}
       </Actions>
@@ -283,7 +284,7 @@ const OutputArrow = styled.div<{ opened?: boolean }>`
   padding: 0.5rem;
   margin: -0.5rem 0;
   svg {
-    fill: ${({ theme }) => theme.text};
+    stroke: ${({ theme }) => theme.text};
     rotate: ${({ opened }) => (opened ? '270deg' : '180deg')};
     transition: ${transition};
   }

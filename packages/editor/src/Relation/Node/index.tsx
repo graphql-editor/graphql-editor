@@ -11,9 +11,7 @@ import { FIELD_NAME_SIZE } from '@/Graf/constants';
 import { fontFamilySans } from '@/vars';
 import styled from '@emotion/styled';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
-import { NodeSearchFields } from '@/Relation/Node/NodeSearchFields';
 import { ActiveType } from '@/Relation/Field/ActiveType';
-import { DiagramView } from '@/editor/icons';
 
 type NodeTypes = keyof EditorTheme['colors'];
 
@@ -64,14 +62,6 @@ const NodeTitle = styled.div`
   display: flex;
 `;
 
-const FromLibrary = styled(NodeTitle)`
-  color: ${({ theme }) => theme.inactive};
-  height: auto;
-  position: absolute;
-  top: -22px;
-  right: 1px;
-`;
-
 const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -94,44 +84,20 @@ const NameInRelation = styled.span`
 
 interface NodeProps {
   field: ParserField;
-  readOnly?: boolean;
   isLibrary?: boolean;
-  enums?: boolean;
   setRef: (instance: HTMLDivElement) => void;
-  filteredFieldTypes: string;
-  setFilteredFieldsTypes: (q: string) => void;
 }
 
-export const Node: React.FC<NodeProps> = ({
-  field,
-  setRef,
-  isLibrary,
-  enums,
-  filteredFieldTypes,
-  setFilteredFieldsTypes,
-  readOnly,
-}) => {
+export const Node: React.FC<NodeProps> = ({ field, setRef, isLibrary }) => {
   const { setSelectedNode, selectedNode, tree, libraryTree } = useTreesState();
   const isNodeActive =
     !!selectedNode?.field && compareParserFields(field)(selectedNode?.field);
   const { theme } = useTheme();
 
-  const nodeArgs = useMemo(() => {
-    return !filteredFieldTypes
-      ? field.args
-      : field.args?.filter((n) =>
-          n.name.toLowerCase().includes(filteredFieldTypes),
-        );
-  }, [filteredFieldTypes, JSON.stringify(field.args)]);
-
   const RelationFields = useMemo(() => {
-    if (!enums && field.data.type === TypeDefinition.EnumTypeDefinition) {
-      return <NodeRelationFields></NodeRelationFields>;
-    }
-
     return (
       <NodeRelationFields>
-        {nodeArgs?.map((a, i) => (
+        {field.args.map((a, i) => (
           <Field
             active={
               isNodeActive &&
@@ -143,11 +109,7 @@ export const Node: React.FC<NodeProps> = ({
         ))}
       </NodeRelationFields>
     );
-  }, [field, isNodeActive, theme, JSON.stringify(nodeArgs), enums]);
-
-  const handleSearch = (searchValue?: string) => {
-    setFilteredFieldsTypes(searchValue?.toLowerCase() || '');
-  };
+  }, [JSON.stringify(field), isNodeActive, theme]);
 
   const NodeContent = useMemo(
     () => (
@@ -157,29 +119,22 @@ export const Node: React.FC<NodeProps> = ({
             <NameInRelation>{field.name}</NameInRelation>
           </NodeName>
           <ActiveType type={field.type} />
-          {!(!enums && field.data.type === TypeDefinition.EnumTypeDefinition) &&
-            (field?.args?.length || 0) > 10 && (
-              <NodeSearchFields
-                value={filteredFieldTypes}
-                handleSearch={handleSearch}
-              />
-            )}
         </NodeTitle>
       </ContentWrapper>
     ),
-    [field, theme, selectedNode, enums, filteredFieldTypes],
+    [field, theme, selectedNode],
   );
   const isSelected = selectedNode?.field?.name === field.name;
 
   return (
     <Content
       args={
-        selectedNode?.field?.name === field.name ? nodeArgs?.length || 0 : 0
+        selectedNode?.field?.name === field.name ? field.args?.length || 0 : 0
       }
       isRelated={
         selectedNode?.field
           ? isSelected ||
-            nodeArgs
+            field.args
               .map((na) => getTypeName(na.type.fieldType))
               .includes(selectedNode.field.name) ||
             selectedNode?.field?.args
@@ -207,11 +162,6 @@ export const Node: React.FC<NodeProps> = ({
         });
       }}
     >
-      {isLibrary && (
-        <FromLibrary title="from external library">
-          <DiagramView size={18} />
-        </FromLibrary>
-      )}
       {NodeContent}
       {RelationFields}
     </Content>

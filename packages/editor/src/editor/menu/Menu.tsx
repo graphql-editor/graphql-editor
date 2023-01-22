@@ -1,40 +1,54 @@
 import React, { useState } from 'react';
-import * as Icons from '../icons';
-
 import styled from '@emotion/styled';
-import { fontFamilySans } from '@/vars';
-import { CollapseArrow } from '@/editor/menu/CollapseArrow';
+import { fontFamilySans, transition } from '@/vars';
+import { ChevronSelectorHorizontal } from '@/icons/ChevronSelectorHorizontal';
+import { Tool } from '@/icons/Tool';
+import { File } from '@/icons/File';
+import { FilterFunnel02 } from '@/icons/FilterFunnel02';
+import { ChevronRightDouble } from '@/icons/ChevronRightDouble';
 
 const Sidebar = styled.div<{ isCollapsed: boolean }>`
-  background: ${({ theme }) => theme.background.mainFurther};
+  background: ${({ theme }) => theme.background.mainBlack};
   color: ${({ theme }) => theme.disabled};
   z-index: 4;
   border: 0 solid ${({ theme }) => theme.moduleSeparator};
   border-right-width: 2px;
   position: relative;
   transition: width 0.5s ease-in-out;
-  width: ${({ isCollapsed }) => (isCollapsed ? '64px' : '210px')};
-  padding-top: 10px;
+  width: ${({ isCollapsed }) => (isCollapsed ? 'calc(2rem + 20px)' : '210px')};
+  padding-top: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+`;
+const Filler = styled.div`
+  flex: 1;
+  background-color: ${({ theme }) => theme.background.mainFar};
 `;
 
-const MenuItem = styled.div<{ isCollapsed: boolean; isDisabled?: boolean }>`
+const MenuItem = styled.div<{
+  isCollapsed: boolean;
+  isDisabled?: boolean;
+  rotate?: boolean;
+}>`
   display: flex;
   justify-content: flex-start;
+  gap: 0.5rem;
   align-items: center;
   color: ${({ theme, isDisabled }) =>
     isDisabled ? theme.disabled : theme.text};
-  padding: 15px;
-  margin: 0 5px;
-  border-radius: 4px;
+  padding: 1rem;
+  border-radius: 2px;
   font-family: ${fontFamilySans};
   cursor: ${({ isDisabled }) => (isDisabled ? 'not-allowed' : 'pointer')};
   transition: all 0.25s ease;
   overflow: hidden;
   user-select: none;
+  background-color: ${({ theme }) => theme.background.mainFar};
 
   &:hover {
     background-color: ${({ theme, isDisabled }) =>
-      !isDisabled && theme.moduleSeparator};
+      !isDisabled && theme.background.mainCloser};
     color: ${({ isDisabled, theme }) =>
       isDisabled ? theme.disabled : '#e3f6fc'};
   }
@@ -71,12 +85,14 @@ const MenuItem = styled.div<{ isCollapsed: boolean; isDisabled?: boolean }>`
 
   svg {
     flex-shrink: 0;
-    height: 22px;
+    height: 20px;
+    rotate: ${({ rotate }) => (rotate ? '0deg' : '180deg')};
+    transition: ${transition};
   }
 
   p {
-    margin: 0 0 0 15px;
     font-size: 14px;
+    margin: 0;
     width: max-content;
     white-space: nowrap;
     transition: opacity 0.25s ease-in-out;
@@ -126,13 +142,6 @@ const MenuItem = styled.div<{ isCollapsed: boolean; isDisabled?: boolean }>`
   }
 `;
 
-const BorderSpacer = styled.div`
-  border-bottom: 2px solid ${({ theme }) => theme.moduleSeparator};
-  margin: 10px 0;
-  height: 0;
-  width: 100%;
-`;
-
 export type ActiveSource = 'diagram' | 'relation' | 'docs' | 'code' | 'routing';
 export type ActivePane = 'diff' | 'relation' | 'docs';
 export interface MenuProps {
@@ -170,11 +179,10 @@ export const Menu = ({
         data-tour="toggle-code"
       >
         <div>
-          <Icons.ToggleCode size={20} />
+          <ChevronSelectorHorizontal />
         </div>
         <p>Toggle Code</p>
       </MenuItem>
-      <BorderSpacer />
       {!excludePanes.includes('relation') && (
         <MenuItem
           className={activePane === 'relation' ? 'active' : ''}
@@ -189,7 +197,7 @@ export const Menu = ({
           data-tour="relation"
           isCollapsed={isCollapsed}
         >
-          <Icons.RelationView size={22} />
+          <Tool />
           <p>Relation</p>
         </MenuItem>
       )}
@@ -207,11 +215,10 @@ export const Menu = ({
           data-tour="documentation"
           isCollapsed={isCollapsed}
         >
-          <Icons.DocsView size={22} />
+          <File />
           <p>Documentation</p>
         </MenuItem>
       )}
-      <BorderSpacer />
       {!excludePanes.includes('diff') && (
         <MenuItem
           className={activePane === 'diff' ? 'active' : ''}
@@ -220,16 +227,20 @@ export const Menu = ({
           data-tour="diff"
           isCollapsed={isCollapsed}
         >
-          <Icons.DiffView size={22} />
+          <FilterFunnel02 />
           <p>Diff</p>
         </MenuItem>
       )}
-      <CollapseArrow
+      <MenuItem
+        onClick={() => setIsCollapsed((prev) => !prev)}
         isCollapsed={isCollapsed}
-        toggle={() => setIsCollapsed((prev) => !prev)}
+        data-tooltip={'show'}
+        rotate={isCollapsed}
       >
-        <Icons.ArrowLeft size={11} />
-      </CollapseArrow>
+        <ChevronRightDouble />
+        <p>Hide</p>
+      </MenuItem>
+      <Filler />
     </Sidebar>
   );
 };

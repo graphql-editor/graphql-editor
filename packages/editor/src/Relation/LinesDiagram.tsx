@@ -1,4 +1,10 @@
-import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTreesState } from '@/state/containers/trees';
 import { useRelationsState } from '@/state/containers';
 import { Node } from './Node';
@@ -9,6 +15,7 @@ import { isScalarArgument } from '@/GraphQL/Resolve';
 import * as vars from '@/vars';
 import { ParserField, getTypeName, TypeDefinition } from 'graphql-js-tree';
 import { useRouter } from '@/state/containers/router';
+import { ReactZoomPanPinchRef } from '@pronestor/react-zoom-pan-pinch';
 const Wrapper = styled.div`
   width: 100%;
   height: 100%;
@@ -57,6 +64,7 @@ export type FilteredFieldsTypesProps = {
 
 type LinesDiagramProps = {
   mainRef: React.RefObject<HTMLDivElement>;
+  panRef: React.RefObject<ReactZoomPanPinchRef>;
   nodes: ParserField[];
   panState?: 'grabbing' | 'grab' | 'auto';
   zoomPanPinch?: (refs: Record<string, HTMLElement>) => void;
@@ -72,6 +80,7 @@ const passScalars = (pass: boolean, scalars: string[]) => (n: ParserField) =>
 
 export const LinesDiagram: React.FC<LinesDiagramProps> = ({
   mainRef,
+  panRef,
   nodes,
   panState,
   zoomPanPinch,
@@ -79,18 +88,15 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
   const { selectedNode, libraryTree, isLibrary } = useTreesState();
   const { routes } = useRouter();
   const { baseTypesOn } = useRelationsState();
-
   const [refs, setRefs] = useState<Record<string, HTMLDivElement>>({});
   const [refsLoaded, setRefsLoaded] = useState(false);
+  const isOnMountCentered = useRef(false);
   const [relationDrawingNodes, setRelationDrawingNodes] =
     useState<ParserField[][]>();
   const relationDrawingNodesArray = useMemo(() => {
     return relationDrawingNodes?.flatMap((r) => r);
   }, [relationDrawingNodes]);
 
-  const [filteredFieldsTypes, setFilteredFieldsTypes] = useState<
-    Record<string, string>
-  >({});
   const [relations, setRelations] =
     useState<
       { to: RelationPath; from: RelationPath[]; fromLength: number }[]
@@ -114,7 +120,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
       .filter((n) => !scalarTypes.includes(n.name));
     setRelationDrawingNodes(layerSort(togetherFiltered));
     return;
-  }, [nodes, libraryTree, filteredFieldsTypes, baseTypesOn]);
+  }, [nodes, libraryTree, baseTypesOn]);
 
   useLayoutEffect(() => {
     if (!refsLoaded || !relationDrawingNodesArray) {
@@ -128,9 +134,6 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
           to: { htmlNode: refs[n.id], field: n, connectingField: n },
           fromLength: n.args?.length || 0,
           from: n.args
-            ?.filter((a) =>
-              a.name.toLowerCase().includes(filteredFieldsTypes[n.id] || ''),
-            )
             .map((a, index) => {
               const pn = relationDrawingNodesArray.find(
                 (nf) => nf.name === getTypeName(a.type.fieldType),
@@ -168,12 +171,23 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
     setRelations([]);
   }, [routes.code]);
 
+  useEffect(() => {
+    if (isOnMountCentered.current) return;
+    if (selectedNode) {
+      isOnMountCentered.current = true;
+      return;
+    }
+    if (!panRef.current || !refsLoaded) return;
+
+    isOnMountCentered.current = true;
+    panRef.current.centerView();
+  }, [panRef.current, refsLoaded, selectedNode]);
+
   const NodesContainer = useMemo(() => {
     tRefs = {};
     tRefsToLoad =
       relationDrawingNodes?.map((rdn) => rdn.length).reduce((a, b) => a + b) ||
       0;
-
     const setRef = (n: ParserField, ref: HTMLDivElement) => {
       if (tRefs[n.id]) return;
       tRefs[n.id] = ref;
@@ -194,13 +208,6 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
           <NodePane key={i}>
             {nodesArray.map((n) => (
               <Node
-                filteredFieldTypes={filteredFieldsTypes[n.id] || ''}
-                setFilteredFieldsTypes={(q) =>
-                  setFilteredFieldsTypes((ftt) => ({
-                    ...ftt,
-                    [n.id]: q,
-                  }))
-                }
                 isLibrary={isLibrary(n.id)}
                 key={n.id}
                 setRef={(ref) => {

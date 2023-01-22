@@ -205,7 +205,8 @@ export const ActiveNode: React.FC<NodeProps> = ({
       const endIdx = node.args.findIndex((a) => a.name === endNodeName);
       node.args.splice(endIdx, 0, node.args.splice(startIdx, 1)[0]);
     }
-    updateNode(node);
+    //TODO: Add replace field order in js-tree
+    updateNode(node, () => {});
   };
 
   useEffect(() => {
@@ -228,7 +229,8 @@ export const ActiveNode: React.FC<NodeProps> = ({
       <ActiveDescription
         onChange={(d) => {
           node.description = d;
-          updateNode(node);
+          //TODO: Add change description in js-tree
+          updateNode(node, () => {});
         }}
         isLocked={isLocked}
         value={node.description || ''}
@@ -244,7 +246,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                 node.type.directiveOptions = node.type.directiveOptions?.filter(
                   (oldDirective) => oldDirective !== d,
                 );
-                updateNode(node);
+                updateNode(node, () => {});
               }}
             >
               {d}
@@ -267,7 +269,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                 node.interfaces = node.interfaces?.filter(
                   (oldInterface) => oldInterface !== i,
                 );
-                updateNode(node);
+                updateNode(node, () => {});
               }}
             >
               {i}
@@ -315,7 +317,6 @@ export const ActiveNode: React.FC<NodeProps> = ({
                     sharedProps.onDelete(openedNodeNode);
                     return;
                   }
-                  updateNode(node);
                 }}
               />
             </DraggableProvider>
@@ -421,8 +422,8 @@ export const ActiveNode: React.FC<NodeProps> = ({
                   }
                   onDelete={() => {
                     setOpenedNode(undefined);
-                    node.directives!.splice(i, 1);
-                    updateNode(node);
+                    //TODO: Add remove directives and add directives to js-tree
+                    updateNode(node, () => node.directives!.splice(i, 1));
                   }}
                 />
               );
@@ -484,19 +485,6 @@ export const ActiveNode: React.FC<NodeProps> = ({
                         openedNode?.type === 'output' && openedNode?.index === i
                       }
                       onDelete={() => {
-                        if (parentNode) {
-                          updateFieldOnNode(
-                            parentNode.node,
-                            parentNode.indexInParent,
-                            {
-                              ...parentNode.node,
-                              args: parentNode.node.args.filter(
-                                (a, i) => i !== parentNode.indexInParent,
-                              ),
-                            },
-                          );
-                          return;
-                        }
                         deleteFieldFromNode(node, i);
                       }}
                     />
