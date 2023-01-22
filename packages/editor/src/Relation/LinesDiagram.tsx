@@ -188,7 +188,6 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
     tRefsToLoad =
       relationDrawingNodes?.map((rdn) => rdn.length).reduce((a, b) => a + b) ||
       0;
-
     const setRef = (n: ParserField, ref: HTMLDivElement) => {
       if (tRefs[n.id]) return;
       tRefs[n.id] = ref;

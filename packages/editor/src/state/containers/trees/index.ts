@@ -7,7 +7,6 @@ import {
   Parser,
   getTypeName,
   compareParserFields,
-  generateNodeId,
   mutate,
 } from 'graphql-js-tree';
 import { GraphQLEditorWorker } from 'graphql-editor-worker';
@@ -23,6 +22,7 @@ type SelectedNode = {
 };
 
 type TreeWithSource = ParserTree & { schema: boolean; initial: boolean };
+let snapLock = true;
 
 const useTreesStateContainer = createContainer(() => {
   const [tree, _setTree] = useState<TreeWithSource>({
@@ -69,21 +69,19 @@ const useTreesStateContainer = createContainer(() => {
     (id: string) => libraryNodeIds.includes(id),
     [libraryNodeIds],
   );
-  const regenerateId = (n: ParserField) => {
-    const id = generateNodeId(n.name, n.data.type, n.args);
-    const shouldBeReselected = n.id === selectedNode?.field?.id && id !== n.id;
-    n.id = id;
-    return { id, shouldBeReselected };
-  };
-  const updateNode = (n: ParserField) => {
-    const { shouldBeReselected } = regenerateId(n);
+
+  const updateNode = (node: ParserField, fn: () => void) => {
+    makeSnapshot();
+    const currentNodeId = node.id;
+    fn();
     setTree({ ...tree });
-    if (shouldBeReselected) {
+    if (
+      currentNodeId === selectedNode?.field?.id &&
+      node.id !== currentNodeId
+    ) {
       setSelectedNode({
         source: 'diagram',
-        field: {
-          ...n,
-        },
+        field: node,
       });
     }
   };
@@ -127,7 +125,7 @@ const useTreesStateContainer = createContainer(() => {
     if (p) {
       setUndos((u) => [...u, p]);
       setSnapshots([...snapshots]);
-      return p;
+      return JSON.parse(p) as SnapshotType;
     }
   };
 
@@ -136,7 +134,38 @@ const useTreesStateContainer = createContainer(() => {
     if (p) {
       setUndos([...undos]);
       setSnapshots((s) => [...s, p]);
-      return p;
+      return JSON.parse(p) as SnapshotType;
+    }
+  };
+
+  const makeSnapshot = () => {
+    if (snapLock) {
+      snapLock = false;
+      return;
+    }
+    const copyTree = JSON.stringify({ tree, selectedNode });
+    if (snapshots.length === 0) {
+      setSnapshots([copyTree]);
+      return;
+    }
+    if (snapshots[snapshots.length - 1] !== copyTree) {
+      setSnapshots([...snapshots, copyTree]);
+    }
+  };
+  const undo = () => {
+    const p = past();
+    if (p) {
+      snapLock = true;
+      setTree(p.tree);
+      setSelectedNode(p.selectedNode);
+    }
+  };
+  const redo = () => {
+    const f = future();
+    if (f) {
+      snapLock = true;
+      setTree(f.tree);
+      setSelectedNode(f.selectedNode);
     }
   };
 
@@ -219,8 +248,7 @@ const useTreesStateContainer = createContainer(() => {
   };
 
   const deleteFieldFromNode = (n: ParserField, i: number) => {
-    mutationRoot.deleteFieldFromNode(n, i);
-    updateNode(n);
+    updateNode(n, () => mutationRoot.deleteFieldFromNode(n, i));
   };
 
   const updateFieldOnNode = (
@@ -228,30 +256,31 @@ const useTreesStateContainer = createContainer(() => {
     i: number,
     updatedField: ParserField,
   ) => {
-    mutationRoot.updateFieldOnNode(node, i, updatedField);
-    updateNode(node);
+    updateNode(node, () =>
+      mutationRoot.updateFieldOnNode(node, i, updatedField),
+    );
   };
 
   const addFieldToNode = (node: ParserField, f: ParserField, name?: string) => {
-    let newName = name || f.name[0].toLowerCase() + f.name.slice(1);
-    const existingNodes =
-      node.args?.filter((a) => a.name.match(`${newName}\d?`)) || [];
-    if (existingNodes.length > 0) {
-      newName = `${newName}${existingNodes.length}`;
-    }
-    mutationRoot.addFieldToNode(node, {
-      ...f,
-      name: newName,
+    updateNode(node, () => {
+      let newName = name || f.name[0].toLowerCase() + f.name.slice(1);
+      const existingNodes =
+        node.args?.filter((a) => a.name.match(`${newName}\d?`)) || [];
+      if (existingNodes.length > 0) {
+        newName = `${newName}${existingNodes.length}`;
+      }
+      mutationRoot.addFieldToNode(node, {
+        ...f,
+        name: newName,
+      });
     });
-    updateNode(node);
   };
   const renameNode = (node: ParserField, newName: string) => {
     const isError = allNodes.nodes.map((n) => n.name).includes(newName);
     if (isError) {
       return;
     }
-    mutationRoot.renameNode(node, newName);
-    updateNode(node);
+    updateNode(node, () => mutationRoot.renameNode(node, newName));
   };
   const removeNode = (node: ParserField) => {
     const deselect = node.id === selectedNode?.field?.id;
@@ -268,12 +297,14 @@ const useTreesStateContainer = createContainer(() => {
     node: ParserField,
     interfaceNode: ParserField,
   ) => {
-    mutationRoot.implementInterface(node, interfaceNode);
-    updateNode(node);
+    updateNode(node, () =>
+      mutationRoot.implementInterface(node, interfaceNode),
+    );
   };
   const deImplementInterface = (node: ParserField, interfaceName: string) => {
-    mutationRoot.deImplementInterface(node, interfaceName);
-    updateNode(node);
+    updateNode(node, () =>
+      mutationRoot.deImplementInterface(node, interfaceName),
+    );
   };
 
   return {
@@ -289,6 +320,9 @@ const useTreesStateContainer = createContainer(() => {
     past,
     undos,
     setUndos,
+    undo,
+    redo,
+    makeSnapshot,
     future,
     relatedToSelected,
     parentTypes,
@@ -313,3 +347,8 @@ const useTreesStateContainer = createContainer(() => {
 
 export const useTreesState = useTreesStateContainer.useContainer;
 export const TreesStateProvider = useTreesStateContainer.Provider;
+
+type SnapshotType = {
+  tree: ParserTree;
+  selectedNode: SelectedNode;
+};

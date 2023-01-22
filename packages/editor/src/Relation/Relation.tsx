@@ -9,7 +9,6 @@ import {
 import { Toggle } from '@/shared/components';
 import styled from '@emotion/styled';
 import { toPng } from 'html-to-image';
-import { Clear, Export, Eye } from '@/editor/icons';
 import * as vars from '@/vars';
 import { TopBar } from '@/shared/components/TopBar';
 import {
@@ -21,6 +20,7 @@ import { Minus, Plus } from '@/shared/icons';
 import { LinesDiagram } from '@/Relation/LinesDiagram';
 import { Graf } from '@/Graf/Graf';
 import { NewNode } from '@/shared/components/NewNode';
+import { FileDownload } from '@/icons/FileDownload';
 
 const Wrapper = styled.div`
   display: flex;
@@ -48,11 +48,6 @@ const ErrorContainer = styled.div`
   color: ${({ theme }) => theme.text};
   background-color: ${({ theme }) => theme.background.mainFurther};
   border: 1px solid ${({ theme }) => theme.error};
-`;
-
-const DeselectWrapper = styled.div`
-  padding-left: 12px;
-  border-left: 1px solid ${({ theme }) => theme.disabled}36;
 `;
 
 const TooltippedZoom = styled.div`
@@ -270,24 +265,6 @@ export const Relation: React.FC = () => {
     <Wrapper>
       <TopBar>
         <Menu>
-          {selectedNode?.field && (
-            <IconWrapper
-              data-tooltip="Focus selected node"
-              onClick={(_e) => setSelectedNode({ ...selectedNode })}
-            >
-              <Eye size={22} />
-            </IconWrapper>
-          )}
-          {selectedNode?.field && (
-            <DeselectWrapper>
-              <IconWrapper
-                data-tooltip="Deselect node"
-                onClick={(_e) => setSelectedNode(undefined)}
-              >
-                <Clear size={16} />
-              </IconWrapper>
-            </DeselectWrapper>
-          )}
           {!selectedNode?.field && !readonly && <NewNode />}
           <ZoomWrapper>
             <IconWrapper
@@ -335,7 +312,7 @@ export const Relation: React.FC = () => {
               data-tooltip="Export to png"
               onClick={() => downloadPng()}
             >
-              <Export size={22} />
+              <FileDownload />
             </IconWrapper>
           )}
         </Menu>

@@ -12,7 +12,6 @@ import { fontFamilySans } from '@/vars';
 import styled from '@emotion/styled';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
 import { ActiveType } from '@/Relation/Field/ActiveType';
-import { DiagramView } from '@/editor/icons';
 
 type NodeTypes = keyof EditorTheme['colors'];
 
@@ -61,14 +60,6 @@ const NodeTitle = styled.div`
   font-weight: 500;
   height: 40px;
   display: flex;
-`;
-
-const FromLibrary = styled(NodeTitle)`
-  color: ${({ theme }) => theme.inactive};
-  height: auto;
-  position: absolute;
-  top: -22px;
-  right: 1px;
 `;
 
 const ContentWrapper = styled.div`
@@ -171,11 +162,6 @@ export const Node: React.FC<NodeProps> = ({ field, setRef, isLibrary }) => {
         });
       }}
     >
-      {isLibrary && (
-        <FromLibrary title="from external library">
-          <DiagramView size={18} />
-        </FromLibrary>
-      )}
       {NodeContent}
       {RelationFields}
     </Content>

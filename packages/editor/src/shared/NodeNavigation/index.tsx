@@ -30,7 +30,7 @@ const ListContainer = styled.div<{ isCollapsed: boolean }>`
   height: 100%;
   transition: width 0.5s ease-in-out;
   width: ${({ isCollapsed }) => (isCollapsed ? '64px' : '24rem')};
-  overflow: ${({ isCollapsed }) => (isCollapsed ? 'hidden' : 'initial')};
+  overflow-y: ${({ isCollapsed }) => (isCollapsed ? 'hidden' : 'auto')};
 `;
 
 const ListWrapper = styled.div`
@@ -102,7 +102,7 @@ export const NodeNavigation = () => {
     useRelationNodesState();
   const { sortAlphabetically } = useSortState();
   const [q, setQ] = useState('');
-  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [listExpanded, setListExpanded] = useState<Array<string>>([
     'Types',
     'Schema',

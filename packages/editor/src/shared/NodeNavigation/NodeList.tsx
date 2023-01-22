@@ -3,8 +3,11 @@ import { compareParserFields, ParserField } from 'graphql-js-tree';
 import React from 'react';
 import styled from '@emotion/styled';
 import { fontFamilySans, transition } from '@/vars';
-import { Arrow, Eye, EyeOff, SixDots } from '@/editor/icons';
+import { Eye, EyeOff } from '@/editor/icons';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
+import { EagleEye } from '@/icons/EagleEye';
+import { ChevronDown } from '@/icons/ChevronDown';
+import { Lock } from '@/icons/Lock';
 
 const Title = styled.div<{
   open?: boolean;
@@ -30,7 +33,7 @@ const Title = styled.div<{
   align-items: center;
   transition: ${transition};
   svg {
-    fill: ${({ theme }) => theme.dimmed};
+    stroke: ${({ theme }) => theme.dimmed};
     transition: ${transition};
     transform-origin: 50%;
     transform: ${({ open }) => (open ? 'rotate(0deg)' : 'rotate(-90deg)')};
@@ -61,6 +64,9 @@ const NodeName = styled.span<{
   color: keyof EditorTheme['colors'];
   isHidden?: boolean;
 }>`
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
   font-family: ${fontFamilySans};
   font-weight: ${({ active }) => (active ? 'bold' : 'normal')};
   color: ${({ theme, active, color }) =>
@@ -80,18 +86,20 @@ const IconContainer = styled.div<{
   display: flex;
   transition: ${transition};
   color: ${({ theme }) => theme.disabled};
+  :hover {
+    color: ${({ theme }) => theme.text};
+  }
   svg {
-    stroke-width: 2px;
     opacity: ${({ isHidden }) => (isHidden ? 0.25 : 0.5)};
-
     transition: ${transition};
   }
 `;
 
 const ExternalLibrary = styled.span`
-  color: ${({ theme }) => theme.salmon};
-  font-weight: 500;
-  font-size: 10px;
+  color: ${({ theme }) => theme.disabled};
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const Actions = styled.div`
@@ -139,7 +147,7 @@ export const NodeList: React.FC<NodeListI> = ({
         open={open}
       >
         <div>{listTitle}</div>
-        {!empty && <Arrow size={14} />}
+        {!empty && <ChevronDown />}
       </Title>
       {open &&
         nodeList &&
@@ -169,19 +177,22 @@ export const NodeList: React.FC<NodeListI> = ({
             >
               {node.name}
               {isLibrary(node.id) && (
-                <ExternalLibrary> External library</ExternalLibrary>
+                <ExternalLibrary title="From external library">
+                  <Lock />
+                </ExternalLibrary>
               )}
             </NodeName>
             <Actions>
               {visibleInRelationView && (
                 <IconContainer
+                  isHidden={node.isHidden}
                   onClick={(e) => {
                     e.stopPropagation();
                     setSelectedNode({ source: 'relation', field: node });
                     focusNode(node);
                   }}
                 >
-                  <SixDots size={18} />
+                  <EagleEye />
                 </IconContainer>
               )}
               {visibleInRelationView && (

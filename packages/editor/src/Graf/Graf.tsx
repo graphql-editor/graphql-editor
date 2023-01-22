@@ -38,56 +38,26 @@ const SubNodeWrapper = styled.div`
   pointer-events: none;
 `;
 
-let snapLock = true;
-
 export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
   const {
     tree,
     setTree,
     selectedNode,
     setSelectedNode,
-    setSnapshots,
     snapshots,
-    past,
-    future,
     readonly,
     scalars,
     removeNode,
+    undo,
+    redo,
   } = useTreesState();
 
   const { mount } = useIO();
 
   useEffect(() => {
-    if (snapLock) {
-      snapLock = false;
-      return;
-    }
-    const copyTree = JSON.stringify(tree);
-    if (snapshots.length === 0) {
-      setSnapshots([copyTree]);
-      return;
-    }
-    if (snapshots[snapshots.length - 1] !== copyTree) {
-      setSnapshots([...snapshots, copyTree]);
-    }
-  }, [tree]);
-
-  useEffect(() => {
     const keyEvents = mount({
-      [KeyboardActions.Undo]: () => {
-        const p = past();
-        if (p) {
-          snapLock = true;
-          setTree(JSON.parse(p));
-        }
-      },
-      [KeyboardActions.Redo]: () => {
-        const f = future();
-        if (f) {
-          snapLock = true;
-          setTree(JSON.parse(f));
-        }
-      },
+      [KeyboardActions.Undo]: undo,
+      [KeyboardActions.Redo]: redo,
       [KeyboardActions.Delete]: () => {
         if (!readonly) {
           const deletedNode = tree.nodes.findIndex(
