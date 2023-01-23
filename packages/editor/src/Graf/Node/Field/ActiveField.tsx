@@ -81,7 +81,13 @@ export const ActiveField: React.FC<FieldProps> = ({
             type={node.type}
             parentTypes={parentTypes}
           ></ActiveGrafType>
-          <Lock />
+          <LockContainer
+            title={`This node comes from ${node.fromInterface?.join(
+              ', ',
+            )} and is editable in parent node only`}
+          >
+            <Lock />
+          </LockContainer>
         </>
       )}
       {!isEnumValue &&
@@ -264,19 +270,9 @@ const OutputArrow = styled.div<{ opened?: boolean }>`
   }
 `;
 
-// //TODO Wogle to naprawic bo przypal od dawna
-// const resolveValueFromNode = (node: ParserField, parentNode: ParserField) => {
-//   const inside =
-//     node.args
-//       ?.map((a) => {
-//         if (a.data.type === Value.NullValue) {
-//           return 'null';
-//         }
-//         return ConvertValueToEditableString(a);
-//       })
-//       .join(',') || '';
-//   if (node.args && node.args.length > 0) {
-//     return `[ ${inside} ]`;
-//   }
-//   return inside;
-// };
+const LockContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${({ theme }) => theme.disabled};
+`;
