@@ -10,6 +10,8 @@ import {
   getTypeName,
   Options,
   createParserField,
+  Value,
+  FieldType,
 } from 'graphql-js-tree';
 import { BuiltInScalars } from '@/GraphQL/Resolve/BuiltInNodes';
 
@@ -105,6 +107,16 @@ export const ResolveCreateField = (
           ...a,
           data: {
             type: Instances.Argument,
+          },
+          type: {
+            fieldType: {
+              name: a.name,
+              type: Options.name,
+            },
+          },
+          value: {
+            value: '',
+            type: checkValueType(a, actualFields),
           },
           args: [],
         };
@@ -213,3 +225,49 @@ export const isScalarArgument = (field: ParserField, scalarTypes: string[]) => {
   }
   return scalarTypes.includes(typeName);
 };
+
+const checkValueType = (node: ParserField, nodes: ParserField[]) => {
+  const isArray = isArrayType(node.type.fieldType);
+  if (isArray) return Value.ListValue;
+  const tName = getTypeName(node.type.fieldType);
+  const scalarTypes = nodes
+    .filter((n) => n.data.type === TypeDefinition.ScalarTypeDefinition)
+    .map((n) => n.name);
+  if (isScalarArgument(node, scalarTypes)) {
+    if (tName === ScalarTypes.Boolean) {
+      return Value.BooleanValue;
+    }
+    if (tName === ScalarTypes.Float) {
+      return Value.FloatValue;
+    }
+    if (tName === ScalarTypes.ID) {
+      return Value.IDValue;
+    }
+    if (tName === ScalarTypes.Int) {
+      return Value.IntValue;
+    }
+    if (tName === ScalarTypes.String) {
+      return Value.StringValue;
+    }
+    return Value.ScalarValue;
+  }
+  const parentNode = nodes.find((n) => n.name === tName);
+  if (
+    parentNode?.data.type === TypeDefinition.InputObjectTypeDefinition ||
+    parentNode?.data.type === TypeExtension.InputObjectTypeExtension
+  ) {
+    return Value.ObjectValue;
+  }
+  if (
+    parentNode?.data.type === TypeDefinition.EnumTypeDefinition ||
+    parentNode?.data.type === TypeExtension.EnumTypeExtension
+  ) {
+    return Value.EnumValue;
+  }
+  return Value.Variable;
+};
+
+export const isArrayType = (f: FieldType) =>
+  f.type === Options.required
+    ? f.nest.type === Options.array
+    : f.type === Options.array;

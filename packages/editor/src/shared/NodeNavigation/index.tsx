@@ -5,7 +5,8 @@ import { useIO, KeyboardActions } from '@/shared/hooks/io';
 import { NodeList } from '@/shared/NodeNavigation/NodeList';
 import { useRelationNodesState, useTreesState } from '@/state/containers';
 import { useSortState } from '@/state/containers/sort';
-import { fontFamilySans } from '@/vars';
+import { fontFamilySans, transition } from '@/vars';
+import { keyframes } from '@emotion/react';
 import styled from '@emotion/styled';
 
 import {
@@ -29,7 +30,7 @@ const ListContainer = styled.div<{ isCollapsed: boolean }>`
   border-left: ${({ theme }) => theme.moduleSeparator} 2px solid;
   height: 100%;
   transition: width 0.5s ease-in-out;
-  width: ${({ isCollapsed }) => (isCollapsed ? '64px' : '24rem')};
+  width: ${({ isCollapsed }) => (isCollapsed ? '50px' : '24rem')};
   overflow-y: ${({ isCollapsed }) => (isCollapsed ? 'hidden' : 'auto')};
 `;
 
@@ -63,7 +64,12 @@ const VisibilityBox = styled.div`
   align-items: center;
   font-family: ${fontFamilySans};
   font-size: 14px;
+  cursor: pointer;
   color: ${({ theme }) => theme.inactive};
+  transition: ${transition};
+  :hover {
+    color: ${({ theme }) => theme.text};
+  }
   svg {
     stroke-width: 2px;
     cursor: pointer;
@@ -79,21 +85,32 @@ const Header = styled.div`
   margin-bottom: 1rem;
 `;
 
+const onShow = keyframes`
+  0% {
+      opacity: 0;
+    }
+    30% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+    }
+`;
+
 const Expanded = styled.div<{ isCollapsed: boolean }>`
-  opacity: ${({ isCollapsed }) => (isCollapsed ? 0 : 1)};
-  visibility: ${({ isCollapsed }) => (isCollapsed ? 'hidden' : 'visible')};
-  transition: opacity 0.5s ease;
+  display: ${({ isCollapsed }) => (isCollapsed ? 'none' : 'block')};
+  animation: ${onShow} 0.8s ease;
 `;
 
 const VerticalTitle = styled(Header)<{ isCollapsed: boolean }>`
-  display: ${({ isCollapsed }) => (isCollapsed ? 'flex' : 'none')};
   align-items: center;
   margin-top: 1rem;
   writing-mode: tb-rl;
   text-orientation: upright;
   letter-spacing: 4px;
-  opacity: ${({ isCollapsed }) => (isCollapsed ? 1 : 0)};
-  transition: opacity 1s ease;
+  display: ${({ isCollapsed }) => (isCollapsed ? 'flex' : 'none')};
+  animation: ${onShow} 0.8s ease;
 `;
 
 export const NodeNavigation = () => {

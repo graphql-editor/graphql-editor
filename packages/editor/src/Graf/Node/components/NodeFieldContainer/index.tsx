@@ -7,7 +7,7 @@ export const NodeFieldContainer = styled.div<{
   /* position: relative; */
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.25rem;
   color: ${({ theme }) => theme.text};
   margin: 0;
   padding: 0.5rem 1rem;

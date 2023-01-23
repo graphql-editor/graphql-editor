@@ -23,12 +23,6 @@ import styled from '@emotion/styled';
 import { ActiveGrafFieldName } from '@/Graf/Node/Field/ActiveGrafFieldName';
 import { ActiveGrafType } from '@/Graf/Node/Field/ActiveGrafType';
 import { transition } from '@/vars';
-import {
-  ConvertArgumentNodeToString,
-  ConvertValueNodeToString,
-  ConvertValueToEditableString,
-  placeStringInNode,
-} from '@/GraphQL/Convert';
 import { ActiveDirectiveName } from '@/Graf/Node/Field/ActiveDirectiveName';
 import { changeTypeName } from '@/utils';
 import { Lock } from '@/icons/Lock';
@@ -47,7 +41,8 @@ export const ActiveField: React.FC<FieldProps> = ({
   isLocked,
   onDelete,
 }) => {
-  const { parentTypes, readonly, updateFieldOnNode } = useTreesState();
+  const { parentTypes, readonly, updateFieldOnNode, setValue } =
+    useTreesState();
   const [menuOpen, setMenuOpen] = useState<'options' | 'details' | 'type'>();
   const isEnumValue = node.data.type === ValueDefinition.EnumValueDefinition;
   const isInputValue =
@@ -61,9 +56,7 @@ export const ActiveField: React.FC<FieldProps> = ({
       fromInterface={!!node.fromInterface?.length}
       active={!!(inputOpen || menuOpen || outputOpen)}
     >
-      {isDirectiveNode && (
-        <ActiveDirectiveName name={ConvertValueToEditableString(node)} />
-      )}
+      {isDirectiveNode && <ActiveDirectiveName name={node.name} />}
       {node.data.type !== TypeSystemDefinition.UnionMemberDefinition &&
         !isDirectiveNode && (
           <ActiveGrafFieldName
@@ -78,7 +71,7 @@ export const ActiveField: React.FC<FieldProps> = ({
                   }
             }
             name={node.name}
-            args={isArgumentNode ? [] : node.args}
+            args={node.args}
             parentTypes={parentTypes}
           />
         )}
@@ -88,7 +81,13 @@ export const ActiveField: React.FC<FieldProps> = ({
             type={node.type}
             parentTypes={parentTypes}
           ></ActiveGrafType>
-          <Lock />
+          <LockContainer
+            title={`This node comes from ${node.fromInterface?.join(
+              ', ',
+            )} and is editable in parent node only`}
+          >
+            <Lock />
+          </LockContainer>
         </>
       )}
       {!isEnumValue &&
@@ -182,30 +181,12 @@ export const ActiveField: React.FC<FieldProps> = ({
         )}
       {isInputValue && (
         <EditableDefaultValue
-          value={
-            isArgumentNode
-              ? ConvertArgumentNodeToString(node)
-              : ConvertValueNodeToString(node)
-          }
-          style={{ fontSize: 10, marginLeft: 5 }}
+          value={node.value?.value || ''}
           onChange={
             isLocked
               ? undefined
               : (v) => {
-                  if (isArgumentNode) {
-                    updateFieldOnNode(parentNode, indexInParentNode, {
-                      ...node,
-                      args:
-                        placeStringInNode({
-                          v,
-                          node,
-                        }) || [],
-                    });
-                  }
-                  updateFieldOnNode(parentNode, indexInParentNode, {
-                    ...node,
-                    args: [...(placeStringInNode({ v, node }) || [])],
-                  });
+                  setValue(node, v);
                 }
           }
         />
@@ -272,7 +253,6 @@ export const ActiveField: React.FC<FieldProps> = ({
 const Actions = styled.div<{ toRight?: boolean }>`
   display: flex;
   margin-left: ${({ toRight }) => (toRight ? 'auto' : 'unset')};
-  padding-left: 0.5rem;
   z-index: 2;
 `;
 const OutputArrow = styled.div<{ opened?: boolean }>`
@@ -290,19 +270,9 @@ const OutputArrow = styled.div<{ opened?: boolean }>`
   }
 `;
 
-// //TODO Wogle to naprawic bo przypal od dawna
-// const resolveValueFromNode = (node: ParserField, parentNode: ParserField) => {
-//   const inside =
-//     node.args
-//       ?.map((a) => {
-//         if (a.data.type === Value.NullValue) {
-//           return 'null';
-//         }
-//         return ConvertValueToEditableString(a);
-//       })
-//       .join(',') || '';
-//   if (node.args && node.args.length > 0) {
-//     return `[ ${inside} ]`;
-//   }
-//   return inside;
-// };
+const LockContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${({ theme }) => theme.disabled};
+`;
