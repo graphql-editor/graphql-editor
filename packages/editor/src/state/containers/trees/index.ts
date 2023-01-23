@@ -306,6 +306,15 @@ const useTreesStateContainer = createContainer(() => {
       mutationRoot.deImplementInterface(node, interfaceName),
     );
   };
+  const setValue = (node: ParserField, value?: string) => {
+    updateNode(node, () => {
+      if (!value) {
+        delete node.value;
+        return;
+      }
+      mutationRoot.setValueNode(node, value);
+    });
+  };
 
   return {
     allNodes,
@@ -342,6 +351,7 @@ const useTreesStateContainer = createContainer(() => {
     removeNode,
     implementInterface,
     deImplementInterface,
+    setValue,
   };
 });
 

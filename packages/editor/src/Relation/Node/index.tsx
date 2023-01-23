@@ -93,7 +93,6 @@ export const Node: React.FC<NodeProps> = ({ field, setRef, isLibrary }) => {
   const isNodeActive =
     !!selectedNode?.field && compareParserFields(field)(selectedNode?.field);
   const { theme } = useTheme();
-
   const RelationFields = useMemo(() => {
     return (
       <NodeRelationFields>

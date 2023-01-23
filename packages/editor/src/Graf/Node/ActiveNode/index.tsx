@@ -170,7 +170,6 @@ export const ActiveNode: React.FC<NodeProps> = ({
   }>();
   const [dragOverName, setDragOverName] = useState('');
   const { draggable } = useDraggable();
-
   const {
     allNodes,
     selectedNode,
