@@ -18,7 +18,7 @@ import { emptyLocation, locToRange } from './utils';
 import { GraphQLEditorWorker } from 'graphql-editor-worker';
 import { EditorError } from '@/validation';
 import { monacoSetDecorations } from '@/editor/code/monaco/decorations';
-import { useTheme } from '@/state/containers';
+import { useTheme, useTreesState } from '@/state/containers';
 import { findCurrentNodeName } from '@/editor/code/guild/editor/onCursor';
 import { Maybe } from 'graphql-language-service';
 import { moveCursor } from '@/editor/code/guild/editor/onCursor/compare';
@@ -71,6 +71,7 @@ const compileSchema = ({
 const cursorIndex = {
   index: -1,
 };
+
 export const useSchemaServices = (
   options: Omit<SchemaServicesOptions, 'schema'> & {
     schemaObj: {
@@ -85,6 +86,7 @@ export const useSchemaServices = (
   const [decorationIds, setDecorationIds] = React.useState<string[]>([]);
   const [monacoRef, setMonaco] = React.useState<typeof monaco | null>(null);
   const previousSchema = usePrevious(options.schemaObj.code);
+  const { tree } = useTreesState();
   const { theme } = useTheme();
   // move to worker
   const languageService = React.useMemo(() => {
@@ -104,6 +106,25 @@ export const useSchemaServices = (
     );
   }, [options.libraries, options.schemaObj.code]);
 
+  const selectNodeUnderCursor = async (
+    model: monaco.editor.ITextModel,
+    e: monaco.Position,
+  ) => {
+    // move to worker
+    languageService
+      .buildBridgeForProviders(model, e)
+      .then((bridge) => {
+        if (bridge && options.select) {
+          const {
+            token: { state },
+          } = bridge;
+          const n = findCurrentNodeName(state);
+          options.select(n);
+        }
+      })
+      .catch((e) => {});
+  };
+
   React.useEffect(() => {
     const model = editorRef?.getModel();
     if (!model || !editorRef || options.schemaObj.isFromLocalChange) return;
@@ -114,6 +135,16 @@ export const useSchemaServices = (
       previousText: previousSchema || '',
     });
   }, [options.schemaObj.code]);
+
+  React.useEffect(() => {
+    if (tree.schema) {
+      const model = editorRef?.getModel();
+      if (model) {
+        const p = model?.getPositionAt(cursorIndex.index);
+        selectNodeUnderCursor(model, p);
+      }
+    }
+  }, [tree]);
 
   React.useEffect(() => {
     if (monacoRef && editorRef) {
@@ -155,28 +186,22 @@ export const useSchemaServices = (
         options.decorationsProviders || [],
       );
 
-      const onCursorChangeDisposable = editorRef.onDidChangeCursorPosition(
-        (e) => {
-          if (e.reason === 0) return;
-          if (!options.select) return;
-          const model = editorRef.getModel();
-          if (model) {
-            // move to worker
-            languageService
-              .buildBridgeForProviders(model, e.position)
-              .then((bridge) => {
-                if (bridge && options.select) {
-                  const {
-                    token: { state },
-                  } = bridge;
-                  const n = findCurrentNodeName(state);
-                  options.select(n);
-                }
-              })
-              .catch((e) => {});
-          }
-        },
-      );
+      const onChangeCursor = (e: monaco.editor.ICursorPositionChangedEvent) => {
+        if (e.reason === 3) {
+          cursorIndex.index =
+            editorRef.getModel()?.getOffsetAt(e.position) || -1;
+        }
+        if (e.reason === 0) return;
+        if (!options.select) return;
+        const model = editorRef.getModel();
+        if (model) {
+          // move to worker
+          selectNodeUnderCursor(model, e.position);
+        }
+      };
+
+      const onCursorChangeDisposable =
+        editorRef.onDidChangeCursorPosition(onChangeCursor);
 
       const definitionProviderDisposable =
         monacoRef.languages.registerDefinitionProvider(
@@ -191,20 +216,10 @@ export const useSchemaServices = (
         languageService.getHoverProvider(options.hoverProviders || []),
       );
 
-      const cursorPreserveDisposable = editorRef.onDidChangeCursorPosition(
-        (e) => {
-          if (e.reason === 3) {
-            cursorIndex.index =
-              editorRef.getModel()?.getOffsetAt(e.position) || -1;
-          }
-        },
-      );
-
       return () => {
         onCursorChangeDisposable && onCursorChangeDisposable.dispose();
         hoverDisposable && hoverDisposable.dispose();
         definitionProviderDisposable && definitionProviderDisposable.dispose();
-        cursorPreserveDisposable && cursorPreserveDisposable.dispose();
       };
     }
 
