@@ -73,7 +73,6 @@ export const EditableText: React.FC<{
             title={isError ? 'Name already exists' : 'rename'}
             onFocus={() => setDraggable(false)}
             onMouseDown={() => setDraggable(false)}
-            onAbort={() => console.log('ABORT')}
             onBlur={(e) => {
               checkEdit();
             }}

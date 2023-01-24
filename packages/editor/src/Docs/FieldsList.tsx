@@ -50,10 +50,12 @@ interface FieldsListI {
 
 export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
   const { text } = useTheme();
-  const { setTree, tree, readonly } = useTreesState();
+  const { setTree, tree, readonly, isLibrary } = useTreesState();
 
   const [isEdit, setIsEdit] = useState(false);
   const [editedIdx, setEditedIdx] = useState(-1);
+
+  const isReadonly = readonly || isLibrary(node.id);
 
   const onSubmit = useCallback(
     (description: string, idx: number) => {
@@ -105,9 +107,9 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
             ) : (
               <DescWrapper
                 isSvgVisible={!arg.description}
-                readonly={readonly}
+                readonly={isReadonly}
                 onClick={() => {
-                  if (readonly) return;
+                  if (isReadonly) return;
                   setEditedIdx(i);
                   setIsEdit(true);
                 }}
@@ -117,7 +119,7 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
                     __html: md.render(arg.description || 'No description'),
                   }}
                 />
-                {!readonly && <Edit size={14} fill={text} />}
+                {!isReadonly && <Edit size={14} fill={text} />}
               </DescWrapper>
             )}
           </FieldsWrapper>

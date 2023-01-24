@@ -183,7 +183,8 @@ export const Relation: React.FC = () => {
   const mainRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const { selectedNode, setSelectedNode, readonly } = useTreesState();
-  const { filteredRelationNodes } = useRelationNodesState();
+  const { filteredRelationNodes, isFocused, deFocusNode } =
+    useRelationNodesState();
   const { grafErrors } = useErrorsState();
   const { setBaseTypesOn, baseTypesOn, editMode, setEditMode } =
     useRelationsState();
@@ -270,24 +271,34 @@ export const Relation: React.FC = () => {
     const scrollListener = (e: WheelEvent) => {
       if (zoomingMode === 'zoom') return;
       if (!wrapperRef.current) return;
-      const takeWheelDeltaX = 1.0 / (e.deltaX || 1);
-      const takeWheelDeltaY = 1.0 / (e.deltaY || 1);
+      const factor =
+        (e.detail
+          ? -e.detail / 3
+          : 'wheelDelta' in e
+          ? ((e as any).wheelDelta as number)
+          : 0) * 2;
       const newX = e.deltaX
-        ? (ref.current?.state.positionX || 0) - takeWheelDeltaX * 1000
+        ? (ref.current?.state.positionX || 0) + factor
         : ref.current?.state.positionX || 0;
       const newY = e.deltaY
-        ? (ref.current?.state.positionY || 0) - takeWheelDeltaY * 50000
+        ? (ref.current?.state.positionY || 0) + factor
         : ref.current?.state.positionY || 0;
-      ref.current?.setTransform(newX, newY, ref.current.state.scale);
+      ref.current?.setTransform(
+        newX,
+        newY,
+        ref.current.state.scale,
+        300,
+        'easeOutCubic',
+      );
     };
-    document.addEventListener('wheel', scrollListener);
+    wrapperRef.current?.addEventListener('wheel', scrollListener);
     document.addEventListener('keydown', listenerDown);
     document.addEventListener('keyup', listenerUp);
 
     return () => {
       document.removeEventListener('keydown', listenerDown);
       document.removeEventListener('keyup', listenerUp);
-      document.removeEventListener('wheel', scrollListener);
+      wrapperRef.current?.removeEventListener('wheel', scrollListener);
     };
   }, [ref, zoomingMode]);
 
@@ -359,7 +370,6 @@ export const Relation: React.FC = () => {
           maxScale={1.5}
           wheel={{ activationKeys: ['Control'] }}
           minScale={0.3}
-          limitToBounds={false}
           panning={{
             velocityDisabled: true,
           }}
@@ -377,6 +387,9 @@ export const Relation: React.FC = () => {
               onMouseUp={(e) => {
                 if (draggingMode !== 'grabbing') {
                   setSelectedNode({ source: 'relation', field: undefined });
+                  if (isFocused) {
+                    deFocusNode();
+                  }
                 }
               }}
             >

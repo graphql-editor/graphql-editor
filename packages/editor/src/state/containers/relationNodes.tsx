@@ -25,6 +25,9 @@ const useRelationNodes = createContainer(() => {
   const [nodesVisibilityArr, setNodesVisibilityArr] = useState(
     relationNodes.map((el) => ({ id: el.id, isHidden: false })),
   );
+  const [nodesBeforeFocusVisibility, setNodesBeforeFocusVisibility] = useState<
+    typeof nodesVisibilityArr
+  >([]);
 
   useEffect(() => {
     setNodesVisibilityArr((prev) => {
@@ -59,6 +62,9 @@ const useRelationNodes = createContainer(() => {
   );
   const focusNode = useCallback(
     (n: ParserField) => {
+      setNodesBeforeFocusVisibility((nf) =>
+        nf.length > 0 ? nf : [...nodesVisibilityArr],
+      );
       const types = n.args.map((a) => getTypeName(a.type.fieldType));
       const children = allNodes.nodes.filter((an) => types.includes(an.name));
       const parents = allNodes.nodes.filter((an) =>
@@ -75,8 +81,24 @@ const useRelationNodes = createContainer(() => {
         })),
       );
     },
-    [allNodes],
+    [
+      allNodes,
+      setNodesBeforeFocusVisibility,
+      setNodesVisibilityArr,
+      nodesVisibilityArr,
+    ],
   );
+  const deFocusNode = useCallback(() => {
+    if (nodesBeforeFocusVisibility.length > 0) {
+      setNodesVisibilityArr([...nodesBeforeFocusVisibility]);
+      setNodesBeforeFocusVisibility([]);
+    }
+  }, [
+    allNodes,
+    nodesBeforeFocusVisibility,
+    setNodesVisibilityArr,
+    setNodesBeforeFocusVisibility,
+  ]);
 
   const toggleNodeVisibility = useCallback(
     (node: ParserField) => {
@@ -95,6 +117,8 @@ const useRelationNodes = createContainer(() => {
     showRelationNodes,
     toggleNodeVisibility,
     focusNode,
+    deFocusNode,
+    isFocused: nodesBeforeFocusVisibility.length > 0,
   };
 });
 
