@@ -26,6 +26,7 @@ export const EditableText: React.FC<{
   const [w, setW] = useState(20);
   const spanRef = useRef<HTMLSpanElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const valueRef = useRef<string>();
   const checkEdit = () => {
     inputRef.current?.blur();
     setDraggable(true);
@@ -41,6 +42,15 @@ export const EditableText: React.FC<{
       setEditedValue(value);
     }
   };
+  useEffect(() => {
+    return () => {
+      if (valueRef.current !== value && valueRef.current) {
+        if (onChange) {
+          onChange(valueRef.current);
+        }
+      }
+    };
+  }, []);
   useEffect(() => {
     setIsError(exclude.includes(editedValue));
   }, [editedValue]);
@@ -72,7 +82,10 @@ export const EditableText: React.FC<{
                 checkEdit();
               }
             }}
-            onChange={(e) => setEditedValue(e.target.value)}
+            onChange={(e) => {
+              setEditedValue(e.target.value);
+              valueRef.current = e.target.value;
+            }}
           />
           <HiddenSpan style={{ ...style }} ref={spanRef}>
             {editedValue}

@@ -183,13 +183,15 @@ export const Relation: React.FC = () => {
   const mainRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const { selectedNode, setSelectedNode, readonly } = useTreesState();
-  const { filteredRelationNodes } = useRelationNodesState();
+  const { filteredRelationNodes, isFocused, deFocusNode } =
+    useRelationNodesState();
   const { grafErrors } = useErrorsState();
   const { setBaseTypesOn, baseTypesOn, editMode, setEditMode } =
     useRelationsState();
   const [isLoading, setIsLoading] = useState(false);
   const [draggingMode, setDraggingMode] = useState<DragMode>('grab');
   const [scaleFactor, setScaleFactor] = useState('100');
+  const [zoomingMode, setZoomingMode] = useState<'zoom' | 'pan'>('pan');
   const ref = useRef<ReactZoomPanPinchRef>(null);
 
   useEffect(() => {
@@ -259,13 +261,53 @@ export const Relation: React.FC = () => {
       );
     };
   }, []);
+  useEffect(() => {
+    const listenerDown = (ev: KeyboardEvent) => {
+      if (ev.key === 'Control') setZoomingMode('zoom');
+    };
+    const listenerUp = (ev: KeyboardEvent) => {
+      if (ev.key === 'Control') setZoomingMode('pan');
+    };
+    const scrollListener = (e: WheelEvent) => {
+      if (zoomingMode === 'zoom') return;
+      if (!wrapperRef.current) return;
+      const factor =
+        (e.detail
+          ? -e.detail / 3
+          : 'wheelDelta' in e
+          ? ((e as any).wheelDelta as number)
+          : 0) * 2;
+      const newX = e.deltaX
+        ? (ref.current?.state.positionX || 0) + factor
+        : ref.current?.state.positionX || 0;
+      const newY = e.deltaY
+        ? (ref.current?.state.positionY || 0) + factor
+        : ref.current?.state.positionY || 0;
+      ref.current?.setTransform(
+        newX,
+        newY,
+        ref.current.state.scale,
+        300,
+        'easeOutCubic',
+      );
+    };
+    wrapperRef.current?.addEventListener('wheel', scrollListener);
+    document.addEventListener('keydown', listenerDown);
+    document.addEventListener('keyup', listenerUp);
+
+    return () => {
+      document.removeEventListener('keydown', listenerDown);
+      document.removeEventListener('keyup', listenerUp);
+      wrapperRef.current?.removeEventListener('wheel', scrollListener);
+    };
+  }, [ref, zoomingMode]);
 
   const step = 0.2;
   return (
     <Wrapper>
       <TopBar>
         <Menu>
-          {!selectedNode?.field && !readonly && <NewNode />}
+          {!readonly && editMode && <NewNode />}
           <ZoomWrapper>
             <IconWrapper
               data-tooltip="Zoom out"
@@ -324,14 +366,10 @@ export const Relation: React.FC = () => {
         {editMode && selectedNode?.field && <Graf node={selectedNode.field} />}
         <TransformWrapper
           ref={ref}
-          wheel={{ activationKeys: ['Control'] }}
           initialScale={1}
           maxScale={1.5}
+          wheel={{ activationKeys: ['Control'] }}
           minScale={0.3}
-          limitToBounds={false}
-          onZoom={(e) => {
-            setScaleFactor((Math.max(e.state.scale, 0.3) * 100).toFixed());
-          }}
           panning={{
             velocityDisabled: true,
           }}
@@ -349,6 +387,9 @@ export const Relation: React.FC = () => {
               onMouseUp={(e) => {
                 if (draggingMode !== 'grabbing') {
                   setSelectedNode({ source: 'relation', field: undefined });
+                  if (isFocused) {
+                    deFocusNode();
+                  }
                 }
               }}
             >

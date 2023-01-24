@@ -40,10 +40,13 @@ interface DocsElementI {
 }
 
 export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
-  const { setSelectedNode, tree, setTree, readonly } = useTreesState();
+  const { setSelectedNode, tree, setTree, readonly, isLibrary } =
+    useTreesState();
   const { text } = useTheme();
 
   const [isEdit, setIsEdit] = useState(false);
+
+  const isReadonly = readonly || isLibrary(node.id);
 
   const setNode = (nodeName: string) => {
     const newSelectedNode = tree.nodes.filter((node) => node.name === nodeName);
@@ -82,16 +85,16 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
         />
       ) : (
         <DescWrapper
-          readonly={readonly}
+          readonly={isReadonly}
           isSvgVisible={!description}
-          onClick={() => !readonly && setIsEdit(true)}
+          onClick={() => !isReadonly && setIsEdit(true)}
         >
           <DescText
             dangerouslySetInnerHTML={{
               __html: description || 'No description',
             }}
           />
-          {!readonly && <Edit size={14} fill={text} />}
+          {!isReadonly && <Edit size={14} fill={text} />}
         </DescWrapper>
       )}
       <Line />
