@@ -1,5 +1,6 @@
-import { Eye, EyeOff } from '@/editor/icons';
 import { CollapseArrow } from '@/editor/menu/CollapseArrow';
+import { Eye } from '@/icons/Eye';
+import { EyeOff } from '@/icons/EyeOff';
 import { SearchInput } from '@/shared/components';
 import { useIO, KeyboardActions } from '@/shared/hooks/io';
 import { NodeList } from '@/shared/NodeNavigation/NodeList';
@@ -261,12 +262,12 @@ export const NodeNavigation = () => {
                 {allVisible ? (
                   <VisibilityBox onClick={hideRelationNodes}>
                     <span>hide all</span>
-                    <EyeOff size={18} />
+                    <EyeOff />
                   </VisibilityBox>
                 ) : (
                   <VisibilityBox onClick={showRelationNodes}>
                     <span>show all</span>
-                    <Eye size={18} />
+                    <Eye />
                   </VisibilityBox>
                 )}
               </>

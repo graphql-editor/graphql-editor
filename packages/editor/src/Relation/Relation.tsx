@@ -16,11 +16,12 @@ import {
   TransformComponent,
   TransformWrapper,
 } from '@pronestor/react-zoom-pan-pinch';
-import { Minus, Plus } from '@/shared/icons';
 import { LinesDiagram } from '@/Relation/LinesDiagram';
 import { Graf } from '@/Graf/Graf';
 import { NewNode } from '@/shared/components/NewNode';
 import { FileDownload } from '@/icons/FileDownload';
+import { Plus } from '@/icons/Plus';
+import { Minus } from '@/icons/Minus';
 
 const Wrapper = styled.div`
   display: flex;
@@ -190,12 +191,12 @@ export const Relation: React.FC = () => {
     useRelationsState();
   const [isLoading, setIsLoading] = useState(false);
   const [draggingMode, setDraggingMode] = useState<DragMode>('grab');
-  const [scaleFactor, setScaleFactor] = useState('100');
+  const [scaleFactor, setScaleFactor] = useState(100);
   const [zoomingMode, setZoomingMode] = useState<'zoom' | 'pan'>('pan');
   const ref = useRef<ReactZoomPanPinchRef>(null);
 
   useEffect(() => {
-    if (!selectedNode) setScaleFactor('100');
+    if (!selectedNode) setScaleFactor(100);
   }, [selectedNode]);
 
   const downloadPng = useCallback(() => {
@@ -242,11 +243,8 @@ export const Relation: React.FC = () => {
       }
     }
   };
-
   const doubleClickHandler = () => {
-    setScaleFactor((prevState) =>
-      Math.min(parseInt(prevState) + 70, 150).toFixed(),
-    );
+    setScaleFactor((prevState) => Math.min(prevState + 70, 150));
   };
 
   useEffect(() => {
@@ -263,26 +261,42 @@ export const Relation: React.FC = () => {
   }, []);
   useEffect(() => {
     const listenerDown = (ev: KeyboardEvent) => {
-      if (ev.key === 'Control') setZoomingMode('zoom');
+      if (
+        ev.key === 'Control' ||
+        ev.metaKey ||
+        ev.key === 'OS' ||
+        ev.key === 'Meta'
+      )
+        setZoomingMode('zoom');
     };
     const listenerUp = (ev: KeyboardEvent) => {
-      if (ev.key === 'Control') setZoomingMode('pan');
+      if (
+        ev.key === 'Control' ||
+        ev.metaKey ||
+        ev.key === 'OS' ||
+        ev.key === 'Meta'
+      )
+        setZoomingMode('pan');
     };
     const scrollListener = (e: WheelEvent) => {
       if (zoomingMode === 'zoom') return;
       if (!wrapperRef.current) return;
+
       const factor =
         (e.detail
           ? -e.detail / 3
           : 'wheelDelta' in e
           ? ((e as any).wheelDelta as number)
           : 0) * 2;
+
       const newX = e.deltaX
         ? (ref.current?.state.positionX || 0) + factor
         : ref.current?.state.positionX || 0;
+
       const newY = e.deltaY
         ? (ref.current?.state.positionY || 0) + factor
         : ref.current?.state.positionY || 0;
+
       ref.current?.setTransform(
         newX,
         newY,
@@ -301,7 +315,6 @@ export const Relation: React.FC = () => {
       wrapperRef.current?.removeEventListener('wheel', scrollListener);
     };
   }, [ref, zoomingMode]);
-
   const step = 0.2;
   return (
     <Wrapper>
@@ -312,27 +325,25 @@ export const Relation: React.FC = () => {
             <IconWrapper
               data-tooltip="Zoom out"
               onClick={() => {
-                setScaleFactor((prevState) =>
-                  Math.max(parseInt(prevState) - step * 100, 30).toFixed(),
-                );
+                if (!ref.current) return;
                 ref.current?.zoomOut(step);
+                setScaleFactor(ref.current.state.scale * 100);
               }}
             >
-              <Minus width={16} height={16} />
+              <Minus />
             </IconWrapper>
             <TooltippedZoom data-tooltip="Ctrl/Cmd + Scroll to zoom in/out">
-              <span>{scaleFactor + '%'}</span>
+              <span>{scaleFactor.toFixed() + '%'}</span>
             </TooltippedZoom>
             <IconWrapper
               data-tooltip="Zoom in"
               onClick={() => {
+                if (!ref.current) return;
                 ref.current?.zoomIn(step);
-                setScaleFactor((prevState) =>
-                  Math.min(parseInt(prevState) + step * 100, 150).toFixed(),
-                );
+                setScaleFactor(ref.current.state.scale * 100);
               }}
             >
-              <Plus width={16} height={16} />
+              <Plus />
             </IconWrapper>
           </ZoomWrapper>
           <TogglesWrapper>
@@ -368,11 +379,15 @@ export const Relation: React.FC = () => {
           ref={ref}
           initialScale={1}
           maxScale={1.5}
-          wheel={{ activationKeys: ['Control'] }}
-          minScale={0.3}
+          wheel={{ activationKeys: ['Control', 'OS', 'Meta'] }}
+          minScale={0.1}
           panning={{
             velocityDisabled: true,
           }}
+          onZoom={(e) => {
+            setScaleFactor(Math.min(Math.max(e.state.scale, 0.1), 1.5) * 100);
+          }}
+          limitToBounds={false}
           onPanningStart={() => setDraggingMode('grab')}
           onPanning={() => setDraggingMode('grabbing')}
           onPanningStop={() => setTimeout(() => setDraggingMode('auto'), 1)}

@@ -4,9 +4,8 @@ import React, { useState } from 'react';
 import { Parser, TreeToGraphQL } from 'graphql-js-tree';
 import { useSortState } from '@/state/containers/sort';
 import { fontFamilySans } from '@/vars';
-import { Abc } from '@/editor/icons';
-import { useTheme } from '@emotion/react';
 import { Select } from '@/shared/components/Select';
+import { AlphabeticalSorting } from '@/icons/AlphabeticalSorting';
 
 interface DiffEditorProps {
   schemas: Record<string, string>;
@@ -22,7 +21,7 @@ const Main = styled.div`
 const TopBar = styled.div`
   display: flex;
   flex-direction: row;
-  padding: 1rem 1rem 0px;
+  padding: 1rem;
   justify-content: space-between;
   align-items: center;
   position: relative;
@@ -43,17 +42,18 @@ const Selects = styled.div`
   gap: 10px;
   right: 16px;
   position: absolute;
+  pointer-events: none;
 `;
 
-const AZContainer = styled.div`
+const AZContainer = styled.div<{ active?: boolean }>`
   display: flex;
   cursor: pointer;
   align-items: center;
+  color: ${({ theme, active }) => (active ? theme.active : theme.disabled)};
 `;
 
 export const DiffEditor = ({ schemas }: DiffEditorProps) => {
   const { sortAlphabetically } = useSortState();
-  const { inactive, active } = useTheme();
   const [isSortActive, setIsSortActive] = useState(true);
   const [leftVersion, setLeftVersion] = useState(
     Object.keys(schemas)[Object.keys(schemas).length - 1],
@@ -97,8 +97,11 @@ export const DiffEditor = ({ schemas }: DiffEditorProps) => {
             value={rightVersion}
           />
         </Selects>
-        <AZContainer onClick={() => setIsSortActive((s) => !s)}>
-          <Abc size={28} fill={isSortActive ? active : inactive} />
+        <AZContainer
+          active={isSortActive}
+          onClick={() => setIsSortActive((s) => !s)}
+        >
+          <AlphabeticalSorting />
         </AZContainer>
       </TopBar>
       <DiffEditorPane

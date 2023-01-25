@@ -3,11 +3,12 @@ import { compareParserFields, ParserField } from 'graphql-js-tree';
 import React from 'react';
 import styled from '@emotion/styled';
 import { fontFamilySans, transition } from '@/vars';
-import { Eye, EyeOff } from '@/editor/icons';
 import { EditorTheme } from '@/gshared/theme/DarkTheme';
 import { EagleEye } from '@/icons/EagleEye';
 import { ChevronDown } from '@/icons/ChevronDown';
 import { Lock } from '@/icons/Lock';
+import { Eye } from '@/icons/Eye';
+import { EyeOff } from '@/icons/EyeOff';
 
 const Title = styled.div<{
   open?: boolean;
@@ -207,7 +208,7 @@ export const NodeList: React.FC<NodeListI> = ({
                     toggleNodeVisibility(node);
                   }}
                 >
-                  {node.isHidden ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {node.isHidden ? <EyeOff /> : <Eye />}
                 </IconContainer>
               )}
             </Actions>

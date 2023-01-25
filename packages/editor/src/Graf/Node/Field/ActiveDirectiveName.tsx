@@ -14,5 +14,5 @@ const Main = styled.div`
 export const ActiveDirectiveName: React.FC<Pick<ParserField, 'name'> & {}> = ({
   name,
 }) => {
-  return <Main>{name}</Main>;
+  return <Main>@{name}</Main>;
 };

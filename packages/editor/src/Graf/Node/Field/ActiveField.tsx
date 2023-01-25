@@ -26,7 +26,11 @@ import { transition } from '@/vars';
 import { ActiveDirectiveName } from '@/Graf/Node/Field/ActiveDirectiveName';
 import { changeTypeName } from '@/utils';
 import { Lock } from '@/icons/Lock';
+import { Menu as MoreIcon } from '@/icons/Menu';
 import { ChevronLeft } from '@/icons/ChevronLeft';
+import { Arrq } from '@/shared/icons';
+import { Plus } from '@/icons/Plus';
+import { Minus } from '@/icons/Minus';
 
 export const ActiveField: React.FC<FieldProps> = ({
   node,
@@ -152,7 +156,7 @@ export const ActiveField: React.FC<FieldProps> = ({
                 return (
                   <FieldPort
                     {...triggerProps}
-                    icons={{ closed: 'Arrq', open: 'Arrq' }}
+                    icons={{ closed: <Arrq />, open: <Arrq /> }}
                     onClick={() => setMenuOpen('options')}
                   />
                 );
@@ -199,6 +203,10 @@ export const ActiveField: React.FC<FieldProps> = ({
             <FieldPort
               onClick={onInputClick}
               open={inputOpen}
+              icons={{
+                closed: <Plus />,
+                open: <Minus />,
+              }}
               info={{
                 message: 'Field arguments and directives',
                 placement: 'left',
@@ -213,7 +221,10 @@ export const ActiveField: React.FC<FieldProps> = ({
               return (
                 <FieldPort
                   {...triggerProps}
-                  icons={{ closed: 'More', open: 'More' }}
+                  icons={{
+                    closed: <MoreIcon />,
+                    open: <MoreIcon />,
+                  }}
                   onClick={() => setMenuOpen('details')}
                 />
               );

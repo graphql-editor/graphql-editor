@@ -1,7 +1,8 @@
 import React, { useRef } from 'react';
 
 import styled from '@emotion/styled';
-import { Search, X } from '@/shared/icons';
+import { X } from '@/shared/icons';
+import { Search } from '@/icons/Search';
 
 interface MenuSearchProps {
   value: string;
@@ -50,9 +51,7 @@ const SearchIconContainer = styled.span`
   align-items: center;
   padding: 0 0.5rem;
   z-index: 1;
-  svg {
-    color: ${({ theme }) => theme.disabled};
-  }
+  color: ${({ theme }) => theme.disabled};
 `;
 
 const XIconContainer = styled.span`
@@ -82,7 +81,7 @@ export const MenuSearch: React.FC<MenuSearchProps> = ({
     <Wrapper>
       {icon === 'search' && (
         <SearchIconContainer>
-          <Search width={14} height={14} />
+          <Search />
         </SearchIconContainer>
       )}
       {value && (

@@ -1,14 +1,12 @@
-import * as Icons from '@/shared/icons';
 import styled from '@emotion/styled';
 import React from 'react';
 
 interface FieldPortProps {
   onClick: () => void;
-  children?: React.ReactNode;
   open?: boolean;
-  icons?: {
-    closed: keyof typeof Icons;
-    open: keyof typeof Icons;
+  icons: {
+    closed: React.ReactNode;
+    open: React.ReactNode;
   };
   info?: {
     message: string;
@@ -28,18 +26,9 @@ const Main = styled.div`
 `;
 
 export const FieldPort = React.forwardRef<HTMLDivElement, FieldPortProps>(
-  (
-    {
-      children,
-      onClick,
-      open,
-      info,
-      icons = { closed: 'Plus', open: 'Minus' },
-    },
-    ref,
-  ) => {
-    const OpenComponent = Icons[icons.open];
-    const ClosedComponent = Icons[icons.closed];
+  ({ children, onClick, open, info, icons }, ref) => {
+    const OpenComponent = icons.open;
+    const ClosedComponent = icons.closed;
     return (
       <Main
         ref={ref}
@@ -47,13 +36,17 @@ export const FieldPort = React.forwardRef<HTMLDivElement, FieldPortProps>(
         className="node-field-port"
         onClick={onClick}
       >
-        {open ? (
-          <OpenComponent className="opener-icon" height={10} width={10} />
-        ) : (
-          <ClosedComponent className="opener-icon" height={12} width={12} />
-        )}
-        {children}
+        <OpenerComponent className="opener-icon">
+          {open && OpenComponent}
+          {!open && ClosedComponent}
+        </OpenerComponent>
       </Main>
     );
   },
 );
+
+const OpenerComponent = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;

@@ -1,18 +1,19 @@
 import React, { useEffect, useRef, useState, useLayoutEffect } from 'react';
 import styled from '@emotion/styled';
 import { useOnClickOutside } from '@/Graf/Node/hooks';
-import { Arrow } from '@/editor/icons';
 import { transition } from '@/vars';
+import { ChevronDown } from '@/icons/ChevronDown';
 
 const SELECT_HEIGHT = 36;
 
 const Main = styled.div`
   cursor: pointer;
   border-radius: 5px;
-  background: ${({ theme }) => theme.background.mainFurther};
+  background: ${({ theme }) => theme.background.mainFurthest};
   padding-right: 11px;
   font-size: 14px;
   width: 100%;
+  pointer-events: all;
   max-width: 160px;
 `;
 const Value = styled.div<{ isOpen?: boolean }>`
@@ -33,7 +34,7 @@ const Placeholder = styled.div<{ isOpen?: boolean }>`
   align-items: center;
   min-height: ${SELECT_HEIGHT}px;
   padding: 9px 16px;
-  background: ${({ theme }) => theme.background.mainFurther};
+  background: ${({ theme }) => theme.background.mainFurthers};
   color: ${({ theme }) => theme.disabled};
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
@@ -45,8 +46,8 @@ const Placeholder = styled.div<{ isOpen?: boolean }>`
 const Options = styled.div`
   position: fixed;
   z-index: 100;
-  background: ${({ theme }) => theme.background.mainFurther};
-  border: ${({ theme }) => theme.background.mainFurther} solid 1px;
+  background: ${({ theme }) => theme.background.mainFurthers};
+  border: ${({ theme }) => theme.background.mainFurthers} solid 1px;
   color: ${({ theme }) => theme.text};
   max-height: 300px;
   overflow-y: auto;
@@ -179,7 +180,7 @@ export const Select: React.FC<SelectProps<any>> = ({
           <Placeholder isOpen={open}>{placeholder}</Placeholder>
         )}
         <DropDownArrowPlacement open={open}>
-          <Arrow size={12} />
+          <ChevronDown />
         </DropDownArrowPlacement>
       </ValueIconContainer>
 

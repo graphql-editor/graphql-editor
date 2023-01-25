@@ -12,11 +12,11 @@ const Sidebar = styled.div<{ isCollapsed: boolean }>`
   color: ${({ theme }) => theme.disabled};
   z-index: 4;
   border: 0 solid ${({ theme }) => theme.moduleSeparator};
-  border-right-width: 2px;
+  border-right-width: 1px;
+  border-left-width: 1px;
   position: relative;
   transition: width 0.5s ease-in-out;
   width: ${({ isCollapsed }) => (isCollapsed ? 'calc(2rem + 20px)' : '210px')};
-  padding-top: 2px;
   display: flex;
   flex-direction: column;
   gap: 1px;
@@ -38,7 +38,6 @@ const MenuItem = styled.div<{
   color: ${({ theme, isDisabled }) =>
     isDisabled ? theme.disabled : theme.text};
   padding: 1rem;
-  border-radius: 2px;
   font-family: ${fontFamilySans};
   cursor: ${({ isDisabled }) => (isDisabled ? 'not-allowed' : 'pointer')};
   transition: all 0.25s ease;

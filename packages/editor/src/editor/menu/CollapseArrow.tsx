@@ -1,4 +1,4 @@
-import { ArrowLeft } from '@/editor/icons';
+import { ChevronLeftDouble } from '@/icons/ChevronLeftDouble';
 import styled from '@emotion/styled';
 import React from 'react';
 
@@ -26,8 +26,6 @@ const Container = styled.div<{ isCollapsed: boolean; isRight?: true }>`
   }
 
   svg {
-    width: 6px;
-    height: 11px;
     transform: ${({ isCollapsed, isRight }) => {
       if (isRight) return isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)';
       return isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)';
@@ -52,7 +50,7 @@ export const CollapseArrow: React.FC<CollapseArrowProps> = ({
       isCollapsed={isCollapsed}
       onClick={() => toggle()}
     >
-      <ArrowLeft size={11} />
+      <ChevronLeftDouble />
     </Container>
   );
 };

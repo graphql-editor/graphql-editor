@@ -16,10 +16,9 @@ import {
   TypeText,
 } from '@/Docs/DocsStyles';
 import styled from '@emotion/styled';
-import { Edit } from '@/editor/icons';
-import { useTheme } from '@emotion/react';
 import { useTreesState } from '@/state/containers';
 import { Description } from '@/Docs/Description';
+import { Edit } from '@/icons/Edit';
 
 const md = new Remarkable();
 
@@ -49,7 +48,6 @@ interface FieldsListI {
 }
 
 export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
-  const { text } = useTheme();
   const { setTree, tree, readonly, isLibrary } = useTreesState();
 
   const [isEdit, setIsEdit] = useState(false);
@@ -119,7 +117,7 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
                     __html: md.render(arg.description || 'No description'),
                   }}
                 />
-                {!isReadonly && <Edit size={14} fill={text} />}
+                {!isReadonly && <Edit />}
               </DescWrapper>
             )}
           </FieldsWrapper>

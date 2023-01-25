@@ -43,6 +43,7 @@ export const DescWrapper = styled.div<{
   cursor: ${({ readonly }) => (readonly ? 'auto' : 'pointer')};
 
   svg {
+    color: ${({ theme }) => theme.text};
     opacity: ${({ isSvgVisible }) => (isSvgVisible ? 1 : 0)};
     transition: opacity 0.5s;
   }
