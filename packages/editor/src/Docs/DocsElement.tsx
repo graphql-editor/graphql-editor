@@ -8,9 +8,8 @@ import React, { useMemo, useState } from 'react';
 import { Remarkable } from 'remarkable';
 import styled from '@emotion/styled';
 import { DescText, DescWrapper, Title } from '@/Docs/DocsStyles';
-import { Edit } from '@/editor/icons';
-import { useTheme } from '@emotion/react';
 import { Description } from '@/Docs/Description';
+import { Edit } from '@/icons/Edit';
 
 const Wrapper = styled.div`
   font-family: ${fontFamilySans};
@@ -42,7 +41,6 @@ interface DocsElementI {
 export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
   const { setSelectedNode, tree, setTree, readonly, isLibrary } =
     useTreesState();
-  const { text } = useTheme();
 
   const [isEdit, setIsEdit] = useState(false);
 
@@ -94,7 +92,7 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
               __html: description || 'No description',
             }}
           />
-          {!isReadonly && <Edit size={14} fill={text} />}
+          {!isReadonly && <Edit />}
         </DescWrapper>
       )}
       <Line />

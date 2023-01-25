@@ -9,7 +9,6 @@ import {
 import { Toggle } from '@/shared/components';
 import styled from '@emotion/styled';
 import { toPng } from 'html-to-image';
-import { Clear, Export } from '@/editor/icons';
 import * as vars from '@/vars';
 import { TopBar } from '@/shared/components/TopBar';
 import {
@@ -17,8 +16,10 @@ import {
   TransformComponent,
   TransformWrapper,
 } from '@pronestor/react-zoom-pan-pinch';
-import { Minus, Plus } from '@/shared/icons';
 import { LinesDiagram } from '@/Relation/LinesDiagram';
+import { FileDownload } from '@/icons/FileDownload';
+import { Plus } from '@/icons/Plus';
+import { Minus } from '@/icons/Minus';
 
 const Wrapper = styled.div`
   display: flex;
@@ -262,14 +263,6 @@ export const Relation: React.FC = () => {
     <Wrapper>
       <TopBar>
         <Menu>
-          {selectedNode?.field && (
-            <IconWrapper
-              data-tooltip="Deselect node"
-              onClick={(_e) => setSelectedNode(undefined)}
-            >
-              <Clear size={16} />
-            </IconWrapper>
-          )}
           <ZoomWrapper>
             <IconWrapper
               data-tooltip="Zoom out"
@@ -280,7 +273,7 @@ export const Relation: React.FC = () => {
                 ref.current?.zoomOut(step);
               }}
             >
-              <Minus width={16} height={16} />
+              <Minus />
             </IconWrapper>
             <TooltippedZoom data-tooltip="Ctrl/Cmd + Scroll to zoom in/out">
               <span>{scaleFactor + '%'}</span>
@@ -294,7 +287,7 @@ export const Relation: React.FC = () => {
                 );
               }}
             >
-              <Plus width={16} height={16} />
+              <Plus />
             </IconWrapper>
           </ZoomWrapper>
           <TogglesWrapper>
@@ -311,7 +304,7 @@ export const Relation: React.FC = () => {
               data-tooltip="Export to png"
               onClick={() => downloadPng()}
             >
-              <Export size={22} />
+              <FileDownload />
             </IconWrapper>
           )}
         </Menu>

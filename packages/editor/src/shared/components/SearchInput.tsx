@@ -1,7 +1,9 @@
 import React from 'react';
-import { Plus, Search, X } from '@/shared/icons';
+import { X } from '@/shared/icons';
 import styled from '@emotion/styled';
 import * as vars from '@/vars';
+import { Search } from '@/icons/Search';
+import { Plus } from '@/icons/Plus';
 
 interface MenuSearchProps {
   value: string;
@@ -51,6 +53,7 @@ const IconContainerStyle = styled.span`
 
 const SearchIconContainer = styled(IconContainerStyle)`
   margin-left: 15px;
+  color: ${({ theme }) => theme.disabled};
 `;
 
 const XIconContainer = styled(IconContainerStyle)`
@@ -74,8 +77,8 @@ export const SearchInput = React.forwardRef<HTMLInputElement, MenuSearchProps>(
     return (
       <Wrapper>
         <SearchIconContainer>
-          {icon === 'search' && <Search width={18} height={18} />}
-          {icon === 'add' && <Plus width={14} height={14} />}
+          {icon === 'search' && <Search />}
+          {icon === 'add' && <Plus />}
         </SearchIconContainer>
         {value && (
           <XIconContainer onClick={onClear}>

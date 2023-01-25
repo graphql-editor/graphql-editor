@@ -22,7 +22,7 @@ const transformToTsx = (
 };
 
 const fillStrokeToCurrentColor = (str: string) =>
-  str.replace(/(stroke|fill)\="(?!none)([^"]*)"/, '$1="currentColor"');
+  str.replace(/(stroke|fill)\="(?!none)([^"]*)"/gm, '$1="currentColor"');
 
 const bseCwd = path.join('..', '..');
 const camelCased = (str: string) =>

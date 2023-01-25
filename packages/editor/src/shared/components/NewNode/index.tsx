@@ -1,6 +1,6 @@
+import { Plus } from '@/icons/Plus';
 import { ContextMenu } from '@/shared/components/ContextMenu';
 import { NewNodeMenu } from '@/shared/components/NewNode/NewNodeMenu';
-import { Plus } from '@/shared/icons';
 import styled from '@emotion/styled';
 import React, { useState } from 'react';
 

@@ -1,3 +1,4 @@
+import { transition } from '@/vars';
 import styled from '@emotion/styled';
 
 export const NodeFieldContainer = styled.div<{
@@ -25,6 +26,11 @@ export const NodeFieldContainer = styled.div<{
   .node-field-port {
     opacity: ${({ active }) => (active ? 1.0 : 0)};
     pointer-events: ${({ active }) => (active ? 'all' : 'none')};
+    color: ${({ theme }) => theme.disabled};
+    transition: ${transition};
+    :hover {
+      color: ${({ theme }) => theme.text};
+    }
     .opener-icon {
       opacity: 1;
     }

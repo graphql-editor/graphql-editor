@@ -33,8 +33,8 @@ const colors = themed<monaco.editor.IColors>(
     'editor.foreground': text,
     'editor.background': mainFurther,
     'minimap.background': mainFurther,
-    'diffEditor.insertedTextBackground': scalar,
-    'diffEditor.removedTextBackground': error,
+    'diffEditor.insertedTextBackground': `${scalar}22`,
+    'diffEditor.removedTextBackground': `${error}22`,
   }),
 );
 

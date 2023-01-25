@@ -11,8 +11,8 @@ import {
 import { useTreesState } from '@/state/containers/trees';
 import { Menu } from '@/Graf/Node/components';
 import styled from '@emotion/styled';
-import { Plus } from '@/shared/icons';
 import { transition } from '@/vars';
+import { Plus } from '@/icons/Plus';
 
 interface NodeChangeFieldTypeMenuProps {
   hideMenu: () => void;

@@ -1,4 +1,5 @@
-import { Tick } from '@/shared/icons';
+import { CheckSquare } from '@/icons/CheckSquare';
+import { CheckSquareEmpty } from '@/icons/CheckSquareEmpty';
 import * as vars from '@/vars';
 import styled from '@emotion/styled';
 import React from 'react';
@@ -11,7 +12,8 @@ export const Toggle: React.FC<{
     <Main onClick={() => onToggle()}>
       {label && <Text active={toggled}>{label}</Text>}
       <ToggleWrapper active={toggled}>
-        <Tick width={20} />
+        {toggled && <CheckSquare />}
+        {!toggled && <CheckSquareEmpty />}
       </ToggleWrapper>
     </Main>
   );
@@ -30,18 +32,13 @@ const Text = styled.div<{ active?: boolean }>`
   transition: ${vars.transition};
 `;
 const ToggleWrapper = styled.div<{ active?: boolean }>`
-  border: 2px solid
-    ${({ theme, active }) => (active ? theme.active : theme.inactive)};
-  border-radius: 2px;
-  width: 20px;
-  height: 20px;
+  ${({ theme, active }) => (active ? theme.active : theme.inactive)};
   position: relative;
   display: flex;
   align-items: center;
   transition: ${vars.transition};
+  color: ${({ theme, active }) => (active ? theme.active : theme.inactive)};
   svg {
-    stroke: ${({ theme, active }) => (active ? theme.active : theme.inactive)};
-    opacity: ${({ active }) => (active ? 1 : 0)};
     transition: ${vars.transition};
     stroke-width: 2px;
   }

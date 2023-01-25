@@ -139,7 +139,7 @@ const NodeArea = styled.div`
   max-width: 50vw;
   left: 30%;
   position: absolute;
-  padding: 2rem;
+  padding: 3.5rem 2rem;
   height: 100%;
 `;
 export const NodeName = styled.div`
@@ -224,6 +224,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
   return (
     <NodeContainer
       className={`NodeBackground-${getTypeName(node.type.fieldType)}`}
+      onWheel={(e) => e.stopPropagation()}
     >
       <ActiveDescription
         onChange={(d) => {
