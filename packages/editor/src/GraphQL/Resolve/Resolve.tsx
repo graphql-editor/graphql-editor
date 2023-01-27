@@ -87,6 +87,12 @@ export const ResolveCreateField = (
       .filter((f) => f.data.type === TypeDefinition.ObjectTypeDefinition)
       .map((n) => ({
         ...n,
+        type: {
+          fieldType: {
+            name: n.name,
+            type: Options.name,
+          },
+        },
         data: {
           type: TypeSystemDefinition.UnionMemberDefinition,
         },

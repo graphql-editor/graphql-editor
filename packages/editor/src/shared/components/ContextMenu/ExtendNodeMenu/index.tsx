@@ -49,6 +49,7 @@ export const ExtendNodeMenu = React.forwardRef<
   );
 
   const onClickFilteredNode = (f: ParserField) => {
+    hideMenu();
     const extendNode = createParserField({
       data: {
         type: ResolveExtension(f.data.type)!,
@@ -67,8 +68,11 @@ export const ExtendNodeMenu = React.forwardRef<
     });
     tree.nodes.push(extendNode);
     setTree({ ...tree });
-    setSelectedNode({ field: extendNode, source: 'diagram' });
-    hideMenu();
+    setSelectedNode({
+      field: extendNode,
+      source: 'diagram',
+      justCreated: true,
+    });
   };
   return (
     <Menu
