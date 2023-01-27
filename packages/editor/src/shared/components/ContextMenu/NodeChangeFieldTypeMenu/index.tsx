@@ -12,7 +12,6 @@ import { sortNodes } from '@/shared/components/ContextMenu/sort';
 
 interface NodeChangeFieldTypeMenuProps {
   node: ParserField;
-  fieldIndex: number;
   hideMenu: () => void;
   onSelectType: (f: ParserField) => void;
 }
@@ -20,7 +19,7 @@ interface NodeChangeFieldTypeMenuProps {
 export const NodeChangeFieldTypeMenu = React.forwardRef<
   HTMLDivElement,
   NodeChangeFieldTypeMenuProps
->(({ node, fieldIndex, hideMenu, onSelectType, ...props }, ref) => {
+>(({ node, hideMenu, onSelectType, ...props }, ref) => {
   const { allNodes } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
