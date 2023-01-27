@@ -1,7 +1,6 @@
 import { ParserField } from 'graphql-js-tree';
 
 export interface FieldProps {
-  parentNode: ParserField;
   node: ParserField;
   inputOpen: boolean;
   outputOpen: boolean;
@@ -10,8 +9,8 @@ export interface FieldProps {
   inputDisabled?: boolean;
   outputDisabled?: boolean;
   isLocked?: boolean;
-  parentNodeTypeName: string;
-  indexInParentNode: number;
   onDelete: () => void;
+  onUpdate: (updatedNode: ParserField) => void;
+  parentNode: ParserField;
   setParentDraggable?: (drag: boolean) => void;
 }

@@ -29,7 +29,7 @@ const Filler = styled.div`
 const MenuItem = styled.div<{
   isCollapsed: boolean;
   isDisabled?: boolean;
-  rotate?: boolean;
+  rotateItem?: boolean;
 }>`
   display: flex;
   justify-content: flex-start;
@@ -85,7 +85,7 @@ const MenuItem = styled.div<{
   svg {
     flex-shrink: 0;
     height: 20px;
-    rotate: ${({ rotate }) => (rotate ? '0deg' : '180deg')};
+    rotate: ${({ rotateItem }) => (rotateItem ? '0deg' : '180deg')};
     transition: ${transition};
   }
 
@@ -234,7 +234,7 @@ export const Menu = ({
         onClick={() => setIsCollapsed((prev) => !prev)}
         isCollapsed={isCollapsed}
         data-tooltip={'show'}
-        rotate={isCollapsed}
+        rotateItem={isCollapsed}
       >
         <ChevronRightDouble />
         <p>Hide</p>

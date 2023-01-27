@@ -40,13 +40,12 @@ export const ActiveField: React.FC<FieldProps> = ({
   outputDisabled,
   onInputClick,
   onOutputClick,
-  indexInParentNode,
-  parentNode,
   isLocked,
   onDelete,
+  onUpdate,
+  parentNode,
 }) => {
-  const { parentTypes, readonly, updateFieldOnNode, setValue } =
-    useTreesState();
+  const { parentTypes, readonly, setValue } = useTreesState();
   const [menuOpen, setMenuOpen] = useState<'options' | 'details' | 'type'>();
   const isEnumValue = node.data.type === ValueDefinition.EnumValueDefinition;
   const isInputValue =
@@ -68,7 +67,7 @@ export const ActiveField: React.FC<FieldProps> = ({
               isLocked || isArgumentNode || isFromInterface
                 ? undefined
                 : (newName) => {
-                    updateFieldOnNode(parentNode, indexInParentNode, {
+                    onUpdate({
                       ...node,
                       name: newName,
                     });
@@ -120,21 +119,17 @@ export const ActiveField: React.FC<FieldProps> = ({
                 {...layerProps}
                 node={parentNode}
                 onSelectType={(f) => {
-                  updateFieldOnNode(parentNode, indexInParentNode, {
+                  onUpdate({
                     ...node,
                     data: {
                       type: f.data.type,
                     },
                     type: {
                       ...node.type,
-                      fieldType: changeTypeName(
-                        parentNode.args[indexInParentNode].type.fieldType,
-                        f.name,
-                      ),
+                      fieldType: changeTypeName(node.type.fieldType, f.name),
                     },
                   });
                 }}
-                fieldIndex={indexInParentNode}
                 hideMenu={() => {
                   setMenuOpen(undefined);
                 }}
@@ -166,7 +161,7 @@ export const ActiveField: React.FC<FieldProps> = ({
                 <NodeTypeOptionsMenu
                   {...layerProps}
                   onCheck={(fieldType) => {
-                    updateFieldOnNode(parentNode, indexInParentNode, {
+                    onUpdate({
                       ...node,
                       type: {
                         ...node.type,

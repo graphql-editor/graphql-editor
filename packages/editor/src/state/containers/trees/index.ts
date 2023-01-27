@@ -247,10 +247,6 @@ const useTreesStateContainer = createContainer(() => {
     selectByTypeName(fieldParentName);
   };
 
-  const deleteFieldFromNode = (n: ParserField, i: number) => {
-    updateNode(n, () => mutationRoot.deleteFieldFromNode(n, i));
-  };
-
   const updateFieldOnNode = (
     node: ParserField,
     i: number,
@@ -280,7 +276,7 @@ const useTreesStateContainer = createContainer(() => {
     if (isError) {
       return;
     }
-    updateNode(node, () => mutationRoot.renameNode(node, newName));
+    updateNode(node, () => mutationRoot.renameRootNode(node, newName));
   };
   const removeNode = (node: ParserField) => {
     const deselect = node.id === selectedNode?.field?.id;
@@ -344,7 +340,6 @@ const useTreesStateContainer = createContainer(() => {
     selectFieldParent,
     isLibrary,
     /// new mutations
-    deleteFieldFromNode,
     updateFieldOnNode,
     addFieldToNode,
     renameNode,

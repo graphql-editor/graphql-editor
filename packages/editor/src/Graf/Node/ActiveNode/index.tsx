@@ -31,7 +31,6 @@ import { DraggableProvider, useDraggable } from '@/Graf/state/draggable';
 
 interface NodeProps {
   node: ParserField;
-  onDelete: (node: ParserField) => void;
   onDuplicate?: (node: ParserField) => void;
   onInputCreate?: (node: ParserField) => void;
   readonly?: boolean;
@@ -176,11 +175,11 @@ export const ActiveNode: React.FC<NodeProps> = ({
     parentTypes,
     readonly,
     updateNode,
-    deleteFieldFromNode,
     renameNode,
     deImplementInterface,
     isLibrary,
     updateFieldOnNode,
+    removeNode,
   } = useTreesState();
 
   const libraryNode = isLibrary(node.id);
@@ -301,23 +300,6 @@ export const ActiveNode: React.FC<NodeProps> = ({
                     : undefined
                 }
                 node={openedNodeNode}
-                onDuplicate={undefined}
-                onInputCreate={undefined}
-                onDelete={() => {
-                  if (openedNode.type === 'directives') {
-                    node.directives!.splice(openedNode.index, 1);
-                  }
-                  if (openedNode.type === 'args') {
-                    node.args!.splice(openedNode.index, 1);
-                  }
-                  if (
-                    openedNode.type === 'output' ||
-                    openedNode.type === 'directiveOutput'
-                  ) {
-                    sharedProps.onDelete(openedNodeNode);
-                    return;
-                  }
-                }}
               />
             </DraggableProvider>
           </NodeArea>
@@ -370,14 +352,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
           {!isLocked && (
             <TopNodeMenu
               {...sharedProps}
-              onDelete={() =>
-                parentNode
-                  ? deleteFieldFromNode(
-                      parentNode.node,
-                      parentNode.indexInParent,
-                    )
-                  : sharedProps.onDelete(node)
-              }
+              onDelete={() => removeNode(node)}
               onDuplicate={() => sharedProps.onDuplicate?.(node)}
               onInputCreate={() => sharedProps.onInputCreate?.(node)}
               node={node}
@@ -393,9 +368,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
               return (
                 <ActiveField
                   isLocked={isLocked}
-                  indexInParentNode={i}
                   parentNode={node}
-                  parentNodeTypeName={getTypeName(node.type.fieldType)}
                   key={d.name + i}
                   onInputClick={() => {
                     setOpenedNode((oN) =>
@@ -420,6 +393,11 @@ export const ActiveNode: React.FC<NodeProps> = ({
                     openedNode?.type === 'directiveOutput' &&
                     openedNode?.index === i
                   }
+                  onUpdate={(updatedNode) => {
+                    updateNode(node, () => {
+                      node.directives[i] = updatedNode;
+                    });
+                  }}
                   onDelete={() => {
                     setOpenedNode(undefined);
                     //TODO: Add remove directives and add directives to js-tree
@@ -457,10 +435,8 @@ export const ActiveNode: React.FC<NodeProps> = ({
                     }}
                   >
                     <ActiveField
-                      indexInParentNode={i}
                       parentNode={node}
                       isLocked={isLocked}
-                      parentNodeTypeName={getTypeName(node.type.fieldType)}
                       key={a.name}
                       onInputClick={() => {
                         setOpenedNode((oN) =>
@@ -484,8 +460,9 @@ export const ActiveNode: React.FC<NodeProps> = ({
                       outputOpen={
                         openedNode?.type === 'output' && openedNode?.index === i
                       }
-                      onDelete={() => {
-                        deleteFieldFromNode(node, i);
+                      onDelete={() => removeNode(a)}
+                      onUpdate={(updatedNode) => {
+                        updateFieldOnNode(node, i, updatedNode);
                       }}
                     />
                   </div>

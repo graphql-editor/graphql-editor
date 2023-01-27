@@ -47,7 +47,6 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
     snapshots,
     readonly,
     scalars,
-    removeNode,
     undo,
     redo,
   } = useTreesState();
@@ -79,7 +78,6 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
         <DraggableProvider>
           <ActiveNode
             readonly={readonly}
-            onDelete={removeNode}
             onDuplicate={(nodeToDuplicate) => {
               const allNodes = [...tree.nodes];
               const { id, ...rest } = node;
