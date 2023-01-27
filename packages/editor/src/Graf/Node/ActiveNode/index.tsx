@@ -227,9 +227,10 @@ export const ActiveNode: React.FC<NodeProps> = ({
     >
       <ActiveDescription
         onChange={(d) => {
-          node.description = d;
           //TODO: Add change description in js-tree
-          updateNode(node, () => {});
+          updateNode(node, () => {
+            node.description = d;
+          });
         }}
         isLocked={isLocked}
         value={node.description || ''}
@@ -242,10 +243,12 @@ export const ActiveNode: React.FC<NodeProps> = ({
               key={d}
               isLocked={isLocked}
               onDelete={() => {
-                node.type.directiveOptions = node.type.directiveOptions?.filter(
-                  (oldDirective) => oldDirective !== d,
-                );
-                updateNode(node, () => {});
+                updateNode(node, () => {
+                  node.type.directiveOptions =
+                    node.type.directiveOptions?.filter(
+                      (oldDirective) => oldDirective !== d,
+                    );
+                });
               }}
             >
               {d}
@@ -352,6 +355,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
           {!isLocked && (
             <TopNodeMenu
               {...sharedProps}
+              parentNode={parentNode?.node}
               onDelete={() => removeNode(node)}
               onDuplicate={() => sharedProps.onDuplicate?.(node)}
               onInputCreate={() => sharedProps.onInputCreate?.(node)}

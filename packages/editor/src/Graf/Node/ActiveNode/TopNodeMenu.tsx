@@ -87,6 +87,7 @@ export const TopNodeMenu: React.FC<{
 
   useEffect(() => {
     if (node.id === selectedNode?.field?.id && selectedNode.justCreated) {
+      console.log('CREATED');
       setMenuOpen('field');
     }
   }, [selectedNode]);
@@ -208,34 +209,36 @@ export const TopNodeMenu: React.FC<{
           <Menu {...layerProps} menuName={'Node options'} hideMenu={hideMenu}>
             <MenuScrollingArea>
               <DetailMenuItem onClick={onDelete}>Delete node</DetailMenuItem>
-              <DetailMenuItem
-                onClick={() => {
-                  const extendNode = createParserField({
-                    data: {
-                      type: ResolveExtension(node.data.type)!,
-                    },
-                    description: undefined,
-                    type: {
-                      fieldType: {
-                        name: TypeDefinitionDisplayMap[
-                          ResolveExtension(node.data.type)!
-                        ],
-                        type: Options.name,
+              {!parentNode && (
+                <DetailMenuItem
+                  onClick={() => {
+                    const extendNode = createParserField({
+                      data: {
+                        type: ResolveExtension(node.data.type)!,
                       },
-                    },
-                    name: node.name,
-                    args: [],
-                    interfaces: [],
-                    directives: [],
-                  });
-                  tree.nodes.push(extendNode);
-                  setTree({ ...tree });
-                  setSelectedNode({ field: extendNode, source: 'diagram' });
-                }}
-              >
-                Extend node
-              </DetailMenuItem>
-              {onDuplicate && (
+                      description: undefined,
+                      type: {
+                        fieldType: {
+                          name: TypeDefinitionDisplayMap[
+                            ResolveExtension(node.data.type)!
+                          ],
+                          type: Options.name,
+                        },
+                      },
+                      name: node.name,
+                      args: [],
+                      interfaces: [],
+                      directives: [],
+                    });
+                    tree.nodes.push(extendNode);
+                    setTree({ ...tree });
+                    setSelectedNode({ field: extendNode, source: 'diagram' });
+                  }}
+                >
+                  Extend node
+                </DetailMenuItem>
+              )}
+              {!parentNode && onDuplicate && (
                 <DetailMenuItem
                   onClick={() => {
                     setCloseMenu((prevValue) => !prevValue);
@@ -245,7 +248,7 @@ export const TopNodeMenu: React.FC<{
                   Duplicate node
                 </DetailMenuItem>
               )}
-              {onInputCreate && isCreateInputValid() && (
+              {!parentNode && onInputCreate && isCreateInputValid() && (
                 <DetailMenuItem
                   onClick={() => {
                     setCloseMenu((prevValue) => !prevValue);

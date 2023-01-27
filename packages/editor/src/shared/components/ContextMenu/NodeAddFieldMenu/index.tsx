@@ -38,6 +38,8 @@ export const NodeAddFieldMenu = React.forwardRef<
     () => ResolveCreateField(node, allNodes.nodes) || [],
     [allNodes],
   );
+
+  console.log(creationNodes);
   const filteredNodes = useMemo(
     () => sortNodes(menuSearchValue, creationNodes),
     [creationNodes, menuSearchValue],
@@ -46,6 +48,18 @@ export const NodeAddFieldMenu = React.forwardRef<
   const fNLength = filteredNodes?.length || 1;
   const selectedNodeIndex =
     (selectedIndex < 0 ? fNLength - selectedIndex : selectedIndex) % fNLength;
+
+  const addNode = (n: ParserField, name: string) => {
+    let addedNode = createParserField(
+      JSON.parse(JSON.stringify(n)) as ParserField,
+    );
+    if (node.data.type === TypeSystemDefinition.FieldDefinition) {
+      addedNode.data.type = ValueDefinition.InputValueDefinition;
+    }
+    addFieldToNode(node, addedNode, name);
+    setMenuSearchValue('');
+    return;
+  };
 
   return (
     <Menu
@@ -58,21 +72,10 @@ export const NodeAddFieldMenu = React.forwardRef<
       <MenuSearch
         onSubmit={() => {
           if (filteredNodes && filteredNodes.length > 0) {
-            const addedNode = createParserField(
-              JSON.parse(
-                JSON.stringify(filteredNodes[selectedNodeIndex]),
-              ) as ParserField,
-            );
-            if (node.data.type === TypeSystemDefinition.FieldDefinition) {
-              addedNode.data.type = ValueDefinition.InputValueDefinition;
-            }
-            addFieldToNode(
-              node,
+            addNode(
               filteredNodes[selectedNodeIndex],
               menuSearchValue.split(' ')[0],
             );
-            setMenuSearchValue('');
-            return;
           }
         }}
         placeholder="Field name..."
@@ -97,10 +100,7 @@ export const NodeAddFieldMenu = React.forwardRef<
             dataType={getTypeName(f.type.fieldType)}
             selected={i === selectedNodeIndex}
             onClick={() => {
-              const addedNode = createParserField(
-                JSON.parse(JSON.stringify(f)) as ParserField,
-              );
-              addFieldToNode(node, addedNode, menuSearchValue.split(' ')[0]);
+              addNode(f, menuSearchValue.split(' ')[0]);
             }}
           />
         ))}
