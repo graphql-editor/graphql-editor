@@ -141,7 +141,13 @@ const MenuItem = styled.div<{
   }
 `;
 
-export type ActiveSource = 'diagram' | 'relation' | 'docs' | 'code' | 'routing';
+export type ActiveSource =
+  | 'diagram'
+  | 'relation'
+  | 'docs'
+  | 'code'
+  | 'routing'
+  | 'deFocus';
 export type ActivePane = 'diff' | 'relation' | 'docs';
 export interface MenuProps {
   setToggleCode: (v: boolean) => void;

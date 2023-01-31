@@ -15,7 +15,7 @@ import {
   ReactZoomPanPinchRef,
   TransformComponent,
   TransformWrapper,
-} from '@pronestor/react-zoom-pan-pinch';
+} from 'react-zoom-pan-pinch';
 import { LinesDiagram } from '@/Relation/LinesDiagram';
 import { FileDownload } from '@/icons/FileDownload';
 import { Plus } from '@/icons/Plus';

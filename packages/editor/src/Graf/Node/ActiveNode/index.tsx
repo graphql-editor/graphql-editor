@@ -237,7 +237,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
       />
       {node.data.type === TypeSystemDefinition.DirectiveDefinition && (
         <DirectivePlacements>
-          <CreateNodeDirective node={node} isLocked={isLocked} />
+          {!isLocked && <CreateNodeDirective node={node} isLocked={isLocked} />}
           {node.type.directiveOptions?.map((d, i) => (
             <DirectivePlacement
               key={d}
@@ -259,9 +259,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
       {(node.data.type === TypeDefinition.ObjectTypeDefinition ||
         node.data.type === TypeDefinition.InterfaceTypeDefinition) && (
         <NodeInterfaces isHidden={libraryNode && !node.interfaces.length}>
-          {!libraryNode && (
-            <CreateNodeInterface node={node} isLocked={isLocked} />
-          )}
+          {!isLocked && <CreateNodeInterface node={node} isLocked={isLocked} />}
           {node.interfaces.map((i) => (
             <NodeInterface
               key={i}

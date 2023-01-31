@@ -15,7 +15,7 @@ import { isScalarArgument } from '@/GraphQL/Resolve';
 import * as vars from '@/vars';
 import { ParserField, getTypeName, TypeDefinition } from 'graphql-js-tree';
 import { useRouter } from '@/state/containers/router';
-import { ReactZoomPanPinchRef } from '@pronestor/react-zoom-pan-pinch';
+import { ReactZoomPanPinchRef } from 'react-zoom-pan-pinch';
 const Wrapper = styled.div`
   width: 100%;
   height: 100%;
@@ -67,7 +67,10 @@ type LinesDiagramProps = {
   panRef: React.RefObject<ReactZoomPanPinchRef>;
   nodes: ParserField[];
   panState?: 'grabbing' | 'grab' | 'auto';
-  zoomPanPinch?: (refs: Record<string, HTMLElement>) => void;
+  zoomPanPinch?: (
+    refs: Record<string, HTMLElement>,
+    animationTime?: number,
+  ) => void;
 };
 
 const passScalars = (pass: boolean, scalars: string[]) => (n: ParserField) =>
@@ -103,7 +106,11 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
     >();
 
   useEffect(() => {
-    if (refsLoaded) {
+    if (refsLoaded && selectedNode?.field) {
+      if (selectedNode?.source === 'deFocus') {
+        zoomPanPinch?.(refs, 0);
+        return;
+      }
       zoomPanPinch?.(refs);
     }
   }, [selectedNode?.field, refsLoaded]);

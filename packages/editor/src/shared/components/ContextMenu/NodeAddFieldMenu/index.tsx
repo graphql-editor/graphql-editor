@@ -39,7 +39,6 @@ export const NodeAddFieldMenu = React.forwardRef<
     [allNodes],
   );
 
-  console.log(creationNodes);
   const filteredNodes = useMemo(
     () => sortNodes(menuSearchValue, creationNodes),
     [creationNodes, menuSearchValue],

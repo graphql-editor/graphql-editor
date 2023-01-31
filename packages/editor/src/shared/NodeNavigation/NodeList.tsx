@@ -189,7 +189,7 @@ export const NodeList: React.FC<NodeListI> = ({
                   isHidden={node.isHidden}
                   onClick={(e) => {
                     e.stopPropagation();
-                    setSelectedNode({ source: 'relation', field: node });
+                    setSelectedNode({ source: 'deFocus', field: node });
                     focusNode(node);
                   }}
                 >
