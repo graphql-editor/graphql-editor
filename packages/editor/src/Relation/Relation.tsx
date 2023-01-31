@@ -15,7 +15,7 @@ import {
   ReactZoomPanPinchRef,
   TransformComponent,
   TransformWrapper,
-} from '@pronestor/react-zoom-pan-pinch';
+} from 'react-zoom-pan-pinch';
 import { LinesDiagram } from '@/Relation/LinesDiagram';
 import { Graf } from '@/Graf/Graf';
 import { NewNode } from '@/shared/components/NewNode';
@@ -217,7 +217,10 @@ export const Relation: React.FC = () => {
         setIsLoading(false);
       });
   }, [mainRef]);
-  const zoomPanPinch = (refs: Record<string, HTMLElement>) => {
+  const zoomPanPinch = (
+    refs: Record<string, HTMLElement>,
+    animationTime = 300,
+  ) => {
     if (selectedNode?.field && ref.current && refs) {
       const currentNode = refs[selectedNode.field.id];
       if (currentNode) {
@@ -229,7 +232,7 @@ export const Relation: React.FC = () => {
           ref.current.zoomToElement(
             currentNode as HTMLElement,
             newScale,
-            300,
+            animationTime,
             'easeInOutQuad',
           );
           return;
@@ -237,7 +240,7 @@ export const Relation: React.FC = () => {
         ref.current.zoomToElement(
           currentNode,
           ref.current.state.scale,
-          300,
+          animationTime,
           'easeInOutQuad',
         );
       }
@@ -326,8 +329,10 @@ export const Relation: React.FC = () => {
               data-tooltip="Zoom out"
               onClick={() => {
                 if (!ref.current) return;
+                const targetScale =
+                  ref.current.state.scale * Math.exp(-1 * step);
+                setScaleFactor(toScaleFactor(targetScale));
                 ref.current?.zoomOut(step);
-                setScaleFactor(ref.current.state.scale * 100);
               }}
             >
               <Minus />
@@ -339,8 +344,10 @@ export const Relation: React.FC = () => {
               data-tooltip="Zoom in"
               onClick={() => {
                 if (!ref.current) return;
+                const targetScale =
+                  ref.current.state.scale * Math.exp(1 * step);
+                setScaleFactor(toScaleFactor(targetScale));
                 ref.current?.zoomIn(step);
-                setScaleFactor(ref.current.state.scale * 100);
               }}
             >
               <Plus />
@@ -385,7 +392,7 @@ export const Relation: React.FC = () => {
             velocityDisabled: true,
           }}
           onZoom={(e) => {
-            setScaleFactor(Math.min(Math.max(e.state.scale, 0.1), 1.5) * 100);
+            setScaleFactor(toScaleFactor(e.state.scale));
           }}
           limitToBounds={false}
           onPanningStart={() => setDraggingMode('grab')}
@@ -401,9 +408,14 @@ export const Relation: React.FC = () => {
             <Deselect
               onMouseUp={(e) => {
                 if (draggingMode !== 'grabbing') {
-                  setSelectedNode({ source: 'relation', field: undefined });
                   if (isFocused) {
                     deFocusNode();
+                    setSelectedNode({
+                      source: 'deFocus',
+                      field: selectedNode?.field,
+                    });
+                  } else {
+                    setSelectedNode({ source: 'relation', field: undefined });
                   }
                 }
               }}
@@ -437,3 +449,6 @@ const DeselectOverlay = styled.div`
   height: calc(100% + 2000px);
   width: calc(100% + 2000px);
 `;
+
+const toScaleFactor = (scale: number) =>
+  Math.min(Math.max(scale, 0.1), 1.5) * 100;

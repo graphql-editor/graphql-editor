@@ -87,7 +87,6 @@ export const TopNodeMenu: React.FC<{
 
   useEffect(() => {
     if (node.id === selectedNode?.field?.id && selectedNode.justCreated) {
-      console.log('CREATED');
       setMenuOpen('field');
     }
   }, [selectedNode]);

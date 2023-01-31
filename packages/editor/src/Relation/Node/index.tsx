@@ -1,4 +1,4 @@
-import { useTheme, useTreesState } from '@/state/containers';
+import { useTreesState } from '@/state/containers';
 import {
   ParserField,
   TypeDefinition,
@@ -68,15 +68,9 @@ const ContentWrapper = styled.div`
   position: relative;
 `;
 
-const NodeName = styled.div`
-  margin-right: 5px;
-`;
-
 const NameInRelation = styled.span`
-  border: 0;
-  background-color: transparent;
+  margin-right: 5px;
   color: ${({ theme }) => theme.text};
-  min-width: auto;
   padding: 0;
   font-family: ${fontFamilySans};
   font-size: ${FIELD_NAME_SIZE};
@@ -92,7 +86,6 @@ export const Node: React.FC<NodeProps> = ({ field, setRef, isLibrary }) => {
   const { setSelectedNode, selectedNode, tree, libraryTree } = useTreesState();
   const isNodeActive =
     !!selectedNode?.field && compareParserFields(field)(selectedNode?.field);
-  const { theme } = useTheme();
   const RelationFields = useMemo(() => {
     return (
       <NodeRelationFields>
@@ -108,20 +101,18 @@ export const Node: React.FC<NodeProps> = ({ field, setRef, isLibrary }) => {
         ))}
       </NodeRelationFields>
     );
-  }, [JSON.stringify(field), isNodeActive, theme]);
+  }, [JSON.stringify(field), isNodeActive]);
 
   const NodeContent = useMemo(
     () => (
       <ContentWrapper>
         <NodeTitle>
-          <NodeName>
-            <NameInRelation>{field.name}</NameInRelation>
-          </NodeName>
+          <NameInRelation>{field.name}</NameInRelation>
           <ActiveType type={field.type} />
         </NodeTitle>
       </ContentWrapper>
     ),
-    [field, theme, selectedNode],
+    [field],
   );
   const isSelected = selectedNode?.field?.name === field.name;
 
