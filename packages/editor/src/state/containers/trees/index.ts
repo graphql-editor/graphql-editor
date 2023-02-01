@@ -14,6 +14,7 @@ import { BuiltInScalars } from '@/GraphQL/Resolve';
 import { PassedSchema } from '@/Models';
 import { useErrorsState } from '@/state/containers';
 import { ActiveSource } from '@/editor/menu/Menu';
+import { useRouter } from '@/state/containers/router';
 
 type SelectedNode = {
   field?: ParserField;
@@ -37,6 +38,7 @@ const useTreesStateContainer = createContainer(() => {
   const [readonly, setReadonly] = useState(false);
   const [scalars, setScalars] = useState(BuiltInScalars.map((a) => a.name));
   const { setLockGraf, setCodeErrors, transformCodeError } = useErrorsState();
+  const { set } = useRouter();
   const allNodes = useMemo(() => {
     return { nodes: tree.nodes.concat(libraryTree.nodes) };
   }, [libraryTree, tree]);
@@ -73,15 +75,17 @@ const useTreesStateContainer = createContainer(() => {
   const updateNode = (node: ParserField, fn: () => void) => {
     makeSnapshot();
     const currentNodeId = node.id;
+    const isSelected = selectedNode?.field?.id === currentNodeId;
     fn();
     setTree({ ...tree });
-    if (
-      currentNodeId === selectedNode?.field?.id &&
-      node.id !== currentNodeId
-    ) {
+    if (isSelected && node.id !== currentNodeId) {
       setSelectedNode({
-        source: 'diagram',
+        source: 'routing',
         field: node,
+      });
+      set({
+        n: node.id,
+        source: 'internal',
       });
     }
   };

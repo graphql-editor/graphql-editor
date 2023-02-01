@@ -36,6 +36,7 @@ export const EditableText: React.FC<{
     }
     if (editedValue && onChange) {
       if (editedValue !== value) {
+        valueRef.current = value;
         onChange(editedValue);
       }
     } else {
