@@ -213,7 +213,6 @@ export const Relation: React.FC = () => {
         setIsLoading(false);
       })
       .catch((err) => {
-        console.log(err);
         setIsLoading(false);
       });
   }, [mainRef]);
@@ -380,6 +379,18 @@ export const Relation: React.FC = () => {
       <Main
         dragMode={selectedNode?.field ? draggingMode : 'auto'}
         ref={wrapperRef}
+        onClick={(e) => {
+          if (draggingMode === 'grabbing') return;
+          if (isFocused) {
+            deFocusNode();
+            setSelectedNode({
+              source: 'deFocus',
+              field: selectedNode?.field,
+            });
+          } else {
+            setSelectedNode({ source: 'relation', field: undefined });
+          }
+        }}
       >
         {editMode && selectedNode?.field && <Graf node={selectedNode.field} />}
         <TransformWrapper
@@ -405,30 +416,13 @@ export const Relation: React.FC = () => {
               height: '100%',
             }}
           >
-            <Deselect
-              onMouseUp={(e) => {
-                if (draggingMode !== 'grabbing') {
-                  if (isFocused) {
-                    deFocusNode();
-                    setSelectedNode({
-                      source: 'deFocus',
-                      field: selectedNode?.field,
-                    });
-                  } else {
-                    setSelectedNode({ source: 'relation', field: undefined });
-                  }
-                }
-              }}
-            >
-              <DeselectOverlay />
-              <LinesDiagram
-                zoomPanPinch={zoomPanPinch}
-                panState={draggingMode}
-                nodes={filteredRelationNodes}
-                mainRef={mainRef}
-                panRef={ref}
-              />
-            </Deselect>
+            <LinesDiagram
+              zoomPanPinch={zoomPanPinch}
+              panState={draggingMode}
+              nodes={filteredRelationNodes}
+              mainRef={mainRef}
+              panRef={ref}
+            />
           </TransformComponent>
         </TransformWrapper>
         {grafErrors && <ErrorContainer>{grafErrors}</ErrorContainer>}
@@ -436,19 +430,5 @@ export const Relation: React.FC = () => {
     </Wrapper>
   );
 };
-const Deselect = styled.div`
-  height: 100%;
-  width: 100%;
-  position: relative;
-`;
-
-const DeselectOverlay = styled.div`
-  position: absolute;
-  top: -1000px;
-  left: -1000px;
-  height: calc(100% + 2000px);
-  width: calc(100% + 2000px);
-`;
-
 const toScaleFactor = (scale: number) =>
   Math.min(Math.max(scale, 0.1), 1.5) * 100;

@@ -80,9 +80,15 @@ interface NodeProps {
   field: ParserField;
   isLibrary?: boolean;
   setRef: (instance: HTMLDivElement) => void;
+  canSelect?: boolean;
 }
 
-export const Node: React.FC<NodeProps> = ({ field, setRef, isLibrary }) => {
+export const Node: React.FC<NodeProps> = ({
+  field,
+  setRef,
+  isLibrary,
+  canSelect,
+}) => {
   const { setSelectedNode, selectedNode, tree, libraryTree } = useTreesState();
   const isNodeActive =
     !!selectedNode?.field && compareParserFields(field)(selectedNode?.field);
@@ -141,6 +147,7 @@ export const Node: React.FC<NodeProps> = ({ field, setRef, isLibrary }) => {
         }
       }}
       onClick={(e) => {
+        if (!canSelect) return;
         e.stopPropagation();
         setSelectedNode({
           field: tree.nodes

@@ -215,6 +215,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
           <NodePane key={i}>
             {nodesArray.map((n) => (
               <Node
+                canSelect={panState !== 'grabbing'}
                 isLibrary={isLibrary(n.id)}
                 key={n.id}
                 setRef={(ref) => {
@@ -227,7 +228,13 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
         ))}
       </>
     );
-  }, [isLibrary, relationDrawingNodes, relationDrawingNodesArray, routes.code]);
+  }, [
+    isLibrary,
+    relationDrawingNodes,
+    relationDrawingNodesArray,
+    routes.code,
+    panState,
+  ]);
 
   return (
     <Wrapper>
