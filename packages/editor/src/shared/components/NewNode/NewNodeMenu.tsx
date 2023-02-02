@@ -72,7 +72,7 @@ export const NewNodeMenu = React.forwardRef<
       },
     });
     tree.nodes.push(node);
-    setTree(tree);
+    setTree({ ...tree });
     setSelectedNodeId({
       source: 'relation',
       value: {

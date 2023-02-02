@@ -26,8 +26,12 @@ export const EditableText: React.FC<{
   const [w, setW] = useState(20);
   const spanRef = useRef<HTMLSpanElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const valueRef = useRef<string>();
+  const constantValueRef = useRef<string>(value);
+  const valueRef = useRef<string>(value);
+  const genericId = useRef(Math.random().toString(16));
   const checkEdit = () => {
+    console.log('CHEC');
+    constantValueRef.current = editedValue;
     inputRef.current?.blur();
     setDraggable(true);
     if (isError) {
@@ -36,7 +40,6 @@ export const EditableText: React.FC<{
     }
     if (editedValue && onChange) {
       if (editedValue !== value) {
-        valueRef.current = value;
         onChange(editedValue);
       }
     } else {
@@ -45,10 +48,9 @@ export const EditableText: React.FC<{
   };
   useEffect(() => {
     return () => {
-      if (valueRef.current !== value && valueRef.current) {
-        if (onChange) {
-          onChange(valueRef.current);
-        }
+      if (constantValueRef.current !== valueRef.current && onChange) {
+        //value was not edited on blur
+        onChange(valueRef.current);
       }
     };
   }, []);
@@ -59,13 +61,16 @@ export const EditableText: React.FC<{
     setEditedValue(value);
   }, [value]);
   useEffect(() => {
-    setW(spanRef.current?.offsetWidth || w);
-  }, [editedValue, onChange]);
+    if (spanRef.current?.offsetWidth) {
+      setW(spanRef.current.offsetWidth);
+    }
+  }, [editedValue]);
   return (
     <>
       {!!onChange ? (
         <>
           <Input
+            id={genericId.current}
             ref={inputRef}
             isError={isError}
             value={editedValue}
@@ -80,7 +85,7 @@ export const EditableText: React.FC<{
             onClick={(e) => (e.target as any).focus()}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
-                checkEdit();
+                inputRef?.current?.blur();
               }
             }}
             onChange={(e) => {
