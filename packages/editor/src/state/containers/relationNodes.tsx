@@ -15,7 +15,7 @@ export const toggleableTypes: AllTypes[] = [
 ];
 
 const useRelationNodes = createContainer(() => {
-  const { allNodes, setSelectedNode } = useTreesState();
+  const { allNodes, setSelectedNodeId } = useTreesState();
 
   const relationNodes = useMemo(
     () => allNodes.nodes.filter((n) => toggleableTypes.includes(n.data.type)),
@@ -50,7 +50,7 @@ const useRelationNodes = createContainer(() => {
     setNodesVisibilityArr((prev) =>
       prev.map((el) => ({ id: el.id, isHidden: true })),
     );
-    setSelectedNode(undefined);
+    setSelectedNodeId(undefined);
   }, []);
 
   const showRelationNodes = useCallback(

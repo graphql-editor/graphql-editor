@@ -88,7 +88,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
   panState,
   zoomPanPinch,
 }) => {
-  const { selectedNode, libraryTree, isLibrary } = useTreesState();
+  const { selectedNodeId, libraryTree, isLibrary } = useTreesState();
   const { routes } = useRouter();
   const { baseTypesOn } = useRelationsState();
   const [refs, setRefs] = useState<Record<string, HTMLDivElement>>({});
@@ -106,14 +106,14 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
     >();
 
   useEffect(() => {
-    if (refsLoaded && selectedNode?.field) {
-      if (selectedNode?.source === 'deFocus') {
+    if (refsLoaded && selectedNodeId?.value) {
+      if (selectedNodeId?.source === 'deFocus') {
         zoomPanPinch?.(refs, 0);
         return;
       }
       zoomPanPinch?.(refs);
     }
-  }, [selectedNode?.field, refsLoaded]);
+  }, [selectedNodeId?.value, refsLoaded]);
 
   useEffect(() => {
     setRefsLoaded(false);
@@ -171,7 +171,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
 
   const SvgLinesContainer = useMemo(() => {
     return <Lines relations={relations} />;
-  }, [relations, selectedNode]);
+  }, [relations, selectedNodeId]);
 
   useEffect(() => {
     setRefsLoaded(false);
@@ -180,7 +180,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
 
   useEffect(() => {
     if (isOnMountCentered.current) return;
-    if (selectedNode) {
+    if (selectedNodeId) {
       isOnMountCentered.current = true;
       return;
     }
@@ -188,7 +188,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
 
     isOnMountCentered.current = true;
     panRef.current.centerView();
-  }, [panRef.current, refsLoaded, selectedNode]);
+  }, [panRef.current, refsLoaded, selectedNodeId]);
 
   const NodesContainer = useMemo(() => {
     tRefs = {};

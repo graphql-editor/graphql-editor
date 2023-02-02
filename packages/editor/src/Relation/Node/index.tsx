@@ -1,10 +1,5 @@
 import { useTreesState } from '@/state/containers';
-import {
-  ParserField,
-  TypeDefinition,
-  getTypeName,
-  compareParserFields,
-} from 'graphql-js-tree';
+import { ParserField, TypeDefinition, getTypeName } from 'graphql-js-tree';
 import React, { useMemo } from 'react';
 import { Field } from '../Field';
 import { FIELD_NAME_SIZE } from '@/Graf/constants';
@@ -21,7 +16,6 @@ interface ContentProps {
   isRelated?: boolean;
   isLibrary?: boolean;
   readOnly?: boolean;
-  args: number;
 }
 
 const Content = styled.div<ContentProps>`
@@ -89,16 +83,17 @@ export const Node: React.FC<NodeProps> = ({
   isLibrary,
   canSelect,
 }) => {
-  const { setSelectedNode, selectedNode, tree, libraryTree } = useTreesState();
-  const isNodeActive =
-    !!selectedNode?.field && compareParserFields(field)(selectedNode?.field);
+  const { setSelectedNodeId, selectedNodeId, relatedToSelected } =
+    useTreesState();
+  const isSelected =
+    !!selectedNodeId?.value && field.id === selectedNodeId.value.id;
   const RelationFields = useMemo(() => {
     return (
       <NodeRelationFields>
         {field.args.map((a, i) => (
           <Field
             active={
-              isNodeActive &&
+              isSelected &&
               field.data.type !== TypeDefinition.EnumTypeDefinition
             }
             key={a.name}
@@ -107,7 +102,7 @@ export const Node: React.FC<NodeProps> = ({
         ))}
       </NodeRelationFields>
     );
-  }, [JSON.stringify(field), isNodeActive]);
+  }, [JSON.stringify(field), isSelected]);
 
   const NodeContent = useMemo(
     () => (
@@ -120,22 +115,12 @@ export const Node: React.FC<NodeProps> = ({
     ),
     [field],
   );
-  const isSelected = selectedNode?.field?.name === field.name;
 
   return (
     <Content
-      args={
-        selectedNode?.field?.name === field.name ? field.args?.length || 0 : 0
-      }
       isRelated={
-        selectedNode?.field
-          ? isSelected ||
-            field.args
-              .map((na) => getTypeName(na.type.fieldType))
-              .includes(selectedNode.field.name) ||
-            selectedNode?.field?.args
-              .map((a) => getTypeName(a.type.fieldType))
-              .includes(field.name)
+        selectedNodeId?.value
+          ? relatedToSelected?.includes(field.name) || isSelected
           : true
       }
       isSelected={isSelected}
@@ -149,12 +134,11 @@ export const Node: React.FC<NodeProps> = ({
       onClick={(e) => {
         if (!canSelect) return;
         e.stopPropagation();
-        setSelectedNode({
-          field: tree.nodes
-            .concat(libraryTree.nodes)
-            .find(
-              (n) => n.name === field.name && n.data.type === field.data.type,
-            ),
+        setSelectedNodeId({
+          value: {
+            id: field.id,
+            name: field.name,
+          },
           source: 'relation',
         });
       }}

@@ -64,7 +64,7 @@ export const TopNodeMenu: React.FC<{
   onDuplicate?: () => void;
   onInputCreate?: () => void;
 }> = ({ node, parentNode, onDelete, onDuplicate, onInputCreate }) => {
-  const { scalars, tree, setTree, selectedNode, setSelectedNode } =
+  const { scalars, tree, setTree, selectedNodeId, setSelectedNodeId } =
     useTreesState();
 
   const [menuOpen, setMenuOpen] = useState<PossibleMenus>();
@@ -86,10 +86,10 @@ export const TopNodeMenu: React.FC<{
   }, [closeMenu]);
 
   useEffect(() => {
-    if (node.id === selectedNode?.field?.id && selectedNode.justCreated) {
+    if (node.id === selectedNodeId?.value?.id && selectedNodeId.justCreated) {
       setMenuOpen('field');
     }
-  }, [selectedNode]);
+  }, [selectedNodeId]);
 
   const hideMenu = () => {
     setMenuOpen(undefined);
@@ -231,7 +231,13 @@ export const TopNodeMenu: React.FC<{
                     });
                     tree.nodes.push(extendNode);
                     setTree({ ...tree });
-                    setSelectedNode({ field: extendNode, source: 'diagram' });
+                    setSelectedNodeId({
+                      value: {
+                        id: extendNode.id,
+                        name: extendNode.name,
+                      },
+                      source: 'diagram',
+                    });
                   }}
                 >
                   Extend node

@@ -25,7 +25,7 @@ export const ExtendNodeMenu = React.forwardRef<
   HTMLDivElement,
   ExtendNodeMenuProps
 >(({ hideMenu, ...props }, ref) => {
-  const { tree, allNodes, setTree, setSelectedNode } = useTreesState();
+  const { tree, allNodes, setTree, setSelectedNodeId } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState('');
   const creationNodes = useMemo(
     () =>
@@ -68,8 +68,11 @@ export const ExtendNodeMenu = React.forwardRef<
     });
     tree.nodes.push(extendNode);
     setTree({ ...tree });
-    setSelectedNode({
-      field: extendNode,
+    setSelectedNodeId({
+      value: {
+        id: extendNode.id,
+        name: extendNode.name,
+      },
       source: 'diagram',
       justCreated: true,
     });

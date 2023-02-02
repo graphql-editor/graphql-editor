@@ -42,10 +42,10 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
   const {
     tree,
     setTree,
-    selectedNode,
-    setSelectedNode,
     snapshots,
+    selectedNodeId,
     readonly,
+    setSelectedNodeId,
     scalars,
     undo,
     redo,
@@ -57,21 +57,9 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
     const keyEvents = mount({
       [KeyboardActions.Undo]: undo,
       [KeyboardActions.Redo]: redo,
-      [KeyboardActions.Delete]: () => {
-        if (!readonly) {
-          const deletedNode = tree.nodes.findIndex(
-            (n) => n === selectedNode?.field,
-          )!;
-          if (deletedNode === -1) return;
-          const allNodes = [...tree.nodes];
-          allNodes.splice(deletedNode, 1);
-          setSelectedNode(undefined);
-          setTree({ nodes: allNodes });
-        }
-      },
     });
     return keyEvents.dispose;
-  }, [snapshots, tree, selectedNode, readonly]);
+  }, [snapshots, tree, selectedNodeId, readonly]);
   return (
     <SubNodeWrapper>
       <SubNodeContainer>
@@ -90,8 +78,11 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
                 ),
               ) as ParserField;
               allNodes.push(duplicatedNode);
-              setSelectedNode({
-                field: duplicatedNode,
+              setSelectedNodeId({
+                value: {
+                  id: duplicatedNode.id,
+                  name: duplicatedNode.name,
+                },
                 source: 'diagram',
               });
               setTree({ nodes: allNodes });
@@ -116,8 +107,11 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
                 ),
               ) as ParserField;
               allNodes.push(createdInput);
-              setSelectedNode({
-                field: createdInput,
+              setSelectedNodeId({
+                value: {
+                  id: createdInput.id,
+                  name: createdInput.name,
+                },
                 source: 'diagram',
               });
               setTree({ nodes: allNodes });

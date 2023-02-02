@@ -39,7 +39,7 @@ interface DocsElementI {
 }
 
 export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
-  const { setSelectedNode, tree, setTree, readonly, isLibrary } =
+  const { setSelectedNodeId, tree, setTree, readonly, isLibrary } =
     useTreesState();
 
   const [isEdit, setIsEdit] = useState(false);
@@ -49,8 +49,11 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
   const setNode = (nodeName: string) => {
     const newSelectedNode = tree.nodes.filter((node) => node.name === nodeName);
     if (newSelectedNode.length > 0)
-      setSelectedNode({
-        field: newSelectedNode[0],
+      setSelectedNodeId({
+        value: {
+          id: newSelectedNode[0].id,
+          name: newSelectedNode[0].name,
+        },
         source: 'docs',
       });
   };

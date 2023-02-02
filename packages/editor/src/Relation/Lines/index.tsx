@@ -44,7 +44,7 @@ interface LinesProps {
 
 export const Lines: React.FC<LinesProps> = ({ relations }) => {
   const { theme } = useTheme();
-  const { selectedNode, setSelectedNode } = useTreesState();
+  const { selectedNodeId, setSelectedNodeId } = useTreesState();
 
   // For optimization purposes
   const relationContent = useMemo(() => {
@@ -59,16 +59,16 @@ export const Lines: React.FC<LinesProps> = ({ relations }) => {
       return r.from?.map((rf, relationNumber) => {
         let portNumber = rf.index;
         const relationType = rf.connectingField.type.fieldType;
-        if (selectedNode?.field) {
+        if (selectedNodeId?.value) {
           if (
-            rf.field.id !== selectedNode.field.id &&
-            r.to.field.id !== selectedNode.field.id
+            rf.field.id !== selectedNodeId.value.id &&
+            r.to.field.id !== selectedNodeId.value.id
           ) {
             return null;
           }
         }
         const clickRelation =
-          selectedNode?.field === rf.field ? r.to.field : rf.field;
+          selectedNodeId?.value?.id === rf.field.id ? r.to.field : rf.field;
         return (
           <Draw
             relationType={relationType}
@@ -78,7 +78,13 @@ export const Lines: React.FC<LinesProps> = ({ relations }) => {
             from={rf.htmlNode}
             to={r.to.htmlNode}
             onClick={() =>
-              setSelectedNode({ source: 'relation', field: clickRelation })
+              setSelectedNodeId({
+                source: 'relation',
+                value: {
+                  id: clickRelation.id,
+                  name: clickRelation.name,
+                },
+              })
             }
             PortNumber={portNumber}
             maxIndex={r.from.length}
@@ -86,6 +92,6 @@ export const Lines: React.FC<LinesProps> = ({ relations }) => {
         );
       });
     });
-  }, [relationContent, selectedNode]);
+  }, [relationContent, selectedNodeId]);
   return <RelationsContainer>{RelationSVGS}</RelationsContainer>;
 };
