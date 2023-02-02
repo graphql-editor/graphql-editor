@@ -79,14 +79,12 @@ const useTreesStateContainer = createContainer(() => {
     fn();
     setTree({ ...tree });
     if (isSelected && node.id !== currentNodeId) {
-      setSelectedNode({
-        source: 'routing',
-        field: node,
-      });
-      set({
-        n: node.id,
-        source: 'internal',
-      });
+      set(
+        {
+          n: node.id,
+        },
+        'internal',
+      );
     }
   };
 
@@ -282,6 +280,19 @@ const useTreesStateContainer = createContainer(() => {
     }
     updateNode(node, () => mutationRoot.renameRootNode(node, newName));
   };
+  const removeFieldFromNode = (node: ParserField, field: ParserField) => {
+    updateNode(node, () => {
+      const deselect = field.id === selectedNode?.field?.id;
+      mutationRoot.removeNode(field);
+      setTree({ ...tree });
+      if (deselect) {
+        setSelectedNode({
+          source: 'relation',
+          field: undefined,
+        });
+      }
+    });
+  };
   const removeNode = (node: ParserField) => {
     const deselect = node.id === selectedNode?.field?.id;
     mutationRoot.removeNode(node);
@@ -348,6 +359,7 @@ const useTreesStateContainer = createContainer(() => {
     addFieldToNode,
     renameNode,
     removeNode,
+    removeFieldFromNode,
     implementInterface,
     deImplementInterface,
     setValue,

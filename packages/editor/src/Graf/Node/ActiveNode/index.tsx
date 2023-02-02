@@ -180,6 +180,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
     isLibrary,
     updateFieldOnNode,
     removeNode,
+    removeFieldFromNode,
   } = useTreesState();
 
   const libraryNode = isLibrary(node.id);
@@ -224,9 +225,11 @@ export const ActiveNode: React.FC<NodeProps> = ({
     <NodeContainer
       className={`NodeBackground-${getTypeName(node.type.fieldType)}`}
       onWheel={(e) => e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()}
     >
       <ActiveDescription
         onChange={(d) => {
+          if (d === node.description) return;
           //TODO: Add change description in js-tree
           updateNode(node, () => {
             node.description = d;
@@ -462,7 +465,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                       outputOpen={
                         openedNode?.type === 'output' && openedNode?.index === i
                       }
-                      onDelete={() => removeNode(a)}
+                      onDelete={() => removeFieldFromNode(node, a)}
                       onUpdate={(updatedNode) => {
                         updateFieldOnNode(node, i, updatedNode);
                       }}

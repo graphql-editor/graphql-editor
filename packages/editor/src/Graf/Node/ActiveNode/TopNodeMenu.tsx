@@ -188,27 +188,27 @@ export const TopNodeMenu: React.FC<{
           )}
         </ContextMenu>
       )}
-      <ContextMenu
-        isOpen={menuOpen === 'options'}
-        close={() => setMenuOpen(undefined)}
-        Trigger={({ triggerProps }) => (
-          <NodeIconArea
-            {...triggerProps}
-            onClick={() => {
-              setMenuOpen('options');
-            }}
-            title="Click to see node actions"
-            opened={menuOpen === 'options'}
-          >
-            <MenuIcon />
-          </NodeIconArea>
-        )}
-      >
-        {({ layerProps }) => (
-          <Menu {...layerProps} menuName={'Node options'} hideMenu={hideMenu}>
-            <MenuScrollingArea>
-              <DetailMenuItem onClick={onDelete}>Delete node</DetailMenuItem>
-              {!parentNode && (
+      {!parentNode && (
+        <ContextMenu
+          isOpen={menuOpen === 'options'}
+          close={() => setMenuOpen(undefined)}
+          Trigger={({ triggerProps }) => (
+            <NodeIconArea
+              {...triggerProps}
+              onClick={() => {
+                setMenuOpen('options');
+              }}
+              title="Click to see node actions"
+              opened={menuOpen === 'options'}
+            >
+              <MenuIcon />
+            </NodeIconArea>
+          )}
+        >
+          {({ layerProps }) => (
+            <Menu {...layerProps} menuName={'Node options'} hideMenu={hideMenu}>
+              <MenuScrollingArea>
+                <DetailMenuItem onClick={onDelete}>Delete node</DetailMenuItem>
                 <DetailMenuItem
                   onClick={() => {
                     const extendNode = createParserField({
@@ -236,74 +236,74 @@ export const TopNodeMenu: React.FC<{
                 >
                   Extend node
                 </DetailMenuItem>
-              )}
-              {!parentNode && onDuplicate && (
-                <DetailMenuItem
-                  onClick={() => {
-                    setCloseMenu((prevValue) => !prevValue);
-                    onDuplicate();
-                  }}
-                >
-                  Duplicate node
-                </DetailMenuItem>
-              )}
-              {!parentNode && onInputCreate && isCreateInputValid() && (
-                <DetailMenuItem
-                  onClick={() => {
-                    setCloseMenu((prevValue) => !prevValue);
-                    onInputCreate();
-                  }}
-                >
-                  Create input from node
-                </DetailMenuItem>
-              )}
-              {isRequiredMenuValid() && (
-                <>
+                {onDuplicate && (
                   <DetailMenuItem
                     onClick={() => {
-                      node.args?.forEach((arg) => {
-                        if (arg.type.fieldType.type === Options.required) {
-                          arg.type.fieldType = {
-                            ...arg.type.fieldType.nest,
-                          };
-                        }
-                      });
-                      const idx = tree.nodes.findIndex(
-                        (n) => n.name === node.name,
-                      );
-                      tree.nodes.splice(idx, 1, node);
-                      setTree({ nodes: tree.nodes }, false);
+                      setCloseMenu((prevValue) => !prevValue);
+                      onDuplicate();
                     }}
                   >
-                    Make all fields optional
+                    Duplicate node
                   </DetailMenuItem>
+                )}
+                {onInputCreate && isCreateInputValid() && (
                   <DetailMenuItem
                     onClick={() => {
-                      node.args?.forEach((arg) => {
-                        const argType = compileType(arg.type.fieldType);
-                        if (!argType.endsWith('!')) {
-                          arg.type.fieldType = {
-                            type: Options.required,
-                            nest: arg.type.fieldType,
-                          };
-                        }
-                      });
+                      setCloseMenu((prevValue) => !prevValue);
+                      onInputCreate();
+                    }}
+                  >
+                    Create input from node
+                  </DetailMenuItem>
+                )}
+                {isRequiredMenuValid() && (
+                  <>
+                    <DetailMenuItem
+                      onClick={() => {
+                        node.args?.forEach((arg) => {
+                          if (arg.type.fieldType.type === Options.required) {
+                            arg.type.fieldType = {
+                              ...arg.type.fieldType.nest,
+                            };
+                          }
+                        });
+                        const idx = tree.nodes.findIndex(
+                          (n) => n.name === node.name,
+                        );
+                        tree.nodes.splice(idx, 1, node);
+                        setTree({ nodes: tree.nodes }, false);
+                      }}
+                    >
+                      Make all fields optional
+                    </DetailMenuItem>
+                    <DetailMenuItem
+                      onClick={() => {
+                        node.args?.forEach((arg) => {
+                          const argType = compileType(arg.type.fieldType);
+                          if (!argType.endsWith('!')) {
+                            arg.type.fieldType = {
+                              type: Options.required,
+                              nest: arg.type.fieldType,
+                            };
+                          }
+                        });
 
-                      const idx = tree.nodes.findIndex(
-                        (n) => n.name === node.name,
-                      );
-                      tree.nodes.splice(idx, 1, node);
-                      setTree({ nodes: tree.nodes }, false);
-                    }}
-                  >
-                    Make all fields required
-                  </DetailMenuItem>
-                </>
-              )}
-            </MenuScrollingArea>
-          </Menu>
-        )}
-      </ContextMenu>
+                        const idx = tree.nodes.findIndex(
+                          (n) => n.name === node.name,
+                        );
+                        tree.nodes.splice(idx, 1, node);
+                        setTree({ nodes: tree.nodes }, false);
+                      }}
+                    >
+                      Make all fields required
+                    </DetailMenuItem>
+                  </>
+                )}
+              </MenuScrollingArea>
+            </Menu>
+          )}
+        </ContextMenu>
+      )}
     </>
   );
 };
