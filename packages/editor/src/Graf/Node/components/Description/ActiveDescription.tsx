@@ -39,9 +39,18 @@ export const ActiveDescription: React.FC<{
 }> = ({ onChange, value, isLocked }) => {
   const [text, setText] = useState(value);
   const DescriptionRef = useRef<HTMLTextAreaElement>(null);
+  const destroyRef = useRef(value);
   useEffect(() => {
     setText(value);
   }, [value]);
+
+  useEffect(() => {
+    return () => {
+      if (value !== destroyRef.current && !isLocked) {
+        onChange(destroyRef.current);
+      }
+    };
+  }, []);
 
   return (
     <MainWrapper>
@@ -60,12 +69,14 @@ export const ActiveDescription: React.FC<{
           e.currentTarget.style.height = 'auto';
           if (isLocked) return;
           if (DescriptionRef.current) {
+            destroyRef.current = text;
             onChange(text);
           }
         }}
         onChange={(e) => {
           if (isLocked) return;
           setText(e.target.value);
+          destroyRef.current = e.target.value;
           e.currentTarget.style.height = 'auto';
           e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
         }}
