@@ -11,7 +11,8 @@
     "lint": "eslint \"./src/**/*.{ts,js}\" --quiet --fix && prettier --write \"./src/**/*.{ts,js}\" ",
     "run-all": "npm run build --ws --if-present && concurrently \"npm run start -w graphql-editor-worker\" \"npm run start -w graphql-editor\" \"npm run start -w sandbox\" ",
     "run-all-debug": "npm run build --ws --if-present && concurrently \"npm run start -w graphql-editor-worker\" \"npm run start -w graphql-editor\" \"npm run start -w sandbox\" \"firefox -start-debugger-server\" ",
-    "regenerate-icons": "npm run run -w svg-ts-sync -- ./svg ./packages/editor/src/icons"
+    "regenerate-icons": "npm run run -w svg-ts-sync -- ./svg ./packages/editor/src/icons",
+    "update-deps": "npm i graphql-js-tree@latest -w graphql-editor && npm i graphql-js-tree@latest -w graphql-editor-worker"
   },
   "resolutions": {
     "@types/react": "^16.9.11"

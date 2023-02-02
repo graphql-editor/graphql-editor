@@ -122,8 +122,8 @@ export const Editor = ({
     setLibraryTree,
     setReadonly,
     generateTreeFromSchema,
-    selectedNode,
-    setSelectedNode,
+    selectedNodeId,
+    setSelectedNodeId,
     readonly,
   } = useTreesState();
   const { isSortAlphabetically, sortByTypes, orderTypes, isUserOrder } =
@@ -139,14 +139,19 @@ export const Editor = ({
   useEffect(() => {
     if (routes.source === 'internal') return;
     if (!routes.n) {
-      setSelectedNode(undefined);
+      setSelectedNodeId(undefined);
       return;
     }
     const field = allNodes.nodes.find((n) => n.id === routes.n);
 
-    setSelectedNode({
+    setSelectedNodeId({
       source: 'routing',
-      field,
+      value: field
+        ? {
+            id: field.id,
+            name: field.name,
+          }
+        : undefined,
     });
   }, [allNodes, routes.n]);
 
@@ -229,16 +234,16 @@ export const Editor = ({
   }, [schema]);
 
   useEffect(() => {
-    if (tree.initial || selectedNode?.source === 'routing') {
+    if (tree.initial || selectedNodeId?.source === 'routing') {
       return;
     }
     set(
       {
-        n: selectedNode?.field?.id,
+        n: selectedNodeId?.value?.id,
       },
       'internal',
     );
-  }, [selectedNode]);
+  }, [selectedNodeId]);
 
   useEffect(() => {
     if (routeState) {

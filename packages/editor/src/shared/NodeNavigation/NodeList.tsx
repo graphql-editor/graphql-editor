@@ -129,12 +129,12 @@ export const NodeList: React.FC<NodeListI> = ({
   colorKey,
   visibleInRelationView,
 }) => {
-  const { selectedNode, setSelectedNode, allNodes, isLibrary } =
+  const { setSelectedNodeId, selectedNodeId, activeNode, allNodes, isLibrary } =
     useTreesState();
   const { toggleNodeVisibility, focusNode } = useRelationNodesState();
   const nodeInsideSelected =
-    !!selectedNode?.field?.name &&
-    nodeList?.map((n) => n.name).includes(selectedNode?.field?.name);
+    !!selectedNodeId?.value?.name &&
+    nodeList?.map((n) => n.name).includes(selectedNodeId?.value?.name);
   const open = expanded.includes(listTitle);
   const empty = !nodeList?.length;
 
@@ -158,23 +158,22 @@ export const NodeList: React.FC<NodeListI> = ({
             key={i}
             onClick={() => {
               const foundNode = allNodes.nodes.find((el) => el.id === node.id);
-              setSelectedNode({
-                field: foundNode,
+              setSelectedNodeId({
+                value: foundNode
+                  ? {
+                      id: foundNode.id,
+                      name: foundNode.name,
+                    }
+                  : undefined,
                 source: 'docs',
               });
             }}
-            active={
-              selectedNode?.field &&
-              !!compareParserFields(node)(selectedNode.field)
-            }
+            active={activeNode && !!compareParserFields(node)(activeNode)}
           >
             <NodeName
               isHidden={node.isHidden}
               color={colorKey}
-              active={
-                selectedNode?.field &&
-                !!compareParserFields(node)(selectedNode.field)
-              }
+              active={activeNode && !!compareParserFields(node)(activeNode)}
             >
               {node.name}
               {isLibrary(node.id) && (
@@ -189,7 +188,13 @@ export const NodeList: React.FC<NodeListI> = ({
                   isHidden={node.isHidden}
                   onClick={(e) => {
                     e.stopPropagation();
-                    setSelectedNode({ source: 'deFocus', field: node });
+                    setSelectedNodeId({
+                      source: 'deFocus',
+                      value: {
+                        id: node.id,
+                        name: node.name,
+                      },
+                    });
                     focusNode(node);
                   }}
                 >
@@ -202,8 +207,8 @@ export const NodeList: React.FC<NodeListI> = ({
                   onClick={(e) => {
                     e.stopPropagation();
 
-                    selectedNode?.field?.id === node.id &&
-                      setSelectedNode(undefined);
+                    selectedNodeId?.value?.id === node.id &&
+                      setSelectedNodeId(undefined);
 
                     toggleNodeVisibility(node);
                   }}

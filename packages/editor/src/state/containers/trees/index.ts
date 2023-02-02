@@ -16,8 +16,11 @@ import { useErrorsState } from '@/state/containers';
 import { ActiveSource } from '@/editor/menu/Menu';
 import { useRouter } from '@/state/containers/router';
 
-type SelectedNode = {
-  field?: ParserField;
+type SelectedNodeId = {
+  value?: {
+    name: string;
+    id: string;
+  };
   source: ActiveSource;
   justCreated?: boolean;
 };
@@ -34,7 +37,7 @@ const useTreesStateContainer = createContainer(() => {
   const [libraryTree, setLibraryTree] = useState<ParserTree>({ nodes: [] });
   const [snapshots, setSnapshots] = useState<string[]>([]);
   const [undos, setUndos] = useState<string[]>([]);
-  const [selectedNode, setSelectedNode] = useState<SelectedNode>();
+  const [selectedNodeId, setSelectedNodeId] = useState<SelectedNodeId>();
   const [readonly, setReadonly] = useState(false);
   const [scalars, setScalars] = useState(BuiltInScalars.map((a) => a.name));
   const { setLockGraf, setCodeErrors, transformCodeError } = useErrorsState();
@@ -42,6 +45,10 @@ const useTreesStateContainer = createContainer(() => {
   const allNodes = useMemo(() => {
     return { nodes: tree.nodes.concat(libraryTree.nodes) };
   }, [libraryTree, tree]);
+
+  const activeNode = useMemo(() => {
+    return allNodes.nodes.find((n) => n.id === selectedNodeId?.value?.id);
+  }, [allNodes, selectedNodeId]);
 
   useEffect(() => {
     updateScallars();
@@ -75,7 +82,7 @@ const useTreesStateContainer = createContainer(() => {
   const updateNode = (node: ParserField, fn: () => void) => {
     makeSnapshot();
     const currentNodeId = node.id;
-    const isSelected = selectedNode?.field?.id === currentNodeId;
+    const isSelected = selectedNodeId?.value?.id === currentNodeId;
     fn();
     setTree({ ...tree });
     if (isSelected && node.id !== currentNodeId) {
@@ -145,7 +152,7 @@ const useTreesStateContainer = createContainer(() => {
       snapLock = false;
       return;
     }
-    const copyTree = JSON.stringify({ tree, selectedNode });
+    const copyTree = JSON.stringify({ tree, selectedNodeId } as SnapshotType);
     if (snapshots.length === 0) {
       setSnapshots([copyTree]);
       return;
@@ -159,7 +166,7 @@ const useTreesStateContainer = createContainer(() => {
     if (p) {
       snapLock = true;
       setTree(p.tree);
-      setSelectedNode(p.selectedNode);
+      setSelectedNodeId(p.selectedNodeId);
     }
   };
   const redo = () => {
@@ -167,20 +174,23 @@ const useTreesStateContainer = createContainer(() => {
     if (f) {
       snapLock = true;
       setTree(f.tree);
-      setSelectedNode(f.selectedNode);
+      setSelectedNodeId(f.selectedNodeId);
     }
   };
 
-  const relatedToSelected = useCallback(() => {
-    if (selectedNode?.field) {
-      const comparator = compareParserFields(selectedNode.field);
-      const node =
-        tree?.nodes.find(comparator) || libraryTree.nodes.find(comparator);
-      if (node) {
-        return node.args?.map((a) => getTypeName(a.type.fieldType));
-      }
-    }
-  }, [selectedNode]);
+  const relatedToSelected = useMemo(() => {
+    return activeNode?.args
+      .map((a) => getTypeName(a.type.fieldType))
+      .concat(
+        allNodes.nodes
+          .filter((an) =>
+            an.args.find(
+              (ana) => getTypeName(ana.type.fieldType) === activeNode.name,
+            ),
+          )
+          .map((a) => a.name),
+      );
+  }, [activeNode]);
 
   const generateTreeFromSchema = async (schema: PassedSchema) => {
     if (!schema.code) {
@@ -235,19 +245,6 @@ const useTreesStateContainer = createContainer(() => {
       );
     }
   };
-  const selectByTypeName = (typeName: string) => {
-    let n = allNodes.nodes.find((tn) => tn.name === typeName);
-    setSelectedNode(
-      n && {
-        field: n,
-        source: 'relation',
-      },
-    );
-  };
-  const selectFieldParent = (field: ParserField) => {
-    const fieldParentName = getTypeName(field.type.fieldType);
-    selectByTypeName(fieldParentName);
-  };
 
   const updateFieldOnNode = (
     node: ParserField,
@@ -282,25 +279,25 @@ const useTreesStateContainer = createContainer(() => {
   };
   const removeFieldFromNode = (node: ParserField, field: ParserField) => {
     updateNode(node, () => {
-      const deselect = field.id === selectedNode?.field?.id;
+      const deselect = field.id === selectedNodeId?.value?.id;
       mutationRoot.removeNode(field);
       setTree({ ...tree });
       if (deselect) {
-        setSelectedNode({
+        setSelectedNodeId({
           source: 'relation',
-          field: undefined,
+          value: undefined,
         });
       }
     });
   };
   const removeNode = (node: ParserField) => {
-    const deselect = node.id === selectedNode?.field?.id;
+    const deselect = node.id === selectedNodeId?.value?.id;
     mutationRoot.removeNode(node);
     setTree({ ...tree });
     if (deselect) {
-      setSelectedNode({
+      setSelectedNodeId({
         source: 'relation',
-        field: undefined,
+        value: undefined,
       });
     }
   };
@@ -335,8 +332,9 @@ const useTreesStateContainer = createContainer(() => {
     setLibraryTree,
     snapshots,
     setSnapshots,
-    selectedNode,
-    setSelectedNode,
+    selectedNodeId,
+    setSelectedNodeId,
+    activeNode,
     past,
     undos,
     setUndos,
@@ -351,8 +349,6 @@ const useTreesStateContainer = createContainer(() => {
     readonly,
     setReadonly,
     updateNode,
-    selectByTypeName,
-    selectFieldParent,
     isLibrary,
     /// new mutations
     updateFieldOnNode,
@@ -371,5 +367,5 @@ export const TreesStateProvider = useTreesStateContainer.Provider;
 
 type SnapshotType = {
   tree: ParserTree;
-  selectedNode: SelectedNode;
+  selectedNodeId: SelectedNodeId;
 };

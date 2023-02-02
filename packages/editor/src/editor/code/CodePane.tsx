@@ -28,7 +28,7 @@ export type CodePaneProps = {
 export const CodePane = (props: CodePaneProps) => {
   const { schema, readonly, onChange, libraries, fullScreen } = props;
   const { theme } = useTheme();
-  const { selectedNode, setSelectedNode, allNodes } = useTreesState();
+  const { selectedNodeId, setSelectedNodeId, allNodes } = useTreesState();
   const { lockCode, errorRowNumber } = useErrorsState();
   const [temporaryString, setTemporaryString] = useState(schema);
   const debouncedTemporaryString = useDebouncedValue(temporaryString, 1200);
@@ -51,14 +51,14 @@ export const CodePane = (props: CodePaneProps) => {
 
   useEffect(() => {
     if (ref.current) {
-      if (selectedNode?.source === 'code') {
+      if (selectedNodeId?.source === 'code') {
         return;
       }
-      selectedNode?.field?.name
-        ? ref.current.jumpToType(selectedNode.field.name)
+      selectedNodeId?.value?.name
+        ? ref.current.jumpToType(selectedNodeId.value.name)
         : ref.current.deselect();
     }
-  }, [selectedNode]);
+  }, [selectedNodeId]);
 
   useEffect(() => {
     if (ref.current && errorRowNumber) {
@@ -81,13 +81,13 @@ export const CodePane = (props: CodePaneProps) => {
         const n = op
           ? allNodes.nodes.find((an) => an.type.operations?.includes(op))
           : allNodes.nodes.find((an) => an.name === e);
-        setSelectedNode({
+        setSelectedNodeId({
           source: 'code',
-          field: n,
+          value: n ? { id: n.id, name: n.name } : undefined,
         });
       }
     },
-    [fullScreen, allNodes, setSelectedNode],
+    [fullScreen, allNodes, setSelectedNodeId],
   );
   return (
     <CodeContainer>

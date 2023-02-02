@@ -183,7 +183,8 @@ const Main = styled.div<{ dragMode: DragMode }>`
 export const Relation: React.FC = () => {
   const mainRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const { selectedNode, setSelectedNode, readonly } = useTreesState();
+  const { selectedNodeId, setSelectedNodeId, readonly, activeNode } =
+    useTreesState();
   const { filteredRelationNodes, isFocused, deFocusNode } =
     useRelationNodesState();
   const { grafErrors } = useErrorsState();
@@ -196,8 +197,8 @@ export const Relation: React.FC = () => {
   const ref = useRef<ReactZoomPanPinchRef>(null);
 
   useEffect(() => {
-    if (!selectedNode) setScaleFactor(100);
-  }, [selectedNode]);
+    if (!selectedNodeId) setScaleFactor(100);
+  }, [selectedNodeId]);
 
   const downloadPng = useCallback(() => {
     setIsLoading(true);
@@ -220,8 +221,8 @@ export const Relation: React.FC = () => {
     refs: Record<string, HTMLElement>,
     animationTime = 300,
   ) => {
-    if (selectedNode?.field && ref.current && refs) {
-      const currentNode = refs[selectedNode.field.id];
+    if (selectedNodeId?.value && ref.current && refs) {
+      const currentNode = refs[selectedNodeId.value.id];
       if (currentNode) {
         const bb = currentNode.getBoundingClientRect();
         if (bb.height > window.innerHeight / 1.2) {
@@ -377,22 +378,24 @@ export const Relation: React.FC = () => {
         </Menu>
       </TopBar>
       <Main
-        dragMode={selectedNode?.field ? draggingMode : 'auto'}
+        dragMode={selectedNodeId?.value ? draggingMode : 'auto'}
         ref={wrapperRef}
         onClick={(e) => {
           if (draggingMode === 'grabbing') return;
-          if (isFocused) {
+          if (isFocused && selectedNodeId?.value) {
             deFocusNode();
-            setSelectedNode({
+            setSelectedNodeId({
               source: 'deFocus',
-              field: selectedNode?.field,
+              value: {
+                ...selectedNodeId.value,
+              },
             });
           } else {
-            setSelectedNode({ source: 'relation', field: undefined });
+            setSelectedNodeId({ source: 'relation', value: undefined });
           }
         }}
       >
-        {editMode && selectedNode?.field && <Graf node={selectedNode.field} />}
+        {editMode && activeNode && <Graf node={activeNode} />}
         <TransformWrapper
           ref={ref}
           initialScale={1}

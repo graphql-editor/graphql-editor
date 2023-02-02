@@ -171,7 +171,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
   const { draggable } = useDraggable();
   const {
     allNodes,
-    selectedNode,
+    selectedNodeId,
     parentTypes,
     readonly,
     updateNode,
@@ -210,7 +210,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
 
   useEffect(() => {
     setOpenedNode(undefined);
-  }, [selectedNode]);
+  }, [selectedNodeId]);
 
   const openedNodeNode = openedNode
     ? openedNode.type === 'directives'

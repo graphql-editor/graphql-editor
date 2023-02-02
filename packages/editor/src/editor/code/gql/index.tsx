@@ -26,7 +26,7 @@ export type GqlCodePaneProps = {
 export const GqlCodePane = (props: GqlCodePaneProps) => {
   const { schema, readonly, onChange, gql } = props;
   const { theme } = useTheme();
-  const { selectedNode, setSelectedNode, allNodes } = useTreesState();
+  const { selectedNodeId, setSelectedNodeId, allNodes } = useTreesState();
   const { lockCode, errorRowNumber } = useErrorsState();
 
   const ref: React.ForwardedRef<SchemaEditorApi> = React.createRef();
@@ -41,14 +41,14 @@ export const GqlCodePane = (props: GqlCodePaneProps) => {
 
   useEffect(() => {
     if (ref.current) {
-      if (selectedNode?.source === 'code') {
+      if (selectedNodeId?.source === 'code') {
         return;
       }
-      selectedNode?.field?.name
-        ? ref.current.jumpToType(selectedNode.field.name)
+      selectedNodeId?.value?.name
+        ? ref.current.jumpToType(selectedNodeId.value.name)
         : ref.current.deselect();
     }
-  }, [selectedNode]);
+  }, [selectedNodeId]);
 
   useEffect(() => {
     if (ref.current && errorRowNumber) {
@@ -77,10 +77,13 @@ export const GqlCodePane = (props: GqlCodePaneProps) => {
           select={(e) => {
             if (e) {
               const n = allNodes.nodes.find((an) => an.name === e);
-              setSelectedNode(
+              setSelectedNodeId(
                 n && {
                   source: 'code',
-                  field: n,
+                  value: {
+                    id: n.id,
+                    name: n.name,
+                  },
                 },
               );
             }
