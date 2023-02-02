@@ -39,6 +39,7 @@ export const ActiveDescription: React.FC<{
 }> = ({ onChange, value, isLocked }) => {
   const [text, setText] = useState(value);
   const DescriptionRef = useRef<HTMLTextAreaElement>(null);
+  const currentRef = useRef(value);
   const destroyRef = useRef(value);
   useEffect(() => {
     setText(value);
@@ -46,7 +47,7 @@ export const ActiveDescription: React.FC<{
 
   useEffect(() => {
     return () => {
-      if (value !== destroyRef.current && !isLocked) {
+      if (currentRef.current !== destroyRef.current && !isLocked) {
         onChange(destroyRef.current);
       }
     };
@@ -69,7 +70,7 @@ export const ActiveDescription: React.FC<{
           e.currentTarget.style.height = 'auto';
           if (isLocked) return;
           if (DescriptionRef.current) {
-            destroyRef.current = text;
+            currentRef.current = text;
             onChange(text);
           }
         }}

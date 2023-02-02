@@ -1,5 +1,5 @@
 import { createContainer } from 'unstated-next';
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   ParserTree,
   ParserField,
@@ -14,7 +14,6 @@ import { BuiltInScalars } from '@/GraphQL/Resolve';
 import { PassedSchema } from '@/Models';
 import { useErrorsState } from '@/state/containers';
 import { ActiveSource } from '@/editor/menu/Menu';
-import { useRouter } from '@/state/containers/router';
 
 type SelectedNodeId = {
   value?: {
@@ -39,20 +38,27 @@ const useTreesStateContainer = createContainer(() => {
   const [undos, setUndos] = useState<string[]>([]);
   const [selectedNodeId, setSelectedNodeId] = useState<SelectedNodeId>();
   const [readonly, setReadonly] = useState(false);
-  const [scalars, setScalars] = useState(BuiltInScalars.map((a) => a.name));
   const { setLockGraf, setCodeErrors, transformCodeError } = useErrorsState();
-  const { set } = useRouter();
   const allNodes = useMemo(() => {
     return { nodes: tree.nodes.concat(libraryTree.nodes) };
   }, [libraryTree, tree]);
 
   const activeNode = useMemo(() => {
     return allNodes.nodes.find((n) => n.id === selectedNodeId?.value?.id);
-  }, [allNodes, selectedNodeId]);
+  }, [selectedNodeId, allNodes]);
 
-  useEffect(() => {
-    updateScallars();
-  }, [tree]);
+  const scalars = useMemo(() => {
+    const ownScalars = allNodes.nodes
+      .filter(
+        (node) =>
+          (node.data.type === TypeDefinition.ScalarTypeDefinition ||
+            node.data.type === TypeDefinition.EnumTypeDefinition) &&
+          node.name,
+      )
+      .map((scalar) => scalar.name)
+      .concat(BuiltInScalars.map((a) => a.name));
+    return ownScalars;
+  }, [allNodes]);
 
   const mutationRoot = useMemo(
     () => mutate(tree, allNodes.nodes),
@@ -80,18 +86,18 @@ const useTreesStateContainer = createContainer(() => {
   );
 
   const updateNode = (node: ParserField, fn: () => void) => {
+    const isSelected = node.id === selectedNodeId?.value?.id;
     makeSnapshot();
-    const currentNodeId = node.id;
-    const isSelected = selectedNodeId?.value?.id === currentNodeId;
     fn();
-    setTree({ ...tree });
-    if (isSelected && node.id !== currentNodeId) {
-      set(
-        {
-          n: node.id,
+    setTree(tree);
+    if (isSelected && selectedNodeId.value?.id !== node.id) {
+      setSelectedNodeId({
+        source: 'diagram',
+        value: {
+          id: node.id,
+          name: node.name,
         },
-        'internal',
-      );
+      });
     }
   };
 
@@ -115,18 +121,6 @@ const useTreesStateContainer = createContainer(() => {
       schema: !!blockSchemaUpdate,
       initial: false,
     });
-  };
-
-  const updateScallars = () => {
-    const ownScalars = tree.nodes
-      .filter(
-        (node) =>
-          (node.data.type === TypeDefinition.ScalarTypeDefinition ||
-            node.data.type === TypeDefinition.EnumTypeDefinition) &&
-          node.name,
-      )
-      .map((scalar) => scalar.name);
-    setScalars((prevValue) => [...prevValue, ...ownScalars]);
   };
 
   const past = () => {
@@ -279,27 +273,13 @@ const useTreesStateContainer = createContainer(() => {
   };
   const removeFieldFromNode = (node: ParserField, field: ParserField) => {
     updateNode(node, () => {
-      const deselect = field.id === selectedNodeId?.value?.id;
       mutationRoot.removeNode(field);
-      setTree({ ...tree });
-      if (deselect) {
-        setSelectedNodeId({
-          source: 'relation',
-          value: undefined,
-        });
-      }
     });
   };
   const removeNode = (node: ParserField) => {
-    const deselect = node.id === selectedNodeId?.value?.id;
-    mutationRoot.removeNode(node);
-    setTree({ ...tree });
-    if (deselect) {
-      setSelectedNodeId({
-        source: 'relation',
-        value: undefined,
-      });
-    }
+    updateNode(node, () => {
+      mutationRoot.removeNode(node);
+    });
   };
   const implementInterface = (
     node: ParserField,

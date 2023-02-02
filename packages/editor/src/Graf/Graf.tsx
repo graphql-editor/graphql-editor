@@ -114,7 +114,7 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
                 },
                 source: 'diagram',
               });
-              setTree({ nodes: allNodes });
+              ({ nodes: allNodes });
             }}
             node={node}
           />
