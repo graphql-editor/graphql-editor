@@ -142,16 +142,17 @@ export const Editor = ({
       setSelectedNodeId(undefined);
       return;
     }
+    if (routes.n === selectedNodeId?.value?.id) return;
     const field = allNodes.nodes.find((n) => n.id === routes.n);
     if (!field) return;
-    // setSelectedNodeId({
-    //   source: 'routing',
-    //   value: {
-    //     id: field.id,
-    //     name: field.name,
-    //   },
-    // });
-  }, [routes.n]);
+    setSelectedNodeId({
+      source: 'routing',
+      value: {
+        id: field.id,
+        name: field.name,
+      },
+    });
+  }, [routes.n, allNodes]);
 
   useEffect(() => {
     isSortAlphabetically &&
