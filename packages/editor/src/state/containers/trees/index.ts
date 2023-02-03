@@ -8,6 +8,7 @@ import {
   getTypeName,
   compareParserFields,
   mutate,
+  OperationType,
 } from 'graphql-js-tree';
 import { GraphQLEditorWorker } from 'graphql-editor-worker';
 import { BuiltInScalars } from '@/GraphQL/Resolve';
@@ -305,6 +306,12 @@ const useTreesStateContainer = createContainer(() => {
       mutationRoot.setValueNode(node, value);
     });
   };
+  const queryNode = useMemo(() => {
+    const queryNode = allNodes.nodes.find((n) =>
+      n.type.operations?.includes(OperationType.query),
+    );
+    return queryNode;
+  }, [allNodes]);
 
   return {
     allNodes,
@@ -316,6 +323,7 @@ const useTreesStateContainer = createContainer(() => {
     setSnapshots,
     selectedNodeId,
     setSelectedNodeId,
+    queryNode,
     activeNode,
     past,
     undos,

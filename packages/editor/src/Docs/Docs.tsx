@@ -23,7 +23,7 @@ const SelectedNodeWrapper = styled.div`
   height: 100%;
 `;
 export const Docs = () => {
-  const { activeNode } = useTreesState();
+  const { activeNode, queryNode } = useTreesState();
   const searchRef = useRef<HTMLInputElement>(null);
   const { mount } = useIO();
   useEffect(() => {
@@ -35,10 +35,12 @@ export const Docs = () => {
     return mounted.dispose;
   }, []);
 
+  const node = activeNode || queryNode;
+
   return (
     <Wrapper>
       <SelectedNodeWrapper>
-        {activeNode && <DocsElement node={activeNode} />}
+        {node && <DocsElement node={node} />}
       </SelectedNodeWrapper>
     </Wrapper>
   );
