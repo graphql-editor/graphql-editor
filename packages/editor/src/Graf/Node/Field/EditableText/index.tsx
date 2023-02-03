@@ -30,7 +30,6 @@ export const EditableText: React.FC<{
   const valueRef = useRef<string>(value);
   const genericId = useRef(Math.random().toString(16));
   const checkEdit = () => {
-    console.log('CHEC');
     constantValueRef.current = editedValue;
     inputRef.current?.blur();
     setDraggable(true);

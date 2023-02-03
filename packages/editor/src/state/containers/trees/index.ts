@@ -90,14 +90,16 @@ const useTreesStateContainer = createContainer(() => {
     makeSnapshot();
     fn();
     setTree(tree);
-    if (isSelected && selectedNodeId.value?.id !== node.id) {
-      setSelectedNodeId({
-        source: 'diagram',
-        value: {
-          id: node.id,
-          name: node.name,
-        },
-      });
+    if (isSelected) {
+      if (selectedNodeId.value?.id !== node.id) {
+        setSelectedNodeId({
+          source: 'diagram',
+          value: {
+            id: node.id,
+            name: node.name,
+          },
+        });
+      }
     }
   };
 
