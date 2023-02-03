@@ -65,7 +65,7 @@ export const googleState = () => {
         onClick={() =>
           changeRoute({
             pane: 'relation',
-            n: '13bfdf3bad4d8d',
+            n: '7f6954ab88b8c',
             code: 'on',
           })
         }
@@ -96,7 +96,6 @@ export const googleState = () => {
         schema={currentSchema}
         sidebarExpanded
         onRouteChange={(routes) => {
-          console.log(routes);
           changeRoute({ a: 'googleState', ...routes });
         }}
         setSchema={(s) => {
