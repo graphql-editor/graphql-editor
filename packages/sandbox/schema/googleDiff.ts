@@ -370,6 +370,15 @@ directive @cacheControl(
 	maxAge: Int
 	scope: CacheControlScope
 ) on FIELD_DEFINITION | OBJECT | INTERFACE
+
+extend type Coords{
+	createdAt: String
+}
+
+extend type Coords{
+	updatedAt: String
+}
+
 schema{
 	query: Query,
 	mutation: Mutation,

@@ -83,10 +83,8 @@ export const Node: React.FC<NodeProps> = ({
   isLibrary,
   canSelect,
 }) => {
-  const { setSelectedNodeId, selectedNodeId, relatedToSelected } =
-    useTreesState();
-  const isSelected =
-    !!selectedNodeId?.value && field.id === selectedNodeId.value.id;
+  const { setSelectedNodeId, activeNode, relatedToSelected } = useTreesState();
+  const isSelected = !!activeNode && field.id === activeNode.id;
   const RelationFields = useMemo(() => {
     return (
       <NodeRelationFields>
@@ -119,7 +117,7 @@ export const Node: React.FC<NodeProps> = ({
   return (
     <Content
       isRelated={
-        selectedNodeId?.value
+        activeNode
           ? relatedToSelected?.includes(field.name) || isSelected
           : true
       }

@@ -42,7 +42,7 @@
     "diff": "^5.1.0",
     "fuzzyjs": "^5.0.1",
     "graphql-editor-worker": "^6.1.2",
-    "graphql-js-tree": "^0.3.0",
+    "graphql-js-tree": "^0.3.1",
     "graphql-language-service": "3.1.4",
     "html-to-image": "^1.10.8",
     "re-resizable": "^6.9.1",
