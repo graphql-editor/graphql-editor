@@ -1,13 +1,31 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { GraphQLEditor, MainTheme } from 'graphql-editor';
 import { PassedSchema } from 'graphql-editor';
 import * as schemas from '../schema';
 
 export const libraries = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
-    code: schemas.finance,
-    libraries: schemas.usersLibraryNew,
+    code: '',
   });
+  useEffect(() => {
+    setTimeout(
+      () =>
+        setMySchema((s) => ({
+          ...s,
+          code: '',
+          libraries: schemas.usersLibraryNew,
+        })),
+      1000,
+    );
+    setTimeout(
+      () =>
+        setMySchema((s) => ({
+          ...s,
+          code: schemas.finance,
+        })),
+      2000,
+    );
+  }, []);
   return (
     <div
       style={{

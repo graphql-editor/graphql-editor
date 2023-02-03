@@ -53,4 +53,14 @@ input NewInput {
 	hello: String!
 	bye: String!
 }
+
+directive @aws_api_key on FIELD_DEFINITION | OBJECT
+directive @aws_iam on FIELD_DEFINITION | OBJECT
+directive @aws_oidc on FIELD_DEFINITION | OBJECT
+directive @aws_lambda on FIELD_DEFINITION | OBJECT
+directive @aws_cognito_user_pools(cognito_groups: [String!]) on FIELD_DEFINITION | OBJECT
+directive @aws_auth(cognito_groups: [String!]!) on FIELD_DEFINITION
+directive @aws_subscribe(mutations: [String!]) on FIELD_DEFINITION
+directive @key(name: String, fields: [String!]!, queryField: String) repeatable on OBJECT
+directive @default(value: String) on FIELD_DEFINITION
 `;
