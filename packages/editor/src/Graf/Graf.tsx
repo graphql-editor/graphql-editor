@@ -48,6 +48,7 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
     setSelectedNodeId,
     scalars,
     undo,
+    updateNode,
     redo,
   } = useTreesState();
 
@@ -88,33 +89,29 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
               setTree({ nodes: allNodes });
             }}
             onInputCreate={(nodeToCreateInput) => {
-              const allNodes = [...tree.nodes];
-              const createdInput = JSON.parse(
-                JSON.stringify(
-                  createParserField({
-                    args: getScalarFields(node, scalars),
-                    interfaces: [],
-                    directives: [],
-                    type: {
-                      fieldType: {
-                        name: 'input',
-                        type: Options.name,
-                      },
-                    },
-                    data: { type: TypeDefinition.InputObjectTypeDefinition },
-                    name: nodeToCreateInput.name + 'Input',
-                  }),
-                ),
-              ) as ParserField;
-              allNodes.push(createdInput);
-              setSelectedNodeId({
-                value: {
-                  id: createdInput.id,
-                  name: createdInput.name,
+              const createdInput = createParserField({
+                args: getScalarFields(node, scalars),
+                interfaces: [],
+                directives: [],
+                type: {
+                  fieldType: {
+                    name: 'input',
+                    type: Options.name,
+                  },
                 },
-                source: 'diagram',
+                data: { type: TypeDefinition.InputObjectTypeDefinition },
+                name: nodeToCreateInput.name + 'Input',
               });
-              ({ nodes: allNodes });
+              updateNode(createdInput, () => {
+                tree.nodes.push(createdInput);
+                setSelectedNodeId({
+                  value: {
+                    id: createdInput.id,
+                    name: createdInput.name,
+                  },
+                  source: 'diagram',
+                });
+              });
             }}
             node={node}
           />
