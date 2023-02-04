@@ -31,9 +31,24 @@ type FieldProps = Pick<GrafFieldProps, 'node'> & {
 };
 
 export const Field: React.FC<FieldProps> = ({ node, active }) => {
-  const { parentTypes } = useTreesState();
+  const { parentTypes, setSelectedNodeId, getParentOfField } = useTreesState();
+  const parent = getParentOfField(node);
   return (
-    <Main isActive={active}>
+    <Main
+      isActive={active}
+      onClick={(e) => {
+        if (active && parent) {
+          e.stopPropagation();
+          setSelectedNodeId({
+            source: 'relation',
+            value: {
+              id: parent.id,
+              name: parent.name,
+            },
+          });
+        }
+      }}
+    >
       <ActiveFieldName
         name={
           node.data.type !== TypeSystemDefinition.UnionMemberDefinition

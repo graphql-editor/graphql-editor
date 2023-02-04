@@ -212,8 +212,7 @@ export const ResolveDirectives = (
     );
 };
 
-export const isScalarArgument = (field: ParserField, scalarTypes: string[]) => {
-  const typeName = getTypeName(field.type.fieldType);
+export const isBaseScalar = (typeName: string) => {
   if (typeName === ScalarTypes.Boolean) {
     return true;
   }
@@ -229,7 +228,11 @@ export const isScalarArgument = (field: ParserField, scalarTypes: string[]) => {
   if (typeName === ScalarTypes.String) {
     return true;
   }
-  return scalarTypes.includes(typeName);
+  return false;
+};
+export const isScalarArgument = (field: ParserField, scalarTypes: string[]) => {
+  const typeName = getTypeName(field.type.fieldType);
+  return isBaseScalar(typeName) || scalarTypes.includes(typeName);
 };
 
 const checkValueType = (node: ParserField, nodes: ParserField[]) => {

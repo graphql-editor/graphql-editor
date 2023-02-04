@@ -15,19 +15,6 @@ const RelationsContainer = styled.svg`
   transform: translatez(0);
   margin: -20px;
   overflow: visible;
-  g {
-    pointer-events: stroke;
-    :hover {
-      path {
-        cursor: pointer;
-        stroke: ${({ theme }) => theme.text};
-      }
-      circle {
-        fill: ${({ theme }) => theme.text};
-        cursor: pointer;
-      }
-    }
-  }
 `;
 
 export interface RelationPath {
@@ -44,7 +31,7 @@ interface LinesProps {
 
 export const Lines: React.FC<LinesProps> = ({ relations }) => {
   const { theme } = useTheme();
-  const { selectedNodeId, setSelectedNodeId } = useTreesState();
+  const { selectedNodeId } = useTreesState();
 
   // For optimization purposes
   const relationContent = useMemo(() => {
@@ -67,8 +54,6 @@ export const Lines: React.FC<LinesProps> = ({ relations }) => {
             return null;
           }
         }
-        const clickRelation =
-          selectedNodeId?.value?.id === rf.field.id ? r.to.field : rf.field;
         return (
           <Draw
             relationType={relationType}
@@ -77,15 +62,6 @@ export const Lines: React.FC<LinesProps> = ({ relations }) => {
             key={`${index}-${rf.index}-${rf.field.name}`}
             from={rf.htmlNode}
             to={r.to.htmlNode}
-            onClick={() =>
-              setSelectedNodeId({
-                source: 'relation',
-                value: {
-                  id: clickRelation.id,
-                  name: clickRelation.name,
-                },
-              })
-            }
             PortNumber={portNumber}
             maxIndex={r.from.length}
           />

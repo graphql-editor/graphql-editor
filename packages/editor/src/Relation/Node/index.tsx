@@ -130,7 +130,7 @@ export const Node: React.FC<NodeProps> = ({
         }
       }}
       onClick={(e) => {
-        if (!canSelect) return;
+        if (!canSelect || isSelected) return;
         e.stopPropagation();
         setSelectedNodeId({
           value: {

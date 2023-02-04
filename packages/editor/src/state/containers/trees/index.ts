@@ -11,7 +11,11 @@ import {
   OperationType,
 } from 'graphql-js-tree';
 import { GraphQLEditorWorker } from 'graphql-editor-worker';
-import { BuiltInScalars } from '@/GraphQL/Resolve';
+import {
+  BuiltInScalars,
+  isBaseScalar,
+  isExtensionNode,
+} from '@/GraphQL/Resolve';
 import { PassedSchema } from '@/Models';
 import { useErrorsState } from '@/state/containers';
 import { ActiveSource } from '@/editor/menu/Menu';
@@ -312,6 +316,14 @@ const useTreesStateContainer = createContainer(() => {
     );
     return queryNode;
   }, [allNodes]);
+  const getParentOfField = (f: ParserField) => {
+    const tName = getTypeName(f.type.fieldType);
+    if (isBaseScalar(tName)) return;
+    const node = allNodes.nodes.find(
+      (n) => n.name === tName && !isExtensionNode(n.data.type),
+    );
+    return node;
+  };
 
   return {
     allNodes,
@@ -324,6 +336,7 @@ const useTreesStateContainer = createContainer(() => {
     selectedNodeId,
     setSelectedNodeId,
     queryNode,
+    getParentOfField,
     activeNode,
     past,
     undos,
