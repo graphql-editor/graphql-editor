@@ -26,7 +26,6 @@ export const Draw = ({
   maxIndex,
   relationNumber,
   relationType,
-  onClick,
 }: {
   from?: HTMLDivElement;
   to?: HTMLDivElement;
@@ -35,7 +34,6 @@ export const Draw = ({
   maxIndex: number;
   relationNumber: number;
   relationType: FieldType;
-  onClick: () => void;
 }) => {
   const stroke = color;
   if (from && to) {
@@ -101,7 +99,7 @@ export const Draw = ({
 
     return (
       <>
-        <g onClick={onClick}>
+        <g>
           <path
             stroke={stroke}
             strokeWidth={fac}
