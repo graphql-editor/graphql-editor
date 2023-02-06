@@ -9,6 +9,7 @@ import {
   compareParserFields,
   mutate,
   OperationType,
+  Instances,
 } from 'graphql-js-tree';
 import { GraphQLEditorWorker } from 'graphql-editor-worker';
 import {
@@ -287,6 +288,10 @@ const useTreesStateContainer = createContainer(() => {
   };
   const removeFieldFromNode = (node: ParserField, field: ParserField) => {
     updateNode(node, () => {
+      if (field.data.type === Instances.Argument) {
+        node.args = node.args.filter((a) => a.id !== field.id);
+        return;
+      }
       mutationRoot.removeNode(field);
     });
   };
