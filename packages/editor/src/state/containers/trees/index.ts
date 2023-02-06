@@ -104,6 +104,13 @@ const useTreesStateContainer = createContainer(() => {
             name: node.name,
           },
         });
+      } else {
+        if (!tree.nodes.find((n) => n.id === node.id)) {
+          setSelectedNodeId({
+            source: 'diagram',
+            value: undefined,
+          });
+        }
       }
     }
   };
