@@ -63,7 +63,15 @@ export const TopNodeMenu: React.FC<{
   onDelete: () => void;
   onDuplicate?: () => void;
   onInputCreate?: () => void;
-}> = ({ node, parentNode, onDelete, onDuplicate, onInputCreate }) => {
+  isLibrary?: boolean;
+}> = ({
+  node,
+  parentNode,
+  onDelete,
+  onDuplicate,
+  onInputCreate,
+  isLibrary,
+}) => {
   const { scalars, tree, setTree, selectedNodeId, setSelectedNodeId } =
     useTreesState();
 
@@ -97,97 +105,104 @@ export const TopNodeMenu: React.FC<{
 
   return (
     <>
-      {node.data.type !== TypeDefinition.ScalarTypeDefinition &&
-        node.data.type !== ValueDefinition.EnumValueDefinition && (
-          <ContextMenu
-            isOpen={menuOpen === 'field'}
-            close={() => setMenuOpen(undefined)}
-            Trigger={({ triggerProps }) => (
-              <NodeIconArea
-                {...triggerProps}
-                onClick={() => {
-                  setMenuOpen('field');
-                }}
-                title="Click to add field"
-                opened={menuOpen === 'field'}
+      {!isLibrary && (
+        <>
+          {node.data.type !== TypeDefinition.ScalarTypeDefinition &&
+            node.data.type !== ValueDefinition.EnumValueDefinition && (
+              <ContextMenu
+                isOpen={menuOpen === 'field'}
+                close={() => setMenuOpen(undefined)}
+                Trigger={({ triggerProps }) => (
+                  <NodeIconArea
+                    {...triggerProps}
+                    onClick={() => {
+                      setMenuOpen('field');
+                    }}
+                    title="Click to add field"
+                    opened={menuOpen === 'field'}
+                  >
+                    <Plus />
+                  </NodeIconArea>
+                )}
               >
-                <Plus />
-              </NodeIconArea>
+                {({ layerProps }) => (
+                  <NodeAddFieldMenu
+                    {...layerProps}
+                    node={node}
+                    hideMenu={hideMenu}
+                  />
+                )}
+              </ContextMenu>
             )}
-          >
-            {({ layerProps }) => (
-              <NodeAddFieldMenu
-                {...layerProps}
-                node={node}
-                hideMenu={hideMenu}
-              />
-            )}
-          </ContextMenu>
-        )}
 
-      {node.data.type !== Instances.Directive && (
-        <ContextMenu
-          isOpen={menuOpen === 'directive'}
-          close={() => setMenuOpen(undefined)}
-          Trigger={({ triggerProps }) => (
-            <NodeIconArea
-              {...triggerProps}
-              onClick={() => {
-                setMenuOpen('directive');
-              }}
-              title="Click to add directive"
-              opened={menuOpen === 'directive'}
+          {node.data.type !== Instances.Directive && (
+            <ContextMenu
+              isOpen={menuOpen === 'directive'}
+              close={() => setMenuOpen(undefined)}
+              Trigger={({ triggerProps }) => (
+                <NodeIconArea
+                  {...triggerProps}
+                  onClick={() => {
+                    setMenuOpen('directive');
+                  }}
+                  title="Click to add directive"
+                  opened={menuOpen === 'directive'}
+                >
+                  <At />
+                </NodeIconArea>
+              )}
             >
-              <At />
-            </NodeIconArea>
+              {({ layerProps }) => (
+                <>
+                  {node.data.type !==
+                    TypeSystemDefinition.DirectiveDefinition && (
+                    <NodeAddDirectiveMenu
+                      {...layerProps}
+                      node={node}
+                      hideMenu={hideMenu}
+                    />
+                  )}
+                  {node.data.type ===
+                    TypeSystemDefinition.DirectiveDefinition && (
+                    <NodeDirectiveOptionsMenu
+                      {...layerProps}
+                      node={node}
+                      hideMenu={hideMenu}
+                    />
+                  )}
+                </>
+              )}
+            </ContextMenu>
           )}
-        >
-          {({ layerProps }) => (
-            <>
-              {node.data.type !== TypeSystemDefinition.DirectiveDefinition && (
-                <NodeAddDirectiveMenu
+          {node.data.type === TypeDefinition.ObjectTypeDefinition && (
+            <ContextMenu
+              isOpen={menuOpen === 'operations'}
+              close={() => setMenuOpen(undefined)}
+              Trigger={({ triggerProps }) => (
+                <NodeIconArea
+                  {...triggerProps}
+                  onClick={() => {
+                    setMenuOpen('operations');
+                  }}
+                  opened={menuOpen === 'operations'}
+                  title="Click set schema query, mutation, subscription"
+                >
+                  <CheckSquareEmpty />
+                </NodeIconArea>
+              )}
+            >
+              {({ layerProps }) => (
+                <NodeOperationsMenu
                   {...layerProps}
                   node={node}
                   hideMenu={hideMenu}
                 />
               )}
-              {node.data.type === TypeSystemDefinition.DirectiveDefinition && (
-                <NodeDirectiveOptionsMenu
-                  {...layerProps}
-                  node={node}
-                  hideMenu={hideMenu}
-                />
-              )}
-            </>
+            </ContextMenu>
           )}
-        </ContextMenu>
+        </>
       )}
-      {node.data.type === TypeDefinition.ObjectTypeDefinition && (
-        <ContextMenu
-          isOpen={menuOpen === 'operations'}
-          close={() => setMenuOpen(undefined)}
-          Trigger={({ triggerProps }) => (
-            <NodeIconArea
-              {...triggerProps}
-              onClick={() => {
-                setMenuOpen('operations');
-              }}
-              opened={menuOpen === 'operations'}
-              title="Click set schema query, mutation, subscription"
-            >
-              <CheckSquareEmpty />
-            </NodeIconArea>
-          )}
-        >
-          {({ layerProps }) => (
-            <NodeOperationsMenu
-              {...layerProps}
-              node={node}
-              hideMenu={hideMenu}
-            />
-          )}
-        </ContextMenu>
-      )}
+
       {!parentNode && (
         <ContextMenu
           isOpen={menuOpen === 'options'}
@@ -208,7 +223,58 @@ export const TopNodeMenu: React.FC<{
           {({ layerProps }) => (
             <Menu {...layerProps} menuName={'Node options'} hideMenu={hideMenu}>
               <MenuScrollingArea>
-                <DetailMenuItem onClick={onDelete}>Delete node</DetailMenuItem>
+                {!isLibrary && (
+                  <>
+                    <DetailMenuItem onClick={onDelete}>
+                      Delete node
+                    </DetailMenuItem>
+                    {isRequiredMenuValid() && (
+                      <>
+                        <DetailMenuItem
+                          onClick={() => {
+                            node.args?.forEach((arg) => {
+                              if (
+                                arg.type.fieldType.type === Options.required
+                              ) {
+                                arg.type.fieldType = {
+                                  ...arg.type.fieldType.nest,
+                                };
+                              }
+                            });
+                            const idx = tree.nodes.findIndex(
+                              (n) => n.name === node.name,
+                            );
+                            tree.nodes.splice(idx, 1, node);
+                            setTree({ nodes: tree.nodes }, false);
+                          }}
+                        >
+                          Make all fields optional
+                        </DetailMenuItem>
+                        <DetailMenuItem
+                          onClick={() => {
+                            node.args?.forEach((arg) => {
+                              const argType = compileType(arg.type.fieldType);
+                              if (!argType.endsWith('!')) {
+                                arg.type.fieldType = {
+                                  type: Options.required,
+                                  nest: arg.type.fieldType,
+                                };
+                              }
+                            });
+
+                            const idx = tree.nodes.findIndex(
+                              (n) => n.name === node.name,
+                            );
+                            tree.nodes.splice(idx, 1, node);
+                            setTree({ nodes: tree.nodes }, false);
+                          }}
+                        >
+                          Make all fields required
+                        </DetailMenuItem>
+                      </>
+                    )}
+                  </>
+                )}
                 <DetailMenuItem
                   onClick={() => {
                     const extendNode = createParserField({
@@ -261,49 +327,6 @@ export const TopNodeMenu: React.FC<{
                   >
                     Create input from node
                   </DetailMenuItem>
-                )}
-                {isRequiredMenuValid() && (
-                  <>
-                    <DetailMenuItem
-                      onClick={() => {
-                        node.args?.forEach((arg) => {
-                          if (arg.type.fieldType.type === Options.required) {
-                            arg.type.fieldType = {
-                              ...arg.type.fieldType.nest,
-                            };
-                          }
-                        });
-                        const idx = tree.nodes.findIndex(
-                          (n) => n.name === node.name,
-                        );
-                        tree.nodes.splice(idx, 1, node);
-                        setTree({ nodes: tree.nodes }, false);
-                      }}
-                    >
-                      Make all fields optional
-                    </DetailMenuItem>
-                    <DetailMenuItem
-                      onClick={() => {
-                        node.args?.forEach((arg) => {
-                          const argType = compileType(arg.type.fieldType);
-                          if (!argType.endsWith('!')) {
-                            arg.type.fieldType = {
-                              type: Options.required,
-                              nest: arg.type.fieldType,
-                            };
-                          }
-                        });
-
-                        const idx = tree.nodes.findIndex(
-                          (n) => n.name === node.name,
-                        );
-                        tree.nodes.splice(idx, 1, node);
-                        setTree({ nodes: tree.nodes }, false);
-                      }}
-                    >
-                      Make all fields required
-                    </DetailMenuItem>
-                  </>
                 )}
               </MenuScrollingArea>
             </Menu>

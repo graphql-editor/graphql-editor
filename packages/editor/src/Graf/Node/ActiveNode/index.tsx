@@ -353,10 +353,11 @@ export const ActiveNode: React.FC<NodeProps> = ({
           <NodeType>
             <ActiveGrafType type={node.type} />
           </NodeType>
-          {!isLocked && (
+          {!(!!sharedProps.readonly || readonly) && (
             <TopNodeMenu
               {...sharedProps}
               parentNode={parentNode?.node}
+              isLibrary={libraryNode}
               onDelete={() => removeNode(node)}
               onDuplicate={() => sharedProps.onDuplicate?.(node)}
               onInputCreate={() => sharedProps.onInputCreate?.(node)}
