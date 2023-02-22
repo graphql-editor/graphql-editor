@@ -1,0 +1,303 @@
+{
+    "failedTests": [
+        {
+            "testPath": "./bdd/ActiveNode/Directive.feature",
+            "reasonOfFail": "I dont know if we can do it",
+            "scenarioTitle": "Adding a extends directive to a node",
+            "scenarioContent": "Given a user has a GraphQL scheme open in the editor\n\n        When the user selects a node in the scheme\n        And the user selects the \"Add Directive\" option\n        And the user enters \"extends\" as the directive name\n\n        Then the selected node should have the \"extends\" directive added to it",
+            "featureContent": "Directives\n\n    As a user of the GraphQL Editor app, I want to be able to add directives to nodes in my GraphQL scheme, so that I can add additional information or functionality to the scheme."
+        }
+    ],
+    "passedTests": [
+        {
+            "testPath": "./bdd/ActiveNode.feature",
+            "scenarioTitle": "User wants to create a field",
+            "scenarioContent": "Given User is in the schema graph view\n        And edit mode is on \n        And node is selected\n\n        When He clicks create field\n        And Writes \"firstName\"\n        And Clicks \"Enter\"\n\n        Then field of type \"String\" with name \"firstName\" is created",
+            "featureContent": "Easiliy create new fields and use node editor\n\n    The user can use edit mode of the active node"
+        },
+        {
+            "testPath": "./bdd/ActiveNode.feature",
+            "scenarioTitle": "User wants main type to implement directives",
+            "scenarioContent": "Given User is in the schema graph view\n        And edit mode is on \n        And node is selected\n        And Schema has some directives\n\n        When User clicks add directives\n        And Selects the directives\n\n        Then directive is visible and implemented under the title",
+            "featureContent": "Easiliy create new fields and use node editor\n\n    The user can use edit mode of the active node"
+        },
+        {
+            "testPath": "./bdd/ActiveNode.feature",
+            "scenarioTitle": "User wants to expand fields type",
+            "scenarioContent": "Given User is in the schema graph view \n        And edit mode is on \n        And node is selected \n        And expanded node is of different type excluding scalars\n\n        When User clicks expand\n\n        Then new active node appears on top of active selected node",
+            "featureContent": "Easiliy create new fields and use node editor\n\n    The user can use edit mode of the active node"
+        },
+        {
+            "testPath": "./bdd/ActiveNode.feature",
+            "scenarioTitle": "User wants to expand fields type",
+            "scenarioContent": "Given User is in the schema graph view\n        And edit mode is on \n        And node is selected \n        And expanded field is same type that selected node\n        \n        Then Expand icon should not be visible",
+            "featureContent": "Easiliy create new fields and use node editor\n\n    The user can use edit mode of the active node"
+        },
+        {
+            "testPath": "./bdd/ActiveNode.feature",
+            "scenarioTitle": "User wants to change field type",
+            "scenarioContent": "Given User is in the schema graph view \n        And edit mode is on \n        And node is selected\n        And Selected node has any fields\n\n        When User clicks on field type\n\n        Then dropdown with existing types should display\n        And User is able to change field type",
+            "featureContent": "Easiliy create new fields and use node editor\n\n    The user can use edit mode of the active node"
+        },
+        {
+            "testPath": "./bdd/ActiveNode.feature",
+            "scenarioTitle": "User wants to change field name",
+            "scenarioContent": "Given User is in the schema graph view \n        And edit mode is on \n        And node is selected\n        And Selected node has any fields\n\n        When user clicks on the field name\n        And edits it\n        And Clicks Enter/Tab or blurs the input\n\n        Then name is changed\n        But If user selected existing name\n\n        Then proper error should appear",
+            "featureContent": "Easiliy create new fields and use node editor\n\n    The user can use edit mode of the active node"
+        },
+        {
+            "testPath": "./bdd/ActiveNode.feature",
+            "scenarioTitle": "User wants to extend node",
+            "scenarioContent": "Given User is in the schema graph view \n        And edit mode is on \n        And node is selected\n\n        When User opens details menu\n        And Clicks extend node\n\n        Then new node with same type but extend is created",
+            "featureContent": "Easiliy create new fields and use node editor\n\n    The user can use edit mode of the active node"
+        },
+        {
+            "testPath": "./bdd/ActiveNode.feature",
+            "scenarioTitle": "User wants to edit description",
+            "scenarioContent": "Given User is in the schema graph view \n        And edit mode is on \n        And node is selected\n\n        When User clicks description field\n        And Edits the content\n        And Clicks Enter/Tab or blurs the input\n\n        Then content is changed",
+            "featureContent": "Easiliy create new fields and use node editor\n\n    The user can use edit mode of the active node"
+        },
+        {
+            "testPath": "./bdd/ActiveNode/Directive.feature",
+            "scenarioTitle": "Adding a key directive to a node",
+            "scenarioContent": "Given a user has a GraphQL scheme open in the editor\n\n        When the user selects a node in the scheme\n        And the user selects the \"Add Directive\" option\n        And the user enters \"key\" as the directive name\n\n        Then the selected node should have the \"key\" directive added to it",
+            "featureContent": "Directives\n\n    As a user of the GraphQL Editor app, I want to be able to add directives to nodes in my GraphQL scheme, so that I can add additional information or functionality to the scheme."
+        },
+        {
+            "testPath": "./bdd/ActiveNode/Directive.feature",
+            "scenarioTitle": "Creating a directive",
+            "scenarioContent": "Given a user has a GraphQL scheme open in the editor\n\n        When the user clicks the \"new node\" button to create a new directive\n        And the user enters \"auth\" as the directive name and selects \"object\" as the placement option\n        And the user adds a field \"role\" of type \"String\" to the directive\n\n        Then a new directive \"auth\" with a field \"role\" of type \"String\" and placement on \"object\" should be added to the scheme\n        And the generated code for the directive should include the field \"role\" of type \"String\"",
+            "featureContent": "Directives\n\n    As a user of the GraphQL Editor app, I want to be able to add directives to nodes in my GraphQL scheme, so that I can add additional information or functionality to the scheme."
+        },
+        {
+            "testPath": "./bdd/ActiveNode/Directive.feature",
+            "scenarioTitle": "Creating a directive with multiple placements",
+            "scenarioContent": "Given a user has a GraphQL scheme open in the editor\n\n        When the user clicks the \"new node\" button to create a new directive\n        And the user enters \"auth\" as the directive name and selects \"object\" and \"field_definition\" as the placement options\n        And the user adds a field \"role\" of type \"String\" to the directive\n\n        Then a new directive \"auth\" with a field \"role\" of type \"String\" and placement on both \"object\" and \"field_definition\" should be added to the scheme\n        And the generated code for the directive should include the field \"role\" of type \"String\" and the placement options \"object\" and \"field_definition\"",
+            "featureContent": "Directives\n\n    As a user of the GraphQL Editor app, I want to be able to add directives to nodes in my GraphQL scheme, so that I can add additional information or functionality to the scheme."
+        },
+        {
+            "testPath": "./bdd/ActiveNode/Enum.feature",
+            "scenarioTitle": "User wants to create a value of an enum",
+            "scenarioContent": "Given User is in the schema graph view \n        And edit mode is on \n        And enum node is selected\n\n        When He clicks create field\n\n        Then Enum fields get created",
+            "featureContent": "Easiliy control enum active node\n\n    The user can use edit mode of the active node on enum node"
+        },
+        {
+            "testPath": "./bdd/ActiveNode/Field.feature",
+            "scenarioTitle": "Adding a field to a node",
+            "scenarioContent": "Given a user has a GraphQL scheme open in the editor\n\n        When the user selects a node in the scheme\n        And the user clicks the \"+\" button to add a new field\n        And the user enters \"name\" as the field name and selects \"String\" as the field type\n\n        Then the selected node should have a new \"name\" field of type \"String\" added to it\n        And the generated code in code section for the node should include the \"name\" field of type \"String\"",
+            "featureContent": "Field\n\n    As a user of the GraphQL Editor app, I want to be able to add fields to nodes in my GraphQL scheme, so that I can add additional information or functionality to the scheme."
+        },
+        {
+            "testPath": "./bdd/ActiveNode/Field.feature",
+            "scenarioTitle": "Adding a custom field to a node",
+            "scenarioContent": "Given a user has a GraphQL scheme open in the editor\n        And node with type Person exists in the scheme\n\n        When the user selects a node in the scheme\n        And the user clicks the \"+\" button to add a new field\n        And the user enters \"randomGuy\" as the field name and selects \"Person\" as the field type\n\n        Then the selected node should have a new \"randomGuy\" field of type \"Person\" added to it\n        And the generated code in code section for the node should include the \"randomGuy\" field of type \"Person\"",
+            "featureContent": "Field\n\n    As a user of the GraphQL Editor app, I want to be able to add fields to nodes in my GraphQL scheme, so that I can add additional information or functionality to the scheme."
+        },
+        {
+            "testPath": "./bdd/ActiveNode/Input.feature",
+            "scenarioTitle": "Creating an input",
+            "scenarioContent": "Given a user has a GraphQL scheme open in the editor\n        And He is in code pane\n\n        When the user creates input \n        And input name is \"submitForm\"\n        And add field \"name\" with type String\n\n        Then a new input named \"submitForm\"  with field \"name\" should be added to the scheme\n        And user should be able to add submitForm input to his nodes",
+            "featureContent": "Input\n\n    As a user of the GraphQL Editor app, I want to be able to create inputs in my GraphQL scheme, so that I can add additional information or functionality to my queries."
+        },
+        {
+            "testPath": "./bdd/ActiveNode/InputValue.feature",
+            "scenarioTitle": "Adding an input value to a field",
+            "scenarioContent": "Given a user has a GraphQL scheme open in the editor\n        And some inputs exists\n\n        When the user selects a field in the scheme\n        And the user clicks the \"+\" button to add a new input value\n        And the user enters \"testValue\" as the input value name and selects \"Boolean\" as the input value type\n\n        Then the selected field should have an input value of \"testValue: Boolean\" added to it\n        And the generated code for the field should include the input value of \"testValue: Boolean\"",
+            "featureContent": "Input Value\n\n    As a user of the GraphQL Editor app, I want to be able to add input values as arguments for fields in my GraphQL scheme,\n    so that I can specify additional information for my fields."
+        },
+        {
+            "testPath": "./bdd/ActiveNode/InputValue.feature",
+            "scenarioTitle": "Adding multiple input values to a field",
+            "scenarioContent": "Given a user has a GraphQL scheme open in the editor\n\n        When the user selects a field in the scheme\n        And the user clicks the \"+\" button to add new input value multiple times\n        And the user enters \"testValue1\" as the first input value name and selects \"Boolean\" as the input value type\n        And the user enters \"testValue2\" as the second input value name and selects \"String\" as the input value type\n\n        Then the selected field should have input values of \"testValue1: Boolean\" and \"testValue2: String\" added to it\n        And the generated code for the field should include the input values of \"testValue1: Boolean\" and \"testValue2: String\"",
+            "featureContent": "Input Value\n\n    As a user of the GraphQL Editor app, I want to be able to add input values as arguments for fields in my GraphQL scheme,\n    so that I can specify additional information for my fields."
+        },
+        {
+            "testPath": "./bdd/ActiveNode/Scalar.feature",
+            "scenarioTitle": "Adding a custom scalar to the scheme",
+            "scenarioContent": "Given a user has a GraphQL scheme open in the editor\n\n        When the user creates a new scalar type in code pane\n\n        Then a new scalar named \"customScalar\" of type \"Scalar\" should be added to the scheme",
+            "featureContent": "Scalar\n\n    As a user of the GraphQL Editor app, I want to be able to add scalar types to my GraphQL scheme, so that I can specify the type of data that is being passed in my queries and mutations."
+        },
+        {
+            "testPath": "./bdd/ActiveNode/TypeInterface.feature",
+            "scenarioTitle": "User wants type to implement interfaces",
+            "scenarioContent": "Given User is in the schema graph view edit mode is on and node is selected\n        And there are interfaces in the schema\n\n        When User clicks Implement interfaces\n        And chooses one interface\n\n        Then Interface appears in the interfaces line\n        And fields of the interface are added to the selected node",
+            "featureContent": "Easiliy create new fields and use node editor\n\n    The user can use edit mode of the active node"
+        },
+        {
+            "testPath": "./bdd/ActiveNode/TypeInterface.feature",
+            "scenarioTitle": "User wants type to be the main Query, Subscription, Mutation",
+            "scenarioContent": "Given User is in the schema graph view \n        And edit mode is on \n        And node is selected\n        And The type of the node is \"type\"\n\n        When User selects \"query\"\n\n        Then Schema \"query\" type is the type of selected node",
+            "featureContent": "Easiliy create new fields and use node editor\n\n    The user can use edit mode of the active node"
+        },
+        {
+            "testPath": "./bdd/ActiveNode/Union.feature",
+            "scenarioTitle": "User wants add an union member field.",
+            "scenarioContent": "Given User is in the schema graph view \n        And edit mode is on \n        And union node is selected\n        And there are types in the schema and union node\n\n        When User clicks add field\n        And chooses a field\n\n        Then Union field is added to the selected node",
+            "featureContent": "Easiliy create new fields for union node\n\n    The user can use edit mode of the active union node"
+        },
+        {
+            "testPath": "./bdd/Code.feature",
+            "scenarioTitle": "Toggling the code section",
+            "scenarioContent": "Given a user has a GraphQL scheme open in the editor\n\n        When the user clicks the \"Toggle Code\" button\n\n        Then the code section should be displayed\n        And the user should be able to edit the code\n        But If user clicks again the \"Toggle Code\" button\n        Then the code section should close",
+            "featureContent": "Code\n\n    As a user of the GraphQL Editor app, I want to be able to toggle a code section and create my own GraphQL schema, fields, queries, etc by adding code."
+        },
+        {
+            "testPath": "./bdd/Code.feature",
+            "scenarioTitle": "Creating a schema using code",
+            "scenarioContent": "Given a user has the code section open\n\n        When the user enters the following code:\n        '''\n        type Query {\n        hello: String\n        }\n        '''\n        And the user saves the code\n\n        Then a new schema should be created with a \"hello\" query of type \"String\"\n        And the node with a \"hello\" query of type \"String\" should be displayed in relation mode",
+            "featureContent": "Code\n\n    As a user of the GraphQL Editor app, I want to be able to toggle a code section and create my own GraphQL schema, fields, queries, etc by adding code."
+        },
+        {
+            "testPath": "./bdd/Code.feature",
+            "scenarioTitle": "Creating nodes using code",
+            "scenarioContent": "Given a user has the code section open\n\n        When the user enters the following code:\n        '''\n        type Query {\n        hello: String\n        }\n\n        interface IPost{\n        title: String\n        message: String\n        }\n        '''\n        And the user saves the code\n\n        Then a new interface \"IPost\" should be created with an input value of \"title: String\" and \"message: String\"\n        And the node with should be displayed in relation mode witch matched fields with the entered code",
+            "featureContent": "Code\n\n    As a user of the GraphQL Editor app, I want to be able to toggle a code section and create my own GraphQL schema, fields, queries, etc by adding code."
+        },
+        {
+            "testPath": "./bdd/DiffEditor.feature",
+            "scenarioTitle": "User wants to compare two versions",
+            "scenarioContent": "Given User is in the diff view\n\n        When He selects version on the left\n        And User selects version on the right\n\n        Then Differences should be visible in diff editor\n        And Both schemas should be sorted Alphabetically",
+            "featureContent": "Diff editor\n\n    User can easily compare different versions of the schema"
+        },
+        {
+            "testPath": "./bdd/LibraryNodes.feature",
+            "scenarioTitle": "Viewing external nodes in relation view",
+            "scenarioContent": "Given a user has a GraphQL scheme open in the editor with external library added\n\n        When the user selects the \"Relation Mode\" option\n\n        Then the external library nodes should be displayed differently in the relation view(border should be dashed)\n        And the external library nodes should be labeled properly\n        And the nodes should be read-only",
+            "featureContent": "External Library\n\n    As a user of the GraphQL Editor app, I want to be able to add external libraries to my GraphQL scheme, so that I can use pre-built nodes in my scheme."
+        },
+        {
+            "testPath": "./bdd/NodeNavigation.feature",
+            "scenarioTitle": "User wants to hide/show node navigation",
+            "scenarioContent": "Given User is in the schema graph view without selected node\n\n        When He clicks toggle node navigation\n\n        Then Node Navigation shows/hide",
+            "featureContent": "Easiliy navigate using node navigation\n\n    The user can navigate the nodes in the Node Navigation Pane on the right"
+        },
+        {
+            "testPath": "./bdd/NodeNavigation.feature",
+            "scenarioTitle": "User wants to search nodes",
+            "scenarioContent": "Given User is in the any view except full screen code with schema opened\n\n        When He inputs a node name\n\n        Then Nodes are filtered in node navigation",
+            "featureContent": "Easiliy navigate using node navigation\n\n    The user can navigate the nodes in the Node Navigation Pane on the right"
+        },
+        {
+            "testPath": "./bdd/NodeNavigation.feature",
+            "scenarioTitle": "User wants to select a node",
+            "scenarioContent": "Given User is in the any view except full screen code with schema opened\n\n        When They select a node in node navigation\n\n        Then Node is selected",
+            "featureContent": "Easiliy navigate using node navigation\n\n    The user can navigate the nodes in the Node Navigation Pane on the right"
+        },
+        {
+            "testPath": "./bdd/RelationNavigation.feature",
+            "scenarioTitle": "User wants to pan",
+            "scenarioContent": "Given User is in the schema graph view without selected node\n\n        When He clicks and moves the mouse\n\n        Then View should pan",
+            "featureContent": "Easiliy navigate in Relation view\n\n    The user can navigate the nodes in relation view"
+        },
+        {
+            "testPath": "./bdd/RelationNavigation.feature",
+            "scenarioTitle": "User wants to zoom with scroll",
+            "scenarioContent": "Given User is in the schema graph view without selected node\n\n        When He holds Ctrl/Cmd Button\n        And Uses Mouse scroll\n\n        Then The view should zoom in and out",
+            "featureContent": "Easiliy navigate in Relation view\n\n    The user can navigate the nodes in relation view"
+        },
+        {
+            "testPath": "./bdd/RelationNavigation.feature",
+            "scenarioTitle": "User wants to zoom with zoom buttons",
+            "scenarioContent": "Given User is in the schema graph view without selected node\n\n        When He click + or - on the top bar\n\n        Then The view should zoom in and out",
+            "featureContent": "Easiliy navigate in Relation view\n\n    The user can navigate the nodes in relation view"
+        },
+        {
+            "testPath": "./bdd/RelationNavigation.feature",
+            "scenarioTitle": "User wants to use scroll to pan",
+            "scenarioContent": "Given User is in the schema graph view without selected node\n\n        When He uses either mouse vertical scroll or horizontal(touchpad)\n\n        Then The view should pan",
+            "featureContent": "Easiliy navigate in Relation view\n\n    The user can navigate the nodes in relation view"
+        },
+        {
+            "testPath": "./bdd/RelationNavigation.feature",
+            "scenarioTitle": "User wants to toggle the scalar fields",
+            "scenarioContent": "Given User is in the schema graph view without selected node\n\n        When He clicks scalars\n\n        Then Scalar fields should disappear from nodes so String Int Id Float Boolean and scalar type",
+            "featureContent": "Easiliy navigate in Relation view\n\n    The user can navigate the nodes in relation view"
+        },
+        {
+            "testPath": "./bdd/RelationNavigation.feature",
+            "scenarioTitle": "User wants to toggle the enum fields",
+            "scenarioContent": "Given User is in the schema graph view without selected node\n\n        When He clicks enums\n\n        Then Enum fields should disappear from nodes",
+            "featureContent": "Easiliy navigate in Relation view\n\n    The user can navigate the nodes in relation view"
+        },
+        {
+            "testPath": "./bdd/RelationNavigation.feature",
+            "scenarioTitle": "User wants to enter the edit mode without selected node",
+            "scenarioContent": "Given User is in the schema graph view without selected node\n\n        When He clicks edit mode\n        And selects a node\n\n        Then Active editable node should appear in the top left corner",
+            "featureContent": "Easiliy navigate in Relation view\n\n    The user can navigate the nodes in relation view"
+        },
+        {
+            "testPath": "./bdd/RelationNavigation.feature",
+            "scenarioTitle": "User wants to enter the edit mode with selected node",
+            "scenarioContent": "Given User is in the schema graph view with selected node\n\n        When He clicks edit mode\n\n        Then Active editable node should appear in the top left corner it should hide on another click in edit mode",
+            "featureContent": "Easiliy navigate in Relation view\n\n    The user can navigate the nodes in relation view"
+        },
+        {
+            "testPath": "./bdd/RelationNavigation.feature",
+            "scenarioTitle": "User sees the new node menu",
+            "scenarioContent": "Given User is in the schema graph view with edit mode on\n\n        Then New node button should be visible",
+            "featureContent": "Easiliy navigate in Relation view\n\n    The user can navigate the nodes in relation view"
+        },
+        {
+            "testPath": "./bdd/RelationNavigation.feature",
+            "scenarioTitle": "User doesnt see the new node menu",
+            "scenarioContent": "Given User is in the schema graph view with edit mode off\n\n        Then New node button should not be visible",
+            "featureContent": "Easiliy navigate in Relation view\n\n    The user can navigate the nodes in relation view"
+        },
+        {
+            "testPath": "./bdd/RelationNavigation.feature",
+            "scenarioTitle": "User wants to navigate via relation link to the field type",
+            "scenarioContent": "Given User is in the schema graph view with edit mode off\n        And has selected a node\n\n        When User clicks the line connected to the field\n\n        Then It navigates them to the clicked link node",
+            "featureContent": "Easiliy navigate in Relation view\n\n    The user can navigate the nodes in relation view"
+        },
+        {
+            "testPath": "./bdd/RelationNavigation.feature",
+            "scenarioTitle": "User wants to create a node",
+            "scenarioContent": "Given User is in the schema graph view with edit mode off\n\n        When He clicks new node\n        And Clicks type +\n        And Inputs \"MyNode\"\n        And Clicks \"Enter\"\n\n        Then New node should appear as an active node with new field menu open",
+            "featureContent": "Easiliy navigate in Relation view\n\n    The user can navigate the nodes in relation view"
+        },
+        {
+            "testPath": "./bdd/Sidebar.feature",
+            "scenarioTitle": "User wants to hide/show code view",
+            "scenarioContent": "Given User is in the schema graph view\n\n        When He clicks toggle code\n\n        Then Code pane shows/hide",
+            "featureContent": "Easiliy navigate using sidebar\n\n    The user can navigate the nodes in the sidebar between docs, graph, code, diff"
+        },
+        {
+            "testPath": "./bdd/Sidebar.feature",
+            "scenarioTitle": "User wants to see docs view",
+            "scenarioContent": "Given User has the schema graph view opened\n\n        When He clicks docs view\n\n        Then He is navigated to the docs view",
+            "featureContent": "Easiliy navigate using sidebar\n\n    The user can navigate the nodes in the sidebar between docs, graph, code, diff"
+        },
+        {
+            "testPath": "./bdd/Sidebar.feature",
+            "scenarioTitle": "User wants to see diff view",
+            "scenarioContent": "Given User has the schema graph view opened\n\n        When He clicks diff view\n\n        Then He is navigated to the diff view",
+            "featureContent": "Easiliy navigate using sidebar\n\n    The user can navigate the nodes in the sidebar between docs, graph, code, diff"
+        },
+        {
+            "testPath": "./bdd/Sidebar.feature",
+            "scenarioTitle": "User wants to hide/show sidebar",
+            "scenarioContent": "Given User has the sidebar opened\n\n        When user clicks an arrow caret on the sidebar\n\n        Then Sidebar shrinks",
+            "featureContent": "Easiliy navigate using sidebar\n\n    The user can navigate the nodes in the sidebar between docs, graph, code, diff"
+        }
+    ],
+    "testStatus": {
+        "status": "finished",
+        "testFilesRoutes": [
+            "./bdd/ActiveNode.feature",
+            "./bdd/ActiveNode/Directive.feature",
+            "./bdd/ActiveNode/Enum.feature",
+            "./bdd/ActiveNode/Field.feature",
+            "./bdd/ActiveNode/Input.feature",
+            "./bdd/ActiveNode/InputValue.feature",
+            "./bdd/ActiveNode/Scalar.feature",
+            "./bdd/ActiveNode/TypeInterface.feature",
+            "./bdd/ActiveNode/Union.feature",
+            "./bdd/Code.feature",
+            "./bdd/DiffEditor.feature",
+            "./bdd/LibraryNodes.feature",
+            "./bdd/NodeNavigation.feature",
+            "./bdd/RelationNavigation.feature",
+            "./bdd/Sidebar.feature"
+        ]
+    }
+}

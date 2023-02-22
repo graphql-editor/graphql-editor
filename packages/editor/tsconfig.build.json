@@ -37,6 +37,7 @@
     "docs",
     "cypress",
     "cypress.config.ts",
+    "jest.config.js",
     "__mocks__",
     "**/*.spec.ts",
     "**/*.test.ts"

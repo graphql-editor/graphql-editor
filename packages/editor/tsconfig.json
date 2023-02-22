@@ -31,5 +31,5 @@
     ],
     "skipLibCheck": true
   },
-  "exclude": ["lib", "sandbox", "docs", "__mocks__"]
+  "exclude": ["lib", "sandbox", "docs", "__mocks__", "jest.config.js"]
 }
