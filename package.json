@@ -41,7 +41,7 @@
     "@types/remarkable": "^2.0.3",
     "@typescript-eslint/eslint-plugin": "^4.31.1",
     "@typescript-eslint/parser": "^4.31.1",
-    "bddx": "^0.1.5",
+    "bddx": "^0.1.6",
     "concurrently": "^7.3.0",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^7.32.0",
@@ -68,6 +68,7 @@
     "color2k": "^1.2.4",
     "fuzzyjs": "^5.0.1",
     "graphql-language-service": "3.1.4",
+    "js-graph-algorithms": "^1.0.18",
     "re-resizable": "^6.9.1",
     "remarkable": "^2.0.1",
     "unstated-next": "^1.1.0"

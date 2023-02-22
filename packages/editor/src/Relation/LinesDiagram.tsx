@@ -9,7 +9,7 @@ import { useTreesState } from '@/state/containers/trees';
 import { useRelationsState } from '@/state/containers';
 import { Node } from './Node';
 import styled from '@emotion/styled';
-import { layerSort } from './Algorithm';
+import { layerSortRecuirsive } from './Algorithm';
 import { Lines, RelationPath } from '@/Relation/Lines';
 import { isScalarArgument } from '@/GraphQL/Resolve';
 import * as vars from '@/vars';
@@ -125,7 +125,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
     const togetherFiltered = nodes
       .map(filterScalars)
       .filter((n) => !scalarTypes.includes(n.name));
-    setRelationDrawingNodes(layerSort(togetherFiltered));
+    setRelationDrawingNodes(layerSortRecuirsive(togetherFiltered));
     return;
   }, [nodes, libraryTree, baseTypesOn]);
 
