@@ -17,7 +17,8 @@ Here is a [guide](https://guide.graphqleditor.com) for GraphQL Editor SaaS
 ## How it works
 
 Create GraphQL nodes and connect them to generate a database schema. You can also use builtin text IDE with GraphQL syntax validation
-![](/assets/demo.gif)
+![graphql-editor-gif](https://user-images.githubusercontent.com/779748/217845783-0f3c5cc3-d74d-4589-bfcb-79b49664935c.gif)
+
 ## Table of contents
 
 - [SaaS Docs](#saas-docs)
