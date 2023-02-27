@@ -1,28 +1,49 @@
 [![GraphQLEditor Editor](assets/logo.gif)](https://graphqleditor.com)
 
-[![npm](https://img.shields.io/npm/v/graphql-editor.svg?style=flat-square)](https://www.npmjs.com/package/graphql-editor) [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?style=flat-square)](http://commitizen.github.io/cz-cli/) [![npm downloads](https://img.shields.io/npm/dt/graphql-editor.svg?style=flat-square)](https://www.npmjs.com/package/graphql-editor)
+<h3 align="center">Graph sorcery, that makes reading GraphQL schemas easier!</h3>
+<div align="center">
+
+[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge&label=license)](https://www.apache.org/licenses/LICENSE-2.0.html)
+[![stars](https://img.shields.io/github/stars/graphql-editor/graphql-editor?style=for-the-badge&label=stars)](https://github.com/apache/incubator-streampark/stargazers)
+[![npm](https://img.shields.io/npm/v/graphql-editor.svg?style=for-the-badge)](https://www.npmjs.com/package/graphql-editor)
+[![npm downloads](https://img.shields.io/npm/dt/graphql-editor.svg?style=for-the-badge)](https://www.npmjs.com/package/graphql-editor)
+[![Twitter](https://img.shields.io/twitter/follow/GraphQLEditor?label=follow&logo=twitter&style=for-the-badge)](https://twitter.com/GraphQLEditor)
+
+**[Website](https://graphqleditor.com)**&nbsp;&nbsp;|&nbsp;&nbsp;
+**[Docs](https://graphqleditor.com/docs)**
+
+![graphql-editor-gif](https://user-images.githubusercontent.com/779748/217845783-0f3c5cc3-d74d-4589-bfcb-79b49664935c.gif)
+
+</div>
 
 GraphQLEditor makes it easier to understand GraphQL schemas. Create a schema by using visual blocks system. GraphQL Editor will transform them into code.
 
 With GraphQL Editor you can create visual diagrams without writing any code or present your schema in a nice way!
 
-### Cloud version
-
-Here is a [cloud version](https://graphqleditor.com) of GraphQL Editor.
-
-## SaaS Docs
-
-Here is a [guide](https://guide.graphqleditor.com) for GraphQL Editor SaaS
-
 ## How it works
 
 Create GraphQL nodes and connect them to generate a database schema. You can also use builtin text IDE with GraphQL syntax validation
-![graphql-editor-gif](https://user-images.githubusercontent.com/779748/217845783-0f3c5cc3-d74d-4589-bfcb-79b49664935c.gif)
+
+## 💡 What is GraphQL Editor?
+
+<h4>GraphQL Editor is Graph based system for reading and designing the GraphQL schema</h4>
+
+> GraphQL Editor is a GraphQL visualizer and designer. It allows you to create and display GraphQL schemas as a visual graph.
+
+## 🚀 Features
+
+- Visual GraphQL Editing.
+- GraphQL Monaco based IDE
+- Selection observer. When node is clicked in visual Graph it automatically scrolls the code to the same node. When cursor is moved in code space
+- Automatically bound interfaces. When interface is implemented on type fields of the interface add to the type. If it is already implemented editing interface edits all implementing nodes
+- Writing,generating and displaying GraphQL Documentation in markdown. Generating GraphQL docs out of GraphQL descriptions in markdown
+- Comparing different versions of GraphQL schemas with special node-sort sorting nodes and its fields to show the real difference in GraphQL Schema on AST omitting line numbers
 
 ## Table of contents
 
-- [SaaS Docs](#saas-docs)
 - [How it works](#how-it-works)
+- [💡 What is GraphQL Editor?](#-what-is-graphql-editor)
+- [🚀 Features](#-features)
 - [Table of contents](#table-of-contents)
 - [License](#license)
 - [Installation](#installation)
@@ -32,6 +53,7 @@ Create GraphQL nodes and connect them to generate a database schema. You can als
 - [GraphQL Gql Editor](#graphql-gql-editor)
   - [Usage](#usage-1)
   - [GraphQLGqlEditor component props](#graphqlgqleditor-component-props)
+  - [GraphQL Embedded Readonly Editor](#graphql-embedded-readonly-editor)
 - [Support](#support)
 - [Team](#team)
 - [Underlying Parsing technology](#underlying-parsing-technology)
@@ -185,7 +207,7 @@ render(<App />, document.getElementById('root'));
 
 ### GraphQL Embedded Readonly Editor
 
-If you only want to view the schema and embed it somewhere in your app you can use our embedded editor for that  reason
+If you only want to view the schema and embed it somewhere in your app you can use our embedded editor for that reason
 
 ```tsx
 import React from 'react';
