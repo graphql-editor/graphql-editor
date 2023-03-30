@@ -14,7 +14,7 @@ import {
 
 import { DiffEditor } from '@/DiffEditor';
 import { Relation } from '@/Relation/Relation';
-import { EditorTheme } from '@/gshared/theme/DarkTheme';
+import { EditorTheme } from '@/gshared/theme/MainTheme';
 import { Docs } from '@/Docs/Docs';
 import { useSortState } from '@/state/containers/sort';
 import styled from '@emotion/styled';
@@ -31,15 +31,15 @@ const Main = styled.div`
   overflow-y: clip;
 
   scrollbar-color: ${({ theme }) =>
-    `${theme.background.mainClose} ${theme.background.mainFurthest}`};
+    `${theme.neutral[500]} ${theme.neutral[600]}`};
   *::-webkit-scrollbar {
-    background: ${({ theme }) => theme.background.mainClose};
+    background: ${({ theme }) => theme.neutral[500]};
   }
   *::-webkit-scrollbar-thumb {
-    background: ${({ theme }) => theme.background.mainClose};
+    background: ${({ theme }) => theme.neutral[500]};
   }
   *::-webkit-scrollbar-track {
-    background: ${({ theme }) => theme.background.mainFurthest};
+    background: ${({ theme }) => theme.neutral[600]};
   }
 
   .full-screen-container {
@@ -57,7 +57,7 @@ const Sidebar = styled.div`
   flex-direction: column;
   overflow: hidden;
   position: relative;
-  background: ${({ theme }) => theme.background.mainFurthest};
+  background: ${({ theme }) => theme.neutral[600]};
 `;
 
 const ErrorOuterContainer = styled.div<{ isOverflow?: boolean }>`
@@ -74,7 +74,6 @@ export interface EditorProps {
   // Code and libraries
   schema: PassedSchema;
   // force expand/hide sidebar
-  sidebarExpanded?: boolean;
   // Record containing graphql schemas with "name" as a key and graphql schema as a "value"
   diffSchemas?: Record<string, string>;
   // Function to be called when schema is set by the editor
@@ -99,7 +98,6 @@ export const Editor = ({
   onTreeChange,
   readonly: editorReadOnly,
   theme,
-  sidebarExpanded,
   routeState,
   onRouteChange,
 }: EditorProps) => {
@@ -268,7 +266,6 @@ export const Editor = ({
     >
       <Menu
         toggleCode={routes.code === 'on'}
-        sidebarExpanded={sidebarExpanded}
         setToggleCode={(e) =>
           set(
             {

@@ -87,7 +87,6 @@ export const NodeAddDirectiveMenu = React.forwardRef<
         }}
         value={menuSearchValue}
         onChange={setMenuSearchValue}
-        onClear={() => setMenuSearchValue('')}
       />
       <MenuScrollingArea
         controls={{

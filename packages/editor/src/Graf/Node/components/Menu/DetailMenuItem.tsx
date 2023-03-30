@@ -15,11 +15,11 @@ const Main = styled.div`
 
 const MenuItemText = styled.span`
   transition: color 0.25s ease-in-out;
-  color: ${({ theme }) => theme.text};
+  color: ${({ theme }) => theme.text.active};
   width: 100%;
 
   &:hover {
-    color: ${({ theme }) => theme.active};
+    color: ${({ theme }) => theme.accents[200]};
   }
 `;
 

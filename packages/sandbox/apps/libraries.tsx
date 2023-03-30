@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { GraphQLEditor, MainTheme } from 'graphql-editor';
+import { GraphQLEditor } from 'graphql-editor';
 import { PassedSchema } from 'graphql-editor';
 import * as schemas from '../schema';
 
@@ -38,8 +38,6 @@ export const libraries = () => {
       }}
     >
       <GraphQLEditor
-        theme={MainTheme}
-        sidebarExpanded
         setSchema={(props) => {
           setMySchema(props);
         }}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GraphQLEditor, LightTheme } from 'graphql-editor';
+import { GraphQLEditor } from 'graphql-editor';
 import { PassedSchema } from 'graphql-editor';
 import * as schemas from '../schema';
 
@@ -20,7 +20,6 @@ export const Light = () => {
       }}
     >
       <GraphQLEditor
-        theme={LightTheme}
         setSchema={(props) => {
           setMySchema(props);
         }}

@@ -1,12 +1,13 @@
-import { useTreesState } from '@/state/containers';
+import { useRelationsState, useTreesState } from '@/state/containers';
 import { ParserField, TypeDefinition, getTypeName } from 'graphql-js-tree';
 import React, { useMemo } from 'react';
 import { Field } from '../Field';
 import { FIELD_NAME_SIZE } from '@/Graf/constants';
-import { fontFamilySans } from '@/vars';
+import { fontFamilySans, transition } from '@/vars';
 import styled from '@emotion/styled';
-import { EditorTheme } from '@/gshared/theme/DarkTheme';
+import { EditorTheme } from '@/gshared/theme/MainTheme';
 import { ActiveType } from '@/Relation/Field/ActiveType';
+import { PenLine } from '@aexol-studio/styling-system';
 
 type NodeTypes = keyof EditorTheme['colors'];
 
@@ -19,11 +20,11 @@ interface ContentProps {
 }
 
 const Content = styled.div<ContentProps>`
-  background-color: ${({ theme }) => `${theme.background.mainFurther}`};
+  background-color: ${({ theme }) => `${theme.neutral[600]}`};
   padding: 12px;
   position: relative;
   text-rendering: optimizeSpeed;
-  border-radius: 0.75rem;
+  border-radius: ${(p) => p.theme.radius}px;
   margin: 15px;
   transition: 0.25s all ease-in-out;
   z-index: 1;
@@ -38,10 +39,12 @@ const Content = styled.div<ContentProps>`
   border-color: ${({ theme, nodeType, isSelected }) =>
     theme.colors[nodeType] && isSelected
       ? theme.colors[nodeType]
-      : `${theme.background.mainMiddle}`};
+      : `${theme.dividerMain}88`};
   &:hover {
     border-color: ${({ theme, nodeType }) =>
-      theme.colors[nodeType] ? theme.colors[nodeType] : `${theme.hover}00`};
+      theme.colors[nodeType]
+        ? theme.colors[nodeType]
+        : `${theme.accents[100]}00`};
   }
 `;
 
@@ -49,11 +52,34 @@ const NodeRelationFields = styled.div``;
 
 const NodeTitle = styled.div`
   align-items: center;
-  color: ${({ theme }) => theme.text};
+  color: ${({ theme }) => theme.text.active};
   font-size: 14px;
   font-weight: 500;
   height: 40px;
+  position: relative;
+  padding-right: 1.5rem;
   display: flex;
+`;
+const EditNodeContainer = styled.div`
+  position: absolute;
+  right: 0;
+  top: 0;
+  background-color: ${(p) => p.theme.neutral[400]};
+  color: ${(p) => p.theme.button.standalone.active};
+  border-top-right-radius: ${(p) => p.theme.radius}px;
+  border-bottom-left-radius: ${(p) => p.theme.radius}px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: ${transition};
+  pointer-events: all;
+  cursor: pointer;
+  z-index: 1;
+  :hover {
+    background-color: ${(p) => p.theme.neutral[200]};
+  }
 `;
 
 const ContentWrapper = styled.div`
@@ -64,7 +90,7 @@ const ContentWrapper = styled.div`
 
 const NameInRelation = styled.span`
   margin-right: 5px;
-  color: ${({ theme }) => theme.text};
+  color: ${({ theme }) => theme.text.active};
   padding: 0;
   font-family: ${fontFamilySans};
   font-size: ${FIELD_NAME_SIZE};
@@ -84,6 +110,7 @@ export const Node: React.FC<NodeProps> = ({
   canSelect,
 }) => {
   const { setSelectedNodeId, activeNode, relatedToSelected } = useTreesState();
+  const { setEditMode } = useRelationsState();
   const isSelected = !!activeNode && field.id === activeNode.id;
   const RelationFields = useMemo(() => {
     return (
@@ -141,6 +168,16 @@ export const Node: React.FC<NodeProps> = ({
         });
       }}
     >
+      {isSelected && (
+        <EditNodeContainer
+          onClick={(e) => {
+            e.stopPropagation();
+            setEditMode(field.id);
+          }}
+        >
+          <PenLine width={16} height={16} />
+        </EditNodeContainer>
+      )}
       {NodeContent}
       {RelationFields}
     </Content>

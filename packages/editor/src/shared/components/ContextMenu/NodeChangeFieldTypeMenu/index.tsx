@@ -63,7 +63,6 @@ export const NodeChangeFieldTypeMenu = React.forwardRef<
         }}
         value={menuSearchValue}
         onChange={setMenuSearchValue}
-        onClear={() => setMenuSearchValue('')}
       />
       <MenuScrollingArea
         controls={{

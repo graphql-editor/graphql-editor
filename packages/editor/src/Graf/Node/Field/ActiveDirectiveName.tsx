@@ -8,7 +8,7 @@ const Main = styled.div`
   flex-flow: row wrap;
   font-size: ${GRAF_FIELD_NAME_SIZE}px;
   gap: 0.1rem;
-  color: ${({ theme }) => theme.inactive};
+  color: ${({ theme }) => theme.text.default};
 `;
 
 export const ActiveDirectiveName: React.FC<Pick<ParserField, 'name'> & {}> = ({

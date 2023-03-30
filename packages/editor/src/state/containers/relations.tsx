@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 const useRelationsContainer = createContainer(() => {
   const [baseTypesOn, setBaseTypesOn] = useState(true);
-  const [editMode, setEditMode] = useState(true);
+  const [editMode, setEditMode] = useState('');
 
   return {
     setBaseTypesOn,

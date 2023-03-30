@@ -66,7 +66,6 @@ export const NodeImplementInterfacesMenu = React.forwardRef<
         }}
         value={menuSearchValue}
         onChange={setMenuSearchValue}
-        onClear={() => setMenuSearchValue('')}
       />
       <MenuScrollingArea
         controls={{

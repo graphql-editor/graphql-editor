@@ -7,21 +7,21 @@ export const CodeContainer = styled.div`
   overflow-x: hidden;
   display: flex;
   flex-flow: column;
-  border-right: 2px solid ${({ theme }) => theme.moduleSeparator};
+  border-right: 2px solid ${({ theme }) => theme.black};
 
   &.monaco-scrollable-element {
     padding: 8px;
   }
 
   &.vs-dark .monaco-scrollable-element > .scrollbar {
-    background: ${({ theme }) => theme.background.mainFurthest};
+    background: ${({ theme }) => theme.neutral[600]};
     &.invisible {
       opacity: 0.5;
     }
   }
 
   &.vs-dark .monaco-scrollable-element > .scrollbar > .slider {
-    background: ${({ theme }) => theme.background.mainFar};
+    background: ${({ theme }) => theme.neutral[600]};
   }
 `;
 
@@ -31,7 +31,7 @@ export const ErrorLock = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  background: ${({ theme }) => theme.background.mainFurthest};
+  background: ${({ theme }) => theme.neutral[600]};
   cursor: pointer;
   color: ${({ theme }) => theme.error};
   font-family: ${fontFamily};

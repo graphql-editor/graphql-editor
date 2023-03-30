@@ -1,119 +1,61 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from '@emotion/styled';
 import { fontFamilySans, transition } from '@/vars';
-import { ChevronSelectorHorizontal } from '@/icons/ChevronSelectorHorizontal';
-import { Tool } from '@/icons/Tool';
-import { File } from '@/icons/File';
-import { FilterFunnel02 } from '@/icons/FilterFunnel02';
-import { ChevronRightDouble } from '@/icons/ChevronRightDouble';
+import { Tool, Code, File, Filter } from '@aexol-studio/styling-system';
 
-const Sidebar = styled.div<{ isCollapsed: boolean }>`
-  background: ${({ theme }) => theme.background.mainBlack};
-  color: ${({ theme }) => theme.disabled};
+const Sidebar = styled.div`
+  background: ${({ theme }) => theme.neutral[600]};
+  color: ${({ theme }) => theme.text.disabled};
   z-index: 4;
-  border: 0 solid ${({ theme }) => theme.moduleSeparator};
+  border: 0 solid ${({ theme }) => theme.black};
   border-right-width: 1px;
   border-left-width: 1px;
   position: relative;
   transition: width 0.5s ease-in-out;
-  width: ${({ isCollapsed }) => (isCollapsed ? 'calc(2rem + 20px)' : '210px')};
+  width: calc(2rem + 20px);
   display: flex;
   flex-direction: column;
   gap: 1px;
 `;
 const Filler = styled.div`
   flex: 1;
-  background-color: ${({ theme }) => theme.background.mainFar};
+  background-color: ${({ theme }) => theme.neutral[600]};
 `;
 
 const MenuItem = styled.div<{
-  isCollapsed: boolean;
   isDisabled?: boolean;
   rotateItem?: boolean;
 }>`
   display: flex;
-  justify-content: flex-start;
-  gap: 0.5rem;
+  justify-content: center;
   align-items: center;
   color: ${({ theme, isDisabled }) =>
-    isDisabled ? theme.disabled : theme.text};
+    isDisabled ? theme.text.disabled : theme.text.active};
   padding: 1rem;
   font-family: ${fontFamilySans};
   cursor: ${({ isDisabled }) => (isDisabled ? 'not-allowed' : 'pointer')};
   transition: all 0.25s ease;
   overflow: hidden;
   user-select: none;
-  background-color: ${({ theme }) => theme.background.mainFar};
+  background-color: ${({ theme }) => theme.neutral[600]};
 
   &:hover {
     background-color: ${({ theme, isDisabled }) =>
-      !isDisabled && theme.background.mainCloser};
+      !isDisabled && theme.neutral[500]};
     color: ${({ isDisabled, theme }) =>
-      isDisabled ? theme.disabled : '#e3f6fc'};
-  }
-
-  & > div::after,
-  p::after {
-    margin-left: 10px;
-    color: ${({ theme }) => theme.active};
-    content: '✔';
-    font-size: 16px;
-    line-height: 1;
-    opacity: 0;
-    transition: opacity 0.25s ease-in-out;
-  }
-
-  p::after {
-    display: ${({ isDisabled }) => (isDisabled ? 'none' : 'inline')};
-    position: relative;
-    bottom: 1px;
-  }
-
-  & > div {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
-
-  & > div::after {
-    display: ${({ isDisabled }) => (isDisabled ? 'none' : 'block')};
-    position: absolute;
-    right: -10px;
-    top: -10px;
+      isDisabled ? theme.text.disabled : '#e3f6fc'};
   }
 
   svg {
     flex-shrink: 0;
     height: 20px;
-    rotate: ${({ rotateItem }) => (rotateItem ? '0deg' : '180deg')};
     transition: ${transition};
   }
 
-  p {
-    font-size: 14px;
-    margin: 0;
-    width: max-content;
-    white-space: nowrap;
-    transition: opacity 0.25s ease-in-out;
-    transform: translateY(2px);
-    opacity: ${({ isCollapsed }) => (isCollapsed ? '0' : '1')};
-  }
-
   &.active {
-    color: ${({ theme }) => theme.active};
+    color: ${({ theme }) => theme.accents[200]};
     font-weight: 600;
   }
-
-  &.toggle-active {
-    p::after {
-      opacity: 1;
-    }
-
-    & > div::after {
-      opacity: ${({ isCollapsed }) => (isCollapsed ? 1 : 0)};
-    }
-  }
-
   &[data-tooltip] {
     &:after {
       content: attr(data-tooltip);
@@ -121,20 +63,21 @@ const MenuItem = styled.div<{
       pointer-events: none;
       left: 67px;
       width: max-content;
-      color: ${({ theme }) => theme.text};
+      color: ${({ theme }) => theme.text.default};
       font-weight: 400;
       background: #000000;
-      border: 1px solid ${({ theme }) => theme.dimmed};
+      border: 1px solid ${({ theme }) => theme.text.disabled};
+      border-radius: ${(p) => p.theme.radius}px;
       text-align: center;
       padding: 5px 12px;
       z-index: 100;
       opacity: 0;
-      transition: opacity 0.25s ease-in-out;
+      transition: ${transition};
     }
 
     &:hover {
       &:after {
-        opacity: ${({ isCollapsed }) => (isCollapsed ? 1 : 0)};
+        opacity: 1;
         color: #e3f6fc;
       }
     }
@@ -152,7 +95,6 @@ export type ActivePane = 'diff' | 'relation' | 'docs';
 export interface MenuProps {
   setToggleCode: (v: boolean) => void;
   toggleCode: boolean;
-  sidebarExpanded?: boolean;
   activePane?: ActivePane;
   excludePanes?: ActivePane[];
   setActivePane: (pane?: ActivePane) => void;
@@ -164,29 +106,22 @@ export const Menu = ({
   setActivePane,
   activePane,
   excludePanes = [],
-  sidebarExpanded,
 }: MenuProps) => {
-  const [isCollapsed, setIsCollapsed] = useState(
-    sidebarExpanded === true ? false : true,
-  );
-
   return (
-    <Sidebar isCollapsed={isCollapsed}>
+    <Sidebar>
       <MenuItem
         className={toggleCode ? 'toggle-active' : ''}
         onClick={() => {
           if (!activePane || activePane === 'diff') return;
           setToggleCode(!toggleCode);
         }}
-        isCollapsed={isCollapsed}
         isDisabled={activePane === 'diff'}
         data-tooltip="Toggle Code"
         data-tour="toggle-code"
       >
         <div>
-          <ChevronSelectorHorizontal />
+          <Code />
         </div>
-        <p>Toggle Code</p>
       </MenuItem>
       {!excludePanes.includes('relation') && (
         <MenuItem
@@ -200,10 +135,8 @@ export const Menu = ({
           }}
           data-tooltip="Relation"
           data-tour="relation"
-          isCollapsed={isCollapsed}
         >
           <Tool />
-          <p>Relation</p>
         </MenuItem>
       )}
       {!excludePanes.includes('docs') && (
@@ -218,10 +151,8 @@ export const Menu = ({
           }}
           data-tooltip="Documentation"
           data-tour="documentation"
-          isCollapsed={isCollapsed}
         >
           <File />
-          <p>Documentation</p>
         </MenuItem>
       )}
       {!excludePanes.includes('diff') && (
@@ -230,21 +161,10 @@ export const Menu = ({
           onClick={() => setActivePane('diff')}
           data-tooltip="Diff"
           data-tour="diff"
-          isCollapsed={isCollapsed}
         >
-          <FilterFunnel02 />
-          <p>Diff</p>
+          <Filter />
         </MenuItem>
       )}
-      <MenuItem
-        onClick={() => setIsCollapsed((prev) => !prev)}
-        isCollapsed={isCollapsed}
-        data-tooltip={'show'}
-        rotateItem={isCollapsed}
-      >
-        <ChevronRightDouble />
-        <p>Hide</p>
-      </MenuItem>
       <Filler />
     </Sidebar>
   );

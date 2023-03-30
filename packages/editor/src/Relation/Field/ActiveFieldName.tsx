@@ -11,7 +11,7 @@ const Main = styled.div`
 
 const Name = styled.div`
   font-size: ${FIELD_NAME_SIZE};
-  color: ${({ theme }) => theme.text};
+  color: ${({ theme }) => theme.text.default};
   margin-right: 2px;
 `;
 

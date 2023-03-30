@@ -9,7 +9,7 @@ import { Remarkable } from 'remarkable';
 import styled from '@emotion/styled';
 import { DescText, DescWrapper, Title } from '@/Docs/DocsStyles';
 import { Description } from '@/Docs/Description';
-import { Edit } from '@/icons/Edit';
+import { PenLine } from '@aexol-studio/styling-system';
 
 const Wrapper = styled.div`
   font-family: ${fontFamilySans};
@@ -30,7 +30,7 @@ const Type = styled.div`
 `;
 
 const Line = styled.div`
-  border-bottom: 1px solid ${({ theme }) => theme.disabled}36;
+  border-bottom: 1px solid ${({ theme }) => theme.text.disabled}36;
   width: 100%;
 `;
 
@@ -95,7 +95,7 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
               __html: description || 'No description',
             }}
           />
-          {!isReadonly && <Edit />}
+          {!isReadonly && <PenLine />}
         </DescWrapper>
       )}
       <Line />

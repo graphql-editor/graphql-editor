@@ -134,26 +134,31 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
       setRelations([]);
       return;
     }
-
+    const findRelative = (a: ParserField, index: number) => {
+      const pn = relationDrawingNodesArray.find(
+        (nf) => nf.name === getTypeName(a.type.fieldType),
+      );
+      if (!pn) {
+        return;
+      }
+      return {
+        htmlNode: refs[pn.id],
+        field: pn,
+        index,
+        connectingField: a,
+      } as RelationPath;
+    };
     setRelations(
       relationDrawingNodesArray
         .map((n) => ({
           to: { htmlNode: refs[n.id], field: n, connectingField: n },
           fromLength: n.args?.length || 0,
           from: n.args
-            .map((a, index) => {
-              const pn = relationDrawingNodesArray.find(
-                (nf) => nf.name === getTypeName(a.type.fieldType),
-              );
-              if (!pn) {
-                return;
-              }
-              return {
-                htmlNode: refs[pn.id],
-                field: pn,
-                index,
-                connectingField: a,
-              } as RelationPath;
+            .flatMap((a, index) => {
+              const argNodes = a.args.map((ar, ind) => findRelative(ar, ind));
+              const main = findRelative(a, index);
+              const nodes = [main, ...argNodes];
+              return nodes.filter((node, i) => nodes.indexOf(node) === i);
             })
             .filter((o) => !!o),
         }))

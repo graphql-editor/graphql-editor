@@ -107,7 +107,6 @@ export const CollabEffect = () => {
     >
       <GraphQLEditor
         schema={currentSchema}
-        sidebarExpanded
         setSchema={(s) => {
           setCurrentSchema(s);
         }}

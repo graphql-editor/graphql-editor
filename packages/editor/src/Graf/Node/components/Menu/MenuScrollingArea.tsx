@@ -2,9 +2,10 @@ import React, { useEffect } from 'react';
 import styled from '@emotion/styled';
 
 const Main = styled.div`
-  color: ${({ theme }) => theme.text};
+  color: ${({ theme }) => theme.text.default};
   max-height: 200px;
   overflow-y: auto;
+  padding: 16px;
   scroll-snap-type: y mandatory;
 `;
 

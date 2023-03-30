@@ -12,7 +12,8 @@ import { useTreesState } from '@/state/containers/trees';
 import { Menu } from '@/Graf/Node/components';
 import styled from '@emotion/styled';
 import { transition } from '@/vars';
-import { Plus } from '@/icons/Plus';
+import { Plus } from '@aexol-studio/styling-system';
+import { useRelationsState } from '@/state/containers';
 
 interface NodeChangeFieldTypeMenuProps {
   hideMenu: () => void;
@@ -23,6 +24,7 @@ export const NewNodeMenu = React.forwardRef<
   NodeChangeFieldTypeMenuProps
 >(({ hideMenu, ...props }, ref) => {
   const { setTree, tree, setSelectedNodeId } = useTreesState();
+  const { setEditMode } = useRelationsState();
   const [nodeName, setNodeName] = useState('');
   const [creating, setCreating] = useState<
     TypeDefinition | TypeSystemDefinition
@@ -81,6 +83,7 @@ export const NewNodeMenu = React.forwardRef<
       },
       justCreated: true,
     });
+    setEditMode(node.id);
   };
 
   return (
@@ -88,7 +91,6 @@ export const NewNodeMenu = React.forwardRef<
       <Menu
         {...props}
         ref={ref}
-        menuName={'New Node'}
         onScroll={(e) => e.stopPropagation()}
         hideMenu={hideMenu}
       >
@@ -144,20 +146,17 @@ const CreateNodeItem = styled.div<{ type: string }>`
   padding: 1rem;
   cursor: pointer;
   svg {
-    color: ${({ theme }) => theme.text};
+    color: ${({ theme }) => theme.text.default};
   }
 
-  background-color: ${({ theme }) => theme.background.mainFar};
-  border-bottom: ${({ type, theme }) =>
-      theme.colors[type as keyof typeof theme.colors]}
-    2px solid;
+  background-color: ${({ theme }) => theme.neutral[500]};
   transition: ${transition};
   :hover {
-    background-color: ${({ theme }) => theme.background.mainMiddle};
+    background-color: ${({ theme }) => theme.neutral[500]};
   }
 `;
 const CreateNodeName = styled.div`
-  color: ${({ theme }) => theme.text};
+  color: ${({ theme }) => theme.text.default};
   font-size: 16px;
 `;
 const NodeMenuContainer = styled.div`
@@ -168,10 +167,7 @@ const NodeMenuContainer = styled.div`
 const CreationInput = styled.input<{ type: string }>`
   border: 0;
   width: 100%;
-  background-color: ${({ theme }) => theme.background.mainFar};
-  border-bottom: ${({ type, theme }) =>
-      theme.colors[type as keyof typeof theme.colors]}
-    2px solid;
+  background-color: ${({ theme }) => theme.neutral[500]};
   color: ${({ type, theme }) =>
     theme.colors[type as keyof typeof theme.colors]};
   font-size: 16px;

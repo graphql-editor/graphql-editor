@@ -1,9 +1,12 @@
+import { themeColors } from '@aexol-studio/styling-system';
 import styled from '@emotion/styled';
-import { MainTheme, vars } from 'graphql-editor';
+import { vars } from 'graphql-editor';
 import { fontFamilySans } from 'graphql-editor/lib/vars';
 import React from 'react';
 import { render } from 'react-dom';
 import * as apps from './apps';
+
+const MainTheme = themeColors('graphqleditor', 'dark');
 
 export type AppType = keyof typeof apps;
 const Wrapper = styled.div`
@@ -11,8 +14,8 @@ const Wrapper = styled.div`
   height: 100%;
   position: relative;
   overflow: auto;
-  background-color: ${MainTheme.background.mainFurther};
-  color: ${MainTheme.text};
+  background: ${MainTheme.background.default};
+  color: ${MainTheme.text.default};
   padding: 40px;
   font-family: ${fontFamilySans};
 `;
@@ -23,15 +26,17 @@ const Main = styled.div`
 const Tile = styled.a`
   border-radius: 10px;
   padding: 40px;
-  background-color: ${MainTheme.background.mainFar};
+  background-color: ${MainTheme.neutral[500]};
   cursor: pointer;
   margin: 10px;
   text-decoration: none;
-  color: ${MainTheme.dimmed};
+  color: ${MainTheme.text.default};
+  border: 1px solid transparent;
   transition: ${vars.transition};
   :hover {
-    color: ${MainTheme.active};
-    background-color: ${MainTheme.background.mainMiddle};
+    border: 1px solid ${MainTheme.accents[200]};
+    color: ${MainTheme.accents[200]};
+    background-color: ${MainTheme.neutral[600]};
   }
 `;
 

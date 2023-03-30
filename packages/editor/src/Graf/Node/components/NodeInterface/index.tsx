@@ -22,7 +22,7 @@ const NodeInterfaceBlock = styled.div<{ isLocked?: boolean }>`
   padding: 0.25rem 0.5rem;
   color: ${({ theme }) => theme.colors.interface};
   font-size: 12px;
-  border-radius: 0.25rem;
+  border-radius: ${(p) => p.theme.radius}px;
   position: relative;
   cursor: pointer;
   border: 1px solid currentColor;
@@ -91,8 +91,8 @@ interface CreateNodeInterfaceProps {
 const CreateNodeInterfaceBlock = styled.div`
   padding: 0.25rem 0.5rem;
   font-size: 12px;
-  color: ${({ theme }) => theme.disabled};
-  border-radius: 0.25rem;
+  color: ${({ theme }) => theme.text.default};
+  border-radius: ${(p) => p.theme.radius}px;
   position: relative;
   cursor: pointer;
   border: 1px dashed currentColor;

@@ -94,12 +94,8 @@ export const NodeAddFieldMenu = React.forwardRef<
           }
         }}
         placeholder="Field name..."
-        icon="add"
         value={menuSearchValue}
         onChange={setMenuSearchValue}
-        onClear={() => {
-          setMenuSearchValue('');
-        }}
       />
       <MenuScrollingArea
         controls={{

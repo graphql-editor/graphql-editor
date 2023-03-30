@@ -7,11 +7,11 @@ import { useDraggable } from '@/Graf/state/draggable';
 const Input = styled.input<{ isError?: boolean; isEditable?: boolean }>`
   border: 0;
   background-color: transparent;
-  color: ${({ theme, isError }) => (isError ? theme.error : theme.text)};
   min-width: auto;
   padding: 0;
   font-family: ${fontFamilySans};
   font-size: ${GRAF_FIELD_NAME_SIZE}px;
+  color: inherit;
 `;
 
 export const EditableText: React.FC<{

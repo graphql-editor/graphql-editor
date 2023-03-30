@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { GraphQLEditor } from 'graphql-editor';
 import { PassedSchema } from 'graphql-editor';
-import { MainTheme } from 'graphql-editor';
 
 export const Pure = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
@@ -20,7 +19,6 @@ export const Pure = () => {
       }}
     >
       <GraphQLEditor
-        theme={MainTheme}
         setSchema={(props) => {
           setMySchema({
             ...props,

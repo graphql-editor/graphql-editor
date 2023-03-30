@@ -8,8 +8,8 @@ type ErrorItemProps = {
 
 const ButtonStyles = styled.button`
   border: 0;
-  background-color: ${({ theme }) => theme.background.mainMiddle};
-  color: ${({ theme }) => theme.text};
+  background-color: ${({ theme }) => theme.neutral[600]};
+  color: ${({ theme }) => theme.text.default};
   padding: 10px 50px;
   cursor: pointer;
   text-transform: uppercase;

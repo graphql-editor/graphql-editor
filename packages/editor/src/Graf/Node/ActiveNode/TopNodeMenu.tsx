@@ -26,11 +26,14 @@ import { useTreesState } from '@/state/containers/trees';
 import { getScalarFields } from '@/Graf/utils/getScalarFields';
 import styled from '@emotion/styled';
 import { ResolveExtension } from '@/GraphQL/Resolve';
-import { At } from '@/icons/At';
-import { Plus } from '@/icons/Plus';
-import { CheckSquareEmpty } from '@/icons/CheckSquareEmpty';
-import { Menu as MenuIcon } from '@/icons/Menu';
 import { transition } from '@/vars';
+import {
+  AtSign,
+  DiagramProject,
+  DotsHorizontal,
+  PlusLarge,
+  Stack,
+} from '@aexol-studio/styling-system';
 
 type PossibleMenus =
   | 'field'
@@ -39,22 +42,14 @@ type PossibleMenus =
   | 'options'
   | 'operations';
 const NodeIconArea = styled.div<{ opened?: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  align-self: center;
-  width: 24px;
-  height: 24px;
-  transition: background-color 0.25s ease-in-out;
-  background-color: transparent;
   cursor: pointer;
-  border-radius: 12px;
+  border-radius: ${(p) => p.theme.radius}px;
   transition: ${transition};
   &:hover {
-    background-color: ${({ theme }) => theme.background.mainFurthest};
-    color: ${({ theme }) => theme.active};
+    color: ${({ theme }) => theme.accents[200]};
   }
-  color: ${({ opened, theme }) => (opened ? theme.active : theme.disabled)};
+  color: ${({ opened, theme }) =>
+    opened ? theme.accents[200] : theme.text.default};
 `;
 
 export const TopNodeMenu: React.FC<{
@@ -104,7 +99,7 @@ export const TopNodeMenu: React.FC<{
   };
 
   return (
-    <>
+    <Stack direction="row" gap="0.5rem">
       {!isLibrary && (
         <>
           {node.data.type !== TypeDefinition.ScalarTypeDefinition &&
@@ -121,7 +116,7 @@ export const TopNodeMenu: React.FC<{
                     title="Click to add field"
                     opened={menuOpen === 'field'}
                   >
-                    <Plus />
+                    <PlusLarge />
                   </NodeIconArea>
                 )}
               >
@@ -148,7 +143,7 @@ export const TopNodeMenu: React.FC<{
                   title="Click to add directive"
                   opened={menuOpen === 'directive'}
                 >
-                  <At />
+                  <AtSign />
                 </NodeIconArea>
               )}
             >
@@ -187,7 +182,7 @@ export const TopNodeMenu: React.FC<{
                   opened={menuOpen === 'operations'}
                   title="Click set schema query, mutation, subscription"
                 >
-                  <CheckSquareEmpty />
+                  <DiagramProject />
                 </NodeIconArea>
               )}
             >
@@ -216,7 +211,7 @@ export const TopNodeMenu: React.FC<{
               title="Click to see node actions"
               opened={menuOpen === 'options'}
             >
-              <MenuIcon />
+              <DotsHorizontal />
             </NodeIconArea>
           )}
         >
@@ -333,6 +328,6 @@ export const TopNodeMenu: React.FC<{
           )}
         </ContextMenu>
       )}
-    </>
+    </Stack>
   );
 };

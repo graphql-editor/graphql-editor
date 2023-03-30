@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MainTheme, PassedSchema, GraphQLEditor } from 'graphql-editor';
+import { PassedSchema, GraphQLEditor } from 'graphql-editor';
 import * as schemas from '../schema';
 
 export const withSchema = () => {
@@ -19,7 +19,6 @@ export const withSchema = () => {
       }}
     >
       <GraphQLEditor
-        theme={MainTheme}
         setSchema={(props) => {
           setMySchema(props);
         }}

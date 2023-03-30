@@ -2,6 +2,7 @@ import React from 'react';
 import { Menu } from './Menu';
 import { DetailMenuItem } from './DetailMenuItem';
 import styled from '@emotion/styled';
+import { Radio } from '@aexol-studio/styling-system';
 
 interface OptionsMenuProps
   extends React.DetailedHTMLProps<
@@ -19,32 +20,6 @@ const Main = styled.div<{ isSelected?: boolean }>`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  color: ${({ theme, isSelected }) => (isSelected ? theme.active : 'inherit')};
-
-  &:hover {
-    color: ${({ theme }) => theme.active};
-
-    .circle {
-      background-color: ${({ theme }) => theme.active};
-      border-color: ${({ theme }) => theme.active};
-    }
-  }
-
-  .circle {
-    background-color: ${({ theme, isSelected }) => isSelected && theme.active};
-    border-color: ${({ theme, isSelected }) => isSelected && theme.active};
-  }
-`;
-
-const Circle = styled.div`
-  border-radius: 6px;
-  width: 12px;
-  height: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid ${({ theme }) => theme.text};
-  transition: 0.25s background-color ease-in-out;
 `;
 
 export const OptionsMenu = React.forwardRef<HTMLDivElement, OptionsMenuProps>(
@@ -55,8 +30,7 @@ export const OptionsMenu = React.forwardRef<HTMLDivElement, OptionsMenuProps>(
           return (
             <DetailMenuItem key={n} onClick={() => onCheck(n)}>
               <Main isSelected={options[n]}>
-                <span>{n}</span>
-                <Circle className="circle" />
+                <Radio label={n} position="end" checked={options[n]} />
               </Main>
             </DetailMenuItem>
           );

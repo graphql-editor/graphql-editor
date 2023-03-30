@@ -35,8 +35,8 @@ const Type = styled.a<{ color: string; cursor: 'pointer' | 'default' }>`
     color
       ? theme.colors[color as keyof typeof theme.colors]
         ? theme.colors[color as keyof typeof theme.colors]
-        : theme.text
-      : theme.text};
+        : theme.text.default
+      : theme.text.default};
   cursor: ${({ cursor }) => cursor};
   font-size: ${GRAF_FIELD_TYPE_SIZE}px;
   position: relative;

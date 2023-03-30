@@ -15,7 +15,7 @@ const Interface = styled.p`
   transition: ${transition};
 
   &:hover {
-    color: ${({ theme }) => theme.text};
+    color: ${({ theme }) => theme.text.default};
   }
 `;
 
@@ -27,7 +27,7 @@ const InterfacesWrapper = styled.div`
 `;
 
 const Title = styled.h3`
-  color: ${({ theme }) => theme.disabled};
+  color: ${({ theme }) => theme.text.disabled};
   font-family: ${fontFamilySans};
   font-size: 18px;
 `;

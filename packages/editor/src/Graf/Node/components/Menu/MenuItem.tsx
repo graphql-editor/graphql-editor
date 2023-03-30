@@ -2,7 +2,7 @@ import React from 'react';
 import { ParserField, getTypeName } from 'graphql-js-tree';
 
 import styled from '@emotion/styled';
-import { EditorTheme } from '@/gshared/theme/DarkTheme';
+import { EditorTheme } from '@/gshared/theme/MainTheme';
 
 interface MenuItemProps {
   node: ParserField;
@@ -23,10 +23,10 @@ const MenuItemText = styled.span<{ nodeType: NodeTypes }>`
   transition: color 0.25s ease-in-out;
   width: 100%;
   color: ${({ theme, nodeType }) =>
-    theme.colors[nodeType] ? theme.colors[nodeType] + 'dd' : theme.text};
+    theme.colors[nodeType] ? theme.colors[nodeType] : theme.text.active};
 
   &:hover {
-    color: ${({ theme }) => theme.hover};
+    color: ${({ theme }) => theme.accents[100]};
   }
 `;
 

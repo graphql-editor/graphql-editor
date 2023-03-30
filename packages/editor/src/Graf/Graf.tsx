@@ -13,6 +13,7 @@ import {
 import styled from '@emotion/styled';
 import { KeyboardActions, useIO } from '@/shared/hooks/io';
 import { DraggableProvider } from '@/Graf/state/draggable';
+import { useRelationsState } from '@/state/containers';
 
 const SubNodeContainer = styled.div`
   font-family: ${fontFamilySans};
@@ -22,7 +23,6 @@ const SubNodeContainer = styled.div`
   left: 0;
   top: 0;
   position: absolute;
-  pointer-events: none;
   padding: 3.5rem 2rem;
   height: 100%;
 `;
@@ -35,7 +35,6 @@ const SubNodeWrapper = styled.div`
   position: absolute;
   z-index: 2;
   overflow-x: auto;
-  pointer-events: none;
 `;
 
 export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
@@ -51,7 +50,7 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
     updateNode,
     redo,
   } = useTreesState();
-
+  const { setEditMode } = useRelationsState();
   const { mount } = useIO();
 
   useEffect(() => {
@@ -62,7 +61,12 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
     return keyEvents.dispose;
   }, [snapshots, tree, selectedNodeId, readonly]);
   return (
-    <SubNodeWrapper>
+    <SubNodeWrapper
+      onClick={(e) => {
+        e.stopPropagation();
+        setEditMode('');
+      }}
+    >
       <SubNodeContainer>
         <DraggableProvider>
           <ActiveNode

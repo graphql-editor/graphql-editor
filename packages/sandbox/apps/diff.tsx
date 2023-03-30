@@ -1,5 +1,5 @@
 import React from 'react';
-import { GraphQLEditor, DarkTheme } from 'graphql-editor';
+import { GraphQLEditor } from 'graphql-editor';
 import * as schemas from '../schema';
 
 export type SchemasVersions = Record<string, string>;
@@ -24,7 +24,6 @@ export const diff = () => {
       }}
     >
       <GraphQLEditor
-        theme={DarkTheme}
         schema={{ code: schemas.versionedUsersLibraryLatest }}
         setSchema={() => {}}
         diffSchemas={mockData}

@@ -1,4 +1,4 @@
-import { ChevronLeftDouble } from '@/icons/ChevronLeftDouble';
+import { ChevronLeftDouble } from '@aexol-studio/styling-system';
 import styled from '@emotion/styled';
 import React from 'react';
 
@@ -7,22 +7,22 @@ const Container = styled.div<{ isCollapsed: boolean; isRight?: true }>`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  height: 29px;
-  width: 29px;
-  border-radius: 100%;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  background-color: ${({ theme }) => theme.background.mainMiddle};
+  height: 24px;
+  width: 20px;
+  border-radius: ${(p) => p.theme.radius}px;
+  background-color: ${({ theme }) => theme.neutral[600]};
   position: absolute;
   z-index: 5;
   top: 50%;
   right: ${({ isRight }) => (isRight ? 'unset' : 0)};
   left: ${({ isRight }) => (isRight ? 0 : 'unset')};
   translate: ${({ isRight }) => (isRight ? '-50% -50%' : '50% -50%')};
-  color: ${({ theme }) => theme.disabled};
+  color: ${({ theme }) => theme.text.default};
   transition: color 0.25s ease;
+  background-color: ${(p) => p.theme.neutral[400]};
 
   &:hover {
-    color: ${({ theme }) => theme.active};
+    color: ${({ theme }) => theme.accents[200]};
   }
 
   svg {
@@ -50,7 +50,7 @@ export const CollapseArrow: React.FC<CollapseArrowProps> = ({
       isCollapsed={isCollapsed}
       onClick={() => toggle()}
     >
-      <ChevronLeftDouble />
+      <ChevronLeftDouble height={16} />
     </Container>
   );
 };

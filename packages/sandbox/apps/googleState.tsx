@@ -94,7 +94,6 @@ export const googleState = () => {
       <GraphQLEditor
         routeState={editorRoutes}
         schema={currentSchema}
-        sidebarExpanded
         onRouteChange={(routes) => {
           changeRoute({ a: 'googleState', ...routes });
         }}

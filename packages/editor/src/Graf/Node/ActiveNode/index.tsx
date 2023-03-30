@@ -55,7 +55,7 @@ const OpenedNode = styled.div`
 const MainNodeArea = styled.div`
   position: relative;
   transition: border-color 0.25s ease-in-out;
-  border-color: ${({ theme }) => theme.active};
+  border-color: ${({ theme }) => `${theme.dividerMain}`};
   flex: 1;
   display: flex;
   flex-flow: column nowrap;
@@ -79,12 +79,12 @@ const NodeContainer = styled.div`
   break-inside: avoid;
   min-width: 24rem;
   max-height: 100%;
-  background-color: ${({ theme }) => theme.background.mainFurther};
+  background-color: ${({ theme }) => theme.neutral[500]};
   display: flex;
   flex-flow: column nowrap;
-  border-radius: 0.75rem;
+  border-radius: ${(p) => p.theme.radius}px;
   pointer-events: all;
-  border: 1px solid ${({ theme }) => theme.active};
+  border: 1px solid ${({ theme }) => `${theme.dividerMain}`};
 `;
 
 const NodeFieldsContainer = styled.div`
@@ -102,7 +102,7 @@ const DirectivePlacements = styled.div`
   align-items: flex-start;
   padding: 1rem;
   gap: 1rem;
-  border-bottom: 1px solid ${({ theme }) => theme.background.mainClose};
+  border-bottom: 1px solid ${({ theme }) => theme.dividerMain};
 `;
 const NodeInterfaces = styled.div<{ isHidden?: boolean }>`
   display: ${({ isHidden }) => (isHidden ? 'none' : 'flex')};
@@ -112,7 +112,7 @@ const NodeInterfaces = styled.div<{ isHidden?: boolean }>`
   gap: 1rem;
   align-items: flex-start;
   padding: 1rem;
-  border-bottom: 1px solid ${({ theme }) => theme.background.mainClose};
+  border-bottom: 1px solid ${({ theme }) => theme.dividerMain};
 `;
 
 const DndContainer = styled.div`
@@ -125,11 +125,11 @@ const GapBar = styled.div`
   width: 100%;
   height: 100%;
   pointer-events: all;
-  background-color: ${({ theme }) => theme.background.mainFurthest}99;
+  background-color: ${({ theme }) => theme.neutral[600]}99;
   transition: 0.25s background-color ease-in-out;
 
   &:hover {
-    background-color: ${({ theme }) => theme.background.mainFurthest}11;
+    background-color: ${({ theme }) => theme.neutral[600]}11;
   }
 `;
 
@@ -143,7 +143,7 @@ const NodeArea = styled.div`
 `;
 export const NodeName = styled.div`
   margin-right: 10px;
-  color: ${({ theme }) => theme.text};
+  color: ${({ theme }) => theme.text.active};
   user-select: none;
 `;
 
@@ -486,12 +486,11 @@ export const ActiveNode: React.FC<NodeProps> = ({
 const NodeTitle = styled.div`
   display: flex;
   align-items: stretch;
-  color: ${({ theme }) => theme.text};
+  color: ${({ theme }) => theme.text.default};
   padding: 1rem;
   user-select: none;
 `;
 
 const FromLibrary = styled(NodeTitle)`
   padding: 1rem 1rem 0;
-  color: ${({ theme }) => theme.salmon};
 `;

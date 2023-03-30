@@ -43,6 +43,7 @@
     "webpack-dev-server": "^4.2.1"
   },
   "dependencies": {
+    "@aexol-studio/styling-system": "^0.0.8",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "graphql-editor": "*",

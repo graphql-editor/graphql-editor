@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PassedSchema } from 'graphql-editor';
 import * as schemas from '../schema';
-import { GraphQLEditor, FrozenTheme } from 'graphql-editor';
+import { GraphQLEditor } from 'graphql-editor';
 
 export const Saleor = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
@@ -20,7 +20,6 @@ export const Saleor = () => {
       }}
     >
       <GraphQLEditor
-        theme={FrozenTheme}
         setSchema={(props) => {
           setMySchema(props);
         }}

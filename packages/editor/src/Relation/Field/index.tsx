@@ -14,14 +14,14 @@ const Main = styled.div<{ isActive?: boolean }>`
   align-items: center;
   height: ${RELATION_CONSTANTS.FIELD_HEIGHT}px;
   padding: 0 12px;
-  color: ${({ theme }) => theme.dimmed};
+  color: ${({ theme }) => theme.text.disabled};
   margin: 0 -12px;
   transition: background-color 0.25s ease-in-out;
   cursor: pointer;
 
   &:hover {
     background-color: ${({ isActive, theme }) =>
-      isActive && theme.background.mainClose};
+      isActive && theme.neutral[500]};
   }
 `;
 

@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { GraphQLEditor } from 'graphql-editor';
 import * as schemas from '../schema';
-import { MainTheme } from 'graphql-editor';
 import { PassedSchema } from 'graphql-editor';
 
 export const googlediff = () => {

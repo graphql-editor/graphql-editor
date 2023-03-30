@@ -12,6 +12,7 @@ export const toggleableTypes: AllTypes[] = [
   TypeDefinition.ObjectTypeDefinition,
   TypeDefinition.UnionTypeDefinition,
   TypeDefinition.InterfaceTypeDefinition,
+  TypeDefinition.InputObjectTypeDefinition,
 ];
 
 const useRelationNodes = createContainer(() => {

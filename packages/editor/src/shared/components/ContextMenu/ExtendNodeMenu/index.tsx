@@ -93,7 +93,6 @@ export const ExtendNodeMenu = React.forwardRef<
         }}
         value={menuSearchValue}
         onChange={setMenuSearchValue}
-        onClear={() => setMenuSearchValue('')}
       />
       <MenuScrollingArea>
         {filteredNodes.map((f) => (

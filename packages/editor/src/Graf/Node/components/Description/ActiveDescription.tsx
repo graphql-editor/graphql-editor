@@ -3,8 +3,8 @@ import styled from '@emotion/styled';
 import { fontFamilySans } from '@/vars';
 
 const Main = styled.textarea`
-  background: ${({ theme }) => theme.background.mainFurthest};
-  color: ${({ theme }) => theme.text};
+  background: ${({ theme }) => theme.neutral[600]};
+  color: ${({ theme }) => theme.text.default};
   padding: 1rem;
   width: 100%;
   border: 0;
@@ -19,14 +19,14 @@ const Main = styled.textarea`
     cursor: auto;
   }
   &::placeholder {
-    color: ${({ theme }) => theme.disabled};
+    color: ${({ theme }) => theme.text.disabled};
   }
 `;
 
 const MainWrapper = styled.div`
   padding: 0.33rem;
   border: 0;
-  border-bottom-color: ${({ theme }) => theme.active};
+  border-bottom-color: ${({ theme }) => `${theme.dividerMain}`};
   border-bottom-width: 1px;
   border-bottom-style: solid;
   display: flex;

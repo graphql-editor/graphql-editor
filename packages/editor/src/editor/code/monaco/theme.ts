@@ -2,39 +2,40 @@ import type * as monaco from 'monaco-editor';
 import { themed } from '@/Theming/utils';
 
 const rules = themed<monaco.editor.ITokenThemeRule[]>(
-  ({ colors, text, active, inactive }) => [
-    { token: 'keyword.gql', foreground: active },
-    { token: 'type.identifier.gql', foreground: active },
-    { token: 'key.identifier.gql', foreground: text },
-    { token: 'keyword', foreground: active },
-    { token: 'annotation', foreground: text },
-    { token: '', foreground: inactive },
-    { token: 'string.md', foreground: inactive },
-    { token: 'keyword.md', foreground: active, fontStyle: 'bold' },
-    { token: 'string.gql', foreground: inactive },
-    { token: 'delimiter.square.gql', foreground: inactive },
-    { token: 'delimiter.curly.gql', foreground: inactive },
-    { token: 'delimiter.parenthesis.gql', foreground: inactive },
+  ({ colors, text, accents }) => [
+    { token: 'keyword.gql', foreground: accents[100] },
+    { token: 'type.identifier.gql', foreground: accents[200] },
+    { token: 'key.identifier.gql', foreground: text.active },
+    { token: 'keyword', foreground: accents[100] },
+    { token: 'annotation', foreground: text.default },
+    { token: '', foreground: text.active },
+    { token: 'string.md', foreground: text.default },
+    { token: 'keyword.md', foreground: accents[100], fontStyle: 'bold' },
+    { token: 'string.gql', foreground: text.default },
+    { token: 'number.gql', foreground: text.contrast },
+    { token: 'delimiter.square.gql', foreground: accents[500] },
+    { token: 'delimiter.curly.gql', foreground: accents[500] },
+    { token: 'delimiter.parenthesis.gql', foreground: accents[500] },
     {
       token: 'string.quote.gql',
-      foreground: active,
+      foreground: text.default,
     },
-    { token: 'comment.gql', foreground: inactive },
+    { token: 'comment.gql', foreground: text.default },
     {
       token: 'operator.gql',
       fontStyle: 'bold',
-      foreground: colors.directive,
+      foreground: accents[300],
     },
   ],
 );
 
 const colors = themed<monaco.editor.IColors>(
-  ({ background: { mainFurther, error }, text, colors: { scalar } }) => ({
-    'editor.foreground': text,
-    'editor.background': mainFurther,
-    'minimap.background': mainFurther,
+  ({ neutral, text, error, colors: { scalar } }) => ({
+    'editor.foreground': text.active,
+    'editor.background': neutral[600],
+    'minimap.background': neutral[600],
     'diffEditor.insertedTextBackground': `${scalar}22`,
-    'diffEditor.removedTextBackground': `${error}22`,
+    'diffEditor.removedTextBackground': `${error.dark}22`,
   }),
 );
 

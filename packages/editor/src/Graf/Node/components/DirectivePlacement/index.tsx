@@ -16,7 +16,7 @@ const NodeDirectiveBlock = styled.div<{ isLocked?: boolean }>`
   padding: 0.25rem 0.5rem;
   color: ${({ theme }) => theme.colors.directive};
   font-size: 12px;
-  border-radius: 0.25rem;
+  border-radius: ${(p) => p.theme.radius}px;
   position: relative;
   cursor: pointer;
   transition: ${transition};
@@ -55,8 +55,8 @@ interface CreateNodeDirectiveProps {
 const CreateDirectiveBlock = styled.div`
   padding: 0.25rem 0.5rem;
   font-size: 12px;
-  color: ${({ theme }) => theme.disabled};
-  border-radius: 0.25rem;
+  color: ${({ theme }) => theme.text.default};
+  border-radius: ${(p) => p.theme.radius}px;
   position: relative;
   cursor: pointer;
   border: 1px dashed currentColor;

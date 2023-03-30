@@ -1,14 +1,16 @@
 import { useRelationNodesState, useTreesState } from '@/state/containers';
 import { compareParserFields, ParserField } from 'graphql-js-tree';
-import React from 'react';
+import React, { createRef, useEffect } from 'react';
 import styled from '@emotion/styled';
 import { fontFamilySans, transition } from '@/vars';
-import { EditorTheme } from '@/gshared/theme/DarkTheme';
-import { EagleEye } from '@/icons/EagleEye';
-import { ChevronDown } from '@/icons/ChevronDown';
-import { Lock } from '@/icons/Lock';
-import { Eye } from '@/icons/Eye';
-import { EyeOff } from '@/icons/EyeOff';
+import { EditorTheme } from '@/gshared/theme/MainTheme';
+import {
+  ChevronDown,
+  EagleEye,
+  Eye,
+  EyeSlash,
+  Link,
+} from '@aexol-studio/styling-system';
 
 const Title = styled.div<{
   open?: boolean;
@@ -18,15 +20,15 @@ const Title = styled.div<{
 }>`
   font-family: ${fontFamilySans};
   font-weight: 600;
+  font-size: 14px;
   cursor: ${({ empty }) => (empty ? 'auto' : 'pointer')};
   color: ${({ theme, nodeInsideSelected, empty, color }) =>
     empty
-      ? theme.disabled
+      ? theme.text.disabled
       : nodeInsideSelected
       ? theme.colors[color]
-      : theme.text};
+      : theme.text.active};
   margin: 0;
-  font-size: 14px;
   padding-bottom: 5px;
   margin-right: 3px;
   display: flex;
@@ -34,7 +36,8 @@ const Title = styled.div<{
   align-items: center;
   transition: ${transition};
   svg {
-    stroke: ${({ theme }) => theme.dimmed};
+    color: ${({ theme, open }) =>
+      open ? theme.text.active : theme.button.standalone.disabled};
     transition: ${transition};
     transform-origin: 50%;
     transform: ${({ open }) => (open ? 'rotate(0deg)' : 'rotate(-90deg)')};
@@ -53,7 +56,10 @@ const NavSingleBox = styled.a<{
   padding: 0.5rem 0 0.5rem 1rem;
   margin-left: 1rem;
   transition: ${transition};
+  background-color: ${(p) => p.theme.neutral[600]};
+
   :hover {
+    background-color: ${(p) => p.theme.neutral[500]};
     svg {
       opacity: 1;
     }
@@ -71,7 +77,7 @@ const NodeName = styled.span<{
   font-family: ${fontFamilySans};
   font-weight: ${({ active }) => (active ? 'bold' : 'normal')};
   color: ${({ theme, active, color }) =>
-    active ? theme.colors[color] : theme.inactive};
+    active ? theme.colors[color] : theme.text.default};
   font-size: 14px;
   transition: ${transition};
   opacity: ${({ isHidden }) => (isHidden ? 0.25 : 1)};
@@ -86,18 +92,18 @@ const IconContainer = styled.div<{
 }>`
   display: flex;
   transition: ${transition};
-  color: ${({ theme }) => theme.disabled};
+  color: ${({ theme }) => theme.button.standalone.disabled};
   :hover {
-    color: ${({ theme }) => theme.text};
+    color: ${({ theme }) => theme.text.active};
   }
   svg {
-    opacity: ${({ isHidden }) => (isHidden ? 0.25 : 0.5)};
+    opacity: ${({ isHidden }) => (isHidden ? 0.25 : 1.0)};
     transition: ${transition};
   }
 `;
 
 const ExternalLibrary = styled.span`
-  color: ${({ theme }) => theme.disabled};
+  color: ${({ theme }) => theme.text.disabled};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -137,10 +143,25 @@ export const NodeList: React.FC<NodeListI> = ({
     nodeList?.map((n) => n.name).includes(selectedNodeId?.value?.name);
   const open = expanded.includes(listTitle);
   const empty = !nodeList?.length;
+  const ref = createRef<HTMLDivElement>();
+
+  useEffect(() => {
+    if (selectedNodeId?.value) {
+      const sn = nodeList?.findIndex((n) => n.id === selectedNodeId.value!.id);
+      if (sn) {
+        console.log(ref.current?.offsetTop);
+        ref.current?.parentElement?.parentElement?.parentElement?.scrollTo({
+          behavior: 'smooth',
+          top: ref.current.offsetTop,
+        });
+      }
+    }
+  }, [selectedNodeId]);
 
   return (
     <>
       <Title
+        ref={ref}
         color={colorKey}
         empty={empty}
         nodeInsideSelected={nodeInsideSelected}
@@ -178,7 +199,7 @@ export const NodeList: React.FC<NodeListI> = ({
               {node.name}
               {isLibrary(node.id) && (
                 <ExternalLibrary title="From external library">
-                  <Lock />
+                  <Link />
                 </ExternalLibrary>
               )}
             </NodeName>
@@ -198,7 +219,7 @@ export const NodeList: React.FC<NodeListI> = ({
                     focusNode(node);
                   }}
                 >
-                  <EagleEye />
+                  <EagleEye height={20} />
                 </IconContainer>
               )}
               {visibleInRelationView && (
@@ -213,7 +234,11 @@ export const NodeList: React.FC<NodeListI> = ({
                     toggleNodeVisibility(node);
                   }}
                 >
-                  {node.isHidden ? <EyeOff /> : <Eye />}
+                  {node.isHidden ? (
+                    <EyeSlash height={20} />
+                  ) : (
+                    <Eye height={20} />
+                  )}
                 </IconContainer>
               )}
             </Actions>

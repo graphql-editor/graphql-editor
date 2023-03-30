@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 
 import styled from '@emotion/styled';
-import { EditorTheme } from '@/gshared/theme/DarkTheme';
+import { EditorTheme } from '@/gshared/theme/MainTheme';
+import { transition } from '@/vars';
 
 interface TypedMenuItemProps {
   onClick: () => void;
@@ -18,19 +19,20 @@ const Main = styled.div<{ isSelected?: boolean }>`
   padding: 8px 16px;
   font-size: 14px;
   cursor: pointer;
+  border-radius: ${(p) => p.theme.radius}px;
   scroll-snap-align: end;
   background-color: ${({ isSelected, theme }) =>
-    isSelected && theme.background.mainClose};
-
+    isSelected && theme.neutral[500]};
+  transition: ${transition};
   &:hover {
-    background-color: ${({ theme }) => theme.background.mainClose};
+    color: ${({ theme }) => theme.accents[100]};
   }
 `;
 
 const MenuItemName = styled.span`
-  transition: color 0.25s ease-in-out;
+  transition: ${transition};
   &:hover {
-    color: ${({ theme }) => theme.hover};
+    color: ${({ theme }) => theme.accents[100]};
   }
 `;
 
@@ -39,8 +41,12 @@ const MenuItemType = styled.span<{ nodeType: NodeTypes }>`
   display: flex;
   align-items: flex-start;
   margin-left: 4px;
+  transition: ${transition};
   color: ${({ theme, nodeType }) =>
-    theme.colors[nodeType] ? theme.colors[nodeType] : theme.text}dd;
+    theme.colors[nodeType] ? theme.colors[nodeType] : theme.text.active};
+  &:hover {
+    color: ${({ theme }) => theme.accents[100]};
+  }
 `;
 
 export const TypedMenuItem: React.FC<TypedMenuItemProps> = ({

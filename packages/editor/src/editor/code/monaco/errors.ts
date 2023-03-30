@@ -11,7 +11,7 @@ export const mapEditorErrorToMonacoDecoration = themed(
           className: 'monacoError',
           isWholeLine: true,
           minimap: {
-            color: error,
+            color: error.light,
             position: 1,
           },
           hoverMessage: [

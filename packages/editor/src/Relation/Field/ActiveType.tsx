@@ -26,6 +26,6 @@ const AType = styled.a<{ clickable?: boolean; color?: string }>`
     color
       ? theme.colors[color as keyof typeof theme.colors]
         ? theme.colors[color as keyof typeof theme.colors]
-        : theme.text
-      : theme.text};
+        : theme.text.default
+      : theme.text.default};
 `;

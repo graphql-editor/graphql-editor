@@ -3,7 +3,7 @@ import { GqlCodePane } from './code';
 import { PassedSchema } from '@/Models';
 import { useTreesState, useTheme, useLayoutState } from '@/state/containers';
 
-import { EditorTheme } from '@/gshared/theme/DarkTheme';
+import { EditorTheme } from '@/gshared/theme/MainTheme';
 import styled from '@emotion/styled';
 
 const Main = styled.div`

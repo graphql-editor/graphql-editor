@@ -18,7 +18,7 @@ import {
 import styled from '@emotion/styled';
 import { useTreesState } from '@/state/containers';
 import { Description } from '@/Docs/Description';
-import { Edit } from '@/icons/Edit';
+import { PenLine } from '@aexol-studio/styling-system';
 
 const md = new Remarkable();
 
@@ -117,7 +117,7 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
                     __html: md.render(arg.description || 'No description'),
                   }}
                 />
-                {!isReadonly && <Edit />}
+                {!isReadonly && <PenLine />}
               </DescWrapper>
             )}
           </FieldsWrapper>

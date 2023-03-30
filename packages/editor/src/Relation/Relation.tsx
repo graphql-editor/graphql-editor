@@ -6,7 +6,6 @@ import {
   useRelationNodesState,
   useRelationsState,
 } from '@/state/containers';
-import { Toggle } from '@/shared/components';
 import styled from '@emotion/styled';
 import { toPng } from 'html-to-image';
 import * as vars from '@/vars';
@@ -19,9 +18,12 @@ import {
 import { LinesDiagram } from '@/Relation/LinesDiagram';
 import { Graf } from '@/Graf/Graf';
 import { NewNode } from '@/shared/components/NewNode';
-import { FileDownload } from '@/icons/FileDownload';
-import { Plus } from '@/icons/Plus';
-import { Minus } from '@/icons/Minus';
+import {
+  Checkbox,
+  ImageSquareCheck,
+  Minus,
+  Plus,
+} from '@aexol-studio/styling-system';
 
 const Wrapper = styled.div`
   display: flex;
@@ -31,7 +33,7 @@ const Wrapper = styled.div`
   width: 100%;
   overflow: hidden;
   transition: ${vars.transition};
-  background: ${({ theme }) => theme.background.mainFurther};
+  background: ${({ theme }) => theme.neutral[600]};
 `;
 
 const ErrorContainer = styled.div`
@@ -46,8 +48,8 @@ const ErrorContainer = styled.div`
   font-size: 12px;
   font-family: ${fontFamily};
   letter-spacing: 1;
-  color: ${({ theme }) => theme.text};
-  background-color: ${({ theme }) => theme.background.mainFurther};
+  color: ${({ theme }) => theme.text.default};
+  background-color: ${({ theme }) => theme.neutral[600]};
   border: 1px solid ${({ theme }) => theme.error};
 `;
 
@@ -56,10 +58,10 @@ const TooltippedZoom = styled.div`
   font-size: 14px;
   font-weight: 500;
   background: transparent;
-  width: 3rem;
+  width: 4ch;
   border: 0;
   text-align: center;
-  color: ${({ theme }) => theme.inactive};
+  color: ${({ theme }) => theme.text.default};
   font-family: ${fontFamilySans};
   cursor: pointer;
   border-radius: 4px;
@@ -74,10 +76,10 @@ const TooltippedZoom = styled.div`
       top: 44px;
       right: 0px;
       width: max-content;
-      color: ${({ theme }) => theme.text};
+      color: ${({ theme }) => theme.text.default};
       font-weight: 400;
       background: #000000;
-      border: 1px solid ${({ theme }) => theme.dimmed};
+      border: 1px solid ${({ theme }) => theme.text.disabled};
       text-align: center;
       padding: 5px 12px;
       z-index: 100;
@@ -97,14 +99,14 @@ const IconWrapper = styled.div`
   position: relative;
   font-size: 12px;
   font-weight: 500;
-  color: ${({ theme }) => theme.inactive};
+  color: ${({ theme }) => theme.text.disabled};
   font-family: ${fontFamilySans};
   cursor: pointer;
   display: flex;
   user-select: none;
   transition: ${vars.transition};
   :hover {
-    color: ${({ theme }) => theme.text};
+    color: ${({ theme }) => theme.text.default};
   }
 
   &[data-tooltip] {
@@ -115,10 +117,10 @@ const IconWrapper = styled.div`
       top: 44px;
       right: 0px;
       width: max-content;
-      color: ${({ theme }) => theme.text};
+      color: ${({ theme }) => theme.text.default};
       font-weight: 400;
       background: #000000;
-      border: 1px solid ${({ theme }) => theme.dimmed};
+      border: 1px solid ${({ theme }) => theme.text.disabled};
       text-align: center;
       padding: 5px 12px;
       z-index: 100;
@@ -135,28 +137,18 @@ const IconWrapper = styled.div`
   }
 `;
 
-const TogglesWrapper = styled.div`
-  align-self: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0.5rem 1rem;
-  background-color: ${({ theme }) => theme.background.mainCloser};
-  border-radius: 2px;
-  gap: 1rem;
-`;
 const ZoomWrapper = styled.div`
   align-self: center;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0.5rem 1rem;
-  background-color: ${({ theme }) => theme.background.mainFurthers};
-  border-color: ${({ theme }) => theme.background.mainCloser};
+  padding: 0.375rem 0.75rem;
+  background-color: ${({ theme }) => theme.neutral[700]};
+  border-color: ${({ theme }) => theme.neutral[200]};
   border-style: solid;
   border-width: 1px;
   border-radius: 2px;
-  gap: 1rem;
+  gap: 8px;
 `;
 
 const Menu = styled.div`
@@ -197,7 +189,13 @@ export const Relation: React.FC = () => {
   const ref = useRef<ReactZoomPanPinchRef>(null);
 
   useEffect(() => {
-    if (!selectedNodeId) setScaleFactor(100);
+    if (!selectedNodeId?.value?.id) {
+      setScaleFactor(100);
+      setEditMode('');
+    }
+    if (selectedNodeId?.value?.id && selectedNodeId.value.id !== editMode) {
+      setEditMode('');
+    }
   }, [selectedNodeId]);
 
   const downloadPng = useCallback(() => {
@@ -323,7 +321,7 @@ export const Relation: React.FC = () => {
     <Wrapper>
       <TopBar>
         <Menu>
-          {!readonly && editMode && <NewNode />}
+          {!readonly && <NewNode />}
           <ZoomWrapper>
             <IconWrapper
               data-tooltip="Zoom out"
@@ -353,18 +351,12 @@ export const Relation: React.FC = () => {
               <Plus />
             </IconWrapper>
           </ZoomWrapper>
-          <TogglesWrapper>
-            <Toggle
-              toggled={editMode}
-              label="edit mode"
-              onToggle={() => setEditMode(!editMode)}
-            />
-            <Toggle
-              toggled={baseTypesOn}
-              label="scalars"
-              onToggle={() => setBaseTypesOn(!baseTypesOn)}
-            />
-          </TogglesWrapper>
+          <Checkbox
+            label="scalars"
+            labelPosition="start"
+            onClick={() => setBaseTypesOn(!baseTypesOn)}
+            checked={baseTypesOn}
+          />
           {isLoading ? (
             <IconWrapper data-tooltip="Loading...">...</IconWrapper>
           ) : (
@@ -372,7 +364,7 @@ export const Relation: React.FC = () => {
               data-tooltip="Export to png"
               onClick={() => downloadPng()}
             >
-              <FileDownload />
+              <ImageSquareCheck />
             </IconWrapper>
           )}
         </Menu>
@@ -395,7 +387,7 @@ export const Relation: React.FC = () => {
           }
         }}
       >
-        {editMode && activeNode && <Graf node={activeNode} />}
+        {editMode == activeNode?.id && <Graf node={activeNode} />}
         <TransformWrapper
           ref={ref}
           initialScale={1}
@@ -417,6 +409,8 @@ export const Relation: React.FC = () => {
             wrapperStyle={{
               flex: 1,
               height: '100%',
+              filter: editMode ? `blur(4px)` : `blur(0px)`,
+              transition: 'all 0.25s ease-in-out',
             }}
           >
             <LinesDiagram

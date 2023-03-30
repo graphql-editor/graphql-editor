@@ -1,9 +1,7 @@
 import React from 'react';
-import { X } from '@/shared/icons';
 import styled from '@emotion/styled';
 import * as vars from '@/vars';
-import { Search } from '@/icons/Search';
-import { Plus } from '@/icons/Plus';
+import { Plus, Search } from '@aexol-studio/styling-system';
 
 interface MenuSearchProps {
   value: string;
@@ -20,9 +18,9 @@ const Wrapper = styled.div`
 `;
 
 const Main = styled.input`
-  background-color: ${({ theme }) => theme.background.mainFurthers};
-  border-radius: 5px;
-  color: ${({ theme }) => theme.text};
+  background-color: ${({ theme }) => theme.neutral[700]};
+  border-radius: ${(p) => p.theme.radius}px;
+  color: ${({ theme }) => theme.text.default};
   width: 100%;
   min-width: 0;
   height: 36px;
@@ -30,15 +28,15 @@ const Main = styled.input`
   font-size: 14px;
   outline: 0;
   position: relative;
-  border-color: transparent;
+  border-color: ${(p) => p.theme.neutral[200]};
   border-width: 1px;
   border-style: solid;
   transition: ${vars.transition};
   &::placeholder {
-    color: ${({ theme }) => theme.dimmed};
+    color: ${({ theme }) => theme.text.disabled};
   }
   :focus {
-    border-color: ${({ theme }) => theme.active};
+    border-color: ${({ theme }) => theme.accents[200]};
   }
 `;
 
@@ -53,13 +51,7 @@ const IconContainerStyle = styled.span`
 
 const SearchIconContainer = styled(IconContainerStyle)`
   margin-left: 15px;
-  color: ${({ theme }) => theme.disabled};
-`;
-
-const XIconContainer = styled(IconContainerStyle)`
-  width: 36px;
-  right: 12px;
-  cursor: pointer;
+  color: ${({ theme }) => theme.text.disabled};
 `;
 
 export const SearchInput = React.forwardRef<HTMLInputElement, MenuSearchProps>(
@@ -80,11 +72,6 @@ export const SearchInput = React.forwardRef<HTMLInputElement, MenuSearchProps>(
           {icon === 'search' && <Search />}
           {icon === 'add' && <Plus />}
         </SearchIconContainer>
-        {value && (
-          <XIconContainer onClick={onClear}>
-            <X width={10} height={10} />
-          </XIconContainer>
-        )}
         <Main
           ref={ref}
           onKeyDown={(e) => {

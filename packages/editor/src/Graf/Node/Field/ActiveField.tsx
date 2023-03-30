@@ -25,12 +25,14 @@ import { ActiveGrafType } from '@/Graf/Node/Field/ActiveGrafType';
 import { transition } from '@/vars';
 import { ActiveDirectiveName } from '@/Graf/Node/Field/ActiveDirectiveName';
 import { changeTypeName } from '@/utils';
-import { Lock } from '@/icons/Lock';
-import { Menu as MoreIcon } from '@/icons/Menu';
-import { ChevronLeft } from '@/icons/ChevronLeft';
-import { Arrq } from '@/shared/icons';
-import { Plus } from '@/icons/Plus';
-import { Minus } from '@/icons/Minus';
+import {
+  BracketsSquare,
+  ChevronLeft,
+  DotsVertical,
+  Lock,
+  Minus,
+  Plus,
+} from '@aexol-studio/styling-system';
 
 export const ActiveField: React.FC<FieldProps> = ({
   node,
@@ -151,7 +153,10 @@ export const ActiveField: React.FC<FieldProps> = ({
                 return (
                   <FieldPort
                     {...triggerProps}
-                    icons={{ closed: <Arrq />, open: <Arrq /> }}
+                    icons={{
+                      closed: <BracketsSquare />,
+                      open: <BracketsSquare />,
+                    }}
                     onClick={() => setMenuOpen('options')}
                   />
                 );
@@ -217,8 +222,8 @@ export const ActiveField: React.FC<FieldProps> = ({
                 <FieldPort
                   {...triggerProps}
                   icons={{
-                    closed: <MoreIcon />,
-                    open: <MoreIcon />,
+                    closed: <DotsVertical />,
+                    open: <DotsVertical />,
                   }}
                   onClick={() => setMenuOpen('details')}
                 />
@@ -270,7 +275,7 @@ const OutputArrow = styled.div<{ opened?: boolean }>`
   padding: 0.5rem;
   margin: -0.5rem 0;
   svg {
-    stroke: ${({ theme }) => theme.text};
+    stroke: ${({ theme }) => theme.text.default};
     rotate: ${({ opened }) => (opened ? '270deg' : '180deg')};
     transition: ${transition};
   }
@@ -280,5 +285,5 @@ const LockContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${({ theme }) => theme.disabled};
+  color: ${({ theme }) => theme.text.disabled};
 `;

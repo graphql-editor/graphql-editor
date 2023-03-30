@@ -38,6 +38,7 @@ const resortRecuirsive = (nodes: ParserField[]) => {
       layerDict[currentIndex] ||= [];
       layerDict[currentIndex].push(n);
       const args = n.args
+        .flatMap((a) => [a, ...a.args])
         .map((a) => getTypeName(a.type.fieldType))
         .filter((t) => t !== n.name);
       const argsNodes = args.map((a) =>

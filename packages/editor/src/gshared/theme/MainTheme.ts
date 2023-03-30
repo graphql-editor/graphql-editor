@@ -1,36 +1,8 @@
-import { EditorTheme } from './DarkTheme';
+import { ITheme } from '@aexol-studio/styling-system';
 
-export const MainTheme: EditorTheme = {
+export const MainTheme = {
   base: 'vs-dark',
   shadow: '#00000022 2px 2px 14px',
-  disabled: '#899599',
-  inactive: '#b7c7cc',
-  dimmed: '#cee0e5',
-  text: '#e3f6fc',
-  buttonText: '#e3f6fc',
-  error: '#d49ea3',
-  moduleSeparator: '#050505',
-  separator: '#2b2b2b',
-  hover: '#ffffff',
-  secondaryHover: '#01c4bd',
-  main: '#35d83b',
-  active: '#1F8EFE',
-  salmon: '#ff8080',
-  public: '#43df2e',
-  private: '#f22e35',
-  background: {
-    mainClosest: '#424242',
-    mainCloser: '#383838',
-    mainClose: '#303030',
-    mainMiddle: '#282828',
-    mainFar: '#212121',
-    mainFurther: '#1A1A1C',
-    mainFurthers: '#141414',
-    mainFurthest: '#0f0f0f',
-    mainBlack: '#0a0a0a',
-    success: '#007fff',
-    error: '#c1301f',
-  },
   colors: {
     type: '#1F8EFE',
     union: '#8F70FD',
@@ -42,3 +14,7 @@ export const MainTheme: EditorTheme = {
     extend: '#6E7578',
   },
 };
+
+export type MainThemeType = typeof MainTheme;
+
+export type EditorTheme = ITheme & MainThemeType;

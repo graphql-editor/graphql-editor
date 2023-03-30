@@ -13,7 +13,7 @@ const TopBarComponent = styled.div`
   position: absolute;
   z-index: 2;
   width: 100%;
-  background-color: ${({ theme }) => theme.background.mainFurther}ee;
+  background-color: ${({ theme }) => theme.neutral[600]}ee;
 `;
 
 export const TopBar: React.FC = ({ children }) => {

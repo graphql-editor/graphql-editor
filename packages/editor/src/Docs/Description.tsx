@@ -3,8 +3,8 @@ import styled from '@emotion/styled';
 import { fontFamilySans } from '@/vars';
 
 const Main = styled.textarea`
-  background: ${({ theme }) => theme.background.mainFurther};
-  color: ${({ theme }) => theme.text};
+  background: ${({ theme }) => theme.neutral[600]};
+  color: ${({ theme }) => theme.text.default};
   padding: 10px;
   font-size: 12px;
   width: 100%;
@@ -18,7 +18,7 @@ const Main = styled.textarea`
     cursor: auto;
   }
   &::placeholder {
-    color: ${({ theme }) => theme.disabled};
+    color: ${({ theme }) => theme.text.disabled};
   }
 `;
 

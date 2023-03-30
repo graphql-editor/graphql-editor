@@ -14,9 +14,15 @@ import { GqlEditor, GqlEditorProps } from '@/editor/GqlEditor';
 import { MainTheme } from '@/gshared/theme/MainTheme';
 import { RouterProvider, EditorRoutes } from '@/state/containers/router';
 import { EmbeddedEditor, EmbeddedEditorProps } from '@/editor/EmbeddedEditor';
+import { themeColors } from '@aexol-studio/styling-system';
 
 export const GraphQLEditor = ({ ...props }: EditorProps) => {
-  const theme = props.theme || MainTheme;
+  const baseITheme = themeColors('graphqleditor', 'dark');
+  const combinedTheme = {
+    ...MainTheme,
+    ...baseITheme,
+  };
+  const theme = props.theme || combinedTheme;
   return (
     <ThemeProvider initialState={theme}>
       <RouterProvider>
@@ -41,7 +47,12 @@ export const GraphQLEditor = ({ ...props }: EditorProps) => {
 };
 
 export const EmbeddedGraphQLEditor = ({ ...props }: EmbeddedEditorProps) => {
-  const theme = props.theme || MainTheme;
+  const baseITheme = themeColors('graphqleditor', 'dark');
+  const combinedTheme = {
+    ...MainTheme,
+    ...baseITheme,
+  };
+  const theme = props.theme || combinedTheme;
   return (
     <ThemeProvider initialState={theme}>
       <RouterProvider>
@@ -66,7 +77,12 @@ export const EmbeddedGraphQLEditor = ({ ...props }: EmbeddedEditorProps) => {
 };
 
 export const GraphQLGqlEditor = ({ ...props }: GqlEditorProps) => {
-  const theme = props.theme || MainTheme;
+  const baseITheme = themeColors('graphqleditor', 'dark');
+  const combinedTheme = {
+    ...MainTheme,
+    ...baseITheme,
+  };
+  const theme = props.theme || combinedTheme;
 
   return (
     <ThemeProvider initialState={theme}>

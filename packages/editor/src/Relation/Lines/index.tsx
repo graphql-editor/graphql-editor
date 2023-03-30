@@ -9,7 +9,7 @@ const RelationsContainer = styled.svg`
   height: 100%;
   position: absolute;
   pointer-events: none;
-  stroke: ${({ theme }) => theme.background.mainClosest};
+  stroke: ${({ theme }) => theme.neutral[500]};
   fill: transparent;
   stroke-width: 2px;
   transform: translatez(0);

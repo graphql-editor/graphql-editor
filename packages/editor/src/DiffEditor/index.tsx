@@ -4,8 +4,7 @@ import React, { useState } from 'react';
 import { Parser, TreeToGraphQL } from 'graphql-js-tree';
 import { useSortState } from '@/state/containers/sort';
 import { fontFamilySans } from '@/vars';
-import { Select } from '@/shared/components/Select';
-import { AlphabeticalSorting } from '@/icons/AlphabeticalSorting';
+import { Arrow_AZ, Select } from '@aexol-studio/styling-system';
 
 interface DiffEditorProps {
   schemas: Record<string, string>;
@@ -15,7 +14,7 @@ const Main = styled.div`
   display: flex;
   width: 100%;
   flex-direction: column;
-  background-color: ${({ theme }) => theme.background.mainFurther};
+  background-color: ${({ theme }) => theme.neutral[600]};
 `;
 
 const TopBar = styled.div`
@@ -25,13 +24,13 @@ const TopBar = styled.div`
   justify-content: space-between;
   align-items: center;
   position: relative;
-  border-bottom: 2px solid ${({ theme }) => theme.moduleSeparator};
+  border-bottom: 2px solid ${({ theme }) => theme.black};
 `;
 
 const Heading = styled.h1`
   font-size: 14px;
   font-weight: 500;
-  color: ${({ theme }) => theme.inactive};
+  color: ${({ theme }) => theme.text.disabled};
   font-family: ${fontFamilySans};
 `;
 
@@ -49,7 +48,8 @@ const AZContainer = styled.div<{ active?: boolean }>`
   display: flex;
   cursor: pointer;
   align-items: center;
-  color: ${({ theme, active }) => (active ? theme.active : theme.disabled)};
+  color: ${({ theme, active }) =>
+    active ? theme.accents[200] : theme.text.disabled};
 `;
 
 export const DiffEditor = ({ schemas }: DiffEditorProps) => {
@@ -88,20 +88,20 @@ export const DiffEditor = ({ schemas }: DiffEditorProps) => {
             options={selectOptions}
             onChange={setLeftVersion}
             placeholder="Select version..."
-            value={leftVersion}
+            selectedOption={leftVersion}
           />
           <Select
             options={selectOptions}
             onChange={setRightVersion}
             placeholder="Select version..."
-            value={rightVersion}
+            selectedOption={rightVersion}
           />
         </Selects>
         <AZContainer
           active={isSortActive}
           onClick={() => setIsSortActive((s) => !s)}
         >
-          <AlphabeticalSorting />
+          <Arrow_AZ />
         </AZContainer>
       </TopBar>
       <DiffEditorPane

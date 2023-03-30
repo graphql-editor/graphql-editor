@@ -1,12 +1,11 @@
 import { CollapseArrow } from '@/editor/menu/CollapseArrow';
-import { Eye } from '@/icons/Eye';
-import { EyeOff } from '@/icons/EyeOff';
 import { SearchInput } from '@/shared/components';
 import { useIO, KeyboardActions } from '@/shared/hooks/io';
 import { NodeList } from '@/shared/NodeNavigation/NodeList';
 import { useRelationNodesState, useTreesState } from '@/state/containers';
 import { useSortState } from '@/state/containers/sort';
 import { fontFamilySans, transition } from '@/vars';
+import { Eye, EyeSlash } from '@aexol-studio/styling-system';
 import { keyframes } from '@emotion/react';
 import styled from '@emotion/styled';
 
@@ -27,8 +26,8 @@ const ListContainer = styled.div<{ isCollapsed: boolean }>`
   flex-flow: column nowrap;
   overflow-y: auto;
   overflow-x: hidden;
-  background: ${({ theme }) => theme.background.mainFurther};
-  border-left: ${({ theme }) => theme.moduleSeparator} 2px solid;
+  background: ${({ theme }) => theme.neutral[600]};
+  border-left: ${({ theme }) => theme.black} 2px solid;
   height: 100%;
   transition: width 0.5s ease-in-out;
   width: ${({ isCollapsed }) => (isCollapsed ? '50px' : '24rem')};
@@ -45,7 +44,7 @@ const TopMenusWrapper = styled.div`
   position: sticky;
   width: 100%;
   top: 0;
-  background: ${({ theme }) => theme.background.mainFurther};
+  background: ${({ theme }) => theme.neutral[600]};
   z-index: 2;
   padding: 1rem;
 `;
@@ -66,10 +65,10 @@ const VisibilityBox = styled.div`
   font-family: ${fontFamilySans};
   font-size: 14px;
   cursor: pointer;
-  color: ${({ theme }) => theme.inactive};
+  color: ${({ theme }) => theme.text.disabled};
   transition: ${transition};
   :hover {
-    color: ${({ theme }) => theme.text};
+    color: ${({ theme }) => theme.text.default};
   }
   svg {
     stroke-width: 2px;
@@ -81,7 +80,7 @@ const Header = styled.div`
   font-size: 16px;
   font-family: ${fontFamilySans};
   font-weight: 500;
-  color: ${({ theme }) => theme.dimmed};
+  color: ${({ theme }) => theme.text.disabled};
   white-space: nowrap;
   margin-bottom: 1rem;
 `;
@@ -247,7 +246,6 @@ export const NodeNavigation = () => {
         <VerticalTitle isCollapsed={isCollapsed}>Navigation</VerticalTitle>
         <Expanded isCollapsed={isCollapsed}>
           <TopMenusWrapper>
-            <Header>Navigation</Header>
             <SearchWrapper>
               <SearchInput
                 ref={searchRef}
@@ -262,7 +260,7 @@ export const NodeNavigation = () => {
                 {allVisible ? (
                   <VisibilityBox onClick={hideRelationNodes}>
                     <span>hide all</span>
-                    <EyeOff />
+                    <EyeSlash />
                   </VisibilityBox>
                 ) : (
                   <VisibilityBox onClick={showRelationNodes}>

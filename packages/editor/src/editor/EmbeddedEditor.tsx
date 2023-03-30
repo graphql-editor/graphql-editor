@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { GraphQLEditorWorker } from 'graphql-editor-worker';
 import { useErrorsState, useTheme, useTreesState } from '@/state/containers';
-import { EditorTheme } from '@/gshared/theme/DarkTheme';
+import { EditorTheme } from '@/gshared/theme/MainTheme';
 import styled from '@emotion/styled';
 import { ErrorsList } from '@/shared/errors/ErrorsList';
 import { PassedSchema } from '@/Models';
@@ -17,15 +17,15 @@ const Main = styled.div`
   overflow-y: clip;
 
   scrollbar-color: ${({ theme }) =>
-    `${theme.background.mainClose} ${theme.background.mainFurthest}`};
+    `${theme.neutral[500]} ${theme.neutral[600]}`};
   *::-webkit-scrollbar {
-    background: ${({ theme }) => theme.background.mainClose};
+    background: ${({ theme }) => theme.neutral[500]};
   }
   *::-webkit-scrollbar-thumb {
-    background: ${({ theme }) => theme.background.mainClose};
+    background: ${({ theme }) => theme.neutral[500]};
   }
   *::-webkit-scrollbar-track {
-    background: ${({ theme }) => theme.background.mainFurthest};
+    background: ${({ theme }) => theme.neutral[600]};
   }
 
   .full-screen-container {
