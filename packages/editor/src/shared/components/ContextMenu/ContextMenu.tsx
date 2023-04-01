@@ -13,6 +13,9 @@ export const ContextMenu: React.FC<{
     onOutsideClick: close, // close the menu when the user clicks outside
     auto: true,
     placement: 'bottom-start',
+    containerOffset: 8,
+    triggerOffset: 8,
+    arrowOffset: 8,
     // automatically find the best placement
   });
 

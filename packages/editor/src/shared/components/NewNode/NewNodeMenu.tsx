@@ -12,7 +12,7 @@ import { useTreesState } from '@/state/containers/trees';
 import { Menu } from '@/Graf/Node/components';
 import styled from '@emotion/styled';
 import { transition } from '@/vars';
-import { Plus } from '@aexol-studio/styling-system';
+import { Plus, Stack } from '@aexol-studio/styling-system';
 import { useRelationsState } from '@/state/containers';
 
 interface NodeChangeFieldTypeMenuProps {
@@ -87,13 +87,13 @@ export const NewNodeMenu = React.forwardRef<
   };
 
   return (
-    <NodeMenuContainer>
-      <Menu
-        {...props}
-        ref={ref}
-        onScroll={(e) => e.stopPropagation()}
-        hideMenu={hideMenu}
-      >
+    <Menu
+      {...props}
+      ref={ref}
+      onScroll={(e) => e.stopPropagation()}
+      hideMenu={hideMenu}
+    >
+      <PaddingContainer direction="column" gap="0.25rem">
         {allTypes.map((nt) => (
           <React.Fragment>
             {creating === nt.data && (
@@ -135,22 +135,27 @@ export const NewNodeMenu = React.forwardRef<
             )}
           </React.Fragment>
         ))}
-      </Menu>
-    </NodeMenuContainer>
+      </PaddingContainer>
+    </Menu>
   );
 });
 const CreateNodeItem = styled.div<{ type: string }>`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
+  padding: 0 1rem;
+  height: 3rem;
+  font-size: 16px;
   cursor: pointer;
   svg {
     color: ${({ theme }) => theme.text.default};
   }
 
   background-color: ${({ theme }) => theme.neutral[500]};
+  border-left: 1px solid
+    ${({ type, theme }) => theme.colors[type as keyof typeof theme.colors]};
   transition: ${transition};
+  border-radius: ${(p) => p.theme.radius}px;
   :hover {
     background-color: ${({ theme }) => theme.neutral[500]};
   }
@@ -159,18 +164,22 @@ const CreateNodeName = styled.div`
   color: ${({ theme }) => theme.text.default};
   font-size: 16px;
 `;
-const NodeMenuContainer = styled.div`
-  position: fixed;
-  z-index: 2;
-`;
 
 const CreationInput = styled.input<{ type: string }>`
   border: 0;
   width: 100%;
+  height: 3rem;
   background-color: ${({ theme }) => theme.neutral[500]};
-  color: ${({ type, theme }) =>
-    theme.colors[type as keyof typeof theme.colors]};
+  color: ${({ theme }) => theme.text.active};
+  border-left: 1px solid
+    ${({ type, theme }) => theme.colors[type as keyof typeof theme.colors]};
   font-size: 16px;
   outline: 0;
+  background-color: ${(p) => p.theme.neutral[600]};
+  border-radius: ${(p) => p.theme.radius}px;
+  padding: 1rem;
+`;
+
+const PaddingContainer = styled(Stack)`
   padding: 1rem;
 `;
