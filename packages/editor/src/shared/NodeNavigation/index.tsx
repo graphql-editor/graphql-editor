@@ -328,6 +328,7 @@ export const NodeNavigation = () => {
                 )
               }
               nodeList={splittedNodes?.inputNodes}
+              visibleInRelationView
               listTitle="Inputs"
               colorKey="input"
             />

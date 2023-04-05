@@ -67,6 +67,12 @@ const useRelationNodes = createContainer(() => {
         nf.length > 0 ? nf : [...nodesVisibilityArr],
       );
       const types = n.args.map((a) => getTypeName(a.type.fieldType));
+      const argChild = n.args
+        .flatMap((a) => a.args)
+        .map((ca) => getTypeName(ca.type.fieldType));
+      const argChildren = allNodes.nodes.filter((an) =>
+        argChild.includes(an.name),
+      );
       const children = allNodes.nodes.filter((an) => types.includes(an.name));
       const parents = allNodes.nodes.filter((an) =>
         an.args.some((a) => getTypeName(a.type.fieldType) === n.name),
@@ -74,6 +80,7 @@ const useRelationNodes = createContainer(() => {
       const visibleIds = children
         .map((c) => c.id)
         .concat(parents.map((p) => p.id))
+        .concat(argChildren.map((p) => p.id))
         .concat([n.id]);
       setNodesVisibilityArr((prev) =>
         prev.map((el) => ({

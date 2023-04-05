@@ -25,14 +25,13 @@ const Content = styled.div<ContentProps>`
   position: relative;
   text-rendering: optimizeSpeed;
   border-radius: ${(p) => p.theme.radius}px;
-  margin: 15px;
   transition: 0.25s all ease-in-out;
   z-index: 1;
   flex: 1 0 auto;
   font-family: ${fontFamilySans};
   font-size: 14px;
   max-width: 66vw;
-  opacity: ${({ isRelated }) => (isRelated ? 1.0 : 0.5)};
+  opacity: ${({ isRelated }) => (isRelated ? 1.0 : 0.3)};
   cursor: ${({ isSelected }) => (isSelected ? 'auto' : 'pointer')};
   border-width: 1px;
   border-style: ${({ isLibrary }) => (isLibrary ? 'dashed' : 'solid')};
@@ -99,16 +98,10 @@ const NameInRelation = styled.span`
 interface NodeProps {
   field: ParserField;
   isLibrary?: boolean;
-  setRef: (instance: HTMLDivElement) => void;
   canSelect?: boolean;
 }
 
-export const Node: React.FC<NodeProps> = ({
-  field,
-  setRef,
-  isLibrary,
-  canSelect,
-}) => {
+export const Node: React.FC<NodeProps> = ({ field, isLibrary, canSelect }) => {
   const { setSelectedNodeId, activeNode, relatedToSelected } = useTreesState();
   const { setEditMode } = useRelationsState();
   const isSelected = !!activeNode && field.id === activeNode.id;
@@ -151,11 +144,6 @@ export const Node: React.FC<NodeProps> = ({
       isSelected={isSelected}
       isLibrary={isLibrary}
       nodeType={getTypeName(field.type.fieldType) as NodeTypes}
-      ref={(ref) => {
-        if (ref) {
-          setRef(ref);
-        }
-      }}
       onClick={(e) => {
         if (!canSelect || isSelected) return;
         e.stopPropagation();

@@ -59,10 +59,11 @@ export const Lines: React.FC<LinesProps> = ({ relations }) => {
             relationType={relationType}
             relationNumber={relationNumber}
             color={(theme.colors as any)[getTypeName(rf.field.type.fieldType)]}
-            key={`${index}-${rf.index}-${rf.field.name}`}
+            key={`${index}-${rf.index}-${relationNumber}-${rf.field.name}-${rf.connectingField.name}`}
             from={rf.htmlNode}
             to={r.to.htmlNode}
             PortNumber={portNumber}
+            network
             maxIndex={r.from.length}
           />
         );

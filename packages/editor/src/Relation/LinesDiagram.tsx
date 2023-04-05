@@ -9,13 +9,14 @@ import { useTreesState } from '@/state/containers/trees';
 import { useRelationsState } from '@/state/containers';
 import { Node } from './Node';
 import styled from '@emotion/styled';
-import { layerSortRecuirsive } from './Algorithm';
 import { Lines, RelationPath } from '@/Relation/Lines';
 import { isScalarArgument } from '@/GraphQL/Resolve';
 import * as vars from '@/vars';
 import { ParserField, getTypeName, TypeDefinition } from 'graphql-js-tree';
 import { useRouter } from '@/state/containers/router';
 import { ReactZoomPanPinchRef } from 'react-zoom-pan-pinch';
+import { GraphQLEditorWorker, NumberNode } from 'graphql-editor-worker';
+
 const Wrapper = styled.div`
   width: 100%;
   height: 100%;
@@ -43,16 +44,13 @@ const Main = styled.div<{ clickable?: boolean }>`
   }
 `;
 
-const NodePane = styled.div`
-  align-self: center;
-  flex-flow: column nowrap;
-  gap: 2rem;
-  margin: auto;
+const NodePane = styled.div<{ x: number; y: number }>`
+  top: ${(p) => p.y}px;
+  left: ${(p) => p.x}px;
+  transform-origin: center;
+  transform: translate(-50%, -50%);
+  position: absolute;
   z-index: 1;
-  font-size: 12px;
-  align-items: flex-end;
-  display: flex;
-  padding: 10vh 0;
 `;
 let tRefs: Record<string, HTMLDivElement> = {};
 let tRefsToLoad = 0;
@@ -95,9 +93,9 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
   const [refsLoaded, setRefsLoaded] = useState(false);
   const isOnMountCentered = useRef(false);
   const [relationDrawingNodes, setRelationDrawingNodes] =
-    useState<ParserField[][]>();
+    useState<NumberNode[]>();
   const relationDrawingNodesArray = useMemo(() => {
-    return relationDrawingNodes?.flatMap((r) => r);
+    return relationDrawingNodes?.flatMap((r) => r).map((r) => r.parserField);
   }, [relationDrawingNodes]);
 
   const [relations, setRelations] =
@@ -125,7 +123,14 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
     const togetherFiltered = nodes
       .map(filterScalars)
       .filter((n) => !scalarTypes.includes(n.name));
-    setRelationDrawingNodes(layerSortRecuirsive(togetherFiltered));
+    // compose existing positions
+
+    GraphQLEditorWorker.simulateSort(
+      togetherFiltered,
+      relationDrawingNodes,
+    ).then((positionedNodes) => {
+      setRelationDrawingNodes(positionedNodes);
+    });
     return;
   }, [nodes, libraryTree, baseTypesOn]);
 
@@ -175,6 +180,9 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
   }, [refs, refsLoaded]);
 
   const SvgLinesContainer = useMemo(() => {
+    if (!selectedNodeId?.value?.id) {
+      return <Lines relations={relations} />;
+    }
     return <Lines relations={relations} />;
   }, [relations, selectedNodeId]);
 
@@ -197,9 +205,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
 
   const NodesContainer = useMemo(() => {
     tRefs = {};
-    tRefsToLoad =
-      relationDrawingNodes?.map((rdn) => rdn.length).reduce((a, b) => a + b) ||
-      0;
+    tRefsToLoad = relationDrawingNodes?.length || 0;
     const setRef = (n: ParserField, ref: HTMLDivElement) => {
       if (tRefs[n.id]) return;
       tRefs[n.id] = ref;
@@ -216,19 +222,22 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
     };
     return (
       <>
-        {relationDrawingNodes?.map((nodesArray, i) => (
-          <NodePane key={i}>
-            {nodesArray.map((n) => (
-              <Node
-                canSelect={panState !== 'grabbing'}
-                isLibrary={isLibrary(n.id)}
-                key={n.id}
-                setRef={(ref) => {
-                  setRef(n, ref);
-                }}
-                field={n}
-              />
-            ))}
+        {relationDrawingNodes?.map((n, i) => (
+          <NodePane
+            ref={(ref) => {
+              if (ref) {
+                setRef(n.parserField, ref);
+              }
+            }}
+            x={n.x}
+            y={n.y}
+            key={n.parserField.id}
+          >
+            <Node
+              canSelect={panState !== 'grabbing'}
+              isLibrary={isLibrary(n.parserField.id)}
+              field={n.parserField}
+            />
           </NodePane>
         ))}
       </>

@@ -26,6 +26,7 @@ export const Draw = ({
   maxIndex,
   relationNumber,
   relationType,
+  network,
 }: {
   from?: HTMLDivElement;
   to?: HTMLDivElement;
@@ -34,6 +35,7 @@ export const Draw = ({
   maxIndex: number;
   relationNumber: number;
   relationType: FieldType;
+  network?: boolean;
 }) => {
   const stroke = color;
   if (from && to) {
@@ -42,13 +44,48 @@ export const Draw = ({
       PortNumber * RELATION_CONSTANTS.FIELD_HEIGHT +
       RELATION_CONSTANTS.FIELD_HEIGHT / 2;
     const f = {
-      x: from.offsetLeft,
-      y: from.offsetTop,
+      x: from.offsetLeft - from.clientWidth / 2.0,
+      y: from.offsetTop - from.clientHeight / 2.0,
     };
     const t = {
-      x: to.offsetLeft + to.clientWidth,
-      y: to.offsetTop + pos,
+      x: to.offsetLeft + to.clientWidth - to.clientWidth / 2.0,
+      y: to.offsetTop + pos - to.clientHeight / 2.0,
     };
+    const isArray = isArrayType(relationType);
+    const fac = isArray ? 5 : 2;
+
+    if (network) {
+      const f = {
+        x: from.offsetLeft,
+        y: from.offsetTop,
+      };
+      const t = {
+        x: to.offsetLeft,
+        y: to.offsetTop,
+      };
+      return (
+        <>
+          <g>
+            <path
+              stroke={stroke}
+              strokeWidth={fac}
+              strokeDasharray={
+                relationType.type === Options.required ? undefined : '5,5'
+              }
+              d={`M ${t.x} ${t.y} L ${f.x} ${f.y}`}
+            />
+            <circle
+              fill={stroke}
+              stroke={stroke}
+              r={7}
+              cx={f.x + 2}
+              cy={f.y + 2}
+            />
+          </g>
+        </>
+      );
+    }
+
     const upDown = f.y > t.y;
     const center = {
       x: (t.x + f.x) / 2.0,
@@ -94,8 +131,6 @@ export const Draw = ({
       bezierPoint2,
       bezierWeight,
     );
-    const isArray = isArrayType(relationType);
-    const fac = isArray ? 5 : 2;
 
     return (
       <>

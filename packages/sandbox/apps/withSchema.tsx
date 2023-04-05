@@ -4,7 +4,7 @@ import * as schemas from '../schema';
 
 export const withSchema = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
-    code: schemas.food,
+    code: schemas.billabeeSchema,
     libraries: '',
   });
   return (

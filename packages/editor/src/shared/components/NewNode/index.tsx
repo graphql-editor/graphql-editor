@@ -13,12 +13,7 @@ export const NewNode: React.FC = () => {
         close={() => setOpen(false)}
         Trigger={({ triggerProps }) => (
           <Main {...triggerProps}>
-            <Button
-              size="small"
-              variant="secondary"
-              endAdornment={<Plus />}
-              {...triggerProps}
-            >
+            <Button size="small" variant="secondary" endAdornment={<Plus />}>
               New node
             </Button>
           </Main>

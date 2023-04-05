@@ -1,6 +1,7 @@
-import { ParserTree } from 'graphql-js-tree';
+import { ParserField, ParserTree } from 'graphql-js-tree';
 import { ContextToken, IPosition } from 'graphql-language-service';
 import type { WorkerEvents } from '@/worker/validation.worker';
+import { NumberNode } from '@/tsAlgo';
 const ValidationWorker = new Worker(
   new URL('./validation.worker.js', import.meta.url),
 );
@@ -34,6 +35,12 @@ const send = <T extends keyof WorkerEvents>(
 };
 
 export class GraphQLEditorWorker {
+  static simulateSort(
+    nodes: ParserField[],
+    existingNumberNodes?: NumberNode[],
+  ) {
+    return send('simulateSort', { nodes, existingNumberNodes });
+  }
   static validate(schema: string, libraries?: string) {
     return send('validate', { schema, libraries });
   }

@@ -191,6 +191,11 @@ const useTreesStateContainer = createContainer(() => {
     return activeNode?.args
       .map((a) => getTypeName(a.type.fieldType))
       .concat(
+        activeNode.args
+          .flatMap((ana) => ana.args)
+          .map((ana) => getTypeName(ana.type.fieldType)),
+      )
+      .concat(
         allNodes.nodes
           .filter((an) =>
             an.args.find(

@@ -354,7 +354,7 @@ export const Relation: React.FC = () => {
           <Checkbox
             label="scalars"
             labelPosition="start"
-            onClick={() => setBaseTypesOn(!baseTypesOn)}
+            onChange={(e) => setBaseTypesOn(!baseTypesOn)}
             checked={baseTypesOn}
           />
           {isLoading ? (

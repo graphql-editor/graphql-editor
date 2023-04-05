@@ -1,5 +1,11 @@
+import { NumberNode, sortNodesTs, storeCoordinates } from '@/tsAlgo';
 import { catchSchemaErrors, EditorError } from '@/validation';
-import { Parser, ParserTree, TreeToGraphQL } from 'graphql-js-tree';
+import {
+  Parser,
+  ParserField,
+  ParserTree,
+  TreeToGraphQL,
+} from 'graphql-js-tree';
 import { getTokenAtPosition, IPosition } from 'graphql-language-service';
 const ctx: Worker = self as any;
 
@@ -30,6 +36,13 @@ export type WorkerEvents = {
       position: Pick<IPosition, 'character' | 'line'>;
     };
     returned: string;
+  };
+  simulateSort: {
+    args: {
+      nodes: ParserField[];
+      existingNumberNodes?: NumberNode[];
+    };
+    returned: NumberNode[];
   };
 };
 
@@ -72,4 +85,10 @@ ctx.addEventListener('message', (message) => {
       getTokenAtPosition(args.document, args.position as IPosition),
     ),
   )(message);
+  receive('simulateSort', (args) => {
+    console.log(args.nodes);
+    const sorted = sortNodesTs(args.nodes, args.existingNumberNodes);
+    storeCoordinates(sorted.numberNodes, sorted.connections);
+    return sorted.numberNodes;
+  })(message);
 });
