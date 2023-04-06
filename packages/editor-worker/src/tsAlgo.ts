@@ -1,5 +1,6 @@
 import { getTypeName, ParserField } from 'graphql-js-tree';
 import * as d3 from 'd3';
+import { WorkerEvents } from '@/worker/validation.worker';
 
 export interface NumberNode {
   id: string;
@@ -21,6 +22,7 @@ interface NumberConnection {
 export function storeCoordinates(
   nodes: NumberNode[],
   connections: NumberConnection[],
+  iterations = 100,
 ): void {
   const simulation = d3
     .forceSimulation(nodes)
@@ -35,17 +37,17 @@ export function storeCoordinates(
     .force('collide', () => createCollisionForce(nodes)(1, 2))
     .stop();
   console.time('simulation');
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < iterations; i++) {
     simulation.tick();
   }
   simulation.stop();
   console.timeEnd('simulation');
 }
 
-export const sortNodesTs = (
-  nodes: ParserField[],
-  existingNumberNodes?: NumberNode[],
-) => {
+export const sortNodesTs = ({
+  nodes,
+  options: { existingNumberNodes },
+}: WorkerEvents['simulateSort']['args']) => {
   const numberNodes = nodes.map((n) => {
     const nodeHeight = 67 + n.args.length * 27;
     const fieldLengths = Math.max(

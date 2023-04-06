@@ -23,6 +23,7 @@ import {
   ImageSquareCheck,
   Minus,
   Plus,
+  Loader,
 } from '@aexol-studio/styling-system';
 
 const Wrapper = styled.div`
@@ -53,9 +54,23 @@ const ErrorContainer = styled.div`
   border: 1px solid ${({ theme }) => theme.error};
 `;
 
+const LoadingContainer = styled.div`
+  position: absolute;
+  z-index: 2;
+  inset:0
+  padding: 2rem;
+  gap:1rem;
+  color: ${({ theme }) => theme.text.default};
+  background-color: ${({ theme }) => theme.neutral[600]};inset: 0;
+  font-family: ${fontFamilySans};
+display: flex;
+align-items: center;
+justify-content: center;
+`;
+
 const TooltippedZoom = styled.div`
   position: relative;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 500;
   background: transparent;
   width: 4ch;
@@ -142,12 +157,12 @@ const ZoomWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0.375rem 0.75rem;
+  padding: 0.275rem 0.75rem;
   background-color: ${({ theme }) => theme.neutral[700]};
   border-color: ${({ theme }) => theme.neutral[200]};
   border-style: solid;
   border-width: 1px;
-  border-radius: 2px;
+  border-radius: ${(p) => p.theme.radius}px;
   gap: 8px;
 `;
 
@@ -180,8 +195,13 @@ export const Relation: React.FC = () => {
   const { filteredRelationNodes, isFocused, deFocusNode } =
     useRelationNodesState();
   const { grafErrors } = useErrorsState();
-  const { setBaseTypesOn, baseTypesOn, editMode, setEditMode } =
-    useRelationsState();
+  const {
+    setBaseTypesOn,
+    baseTypesOn,
+    editMode,
+    setEditMode,
+    largeSimulationLoading,
+  } = useRelationsState();
   const [isLoading, setIsLoading] = useState(false);
   const [draggingMode, setDraggingMode] = useState<DragMode>('grab');
   const [scaleFactor, setScaleFactor] = useState(100);
@@ -422,6 +442,12 @@ export const Relation: React.FC = () => {
             />
           </TransformComponent>
         </TransformWrapper>
+        {largeSimulationLoading && (
+          <LoadingContainer>
+            <Loader size="lg" />
+            <span>Loading {filteredRelationNodes.length} nodes</span>
+          </LoadingContainer>
+        )}
         {grafErrors && <ErrorContainer>{grafErrors}</ErrorContainer>}
       </Main>
     </Wrapper>

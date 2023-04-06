@@ -8,7 +8,7 @@ const TopBarComponent = styled.div`
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
-  padding: 8px 25px 8px;
+  padding: 1rem;
   height: 60px;
   position: absolute;
   z-index: 2;

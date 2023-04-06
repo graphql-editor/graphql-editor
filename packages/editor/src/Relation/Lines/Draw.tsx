@@ -1,6 +1,6 @@
 import { FieldType, Options } from 'graphql-js-tree';
 import React from 'react';
-import { RELATION_CONSTANTS } from './constants';
+// import { RELATION_CONSTANTS } from './constants';
 
 interface Point {
   x: number;
@@ -39,17 +39,17 @@ export const Draw = ({
 }) => {
   const stroke = color;
   if (from && to) {
-    let pos =
-      RELATION_CONSTANTS.TOP_HEIGHT +
-      PortNumber * RELATION_CONSTANTS.FIELD_HEIGHT +
-      RELATION_CONSTANTS.FIELD_HEIGHT / 2;
+    // let pos =
+    //   RELATION_CONSTANTS.TOP_HEIGHT +
+    //   PortNumber * RELATION_CONSTANTS.FIELD_HEIGHT +
+    //   RELATION_CONSTANTS.FIELD_HEIGHT / 2;
     const f = {
-      x: from.offsetLeft - from.clientWidth / 2.0,
-      y: from.offsetTop - from.clientHeight / 2.0,
+      x: from.offsetLeft,
+      y: from.offsetTop,
     };
     const t = {
-      x: to.offsetLeft + to.clientWidth - to.clientWidth / 2.0,
-      y: to.offsetTop + pos - to.clientHeight / 2.0,
+      x: to.offsetLeft,
+      y: to.offsetTop,
     };
     const isArray = isArrayType(relationType);
     const fac = isArray ? 5 : 2;
@@ -139,7 +139,7 @@ export const Draw = ({
             stroke={stroke}
             strokeWidth={fac}
             strokeDasharray={
-              relationType.type === Options.required ? undefined : '5,5'
+              relationType.type === Options.required ? undefined : '5 10'
             }
             d={`M ${t.x} ${t.y}
            Q ${bezier1.x} ${bezier1.y} ${center.x} ${center.y}

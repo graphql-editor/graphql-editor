@@ -40,7 +40,10 @@ export type WorkerEvents = {
   simulateSort: {
     args: {
       nodes: ParserField[];
-      existingNumberNodes?: NumberNode[];
+      options: {
+        existingNumberNodes?: NumberNode[];
+        iterations?: number;
+      };
     };
     returned: NumberNode[];
   };
@@ -86,9 +89,12 @@ ctx.addEventListener('message', (message) => {
     ),
   )(message);
   receive('simulateSort', (args) => {
-    console.log(args.nodes);
-    const sorted = sortNodesTs(args.nodes, args.existingNumberNodes);
-    storeCoordinates(sorted.numberNodes, sorted.connections);
+    const sorted = sortNodesTs(args);
+    storeCoordinates(
+      sorted.numberNodes,
+      sorted.connections,
+      args.options.iterations,
+    );
     return sorted.numberNodes;
   })(message);
 });

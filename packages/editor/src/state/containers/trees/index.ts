@@ -204,7 +204,7 @@ const useTreesStateContainer = createContainer(() => {
           )
           .map((a) => a.name),
       );
-  }, [activeNode]);
+  }, [JSON.stringify(activeNode)]);
 
   const generateTreeFromSchema = async (schema: PassedSchema) => {
     if (!schema.code) {

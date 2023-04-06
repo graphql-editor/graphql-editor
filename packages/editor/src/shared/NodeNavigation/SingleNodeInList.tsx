@@ -1,7 +1,17 @@
 import { EditorTheme } from '@/gshared/theme/MainTheme';
-import { useTreesState, useRelationNodesState } from '@/state/containers';
+import {
+  useTreesState,
+  useRelationNodesState,
+  useRelationsState,
+} from '@/state/containers';
 import { fontFamilySans, transition } from '@/vars';
-import { Link, EagleEye, EyeSlash, Eye } from '@aexol-studio/styling-system';
+import {
+  Link,
+  EagleEye,
+  EyeSlash,
+  Eye,
+  Pen,
+} from '@aexol-studio/styling-system';
 import styled from '@emotion/styled';
 import { compareParserFields, ParserField } from 'graphql-js-tree';
 import React, { createRef, useEffect } from 'react';
@@ -13,9 +23,10 @@ export const SingleNodeInList: React.FC<{
   colorKey: keyof EditorTheme['colors'];
   visibleInRelationView?: true;
 }> = ({ node, colorKey, visibleInRelationView }) => {
-  const { setSelectedNodeId, selectedNodeId, activeNode, allNodes, isLibrary } =
+  const { setSelectedNodeId, selectedNodeId, activeNode, isLibrary } =
     useTreesState();
   const { toggleNodeVisibility, focusNode } = useRelationNodesState();
+  const { setEditMode } = useRelationsState();
   const ref = createRef<HTMLAnchorElement>();
 
   useEffect(() => {
@@ -26,30 +37,26 @@ export const SingleNodeInList: React.FC<{
       });
     }
   }, [selectedNodeId]);
-
+  const isSelected = activeNode && !!compareParserFields(node)(activeNode);
   return (
     <NavSingleBox
       color={colorKey}
       ref={ref}
       onClick={() => {
-        const foundNode = allNodes.nodes.find((el) => el.id === node.id);
         setSelectedNodeId({
-          value: foundNode
-            ? {
-                id: foundNode.id,
-                name: foundNode.name,
-              }
-            : undefined,
+          value: {
+            id: node.id,
+            name: node.name,
+          },
           source: 'docs',
         });
+        if (!visibleInRelationView) {
+          setEditMode(node.id);
+        }
       }}
-      active={activeNode && !!compareParserFields(node)(activeNode)}
+      active={isSelected}
     >
-      <NodeName
-        isHidden={node.isHidden}
-        color={colorKey}
-        active={activeNode && !!compareParserFields(node)(activeNode)}
-      >
+      <NodeName isHidden={node.isHidden} color={colorKey} active={isSelected}>
         {node.name}
         {isLibrary(node.id) && (
           <ExternalLibrary title="From external library">
@@ -58,7 +65,7 @@ export const SingleNodeInList: React.FC<{
         )}
       </NodeName>
       <Actions>
-        {visibleInRelationView && (
+        {visibleInRelationView && isSelected && (
           <IconContainer
             isHidden={node.isHidden}
             onClick={(e) => {
@@ -74,6 +81,24 @@ export const SingleNodeInList: React.FC<{
             }}
           >
             <EagleEye height={20} />
+          </IconContainer>
+        )}
+        {visibleInRelationView && isSelected && (
+          <IconContainer
+            isHidden={node.isHidden}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedNodeId({
+                source: 'deFocus',
+                value: {
+                  id: node.id,
+                  name: node.name,
+                },
+              });
+              setEditMode(node.id);
+            }}
+          >
+            <Pen height={20} />
           </IconContainer>
         )}
         {visibleInRelationView && (
@@ -107,7 +132,7 @@ const Actions = styled.div`
   margin-left: auto;
   align-items: center;
   display: flex;
-  gap: 0.5rem;
+  gap: 0.25rem;
 `;
 
 const NavSingleBox = styled.a<{
@@ -137,9 +162,6 @@ const NodeName = styled.span<{
   color: keyof EditorTheme['colors'];
   isHidden?: boolean;
 }>`
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
   font-family: ${fontFamilySans};
   font-weight: ${({ active }) => (active ? 'bold' : 'normal')};
   color: ${({ theme, active, color }) =>
@@ -147,6 +169,10 @@ const NodeName = styled.span<{
   font-size: 14px;
   transition: ${transition};
   opacity: ${({ isHidden }) => (isHidden ? 0.25 : 1)};
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  width: 28ch;
+  white-space: nowrap;
 
   &:hover {
     color: ${({ theme, color }) => theme.colors[color]};

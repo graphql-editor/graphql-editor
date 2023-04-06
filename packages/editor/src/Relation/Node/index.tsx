@@ -33,7 +33,7 @@ const Content = styled.div<ContentProps>`
   max-width: 66vw;
   opacity: ${({ isRelated }) => (isRelated ? 1.0 : 0.3)};
   cursor: ${({ isSelected }) => (isSelected ? 'auto' : 'pointer')};
-  border-width: 1px;
+  border-width: 2px;
   border-style: ${({ isLibrary }) => (isLibrary ? 'dashed' : 'solid')};
   border-color: ${({ theme, nodeType, isSelected }) =>
     theme.colors[nodeType] && isSelected

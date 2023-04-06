@@ -88,7 +88,8 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
 }) => {
   const { selectedNodeId, libraryTree, isLibrary } = useTreesState();
   const { routes } = useRouter();
-  const { baseTypesOn } = useRelationsState();
+  const { baseTypesOn, editMode, setLargeSimulationLoading } =
+    useRelationsState();
   const [refs, setRefs] = useState<Record<string, HTMLDivElement>>({});
   const [refsLoaded, setRefsLoaded] = useState(false);
   const isOnMountCentered = useRef(false);
@@ -114,23 +115,28 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
   }, [selectedNodeId?.value, refsLoaded]);
 
   useEffect(() => {
-    setRefsLoaded(false);
-    const scalarTypes = nodes
-      .filter((n) => n.data.type === TypeDefinition.ScalarTypeDefinition)
-      .map((n) => n.name);
-    const filterScalars = passScalars(baseTypesOn, scalarTypes);
-
-    const togetherFiltered = nodes
-      .map(filterScalars)
-      .filter((n) => !scalarTypes.includes(n.name));
     // compose existing positions
+    if (!editMode) {
+      setRefsLoaded(false);
+      const scalarTypes = nodes
+        .filter((n) => n.data.type === TypeDefinition.ScalarTypeDefinition)
+        .map((n) => n.name);
+      const filterScalars = passScalars(baseTypesOn, scalarTypes);
 
-    GraphQLEditorWorker.simulateSort(
-      togetherFiltered,
-      relationDrawingNodes,
-    ).then((positionedNodes) => {
-      setRelationDrawingNodes(positionedNodes);
-    });
+      const togetherFiltered = nodes
+        .map(filterScalars)
+        .filter((n) => !scalarTypes.includes(n.name));
+      setLargeSimulationLoading(true);
+      GraphQLEditorWorker.simulateSort({
+        nodes: togetherFiltered,
+        options: {
+          existingNumberNodes: relationDrawingNodes,
+          iterations: 200,
+        },
+      }).then((positionedNodes) => {
+        setRelationDrawingNodes(positionedNodes);
+      });
+    }
     return;
   }, [nodes, libraryTree, baseTypesOn]);
 
@@ -217,6 +223,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
         refTimeout = setTimeout(() => {
           setRefs(tRefs);
           setRefsLoaded(true);
+          setLargeSimulationLoading(false);
         }, 10);
       }
     };

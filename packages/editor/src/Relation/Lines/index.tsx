@@ -63,7 +63,6 @@ export const Lines: React.FC<LinesProps> = ({ relations }) => {
             from={rf.htmlNode}
             to={r.to.htmlNode}
             PortNumber={portNumber}
-            network
             maxIndex={r.from.length}
           />
         );
