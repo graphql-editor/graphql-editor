@@ -491,7 +491,7 @@ export const Relation: React.FC = () => {
             }}
           >
             {mainDiagram}
-            {focusedDiagram}
+            {!!focusMode && focusedDiagram}
           </TransformComponent>
         </TransformWrapper>
         {largeSimulationLoading && (

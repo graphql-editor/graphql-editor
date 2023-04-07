@@ -198,7 +198,6 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
       if (tRefs[n.id]) return;
       tRefs[n.id] = ref;
       const renderedRefs = Object.keys(tRefs).length;
-      console.log(renderedRefs, tRefsToLoad, relationDrawingNodes);
       if (renderedRefs === tRefsToLoad) {
         if (refTimeout) {
           clearTimeout(refTimeout);
