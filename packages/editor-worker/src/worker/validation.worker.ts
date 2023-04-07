@@ -43,6 +43,7 @@ export type WorkerEvents = {
       options: {
         existingNumberNodes?: NumberNode[];
         iterations?: number;
+        alpha?: number;
       };
     };
     returned: NumberNode[];
@@ -90,10 +91,21 @@ ctx.addEventListener('message', (message) => {
   )(message);
   receive('simulateSort', (args) => {
     const sorted = sortNodesTs(args);
+    if (sorted.alpha === 0) {
+      return sorted.numberNodes;
+    }
+    const iterations =
+      sorted.alpha === 1
+        ? args.options.iterations || 200
+        : Math.max(
+            1,
+            Math.round(sorted.alpha * (args.options.iterations || 200)),
+          );
     storeCoordinates(
       sorted.numberNodes,
       sorted.connections,
-      args.options.iterations,
+      iterations,
+      sorted.alpha,
     );
     return sorted.numberNodes;
   })(message);

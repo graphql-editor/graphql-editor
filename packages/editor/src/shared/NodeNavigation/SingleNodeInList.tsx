@@ -70,13 +70,6 @@ export const SingleNodeInList: React.FC<{
             isHidden={node.isHidden}
             onClick={(e) => {
               e.stopPropagation();
-              setSelectedNodeId({
-                source: 'deFocus',
-                value: {
-                  id: node.id,
-                  name: node.name,
-                },
-              });
               focusNode(node);
             }}
           >

@@ -9,6 +9,7 @@ import {
   ParserField,
   createParserField,
   TypeDefinition,
+  TypeSystemDefinition,
 } from 'graphql-js-tree';
 import styled from '@emotion/styled';
 import { KeyboardActions, useIO } from '@/shared/hooks/io';
@@ -48,6 +49,7 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
     scalars,
     undo,
     updateNode,
+    activeNode,
     redo,
   } = useTreesState();
   const { setEditMode } = useRelationsState();
@@ -64,6 +66,17 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
     <SubNodeWrapper
       onClick={(e) => {
         e.stopPropagation();
+        const d = activeNode?.data.type;
+        if (
+          d === TypeDefinition.EnumTypeDefinition ||
+          d === TypeDefinition.ScalarTypeDefinition ||
+          d === TypeSystemDefinition.DirectiveDefinition
+        ) {
+          setSelectedNodeId({
+            source: 'relation',
+            value: undefined,
+          });
+        }
         setEditMode('');
       }}
     >

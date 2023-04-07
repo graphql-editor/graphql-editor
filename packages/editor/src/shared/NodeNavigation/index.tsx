@@ -115,8 +115,12 @@ const VerticalTitle = styled(Header)<{ isCollapsed: boolean }>`
 
 export const NodeNavigation = () => {
   const { allNodes } = useTreesState();
-  const { nodesVisibilityArr, hideRelationNodes, showRelationNodes } =
-    useRelationNodesState();
+  const {
+    nodesVisibilityArr,
+    hideRelationNodes,
+    showRelationNodes,
+    allVisible,
+  } = useRelationNodesState();
   const { sortAlphabetically } = useSortState();
   const [q, setQ] = useState('');
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -133,8 +137,6 @@ export const NodeNavigation = () => {
   ]);
   const searchRef = useRef<HTMLInputElement>(null);
   const { mount } = useIO();
-
-  const allVisible = !nodesVisibilityArr.some((n) => n.isHidden);
 
   useEffect(() => {
     const mounted = mount({

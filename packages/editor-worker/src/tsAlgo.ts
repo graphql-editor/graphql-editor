@@ -14,7 +14,7 @@ export interface NumberNode {
   parserField: ParserField;
 }
 
-interface NumberConnection {
+export interface NumberConnection {
   source: string;
   target: string;
 }
@@ -22,10 +22,12 @@ interface NumberConnection {
 export function storeCoordinates(
   nodes: NumberNode[],
   connections: NumberConnection[],
-  iterations = 100,
-): void {
+  iterations: number,
+  alpha: number,
+) {
   const simulation = d3
     .forceSimulation(nodes)
+    .alpha(alpha)
     .force(
       'link',
       d3.forceLink(connections).id((d) => {
@@ -36,19 +38,27 @@ export function storeCoordinates(
     .force('y', d3.forceY().strength(0.1))
     .force('collide', () => createCollisionForce(nodes)(1, 2))
     .stop();
-  console.time('simulation');
   for (let i = 0; i < iterations; i++) {
     simulation.tick();
   }
-  simulation.stop();
-  console.timeEnd('simulation');
+
+  return simulation;
 }
 
 export const sortNodesTs = ({
   nodes,
   options: { existingNumberNodes },
 }: WorkerEvents['simulateSort']['args']) => {
+  let exisitingNodes = 0;
+  let modifiedNodes = 0;
   const numberNodes = nodes.map((n) => {
+    const existingNode = existingNumberNodes?.find((enn) => enn.id === n.id);
+    if (existingNode) {
+      exisitingNodes += 1;
+      if (JSON.stringify(existingNode.parserField) !== JSON.stringify(n)) {
+        modifiedNodes += 1;
+      }
+    }
     const nodeHeight = 67 + n.args.length * 27;
     const fieldLengths = Math.max(
       ...n.args.map((a) => {
@@ -68,7 +78,6 @@ export const sortNodesTs = ({
       }),
     );
     const nodeWidth = fieldLengths * 9;
-    const existingNode = existingNumberNodes?.find((enn) => enn.id === n.id);
     return {
       ...existingNode,
       height: nodeHeight,
@@ -110,9 +119,22 @@ export const sortNodesTs = ({
       });
     });
   }
+  const sameNodes = exisitingNodes / numberNodes.length;
+  const modified = modifiedNodes > 0;
+  const removedAdded = Math.abs(
+    (existingNumberNodes?.length || 0) - numberNodes.length,
+  );
+  const alpha =
+    sameNodes > 0.9
+      ? modified
+        ? Math.max(Math.min(modifiedNodes * 0.01, 0.5), 0.08)
+        : removedAdded / numberNodes.length
+      : 1;
+
   return {
     numberNodes,
     connections,
+    alpha,
   };
 };
 export function createCollisionForce(nodes: NumberNode[]) {

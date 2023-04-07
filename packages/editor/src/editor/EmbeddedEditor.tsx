@@ -6,7 +6,7 @@ import styled from '@emotion/styled';
 import { ErrorsList } from '@/shared/errors/ErrorsList';
 import { PassedSchema } from '@/Models';
 import { NodeNavigation } from '@/shared/NodeNavigation';
-import { Relation } from '@/EmbeddedEditor/Relation';
+import { Relation } from '@/Relation/Relation';
 
 const Main = styled.div`
   display: flex;

@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { fontFamily, fontFamilySans } from '@/vars';
 import { useTreesState } from '@/state/containers/trees';
 import {
@@ -24,7 +30,11 @@ import {
   Minus,
   Plus,
   Loader,
+  Button,
+  EyeAlt,
 } from '@aexol-studio/styling-system';
+import { ParserField, TypeDefinition } from 'graphql-js-tree/lib/Models';
+import { isScalarArgument } from '@/GraphQL/Resolve';
 
 const Wrapper = styled.div`
   display: flex;
@@ -190,18 +200,19 @@ const Main = styled.div<{ dragMode: DragMode }>`
 export const Relation: React.FC = () => {
   const mainRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const { selectedNodeId, setSelectedNodeId, readonly, activeNode } =
-    useTreesState();
-  const { filteredRelationNodes, isFocused, deFocusNode } =
+  const {
+    selectedNodeId,
+    setSelectedNodeId,
+    readonly,
+    activeNode,
+    libraryTree,
+  } = useTreesState();
+  const { filteredRelationNodes, exitFocus, focusMode, focusedNodes } =
     useRelationNodesState();
   const { grafErrors } = useErrorsState();
-  const {
-    setBaseTypesOn,
-    baseTypesOn,
-    editMode,
-    setEditMode,
-    largeSimulationLoading,
-  } = useRelationsState();
+  const { setBaseTypesOn, baseTypesOn, editMode, setEditMode } =
+    useRelationsState();
+  const [largeSimulationLoading, setLargeSimulationLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [draggingMode, setDraggingMode] = useState<DragMode>('grab');
   const [scaleFactor, setScaleFactor] = useState(100);
@@ -235,33 +246,14 @@ export const Relation: React.FC = () => {
         setIsLoading(false);
       });
   }, [mainRef]);
-  const zoomPanPinch = (
-    refs: Record<string, HTMLElement>,
-    animationTime = 300,
-  ) => {
-    if (selectedNodeId?.value && ref.current && refs) {
-      const currentNode = refs[selectedNodeId.value.id];
-      if (currentNode) {
-        const bb = currentNode.getBoundingClientRect();
-        if (bb.height > window.innerHeight / 1.2) {
-          const currentScale = ref.current.state.scale;
-          const newScaleFactor = window.innerHeight / 1.2 / bb.height;
-          const newScale = Math.max(0.3, currentScale * newScaleFactor);
-          ref.current.zoomToElement(
-            currentNode as HTMLElement,
-            newScale,
-            animationTime,
-            'easeInOutQuad',
-          );
-          return;
-        }
-        ref.current.zoomToElement(
-          currentNode,
-          ref.current.state.scale,
-          animationTime,
-          'easeInOutQuad',
-        );
-      }
+  const zoomPanPinch = (animationTime = 300) => {
+    if (selectedNodeId?.value && ref.current) {
+      ref.current.zoomToElement(
+        `${focusMode ? 'focus' : 'full'}-${selectedNodeId.value.id}`,
+        ref.current.instance.transformState.scale,
+        animationTime,
+        'easeInOutQuad',
+      );
     }
   };
   const doubleClickHandler = () => {
@@ -287,8 +279,10 @@ export const Relation: React.FC = () => {
         ev.metaKey ||
         ev.key === 'OS' ||
         ev.key === 'Meta'
-      )
+      ) {
+        ev.preventDefault();
         setZoomingMode('zoom');
+      }
     };
     const listenerUp = (ev: KeyboardEvent) => {
       if (
@@ -299,9 +293,15 @@ export const Relation: React.FC = () => {
       )
         setZoomingMode('pan');
     };
+    const scrollListenerZoom = (e: WheelEvent) => {
+      e.preventDefault();
+    };
     const scrollListener = (e: WheelEvent) => {
-      if (zoomingMode === 'zoom') return;
+      e.preventDefault();
       if (!wrapperRef.current) return;
+      if (zoomingMode === 'zoom') {
+        return;
+      }
 
       const factor =
         (e.detail
@@ -311,36 +311,97 @@ export const Relation: React.FC = () => {
           : 0) * 2;
 
       const newX = e.deltaX
-        ? (ref.current?.state.positionX || 0) + factor
-        : ref.current?.state.positionX || 0;
+        ? (ref.current?.instance.transformState.positionX || 0) + factor
+        : ref.current?.instance.transformState.positionX || 0;
 
       const newY = e.deltaY
-        ? (ref.current?.state.positionY || 0) + factor
-        : ref.current?.state.positionY || 0;
+        ? (ref.current?.instance.transformState.positionY || 0) + factor
+        : ref.current?.instance.transformState.positionY || 0;
 
       ref.current?.setTransform(
         newX,
         newY,
-        ref.current.state.scale,
+        ref.current.instance.transformState.scale,
         300,
         'easeOutCubic',
       );
     };
     wrapperRef.current?.addEventListener('wheel', scrollListener);
+    document.addEventListener('wheel', scrollListenerZoom);
     document.addEventListener('keydown', listenerDown);
     document.addEventListener('keyup', listenerUp);
 
     return () => {
       document.removeEventListener('keydown', listenerDown);
       document.removeEventListener('keyup', listenerUp);
+      document.removeEventListener('wheel', scrollListenerZoom);
       wrapperRef.current?.removeEventListener('wheel', scrollListener);
     };
   }, [ref, zoomingMode]);
+
+  const filteredNodes = useMemo(() => {
+    const scalarTypes = filteredRelationNodes
+      .filter((n) => n.data.type === TypeDefinition.ScalarTypeDefinition)
+      .map((n) => n.name);
+    const filterScalars = passScalars(baseTypesOn, scalarTypes);
+
+    return filteredRelationNodes
+      .map(filterScalars)
+      .filter((n) => !scalarTypes.includes(n.name));
+  }, [filteredRelationNodes, libraryTree, baseTypesOn]);
+
+  const mainDiagram = useMemo(() => {
+    return (
+      <LinesDiagram
+        zoomPanPinch={zoomPanPinch}
+        panState={draggingMode}
+        nodes={filteredNodes}
+        mainRef={mainRef}
+        panRef={ref}
+        name="full"
+        hide={!!focusMode}
+        setLoading={(e) => setLargeSimulationLoading(e)}
+      />
+    );
+  }, [
+    draggingMode,
+    focusMode,
+    zoomPanPinch,
+    filteredRelationNodes,
+    ref,
+    mainRef,
+  ]);
+
+  const focusedDiagram = useMemo(() => {
+    return (
+      <LinesDiagram
+        zoomPanPinch={zoomPanPinch}
+        panState={draggingMode}
+        nodes={focusedNodes || []}
+        mainRef={mainRef}
+        panRef={ref}
+        hide={!focusMode}
+        name="focus"
+        setLoading={(e) => setLargeSimulationLoading(e)}
+      />
+    );
+  }, [focusedNodes, focusMode, draggingMode, zoomPanPinch, ref, mainRef]);
+
   const step = 0.2;
   return (
     <Wrapper>
       <TopBar>
         <Menu>
+          {focusMode && (
+            <Button
+              variant="neutral"
+              size="small"
+              onClick={() => exitFocus()}
+              endAdornment={<EyeAlt />}
+            >
+              Exit focus
+            </Button>
+          )}
           {!readonly && <NewNode />}
           <ZoomWrapper>
             <IconWrapper
@@ -348,7 +409,8 @@ export const Relation: React.FC = () => {
               onClick={() => {
                 if (!ref.current) return;
                 const targetScale =
-                  ref.current.state.scale * Math.exp(-1 * step);
+                  ref.current.instance.transformState.scale *
+                  Math.exp(-1 * step);
                 setScaleFactor(toScaleFactor(targetScale));
                 ref.current?.zoomOut(step);
               }}
@@ -363,7 +425,8 @@ export const Relation: React.FC = () => {
               onClick={() => {
                 if (!ref.current) return;
                 const targetScale =
-                  ref.current.state.scale * Math.exp(1 * step);
+                  ref.current.instance.transformState.scale *
+                  Math.exp(1 * step);
                 setScaleFactor(toScaleFactor(targetScale));
                 ref.current?.zoomIn(step);
               }}
@@ -394,17 +457,11 @@ export const Relation: React.FC = () => {
         ref={wrapperRef}
         onClick={(e) => {
           if (draggingMode === 'grabbing') return;
-          if (isFocused && selectedNodeId?.value) {
-            deFocusNode();
-            setSelectedNodeId({
-              source: 'deFocus',
-              value: {
-                ...selectedNodeId.value,
-              },
-            });
-          } else {
-            setSelectedNodeId({ source: 'relation', value: undefined });
+          if (focusMode) {
+            exitFocus();
+            return;
           }
+          setSelectedNodeId({ source: 'relation', value: undefined });
         }}
       >
         {editMode == activeNode?.id && <Graf node={activeNode} />}
@@ -433,19 +490,18 @@ export const Relation: React.FC = () => {
               transition: 'all 0.25s ease-in-out',
             }}
           >
-            <LinesDiagram
-              zoomPanPinch={zoomPanPinch}
-              panState={draggingMode}
-              nodes={filteredRelationNodes}
-              mainRef={mainRef}
-              panRef={ref}
-            />
+            {mainDiagram}
+            {focusedDiagram}
           </TransformComponent>
         </TransformWrapper>
         {largeSimulationLoading && (
           <LoadingContainer>
             <Loader size="lg" />
-            <span>Loading {filteredRelationNodes.length} nodes</span>
+            <span>
+              Loading{' '}
+              {focusMode ? focusedNodes?.length : filteredRelationNodes.length}{' '}
+              nodes
+            </span>
           </LoadingContainer>
         )}
         {grafErrors && <ErrorContainer>{grafErrors}</ErrorContainer>}
@@ -455,3 +511,11 @@ export const Relation: React.FC = () => {
 };
 const toScaleFactor = (scale: number) =>
   Math.min(Math.max(scale, 0.1), 1.5) * 100;
+
+const passScalars = (pass: boolean, scalars: string[]) => (n: ParserField) =>
+  !pass
+    ? {
+        ...n,
+        args: n.args?.filter((a) => !isScalarArgument(a, scalars)),
+      }
+    : n;

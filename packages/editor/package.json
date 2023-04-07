@@ -50,7 +50,7 @@
     "re-resizable": "^6.9.1",
     "react-laag": "^2.0.4",
     "react-transition-group": "^4.4.5",
-    "react-zoom-pan-pinch": "^2.5.0",
+    "react-zoom-pan-pinch": "^3.0.6",
     "remarkable": "^2.0.1",
     "unstated-next": "^1.1.0"
   },

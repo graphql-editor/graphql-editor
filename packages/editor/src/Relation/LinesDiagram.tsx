@@ -6,20 +6,19 @@ import React, {
   useState,
 } from 'react';
 import { useTreesState } from '@/state/containers/trees';
-import { useRelationsState } from '@/state/containers';
 import { Node } from './Node';
 import styled from '@emotion/styled';
 import { Lines, RelationPath } from '@/Relation/Lines';
-import { isScalarArgument } from '@/GraphQL/Resolve';
 import * as vars from '@/vars';
-import { ParserField, getTypeName, TypeDefinition } from 'graphql-js-tree';
+import { ParserField, getTypeName } from 'graphql-js-tree';
 import { useRouter } from '@/state/containers/router';
 import { ReactZoomPanPinchRef } from 'react-zoom-pan-pinch';
 import { GraphQLEditorWorker, NumberNode } from 'graphql-editor-worker';
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ hide?: boolean }>`
   width: 100%;
   height: 100%;
+  visibility: ${(p) => (p.hide ? 'hidden' : 'visible')};
 `;
 const Main = styled.div<{ clickable?: boolean }>`
   position: relative;
@@ -64,32 +63,25 @@ type LinesDiagramProps = {
   mainRef: React.RefObject<HTMLDivElement>;
   panRef: React.RefObject<ReactZoomPanPinchRef>;
   nodes: ParserField[];
+  hide?: boolean;
   panState?: 'grabbing' | 'grab' | 'auto';
-  zoomPanPinch?: (
-    refs: Record<string, HTMLElement>,
-    animationTime?: number,
-  ) => void;
+  setLoading: (b: boolean) => void;
+  name: string;
+  zoomPanPinch?: (animationTime?: number) => void;
 };
-
-const passScalars = (pass: boolean, scalars: string[]) => (n: ParserField) =>
-  !pass
-    ? {
-        ...n,
-        args: n.args?.filter((a) => !isScalarArgument(a, scalars)),
-      }
-    : n;
 
 export const LinesDiagram: React.FC<LinesDiagramProps> = ({
   mainRef,
   panRef,
   nodes,
   panState,
+  setLoading,
   zoomPanPinch,
+  name,
+  hide,
 }) => {
-  const { selectedNodeId, libraryTree, isLibrary } = useTreesState();
+  const { selectedNodeId, isLibrary } = useTreesState();
   const { routes } = useRouter();
-  const { baseTypesOn, editMode, setLargeSimulationLoading } =
-    useRelationsState();
   const [refs, setRefs] = useState<Record<string, HTMLDivElement>>({});
   const [refsLoaded, setRefsLoaded] = useState(false);
   const isOnMountCentered = useRef(false);
@@ -106,43 +98,33 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
 
   useEffect(() => {
     if (refsLoaded && selectedNodeId?.value) {
-      if (selectedNodeId?.source === 'deFocus') {
-        zoomPanPinch?.(refs, 0);
-        return;
-      }
-      zoomPanPinch?.(refs);
+      zoomPanPinch?.();
     }
   }, [selectedNodeId?.value, refsLoaded]);
-
   useEffect(() => {
     // compose existing positions
-    if (!editMode) {
-      setRefsLoaded(false);
-      const scalarTypes = nodes
-        .filter((n) => n.data.type === TypeDefinition.ScalarTypeDefinition)
-        .map((n) => n.name);
-      const filterScalars = passScalars(baseTypesOn, scalarTypes);
-
-      const togetherFiltered = nodes
-        .map(filterScalars)
-        .filter((n) => !scalarTypes.includes(n.name));
-      setLargeSimulationLoading(true);
-      GraphQLEditorWorker.simulateSort({
-        nodes: togetherFiltered,
-        options: {
-          existingNumberNodes: relationDrawingNodes,
-          iterations: 200,
-        },
-      }).then((positionedNodes) => {
-        setRelationDrawingNodes(positionedNodes);
-      });
+    if (!nodes.length) {
+      setRelationDrawingNodes([]);
+      return;
     }
+    setRefsLoaded(false);
+    if (!relationDrawingNodes?.length) {
+      setLoading(true);
+    }
+    GraphQLEditorWorker.simulateSort({
+      nodes,
+      options: {
+        existingNumberNodes: relationDrawingNodes,
+        iterations: 200,
+      },
+    }).then((positionedNodes) => {
+      setRelationDrawingNodes(positionedNodes);
+    });
     return;
-  }, [nodes, libraryTree, baseTypesOn]);
+  }, [nodes]);
 
   useLayoutEffect(() => {
     if (!refsLoaded || !relationDrawingNodesArray) {
-      setRelations([]);
       return;
     }
     const findRelative = (a: ParserField, index: number) => {
@@ -216,6 +198,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
       if (tRefs[n.id]) return;
       tRefs[n.id] = ref;
       const renderedRefs = Object.keys(tRefs).length;
+      console.log(renderedRefs, tRefsToLoad, relationDrawingNodes);
       if (renderedRefs === tRefsToLoad) {
         if (refTimeout) {
           clearTimeout(refTimeout);
@@ -223,7 +206,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
         refTimeout = setTimeout(() => {
           setRefs(tRefs);
           setRefsLoaded(true);
-          setLargeSimulationLoading(false);
+          setLoading(false);
         }, 10);
       }
     };
@@ -237,6 +220,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
               }
             }}
             x={n.x}
+            id={`${name}-${n.id}`}
             y={n.y}
             key={n.parserField.id}
           >
@@ -258,7 +242,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
   ]);
 
   return (
-    <Wrapper>
+    <Wrapper hide={hide}>
       <Main clickable={panState !== 'grabbing'} ref={mainRef}>
         {NodesContainer}
         {SvgLinesContainer}
