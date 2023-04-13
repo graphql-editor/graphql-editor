@@ -99,7 +99,7 @@ const useTreesStateContainer = createContainer(() => {
     if (isSelected) {
       if (selectedNodeId.value?.id !== node.id) {
         setSelectedNodeId({
-          source: 'diagram',
+          source: 'relation',
           value: {
             id: node.id,
             name: node.name,
@@ -108,7 +108,7 @@ const useTreesStateContainer = createContainer(() => {
       } else {
         if (!tree.nodes.find((n) => n.id === node.id)) {
           setSelectedNodeId({
-            source: 'diagram',
+            source: 'relation',
             value: undefined,
           });
         }

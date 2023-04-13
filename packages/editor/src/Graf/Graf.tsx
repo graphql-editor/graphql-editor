@@ -101,7 +101,7 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
                   id: duplicatedNode.id,
                   name: duplicatedNode.name,
                 },
-                source: 'diagram',
+                source: 'relation',
               });
               setTree({ nodes: allNodes });
             }}
@@ -126,7 +126,7 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
                     id: createdInput.id,
                     name: createdInput.name,
                   },
-                  source: 'diagram',
+                  source: 'relation',
                 });
               });
             }}

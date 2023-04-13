@@ -115,6 +115,7 @@ const VerticalTitle = styled(Header)<{ isCollapsed: boolean }>`
 
 export const NodeNavigation = () => {
   const { allNodes } = useTreesState();
+  const { focusMode, focusedNodes } = useRelationNodesState();
   const {
     nodesVisibilityArr,
     hideRelationNodes,
@@ -162,8 +163,9 @@ export const NodeNavigation = () => {
     const extScalarNodes: ParserField[] = [];
     const extTypeNodes: ParserField[] = [];
     const extInterfaceNodes: ParserField[] = [];
+    const mainNodes = focusMode && focusedNodes ? focusedNodes : allNodes.nodes;
 
-    const filteredNodes = allNodes.nodes
+    const filteredNodes = mainNodes
       .filter((n) => n.name.toLowerCase().includes(q.toLowerCase()))
       .map((el) => {
         const foundNode = nodesVisibilityArr.find((el2) => el2.id === el.id);
@@ -235,7 +237,7 @@ export const NodeNavigation = () => {
       extTypeNodes,
       extUnionNodes,
     };
-  }, [allNodes, nodesVisibilityArr, q]);
+  }, [allNodes, nodesVisibilityArr, q, focusedNodes, focusMode]);
 
   return (
     <Container>

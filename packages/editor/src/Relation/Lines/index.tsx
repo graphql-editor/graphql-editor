@@ -1,8 +1,9 @@
 import { Draw } from './Draw';
-import { ParserField, getTypeName } from 'graphql-js-tree';
+import { getTypeName, ParserField } from 'graphql-js-tree';
 import React, { useMemo } from 'react';
 import { useTheme, useTreesState } from '@/state/containers';
 import styled from '@emotion/styled';
+import { NumberNode } from 'graphql-editor-worker';
 
 const RelationsContainer = styled.svg`
   width: 100%;
@@ -18,8 +19,7 @@ const RelationsContainer = styled.svg`
 `;
 
 export interface RelationPath {
-  htmlNode: HTMLDivElement;
-  field: ParserField;
+  field: NumberNode;
   index: number;
   connectingField: ParserField;
 }
@@ -37,7 +37,10 @@ export const Lines: React.FC<LinesProps> = ({ relations }) => {
   const relationContent = useMemo(() => {
     return relations
       ?.filter((r) => r.from)
-      ?.map((r) => r.from.map((f) => f.field.name).join('.') + r.fromLength)
+      ?.map(
+        (r) =>
+          r.from.map((f) => f.field.parserField.name).join('.') + r.fromLength,
+      )
       .join(',');
   }, [relations]);
 
@@ -58,10 +61,14 @@ export const Lines: React.FC<LinesProps> = ({ relations }) => {
           <Draw
             relationType={relationType}
             relationNumber={relationNumber}
-            color={(theme.colors as any)[getTypeName(rf.field.type.fieldType)]}
-            key={`${index}-${rf.index}-${relationNumber}-${rf.field.name}-${rf.connectingField.name}`}
-            from={rf.htmlNode}
-            to={r.to.htmlNode}
+            color={
+              (theme.colors as any)[
+                getTypeName(rf.field.parserField.type.fieldType)
+              ]
+            }
+            key={`${index}-${rf.index}-${relationNumber}-${rf.field.parserField.name}-${rf.connectingField.name}`}
+            from={rf.field}
+            to={r.to.field}
             PortNumber={portNumber}
             maxIndex={r.from.length}
           />

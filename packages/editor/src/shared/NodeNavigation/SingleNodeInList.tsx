@@ -11,6 +11,7 @@ import {
   EyeSlash,
   Eye,
   Pen,
+  Stack,
 } from '@aexol-studio/styling-system';
 import styled from '@emotion/styled';
 import { compareParserFields, ParserField } from 'graphql-js-tree';
@@ -43,12 +44,13 @@ export const SingleNodeInList: React.FC<{
       color={colorKey}
       ref={ref}
       onClick={() => {
+        console.time('clicknode');
         setSelectedNodeId({
           value: {
             id: node.id,
             name: node.name,
           },
-          source: 'docs',
+          source: 'navigation',
         });
         if (!visibleInRelationView) {
           setEditMode(node.id);
@@ -56,8 +58,14 @@ export const SingleNodeInList: React.FC<{
       }}
       active={isSelected}
     >
-      <NodeName isHidden={node.isHidden} color={colorKey} active={isSelected}>
-        {node.name}
+      <NodeName
+        align="center"
+        gap="0.5rem"
+        isHidden={node.isHidden}
+        color={colorKey}
+        active={isSelected}
+      >
+        <span>{node.name}</span>
         {isLibrary(node.id) && (
           <ExternalLibrary title="From external library">
             <Link />
@@ -82,7 +90,7 @@ export const SingleNodeInList: React.FC<{
             onClick={(e) => {
               e.stopPropagation();
               setSelectedNodeId({
-                source: 'deFocus',
+                source: 'navigation',
                 value: {
                   id: node.id,
                   name: node.name,
@@ -150,23 +158,22 @@ const NavSingleBox = styled.a<{
   }
 `;
 
-const NodeName = styled.span<{
+const NodeName = styled(Stack)<{
   active?: boolean;
   color: keyof EditorTheme['colors'];
   isHidden?: boolean;
 }>`
-  font-family: ${fontFamilySans};
   font-weight: ${({ active }) => (active ? 'bold' : 'normal')};
+  font-family: ${fontFamilySans};
+  font-size: 14px;
   color: ${({ theme, active, color }) =>
     active ? theme.colors[color] : theme.text.default};
-  font-size: 14px;
   transition: ${transition};
   opacity: ${({ isHidden }) => (isHidden ? 0.25 : 1)};
   overflow-x: hidden;
   text-overflow: ellipsis;
   width: 28ch;
   white-space: nowrap;
-
   &:hover {
     color: ${({ theme, color }) => theme.colors[color]};
   }

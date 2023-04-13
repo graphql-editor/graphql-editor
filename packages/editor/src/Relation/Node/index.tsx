@@ -147,6 +147,7 @@ export const Node: React.FC<NodeProps> = ({ field, isLibrary, canSelect }) => {
       onClick={(e) => {
         if (!canSelect || isSelected) return;
         e.stopPropagation();
+        console.time('clicknode');
         setSelectedNodeId({
           value: {
             id: field.id,

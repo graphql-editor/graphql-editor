@@ -1,6 +1,7 @@
 import React, {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -246,32 +247,30 @@ export const Relation: React.FC = () => {
         setIsLoading(false);
       });
   }, [mainRef]);
-  const zoomPanPinch = (animationTime = 300) => {
-    if (selectedNodeId?.value && ref.current) {
-      ref.current.zoomToElement(
-        `${focusMode ? 'focus' : 'full'}-${selectedNodeId.value.id}`,
+  const zoomPanPinch = useCallback(
+    (nodeId: string, animationTime?: number) => {
+      ref.current?.zoomToElement(
+        `${focusMode ? 'focus' : 'full'}-${nodeId}`,
         ref.current.instance.transformState.scale,
         animationTime,
-        'easeInOutQuad',
+        'easeOut',
       );
+    },
+    [focusMode],
+  );
+
+  useLayoutEffect(() => {
+    if (selectedNodeId?.value?.id && !largeSimulationLoading) {
+      zoomPanPinch(selectedNodeId.value.id, 0);
     }
-  };
-  const doubleClickHandler = () => {
-    setScaleFactor((prevState) => Math.min(prevState + 70, 150));
-  };
+  }, [focusMode, largeSimulationLoading]);
 
-  useEffect(() => {
-    if (!wrapperRef.current) return;
-    wrapperRef.current.addEventListener('dblclick', doubleClickHandler);
+  useLayoutEffect(() => {
+    if (selectedNodeId?.value?.id && !largeSimulationLoading) {
+      zoomPanPinch(selectedNodeId.value.id, 300);
+    }
+  }, [selectedNodeId?.value?.id, largeSimulationLoading]);
 
-    return () => {
-      if (!wrapperRef.current) return;
-      return wrapperRef.current.removeEventListener(
-        'dblclick',
-        doubleClickHandler,
-      );
-    };
-  }, []);
   useEffect(() => {
     const listenerDown = (ev: KeyboardEvent) => {
       if (
@@ -350,32 +349,9 @@ export const Relation: React.FC = () => {
       .filter((n) => !scalarTypes.includes(n.name));
   }, [filteredRelationNodes, libraryTree, baseTypesOn]);
 
-  const mainDiagram = useMemo(() => {
-    return (
-      <LinesDiagram
-        zoomPanPinch={zoomPanPinch}
-        panState={draggingMode}
-        nodes={filteredNodes}
-        mainRef={mainRef}
-        panRef={ref}
-        name="full"
-        hide={!!focusMode}
-        setLoading={(e) => setLargeSimulationLoading(e)}
-      />
-    );
-  }, [
-    draggingMode,
-    focusMode,
-    zoomPanPinch,
-    filteredRelationNodes,
-    ref,
-    mainRef,
-  ]);
-
   const focusedDiagram = useMemo(() => {
     return (
       <LinesDiagram
-        zoomPanPinch={zoomPanPinch}
         panState={draggingMode}
         nodes={focusedNodes || []}
         mainRef={mainRef}
@@ -394,7 +370,6 @@ export const Relation: React.FC = () => {
         <Menu>
           {focusMode && (
             <Button
-              variant="neutral"
               size="small"
               onClick={() => exitFocus()}
               endAdornment={<EyeAlt />}
@@ -457,10 +432,6 @@ export const Relation: React.FC = () => {
         ref={wrapperRef}
         onClick={(e) => {
           if (draggingMode === 'grabbing') return;
-          if (focusMode) {
-            exitFocus();
-            return;
-          }
           setSelectedNodeId({ source: 'relation', value: undefined });
         }}
       >
@@ -490,7 +461,16 @@ export const Relation: React.FC = () => {
               transition: 'all 0.25s ease-in-out',
             }}
           >
-            {mainDiagram}
+            <LinesDiagram
+              panState={draggingMode}
+              nodes={filteredNodes}
+              mainRef={mainRef}
+              panRef={ref}
+              name="full"
+              hide={!!focusMode}
+              loading={largeSimulationLoading}
+              setLoading={(e) => setLargeSimulationLoading(e)}
+            />
             {!!focusMode && focusedDiagram}
           </TransformComponent>
         </TransformWrapper>

@@ -297,7 +297,7 @@ export const TopNodeMenu: React.FC<{
                         id: extendNode.id,
                         name: extendNode.name,
                       },
-                      source: 'diagram',
+                      source: 'relation',
                     });
                   }}
                 >

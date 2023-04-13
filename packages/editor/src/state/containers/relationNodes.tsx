@@ -16,7 +16,7 @@ export const toggleableTypes: AllTypes[] = [
 ];
 
 const useRelationNodes = createContainer(() => {
-  const { allNodes, setSelectedNodeId, selectedNodeId } = useTreesState();
+  const { allNodes, setSelectedNodeId } = useTreesState();
 
   const relationNodes = useMemo(
     () => allNodes.nodes.filter((n) => toggleableTypes.includes(n.data.type)),
@@ -37,11 +37,6 @@ const useRelationNodes = createContainer(() => {
       return newArray;
     });
   }, [allNodes]);
-
-  useEffect(() => {
-    if (!selectedNodeId?.value?.id) setFocusMode(undefined);
-    if (selectedNodeId?.value?.id !== focusMode) setFocusMode(undefined);
-  }, [selectedNodeId]);
 
   const filteredRelationNodes = useMemo(() => {
     return relationNodes.filter((el) => {
@@ -66,7 +61,7 @@ const useRelationNodes = createContainer(() => {
   );
 
   const focusedNodes = useMemo(() => {
-    const nId = selectedNodeId?.value?.id;
+    const nId = focusMode;
     if (nId) {
       const n = allNodes.nodes.find((an) => an.id === nId);
       if (n) {
@@ -91,7 +86,7 @@ const useRelationNodes = createContainer(() => {
       }
     }
     return;
-  }, [selectedNodeId]);
+  }, [focusMode]);
 
   const focusNode = useCallback((n: ParserField) => {
     setSelectedNodeId({

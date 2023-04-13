@@ -85,10 +85,10 @@ const MenuItem = styled.div<{
 `;
 
 export type ActiveSource =
-  | 'diagram'
   | 'relation'
   | 'docs'
   | 'code'
+  | 'navigation'
   | 'routing'
   | 'deFocus';
 export type ActivePane = 'diff' | 'relation' | 'docs';

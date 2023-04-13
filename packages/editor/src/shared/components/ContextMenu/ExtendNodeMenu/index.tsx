@@ -73,7 +73,7 @@ export const ExtendNodeMenu = React.forwardRef<
         id: extendNode.id,
         name: extendNode.name,
       },
-      source: 'diagram',
+      source: 'relation',
       justCreated: true,
     });
   };

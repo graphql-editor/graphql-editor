@@ -1,3 +1,4 @@
+import { NumberNode } from 'graphql-editor-worker';
 import { FieldType, Options } from 'graphql-js-tree';
 import React from 'react';
 // import { RELATION_CONSTANTS } from './constants';
@@ -28,8 +29,8 @@ export const Draw = ({
   relationType,
   network,
 }: {
-  from?: HTMLDivElement;
-  to?: HTMLDivElement;
+  from?: NumberNode;
+  to?: NumberNode;
   color: string;
   PortNumber: number;
   maxIndex: number;
@@ -44,24 +45,24 @@ export const Draw = ({
     //   PortNumber * RELATION_CONSTANTS.FIELD_HEIGHT +
     //   RELATION_CONSTANTS.FIELD_HEIGHT / 2;
     const f = {
-      x: from.offsetLeft,
-      y: from.offsetTop,
+      x: from.x,
+      y: from.y,
     };
     const t = {
-      x: to.offsetLeft,
-      y: to.offsetTop,
+      x: to.x,
+      y: to.y,
     };
     const isArray = isArrayType(relationType);
     const fac = isArray ? 5 : 2;
 
     if (network) {
       const f = {
-        x: from.offsetLeft,
-        y: from.offsetTop,
+        x: from.x,
+        y: from.y,
       };
       const t = {
-        x: to.offsetLeft,
-        y: to.offsetTop,
+        x: to.x,
+        y: to.y,
       };
       return (
         <>
