@@ -20,7 +20,9 @@ export const useRouter = () => {
     };
   };
 
-  const [path, setPath] = useState<Routes>(resolvePath());
+  const [path, setPath] = useState<{ p: Routes; source?: 'internal' }>({
+    p: resolvePath(),
+  });
 
   const route = ({
     path = window.location.pathname,
@@ -55,11 +57,14 @@ export const useRouter = () => {
     return { fullPath, path };
   };
 
-  const changeRoute = (r: Routes) => {
+  const changeRoute = (r: Routes, source?: 'internal') => {
     setPath((p) => {
-      const { fullPath, path } = composePath(r, p);
+      const { fullPath, path } = composePath(r, p.p);
       route({ fullPath });
-      return path;
+      return {
+        p: path,
+        source,
+      };
     });
   };
 

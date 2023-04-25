@@ -28,18 +28,22 @@ export const googleState = () => {
   });
 
   const [editorRoutes, setEditorRoutes] = useState<EditorRoutes>();
+  const { changeRoute, path } = useRouter();
+
   const {
-    changeRoute,
-    path: { code, pane, n },
-  } = useRouter();
+    p: { code, pane, n },
+    source,
+  } = path;
 
   useEffect(() => {
+    if (path.source === 'internal') return;
     setEditorRoutes({
       code: code as 'on' | 'off' | undefined,
       pane: pane as ActivePane | undefined,
       n,
+      source,
     });
-  }, [code, pane, n]);
+  }, [path]);
 
   useEffect(() => {
     const listener = (e: PopStateEvent) => {
@@ -95,7 +99,7 @@ export const googleState = () => {
         routeState={editorRoutes}
         schema={currentSchema}
         onRouteChange={(routes) => {
-          changeRoute({ a: 'googleState', ...routes });
+          changeRoute({ a: 'googleState', ...routes }, 'internal');
         }}
         setSchema={(s) => {
           setCurrentSchema(s);

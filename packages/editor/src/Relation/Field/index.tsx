@@ -35,19 +35,23 @@ export const Field: React.FC<FieldProps> = ({ node, active }) => {
   return (
     <Main
       isActive={active}
-      onClick={(e) => {
-        const parent = getParentOfField(node);
-        if (active && parent) {
-          e.stopPropagation();
-          setSelectedNodeId({
-            source: 'relation',
-            value: {
-              id: parent.id,
-              name: parent.name,
-            },
-          });
-        }
-      }}
+      onClick={
+        active
+          ? (e) => {
+              const parent = getParentOfField(node);
+              if (active && parent) {
+                e.stopPropagation();
+                setSelectedNodeId({
+                  source: 'relation',
+                  value: {
+                    id: parent.id,
+                    name: parent.name,
+                  },
+                });
+              }
+            }
+          : undefined
+      }
     >
       <ActiveFieldName
         name={

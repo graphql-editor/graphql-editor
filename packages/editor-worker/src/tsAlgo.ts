@@ -35,7 +35,7 @@ export function storeCoordinates(
       }),
     )
     .force('x', d3.forceX().strength(0.1))
-    .force('y', d3.forceY().strength(0.1))
+    .force('y', d3.forceY().strength(0.3))
     .force('collide', () => createCollisionForce(nodes)(1, 2))
     .stop();
   for (let i = 0; i < iterations; i++) {
@@ -47,7 +47,7 @@ export function storeCoordinates(
 
 export const sortNodesTs = ({
   nodes,
-  options: { existingNumberNodes },
+  options: { existingNumberNodes, ignoreAlphaCalculation, alpha },
 }: WorkerEvents['simulateSort']['args']) => {
   let exisitingNodes = 0;
   let modifiedNodes = 0;
@@ -76,6 +76,7 @@ export const sortNodesTs = ({
           fieldArgumentCumulated
         );
       }),
+      n.name.length + getTypeName(n.type.fieldType).length,
     );
     const nodeWidth = fieldLengths * 9;
     return {
@@ -124,7 +125,7 @@ export const sortNodesTs = ({
   const removedAdded = Math.abs(
     (existingNumberNodes?.length || 0) - numberNodes.length,
   );
-  const alpha =
+  const retAlpha =
     sameNodes > 0.9
       ? modified
         ? Math.max(Math.min(modifiedNodes * 0.01, 0.5), 0.08)
@@ -134,7 +135,7 @@ export const sortNodesTs = ({
   return {
     numberNodes,
     connections,
-    alpha,
+    alpha: ignoreAlphaCalculation ? (alpha ? alpha : retAlpha) : retAlpha,
   };
 };
 export function createCollisionForce(nodes: NumberNode[]) {

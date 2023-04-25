@@ -8,6 +8,7 @@ export const ActiveGrafType = React.forwardRef<
   Pick<ParserField, 'type'> & {
     parentTypes?: Record<string, string>;
     onClick?: () => void;
+    children?: React.ReactNode;
   }
 >(({ type, parentTypes, onClick, children }, ref) => {
   let compiledType = useMemo(

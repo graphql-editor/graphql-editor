@@ -16,7 +16,9 @@ const TopBarComponent = styled.div`
   background-color: ${({ theme }) => theme.neutral[600]}ee;
 `;
 
-export const TopBar: React.FC = ({ children }) => {
+export const TopBar: React.FC<{
+  children?: React.ReactNode;
+}> = ({ children }) => {
   const { mount } = useIO();
 
   const ref = useRef<HTMLInputElement>(null);

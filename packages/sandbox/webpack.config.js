@@ -7,6 +7,7 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 const baseRules = require('./weback.rules');
 const TsConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 module.exports = {
   context: sourcePath,
   entry: {
@@ -24,12 +25,6 @@ module.exports = {
     extensions: ['.mjs', '.js', '.jsx', '.ts', '.tsx'],
     mainFields: ['module', 'browser', 'main'],
     plugins: [new TsConfigPathsPlugin({})],
-    alias: {
-      'react-dom': path.join(
-        __dirname,
-        '../../node_modules/react-dom/profiling',
-      ),
-    },
   },
   module: {
     rules: [
@@ -45,6 +40,8 @@ module.exports = {
     ],
   },
   plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    new ReactRefreshWebpackPlugin(),
     new HtmlWebpackPlugin({
       template: 'assets/index.html',
     }),

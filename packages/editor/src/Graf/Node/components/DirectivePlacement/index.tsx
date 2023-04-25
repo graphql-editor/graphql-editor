@@ -10,6 +10,7 @@ import { transition } from '@/vars';
 interface NodeDirectiveProps {
   onDelete: () => void;
   isLocked?: boolean;
+  children?: React.ReactNode;
 }
 
 const NodeDirectiveBlock = styled.div<{ isLocked?: boolean }>`

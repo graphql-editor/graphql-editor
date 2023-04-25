@@ -1,4 +1,3 @@
-import { NumberNode } from 'graphql-editor-worker';
 import { FieldType, Options } from 'graphql-js-tree';
 import React from 'react';
 // import { RELATION_CONSTANTS } from './constants';
@@ -23,27 +22,15 @@ export const Draw = ({
   from,
   to,
   color,
-  PortNumber,
-  maxIndex,
-  relationNumber,
   relationType,
-  network,
 }: {
-  from?: NumberNode;
-  to?: NumberNode;
+  from?: { x: number; y: number };
+  to?: { x: number; y: number };
   color: string;
-  PortNumber: number;
-  maxIndex: number;
-  relationNumber: number;
   relationType: FieldType;
-  network?: boolean;
 }) => {
   const stroke = color;
   if (from && to) {
-    // let pos =
-    //   RELATION_CONSTANTS.TOP_HEIGHT +
-    //   PortNumber * RELATION_CONSTANTS.FIELD_HEIGHT +
-    //   RELATION_CONSTANTS.FIELD_HEIGHT / 2;
     const f = {
       x: from.x,
       y: from.y,
@@ -54,38 +41,6 @@ export const Draw = ({
     };
     const isArray = isArrayType(relationType);
     const fac = isArray ? 5 : 2;
-
-    if (network) {
-      const f = {
-        x: from.x,
-        y: from.y,
-      };
-      const t = {
-        x: to.x,
-        y: to.y,
-      };
-      return (
-        <>
-          <g>
-            <path
-              stroke={stroke}
-              strokeWidth={fac}
-              strokeDasharray={
-                relationType.type === Options.required ? undefined : '5,5'
-              }
-              d={`M ${t.x} ${t.y} L ${f.x} ${f.y}`}
-            />
-            <circle
-              fill={stroke}
-              stroke={stroke}
-              r={7}
-              cx={f.x + 2}
-              cy={f.y + 2}
-            />
-          </g>
-        </>
-      );
-    }
 
     const upDown = f.y > t.y;
     const center = {

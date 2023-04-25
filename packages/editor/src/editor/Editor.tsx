@@ -243,7 +243,7 @@ export const Editor = ({
   }, [selectedNodeId]);
 
   useEffect(() => {
-    if (routeState) {
+    if (routeState && routeState.source !== 'internal') {
       set({ ...routeState });
     }
   }, [routeState?.code, routeState?.n, routeState?.pane]);

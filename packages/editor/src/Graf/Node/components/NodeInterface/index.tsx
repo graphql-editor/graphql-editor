@@ -15,6 +15,7 @@ import {
 interface NodeInterfaceProps {
   onDelete: () => void;
   onDetach: () => void;
+  children?: React.ReactNode;
   isLocked?: boolean;
 }
 

@@ -8,6 +8,7 @@ interface FieldPortProps {
     closed: React.ReactNode;
     open: React.ReactNode;
   };
+  children?: React.ReactNode;
   info?: {
     message: string;
     placement: 'top' | 'bottom' | 'left' | 'right';

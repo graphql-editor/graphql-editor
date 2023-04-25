@@ -28,7 +28,9 @@ export const ErrorLabel = styled.p`
   width: 90%;
 `;
 
-export const ErrorsList: React.FC = ({ children }) => {
+export const ErrorsList: React.FC<{
+  children?: React.ReactNode;
+}> = ({ children }) => {
   return (
     <ErrorWrapper onClick={(e) => e.stopPropagation()}>
       <ErrorInside>

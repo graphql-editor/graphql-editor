@@ -44,7 +44,6 @@ export const SingleNodeInList: React.FC<{
       color={colorKey}
       ref={ref}
       onClick={() => {
-        console.time('clicknode');
         setSelectedNodeId({
           value: {
             id: node.id,

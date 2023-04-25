@@ -3,6 +3,7 @@ import styled from '@emotion/styled';
 
 interface MenuItemProps {
   onClick: () => void;
+  children?: React.ReactNode;
 }
 
 const Main = styled.div`

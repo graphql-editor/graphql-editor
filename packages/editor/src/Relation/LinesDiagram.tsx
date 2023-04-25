@@ -15,6 +15,8 @@ import { useRouter } from '@/state/containers/router';
 import { ReactZoomPanPinchRef } from 'react-zoom-pan-pinch';
 import { GraphQLEditorWorker, NumberNode } from 'graphql-editor-worker';
 import { runAfterFramePaint } from '@/shared/hooks/useMarkFramePaint';
+import { nodeFilter } from '@/Relation/shared/nodeFilter';
+import { useRelationsState } from '@/state/containers';
 
 const Wrapper = styled.div<{ hide?: boolean }>`
   width: 100%;
@@ -71,7 +73,7 @@ type LinesDiagramProps = {
 export const LinesDiagram: React.FC<LinesDiagramProps> = ({
   mainRef,
   panRef,
-  nodes,
+  nodes: unFilteredNodes,
   panState,
   setLoading,
   name,
@@ -79,6 +81,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
 }) => {
   const { selectedNodeId, isLibrary } = useTreesState();
   const { routes } = useRouter();
+  const { baseTypesOn, fieldsOn, inputsOn } = useRelationsState();
   const isOnMountCentered = useRef(false);
   const [relationDrawingNodes, setRelationDrawingNodes] =
     useState<NumberNode[]>();
@@ -87,6 +90,14 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
     useState<
       { to: RelationPath; from: RelationPath[]; fromLength: number }[]
     >();
+
+  const nodes = useMemo(() => {
+    return nodeFilter(unFilteredNodes, {
+      baseTypesOn,
+      fieldsOn,
+      inputsOn,
+    });
+  }, [unFilteredNodes, baseTypesOn, fieldsOn, inputsOn]);
 
   useEffect(() => {
     // compose existing positions
@@ -97,6 +108,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
     if (!relationDrawingNodes?.length) {
       setLoading(true);
     }
+
     GraphQLEditorWorker.simulateSort({
       nodes,
       options: {
@@ -105,13 +117,16 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
       },
     }).then((positionedNodes) => {
       setRelationDrawingNodes(positionedNodes);
-      runAfterFramePaint(() => setLoading(false));
     });
     return;
   }, [nodes]);
 
   useLayoutEffect(() => {
-    if (!relationDrawingNodes) return;
+    if (!relationDrawingNodes) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
     const findRelative = (a: ParserField, index: number) => {
       const pn = relationDrawingNodes.find(
         (nf) => nf.parserField.name === getTypeName(a.type.fieldType),
@@ -128,18 +143,30 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
 
     setRelations(
       relationDrawingNodes
-        .map((n, i) => ({
-          to: { field: n, connectingField: n.parserField, index: i },
-          fromLength: n.parserField.args?.length || 0,
-          from: n.parserField.args
-            .flatMap((a, index) => {
-              const argNodes = a.args.map((ar, ind) => findRelative(ar, ind));
-              const main = findRelative(a, index);
-              const nodes = [main, ...argNodes];
-              return nodes.filter((node, i) => nodes.indexOf(node) === i);
-            })
-            .filter((o) => !!o),
+        .map((n) => ({
+          ...n,
+          parserField: {
+            ...n.parserField,
+            // args:unFilteredNodes.find(ufn => ufn.id === n.parserField.id)?.args || []
+          },
         }))
+        .map((n, i) => {
+          const args =
+            unFilteredNodes.find((ufn) => ufn.id === n.parserField.id)?.args ||
+            n.parserField.args;
+          return {
+            to: { field: n, connectingField: n.parserField, index: i },
+            fromLength: n.parserField.args?.length || 0,
+            from: args
+              .flatMap((a, index) => {
+                const argNodes = a.args.map((ar, ind) => findRelative(ar, ind));
+                const main = findRelative(a, index);
+                const nodes = [main, ...argNodes];
+                return nodes.filter((node, i) => nodes.indexOf(node) === i);
+              })
+              .filter((o) => !!o),
+          };
+        })
         .filter((n) => n.from)
         .map(
           (n) =>
@@ -150,6 +177,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = ({
             },
         ),
     );
+    runAfterFramePaint(() => setLoading(false));
   }, [relationDrawingNodes]);
 
   const SvgLinesContainer = useMemo(() => {

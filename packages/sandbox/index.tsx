@@ -3,7 +3,7 @@ import styled from '@emotion/styled';
 import { vars } from 'graphql-editor';
 import { fontFamilySans } from 'graphql-editor/lib/vars';
 import React from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import * as apps from './apps';
 
 const MainTheme = themeColors('graphqleditor', 'dark');
@@ -71,5 +71,6 @@ export const App = () => {
   }
   return <>{apps[p]()}</>;
 };
-
-render(<App />, document.getElementById('root'));
+const rootDiv = document.getElementById('root');
+const root = createRoot(rootDiv);
+root.render(<App />);

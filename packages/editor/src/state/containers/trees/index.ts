@@ -199,7 +199,12 @@ const useTreesStateContainer = createContainer(() => {
         allNodes.nodes
           .filter((an) =>
             an.args.find(
-              (ana) => getTypeName(ana.type.fieldType) === activeNode.name,
+              (ana) =>
+                getTypeName(ana.type.fieldType) === activeNode.name ||
+                ana.args.find(
+                  (nestedArg) =>
+                    getTypeName(nestedArg.type.fieldType) === activeNode.name,
+                ),
             ),
           )
           .map((a) => a.name),

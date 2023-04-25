@@ -43,6 +43,7 @@ export type WorkerEvents = {
       options: {
         existingNumberNodes?: NumberNode[];
         iterations?: number;
+        ignoreAlphaCalculation?: boolean;
         alpha?: number;
       };
     };

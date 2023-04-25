@@ -34,8 +34,304 @@ import {
   Button,
   EyeAlt,
 } from '@aexol-studio/styling-system';
-import { ParserField, TypeDefinition } from 'graphql-js-tree/lib/Models';
-import { isScalarArgument } from '@/GraphQL/Resolve';
+export const Relation: React.FC = () => {
+  const mainRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const { selectedNodeId, setSelectedNodeId, readonly, activeNode } =
+    useTreesState();
+  const { filteredRelationNodes, exitFocus, focusMode, focusedNodes } =
+    useRelationNodesState();
+  const { grafErrors } = useErrorsState();
+  const {
+    setBaseTypesOn,
+    baseTypesOn,
+    editMode,
+    setEditMode,
+    fieldsOn,
+    setFieldsOn,
+    inputsOn,
+    setInputsOn,
+  } = useRelationsState();
+  const [largeSimulationLoading, setLargeSimulationLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [draggingMode, setDraggingMode] = useState<DragMode>('grab');
+  const [scaleFactor, setScaleFactor] = useState(100);
+  const [zoomingMode, setZoomingMode] = useState<'zoom' | 'pan'>('pan');
+  const ref = useRef<ReactZoomPanPinchRef>(null);
+
+  useEffect(() => {
+    if (!selectedNodeId?.value?.id) {
+      setScaleFactor(100);
+      setEditMode('');
+    }
+    if (selectedNodeId?.value?.id && selectedNodeId.value.id !== editMode) {
+      setEditMode('');
+    }
+  }, [selectedNodeId]);
+
+  const downloadPng = useCallback(() => {
+    setIsLoading(true);
+    if (mainRef.current === null) {
+      return;
+    }
+    toPng(mainRef.current, { cacheBust: true })
+      .then((dataUrl) => {
+        const link = document.createElement('a');
+        link.download = `${'relation_view'}`;
+        link.href = dataUrl;
+        link.click();
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        setIsLoading(false);
+      });
+  }, [mainRef]);
+  const zoomPanPinch = useCallback(
+    (nodeId: string, animationTime?: number) => {
+      ref.current?.zoomToElement(
+        `${focusMode ? 'focus' : 'full'}-${nodeId}`,
+        ref.current.instance.transformState.scale,
+        animationTime,
+        'easeOut',
+      );
+    },
+    [focusMode],
+  );
+
+  useLayoutEffect(() => {
+    if (selectedNodeId?.value?.id && !largeSimulationLoading) {
+      zoomPanPinch(selectedNodeId.value.id, 0);
+    }
+  }, [focusMode, largeSimulationLoading]);
+
+  useLayoutEffect(() => {
+    if (selectedNodeId?.value?.id && !largeSimulationLoading) {
+      zoomPanPinch(selectedNodeId.value.id, 300);
+    }
+  }, [selectedNodeId?.value?.id, largeSimulationLoading]);
+
+  useEffect(() => {
+    const listenerDown = (ev: KeyboardEvent) => {
+      if (
+        ev.key === 'Control' ||
+        ev.metaKey ||
+        ev.key === 'OS' ||
+        ev.key === 'Meta'
+      ) {
+        ev.preventDefault();
+        setZoomingMode('zoom');
+      }
+    };
+    const listenerUp = (ev: KeyboardEvent) => {
+      if (
+        ev.key === 'Control' ||
+        ev.metaKey ||
+        ev.key === 'OS' ||
+        ev.key === 'Meta'
+      )
+        setZoomingMode('pan');
+    };
+    const scrollListenerZoom = (e: WheelEvent) => {
+      e.preventDefault();
+    };
+    const scrollListener = (e: WheelEvent) => {
+      e.preventDefault();
+      if (!wrapperRef.current) return;
+      if (zoomingMode === 'zoom') {
+        return;
+      }
+
+      const factor =
+        (e.detail
+          ? -e.detail / 3
+          : 'wheelDelta' in e
+          ? ((e as any).wheelDelta as number)
+          : 0) * 2;
+
+      const newX = e.deltaX
+        ? (ref.current?.instance.transformState.positionX || 0) + factor
+        : ref.current?.instance.transformState.positionX || 0;
+
+      const newY = e.deltaY
+        ? (ref.current?.instance.transformState.positionY || 0) + factor
+        : ref.current?.instance.transformState.positionY || 0;
+
+      ref.current?.setTransform(
+        newX,
+        newY,
+        ref.current.instance.transformState.scale,
+        300,
+        'easeOutCubic',
+      );
+    };
+    wrapperRef.current?.addEventListener('wheel', scrollListener);
+    document.addEventListener('wheel', scrollListenerZoom);
+    document.addEventListener('keydown', listenerDown);
+    document.addEventListener('keyup', listenerUp);
+
+    return () => {
+      document.removeEventListener('keydown', listenerDown);
+      document.removeEventListener('keyup', listenerUp);
+      document.removeEventListener('wheel', scrollListenerZoom);
+      wrapperRef.current?.removeEventListener('wheel', scrollListener);
+    };
+  }, [ref, zoomingMode]);
+
+  const focusedDiagram = useMemo(() => {
+    return (
+      <LinesDiagram
+        panState={draggingMode}
+        nodes={focusedNodes || []}
+        mainRef={mainRef}
+        panRef={ref}
+        hide={!focusMode}
+        name="focus"
+        setLoading={(e) => setLargeSimulationLoading(e)}
+      />
+    );
+  }, [focusedNodes, focusMode, draggingMode, zoomPanPinch, ref, mainRef]);
+
+  const step = 0.2;
+  return (
+    <Wrapper>
+      <TopBar>
+        <Menu>
+          {focusMode && (
+            <Button
+              size="small"
+              onClick={() => exitFocus()}
+              endAdornment={<EyeAlt />}
+            >
+              Exit focus
+            </Button>
+          )}
+          {!readonly && <NewNode />}
+          <ZoomWrapper>
+            <IconWrapper
+              data-tooltip="Zoom out"
+              onClick={() => {
+                if (!ref.current) return;
+                const targetScale =
+                  ref.current.instance.transformState.scale *
+                  Math.exp(-1 * step);
+                setScaleFactor(toScaleFactor(targetScale));
+                ref.current?.zoomOut(step);
+              }}
+            >
+              <Minus />
+            </IconWrapper>
+            <TooltippedZoom data-tooltip="Ctrl/Cmd + Scroll to zoom in/out">
+              <span>{scaleFactor.toFixed() + '%'}</span>
+            </TooltippedZoom>
+            <IconWrapper
+              data-tooltip="Zoom in"
+              onClick={() => {
+                if (!ref.current) return;
+                const targetScale =
+                  ref.current.instance.transformState.scale *
+                  Math.exp(1 * step);
+                setScaleFactor(toScaleFactor(targetScale));
+                ref.current?.zoomIn(step);
+              }}
+            >
+              <Plus />
+            </IconWrapper>
+          </ZoomWrapper>
+          <Checkbox
+            label="fields"
+            labelPosition="start"
+            onChange={(e) => setFieldsOn(!fieldsOn)}
+            checked={fieldsOn}
+          />
+          <Checkbox
+            label="scalars"
+            disabled={!fieldsOn}
+            labelPosition="start"
+            onChange={(e) => setBaseTypesOn(!baseTypesOn)}
+            checked={fieldsOn ? baseTypesOn : false}
+          />
+          <Checkbox
+            label="inputs"
+            labelPosition="start"
+            onChange={(e) => setInputsOn(!inputsOn)}
+            checked={inputsOn}
+          />
+          {isLoading ? (
+            <IconWrapper data-tooltip="Loading...">...</IconWrapper>
+          ) : (
+            <IconWrapper
+              data-tooltip="Export to png"
+              onClick={() => downloadPng()}
+            >
+              <ImageSquareCheck />
+            </IconWrapper>
+          )}
+        </Menu>
+      </TopBar>
+      <Main
+        dragMode={selectedNodeId?.value ? draggingMode : 'auto'}
+        ref={wrapperRef}
+        onClick={(e) => {
+          if (draggingMode === 'grabbing') return;
+          setSelectedNodeId({ source: 'relation', value: undefined });
+        }}
+      >
+        {editMode == activeNode?.id && <Graf node={activeNode} />}
+        <TransformWrapper
+          ref={ref}
+          initialScale={1}
+          maxScale={1.5}
+          wheel={{ activationKeys: ['Control', 'OS', 'Meta'] }}
+          minScale={0.1}
+          panning={{
+            velocityDisabled: true,
+          }}
+          onZoom={(e) => {
+            setScaleFactor(toScaleFactor(e.state.scale));
+          }}
+          limitToBounds={false}
+          onPanningStart={() => setDraggingMode('grab')}
+          onPanning={() => setDraggingMode('grabbing')}
+          onPanningStop={() => setTimeout(() => setDraggingMode('auto'), 1)}
+        >
+          <TransformComponent
+            wrapperStyle={{
+              flex: 1,
+              height: '100%',
+              filter: editMode ? `blur(4px)` : `blur(0px)`,
+              transition: 'all 0.25s ease-in-out',
+            }}
+          >
+            <LinesDiagram
+              panState={draggingMode}
+              nodes={filteredRelationNodes}
+              mainRef={mainRef}
+              panRef={ref}
+              name="full"
+              hide={!!focusMode}
+              loading={largeSimulationLoading}
+              setLoading={(e) => setLargeSimulationLoading(e)}
+            />
+            {!!focusMode && focusedDiagram}
+          </TransformComponent>
+        </TransformWrapper>
+        {largeSimulationLoading && (
+          <LoadingContainer>
+            <Loader size="lg" />
+            <span>
+              Loading{' '}
+              {focusMode ? focusedNodes?.length : filteredRelationNodes.length}{' '}
+              nodes
+            </span>
+          </LoadingContainer>
+        )}
+        {grafErrors && <ErrorContainer>{grafErrors}</ErrorContainer>}
+      </Main>
+    </Wrapper>
+  );
+};
+const toScaleFactor = (scale: number) =>
+  Math.min(Math.max(scale, 0.1), 1.5) * 100;
 
 const Wrapper = styled.div`
   display: flex;
@@ -197,305 +493,3 @@ const Main = styled.div<{ dragMode: DragMode }>`
   justify-content: flex-end;
   cursor: ${({ dragMode }) => dragMode};
 `;
-
-export const Relation: React.FC = () => {
-  const mainRef = useRef<HTMLDivElement>(null);
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const {
-    selectedNodeId,
-    setSelectedNodeId,
-    readonly,
-    activeNode,
-    libraryTree,
-  } = useTreesState();
-  const { filteredRelationNodes, exitFocus, focusMode, focusedNodes } =
-    useRelationNodesState();
-  const { grafErrors } = useErrorsState();
-  const { setBaseTypesOn, baseTypesOn, editMode, setEditMode } =
-    useRelationsState();
-  const [largeSimulationLoading, setLargeSimulationLoading] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [draggingMode, setDraggingMode] = useState<DragMode>('grab');
-  const [scaleFactor, setScaleFactor] = useState(100);
-  const [zoomingMode, setZoomingMode] = useState<'zoom' | 'pan'>('pan');
-  const ref = useRef<ReactZoomPanPinchRef>(null);
-
-  useEffect(() => {
-    if (!selectedNodeId?.value?.id) {
-      setScaleFactor(100);
-      setEditMode('');
-    }
-    if (selectedNodeId?.value?.id && selectedNodeId.value.id !== editMode) {
-      setEditMode('');
-    }
-  }, [selectedNodeId]);
-
-  const downloadPng = useCallback(() => {
-    setIsLoading(true);
-    if (mainRef.current === null) {
-      return;
-    }
-    toPng(mainRef.current, { cacheBust: true })
-      .then((dataUrl) => {
-        const link = document.createElement('a');
-        link.download = `${'relation_view'}`;
-        link.href = dataUrl;
-        link.click();
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        setIsLoading(false);
-      });
-  }, [mainRef]);
-  const zoomPanPinch = useCallback(
-    (nodeId: string, animationTime?: number) => {
-      ref.current?.zoomToElement(
-        `${focusMode ? 'focus' : 'full'}-${nodeId}`,
-        ref.current.instance.transformState.scale,
-        animationTime,
-        'easeOut',
-      );
-    },
-    [focusMode],
-  );
-
-  useLayoutEffect(() => {
-    if (selectedNodeId?.value?.id && !largeSimulationLoading) {
-      zoomPanPinch(selectedNodeId.value.id, 0);
-    }
-  }, [focusMode, largeSimulationLoading]);
-
-  useLayoutEffect(() => {
-    if (selectedNodeId?.value?.id && !largeSimulationLoading) {
-      zoomPanPinch(selectedNodeId.value.id, 300);
-    }
-  }, [selectedNodeId?.value?.id, largeSimulationLoading]);
-
-  useEffect(() => {
-    const listenerDown = (ev: KeyboardEvent) => {
-      if (
-        ev.key === 'Control' ||
-        ev.metaKey ||
-        ev.key === 'OS' ||
-        ev.key === 'Meta'
-      ) {
-        ev.preventDefault();
-        setZoomingMode('zoom');
-      }
-    };
-    const listenerUp = (ev: KeyboardEvent) => {
-      if (
-        ev.key === 'Control' ||
-        ev.metaKey ||
-        ev.key === 'OS' ||
-        ev.key === 'Meta'
-      )
-        setZoomingMode('pan');
-    };
-    const scrollListenerZoom = (e: WheelEvent) => {
-      e.preventDefault();
-    };
-    const scrollListener = (e: WheelEvent) => {
-      e.preventDefault();
-      if (!wrapperRef.current) return;
-      if (zoomingMode === 'zoom') {
-        return;
-      }
-
-      const factor =
-        (e.detail
-          ? -e.detail / 3
-          : 'wheelDelta' in e
-          ? ((e as any).wheelDelta as number)
-          : 0) * 2;
-
-      const newX = e.deltaX
-        ? (ref.current?.instance.transformState.positionX || 0) + factor
-        : ref.current?.instance.transformState.positionX || 0;
-
-      const newY = e.deltaY
-        ? (ref.current?.instance.transformState.positionY || 0) + factor
-        : ref.current?.instance.transformState.positionY || 0;
-
-      ref.current?.setTransform(
-        newX,
-        newY,
-        ref.current.instance.transformState.scale,
-        300,
-        'easeOutCubic',
-      );
-    };
-    wrapperRef.current?.addEventListener('wheel', scrollListener);
-    document.addEventListener('wheel', scrollListenerZoom);
-    document.addEventListener('keydown', listenerDown);
-    document.addEventListener('keyup', listenerUp);
-
-    return () => {
-      document.removeEventListener('keydown', listenerDown);
-      document.removeEventListener('keyup', listenerUp);
-      document.removeEventListener('wheel', scrollListenerZoom);
-      wrapperRef.current?.removeEventListener('wheel', scrollListener);
-    };
-  }, [ref, zoomingMode]);
-
-  const filteredNodes = useMemo(() => {
-    const scalarTypes = filteredRelationNodes
-      .filter((n) => n.data.type === TypeDefinition.ScalarTypeDefinition)
-      .map((n) => n.name);
-    const filterScalars = passScalars(baseTypesOn, scalarTypes);
-
-    return filteredRelationNodes
-      .map(filterScalars)
-      .filter((n) => !scalarTypes.includes(n.name));
-  }, [filteredRelationNodes, libraryTree, baseTypesOn]);
-
-  const focusedDiagram = useMemo(() => {
-    return (
-      <LinesDiagram
-        panState={draggingMode}
-        nodes={focusedNodes || []}
-        mainRef={mainRef}
-        panRef={ref}
-        hide={!focusMode}
-        name="focus"
-        setLoading={(e) => setLargeSimulationLoading(e)}
-      />
-    );
-  }, [focusedNodes, focusMode, draggingMode, zoomPanPinch, ref, mainRef]);
-
-  const step = 0.2;
-  return (
-    <Wrapper>
-      <TopBar>
-        <Menu>
-          {focusMode && (
-            <Button
-              size="small"
-              onClick={() => exitFocus()}
-              endAdornment={<EyeAlt />}
-            >
-              Exit focus
-            </Button>
-          )}
-          {!readonly && <NewNode />}
-          <ZoomWrapper>
-            <IconWrapper
-              data-tooltip="Zoom out"
-              onClick={() => {
-                if (!ref.current) return;
-                const targetScale =
-                  ref.current.instance.transformState.scale *
-                  Math.exp(-1 * step);
-                setScaleFactor(toScaleFactor(targetScale));
-                ref.current?.zoomOut(step);
-              }}
-            >
-              <Minus />
-            </IconWrapper>
-            <TooltippedZoom data-tooltip="Ctrl/Cmd + Scroll to zoom in/out">
-              <span>{scaleFactor.toFixed() + '%'}</span>
-            </TooltippedZoom>
-            <IconWrapper
-              data-tooltip="Zoom in"
-              onClick={() => {
-                if (!ref.current) return;
-                const targetScale =
-                  ref.current.instance.transformState.scale *
-                  Math.exp(1 * step);
-                setScaleFactor(toScaleFactor(targetScale));
-                ref.current?.zoomIn(step);
-              }}
-            >
-              <Plus />
-            </IconWrapper>
-          </ZoomWrapper>
-          <Checkbox
-            label="scalars"
-            labelPosition="start"
-            onChange={(e) => setBaseTypesOn(!baseTypesOn)}
-            checked={baseTypesOn}
-          />
-          {isLoading ? (
-            <IconWrapper data-tooltip="Loading...">...</IconWrapper>
-          ) : (
-            <IconWrapper
-              data-tooltip="Export to png"
-              onClick={() => downloadPng()}
-            >
-              <ImageSquareCheck />
-            </IconWrapper>
-          )}
-        </Menu>
-      </TopBar>
-      <Main
-        dragMode={selectedNodeId?.value ? draggingMode : 'auto'}
-        ref={wrapperRef}
-        onClick={(e) => {
-          if (draggingMode === 'grabbing') return;
-          setSelectedNodeId({ source: 'relation', value: undefined });
-        }}
-      >
-        {editMode == activeNode?.id && <Graf node={activeNode} />}
-        <TransformWrapper
-          ref={ref}
-          initialScale={1}
-          maxScale={1.5}
-          wheel={{ activationKeys: ['Control', 'OS', 'Meta'] }}
-          minScale={0.1}
-          panning={{
-            velocityDisabled: true,
-          }}
-          onZoom={(e) => {
-            setScaleFactor(toScaleFactor(e.state.scale));
-          }}
-          limitToBounds={false}
-          onPanningStart={() => setDraggingMode('grab')}
-          onPanning={() => setDraggingMode('grabbing')}
-          onPanningStop={() => setTimeout(() => setDraggingMode('auto'), 1)}
-        >
-          <TransformComponent
-            wrapperStyle={{
-              flex: 1,
-              height: '100%',
-              filter: editMode ? `blur(4px)` : `blur(0px)`,
-              transition: 'all 0.25s ease-in-out',
-            }}
-          >
-            <LinesDiagram
-              panState={draggingMode}
-              nodes={filteredNodes}
-              mainRef={mainRef}
-              panRef={ref}
-              name="full"
-              hide={!!focusMode}
-              loading={largeSimulationLoading}
-              setLoading={(e) => setLargeSimulationLoading(e)}
-            />
-            {!!focusMode && focusedDiagram}
-          </TransformComponent>
-        </TransformWrapper>
-        {largeSimulationLoading && (
-          <LoadingContainer>
-            <Loader size="lg" />
-            <span>
-              Loading{' '}
-              {focusMode ? focusedNodes?.length : filteredRelationNodes.length}{' '}
-              nodes
-            </span>
-          </LoadingContainer>
-        )}
-        {grafErrors && <ErrorContainer>{grafErrors}</ErrorContainer>}
-      </Main>
-    </Wrapper>
-  );
-};
-const toScaleFactor = (scale: number) =>
-  Math.min(Math.max(scale, 0.1), 1.5) * 100;
-
-const passScalars = (pass: boolean, scalars: string[]) => (n: ParserField) =>
-  !pass
-    ? {
-        ...n,
-        args: n.args?.filter((a) => !isScalarArgument(a, scalars)),
-      }
-    : n;

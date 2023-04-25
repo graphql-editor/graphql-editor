@@ -11,6 +11,7 @@ export const DynamicResize: React.FunctionComponent<{
   maxWidth?: string | number;
   minWidth?: string | number;
   enable?: Enable;
+  children?: React.ReactNode;
 }> = ({
   children,
   width,
