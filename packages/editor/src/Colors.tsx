@@ -22,7 +22,7 @@ export const fade = (c: HexaDecimal, alpha: number) => {
     .padStart(2, '0')}`;
 };
 
-export const mix = (c1: HexaDecimal, c2: HexaDecimal, weight: number = 50) => {
+export const mix = (c1: HexaDecimal, c2: HexaDecimal, weight = 50) => {
   const color1 = c1.slice(1);
   const color2 = c2.slice(1);
   if (!isHexa(color1) || !isHexa(color2)) {

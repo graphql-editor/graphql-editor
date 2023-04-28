@@ -2,7 +2,7 @@ import React from 'react';
 import { ParserField } from 'graphql-js-tree';
 import styled from '@emotion/styled';
 import { FIELD_NAME_SIZE } from '@/Graf/constants';
-import { ActiveType } from '@/Relation/Field/ActiveType';
+import { ActiveType } from '@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveType';
 
 const Main = styled.div`
   display: flex;

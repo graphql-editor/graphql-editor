@@ -86,6 +86,7 @@ const useTreesStateContainer = createContainer(() => {
     () => libraryTree.nodes.map((n) => n.id),
     [libraryTree],
   );
+
   const isLibrary = useCallback(
     (id: string) => libraryNodeIds.includes(id),
     [libraryNodeIds],
@@ -188,7 +189,7 @@ const useTreesStateContainer = createContainer(() => {
   };
 
   const relatedToSelected = useMemo(() => {
-    return activeNode?.args
+    const notBaseTypes = activeNode?.args
       .map((a) => getTypeName(a.type.fieldType))
       .concat(
         activeNode.args
@@ -208,8 +209,17 @@ const useTreesStateContainer = createContainer(() => {
             ),
           )
           .map((a) => a.name),
-      );
+      )
+      .filter((n) => !isBaseScalar(n));
+    return notBaseTypes?.filter(
+      (t, index) => index === notBaseTypes.indexOf(t),
+    );
   }, [JSON.stringify(activeNode)]);
+  const relatedNodeIdsToSelected = useMemo(() => {
+    return allNodes.nodes
+      .filter((n) => relatedToSelected?.includes(n.name))
+      .map((n) => n.id);
+  }, [relatedToSelected, allNodes]);
 
   const generateTreeFromSchema = async (schema: PassedSchema) => {
     if (!schema.code) {
@@ -279,6 +289,7 @@ const useTreesStateContainer = createContainer(() => {
     updateNode(node, () => {
       let newName = name || f.name[0].toLowerCase() + f.name.slice(1);
       const existingNodes =
+        // eslint-disable-next-line no-useless-escape
         node.args?.filter((a) => a.name.match(`${newName}\d?`)) || [];
       if (existingNodes.length > 0) {
         newName = `${newName}${existingNodes.length}`;
@@ -367,6 +378,7 @@ const useTreesStateContainer = createContainer(() => {
     redo,
     makeSnapshot,
     future,
+    relatedNodeIdsToSelected,
     relatedToSelected,
     parentTypes,
     scalars,

@@ -49,7 +49,7 @@ export const NodeAddFieldMenu = React.forwardRef<
     (selectedIndex < 0 ? fNLength - selectedIndex : selectedIndex) % fNLength;
 
   const addNode = (n: ParserField, name: string) => {
-    let addedNode = createParserField(
+    const addedNode = createParserField(
       JSON.parse(JSON.stringify(n)) as ParserField,
     );
     addFieldToNode(

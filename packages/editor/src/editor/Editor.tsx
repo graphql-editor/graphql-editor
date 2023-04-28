@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useImperativeHandle } from 'react';
 import { Menu } from './menu/Menu';
 import { CodePane } from './code';
 import { PassedSchema } from '@/Models';
@@ -82,243 +82,250 @@ export interface EditorProps {
   onTreeChange?: (tree: ParserTree) => void;
   // Editor theme
   theme?: EditorTheme;
-  // Override current route
-  routeState?: EditorRoutes;
   // listen to route changes. Don't bind it with routeState though! You will get Maximum depth exceeded
   onRouteChange?: (r: EditorRoutes) => void;
+  onNodeSelect?: (selectedNodeId?: string) => void;
 }
 
-export const Editor = ({
-  schema = {
-    code: '',
-    libraries: '',
-  },
-  setSchema,
-  diffSchemas,
-  onTreeChange,
-  readonly: editorReadOnly,
-  theme,
-  routeState,
-  onRouteChange,
-}: EditorProps) => {
-  const { setTheme } = useTheme();
-  const {
-    grafErrors,
-    setGrafErrors,
-    setLockCode,
-    setGrafEditorErrors,
-    setGrafErrorSchema,
-    lockGraf,
-    errorsItems,
-  } = useErrorsState();
-  const {
-    tree,
-    allNodes,
-    setTree,
-    setSnapshots,
-    setUndos,
-    setLibraryTree,
-    setReadonly,
-    generateTreeFromSchema,
-    selectedNodeId,
-    setSelectedNodeId,
-    readonly,
-  } = useTreesState();
-  const { isSortAlphabetically, sortByTypes, orderTypes, isUserOrder } =
-    useSortState();
-  const { setSidebarSize, sidebarSize } = useLayoutState();
-  const { routes, set } = useRouter();
+export interface ExternalEditorAPI {
+  selectNode: (selectedNodeId?: string) => void;
+  route: (r: EditorRoutes) => void;
+}
 
-  const reset = () => {
-    setSnapshots([]);
-    setUndos([]);
-    setGrafErrors(undefined);
-  };
-  useEffect(() => {
-    if (routes.source === 'internal') return;
-    if (!routes.n) {
-      setSelectedNodeId(undefined);
-      return;
-    }
-    if (routes.n === selectedNodeId?.value?.id) return;
-    const field = allNodes.nodes.find((n) => n.id === routes.n);
-    if (!field) return;
-    setSelectedNodeId({
-      source: 'routing',
-      value: {
-        id: field.id,
-        name: field.name,
+export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
+  (
+    {
+      schema = {
+        code: '',
+        libraries: '',
       },
-    });
-  }, [routes.n, allNodes]);
+      setSchema,
+      diffSchemas,
+      onTreeChange,
+      readonly: editorReadOnly,
+      theme,
+      onRouteChange,
+      onNodeSelect,
+    }: EditorProps,
+    ref,
+  ) => {
+    const { setTheme } = useTheme();
+    const {
+      grafErrors,
+      setGrafErrors,
+      setLockCode,
+      setGrafEditorErrors,
+      setGrafErrorSchema,
+      lockGraf,
+      errorsItems,
+    } = useErrorsState();
+    const {
+      tree,
+      setTree,
+      setSnapshots,
+      setUndos,
+      setLibraryTree,
+      setReadonly,
+      generateTreeFromSchema,
+      readonly,
+      allNodes,
+      selectedNodeId,
+      setSelectedNodeId,
+    } = useTreesState();
+    const { isSortAlphabetically, sortByTypes, orderTypes, isUserOrder } =
+      useSortState();
+    const { setSidebarSize, sidebarSize } = useLayoutState();
+    const { routes, set } = useRouter();
 
-  useEffect(() => {
-    isSortAlphabetically &&
-      !isUserOrder &&
-      setTree({
-        nodes: tree.nodes.sort(sortByTypes),
-      });
-  }, [isSortAlphabetically, orderTypes]);
+    const reset = () => {
+      setSnapshots([]);
+      setUndos([]);
+      setGrafErrors(undefined);
+    };
 
-  useEffect(() => {
-    if (theme) {
-      setTheme(theme);
-    }
-  }, [theme]);
+    useImperativeHandle(
+      ref,
+      () => ({
+        selectNode: (nId) => {
+          const n = allNodes.nodes.find((an) => an.id === nId);
+          if (n) {
+            setSelectedNodeId({
+              source: 'routing',
+              value: {
+                id: n.id,
+                name: n.name,
+              },
+            });
+          }
+        },
+        route: (routes) => {
+          set({
+            ...routes,
+          });
+        },
+      }),
+      [set, setSelectedNodeId, allNodes],
+    );
+    useEffect(() => {
+      if (
+        onNodeSelect &&
+        selectedNodeId &&
+        selectedNodeId.source !== 'routing'
+      ) {
+        onNodeSelect(selectedNodeId?.value?.id);
+      }
+    }, [selectedNodeId]);
 
-  useEffect(() => {
-    setReadonly(!!editorReadOnly);
-  }, [editorReadOnly]);
+    useEffect(() => {
+      isSortAlphabetically &&
+        !isUserOrder &&
+        setTree({
+          nodes: tree.nodes.sort(sortByTypes),
+        });
+    }, [isSortAlphabetically, orderTypes]);
 
-  useEffect(() => {
-    if (schema.libraries) {
-      GraphQLEditorWorker.generateTree(schema.libraries).then(setLibraryTree);
-    } else {
-      setLibraryTree({ nodes: [] });
-    }
-    reset();
-  }, [schema.libraries]);
+    useEffect(() => {
+      if (theme) {
+        setTheme(theme);
+      }
+    }, [theme]);
 
-  useEffect(() => {
-    if (!tree || !!tree.schema) {
-      return;
-    }
-    if (tree.nodes.length === 0) {
-      if (tree.initial) {
+    useEffect(() => {
+      setReadonly(!!editorReadOnly);
+    }, [editorReadOnly]);
+
+    useEffect(() => {
+      if (schema.libraries) {
+        GraphQLEditorWorker.generateTree(schema.libraries).then(setLibraryTree);
+      } else {
+        setLibraryTree({ nodes: [] });
+      }
+      reset();
+    }, [schema.libraries]);
+
+    useEffect(() => {
+      if (!tree || !!tree.schema) {
         return;
       }
-      setSchema({ ...schema, isTree: true, code: '' });
-      return;
-    }
-    try {
-      GraphQLEditorWorker.generateCode(tree).then((graphql) => {
-        if (graphql !== schema.code || (grafErrors?.length || 0) > 0) {
-          GraphQLEditorWorker.validate(graphql, schema.libraries).then(
-            (errors) => {
-              if (errors.length > 0) {
-                const mapErrors = errors.map((e) => e.text);
-                const msg = [
-                  ...mapErrors.filter((e, i) => mapErrors.indexOf(e) === i),
-                ].join('\n\n');
-                setGrafErrors(msg);
-                setGrafEditorErrors(errors);
-                setGrafErrorSchema(graphql);
-                setLockCode(msg);
-                return;
-              }
-              setLockCode(undefined);
-              setGrafErrors(undefined);
-              setGrafEditorErrors([]);
-              setSchema({ ...schema, code: graphql, isTree: true });
-            },
-          );
+      if (tree.nodes.length === 0) {
+        if (tree.initial) {
+          return;
         }
-      });
-    } catch (error) {
-      const msg = (error as any).message;
-      setLockCode(msg);
-      setGrafErrors(msg);
-      return;
-    }
-    onTreeChange?.(tree);
-  }, [tree]);
+        setSchema({ ...schema, isTree: true, code: '' });
+        return;
+      }
+      try {
+        GraphQLEditorWorker.generateCode(tree).then((graphql) => {
+          if (graphql !== schema.code || (grafErrors?.length || 0) > 0) {
+            GraphQLEditorWorker.validate(graphql, schema.libraries).then(
+              (errors) => {
+                if (errors.length > 0) {
+                  const mapErrors = errors.map((e) => e.text);
+                  const msg = [
+                    ...mapErrors.filter((e, i) => mapErrors.indexOf(e) === i),
+                  ].join('\n\n');
+                  setGrafErrors(msg);
+                  setGrafEditorErrors(errors);
+                  setGrafErrorSchema(graphql);
+                  setLockCode(msg);
+                  return;
+                }
+                setLockCode(undefined);
+                setGrafErrors(undefined);
+                setGrafEditorErrors([]);
+                setSchema({ ...schema, code: graphql, isTree: true });
+              },
+            );
+          }
+        });
+      } catch (error) {
+        const msg = (error as any).message;
+        setLockCode(msg);
+        setGrafErrors(msg);
+        return;
+      }
+      onTreeChange?.(tree);
+    }, [tree]);
 
-  useEffect(() => {
-    if (schema.isTree) {
-      return;
-    }
-    generateTreeFromSchema(schema);
-  }, [schema]);
+    useEffect(() => {
+      if (schema.isTree) {
+        return;
+      }
+      generateTreeFromSchema(schema);
+    }, [schema]);
 
-  useEffect(() => {
-    if (tree.initial || selectedNodeId?.source === 'routing') {
-      return;
-    }
-    set(
-      {
-        n: selectedNodeId?.value?.id,
-      },
-      'internal',
-    );
-  }, [selectedNodeId]);
+    useEffect(() => {
+      if (onRouteChange && routes.source === 'internal') {
+        onRouteChange({
+          ...routes,
+        });
+      }
+    }, [routes.code, routes.pane]);
 
-  useEffect(() => {
-    if (routeState && routeState.source !== 'internal') {
-      set({ ...routeState });
-    }
-  }, [routeState?.code, routeState?.n, routeState?.pane]);
-
-  useEffect(() => {
-    if (onRouteChange && routes.source === 'internal') {
-      onRouteChange({
-        ...routes,
-      });
-    }
-  }, [routes.code, routes.pane, routes.n]);
-
-  return (
-    <Main
-      onKeyDown={(e) => {
-        if (e.key.toLowerCase() === 'f' && (e.metaKey || e.ctrlKey)) {
-          e.preventDefault();
-        }
-      }}
-    >
-      <Menu
-        toggleCode={routes.code === 'on'}
-        setToggleCode={(e) =>
-          set(
-            {
-              ...routes,
-              code: routes.code === 'off' ? 'on' : 'off',
-              source: 'internal',
-            },
-            'internal',
-          )
-        }
-        activePane={routes.pane}
-        excludePanes={diffSchemas ? undefined : ['diff']}
-        setActivePane={(p) => {
-          const newState: typeof routes = { ...routes, pane: p };
-          set(newState, 'internal');
+    return (
+      <Main
+        onKeyDown={(e) => {
+          if (e.key.toLowerCase() === 'f' && (e.metaKey || e.ctrlKey)) {
+            e.preventDefault();
+          }
         }}
-      />
-      {routes.code === 'on' && routes.pane !== 'diff' && (
-        <DynamicResize
-          enable={{ right: true }}
-          disabledClass={!routes.pane ? 'full-screen-container' : undefined}
-          resizeCallback={(e, r, c, w) => {
-            setSidebarSize(c.getBoundingClientRect().width);
+      >
+        <Menu
+          toggleCode={routes.code === 'on'}
+          setToggleCode={(e) =>
+            set(
+              {
+                ...routes,
+                code: routes.code === 'off' ? 'on' : 'off',
+                source: 'internal',
+              },
+              'internal',
+            )
+          }
+          activePane={routes.pane}
+          excludePanes={diffSchemas ? undefined : ['diff']}
+          setActivePane={(p) => {
+            const newState: typeof routes = { ...routes, pane: p };
+            set(newState, 'internal');
           }}
-          width={!routes.pane ? '100%' : sidebarSize}
-        >
-          <Sidebar
-            className={!routes.pane ? 'full-screen-container' : undefined}
+        />
+        {routes.code === 'on' && routes.pane !== 'diff' && (
+          <DynamicResize
+            enable={{ right: true }}
+            disabledClass={!routes.pane ? 'full-screen-container' : undefined}
+            resizeCallback={(e, r, c, w) => {
+              setSidebarSize(c.getBoundingClientRect().width);
+            }}
+            width={!routes.pane ? '100%' : sidebarSize}
           >
-            <CodePane
-              size={!routes.pane ? 100000 : sidebarSize}
-              onChange={(v) => {
-                setSchema({ ...schema, code: v, isTree: false });
-              }}
-              schema={schema.code}
-              fullScreen={!routes.pane}
-              libraries={schema.libraries}
-              readonly={readonly}
-            />
-          </Sidebar>
-        </DynamicResize>
-      )}
-      {(routes.pane === 'relation' || routes.pane === 'docs') && (
-        <ErrorOuterContainer>
-          {routes.pane === 'relation' && <Relation />}
-          {routes.pane === 'docs' && <Docs />}
-          <NodeNavigation />
-        </ErrorOuterContainer>
-      )}
-      {routes.pane === 'diff' && diffSchemas && (
-        <DiffEditor schemas={diffSchemas} />
-      )}
-      {lockGraf && <ErrorsList> {errorsItems}</ErrorsList>}
-    </Main>
-  );
-};
+            <Sidebar
+              className={!routes.pane ? 'full-screen-container' : undefined}
+            >
+              <CodePane
+                size={!routes.pane ? 100000 : sidebarSize}
+                onChange={(v) => {
+                  setSchema({ ...schema, code: v, isTree: false });
+                }}
+                schema={schema.code}
+                fullScreen={!routes.pane}
+                libraries={schema.libraries}
+                readonly={readonly}
+              />
+            </Sidebar>
+          </DynamicResize>
+        )}
+        {(routes.pane === 'relation' || routes.pane === 'docs') && (
+          <ErrorOuterContainer>
+            {routes.pane === 'relation' && <Relation />}
+            {routes.pane === 'docs' && <Docs />}
+            <NodeNavigation />
+          </ErrorOuterContainer>
+        )}
+        {routes.pane === 'diff' && diffSchemas && (
+          <DiffEditor schemas={diffSchemas} />
+        )}
+        {lockGraf && <ErrorsList> {errorsItems}</ErrorsList>}
+      </Main>
+    );
+  },
+);

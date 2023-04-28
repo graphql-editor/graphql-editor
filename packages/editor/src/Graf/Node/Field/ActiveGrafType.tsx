@@ -11,7 +11,7 @@ export const ActiveGrafType = React.forwardRef<
     children?: React.ReactNode;
   }
 >(({ type, parentTypes, onClick, children }, ref) => {
-  let compiledType = useMemo(
+  const compiledType = useMemo(
     () => compileTypeOptions({ type }),
     [JSON.stringify(type)],
   );

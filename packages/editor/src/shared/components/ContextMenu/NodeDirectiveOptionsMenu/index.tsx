@@ -7,8 +7,8 @@ interface NodeDirectiveOptionsMenuProps {
   hideMenu: () => void;
 }
 const configureOpts = (node: ParserField) => {
-  let { directiveOptions = [] } = node.type;
-  let opts: Record<string, boolean> = {};
+  const { directiveOptions = [] } = node.type;
+  const opts: Record<string, boolean> = {};
   Object.keys(Directive).map((k) => {
     const v = Directive[k as keyof typeof Directive];
     opts[v] = !!directiveOptions.includes(v);

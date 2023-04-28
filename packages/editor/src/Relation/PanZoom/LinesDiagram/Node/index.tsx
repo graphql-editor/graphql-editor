@@ -1,20 +1,21 @@
 import { useRelationsState, useTreesState } from '@/state/containers';
-import { ParserField, TypeDefinition, getTypeName } from 'graphql-js-tree';
-import React, { useMemo } from 'react';
-import { Field } from '../Field';
+import { ParserField, getTypeName } from 'graphql-js-tree';
+import React, { useMemo, useRef } from 'react';
 import { FIELD_NAME_SIZE } from '@/Graf/constants';
 import { fontFamilySans, transition } from '@/vars';
 import styled from '@emotion/styled';
 import { EditorTheme } from '@/gshared/theme/MainTheme';
-import { ActiveType } from '@/Relation/Field/ActiveType';
 import { PenLine } from '@aexol-studio/styling-system';
+import { useClickDetector } from '@/Relation/shared/useClickDetector';
+import { ActiveType } from '@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveType';
+import { Field } from '@/Relation/PanZoom/LinesDiagram/Node/Field';
+import { useLazyControls } from '@/Relation/shared/useLazyControls';
+import { useDomManagerTs } from '@/Relation/PanZoom/useDomManager';
 
 type NodeTypes = keyof EditorTheme['colors'];
 
 interface ContentProps {
   nodeType: NodeTypes;
-  isSelected?: boolean;
-  isRelated?: boolean;
   isLibrary?: boolean;
   readOnly?: boolean;
 }
@@ -31,19 +32,42 @@ const Content = styled.div<ContentProps>`
   font-family: ${fontFamilySans};
   font-size: 14px;
   max-width: 66vw;
-  opacity: ${({ isRelated }) => (isRelated ? 1.0 : 0.3)};
-  cursor: ${({ isSelected }) => (isSelected ? 'auto' : 'pointer')};
+  opacity: 1;
+  cursor: pointer;
   border-width: 2px;
   border-style: ${({ isLibrary }) => (isLibrary ? 'dashed' : 'solid')};
-  border-color: ${({ theme, nodeType, isSelected }) =>
-    theme.colors[nodeType] && isSelected
-      ? theme.colors[nodeType]
-      : `${theme.dividerMain}88`};
+  border-color: ${({ theme }) => `${theme.dividerMain}88`};
   &:hover {
     border-color: ${({ theme, nodeType }) =>
       theme.colors[nodeType]
         ? theme.colors[nodeType]
         : `${theme.accents[100]}00`};
+  }
+  .graph-field {
+    pointer-events: none;
+  }
+  &.selection {
+    opacity: 0.3;
+    &.active {
+      opacity: 1;
+      cursor: auto;
+      border-color: ${({ theme, nodeType }) =>
+        theme.colors[nodeType]
+          ? theme.colors[nodeType]
+          : `${theme.dividerMain}88`};
+      .editNode {
+        display: flex;
+      }
+      .graph-field {
+        pointer-events: auto;
+      }
+    }
+    &.related {
+      opacity: 1;
+    }
+  }
+  .editNode {
+    display: none;
   }
 `;
 
@@ -98,29 +122,26 @@ const NameInRelation = styled.span`
 interface NodeProps {
   field: ParserField;
   isLibrary?: boolean;
-  canSelect?: boolean;
 }
 
-export const Node: React.FC<NodeProps> = ({ field, isLibrary, canSelect }) => {
-  const { setSelectedNodeId, activeNode, relatedToSelected } = useTreesState();
+export const Node: React.FC<NodeProps> = (props) => {
+  const { field, isLibrary } = props;
+  const { setSelectedNodeId } = useTreesState();
   const { setEditMode } = useRelationsState();
-  const isSelected = !!activeNode && field.id === activeNode.id;
+  const { isClick, mouseDown } = useClickDetector();
+  const { zoomToElement } = useLazyControls();
+  const { deselectNodes, selectNode } = useDomManagerTs();
+  const nodeRef = useRef<HTMLDivElement>(null);
+
   const RelationFields = useMemo(() => {
     return (
       <NodeRelationFields>
-        {field.args.map((a, i) => (
-          <Field
-            active={
-              isSelected &&
-              field.data.type !== TypeDefinition.EnumTypeDefinition
-            }
-            key={a.name}
-            node={a}
-          />
+        {field.args.map((a) => (
+          <Field key={a.name} node={a} />
         ))}
       </NodeRelationFields>
     );
-  }, [JSON.stringify(field), isSelected]);
+  }, [JSON.stringify(field)]);
 
   const NodeContent = useMemo(
     () => (
@@ -136,36 +157,41 @@ export const Node: React.FC<NodeProps> = ({ field, isLibrary, canSelect }) => {
 
   return (
     <Content
-      isRelated={
-        activeNode
-          ? relatedToSelected?.includes(field.name) || isSelected
-          : true
-      }
-      isSelected={isSelected}
+      className="graph-node"
+      id={`node-${field.id}`}
+      ref={nodeRef}
       isLibrary={isLibrary}
       nodeType={getTypeName(field.type.fieldType) as NodeTypes}
+      onMouseDown={mouseDown}
       onClick={(e) => {
-        if (!canSelect || isSelected) return;
+        if (!isClick(e)) {
+          return;
+        }
         e.stopPropagation();
-        setSelectedNodeId({
-          value: {
-            id: field.id,
-            name: field.name,
-          },
-          source: 'relation',
-        });
+        if (nodeRef.current?.classList.contains('active')) return;
+        deselectNodes();
+        selectNode(field.id);
+        zoomToElement(`node-${field.id}`);
+        setTimeout(() => {
+          setSelectedNodeId({
+            value: {
+              id: field.id,
+              name: field.name,
+            },
+            source: 'relation',
+          });
+        }, 200);
       }}
     >
-      {isSelected && (
-        <EditNodeContainer
-          onClick={(e) => {
-            e.stopPropagation();
-            setEditMode(field.id);
-          }}
-        >
-          <PenLine width={16} height={16} />
-        </EditNodeContainer>
-      )}
+      <EditNodeContainer
+        className="editNode"
+        onClick={(e) => {
+          e.stopPropagation();
+          setEditMode(field.id);
+        }}
+      >
+        <PenLine width={16} height={16} />
+      </EditNodeContainer>
       {NodeContent}
       {RelationFields}
     </Content>

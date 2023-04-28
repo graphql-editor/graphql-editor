@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   GraphQLEditor,
+  ExternalEditorAPI,
   Colors,
   PassedSchema,
   EditorRoutes,
 } from 'graphql-editor';
 import * as schemas from '../schema';
-import { useRouter } from 'helpers/FakeRouter';
-import { ActivePane } from 'graphql-editor/lib/editor/menu/Menu';
 
 const buttonStyle = {
   position: 'absolute',
@@ -23,36 +22,41 @@ const buttonStyle = {
 
 export const googleState = () => {
   const [currentSchema, setCurrentSchema] = useState<PassedSchema>({
-    code: schemas.googleDirectionsNew,
+    code: schemas.billabeeSchema,
     libraries: '',
   });
+  const [, setR] = useState<EditorRoutes>({ code: 'on', pane: 'relation' });
+  const [n, setN] = useState<string>();
 
-  const [editorRoutes, setEditorRoutes] = useState<EditorRoutes>();
-  const { changeRoute, path } = useRouter();
-
-  const {
-    p: { code, pane, n },
-    source,
-  } = path;
+  const editorRef = useRef<ExternalEditorAPI>();
 
   useEffect(() => {
-    if (path.source === 'internal') return;
-    setEditorRoutes({
-      code: code as 'on' | 'off' | undefined,
-      pane: pane as ActivePane | undefined,
-      n,
-      source,
-    });
-  }, [path]);
+    editorRef.current.selectNode(n);
+  }, [n]);
 
-  useEffect(() => {
-    const listener = (e: PopStateEvent) => {
-      const u = new URL(window.location.href);
-      u.searchParams.toString();
-    };
-    window.addEventListener('popstate', listener);
-    return () => window.removeEventListener('popstate', listener);
-  }, []);
+  const memoedEditor = useMemo(() => {
+    return (
+      <GraphQLEditor
+        schema={currentSchema}
+        ref={editorRef}
+        onNodeSelect={(n) => {
+          console.log('EDITOR SELECT NODE');
+          setN(n);
+        }}
+        onRouteChange={(routes) => {
+          console.log('EDITOR ROUTE CHANGE');
+          setR(routes);
+        }}
+        setSchema={(s) => {
+          setCurrentSchema(s);
+        }}
+        diffSchemas={{
+          '1': schemas.googleDirectionsNew,
+          '2': schemas.googleDirectionsOld,
+        }}
+      />
+    );
+  }, [currentSchema, setCurrentSchema]);
 
   return (
     <div
@@ -66,13 +70,7 @@ export const googleState = () => {
       }}
     >
       <div
-        onClick={() =>
-          changeRoute({
-            pane: 'relation',
-            n: '7f6954ab88b8c',
-            code: 'on',
-          })
-        }
+        onClick={() => setN('1dde4cbc7c784a')}
         style={{
           ...buttonStyle,
         }}
@@ -80,13 +78,7 @@ export const googleState = () => {
         select node
       </div>
       <div
-        onClick={() =>
-          changeRoute({
-            pane: 'relation',
-            n: undefined,
-            code: 'on',
-          })
-        }
+        onClick={() => setN(undefined)}
         style={{
           ...buttonStyle,
           backgroundColor: Colors.orange,
@@ -95,20 +87,7 @@ export const googleState = () => {
       >
         deselect node
       </div>
-      <GraphQLEditor
-        routeState={editorRoutes}
-        schema={currentSchema}
-        onRouteChange={(routes) => {
-          changeRoute({ a: 'googleState', ...routes }, 'internal');
-        }}
-        setSchema={(s) => {
-          setCurrentSchema(s);
-        }}
-        diffSchemas={{
-          '1': schemas.googleDirectionsNew,
-          '2': schemas.googleDirectionsOld,
-        }}
-      />
+      {memoedEditor}
     </div>
   );
 };

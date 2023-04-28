@@ -108,7 +108,7 @@ export const SingleNodeInList: React.FC<{
               e.stopPropagation();
 
               selectedNodeId?.value?.id === node.id &&
-                setSelectedNodeId(undefined);
+                setSelectedNodeId({ source: 'navigation', value: undefined });
 
               toggleNodeVisibility(node);
             }}

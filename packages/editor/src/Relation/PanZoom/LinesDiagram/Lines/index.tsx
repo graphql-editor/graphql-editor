@@ -1,7 +1,7 @@
 import { Draw } from './Draw';
 import { getTypeName, ParserField } from 'graphql-js-tree';
 import React from 'react';
-import { useTheme, useTreesState } from '@/state/containers';
+import { useTheme } from '@/state/containers';
 import styled from '@emotion/styled';
 import { NumberNode } from 'graphql-editor-worker';
 
@@ -31,27 +31,20 @@ interface LinesProps {
 
 export const Lines: React.FC<LinesProps> = ({ relations }) => {
   const { theme } = useTheme();
-  const { selectedNodeId } = useTreesState();
 
   return (
     <RelationsContainer>
       {relations?.map((r, index) => {
         return r.from?.map((rf, relationNumber) => {
           const relationType = rf.connectingField.type.fieldType;
-          if (selectedNodeId?.value) {
-            if (
-              rf.field.id !== selectedNodeId.value.id &&
-              r.to.field.id !== selectedNodeId.value.id
-            ) {
-              return null;
-            }
-          }
           return (
             <Draw
               relationType={relationType}
               color={
-                (theme.colors as any)[
-                  getTypeName(rf.field.parserField.type.fieldType)
+                theme.colors[
+                  getTypeName(
+                    rf.field.parserField.type.fieldType,
+                  ) as keyof typeof theme.colors
                 ]
               }
               key={`${index}-${rf.index}-${relationNumber}-${rf.field.parserField.name}-${rf.connectingField.name}`}

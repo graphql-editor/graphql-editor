@@ -2,12 +2,12 @@ import React from 'react';
 import { useTreesState } from '@/state/containers/trees';
 import { FieldProps as GrafFieldProps } from '@/Graf/Node/models';
 import styled from '@emotion/styled';
-import { RELATION_CONSTANTS } from '@/Relation/Lines/constants';
 import { TypeSystemDefinition } from 'graphql-js-tree';
-import { ActiveFieldName } from '@/Relation/Field/ActiveFieldName';
-import { ActiveType } from '@/Relation/Field/ActiveType';
+import { RELATION_CONSTANTS } from '@/Relation/PanZoom/LinesDiagram/Lines/constants';
+import { ActiveFieldName } from '@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveFieldName';
+import { ActiveType } from '@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveType';
 
-const Main = styled.div<{ isActive?: boolean }>`
+const Main = styled.div`
   position: relative;
   display: flex;
   gap: 0.5rem;
@@ -18,40 +18,33 @@ const Main = styled.div<{ isActive?: boolean }>`
   margin: 0 -12px;
   transition: background-color 0.25s ease-in-out;
   cursor: pointer;
-
   &:hover {
-    background-color: ${({ isActive, theme }) =>
-      isActive && theme.neutral[500]};
+    background-color: ${({ theme }) => theme.neutral[500]};
   }
 `;
 
 type FieldProps = Pick<GrafFieldProps, 'node'> & {
-  active?: boolean;
   showArgs?: boolean;
 };
 
-export const Field: React.FC<FieldProps> = ({ node, active }) => {
+export const Field: React.FC<FieldProps> = ({ node }) => {
   const { parentTypes, setSelectedNodeId, getParentOfField } = useTreesState();
   return (
     <Main
-      isActive={active}
-      onClick={
-        active
-          ? (e) => {
-              const parent = getParentOfField(node);
-              if (active && parent) {
-                e.stopPropagation();
-                setSelectedNodeId({
-                  source: 'relation',
-                  value: {
-                    id: parent.id,
-                    name: parent.name,
-                  },
-                });
-              }
-            }
-          : undefined
-      }
+      className="graph-field"
+      onClick={(e) => {
+        const parent = getParentOfField(node);
+        if (parent) {
+          e.stopPropagation();
+          setSelectedNodeId({
+            source: 'relation',
+            value: {
+              id: parent.id,
+              name: parent.name,
+            },
+          });
+        }
+      }}
     >
       <ActiveFieldName
         name={

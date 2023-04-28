@@ -95,7 +95,7 @@ export const NewNodeMenu = React.forwardRef<
     >
       <PaddingContainer direction="column" gap="0.25rem">
         {allTypes.map((nt) => (
-          <React.Fragment>
+          <React.Fragment key={nt.type}>
             {creating === nt.data && (
               <CreationInput
                 autoFocus

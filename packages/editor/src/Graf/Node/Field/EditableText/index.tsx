@@ -66,7 +66,7 @@ export const EditableText: React.FC<{
   }, [editedValue]);
   return (
     <>
-      {!!onChange ? (
+      {onChange ? (
         <>
           <Input
             id={genericId.current}

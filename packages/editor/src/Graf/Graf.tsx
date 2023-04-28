@@ -86,7 +86,7 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
             readonly={readonly}
             onDuplicate={(nodeToDuplicate) => {
               const allNodes = [...tree.nodes];
-              const { id, ...rest } = node;
+              const { ...rest } = node;
               const duplicatedNode = JSON.parse(
                 JSON.stringify(
                   createParserField({

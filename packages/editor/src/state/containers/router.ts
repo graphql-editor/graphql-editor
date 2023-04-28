@@ -5,7 +5,6 @@ import { createContainer } from 'unstated-next';
 type ValuesType = {
   pane?: ActivePane;
   code: 'on' | 'off';
-  n?: string;
   source?: 'internal';
 };
 

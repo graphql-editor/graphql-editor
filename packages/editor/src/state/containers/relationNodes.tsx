@@ -49,7 +49,7 @@ const useRelationNodes = createContainer(() => {
     setNodesVisibilityArr((prev) =>
       prev.map((el) => ({ id: el.id, isHidden: true })),
     );
-    setSelectedNodeId(undefined);
+    setSelectedNodeId({ source: 'relation', value: undefined });
   }, []);
 
   const showRelationNodes = useCallback(

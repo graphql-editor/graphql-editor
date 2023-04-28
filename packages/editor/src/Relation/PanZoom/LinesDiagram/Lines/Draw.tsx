@@ -1,3 +1,5 @@
+import { transition } from '@/vars';
+import styled from '@emotion/styled';
 import { FieldType, Options } from 'graphql-js-tree';
 import React from 'react';
 // import { RELATION_CONSTANTS } from './constants';
@@ -24,8 +26,8 @@ export const Draw = ({
   color,
   relationType,
 }: {
-  from?: { x: number; y: number };
-  to?: { x: number; y: number };
+  from?: { x: number; y: number; id: string };
+  to?: { x: number; y: number; id: string };
   color: string;
   relationType: FieldType;
 }) => {
@@ -89,27 +91,19 @@ export const Draw = ({
     );
 
     return (
-      <>
-        <g>
-          <path
-            stroke={stroke}
-            strokeWidth={fac}
-            strokeDasharray={
-              relationType.type === Options.required ? undefined : '5 10'
-            }
-            d={`M ${t.x} ${t.y}
+      <PathG data-from={from.id} data-to={to.id} className="graph-connection">
+        <path
+          stroke={stroke}
+          strokeWidth={fac}
+          strokeDasharray={
+            relationType.type === Options.required ? undefined : '5 10'
+          }
+          d={`M ${t.x} ${t.y}
            Q ${bezier1.x} ${bezier1.y} ${center.x} ${center.y}
            Q ${bezier2.x} ${bezier2.y} ${f.x} ${f.y}`}
-          />
-          <circle
-            fill={stroke}
-            stroke={stroke}
-            r={7}
-            cx={f.x + 2}
-            cy={f.y + 2}
-          />
-        </g>
-      </>
+        />
+        <circle fill={stroke} stroke={stroke} r={7} cx={f.x + 2} cy={f.y + 2} />
+      </PathG>
     );
   }
   return <></>;
@@ -119,3 +113,13 @@ const isArrayType = (f: FieldType) =>
   f.type === Options.required
     ? f.nest.type === Options.array
     : f.type === Options.array;
+
+const PathG = styled.g`
+  &.selection {
+    opacity: 0;
+    transition: ${transition};
+    &.active {
+      opacity: 1;
+    }
+  }
+`;

@@ -7,8 +7,8 @@ interface NodeOperationsMenuProps {
   hideMenu: () => void;
 }
 const configureOpts = (node: ParserField) => {
-  let { operations = [] } = node.type;
-  let opts: Record<string, boolean> = {};
+  const { operations = [] } = node.type;
+  const opts: Record<string, boolean> = {};
   opts[OperationType.query] = !!operations.includes(OperationType.query);
   opts[OperationType.mutation] = !!operations.includes(OperationType.mutation);
   opts[OperationType.subscription] = !!operations.includes(

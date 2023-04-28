@@ -1,5 +1,5 @@
 import React from 'react';
-import { Editor, EditorProps } from './Editor';
+import { Editor, EditorProps, ExternalEditorAPI } from './Editor';
 import {
   TreesStateProvider,
   ErrorsStateProvider,
@@ -16,35 +16,39 @@ import { RouterProvider, EditorRoutes } from '@/state/containers/router';
 import { EmbeddedEditor, EmbeddedEditorProps } from '@/editor/EmbeddedEditor';
 import { themeColors } from '@aexol-studio/styling-system';
 
-export const GraphQLEditor = ({ ...props }: EditorProps) => {
-  const baseITheme = themeColors('graphqleditor', 'dark');
-  const combinedTheme = {
-    ...MainTheme,
-    ...baseITheme,
-  };
-  const theme = props.theme || combinedTheme;
-  return (
-    <ThemeProvider initialState={theme}>
-      <RouterProvider>
-        <ErrorsStateProvider>
-          <TreesStateProvider>
-            <RelationsProvider>
-              <SortStateProvider>
-                <LayoutStateProvider>
-                  <RelationNodesProvider>
-                    <ScThemeProvider theme={theme}>
-                      <Editor {...props} />
-                    </ScThemeProvider>
-                  </RelationNodesProvider>
-                </LayoutStateProvider>
-              </SortStateProvider>
-            </RelationsProvider>
-          </TreesStateProvider>
-        </ErrorsStateProvider>
-      </RouterProvider>
-    </ThemeProvider>
-  );
-};
+export { ExternalEditorAPI };
+
+export const GraphQLEditor = React.forwardRef<ExternalEditorAPI, EditorProps>(
+  ({ ...props }, ref) => {
+    const baseITheme = themeColors('graphqleditor', 'dark');
+    const combinedTheme = {
+      ...MainTheme,
+      ...baseITheme,
+    };
+    const theme = props.theme || combinedTheme;
+    return (
+      <ThemeProvider initialState={theme}>
+        <RouterProvider>
+          <ErrorsStateProvider>
+            <TreesStateProvider>
+              <RelationsProvider>
+                <SortStateProvider>
+                  <LayoutStateProvider>
+                    <RelationNodesProvider>
+                      <ScThemeProvider theme={theme}>
+                        <Editor {...props} ref={ref} />
+                      </ScThemeProvider>
+                    </RelationNodesProvider>
+                  </LayoutStateProvider>
+                </SortStateProvider>
+              </RelationsProvider>
+            </TreesStateProvider>
+          </ErrorsStateProvider>
+        </RouterProvider>
+      </ThemeProvider>
+    );
+  },
+);
 
 export const EmbeddedGraphQLEditor = ({ ...props }: EmbeddedEditorProps) => {
   const baseITheme = themeColors('graphqleditor', 'dark');

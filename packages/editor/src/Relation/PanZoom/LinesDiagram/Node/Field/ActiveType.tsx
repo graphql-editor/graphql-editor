@@ -8,7 +8,7 @@ export const ActiveType: React.FC<
     onClick?: () => void;
   }
 > = ({ type, parentTypes, onClick }) => {
-  let compiledType = useMemo(
+  const compiledType = useMemo(
     () => compileTypeOptions({ type }),
     [JSON.stringify(type)],
   );

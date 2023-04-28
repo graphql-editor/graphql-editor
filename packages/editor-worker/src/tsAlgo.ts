@@ -31,7 +31,7 @@ export function storeCoordinates(
     .force(
       'link',
       d3.forceLink(connections).id((d) => {
-        return (d as any).id;
+        return (d as NumberNode).id;
       }),
     )
     .force('x', d3.forceX().strength(0.1))
@@ -120,17 +120,13 @@ export const sortNodesTs = ({
       });
     });
   }
-  const sameNodes = exisitingNodes / numberNodes.length;
-  const modified = modifiedNodes > 0;
-  const removedAdded = Math.abs(
-    (existingNumberNodes?.length || 0) - numberNodes.length,
-  );
-  const retAlpha =
-    sameNodes > 0.9
-      ? modified
-        ? Math.max(Math.min(modifiedNodes * 0.01, 0.5), 0.08)
-        : removedAdded / numberNodes.length
-      : 1;
+  const removedAdded = Math.abs(exisitingNodes - numberNodes.length);
+
+  const modifyAlpha = modifiedNodes / numberNodes.length;
+
+  const a = removedAdded > 1 ? 1 : removedAdded === 1 ? 0.45 : modifyAlpha;
+
+  const retAlpha = a;
 
   return {
     numberNodes,
@@ -154,13 +150,13 @@ export function createCollisionForce(nodes: NumberNode[]) {
           if ('data' in q && q.data && q.data !== d) {
             let x = d.x - q.data.x,
               y = d.y - q.data.y,
-              xSpacing = padding + (q.data.width + d.width) / 2,
-              ySpacing = padding + (q.data.height + d.height) / 2,
-              absX = Math.abs(x),
-              absY = Math.abs(y),
               l,
               lx,
               ly;
+            const xSpacing = padding + (q.data.width + d.width) / 2,
+              ySpacing = padding + (q.data.height + d.height) / 2,
+              absX = Math.abs(x),
+              absY = Math.abs(y);
 
             if (absX < xSpacing && absY < ySpacing) {
               l = Math.sqrt(x * x + y * y);
