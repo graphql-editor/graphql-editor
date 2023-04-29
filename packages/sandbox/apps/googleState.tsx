@@ -25,8 +25,8 @@ export const googleState = () => {
     code: schemas.billabeeSchema,
     libraries: '',
   });
-  const [, setR] = useState<EditorRoutes>({ code: 'on', pane: 'relation' });
-  const [n, setN] = useState<string>();
+  const [r, setR] = useState<EditorRoutes>({ code: 'on', pane: 'docs' });
+  const [n, setN] = useState<string>('1392b05ce2df54');
 
   const editorRef = useRef<ExternalEditorAPI>();
 
@@ -34,12 +34,17 @@ export const googleState = () => {
     editorRef.current.selectNode(n);
   }, [n]);
 
+  useEffect(() => {
+    editorRef.current.route(r);
+  }, [r]);
+
   const memoedEditor = useMemo(() => {
     return (
       <GraphQLEditor
         schema={currentSchema}
         ref={editorRef}
         onNodeSelect={(n) => {
+          console.log(n);
           console.log('EDITOR SELECT NODE');
           setN(n);
         }}

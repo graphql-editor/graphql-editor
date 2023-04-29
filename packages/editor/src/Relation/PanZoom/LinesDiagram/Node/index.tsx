@@ -121,6 +121,7 @@ const NameInRelation = styled.span`
 
 interface NodeProps {
   field: ParserField;
+  className: string;
   isLibrary?: boolean;
 }
 
@@ -130,7 +131,7 @@ export const Node: React.FC<NodeProps> = (props) => {
   const { setEditMode } = useRelationsState();
   const { isClick, mouseDown } = useClickDetector();
   const { zoomToElement } = useLazyControls();
-  const { deselectNodes, selectNode } = useDomManagerTs();
+  const { deselectNodes, selectNode } = useDomManagerTs(props.className);
   const nodeRef = useRef<HTMLDivElement>(null);
 
   const RelationFields = useMemo(() => {
@@ -157,8 +158,8 @@ export const Node: React.FC<NodeProps> = (props) => {
 
   return (
     <Content
-      className="graph-node"
-      id={`node-${field.id}`}
+      className={`graph-node ${props.className}`}
+      id={`${props.className}-node-${field.id}`}
       ref={nodeRef}
       isLibrary={isLibrary}
       nodeType={getTypeName(field.type.fieldType) as NodeTypes}
@@ -171,7 +172,7 @@ export const Node: React.FC<NodeProps> = (props) => {
         if (nodeRef.current?.classList.contains('active')) return;
         deselectNodes();
         selectNode(field.id);
-        zoomToElement(`node-${field.id}`);
+        zoomToElement(`${props.className}-node-${field.id}`);
         setTimeout(() => {
           setSelectedNodeId({
             value: {

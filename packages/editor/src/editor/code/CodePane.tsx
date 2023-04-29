@@ -115,9 +115,7 @@ export const CodePane = (props: CodePaneProps) => {
         />
       )}
       {lockCode && (
-        <ErrorLock
-          onClick={() => {}}
-        >{`Unable to parse GraphQL graph. Code editor is locked. Open graph editor to correct errors in GraphQL Schema. Message:\n${lockCode}`}</ErrorLock>
+        <ErrorLock>{`Unable to parse GraphQL graph. Code editor is locked. Open graph editor to correct errors in GraphQL Schema. Message:\n${lockCode}`}</ErrorLock>
       )}
     </CodeContainer>
   );

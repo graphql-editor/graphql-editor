@@ -87,6 +87,12 @@ const useRelationNodes = createContainer(() => {
     }
     return;
   }, [focusMode]);
+  const filteredFocusedNodes = useMemo(() => {
+    return focusedNodes?.filter((el) => {
+      const foundNode = nodesVisibilityArr.find((el2) => el2.id === el.id);
+      return foundNode ? !foundNode.isHidden : true;
+    });
+  }, [nodesVisibilityArr, focusedNodes]);
 
   const focusNode = useCallback((n: ParserField) => {
     setSelectedNodeId({
@@ -118,6 +124,7 @@ const useRelationNodes = createContainer(() => {
     nodesVisibilityArr,
     hideRelationNodes,
     showRelationNodes,
+    filteredFocusedNodes,
     toggleNodeVisibility,
     focusNode,
     focusMode,

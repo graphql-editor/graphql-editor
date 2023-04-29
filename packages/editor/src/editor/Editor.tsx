@@ -148,15 +148,15 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
       () => ({
         selectNode: (nId) => {
           const n = allNodes.nodes.find((an) => an.id === nId);
-          if (n) {
-            setSelectedNodeId({
-              source: 'routing',
-              value: {
-                id: n.id,
-                name: n.name,
-              },
-            });
-          }
+          setSelectedNodeId({
+            source: 'routing',
+            value: nId
+              ? {
+                  id: nId,
+                  name: n?.name || '',
+                }
+              : undefined,
+          });
         },
         route: (routes) => {
           set({
@@ -239,7 +239,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
           }
         });
       } catch (error) {
-        const msg = (error as any).message;
+        const msg = (error as Error).message;
         setLockCode(msg);
         setGrafErrors(msg);
         return;
@@ -272,7 +272,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
       >
         <Menu
           toggleCode={routes.code === 'on'}
-          setToggleCode={(e) =>
+          setToggleCode={() =>
             set(
               {
                 ...routes,
@@ -293,7 +293,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
           <DynamicResize
             enable={{ right: true }}
             disabledClass={!routes.pane ? 'full-screen-container' : undefined}
-            resizeCallback={(e, r, c, w) => {
+            resizeCallback={(e, r, c) => {
               setSidebarSize(c.getBoundingClientRect().width);
             }}
             width={!routes.pane ? '100%' : sidebarSize}

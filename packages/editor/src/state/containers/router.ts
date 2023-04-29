@@ -5,13 +5,13 @@ import { createContainer } from 'unstated-next';
 type ValuesType = {
   pane?: ActivePane;
   code: 'on' | 'off';
-  source?: 'internal';
+  source?: 'internal' | 'initial';
 };
 
 const defaultValues: ValuesType = {
   pane: 'relation',
   code: 'off' as 'on' | 'off',
-  source: 'internal',
+  source: 'initial',
 };
 
 export type EditorRoutes = typeof defaultValues;

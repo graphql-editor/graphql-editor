@@ -51,6 +51,7 @@ type LinesDiagramProps = {
   hide?: boolean;
   setLoading: (b: boolean) => void;
   loading?: boolean;
+  className: string;
 };
 
 export const LinesDiagram: React.FC<LinesDiagramProps> = (props) => {
@@ -156,6 +157,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = (props) => {
         {simulatedNodes?.map((n) => (
           <NodePane x={n.x} id={`${n.id}`} y={n.y} key={n.parserField.id}>
             <Node
+              className={props.className}
               isLibrary={isLibrary(n.parserField.id)}
               field={n.parserField}
             />

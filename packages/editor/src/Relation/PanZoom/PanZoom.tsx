@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import { fontFamily, fontFamilySans } from '@/vars';
 import { useTreesState } from '@/state/containers/trees';
-import { useRelationsState } from '@/state/containers';
+import { useRelationNodesState, useRelationsState } from '@/state/containers';
 import styled from '@emotion/styled';
 import { toPng } from 'html-to-image';
 import * as vars from '@/vars';
@@ -24,16 +24,20 @@ import { LinesDiagram } from '@/Relation/PanZoom/LinesDiagram/LinesDiagram';
 import { nodeFilter } from '@/Relation/shared/nodeFilter';
 import { useLazyControls } from '@/Relation/shared/useLazyControls';
 import { useDomManagerTs } from '@/Relation/PanZoom/useDomManager';
-export const PanZoom: React.FC<{ nodes: ParserField[] }> = ({ nodes }) => {
+export const PanZoom: React.FC<{ nodes: ParserField[]; className: string }> = ({
+  nodes,
+  className,
+}) => {
   const mainRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const { selectedNodeId, setSelectedNodeId, relatedNodeIdsToSelected } =
     useTreesState();
+  const { focusMode } = useRelationNodesState();
   const { isClick, mouseDown } = useClickDetector();
-  const { deselectNodes, selectNode, markRelated } = useDomManagerTs();
+  const { deselectNodes, selectNode, markRelated } = useDomManagerTs(className);
 
   const { getContext } = useTransformContext();
-  const { setTransform } = useLazyControls();
+  const { setTransform, center } = useLazyControls();
   const { editMode, baseTypesOn, fieldsOn, inputsOn } = useRelationsState();
   const [largeSimulationLoading, setLargeSimulationLoading] = useState(false);
   const [zoomingMode, setZoomingMode] = useState<'zoom' | 'pan'>('pan');
@@ -46,6 +50,15 @@ export const PanZoom: React.FC<{ nodes: ParserField[] }> = ({ nodes }) => {
       inputsOn,
     });
   }, [nodes, baseTypesOn, fieldsOn, inputsOn]);
+
+  useEffect(() => {
+    if (selectedNodeId?.value?.id) {
+      selectNode(selectedNodeId.value.id, largeSimulationLoading);
+      markRelated(relatedNodeIdsToSelected);
+    } else {
+      center();
+    }
+  }, [focusMode, largeSimulationLoading]);
 
   useEffect(() => {
     if (!selectedNodeId?.value?.id) {
@@ -147,6 +160,7 @@ export const PanZoom: React.FC<{ nodes: ParserField[] }> = ({ nodes }) => {
   const memoizedDiagram = useMemo(() => {
     return (
       <LinesDiagram
+        className={className}
         nodes={filteredNodes}
         mainRef={mainRef}
         loading={largeSimulationLoading}
