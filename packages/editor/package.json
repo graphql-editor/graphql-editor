@@ -1,6 +1,6 @@
 {
   "name": "graphql-editor",
-  "version": "6.4.0",
+  "version": "6.4.1",
   "private": false,
   "license": "MIT",
   "description": "Visual node editor for GraphQL",

@@ -162,6 +162,7 @@ export const PanZoom: React.FC<{ nodes: ParserField[]; className: string }> = ({
       <LinesDiagram
         className={className}
         nodes={filteredNodes}
+        nodesWithoutFilter={nodes}
         mainRef={mainRef}
         loading={largeSimulationLoading}
         setLoading={(e) => setLargeSimulationLoading(e)}

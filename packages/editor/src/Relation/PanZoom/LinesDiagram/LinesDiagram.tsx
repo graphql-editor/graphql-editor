@@ -4,7 +4,6 @@ import { Node } from './Node';
 import styled from '@emotion/styled';
 import * as vars from '@/vars';
 import { ParserField, getTypeName } from 'graphql-js-tree';
-import { useRouter } from '@/state/containers/router';
 import { GraphQLEditorWorker, NumberNode } from 'graphql-editor-worker';
 import { runAfterFramePaint } from '@/shared/hooks/useMarkFramePaint';
 import { useRelationsState } from '@/state/containers';
@@ -48,6 +47,7 @@ export type FilteredFieldsTypesProps = {
 type LinesDiagramProps = {
   mainRef: React.RefObject<HTMLDivElement>;
   nodes: ParserField[];
+  nodesWithoutFilter: ParserField[];
   hide?: boolean;
   setLoading: (b: boolean) => void;
   loading?: boolean;
@@ -55,9 +55,8 @@ type LinesDiagramProps = {
 };
 
 export const LinesDiagram: React.FC<LinesDiagramProps> = (props) => {
-  const { nodes, setLoading, mainRef } = props;
+  const { nodes, setLoading, mainRef, nodesWithoutFilter } = props;
   const { isLibrary } = useTreesState();
-  const { routes } = useRouter();
   const { editMode } = useRelationsState();
   const [simulatedNodes, setSimulatedNodes] = useState<NumberNode[]>();
 
@@ -65,6 +64,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = (props) => {
     useState<
       { to: RelationPath; from: RelationPath[]; fromLength: number }[]
     >();
+
   useEffect(() => {
     // compose existing positions
     if (!nodes.length) {
@@ -115,8 +115,8 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = (props) => {
         }))
         .map((n, i) => {
           const args =
-            nodes.find((ufn) => ufn.id === n.parserField.id)?.args ||
-            n.parserField.args;
+            nodesWithoutFilter.find((ufn) => ufn.id === n.parserField.id)
+              ?.args || n.parserField.args;
           return {
             to: { field: n, connectingField: n.parserField, index: i },
             fromLength: n.parserField.args?.length || 0,
@@ -147,10 +147,6 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = (props) => {
     return <Lines relations={relations} />;
   }, [relations]);
 
-  useEffect(() => {
-    setRelations([]);
-  }, [routes.code]);
-
   const NodesContainer = useMemo(() => {
     return (
       <>
@@ -165,7 +161,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = (props) => {
         ))}
       </>
     );
-  }, [isLibrary, simulatedNodes, routes.code]);
+  }, [isLibrary, simulatedNodes]);
 
   return (
     <Main ref={mainRef}>
