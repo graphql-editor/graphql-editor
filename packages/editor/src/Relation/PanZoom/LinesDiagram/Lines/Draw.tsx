@@ -115,9 +115,15 @@ const isArrayType = (f: FieldType) =>
     : f.type === Options.array;
 
 const PathG = styled.g`
+  opacity: 0;
+  transition: ${transition};
+  &.inViewport {
+    opacity: 1;
+    &.selection {
+      opacity: 0;
+    }
+  }
   &.selection {
-    opacity: 0;
-    transition: ${transition};
     &.active {
       opacity: 1;
     }

@@ -42,6 +42,7 @@ export const Relation: React.FC = () => {
             initialScale={1}
             maxScale={1.5}
             wheel={{ activationKeys: ['Control', 'OS', 'Meta'], step: 0.03 }}
+            panning={{ velocityDisabled: false }}
             minScale={0.1}
             limitToBounds={false}
           >

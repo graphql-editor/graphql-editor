@@ -8,6 +8,8 @@ import { GraphQLEditorWorker, NumberNode } from 'graphql-editor-worker';
 import { runAfterFramePaint } from '@/shared/hooks/useMarkFramePaint';
 import { useRelationsState } from '@/state/containers';
 import { RelationPath, Lines } from '@/Relation/PanZoom/LinesDiagram/Lines';
+import { useTransformEffect } from 'react-zoom-pan-pinch';
+import { useDomManagerTs } from '@/Relation/PanZoom/useDomManager';
 
 const Main = styled.div`
   position: relative;
@@ -57,8 +59,18 @@ type LinesDiagramProps = {
 export const LinesDiagram: React.FC<LinesDiagramProps> = (props) => {
   const { nodes, setLoading, mainRef, nodesWithoutFilter } = props;
   const { isLibrary } = useTreesState();
+  const { cullNodes } = useDomManagerTs(props.className);
   const { editMode } = useRelationsState();
   const [simulatedNodes, setSimulatedNodes] = useState<NumberNode[]>();
+  useTransformEffect((r) => {
+    if (simulatedNodes) {
+      const size = r.instance.wrapperComponent?.getBoundingClientRect();
+      if (!size) return;
+      requestAnimationFrame(() => {
+        cullNodes(simulatedNodes, r.state, size);
+      });
+    }
+  });
 
   const [relations, setRelations] =
     useState<

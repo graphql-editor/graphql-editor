@@ -32,7 +32,7 @@ const Content = styled.div<ContentProps>`
   font-family: ${fontFamilySans};
   font-size: 14px;
   max-width: 66vw;
-  opacity: 1;
+  visibility: hidden;
   cursor: pointer;
   border-width: 2px;
   border-style: ${({ isLibrary }) => (isLibrary ? 'dashed' : 'solid')};
@@ -45,6 +45,9 @@ const Content = styled.div<ContentProps>`
   }
   .graph-field {
     pointer-events: none;
+  }
+  &.inViewport {
+    visibility: visible;
   }
   &.selection {
     opacity: 0.3;
