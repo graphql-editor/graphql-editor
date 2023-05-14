@@ -2,7 +2,7 @@ import React from 'react';
 import styled from '@emotion/styled';
 
 interface MenuItemProps {
-  onClick: () => void;
+  onClick?: () => void;
   children?: React.ReactNode;
 }
 

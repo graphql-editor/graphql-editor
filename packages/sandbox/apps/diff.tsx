@@ -24,6 +24,7 @@ export const diff = () => {
       }}
     >
       <GraphQLEditor
+        path="diff"
         schema={{ code: schemas.versionedUsersLibraryLatest }}
         setSchema={() => {}}
         diffSchemas={mockData}

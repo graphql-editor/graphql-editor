@@ -8,7 +8,7 @@ import { GraphQLEditorWorker, NumberNode } from 'graphql-editor-worker';
 import { runAfterFramePaint } from '@/shared/hooks/useMarkFramePaint';
 import { useRelationsState } from '@/state/containers';
 import { RelationPath, Lines } from '@/Relation/PanZoom/LinesDiagram/Lines';
-import { useTransformEffect } from 'react-zoom-pan-pinch';
+import { useTransformContext, useTransformEffect } from 'react-zoom-pan-pinch';
 import { useDomManagerTs } from '@/Relation/PanZoom/useDomManager';
 
 const Main = styled.div`
@@ -53,14 +53,16 @@ type LinesDiagramProps = {
   hide?: boolean;
   setLoading: (b: boolean) => void;
   loading?: boolean;
+  fieldsOn?: boolean;
   className: string;
 };
 
 export const LinesDiagram: React.FC<LinesDiagramProps> = (props) => {
   const { nodes, setLoading, mainRef, nodesWithoutFilter } = props;
   const { isLibrary } = useTreesState();
-  const { cullNodes } = useDomManagerTs(props.className);
+  const { cullNodes, LoDNodes } = useDomManagerTs(props.className);
   const { editMode } = useRelationsState();
+  const { transformState: { scale } } = useTransformContext()
   const [simulatedNodes, setSimulatedNodes] = useState<NumberNode[]>();
   useTransformEffect((r) => {
     if (simulatedNodes) {
@@ -68,9 +70,22 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = (props) => {
       if (!size) return;
       requestAnimationFrame(() => {
         cullNodes(simulatedNodes, r.state, size);
+        if (props.fieldsOn) {
+          LoDNodes(r.state.scale);
+        } else {
+          LoDNodes(0.2)
+        }
       });
     }
   });
+
+  useEffect(() => {
+    if (!props.fieldsOn) {
+      LoDNodes(0.2)
+    } else {
+      LoDNodes(scale);
+    }
+  }, [props.fieldsOn])
 
   const [relations, setRelations] =
     useState<

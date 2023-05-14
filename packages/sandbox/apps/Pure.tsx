@@ -19,6 +19,7 @@ export const Pure = () => {
       }}
     >
       <GraphQLEditor
+        path="Pure"
         setSchema={(props) => {
           setMySchema({
             ...props,

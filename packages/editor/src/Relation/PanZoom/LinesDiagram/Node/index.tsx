@@ -39,9 +39,9 @@ const Content = styled.div<ContentProps>`
   border-color: ${({ theme }) => `${theme.dividerMain}88`};
   &:hover {
     border-color: ${({ theme, nodeType }) =>
-      theme.colors[nodeType]
-        ? theme.colors[nodeType]
-        : `${theme.accents[100]}00`};
+    theme.colors[nodeType]
+      ? theme.colors[nodeType]
+      : `${theme.accents[100]}00`};
   }
   .graph-field {
     pointer-events: none;
@@ -55,9 +55,9 @@ const Content = styled.div<ContentProps>`
       opacity: 1;
       cursor: auto;
       border-color: ${({ theme, nodeType }) =>
-        theme.colors[nodeType]
-          ? theme.colors[nodeType]
-          : `${theme.dividerMain}88`};
+    theme.colors[nodeType]
+      ? theme.colors[nodeType]
+      : `${theme.dividerMain}88`};
       .editNode {
         display: flex;
       }
@@ -72,19 +72,39 @@ const Content = styled.div<ContentProps>`
   .editNode {
     display: none;
   }
+  &.far{
+    border-width:0;
+    background-color:transparent;
+    .graph-node-fields{
+      opacity:0;
+    }
+    .graph-node-title{
+      transform: translate(-50%, -50%);
+      flex-direction:column;
+      padding:1.5rem;
+      font-size: 34px;
+      top:50%;
+      left:50%;
+    }
+  }
 `;
 
-const NodeRelationFields = styled.div``;
+const NodeRelationFields = styled.div`
+  transition:${transition};
+  margin-top:32px;
+`;
 
 const NodeTitle = styled.div`
   align-items: center;
+  background-color: ${({ theme }) => `${theme.neutral[600]}`};
   color: ${({ theme }) => theme.text.active};
   font-size: 14px;
   font-weight: 500;
-  height: 40px;
   position: relative;
   padding-right: 1.5rem;
+  transition:${transition};
   display: flex;
+  position:absolute;
 `;
 const EditNodeContainer = styled.div`
   position: absolute;
@@ -106,12 +126,6 @@ const EditNodeContainer = styled.div`
   :hover {
     background-color: ${(p) => p.theme.neutral[200]};
   }
-`;
-
-const ContentWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  position: relative;
 `;
 
 const NameInRelation = styled.span`
@@ -139,7 +153,7 @@ export const Node: React.FC<NodeProps> = (props) => {
 
   const RelationFields = useMemo(() => {
     return (
-      <NodeRelationFields>
+      <NodeRelationFields className='graph-node-fields'>
         {field.args.map((a) => (
           <Field key={a.name} node={a} />
         ))}
@@ -149,12 +163,10 @@ export const Node: React.FC<NodeProps> = (props) => {
 
   const NodeContent = useMemo(
     () => (
-      <ContentWrapper>
-        <NodeTitle>
-          <NameInRelation>{field.name}</NameInRelation>
-          <ActiveType type={field.type} />
-        </NodeTitle>
-      </ContentWrapper>
+      <NodeTitle className='graph-node-title'>
+        <NameInRelation>{field.name}</NameInRelation>
+        <ActiveType type={field.type} />
+      </NodeTitle>
     ),
     [field],
   );

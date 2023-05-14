@@ -85,6 +85,8 @@ export interface EditorProps {
   // listen to route changes. Don't bind it with routeState though! You will get Maximum depth exceeded
   onRouteChange?: (r: EditorRoutes) => void;
   onNodeSelect?: (selectedNodeId?: string) => void;
+  // name of the schema file
+  path: string;
 }
 
 export interface ExternalEditorAPI {
@@ -102,6 +104,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
       setSchema,
       diffSchemas,
       onTreeChange,
+      path,
       readonly: editorReadOnly,
       theme,
       onRouteChange,
@@ -271,7 +274,11 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
         }}
       >
         <Menu
+          schema={schema.code}
+          libraries={schema.libraries}
+          path={path}
           toggleCode={routes.code === 'on'}
+          setSchema={setSchema}
           setToggleCode={() =>
             set(
               {

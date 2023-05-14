@@ -19,6 +19,7 @@ export const github = () => {
       }}
     >
       <GraphQLEditor
+        path="github"
         setSchema={(props) => {
           setMySchema(props);
         }}

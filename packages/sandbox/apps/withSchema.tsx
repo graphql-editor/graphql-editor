@@ -19,6 +19,7 @@ export const withSchema = () => {
       }}
     >
       <GraphQLEditor
+        path="billabee"
         setSchema={(props) => {
           setMySchema(props);
         }}

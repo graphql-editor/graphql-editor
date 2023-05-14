@@ -15,7 +15,7 @@ interface OptionsMenuProps
   menuName: string;
 }
 
-const Main = styled.div<{ isSelected?: boolean }>`
+const Main = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -23,14 +23,19 @@ const Main = styled.div<{ isSelected?: boolean }>`
 `;
 
 export const OptionsMenu = React.forwardRef<HTMLDivElement, OptionsMenuProps>(
-  ({ children, options, onCheck, hideMenu, menuName, ...props }, ref) => {
+  ({ options, onCheck, hideMenu, menuName, ...props }, ref) => {
     return (
       <Menu menuName={menuName} hideMenu={hideMenu} {...props} ref={ref}>
         {Object.keys(options).map((n) => {
           return (
-            <DetailMenuItem key={n} onClick={() => onCheck(n)}>
-              <Main isSelected={options[n]}>
-                <Radio label={n} position="end" checked={options[n]} />
+            <DetailMenuItem key={n}>
+              <Main>
+                <Radio
+                  label={n}
+                  position="end"
+                  onClick={() => onCheck(n)}
+                  checked={options[n]}
+                />
               </Main>
             </DetailMenuItem>
           );

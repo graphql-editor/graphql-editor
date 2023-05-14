@@ -6,7 +6,6 @@ export const nodeFilter = (
   options: {
     inputsOn?: boolean;
     baseTypesOn?: boolean;
-    fieldsOn?: boolean;
   },
 ) => {
   const scalarTypes = nodes
@@ -16,16 +15,12 @@ export const nodeFilter = (
   const withoutScalars = options.baseTypesOn
     ? nodes
     : nodes.map((n) => ({
-        ...n,
-        args: n.args?.filter((a) => !isScalarArgument(a, scalarTypes)),
-      }));
+      ...n,
+      args: n.args?.filter((a) => !isScalarArgument(a, scalarTypes)),
+    }));
 
-  const filterFields = options.fieldsOn
-    ? withoutScalars
-    : withoutScalars.map(stripField);
-  return options.inputsOn ? filterFields : filterInputs(filterFields);
+  return options.inputsOn ? withoutScalars : filterInputs(withoutScalars);
 };
 
-const stripField = (n: ParserField): ParserField => ({ ...n, args: [] });
 const filterInputs = (nodes: ParserField[]) =>
   nodes.filter((n) => n.data.type !== TypeDefinition.InputObjectTypeDefinition);

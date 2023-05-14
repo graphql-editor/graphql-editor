@@ -38,6 +38,7 @@ export const libraries = () => {
       }}
     >
       <GraphQLEditor
+        path="libraries"
         setSchema={(props) => {
           setMySchema(props);
         }}

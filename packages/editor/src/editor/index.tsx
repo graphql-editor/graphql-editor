@@ -14,7 +14,7 @@ import { GqlEditor, GqlEditorProps } from '@/editor/GqlEditor';
 import { MainTheme } from '@/gshared/theme/MainTheme';
 import { RouterProvider, EditorRoutes } from '@/state/containers/router';
 import { EmbeddedEditor, EmbeddedEditorProps } from '@/editor/EmbeddedEditor';
-import { themeColors } from '@aexol-studio/styling-system';
+import { themeColors, ToastsProvider } from '@aexol-studio/styling-system';
 
 export { ExternalEditorAPI };
 
@@ -36,7 +36,9 @@ export const GraphQLEditor = React.forwardRef<ExternalEditorAPI, EditorProps>(
                   <LayoutStateProvider>
                     <RelationNodesProvider>
                       <ScThemeProvider theme={theme}>
-                        <Editor {...props} ref={ref} />
+                        <ToastsProvider>
+                          <Editor {...props} ref={ref} />
+                        </ToastsProvider>
                       </ScThemeProvider>
                     </RelationNodesProvider>
                   </LayoutStateProvider>

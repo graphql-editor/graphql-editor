@@ -20,6 +20,7 @@ export const Light = () => {
       }}
     >
       <GraphQLEditor
+        path="light"
         setSchema={(props) => {
           setMySchema(props);
         }}

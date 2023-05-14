@@ -36,12 +36,14 @@
     "worker-loader": ">=3.0.8"
   },
   "dependencies": {
-    "@aexol-studio/styling-system": "^0.1.0",
+    "@aexol-studio/hooks": "^0.1.5",
+    "@aexol-studio/styling-system": "^0.1.5",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
     "color2k": "^1.2.4",
     "d3": "^7.8.4",
     "diff": "^5.1.0",
+    "file-saver": "^2.0.5",
     "fuzzyjs": "^5.0.1",
     "graphql-editor-worker": "^6.3.3",
     "graphql-js-tree": "^0.3.1",

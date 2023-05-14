@@ -41,6 +41,7 @@ export const googleState = () => {
   const memoedEditor = useMemo(() => {
     return (
       <GraphQLEditor
+        path="google-directions"
         schema={currentSchema}
         ref={editorRef}
         onNodeSelect={(n) => {

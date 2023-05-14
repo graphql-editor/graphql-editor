@@ -106,6 +106,7 @@ export const CollabEffect = () => {
       }}
     >
       <GraphQLEditor
+        path="collab"
         schema={currentSchema}
         setSchema={(s) => {
           setCurrentSchema(s);

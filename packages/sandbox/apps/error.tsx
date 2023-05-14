@@ -19,6 +19,7 @@ export const error = () => {
       }}
     >
       <GraphQLEditor
+        path="error"
         setSchema={(props) => {
           setMySchema(props);
         }}

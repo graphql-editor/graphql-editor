@@ -89,11 +89,19 @@ export const useDomManagerTs = (className: string) => {
       .map((n) => n.id);
     markInViewport(activeNodes);
   };
+  const LoDNodes = (scale: number) => {
+    if (scale < 0.66) {
+      DOMGraphNode.addClassToAll('far');
+    } else {
+      DOMGraphNode.removeClasses(['far']);
+    }
+  };
   return {
     selectNode,
     deselectNodes,
     markRelated,
     zoomNode,
     cullNodes,
+    LoDNodes,
   };
 };

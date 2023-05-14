@@ -34,6 +34,7 @@ export const NodeOperationsMenu = React.forwardRef<
       options={opts}
       onCheck={(o) => {
         const turnOff = !!node.type.operations?.includes(o as OperationType);
+        console.log(turnOff, node);
         tree.nodes.forEach((n) => {
           const { operations } = n.type;
           if (operations) {
@@ -53,6 +54,7 @@ export const NodeOperationsMenu = React.forwardRef<
             o as OperationType,
           ];
         }
+        console.log(tree.nodes.filter((n) => n.type.operations));
         setTree({ ...tree });
       }}
     />

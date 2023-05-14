@@ -20,6 +20,7 @@ export const Saleor = () => {
       }}
     >
       <GraphQLEditor
+        path="saleor"
         setSchema={(props) => {
           setMySchema(props);
         }}

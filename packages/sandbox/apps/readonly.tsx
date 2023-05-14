@@ -21,6 +21,7 @@ export const readonly = () => {
     >
       <GraphQLEditor
         readonly
+        path="readonly"
         setSchema={(props) => {
           setMySchema(props);
         }}

@@ -46,10 +46,9 @@ export const PanZoom: React.FC<{ nodes: ParserField[]; className: string }> = ({
   const filteredNodes = useMemo(() => {
     return nodeFilter(nodes, {
       baseTypesOn,
-      fieldsOn,
       inputsOn,
     });
-  }, [nodes, baseTypesOn, fieldsOn, inputsOn]);
+  }, [nodes, baseTypesOn, inputsOn]);
 
   useEffect(() => {
     if (selectedNodeId?.value?.id) {
@@ -132,8 +131,8 @@ export const PanZoom: React.FC<{ nodes: ParserField[]; className: string }> = ({
         (e.detail
           ? -e.detail / 3
           : 'wheelDelta' in e
-          ? (e as unknown as { wheelDelta: number }).wheelDelta
-          : 0) * 2;
+            ? (e as unknown as { wheelDelta: number }).wheelDelta
+            : 0) * 2;
       const transformState = getContext().instance.transformState;
       const newX = e.deltaX
         ? (transformState.positionX || 0) + factor
@@ -162,13 +161,14 @@ export const PanZoom: React.FC<{ nodes: ParserField[]; className: string }> = ({
       <LinesDiagram
         className={className}
         nodes={filteredNodes}
+        fieldsOn={fieldsOn}
         nodesWithoutFilter={nodes}
         mainRef={mainRef}
         loading={largeSimulationLoading}
         setLoading={(e) => setLargeSimulationLoading(e)}
       />
     );
-  }, [filteredNodes, largeSimulationLoading, setLargeSimulationLoading]);
+  }, [filteredNodes, largeSimulationLoading, setLargeSimulationLoading, fieldsOn]);
   return (
     <Wrapper>
       <ControlsBar downloadPng={downloadPng} />
