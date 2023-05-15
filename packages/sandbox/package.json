@@ -39,7 +39,7 @@
     "ts-loader": "^9.2.5",
     "tsconfig-paths-webpack-plugin": "^3.5.1",
     "url-loader": "^4.1.1",
-    "webpack": "^5.53.0",
+    "webpack": "^5.76.0",
     "webpack-cleanup-plugin": "^0.5.1",
     "webpack-cli": "^4.8.0",
     "webpack-dev-server": "^4.2.1"
