@@ -5,7 +5,7 @@ import { useRelationNodesState, useRelationsState } from '@/state/containers';
 import styled from '@emotion/styled';
 import * as vars from '@/vars';
 import { TopBar } from '@/shared/components/TopBar';
-import { useTransformContext, useControls } from 'react-zoom-pan-pinch';
+import { useControls } from 'react-zoom-pan-pinch';
 import { NewNode } from '@/shared/components/NewNode';
 import {
   Checkbox,
@@ -15,13 +15,13 @@ import {
   Button,
   EyeAlt,
 } from '@aexol-studio/styling-system';
+import { DOMClassNames } from '@/Relation/shared/DOMClassNames';
 export const ControlsBar: React.FC<{ downloadPng: () => void }> = ({
   downloadPng,
 }) => {
   const { readonly } = useTreesState();
   const { exitFocus, focusMode } = useRelationNodesState();
 
-  const { transformState } = useTransformContext();
   const { zoomIn, zoomOut } = useControls();
   const {
     setBaseTypesOn,
@@ -56,7 +56,7 @@ export const ControlsBar: React.FC<{ downloadPng: () => void }> = ({
             <Minus />
           </IconWrapper>
           <TooltippedZoom data-tooltip="Ctrl/Cmd + Scroll to zoom in/out">
-            <span>{(transformState.scale * 100).toFixed() + '%'}</span>
+            <span className={DOMClassNames.topBarZoom}></span>
           </TooltippedZoom>
           <IconWrapper
             data-tooltip="Zoom in"

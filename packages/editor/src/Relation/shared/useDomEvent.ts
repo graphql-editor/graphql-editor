@@ -1,9 +1,12 @@
-export const useDomOperations = (className: string | string[]) => {
+export const useDomOperations = (
+  className: string | string[],
+  idClassName: string,
+) => {
   const selectAll = () =>
     document.querySelectorAll(
       Array.isArray(className)
         ? className.map((c) => `.${c}`).join(',')
-        : `.${className}`,
+        : `.${className}.${idClassName}`,
     );
   const addClassToAll = (addedClassName: string) => {
     selectAll().forEach((e) => e.classList.add(addedClassName));

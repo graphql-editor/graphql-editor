@@ -2,11 +2,12 @@ import { NumberNode } from 'graphql-editor-worker';
 import { useDomOperations } from '@/Relation/shared/useDomEvent';
 import { useLazyControls } from '@/Relation/shared/useLazyControls';
 import { ReactZoomPanPinchState } from 'react-zoom-pan-pinch';
+import { DOMClassNames } from '@/Relation/shared/DOMClassNames';
 
 export const useDomManagerTs = (className: string) => {
   const { zoomToElement } = useLazyControls();
-  const DOMGraphNode = useDomOperations('graph-node');
-  const DOMGraphConnection = useDomOperations('graph-connection');
+  const DOMGraphNode = useDomOperations('graph-node', className);
+  const DOMGraphConnection = useDomOperations('graph-connection', className);
 
   const zoomNode = (nodeId: string, largeSimulationLoading?: boolean) => {
     if (!largeSimulationLoading) {
@@ -96,6 +97,14 @@ export const useDomManagerTs = (className: string) => {
       DOMGraphNode.removeClasses(['far']);
     }
   };
+  const changeZoomInTopBar = (state: ReactZoomPanPinchState) => {
+    const topBarZoomSpan = document.querySelector(
+      `.${DOMClassNames.topBarZoom}`,
+    );
+    if (topBarZoomSpan) {
+      topBarZoomSpan.innerHTML = `${(state.scale * 100).toFixed() + '%'}`;
+    }
+  };
   return {
     selectNode,
     deselectNodes,
@@ -103,5 +112,6 @@ export const useDomManagerTs = (className: string) => {
     zoomNode,
     cullNodes,
     LoDNodes,
+    changeZoomInTopBar,
   };
 };

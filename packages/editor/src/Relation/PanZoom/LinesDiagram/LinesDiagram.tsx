@@ -54,26 +54,31 @@ type LinesDiagramProps = {
   setLoading: (b: boolean) => void;
   loading?: boolean;
   fieldsOn?: boolean;
-  className: string;
+  className: 'all' | 'focused';
 };
 
 export const LinesDiagram: React.FC<LinesDiagramProps> = (props) => {
   const { nodes, setLoading, mainRef, nodesWithoutFilter } = props;
   const { isLibrary } = useTreesState();
-  const { cullNodes, LoDNodes } = useDomManagerTs(props.className);
+  const { cullNodes, LoDNodes, changeZoomInTopBar } = useDomManagerTs(
+    props.className,
+  );
   const { editMode } = useRelationsState();
-  const { transformState: { scale } } = useTransformContext()
+  const {
+    transformState: { scale },
+  } = useTransformContext();
   const [simulatedNodes, setSimulatedNodes] = useState<NumberNode[]>();
   useTransformEffect((r) => {
     if (simulatedNodes) {
       const size = r.instance.wrapperComponent?.getBoundingClientRect();
+      changeZoomInTopBar(r.state);
       if (!size) return;
       requestAnimationFrame(() => {
         cullNodes(simulatedNodes, r.state, size);
         if (props.fieldsOn) {
           LoDNodes(r.state.scale);
         } else {
-          LoDNodes(0.2)
+          LoDNodes(0.2);
         }
       });
     }
@@ -81,11 +86,11 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = (props) => {
 
   useEffect(() => {
     if (!props.fieldsOn) {
-      LoDNodes(0.2)
+      LoDNodes(0.2);
     } else {
       LoDNodes(scale);
     }
-  }, [props.fieldsOn])
+  }, [props.fieldsOn]);
 
   const [relations, setRelations] =
     useState<
@@ -171,7 +176,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = (props) => {
   }, [simulatedNodes]);
 
   const SvgLinesContainer = useMemo(() => {
-    return <Lines relations={relations} />;
+    return <Lines className={props.className} relations={relations} />;
   }, [relations]);
 
   const NodesContainer = useMemo(() => {
@@ -182,7 +187,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = (props) => {
             <Node
               className={props.className}
               isLibrary={isLibrary(n.parserField.id)}
-              field={n.parserField}
+              numberNode={n}
             />
           </NodePane>
         ))}

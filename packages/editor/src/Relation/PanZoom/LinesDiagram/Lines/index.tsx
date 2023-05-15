@@ -24,12 +24,13 @@ export interface RelationPath {
   connectingField: ParserField;
 }
 interface LinesProps {
+  className: 'all' | 'focused';
   relations:
     | { to: RelationPath; from: RelationPath[]; fromLength: number }[]
     | undefined;
 }
 
-export const Lines: React.FC<LinesProps> = ({ relations }) => {
+export const Lines: React.FC<LinesProps> = ({ relations, className }) => {
   const { theme } = useTheme();
 
   return (
@@ -39,6 +40,7 @@ export const Lines: React.FC<LinesProps> = ({ relations }) => {
           const relationType = rf.connectingField.type.fieldType;
           return (
             <Draw
+              className={className}
               relationType={relationType}
               color={
                 theme.colors[

@@ -16,7 +16,7 @@ import {
   TransformComponent,
   useTransformContext,
 } from 'react-zoom-pan-pinch';
-import { Loader } from '@aexol-studio/styling-system';
+import { Loader, useToasts } from '@aexol-studio/styling-system';
 import { ParserField } from 'graphql-js-tree';
 import { ControlsBar } from '@/Relation/PanZoom/ControlsBar';
 import { useClickDetector } from '@/Relation/shared/useClickDetector';
@@ -24,16 +24,17 @@ import { LinesDiagram } from '@/Relation/PanZoom/LinesDiagram/LinesDiagram';
 import { nodeFilter } from '@/Relation/shared/nodeFilter';
 import { useLazyControls } from '@/Relation/shared/useLazyControls';
 import { useDomManagerTs } from '@/Relation/PanZoom/useDomManager';
-export const PanZoom: React.FC<{ nodes: ParserField[]; className: string }> = ({
-  nodes,
-  className,
-}) => {
+export const PanZoom: React.FC<{
+  nodes: ParserField[];
+  className: 'all' | 'focused';
+}> = ({ nodes, className }) => {
   const mainRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const { selectedNodeId, setSelectedNodeId, relatedNodeIdsToSelected } =
     useTreesState();
   const { focusMode } = useRelationNodesState();
   const { isClick, mouseDown } = useClickDetector();
+  const { createToast } = useToasts();
   const { deselectNodes, selectNode, markRelated } = useDomManagerTs(className);
 
   const { getContext } = useTransformContext();
@@ -78,9 +79,7 @@ export const PanZoom: React.FC<{ nodes: ParserField[]; className: string }> = ({
   }, [selectedNodeId, relatedNodeIdsToSelected]);
 
   const downloadPng = useCallback(() => {
-    setLargeSimulationLoading(true);
     if (mainRef.current === null) {
-      setLargeSimulationLoading(false);
       return;
     }
     toPng(mainRef.current, { cacheBust: true })
@@ -89,10 +88,12 @@ export const PanZoom: React.FC<{ nodes: ParserField[]; className: string }> = ({
         link.download = `${'relation_view'}`;
         link.href = dataUrl;
         link.click();
-        setLargeSimulationLoading(false);
       })
       .catch(() => {
-        setLargeSimulationLoading(false);
+        createToast({
+          message: 'Export failed. Check browser console for details',
+          variant: 'error',
+        });
       });
   }, [mainRef]);
 
@@ -131,8 +132,8 @@ export const PanZoom: React.FC<{ nodes: ParserField[]; className: string }> = ({
         (e.detail
           ? -e.detail / 3
           : 'wheelDelta' in e
-            ? (e as unknown as { wheelDelta: number }).wheelDelta
-            : 0) * 2;
+          ? (e as unknown as { wheelDelta: number }).wheelDelta
+          : 0) * 2;
       const transformState = getContext().instance.transformState;
       const newX = e.deltaX
         ? (transformState.positionX || 0) + factor
@@ -168,7 +169,12 @@ export const PanZoom: React.FC<{ nodes: ParserField[]; className: string }> = ({
         setLoading={(e) => setLargeSimulationLoading(e)}
       />
     );
-  }, [filteredNodes, largeSimulationLoading, setLargeSimulationLoading, fieldsOn]);
+  }, [
+    filteredNodes,
+    largeSimulationLoading,
+    setLargeSimulationLoading,
+    fieldsOn,
+  ]);
   return (
     <Wrapper>
       <ControlsBar downloadPng={downloadPng} />

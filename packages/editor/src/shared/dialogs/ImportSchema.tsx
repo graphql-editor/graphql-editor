@@ -38,7 +38,6 @@ export const ImportSchema: React.FC<{
           !prevHeader[1]
         ) {
           headers.pop();
-          console.log('popemp');
           setHeaders([...headers]);
           return;
         }
@@ -46,12 +45,10 @@ export const ImportSchema: React.FC<{
       const lastHeader = headers[headers.length - 1];
       if (lastHeader[0]) {
         headers.push(['', '']);
-        console.log('{Pushemptywhengfile');
         setHeaders([...headers]);
       }
     } else {
       headers.push(['', '']);
-      console.log('{Pushempty');
       setHeaders([...headers]);
     }
   }, [headers]);

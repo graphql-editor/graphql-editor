@@ -1,5 +1,5 @@
 import { useRelationsState, useTreesState } from '@/state/containers';
-import { ParserField, getTypeName } from 'graphql-js-tree';
+import { getTypeName } from 'graphql-js-tree';
 import React, { useMemo, useRef } from 'react';
 import { FIELD_NAME_SIZE } from '@/Graf/constants';
 import { fontFamilySans, transition } from '@/vars';
@@ -11,6 +11,8 @@ import { ActiveType } from '@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveTyp
 import { Field } from '@/Relation/PanZoom/LinesDiagram/Node/Field';
 import { useLazyControls } from '@/Relation/shared/useLazyControls';
 import { useDomManagerTs } from '@/Relation/PanZoom/useDomManager';
+import { NumberNode } from 'graphql-editor-worker';
+import { DOMClassNames } from '@/Relation/shared/DOMClassNames';
 
 type NodeTypes = keyof EditorTheme['colors'];
 
@@ -18,9 +20,11 @@ interface ContentProps {
   nodeType: NodeTypes;
   isLibrary?: boolean;
   readOnly?: boolean;
+  width: number;
 }
 
 const Content = styled.div<ContentProps>`
+  width: ${(p) => p.width}px;
   background-color: ${({ theme }) => `${theme.neutral[600]}`};
   padding: 12px;
   position: relative;
@@ -39,9 +43,9 @@ const Content = styled.div<ContentProps>`
   border-color: ${({ theme }) => `${theme.dividerMain}88`};
   &:hover {
     border-color: ${({ theme, nodeType }) =>
-    theme.colors[nodeType]
-      ? theme.colors[nodeType]
-      : `${theme.accents[100]}00`};
+      theme.colors[nodeType]
+        ? theme.colors[nodeType]
+        : `${theme.accents[100]}00`};
   }
   .graph-field {
     pointer-events: none;
@@ -55,9 +59,9 @@ const Content = styled.div<ContentProps>`
       opacity: 1;
       cursor: auto;
       border-color: ${({ theme, nodeType }) =>
-    theme.colors[nodeType]
-      ? theme.colors[nodeType]
-      : `${theme.dividerMain}88`};
+        theme.colors[nodeType]
+          ? theme.colors[nodeType]
+          : `${theme.dividerMain}88`};
       .editNode {
         display: flex;
       }
@@ -72,39 +76,46 @@ const Content = styled.div<ContentProps>`
   .editNode {
     display: none;
   }
-  &.far{
-    border-width:0;
-    background-color:transparent;
-    .graph-node-fields{
-      opacity:0;
+  &.far {
+    border-width: 0;
+    background-color: transparent;
+    .graph-node-fields {
+      opacity: 0;
     }
-    .graph-node-title{
+    .graph-node-title {
       transform: translate(-50%, -50%);
-      flex-direction:column;
-      padding:1.5rem;
+      flex-direction: column;
+      padding: 1.5rem;
       font-size: 34px;
-      top:50%;
-      left:50%;
+      letter-spacing: 1px;
+      top: 50%;
+      left: 50%;
+    }
+    .editNode {
+      scale: 2;
+      transform: translate(0, -50%);
     }
   }
 `;
 
 const NodeRelationFields = styled.div`
-  transition:${transition};
-  margin-top:32px;
+  transition: ${transition};
+  margin-top: 24px;
 `;
 
 const NodeTitle = styled.div`
+  position: absolute;
   align-items: center;
-  background-color: ${({ theme }) => `${theme.neutral[600]}`};
+  /* background-color: ${({ theme }) => `${theme.neutral[600]}`}; */
   color: ${({ theme }) => theme.text.active};
   font-size: 14px;
   font-weight: 500;
-  position: relative;
-  padding-right: 1.5rem;
-  transition:${transition};
+  padding: 12px;
+  transition: ${transition};
   display: flex;
-  position:absolute;
+  left: 0;
+  top: 0;
+  right: 0;
 `;
 const EditNodeContainer = styled.div`
   position: absolute;
@@ -137,13 +148,14 @@ const NameInRelation = styled.span`
 `;
 
 interface NodeProps {
-  field: ParserField;
-  className: string;
+  numberNode: NumberNode;
+  className: 'all' | 'focused';
   isLibrary?: boolean;
 }
 
 export const Node: React.FC<NodeProps> = (props) => {
-  const { field, isLibrary } = props;
+  const { numberNode, isLibrary } = props;
+  const { parserField: field } = numberNode;
   const { setSelectedNodeId } = useTreesState();
   const { setEditMode } = useRelationsState();
   const { isClick, mouseDown } = useClickDetector();
@@ -153,7 +165,9 @@ export const Node: React.FC<NodeProps> = (props) => {
 
   const RelationFields = useMemo(() => {
     return (
-      <NodeRelationFields className='graph-node-fields'>
+      <NodeRelationFields
+        className={`${props.className} ${DOMClassNames.nodeFields}`}
+      >
         {field.args.map((a) => (
           <Field key={a.name} node={a} />
         ))}
@@ -163,9 +177,18 @@ export const Node: React.FC<NodeProps> = (props) => {
 
   const NodeContent = useMemo(
     () => (
-      <NodeTitle className='graph-node-title'>
+      <NodeTitle className={`${props.className} ${DOMClassNames.nodeTitle}`}>
         <NameInRelation>{field.name}</NameInRelation>
         <ActiveType type={field.type} />
+        <EditNodeContainer
+          className="editNode"
+          onClick={(e) => {
+            e.stopPropagation();
+            setEditMode(field.id);
+          }}
+        >
+          <PenLine width={16} height={16} />
+        </EditNodeContainer>
       </NodeTitle>
     ),
     [field],
@@ -173,7 +196,8 @@ export const Node: React.FC<NodeProps> = (props) => {
 
   return (
     <Content
-      className={`graph-node ${props.className}`}
+      width={numberNode.width}
+      className={`${DOMClassNames.node} ${props.className}`}
       id={`${props.className}-node-${field.id}`}
       ref={nodeRef}
       isLibrary={isLibrary}
@@ -199,15 +223,6 @@ export const Node: React.FC<NodeProps> = (props) => {
         }, 200);
       }}
     >
-      <EditNodeContainer
-        className="editNode"
-        onClick={(e) => {
-          e.stopPropagation();
-          setEditMode(field.id);
-        }}
-      >
-        <PenLine width={16} height={16} />
-      </EditNodeContainer>
       {NodeContent}
       {RelationFields}
     </Content>

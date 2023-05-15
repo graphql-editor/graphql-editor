@@ -1,3 +1,4 @@
+import { DOMClassNames } from '@/Relation/shared/DOMClassNames';
 import { transition } from '@/vars';
 import styled from '@emotion/styled';
 import { FieldType, Options } from 'graphql-js-tree';
@@ -25,11 +26,13 @@ export const Draw = ({
   to,
   color,
   relationType,
+  className,
 }: {
   from?: { x: number; y: number; id: string };
   to?: { x: number; y: number; id: string };
   color: string;
   relationType: FieldType;
+  className: 'all' | 'focused';
 }) => {
   const stroke = color;
   if (from && to) {
@@ -91,7 +94,11 @@ export const Draw = ({
     );
 
     return (
-      <PathG data-from={from.id} data-to={to.id} className="graph-connection">
+      <PathG
+        data-from={from.id}
+        data-to={to.id}
+        className={`${DOMClassNames.nodeConnection} ${className}`}
+      >
         <path
           stroke={stroke}
           strokeWidth={fac}
@@ -102,6 +109,7 @@ export const Draw = ({
            Q ${bezier1.x} ${bezier1.y} ${center.x} ${center.y}
            Q ${bezier2.x} ${bezier2.y} ${f.x} ${f.y}`}
         />
+        <circle fill={stroke} stroke={stroke} r={7} cx={t.x + 2} cy={t.y + 2} />
         <circle fill={stroke} stroke={stroke} r={7} cx={f.x + 2} cy={f.y + 2} />
       </PathG>
     );
