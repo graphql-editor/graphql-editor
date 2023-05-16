@@ -53,7 +53,7 @@ const allowMultipleDirectivesAtLocation = (s: string) => {
 };
 export const catchSchemaErrors = (
   schema: string,
-  libraries: string = '',
+  libraries = '',
 ): EditorError[] => {
   const s = libraries + '\n' + schema;
   const paddingFunction = moveErrorsByLibraryPadding(libraries);

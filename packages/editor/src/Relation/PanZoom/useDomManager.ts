@@ -3,11 +3,13 @@ import { useDomOperations } from '@/Relation/shared/useDomEvent';
 import { useLazyControls } from '@/Relation/shared/useLazyControls';
 import { ReactZoomPanPinchState } from 'react-zoom-pan-pinch';
 import { DOMClassNames } from '@/Relation/shared/DOMClassNames';
+import { useRef } from 'react';
 
 export const useDomManagerTs = (className: string) => {
   const { zoomToElement } = useLazyControls();
   const DOMGraphNode = useDomOperations('graph-node', className);
   const DOMGraphConnection = useDomOperations('graph-connection', className);
+  const visibleNodesCache = useRef<string[]>();
 
   const zoomNode = (nodeId: string, largeSimulationLoading?: boolean) => {
     if (!largeSimulationLoading) {
@@ -88,6 +90,11 @@ export const useDomManagerTs = (className: string) => {
         return x && y;
       })
       .map((n) => n.id);
+    const refValue = visibleNodesCache.current;
+    if (refValue && JSON.stringify(refValue) === JSON.stringify(activeNodes)) {
+      return;
+    }
+    visibleNodesCache.current = activeNodes;
     markInViewport(activeNodes);
   };
   const LoDNodes = (scale: number) => {
