@@ -86,7 +86,7 @@ export const useSchemaServices = (
   const [decorationIds, setDecorationIds] = React.useState<string[]>([]);
   const [monacoRef, setMonaco] = React.useState<typeof monaco | null>(null);
   const previousSchema = usePrevious(options.schemaObj.code);
-  const { tree } = useTreesState();
+  const { tree, selectedNodeId } = useTreesState();
   const { theme } = useTheme();
   // move to worker
   const languageService = React.useMemo(() => {
@@ -106,9 +106,12 @@ export const useSchemaServices = (
     );
   }, [options.libraries, options.schemaObj.code]);
 
-  const selectNodeUnderCursor = async (
+  const selectNodeUnderCursor = async <
+    T extends { lineNumber: number; column: number },
+  >(
     model: monaco.editor.ITextModel,
-    e: monaco.Position,
+    e: T,
+    currentSelectedNode?: string,
   ) => {
     // move to worker
     languageService
@@ -119,7 +122,10 @@ export const useSchemaServices = (
             token: { state },
           } = bridge;
           const n = findCurrentNodeName(state);
-          options.select(n);
+          if (n !== currentSelectedNode) {
+            console.log('SELECTING', n, currentSelectedNode);
+            options.select(n);
+          }
         }
       })
       .catch((e) => {});
@@ -141,7 +147,7 @@ export const useSchemaServices = (
       const model = editorRef?.getModel();
       if (model) {
         const p = model?.getPositionAt(cursorIndex.index);
-        selectNodeUnderCursor(model, p);
+        selectNodeUnderCursor(model, p, selectedNodeId?.value?.name);
       }
     }
   }, [tree]);
@@ -186,22 +192,36 @@ export const useSchemaServices = (
         options.decorationsProviders || [],
       );
 
-      const onChangeCursor = (e: monaco.editor.ICursorPositionChangedEvent) => {
+      const onSelectCursor = (
+        e: monaco.editor.ICursorSelectionChangedEvent,
+      ) => {
+        console.log(e);
+        if (e.selection.startLineNumber !== e.selection.endLineNumber) return;
+        if (e.selection.startColumn !== e.selection.endColumn) return;
         if (e.reason === 3) {
           cursorIndex.index =
-            editorRef.getModel()?.getOffsetAt(e.position) || -1;
+            editorRef.getModel()?.getOffsetAt({
+              column: e.selection.startColumn,
+              lineNumber: e.selection.startLineNumber,
+            }) || -1;
         }
         if (e.reason === 0) return;
         if (!options.select) return;
         const model = editorRef.getModel();
         if (model) {
           // move to worker
-          selectNodeUnderCursor(model, e.position);
+          selectNodeUnderCursor(
+            model,
+            {
+              column: e.selection.startColumn,
+              lineNumber: e.selection.startLineNumber,
+            },
+            selectedNodeId?.value?.name,
+          );
         }
       };
-
-      const onCursorChangeDisposable =
-        editorRef.onDidChangeCursorPosition(onChangeCursor);
+      const cursorSelectionDisposable =
+        editorRef.onDidChangeCursorSelection(onSelectCursor);
 
       const definitionProviderDisposable =
         monacoRef.languages.registerDefinitionProvider(
@@ -217,9 +237,9 @@ export const useSchemaServices = (
       );
 
       return () => {
-        onCursorChangeDisposable && onCursorChangeDisposable.dispose();
         hoverDisposable && hoverDisposable.dispose();
         definitionProviderDisposable && definitionProviderDisposable.dispose();
+        cursorSelectionDisposable && cursorSelectionDisposable.dispose();
       };
     }
 
@@ -235,6 +255,7 @@ export const useSchemaServices = (
     options.definitionProviders,
     options.hoverProviders,
     options.select,
+    selectedNodeId,
   ]);
 
   React.useEffect(() => {

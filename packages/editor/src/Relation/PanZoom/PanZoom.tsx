@@ -20,7 +20,10 @@ import { Loader, useToasts } from '@aexol-studio/styling-system';
 import { ParserField } from 'graphql-js-tree';
 import { ControlsBar } from '@/Relation/PanZoom/ControlsBar';
 import { useClickDetector } from '@/Relation/shared/useClickDetector';
-import { LinesDiagram } from '@/Relation/PanZoom/LinesDiagram/LinesDiagram';
+import {
+  LinesDiagram,
+  ViewportParams,
+} from '@/Relation/PanZoom/LinesDiagram/LinesDiagram';
 import { nodeFilter } from '@/Relation/shared/nodeFilter';
 import { useLazyControls } from '@/Relation/shared/useLazyControls';
 import { useDomManagerTs } from '@/Relation/PanZoom/useDomManager';
@@ -42,6 +45,7 @@ export const PanZoom: React.FC<{
   const { editMode, baseTypesOn, fieldsOn, inputsOn } = useRelationsState();
   const [largeSimulationLoading, setLargeSimulationLoading] = useState(false);
   const [zoomingMode, setZoomingMode] = useState<'zoom' | 'pan'>('pan');
+  const [viewportParams, setViewportParams] = useState<ViewportParams>();
   const ref = useRef<ReactZoomPanPinchRef>(null);
 
   const filteredNodes = useMemo(() => {
@@ -79,23 +83,28 @@ export const PanZoom: React.FC<{
   }, [selectedNodeId, relatedNodeIdsToSelected]);
 
   const downloadPng = useCallback(() => {
-    if (mainRef.current === null) {
+    if (mainRef.current === null || !viewportParams) {
       return;
     }
-    toPng(mainRef.current, { cacheBust: true })
+    toPng(mainRef.current, {
+      cacheBust: true,
+      width: viewportParams.width,
+      height: viewportParams.height,
+    })
       .then((dataUrl) => {
         const link = document.createElement('a');
         link.download = `${'relation_view'}`;
         link.href = dataUrl;
         link.click();
       })
-      .catch(() => {
+      .catch((e) => {
+        console.log(e);
         createToast({
           message: 'Export failed. Check browser console for details',
           variant: 'error',
         });
       });
-  }, [mainRef]);
+  }, [mainRef, viewportParams]);
 
   useEffect(() => {
     const listenerDown = (ev: KeyboardEvent) => {
@@ -162,6 +171,7 @@ export const PanZoom: React.FC<{
       <LinesDiagram
         className={className}
         nodes={filteredNodes}
+        setViewportParams={(p) => setViewportParams(p)}
         fieldsOn={fieldsOn}
         nodesWithoutFilter={nodes}
         mainRef={mainRef}
@@ -177,7 +187,7 @@ export const PanZoom: React.FC<{
   ]);
   return (
     <Wrapper>
-      <ControlsBar downloadPng={downloadPng} />
+      <ControlsBar className={className} downloadPng={downloadPng} />
       <Main
         ref={wrapperRef}
         onMouseDown={mouseDown}

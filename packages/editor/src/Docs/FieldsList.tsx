@@ -18,28 +18,44 @@ import {
 import styled from '@emotion/styled';
 import { useTreesState } from '@/state/containers';
 import { Description } from '@/Docs/Description';
-import { PenLine } from '@aexol-studio/styling-system';
+import { PenLine, Stack } from '@aexol-studio/styling-system';
+import { transition } from '@/vars';
 
 const md = new Remarkable();
 
-const ListWrapper = styled.div`
-  margin-bottom: 12px;
+const ListWrapper = styled(Stack)`
   margin-left: 10px;
   flex: 1 1 auto;
   min-height: 0;
   word-wrap: normal;
 `;
 
-const FieldsWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 90%;
-  margin-bottom: 8px;
+const FieldsWrapper = styled(Stack)`
+  border: 1px solid ${(p) => p.theme.dividerMain};
+  position: relative;
+  padding: 1rem;
+  border-radius: ${(p) => p.theme.radius}px;
 `;
 
 const TitleWrapper = styled.div<{ isType: boolean }>`
   display: flex;
   cursor: ${({ isType }) => (isType ? 'pointer' : 'default')};
+`;
+
+const IconWrapper = styled.div`
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  cursor: pointer;
+  transition: ${transition};
+  color: ${(p) => p.theme.text.disabled};
+  &:hover {
+    color: ${(p) => p.theme.text.active};
+  }
+  svg {
+    width: 18px;
+    height: 18px;
+  }
 `;
 
 interface FieldsListI {
@@ -70,9 +86,9 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
   return (
     <>
       <Title subTitle>Fields</Title>
-      <ListWrapper>
+      <ListWrapper direction="column" gap="1rem">
         {node.args?.map((arg, i) => (
-          <FieldsWrapper key={i}>
+          <FieldsWrapper key={i} direction="column" gap="0.5rem">
             <TitleWrapper
               isType={
                 !BuiltInScalars.some(
@@ -94,7 +110,7 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
                 </TypeText>
               )}
             </TitleWrapper>
-            {isEdit && editedIdx === i ? (
+            {isEdit && editedIdx === i && (
               <Description
                 onChange={(description: string) => {
                   onSubmit(description, i);
@@ -102,7 +118,8 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
                 }}
                 value={arg.description || ''}
               />
-            ) : (
+            )}
+            {(!isEdit || editedIdx !== i) && !!arg.description && (
               <DescWrapper
                 isSvgVisible={!arg.description}
                 readonly={isReadonly}
@@ -117,8 +134,18 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
                     __html: md.render(arg.description || 'No description'),
                   }}
                 />
-                {!isReadonly && <PenLine />}
               </DescWrapper>
+            )}
+            {!isReadonly && (
+              <IconWrapper
+                onClick={() => {
+                  if (isReadonly) return;
+                  setEditedIdx(i);
+                  setIsEdit(true);
+                }}
+              >
+                <PenLine />
+              </IconWrapper>
             )}
           </FieldsWrapper>
         ))}

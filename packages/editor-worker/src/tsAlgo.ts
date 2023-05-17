@@ -1,4 +1,8 @@
-import { getTypeName, ParserField } from 'graphql-js-tree';
+import {
+  getTypeName,
+  ParserField,
+  TypeSystemDefinition,
+} from 'graphql-js-tree';
 import * as d3 from 'd3';
 import { WorkerEvents } from '@/worker/validation.worker';
 
@@ -71,14 +75,16 @@ export const sortNodesTs = ({
           0,
         );
         return (
-          a.name.length +
+          (a.data.type !== TypeSystemDefinition.UnionMemberDefinition
+            ? a.name.length
+            : 0) +
           getTypeName(a.type.fieldType).length +
           fieldArgumentCumulated
         );
       }),
-      n.name.length + getTypeName(n.type.fieldType).length,
     );
-    const nodeWidth = fieldLengths * 9;
+    const nameLength = n.name.length + getTypeName(n.type.fieldType).length;
+    const nodeWidth = Math.max(fieldLengths, nameLength) * 8.5 + 24;
     return {
       ...existingNode,
       height: nodeHeight,

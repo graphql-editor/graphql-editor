@@ -14,10 +14,8 @@ export const ResolveExtension = (t: AllTypes) => {
       return TypeExtension.ScalarTypeExtension;
     case TypeDefinition.UnionTypeDefinition:
       return TypeExtension.UnionTypeExtension;
-
-    default:
-      break;
   }
+  throw new Error('Invalid extension node');
 };
 export const isExtensionNode = (t: AllTypes) =>
   !![

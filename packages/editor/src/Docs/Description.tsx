@@ -5,14 +5,12 @@ import { fontFamilySans } from '@/vars';
 const Main = styled.textarea`
   background: ${({ theme }) => theme.neutral[600]};
   color: ${({ theme }) => theme.text.default};
-  padding: 10px;
-  font-size: 12px;
-  width: 100%;
+  font-size: 14px;
+  margin: 0;
   border: 0;
   resize: none;
   outline: none;
   cursor: pointer;
-  border-radius: 10px;
   font-family: ${fontFamilySans};
   &:focus {
     cursor: auto;

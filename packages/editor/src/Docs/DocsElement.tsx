@@ -4,7 +4,6 @@ import { useTreesState } from '@/state/containers';
 import { fontFamilySans } from '@/vars';
 import { ParserField, getTypeName, compareParserFields } from 'graphql-js-tree';
 import React, { useMemo, useState } from 'react';
-// @ts-ignore
 import { Remarkable } from 'remarkable';
 import styled from '@emotion/styled';
 import { DescText, DescWrapper, Title } from '@/Docs/DocsStyles';

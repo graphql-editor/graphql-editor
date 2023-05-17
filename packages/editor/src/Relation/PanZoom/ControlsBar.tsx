@@ -16,9 +16,10 @@ import {
   EyeAlt,
 } from '@aexol-studio/styling-system';
 import { DOMClassNames } from '@/Relation/shared/DOMClassNames';
-export const ControlsBar: React.FC<{ downloadPng: () => void }> = ({
-  downloadPng,
-}) => {
+export const ControlsBar: React.FC<{
+  downloadPng: () => void;
+  className: 'all' | 'focused';
+}> = ({ downloadPng, className }) => {
   const { readonly } = useTreesState();
   const { exitFocus, focusMode } = useRelationNodesState();
 
@@ -56,7 +57,7 @@ export const ControlsBar: React.FC<{ downloadPng: () => void }> = ({
             <Minus />
           </IconWrapper>
           <TooltippedZoom data-tooltip="Ctrl/Cmd + Scroll to zoom in/out">
-            <span className={DOMClassNames.topBarZoom}></span>
+            <span className={`${DOMClassNames.topBarZoom} ${className}`}></span>
           </TooltippedZoom>
           <IconWrapper
             data-tooltip="Zoom in"

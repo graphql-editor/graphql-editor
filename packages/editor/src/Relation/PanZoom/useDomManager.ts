@@ -10,6 +10,7 @@ export const useDomManagerTs = (className: string) => {
   const DOMGraphNode = useDomOperations('graph-node', className);
   const DOMGraphConnection = useDomOperations('graph-connection', className);
   const visibleNodesCache = useRef<string[]>();
+  const lodCache = useRef<'far'>();
 
   const zoomNode = (nodeId: string, largeSimulationLoading?: boolean) => {
     if (!largeSimulationLoading) {
@@ -83,10 +84,12 @@ export const useDomManagerTs = (className: string) => {
         };
         const x =
           (n.x < bb.x[1] && n.x > bb.x[0]) ||
-          (n.x + n.width > bb.x[0] && n.x + n.width < bb.x[1]);
+          (n.x + n.width > bb.x[0] && n.x + n.width < bb.x[1]) ||
+          (n.x < bb.x[0] && n.x + n.width > bb.x[1]);
         const y =
           (n.y < bb.y[1] && n.y > bb.y[0]) ||
-          (n.y + n.height > bb.y[0] && n.y + n.height < bb.y[1]);
+          (n.y + n.height > bb.y[0] && n.y + n.height < bb.y[1]) ||
+          (n.y < bb.y[0] && n.y + n.height > bb.y[1]);
         return x && y;
       })
       .map((n) => n.id);
@@ -99,14 +102,18 @@ export const useDomManagerTs = (className: string) => {
   };
   const LoDNodes = (scale: number) => {
     if (scale < 0.66) {
+      if (lodCache.current === 'far') return;
       DOMGraphNode.addClassToAll('far');
+      lodCache.current = 'far';
     } else {
+      if (!lodCache.current) return;
       DOMGraphNode.removeClasses(['far']);
+      lodCache.current = undefined;
     }
   };
   const changeZoomInTopBar = (state: ReactZoomPanPinchState) => {
     const topBarZoomSpan = document.querySelector(
-      `.${DOMClassNames.topBarZoom}`,
+      `.${DOMClassNames.topBarZoom}.${className}`,
     );
     if (topBarZoomSpan) {
       topBarZoomSpan.innerHTML = `${(state.scale * 100).toFixed() + '%'}`;

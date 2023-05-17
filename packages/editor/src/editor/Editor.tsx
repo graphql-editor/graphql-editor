@@ -264,7 +264,6 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
         });
       }
     }, [routes.code, routes.pane]);
-
     return (
       <Main
         onKeyDown={(e) => {

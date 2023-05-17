@@ -1,11 +1,15 @@
-import { useRelationsState, useTreesState } from '@/state/containers';
+import {
+  useRelationNodesState,
+  useRelationsState,
+  useTreesState,
+} from '@/state/containers';
 import { getTypeName } from 'graphql-js-tree';
 import React, { useMemo, useRef } from 'react';
 import { FIELD_NAME_SIZE } from '@/Graf/constants';
 import { fontFamilySans, transition } from '@/vars';
 import styled from '@emotion/styled';
 import { EditorTheme } from '@/gshared/theme/MainTheme';
-import { PenLine } from '@aexol-studio/styling-system';
+import { EagleEye, PenLine } from '@aexol-studio/styling-system';
 import { useClickDetector } from '@/Relation/shared/useClickDetector';
 import { ActiveType } from '@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveType';
 import { Field } from '@/Relation/PanZoom/LinesDiagram/Node/Field';
@@ -68,6 +72,11 @@ const Content = styled.div<ContentProps>`
       .graph-field {
         pointer-events: auto;
       }
+      &.far {
+        .graph-field {
+          pointer-events: none;
+        }
+      }
     }
     &.related {
       opacity: 1;
@@ -81,6 +90,7 @@ const Content = styled.div<ContentProps>`
     background-color: transparent;
     .graph-node-fields {
       opacity: 0;
+      pointer-events: none;
     }
     .graph-node-title {
       transform: translate(-50%, -50%);
@@ -120,11 +130,13 @@ const NodeTitle = styled.div`
 const EditNodeContainer = styled.div`
   position: absolute;
   right: 0;
+  display: flex;
+  gap: 1px;
   top: 0;
+`;
+const SmallClickableButton = styled.div`
   background-color: ${(p) => p.theme.neutral[400]};
   color: ${(p) => p.theme.button.standalone.active};
-  border-top-right-radius: ${(p) => p.theme.radius}px;
-  border-bottom-left-radius: ${(p) => p.theme.radius}px;
   width: 28px;
   height: 28px;
   display: flex;
@@ -137,6 +149,12 @@ const EditNodeContainer = styled.div`
   :hover {
     background-color: ${(p) => p.theme.neutral[200]};
   }
+`;
+const EditNodeClickableButton = styled(SmallClickableButton)`
+  border-top-right-radius: ${(p) => p.theme.radius}px;
+`;
+const FocusNodeClickableButton = styled(SmallClickableButton)`
+  border-bottom-left-radius: ${(p) => p.theme.radius}px;
 `;
 
 const NameInRelation = styled.span`
@@ -158,6 +176,7 @@ export const Node: React.FC<NodeProps> = (props) => {
   const { parserField: field } = numberNode;
   const { setSelectedNodeId } = useTreesState();
   const { setEditMode } = useRelationsState();
+  const { focusNode } = useRelationNodesState();
   const { isClick, mouseDown } = useClickDetector();
   const { zoomToElement } = useLazyControls();
   const { deselectNodes, selectNode } = useDomManagerTs(props.className);
@@ -180,14 +199,23 @@ export const Node: React.FC<NodeProps> = (props) => {
       <NodeTitle className={`${props.className} ${DOMClassNames.nodeTitle}`}>
         <NameInRelation>{field.name}</NameInRelation>
         <ActiveType type={field.type} />
-        <EditNodeContainer
-          className="editNode"
-          onClick={(e) => {
-            e.stopPropagation();
-            setEditMode(field.id);
-          }}
-        >
-          <PenLine width={16} height={16} />
+        <EditNodeContainer className="editNode">
+          <FocusNodeClickableButton
+            onClick={(e) => {
+              e.stopPropagation();
+              focusNode(field);
+            }}
+          >
+            <EagleEye width={16} height={16} />
+          </FocusNodeClickableButton>
+          <EditNodeClickableButton
+            onClick={(e) => {
+              e.stopPropagation();
+              setEditMode(field.id);
+            }}
+          >
+            <PenLine width={16} height={16} />
+          </EditNodeClickableButton>
         </EditNodeContainer>
       </NodeTitle>
     ),

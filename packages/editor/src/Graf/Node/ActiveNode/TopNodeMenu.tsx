@@ -274,13 +274,13 @@ export const TopNodeMenu: React.FC<{
                   onClick={() => {
                     const extendNode = createParserField({
                       data: {
-                        type: ResolveExtension(node.data.type)!,
+                        type: ResolveExtension(node.data.type),
                       },
                       description: undefined,
                       type: {
                         fieldType: {
                           name: TypeDefinitionDisplayMap[
-                            ResolveExtension(node.data.type)!
+                            ResolveExtension(node.data.type)
                           ],
                           type: Options.name,
                         },

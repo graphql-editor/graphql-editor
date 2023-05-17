@@ -55,9 +55,9 @@ const MenuItem = styled.div<{
 
   &:hover {
     background-color: ${({ theme, isDisabled }) =>
-    !isDisabled && theme.neutral[500]};
+      !isDisabled && theme.neutral[500]};
     color: ${({ isDisabled, theme }) =>
-    isDisabled ? theme.text.disabled : '#e3f6fc'};
+      isDisabled ? theme.text.disabled : '#e3f6fc'};
   }
 
   svg {
@@ -209,8 +209,9 @@ export const Menu = ({
 
         <DropdownMenu
           actionType="icon"
-          dropdownPosition="right"
+          dropdownPosition="right-center"
           menuItems={exportActions}
+          distanceX="10px"
         >
           <MenuItem data-tooltip="Export schema" data-tour="export">
             <ArrowNarrowUpMove />

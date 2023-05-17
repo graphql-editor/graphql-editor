@@ -190,7 +190,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
       ? allNodes.nodes.find(
           (n) =>
             n.name === getTypeName(field.type.fieldType) &&
-            !isExtensionNode(n.data.type!),
+            !isExtensionNode(n.data.type),
         )
       : undefined;
   };
@@ -205,7 +205,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
       node.args.splice(endIdx, 0, node.args.splice(startIdx, 1)[0]);
     }
     //TODO: Add replace field order in js-tree
-    updateNode(node, () => {});
+    updateNode(node);
   };
 
   useEffect(() => {
@@ -214,12 +214,12 @@ export const ActiveNode: React.FC<NodeProps> = ({
 
   const openedNodeNode = openedNode
     ? openedNode.type === 'directives'
-      ? node.directives![openedNode.index]
+      ? node.directives[openedNode.index]
       : openedNode.type === 'args'
-      ? node.args![openedNode.index]
+      ? node.args[openedNode.index]
       : openedNode.type === 'directiveOutput'
-      ? findNodeByField(node.directives![openedNode.index])
-      : findNodeByField(node.args![openedNode.index])
+      ? findNodeByField(node.directives[openedNode.index])
+      : findNodeByField(node.args[openedNode.index])
     : undefined;
   return (
     <NodeContainer
@@ -241,7 +241,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
       {node.data.type === TypeSystemDefinition.DirectiveDefinition && (
         <DirectivePlacements>
           {!isLocked && <CreateNodeDirective node={node} isLocked={isLocked} />}
-          {node.type.directiveOptions?.map((d, i) => (
+          {node.type.directiveOptions?.map((d) => (
             <DirectivePlacement
               key={d}
               isLocked={isLocked}
@@ -272,7 +272,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                 node.interfaces = node.interfaces?.filter(
                   (oldInterface) => oldInterface !== i,
                 );
-                updateNode(node, () => {});
+                updateNode(node);
               }}
             >
               {i}
@@ -407,7 +407,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                   onDelete={() => {
                     setOpenedNode(undefined);
                     //TODO: Add remove directives and add directives to js-tree
-                    updateNode(node, () => node.directives!.splice(i, 1));
+                    updateNode(node, () => node.directives.splice(i, 1));
                   }}
                 />
               );

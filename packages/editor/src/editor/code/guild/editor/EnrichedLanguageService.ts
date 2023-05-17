@@ -67,9 +67,11 @@ export class EnrichedLanguageService extends LanguageService {
     };
   }
 
-  public async buildBridgeForProviders(
+  public async buildBridgeForProviders<
+    T extends { lineNumber: number; column: number },
+  >(
     model: monaco.editor.ITextModel,
-    position: monaco.Position,
+    position: T,
   ): Promise<null | BridgeOptions> {
     const graphQLPosition = toGraphQLPosition(position);
     const document = model.getValue();
@@ -114,7 +116,7 @@ export class EnrichedLanguageService extends LanguageService {
 
         const nestedArrays = (
           await Promise.all(sources.map((source) => source.forNode(bridge)))
-        ).filter(Boolean) as any as monaco.languages.Location[][];
+        ).filter(Boolean) as unknown as monaco.languages.Location[][];
 
         const items = ([] as monaco.languages.Location[]).concat(
           ...nestedArrays,

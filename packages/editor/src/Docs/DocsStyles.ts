@@ -1,12 +1,16 @@
 import styled from '@emotion/styled';
 
 export const DescText = styled.p`
-  margin: 0 10px;
-  color: ${({ theme }) => theme.text.disabled};
+  color: ${({ theme }) => theme.text.default};
+  margin: 0;
+  font-size: 14px;
+  p {
+    margin: 0;
+  }
 `;
 
 export const FieldText = styled.p`
-  color: ${({ theme }) => theme.text.default};
+  color: ${({ theme }) => theme.text.active};
   font-size: 14px;
   margin: 0;
   line-height: 1.6;
@@ -24,7 +28,7 @@ export const TypeText = styled.p<{ isScalar?: boolean }>`
 
 export const Title = styled.div<{ subTitle: boolean }>`
   color: ${({ theme, subTitle }) =>
-    subTitle ? theme.text.disabled : theme.text.default};
+    subTitle ? theme.text.default : theme.text.active};
   font-size: 18px;
   margin: ${({ subTitle }) => (subTitle ? '18px 0px' : '0px 0px 4px 0px')};
   font-weight: bold;

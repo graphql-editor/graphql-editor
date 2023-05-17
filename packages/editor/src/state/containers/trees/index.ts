@@ -92,10 +92,10 @@ const useTreesStateContainer = createContainer(() => {
     [libraryNodeIds],
   );
 
-  const updateNode = (node: ParserField, fn: () => void) => {
+  const updateNode = (node: ParserField, fn?: () => void) => {
     const isSelected = node.id === selectedNodeId?.value?.id;
     makeSnapshot();
-    fn();
+    fn?.();
     setTree(tree);
     if (isSelected) {
       if (selectedNodeId.value?.id !== node.id) {

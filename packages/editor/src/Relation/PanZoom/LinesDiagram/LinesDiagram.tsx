@@ -46,6 +46,13 @@ export type FilteredFieldsTypesProps = {
   searchValueEmpty: boolean;
 };
 
+export interface ViewportParams {
+  width: number;
+  height: number;
+  x: number;
+  y: number;
+}
+
 type LinesDiagramProps = {
   mainRef: React.RefObject<HTMLDivElement>;
   nodes: ParserField[];
@@ -55,6 +62,7 @@ type LinesDiagramProps = {
   loading?: boolean;
   fieldsOn?: boolean;
   className: 'all' | 'focused';
+  setViewportParams: (props: ViewportParams) => void;
 };
 
 export const LinesDiagram: React.FC<LinesDiagramProps> = (props) => {
@@ -113,6 +121,32 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = (props) => {
         iterations: 200,
       },
     }).then((positionedNodes) => {
+      let minX = Infinity;
+      let minY = Infinity;
+      let maxX = -Infinity;
+      let maxY = -Infinity;
+      positionedNodes.forEach((pn) => {
+        if (pn.x < minX) {
+          minX = pn.x;
+        }
+        if (pn.y < minY) {
+          minY = pn.y;
+        }
+        const lastX = pn.x + pn.width;
+        const lastY = pn.y + pn.height;
+        if (lastX > maxX) {
+          maxX = lastX;
+        }
+        if (lastY > maxY) {
+          maxY = lastY;
+        }
+      });
+      props.setViewportParams({
+        x: minX,
+        y: minY,
+        width: maxX - minX,
+        height: maxY - minY,
+      });
       setSimulatedNodes(positionedNodes);
     });
     return;

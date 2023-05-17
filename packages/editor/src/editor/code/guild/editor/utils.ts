@@ -70,7 +70,7 @@ export const coreDiagnosticsSource: DiagnosticsSource = {
               severity: DIAGNOSTIC_SEVERITY.Error,
               message: e.message,
               source: 'GraphQL: Syntax',
-              range: getRange(e.locations![0], document),
+              range: getRange(e.locations[0], document),
             }),
           ];
         } else {
@@ -137,7 +137,9 @@ export const debugHoverSource: HoverSource = {
   }),
 };
 
-export function toGraphQLPosition(position: monaco.Position): GraphQLPosition {
+export function toGraphQLPosition<
+  T extends { lineNumber: number; column: number },
+>(position: T): GraphQLPosition {
   return new Position(position.lineNumber - 1, position.column - 1);
 }
 
