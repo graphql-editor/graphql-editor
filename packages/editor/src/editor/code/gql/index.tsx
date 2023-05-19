@@ -48,7 +48,7 @@ export const GqlCodePane = (props: GqlCodePaneProps) => {
         ? ref.current.jumpToType(selectedNodeId.value.name)
         : ref.current.deselect();
     }
-  }, [selectedNodeId]);
+  }, [selectedNodeId?.value?.id]);
 
   useEffect(() => {
     if (ref.current && errorRowNumber) {

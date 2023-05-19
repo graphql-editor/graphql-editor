@@ -210,7 +210,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
 
   useEffect(() => {
     setOpenedNode(undefined);
-  }, [selectedNodeId]);
+  }, [selectedNodeId?.value?.id]);
 
   const openedNodeNode = openedNode
     ? openedNode.type === 'directives'

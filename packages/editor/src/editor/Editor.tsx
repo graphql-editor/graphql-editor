@@ -177,7 +177,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
       ) {
         onNodeSelect(selectedNodeId?.value?.id);
       }
-    }, [selectedNodeId]);
+    }, [selectedNodeId?.value?.id]);
 
     useEffect(() => {
       isSortAlphabetically &&

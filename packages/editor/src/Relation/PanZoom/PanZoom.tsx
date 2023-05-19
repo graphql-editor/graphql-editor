@@ -73,14 +73,14 @@ export const PanZoom: React.FC<{
       markRelated(relatedNodeIdsToSelected);
       return;
     }
-    deselectNodes();
     if (selectedNodeId?.value?.id && selectedNodeId.value.id !== editMode) {
+      deselectNodes();
       selectNode(selectedNodeId.value.id, largeSimulationLoading);
       if (relatedNodeIdsToSelected?.length) {
         markRelated(relatedNodeIdsToSelected);
       }
     }
-  }, [selectedNodeId, relatedNodeIdsToSelected]);
+  }, [selectedNodeId?.value?.id, relatedNodeIdsToSelected]);
 
   const downloadPng = useCallback(() => {
     if (mainRef.current === null || !viewportParams) {

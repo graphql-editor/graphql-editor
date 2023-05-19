@@ -1,3 +1,4 @@
+import { transition } from '@/vars';
 import styled from '@emotion/styled';
 
 export const DescText = styled.p`
@@ -23,7 +24,12 @@ export const TypeText = styled.p<{ isScalar?: boolean }>`
   font-size: 14px;
   padding-left: 8px;
   margin: 0;
+  transition: ${transition};
   line-height: 1.6;
+  &:hover {
+    color: ${({ isScalar, theme }) =>
+      isScalar ? theme.colors.scalar : theme.text.active};
+  }
 `;
 
 export const Title = styled.div<{ subTitle: boolean }>`

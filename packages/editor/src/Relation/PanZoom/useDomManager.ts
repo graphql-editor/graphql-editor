@@ -29,11 +29,13 @@ export const useDomManagerTs = (className: string) => {
     DOMGraphNode.addClassByFn('active', (e) => {
       return e.id === `${className}-node-${nodeId}`;
     });
+    console.log('SELECT');
     zoomNode(nodeId, largeSimulationLoading);
   };
   const deselectNodes = () => {
     DOMGraphNode.removeClasses(['active', 'selection', 'related']);
     DOMGraphConnection.removeClasses(['active', 'selection']);
+    console.log('DESLECT');
   };
   const markRelated = (relatedNodeIdsToSelected: string[]) => {
     DOMGraphNode.addClassByFn('related', (e) => {

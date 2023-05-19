@@ -255,7 +255,7 @@ export const useSchemaServices = (
     options.definitionProviders,
     options.hoverProviders,
     options.select,
-    selectedNodeId,
+    selectedNodeId?.value?.id,
   ]);
 
   React.useEffect(() => {

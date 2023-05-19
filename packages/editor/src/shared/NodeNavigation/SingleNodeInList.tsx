@@ -37,7 +37,7 @@ export const SingleNodeInList: React.FC<{
         block: 'center',
       });
     }
-  }, [selectedNodeId]);
+  }, [selectedNodeId?.value?.id]);
   const isSelected = activeNode && !!compareParserFields(node)(activeNode);
   return (
     <NavSingleBox

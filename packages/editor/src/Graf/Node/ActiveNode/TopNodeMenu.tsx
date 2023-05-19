@@ -92,7 +92,7 @@ export const TopNodeMenu: React.FC<{
     if (node.id === selectedNodeId?.value?.id && selectedNodeId.justCreated) {
       setMenuOpen('field');
     }
-  }, [selectedNodeId]);
+  }, [selectedNodeId?.value?.id]);
 
   const hideMenu = () => {
     setMenuOpen(undefined);

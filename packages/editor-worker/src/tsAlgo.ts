@@ -2,6 +2,7 @@ import {
   getTypeName,
   ParserField,
   TypeSystemDefinition,
+  compileType,
 } from 'graphql-js-tree';
 import * as d3 from 'd3';
 import { WorkerEvents } from '@/worker/validation.worker';
@@ -63,28 +64,30 @@ export const sortNodesTs = ({
         modifiedNodes += 1;
       }
     }
-    const nodeHeight = 67 + n.args.length * 27;
-    const fieldLengths = Math.max(
-      ...n.args.map((a) => {
-        const fieldArguments = a.args;
-        const fieldArgumentsLengths = fieldArguments.map(
-          (fa) => fa.name.length + getTypeName(fa.type.fieldType).length,
-        );
-        const fieldArgumentCumulated = fieldArgumentsLengths.reduce(
-          (a, b) => a + b,
-          0,
-        );
-        return (
-          (a.data.type !== TypeSystemDefinition.UnionMemberDefinition
-            ? a.name.length
-            : 0) +
-          getTypeName(a.type.fieldType).length +
-          fieldArgumentCumulated
-        );
-      }),
-    );
-    const nameLength = n.name.length + getTypeName(n.type.fieldType).length;
-    const nodeWidth = Math.max(fieldLengths, nameLength) * 8.5 + 24;
+    const nodeHeight = 43 + n.args.length * 26 + 12;
+    const fieldLengths =
+      Math.max(
+        ...n.args.map((a) => {
+          const fieldArguments = a.args;
+          const fieldArgumentsLengths = fieldArguments.map(
+            (fa) => fa.name.length + compileType(fa.type.fieldType).length,
+          );
+          const fieldArgumentCumulated = fieldArguments.length
+            ? fieldArgumentsLengths.reduce((a, b) => a + b, 2)
+            : 0;
+          return (
+            (a.data.type !== TypeSystemDefinition.UnionMemberDefinition
+              ? a.name.length
+              : 0) +
+            compileType(a.type.fieldType).length +
+            2 +
+            fieldArgumentCumulated
+          );
+        }),
+      ) * 8;
+    const nameLength =
+      8 * (n.name.length + compileType(n.type.fieldType).length + 1);
+    const nodeWidth = Math.max(fieldLengths, nameLength);
     return {
       ...existingNode,
       height: nodeHeight,

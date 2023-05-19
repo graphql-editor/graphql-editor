@@ -15,6 +15,7 @@ import styled from '@emotion/styled';
 import { KeyboardActions, useIO } from '@/shared/hooks/io';
 import { DraggableProvider } from '@/Graf/state/draggable';
 import { useRelationsState } from '@/state/containers';
+import { Button, Stack, useToasts } from '@aexol-studio/styling-system';
 
 const SubNodeContainer = styled.div`
   font-family: ${fontFamilySans};
@@ -54,6 +55,7 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
   } = useTreesState();
   const { setEditMode } = useRelationsState();
   const { mount } = useIO();
+  const { createToast } = useToasts();
 
   useEffect(() => {
     const keyEvents = mount({
@@ -61,23 +63,37 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
       [KeyboardActions.Redo]: redo,
     });
     return keyEvents.dispose;
-  }, [snapshots, tree, selectedNodeId, readonly]);
+  }, [snapshots, tree, selectedNodeId?.value?.id, readonly]);
+
+  const exit = () => {
+    const d = activeNode?.data.type;
+    if (
+      d === TypeDefinition.EnumTypeDefinition ||
+      d === TypeDefinition.ScalarTypeDefinition ||
+      d === TypeSystemDefinition.DirectiveDefinition
+    ) {
+      setSelectedNodeId({
+        source: 'relation',
+        value: undefined,
+      });
+    }
+    setEditMode('');
+  };
+
+  const cancelCreate = () => {
+    const allNodes = tree.nodes.filter(
+      (n) => n.id !== selectedNodeId?.value?.id,
+    );
+    setSelectedNodeId({ source: 'relation', value: undefined });
+    setTree({ nodes: allNodes });
+    setEditMode('');
+  };
   return (
     <SubNodeWrapper
       onClick={(e) => {
         e.stopPropagation();
-        const d = activeNode?.data.type;
-        if (
-          d === TypeDefinition.EnumTypeDefinition ||
-          d === TypeDefinition.ScalarTypeDefinition ||
-          d === TypeSystemDefinition.DirectiveDefinition
-        ) {
-          setSelectedNodeId({
-            source: 'relation',
-            value: undefined,
-          });
-        }
-        setEditMode('');
+        if (selectedNodeId?.justCreated) return;
+        exit();
       }}
     >
       <SubNodeContainer>
@@ -133,7 +149,43 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
             node={node}
           />
         </DraggableProvider>
+        {selectedNodeId?.justCreated && (
+          <CreateActions justify="end" gap="1rem">
+            <Button
+              variant="neutral"
+              onClick={(e) => {
+                e.stopPropagation();
+                cancelCreate();
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (
+                  activeNode?.args.length ||
+                  activeNode?.data.type ===
+                    TypeSystemDefinition.DirectiveDefinition
+                ) {
+                  exit();
+                  return;
+                }
+                createToast({
+                  message: 'Node must have fields to be created',
+                  variant: 'error',
+                });
+              }}
+            >
+              Create
+            </Button>
+          </CreateActions>
+        )}
       </SubNodeContainer>
     </SubNodeWrapper>
   );
 };
+
+const CreateActions = styled(Stack)`
+  padding: 1rem 0;
+`;
