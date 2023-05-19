@@ -69,7 +69,9 @@ export const EmbeddedGraphQLEditor = ({ ...props }: EmbeddedEditorProps) => {
                 <LayoutStateProvider>
                   <RelationNodesProvider>
                     <ScThemeProvider theme={theme}>
-                      <EmbeddedEditor {...props} />
+                      <ToastsProvider>
+                        <EmbeddedEditor {...props} />
+                      </ToastsProvider>
                     </ScThemeProvider>
                   </RelationNodesProvider>
                 </LayoutStateProvider>
