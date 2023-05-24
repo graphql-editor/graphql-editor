@@ -1,21 +1,21 @@
-import { CollapseArrow } from '@/editor/menu/CollapseArrow';
-import { SearchInput } from '@/shared/components';
-import { useIO, KeyboardActions } from '@/shared/hooks/io';
-import { NodeList } from '@/shared/NodeNavigation/NodeList';
-import { useRelationNodesState, useTreesState } from '@/state/containers';
-import { useSortState } from '@/state/containers/sort';
-import { fontFamilySans, transition } from '@/vars';
-import { Eye, EyeSlash } from '@aexol-studio/styling-system';
-import { keyframes } from '@emotion/react';
-import styled from '@emotion/styled';
+import { CollapseArrow } from "@/editor/menu/CollapseArrow";
+import { SearchInput } from "@/shared/components";
+import { useIO, KeyboardActions } from "@/shared/hooks/io";
+import { NodeList } from "@/shared/NodeNavigation/NodeList";
+import { useRelationNodesState, useTreesState } from "@/state/containers";
+import { useSortState } from "@/state/containers/sort";
+import { fontFamilySans, transition } from "@/vars";
+import { Eye, EyeSlash } from "@aexol-studio/styling-system";
+import { keyframes } from "@emotion/react";
+import styled from "@emotion/styled";
 
 import {
   ParserField,
   TypeDefinition,
   TypeSystemDefinition,
   TypeExtension,
-} from 'graphql-js-tree';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+} from "graphql-js-tree";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 const Container = styled.div`
   position: relative;
@@ -30,8 +30,8 @@ const ListContainer = styled.div<{ isCollapsed: boolean }>`
   border-left: ${({ theme }) => theme.black} 2px solid;
   height: 100%;
   transition: width 0.5s ease-in-out;
-  width: ${({ isCollapsed }) => (isCollapsed ? '50px' : '24rem')};
-  overflow-y: ${({ isCollapsed }) => (isCollapsed ? 'hidden' : 'auto')};
+  width: ${({ isCollapsed }) => (isCollapsed ? "50px" : "24rem")};
+  overflow-y: ${({ isCollapsed }) => (isCollapsed ? "hidden" : "auto")};
 `;
 
 const ListWrapper = styled.div`
@@ -99,7 +99,7 @@ const onShow = keyframes`
 `;
 
 const Expanded = styled.div<{ isCollapsed: boolean }>`
-  display: ${({ isCollapsed }) => (isCollapsed ? 'none' : 'block')};
+  display: ${({ isCollapsed }) => (isCollapsed ? "none" : "block")};
   animation: ${onShow} 0.8s ease;
 `;
 
@@ -109,13 +109,13 @@ const VerticalTitle = styled(Header)<{ isCollapsed: boolean }>`
   writing-mode: tb-rl;
   text-orientation: upright;
   letter-spacing: 4px;
-  display: ${({ isCollapsed }) => (isCollapsed ? 'flex' : 'none')};
+  display: ${({ isCollapsed }) => (isCollapsed ? "flex" : "none")};
   animation: ${onShow} 0.8s ease;
 `;
 
 export const NodeNavigation = () => {
-  const { allNodes } = useTreesState();
-  const { focusMode, focusedNodes } = useRelationNodesState();
+  const { allNodes, focusMode } = useTreesState();
+  const { focusedNodes } = useRelationNodesState();
   const {
     nodesVisibilityArr,
     hideRelationNodes,
@@ -123,18 +123,18 @@ export const NodeNavigation = () => {
     allVisible,
   } = useRelationNodesState();
   const { sortAlphabetically } = useSortState();
-  const [q, setQ] = useState('');
+  const [q, setQ] = useState("");
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [listExpanded, setListExpanded] = useState<Array<string>>([
-    'Types',
-    'Schema',
-    'Interface',
-    'Inputs',
-    'Enums',
-    'Scalars',
-    'Unions',
-    'Directives',
-    'Type Extensions',
+    "Types",
+    "Schema",
+    "Interface",
+    "Inputs",
+    "Enums",
+    "Scalars",
+    "Unions",
+    "Directives",
+    "Type Extensions",
   ]);
   const searchRef = useRef<HTMLInputElement>(null);
   const { mount } = useIO();
@@ -257,7 +257,7 @@ export const NodeNavigation = () => {
                   setQ(e);
                 }}
                 value={q}
-                onClear={() => setQ('')}
+                onClear={() => setQ("")}
                 onSubmit={() => {}}
               />
               <>
@@ -280,7 +280,7 @@ export const NodeNavigation = () => {
               expanded={listExpanded}
               setExpanded={(e) =>
                 setListExpanded((le) =>
-                  le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+                  le.includes(e) ? le.filter((l) => l !== e) : [...le, e]
                 )
               }
               nodeList={splittedNodes?.schemaNodes}
@@ -292,7 +292,7 @@ export const NodeNavigation = () => {
               expanded={listExpanded}
               setExpanded={(e) =>
                 setListExpanded((le) =>
-                  le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+                  le.includes(e) ? le.filter((l) => l !== e) : [...le, e]
                 )
               }
               nodeList={splittedNodes?.typeNodes}
@@ -304,7 +304,7 @@ export const NodeNavigation = () => {
               expanded={listExpanded}
               setExpanded={(e) =>
                 setListExpanded((le) =>
-                  le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+                  le.includes(e) ? le.filter((l) => l !== e) : [...le, e]
                 )
               }
               nodeList={splittedNodes?.interfaceNodes}
@@ -316,7 +316,7 @@ export const NodeNavigation = () => {
               expanded={listExpanded}
               setExpanded={(e) =>
                 setListExpanded((le) =>
-                  le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+                  le.includes(e) ? le.filter((l) => l !== e) : [...le, e]
                 )
               }
               nodeList={splittedNodes?.unionNodes}
@@ -328,7 +328,7 @@ export const NodeNavigation = () => {
               expanded={listExpanded}
               setExpanded={(e) =>
                 setListExpanded((le) =>
-                  le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+                  le.includes(e) ? le.filter((l) => l !== e) : [...le, e]
                 )
               }
               nodeList={splittedNodes?.inputNodes}
@@ -340,7 +340,7 @@ export const NodeNavigation = () => {
               expanded={listExpanded}
               setExpanded={(e) =>
                 setListExpanded((le) =>
-                  le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+                  le.includes(e) ? le.filter((l) => l !== e) : [...le, e]
                 )
               }
               nodeList={splittedNodes?.enumNodes}
@@ -351,7 +351,7 @@ export const NodeNavigation = () => {
               expanded={listExpanded}
               setExpanded={(e) =>
                 setListExpanded((le) =>
-                  le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+                  le.includes(e) ? le.filter((l) => l !== e) : [...le, e]
                 )
               }
               nodeList={splittedNodes?.scalarNodes}
@@ -362,7 +362,7 @@ export const NodeNavigation = () => {
               expanded={listExpanded}
               setExpanded={(e) =>
                 setListExpanded((le) =>
-                  le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+                  le.includes(e) ? le.filter((l) => l !== e) : [...le, e]
                 )
               }
               nodeList={splittedNodes?.directivesNodes}
@@ -374,7 +374,7 @@ export const NodeNavigation = () => {
                 expanded={listExpanded}
                 setExpanded={(e) =>
                   setListExpanded((le) =>
-                    le.includes(e) ? le.filter((l) => l !== e) : [...le, e],
+                    le.includes(e) ? le.filter((l) => l !== e) : [...le, e]
                   )
                 }
                 nodeList={splittedNodes?.extTypeNodes}

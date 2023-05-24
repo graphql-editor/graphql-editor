@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import styled from '@emotion/styled';
-import { fontFamilySans, transition } from '@/vars';
+import React, { useState } from "react";
+import styled from "@emotion/styled";
+import { fontFamilySans, transition } from "@/vars";
 import {
   Tool,
   Code,
@@ -10,10 +10,10 @@ import {
   ArrowNarrowBottomAlignment,
   DropdownMenu,
   MenuItem,
-} from '@aexol-studio/styling-system';
-import { PassedSchema } from '@/Models';
-import { ImportSchema } from '@/shared/dialogs/ImportSchema';
-import { useFileOperations } from '@/editor/menu/Tools/FileOperations';
+} from "@aexol-studio/styling-system";
+import { PassedSchema } from "@/Models";
+import { ImportSchema } from "@/shared/dialogs/ImportSchema";
+import { useFileOperations } from "@/editor/menu/Tools/FileOperations";
 
 const Sidebar = styled.div`
   background: ${({ theme }) => theme.neutral[600]};
@@ -43,10 +43,10 @@ const MenuItem = styled.div<{
   justify-content: center;
   align-items: center;
   color: ${({ theme, isDisabled }) =>
-    isDisabled ? theme.text.disabled : theme.text.active};
+    isDisabled ? theme.text.disabled : theme.text.default};
   padding: 1rem;
   font-family: ${fontFamilySans};
-  cursor: ${({ isDisabled }) => (isDisabled ? 'not-allowed' : 'pointer')};
+  cursor: ${({ isDisabled }) => (isDisabled ? "not-allowed" : "pointer")};
   transition: all 0.25s ease;
   overflow: visible;
   user-select: none;
@@ -57,7 +57,7 @@ const MenuItem = styled.div<{
     background-color: ${({ theme, isDisabled }) =>
       !isDisabled && theme.neutral[500]};
     color: ${({ isDisabled, theme }) =>
-      isDisabled ? theme.text.disabled : '#e3f6fc'};
+      isDisabled ? theme.text.disabled : theme.accents[200]};
   }
 
   svg {
@@ -68,6 +68,10 @@ const MenuItem = styled.div<{
 
   &.active {
     color: ${({ theme }) => theme.accents[200]};
+    font-weight: 600;
+  }
+  &.toggle-active {
+    color: ${({ theme }) => theme.accents[100]};
     font-weight: 600;
   }
   &[data-tooltip] {
@@ -99,13 +103,13 @@ const MenuItem = styled.div<{
 `;
 
 export type ActiveSource =
-  | 'relation'
-  | 'docs'
-  | 'code'
-  | 'navigation'
-  | 'routing'
-  | 'deFocus';
-export type ActivePane = 'diff' | 'relation' | 'docs';
+  | "relation"
+  | "docs"
+  | "code"
+  | "navigation"
+  | "routing"
+  | "deFocus";
+export type ActivePane = "diff" | "relation" | "docs";
 export interface MenuProps {
   setToggleCode: (v: boolean) => void;
   toggleCode: boolean;
@@ -133,7 +137,7 @@ export const Menu = ({
   const { saveToFile } = useFileOperations();
   const exportActions: MenuItem[] = [
     {
-      name: 'Export schema',
+      name: "Export schema",
       onClick: () => {
         saveToFile(path, schema);
       },
@@ -141,9 +145,9 @@ export const Menu = ({
   ];
   if (libraries) {
     exportActions.push({
-      name: 'Export schema with libraries',
+      name: "Export schema with libraries",
       onClick: () => {
-        saveToFile(path, [libraries, schema].join('\n'));
+        saveToFile(path, [libraries, schema].join("\n"));
       },
     });
   }
@@ -151,28 +155,26 @@ export const Menu = ({
     <>
       <Sidebar>
         <MenuItem
-          className={toggleCode ? 'toggle-active' : ''}
+          className={toggleCode ? "toggle-active" : ""}
           onClick={() => {
-            if (!activePane || activePane === 'diff') return;
+            if (!activePane || activePane === "diff") return;
             setToggleCode(!toggleCode);
           }}
-          isDisabled={activePane === 'diff'}
+          isDisabled={activePane === "diff"}
           data-tooltip="Toggle Code"
           data-tour="toggle-code"
         >
-          <div>
-            <Code />
-          </div>
+          <Code />
         </MenuItem>
-        {!excludePanes.includes('relation') && (
+        {!excludePanes.includes("relation") && (
           <MenuItem
-            className={activePane === 'relation' ? 'active' : ''}
+            className={activePane === "relation" ? "active" : ""}
             onClick={() => {
-              if (activePane === 'relation' && toggleCode) {
+              if (activePane === "relation" && toggleCode) {
                 setActivePane(undefined);
                 return;
               }
-              setActivePane('relation');
+              setActivePane("relation");
             }}
             data-tooltip="Relation"
             data-tour="relation"
@@ -180,15 +182,15 @@ export const Menu = ({
             <Tool />
           </MenuItem>
         )}
-        {!excludePanes.includes('docs') && (
+        {!excludePanes.includes("docs") && (
           <MenuItem
-            className={activePane === 'docs' ? 'active' : ''}
+            className={activePane === "docs" ? "active" : ""}
             onClick={() => {
-              if (activePane === 'docs' && toggleCode) {
+              if (activePane === "docs" && toggleCode) {
                 setActivePane(undefined);
                 return;
               }
-              setActivePane('docs');
+              setActivePane("docs");
             }}
             data-tooltip="Documentation"
             data-tour="documentation"
@@ -196,10 +198,10 @@ export const Menu = ({
             <File />
           </MenuItem>
         )}
-        {!excludePanes.includes('diff') && (
+        {!excludePanes.includes("diff") && (
           <MenuItem
-            className={activePane === 'diff' ? 'active' : ''}
-            onClick={() => setActivePane('diff')}
+            className={activePane === "diff" ? "active" : ""}
+            onClick={() => setActivePane("diff")}
             data-tooltip="Diff"
             data-tour="diff"
           >

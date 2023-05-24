@@ -1,6 +1,6 @@
-import { ChevronLeftDouble } from '@aexol-studio/styling-system';
-import styled from '@emotion/styled';
-import React from 'react';
+import { ChevronLeftDouble } from "@aexol-studio/styling-system";
+import styled from "@emotion/styled";
+import React from "react";
 
 const Container = styled.div<{ isCollapsed: boolean; isRight?: true }>`
   display: flex;
@@ -12,11 +12,11 @@ const Container = styled.div<{ isCollapsed: boolean; isRight?: true }>`
   border-radius: ${(p) => p.theme.radius}px;
   background-color: ${({ theme }) => theme.neutral[600]};
   position: absolute;
-  z-index: 5;
+  z-index: 1;
   top: 50%;
-  right: ${({ isRight }) => (isRight ? 'unset' : 0)};
-  left: ${({ isRight }) => (isRight ? 0 : 'unset')};
-  translate: ${({ isRight }) => (isRight ? '-50% -50%' : '50% -50%')};
+  right: ${({ isRight }) => (isRight ? "unset" : 0)};
+  left: ${({ isRight }) => (isRight ? 0 : "unset")};
+  translate: ${({ isRight }) => (isRight ? "-50% -50%" : "50% -50%")};
   color: ${({ theme }) => theme.text.default};
   transition: color 0.25s ease;
   background-color: ${(p) => p.theme.neutral[400]};
@@ -27,8 +27,8 @@ const Container = styled.div<{ isCollapsed: boolean; isRight?: true }>`
 
   svg {
     transform: ${({ isCollapsed, isRight }) => {
-      if (isRight) return isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)';
-      return isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)';
+      if (isRight) return isCollapsed ? "rotate(0deg)" : "rotate(180deg)";
+      return isCollapsed ? "rotate(180deg)" : "rotate(0deg)";
     }};
   }
 `;

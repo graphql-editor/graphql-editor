@@ -1,5 +1,5 @@
-import { changeTypeName } from '@/utils';
-import { getTypeName, ParserField } from 'graphql-js-tree';
+import { changeTypeName } from "@/utils";
+import { getTypeName, ParserField } from "graphql-js-tree";
 
 export const ChangeRelatedNode = ({
   newName,

@@ -1,24 +1,17 @@
-import {
-  useRelationNodesState,
-  useRelationsState,
-  useTreesState,
-} from '@/state/containers';
-import { getTypeName } from 'graphql-js-tree';
-import React, { useMemo, useRef } from 'react';
-import { FIELD_NAME_SIZE } from '@/Graf/constants';
-import { fontFamilySans, transition } from '@/vars';
-import styled from '@emotion/styled';
-import { EditorTheme } from '@/gshared/theme/MainTheme';
-import { EagleEye, PenLine } from '@aexol-studio/styling-system';
-import { useClickDetector } from '@/Relation/shared/useClickDetector';
-import { ActiveType } from '@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveType';
-import { Field } from '@/Relation/PanZoom/LinesDiagram/Node/Field';
-import { useLazyControls } from '@/Relation/shared/useLazyControls';
-import { useDomManagerTs } from '@/Relation/PanZoom/useDomManager';
-import { NumberNode } from 'graphql-editor-worker';
-import { DOMClassNames } from '@/Relation/shared/DOMClassNames';
+import { useRelationsState, useTreesState } from "@/state/containers";
+import { getTypeName } from "graphql-js-tree";
+import React, { useMemo, useRef } from "react";
+import { fontFamilySans, transition } from "@/vars";
+import styled from "@emotion/styled";
+import { EditorTheme } from "@/gshared/theme/MainTheme";
+import { EagleEye, PenLine } from "@aexol-studio/styling-system";
+import { ActiveType } from "@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveType";
+import { Field } from "@/Relation/PanZoom/LinesDiagram/Node/Field";
+import { NumberNode } from "graphql-editor-worker";
+import { DOMClassNames } from "@/shared/hooks/DOMClassNames";
+import { useClickDetector } from "@/shared/hooks/useClickDetector";
 
-type NodeTypes = keyof EditorTheme['colors'];
+type NodeTypes = keyof EditorTheme["colors"];
 
 interface ContentProps {
   nodeType: NodeTypes;
@@ -43,7 +36,7 @@ const Content = styled.div<ContentProps>`
   visibility: hidden;
   cursor: pointer;
   border-width: 2px;
-  border-style: ${({ isLibrary }) => (isLibrary ? 'dashed' : 'solid')};
+  border-style: ${({ isLibrary }) => (isLibrary ? "dashed" : "solid")};
   border-color: ${({ theme }) => `${theme.dividerMain}88`};
   &:hover {
     border-color: ${({ theme, nodeType }) =>
@@ -162,31 +155,24 @@ const NameInRelation = styled.span`
   color: ${({ theme }) => theme.text.active};
   padding: 0;
   font-family: ${fontFamilySans};
-  font-size: ${FIELD_NAME_SIZE};
 `;
 
 interface NodeProps {
   numberNode: NumberNode;
-  className: 'all' | 'focused';
   isLibrary?: boolean;
 }
 
 export const Node: React.FC<NodeProps> = (props) => {
   const { numberNode, isLibrary } = props;
   const { parserField: field } = numberNode;
-  const { setSelectedNodeId } = useTreesState();
+  const { setSelectedNodeId, focusNode } = useTreesState();
   const { setEditMode } = useRelationsState();
-  const { focusNode } = useRelationNodesState();
   const { isClick, mouseDown } = useClickDetector();
-  const { zoomToElement } = useLazyControls();
-  const { deselectNodes, selectNode } = useDomManagerTs(props.className);
   const nodeRef = useRef<HTMLDivElement>(null);
 
   const RelationFields = useMemo(() => {
     return (
-      <NodeRelationFields
-        className={`${props.className} ${DOMClassNames.nodeFields}`}
-      >
+      <NodeRelationFields className={`${DOMClassNames.nodeFields}`}>
         {field.args.map((a) => (
           <Field key={a.name} node={a} />
         ))}
@@ -196,7 +182,7 @@ export const Node: React.FC<NodeProps> = (props) => {
 
   const NodeContent = useMemo(
     () => (
-      <NodeTitle className={`${props.className} ${DOMClassNames.nodeTitle}`}>
+      <NodeTitle className={`${DOMClassNames.nodeTitle}`}>
         <NameInRelation>{field.name}</NameInRelation>
         <ActiveType type={field.type} />
         <EditNodeContainer className="editNode">
@@ -219,14 +205,14 @@ export const Node: React.FC<NodeProps> = (props) => {
         </EditNodeContainer>
       </NodeTitle>
     ),
-    [field],
+    [field]
   );
 
   return (
     <Content
       width={numberNode.width}
-      className={`${DOMClassNames.node} ${props.className}`}
-      id={`${props.className}-node-${field.id}`}
+      className={`${DOMClassNames.node}`}
+      id={`node-${field.id}`}
       ref={nodeRef}
       isLibrary={isLibrary}
       nodeType={getTypeName(field.type.fieldType) as NodeTypes}
@@ -236,19 +222,14 @@ export const Node: React.FC<NodeProps> = (props) => {
           return;
         }
         e.stopPropagation();
-        if (nodeRef.current?.classList.contains('active')) return;
-        deselectNodes();
-        selectNode(field.id);
-        zoomToElement(`${props.className}-node-${field.id}`);
-        setTimeout(() => {
-          setSelectedNodeId({
-            value: {
-              id: field.id,
-              name: field.name,
-            },
-            source: 'relation',
-          });
-        }, 200);
+        if (nodeRef.current?.classList.contains("active")) return;
+        setSelectedNodeId({
+          value: {
+            id: field.id,
+            name: field.name,
+          },
+          source: "relation",
+        });
       }}
     >
       {NodeContent}

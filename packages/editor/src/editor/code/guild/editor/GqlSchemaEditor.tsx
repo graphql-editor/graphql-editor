@@ -1,13 +1,13 @@
-import React, { useEffect } from 'react';
-import MonacoEditor, { EditorProps } from '@monaco-editor/react';
-import type * as monaco from 'monaco-editor';
-import { EnrichedLanguageService } from './EnrichedLanguageService';
-import { GraphQLError, GraphQLSchema } from 'graphql';
-import { SchemaServicesOptions } from './use-schema-services';
-import { useErrorsState, useTheme } from '@/state/containers';
-import { theme as MonacoTheme } from '@/editor/code/monaco';
-import { findCurrentNodeName } from '@/editor/code/guild/editor/onCursor';
-import { useGqlServices } from '@/editor/code/guild/editor/use-gql-services';
+import React, { useEffect } from "react";
+import MonacoEditor, { EditorProps } from "@monaco-editor/react";
+import type * as monaco from "monaco-editor";
+import { EnrichedLanguageService } from "./EnrichedLanguageService";
+import { GraphQLError, GraphQLSchema } from "graphql";
+import { SchemaServicesOptions } from "./use-schema-services";
+import { useErrorsState, useTheme } from "@/state/containers";
+import { theme as MonacoTheme } from "@/editor/code/monaco";
+import { findCurrentNodeName } from "@/editor/code/guild/editor/onCursor";
+import { useGqlServices } from "@/editor/code/guild/editor/use-gql-services";
 
 export type GqlSchemaEditorProps = SchemaServicesOptions & {
   onBlur?: (value: string) => void;
@@ -16,17 +16,14 @@ export type GqlSchemaEditorProps = SchemaServicesOptions & {
   onSchemaError?: (
     errors: [GraphQLError],
     sdl: string,
-    languageService: EnrichedLanguageService,
+    languageService: EnrichedLanguageService
   ) => void;
-} & Omit<EditorProps, 'language'> & {
+} & Omit<EditorProps, "language"> & {
     gql?: string;
     setGql: (gql: string) => void;
   };
 
-function BaseGqlEditor(
-  props: GqlSchemaEditorProps,
-  ref: React.ForwardedRef<{}>,
-) {
+function BaseGqlEditor(props: GqlSchemaEditorProps) {
   const {
     languageService,
     setMonaco,
@@ -35,12 +32,12 @@ function BaseGqlEditor(
     editorRef,
     onValidate,
   } = useGqlServices(props);
-  const { lockCode, grafEditorErrors, setErrorNodeNames, grafErrorSchema } =
+  const { grafEditorErrors, setErrorNodeNames, grafErrorSchema } =
     useErrorsState();
 
   useEffect(() => {
     setErrorNodeNames(undefined);
-    if (languageService && lockCode && props.schema) {
+    if (languageService && props.schema) {
       Promise.all(
         grafEditorErrors.map((gee) => {
           if (grafErrorSchema && gee.row && gee.column) {
@@ -55,12 +52,12 @@ function BaseGqlEditor(
                 }
               });
           }
-        }),
+        })
       ).then((erroringNodes) => {
         setErrorNodeNames(erroringNodes.filter(Boolean) as string[]);
       });
     }
-  }, [lockCode, grafEditorErrors, grafErrorSchema]);
+  }, [grafEditorErrors, grafErrorSchema]);
 
   useEffect(() => {
     if (editorRef)
@@ -83,7 +80,7 @@ function BaseGqlEditor(
       onBlurHandler?.dispose();
 
       const subscription = editorRef.onDidBlurEditorText(() => {
-        props.onBlur && props.onBlur(editorRef.getValue() || '');
+        props.onBlur && props.onBlur(editorRef.getValue() || "");
       });
 
       setOnBlurSubscription(subscription);
@@ -97,7 +94,7 @@ function BaseGqlEditor(
   }, [theme, monacoRef]);
   return (
     <MonacoEditor
-      height={'auto'}
+      height={"auto"}
       {...props}
       beforeMount={(monaco) => {
         setMonaco(monaco);

@@ -1,14 +1,13 @@
-import { createContainer } from 'unstated-next';
-import React, { useEffect, useState } from 'react';
-import { EditorError } from '@/validation';
-import { ErrorItem } from '@/shared/errors/ErrorItem';
+import { createContainer } from "unstated-next";
+import React, { useEffect, useState } from "react";
+import { EditorError } from "@/validation";
+import { ErrorItem } from "@/shared/errors/ErrorItem";
 const useErrorsStateContainer = createContainer(() => {
   const [codeErrors, setCodeErrors] = useState<EditorError[]>([]);
   const [grafEditorErrors, setGrafEditorErrors] = useState<EditorError[]>([]);
   const [grafErrors, setGrafErrors] = useState<string>();
   const [grafErrorSchema, setGrafErrorSchema] = useState<string>();
   const [lockGraf, setLockGraf] = useState<string>();
-  const [lockCode, setLockCode] = useState<string>();
   const [errorRowNumber, setErrorRowNumber] = useState<number>();
   const [errorNodeNames, setErrorNodeNames] = useState<string[]>();
   const [errorsItems, setErrorsItems] = useState<JSX.Element[]>();
@@ -19,7 +18,7 @@ const useErrorsStateContainer = createContainer(() => {
         a.row = undefined;
         a.column = undefined;
         a.position = undefined;
-        a.libraryError = 'Already defined in library.';
+        a.libraryError = "Already defined in library.";
       }
     });
     return errors;
@@ -27,7 +26,7 @@ const useErrorsStateContainer = createContainer(() => {
 
   const generateErrorsText = () => {
     if (lockGraf) {
-      const lockGrafArray = lockGraf.split('}').filter((ee) => ee);
+      const lockGrafArray = lockGraf.split("}").filter((ee) => ee);
       const errors = lockGrafArray.map((e, i) => (
         <ErrorItem key={i} error={e} />
       ));
@@ -45,9 +44,7 @@ const useErrorsStateContainer = createContainer(() => {
     grafErrors,
     setGrafErrors,
     lockGraf,
-    lockCode,
     setLockGraf,
-    setLockCode,
     transformCodeError,
     errorRowNumber,
     setErrorRowNumber,

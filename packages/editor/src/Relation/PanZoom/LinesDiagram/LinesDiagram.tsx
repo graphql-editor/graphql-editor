@@ -1,15 +1,21 @@
-import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
-import { useTreesState } from '@/state/containers/trees';
-import { Node } from './Node';
-import styled from '@emotion/styled';
-import * as vars from '@/vars';
-import { ParserField, getTypeName } from 'graphql-js-tree';
-import { GraphQLEditorWorker, NumberNode } from 'graphql-editor-worker';
-import { runAfterFramePaint } from '@/shared/hooks/useMarkFramePaint';
-import { useRelationsState } from '@/state/containers';
-import { RelationPath, Lines } from '@/Relation/PanZoom/LinesDiagram/Lines';
-import { useTransformContext, useTransformEffect } from 'react-zoom-pan-pinch';
-import { useDomManagerTs } from '@/Relation/PanZoom/useDomManager';
+import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { useTreesState } from "@/state/containers/trees";
+import { Node } from "./Node";
+import styled from "@emotion/styled";
+import * as vars from "@/vars";
+import { ParserField, getTypeName } from "graphql-js-tree";
+import { GraphQLEditorWorker, NumberNode } from "graphql-editor-worker";
+import { runAfterFramePaint } from "@/shared/hooks/useMarkFramePaint";
+import { useRelationsState } from "@/state/containers";
+import { RelationPath, Lines } from "@/Relation/PanZoom/LinesDiagram/Lines";
+import {
+  ReactZoomPanPinchState,
+  useControls,
+  useTransformContext,
+  useTransformEffect,
+} from "react-zoom-pan-pinch";
+import { useDomManagerTs } from "@/shared/hooks/useDomManager";
+import { DOMEvents } from "@/shared/hooks/DOMClassNames";
 
 const Main = styled.div`
   position: relative;
@@ -57,38 +63,70 @@ type LinesDiagramProps = {
   mainRef: React.RefObject<HTMLDivElement>;
   nodes: ParserField[];
   nodesWithoutFilter: ParserField[];
-  hide?: boolean;
   setLoading: (b: boolean) => void;
   loading?: boolean;
   fieldsOn?: boolean;
-  className: 'all' | 'focused';
+  hide?: boolean;
+  parentClass: "focus" | "all";
   setViewportParams: (props: ViewportParams) => void;
 };
 
 export const LinesDiagram: React.FC<LinesDiagramProps> = (props) => {
   const { nodes, setLoading, mainRef, nodesWithoutFilter } = props;
-  const { isLibrary } = useTreesState();
+  const { isLibrary, setSelectedNodeId, selectedNodeId } = useTreesState();
   const { cullNodes, LoDNodes, changeZoomInTopBar } = useDomManagerTs(
-    props.className,
+    props.parentClass
   );
+  const { zoomToElement, instance } = useControls();
   const { editMode } = useRelationsState();
   const {
     transformState: { scale },
   } = useTransformContext();
   const [simulatedNodes, setSimulatedNodes] = useState<NumberNode[]>();
-  useTransformEffect((r) => {
+
+  useEffect(() => {
+    if (props.hide) return;
+    const selectDisposable = DOMEvents.selectNode.disposable(
+      (nodeId?: string) => {
+        if (nodeId) {
+          zoomToElement(nodeId, instance.transformState.scale, 200);
+        }
+      }
+    );
+    return () => selectDisposable.dispose();
+  }, [simulatedNodes, props.hide]);
+
+  useLayoutEffect(() => {
+    if (!props.loading) {
+      if (instance.wrapperComponent) {
+        transformEffect(instance.transformState, instance.wrapperComponent);
+        setSelectedNodeId(selectedNodeId);
+      }
+    }
+  }, [props.loading, simulatedNodes]);
+
+  const transformEffect = (
+    state: ReactZoomPanPinchState,
+    wrapper: HTMLDivElement
+  ) => {
     if (simulatedNodes) {
-      const size = r.instance.wrapperComponent?.getBoundingClientRect();
-      changeZoomInTopBar(r.state);
+      const size = wrapper.getBoundingClientRect();
+      changeZoomInTopBar(state.scale);
       if (!size) return;
       requestAnimationFrame(() => {
-        cullNodes(simulatedNodes, r.state, size);
+        cullNodes(simulatedNodes, state, size);
         if (props.fieldsOn) {
-          LoDNodes(r.state.scale);
+          LoDNodes(state.scale);
         } else {
           LoDNodes(0.2);
         }
       });
+    }
+  };
+
+  useTransformEffect((r) => {
+    if (r.instance.wrapperComponent) {
+      transformEffect(r.state, r.instance.wrapperComponent);
     }
   });
 
@@ -158,7 +196,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = (props) => {
     }
     const findRelative = (a: ParserField, index: number) => {
       const pn = simulatedNodes.find(
-        (nf) => nf.parserField.name === getTypeName(a.type.fieldType),
+        (nf) => nf.parserField.name === getTypeName(a.type.fieldType)
       );
       if (!pn) {
         return;
@@ -203,14 +241,14 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = (props) => {
               from: RelationPath[];
               to: RelationPath;
               fromLength: number;
-            },
-        ),
+            }
+        )
     );
     runAfterFramePaint(() => setLoading(false));
   }, [simulatedNodes]);
 
   const SvgLinesContainer = useMemo(() => {
-    return <Lines className={props.className} relations={relations} />;
+    return <Lines relations={relations} />;
   }, [relations]);
 
   const NodesContainer = useMemo(() => {
@@ -218,11 +256,7 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = (props) => {
       <>
         {simulatedNodes?.map((n) => (
           <NodePane x={n.x} id={`${n.id}`} y={n.y} key={n.parserField.id}>
-            <Node
-              className={props.className}
-              isLibrary={isLibrary(n.parserField.id)}
-              numberNode={n}
-            />
+            <Node isLibrary={isLibrary(n.parserField.id)} numberNode={n} />
           </NodePane>
         ))}
       </>

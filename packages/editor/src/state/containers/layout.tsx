@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-import { createContainer } from 'unstated-next';
-import { sizeSidebar } from '@/vars';
-import { AllTypes } from 'graphql-js-tree';
+import { useEffect, useState } from "react";
+import { createContainer } from "unstated-next";
+import { sizeSidebar } from "@/vars";
+import { AllTypes } from "graphql-js-tree";
 
 type DragOverStylesDiagram = {
   nodeName: string;
@@ -22,8 +22,8 @@ const useLayoutStateContainer = createContainer(() => {
       setWindowWidth(window.innerWidth);
     };
     updateWindowDimensions();
-    window.addEventListener('resize', updateWindowDimensions);
-    return () => window.removeEventListener('resize', updateWindowDimensions);
+    window.addEventListener("resize", updateWindowDimensions);
+    return () => window.removeEventListener("resize", updateWindowDimensions);
   }, []);
 
   return {

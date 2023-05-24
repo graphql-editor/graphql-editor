@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react';
-import { createContainer } from 'unstated-next';
+import { useEffect, useState } from "react";
+import { createContainer } from "unstated-next";
 import {
   AllTypes,
   OperationType,
   ParserField,
   TypeDefinition,
   TypeSystemDefinition,
-} from 'graphql-js-tree';
-import { useTreesState } from './trees';
+} from "graphql-js-tree";
+import { useTreesState } from "./trees";
 
 type OrderType = {
   name: TypeDefinition | TypeSystemDefinition.DirectiveDefinition;
@@ -69,7 +69,7 @@ const useSortStateContainer = createContainer(() => {
         initialOrderTypesArray.map((a, i) => ({
           name: a as TypeDefinition | TypeSystemDefinition.DirectiveDefinition,
           value: i,
-        })),
+        }))
       );
     }
   }, [tree]);

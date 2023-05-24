@@ -1,12 +1,12 @@
-import React from 'react';
-import { fontFamilySans } from '@/vars';
-import { useTreesState } from '@/state/containers/trees';
-import { useRelationNodesState, useRelationsState } from '@/state/containers';
-import styled from '@emotion/styled';
-import * as vars from '@/vars';
-import { TopBar } from '@/shared/components/TopBar';
-import { useControls } from 'react-zoom-pan-pinch';
-import { NewNode } from '@/shared/components/NewNode';
+import React from "react";
+import { fontFamilySans } from "@/vars";
+import { useTreesState } from "@/state/containers/trees";
+import { useRelationsState } from "@/state/containers";
+import styled from "@emotion/styled";
+import * as vars from "@/vars";
+import { TopBar } from "@/shared/components/TopBar";
+import { useControls } from "react-zoom-pan-pinch";
+import { NewNode } from "@/shared/components/NewNode";
 import {
   Checkbox,
   ImageSquareCheck,
@@ -14,14 +14,12 @@ import {
   Plus,
   Button,
   EyeAlt,
-} from '@aexol-studio/styling-system';
-import { DOMClassNames } from '@/Relation/shared/DOMClassNames';
+} from "@aexol-studio/styling-system";
+import { DOMClassNames } from "@/shared/hooks/DOMClassNames";
 export const ControlsBar: React.FC<{
   downloadPng: () => void;
-  className: 'all' | 'focused';
-}> = ({ downloadPng, className }) => {
-  const { readonly } = useTreesState();
-  const { exitFocus, focusMode } = useRelationNodesState();
+}> = ({ downloadPng }) => {
+  const { readonly, exitFocus, focusMode } = useTreesState();
 
   const { zoomIn, zoomOut } = useControls();
   const {
@@ -57,7 +55,7 @@ export const ControlsBar: React.FC<{
             <Minus />
           </IconWrapper>
           <TooltippedZoom data-tooltip="Ctrl/Cmd + Scroll to zoom in/out">
-            <span className={`${DOMClassNames.topBarZoom} ${className}`}></span>
+            <span className={`${DOMClassNames.topBarZoom}`}></span>
           </TooltippedZoom>
           <IconWrapper
             data-tooltip="Zoom in"

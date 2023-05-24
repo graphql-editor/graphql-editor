@@ -1,11 +1,11 @@
-import React, { useEffect, useMemo } from 'react';
-import { fontFamily } from '@/vars';
-import { useErrorsState, useTheme, useTreesState } from '@/state/containers';
+import React, { useEffect, useMemo } from "react";
+import { fontFamily } from "@/vars";
+import { useErrorsState, useTheme, useTreesState } from "@/state/containers";
 
-import { SchemaEditorApi } from '@/editor/code/guild';
-import { settings, theme as MonacoTheme } from '@/editor/code/monaco';
-import { GqlSchemaEditor } from '@/editor/code/guild/editor/GqlSchemaEditor';
-import { CodeContainer, ErrorLock } from '@/editor/code/style/Code';
+import { SchemaEditorApi } from "@/editor/code/guild";
+import { settings, theme as MonacoTheme } from "@/editor/code/monaco";
+import { GqlSchemaEditor } from "@/editor/code/guild/editor/GqlSchemaEditor";
+import { CodeContainer } from "@/editor/code/style/Code";
 
 export interface GqlCodePaneOuterProps {
   readonly?: boolean;
@@ -27,7 +27,7 @@ export const GqlCodePane = (props: GqlCodePaneProps) => {
   const { schema, readonly, onChange, gql } = props;
   const { theme } = useTheme();
   const { selectedNodeId, setSelectedNodeId, allNodes } = useTreesState();
-  const { lockCode, errorRowNumber } = useErrorsState();
+  const { errorRowNumber } = useErrorsState();
 
   const ref: React.ForwardedRef<SchemaEditorApi> = React.createRef();
   const codeSettings = useMemo(
@@ -36,12 +36,12 @@ export const GqlCodePane = (props: GqlCodePaneProps) => {
       fontFamily,
       readOnly: readonly,
     }),
-    [readonly],
+    [readonly]
   );
 
   useEffect(() => {
     if (ref.current) {
-      if (selectedNodeId?.source === 'code') {
+      if (selectedNodeId?.source === "code") {
         return;
       }
       selectedNodeId?.value?.name
@@ -67,10 +67,10 @@ export const GqlCodePane = (props: GqlCodePaneProps) => {
           height="100%"
           ref={ref}
           beforeMount={(monaco) =>
-            monaco.editor.defineTheme('graphql-editor', MonacoTheme(theme))
+            monaco.editor.defineTheme("graphql-editor", MonacoTheme(theme))
           }
           onChange={(v) => {
-            if (!props.readonly) onChange(v || '');
+            if (!props.readonly) onChange(v || "");
           }}
           schema={schema}
           options={codeSettings}
@@ -79,21 +79,16 @@ export const GqlCodePane = (props: GqlCodePaneProps) => {
               const n = allNodes.nodes.find((an) => an.name === e);
               setSelectedNodeId(
                 n && {
-                  source: 'code',
+                  source: "code",
                   value: {
                     id: n.id,
                     name: n.name,
                   },
-                },
+                }
               );
             }
           }}
         />
-      )}
-      {lockCode && (
-        <ErrorLock
-          onClick={() => {}}
-        >{`Unable to parse GraphQL graph. Code editor is locked. Open graph editor to correct errors in GraphQL Schema. Message:\n${lockCode}`}</ErrorLock>
       )}
     </CodeContainer>
   );

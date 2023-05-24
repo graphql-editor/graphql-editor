@@ -1,27 +1,27 @@
-import React, { useRef } from 'react';
-import type * as monaco from 'monaco-editor';
+import React, { useRef } from "react";
+import type * as monaco from "monaco-editor";
 import {
   DecorationsSource,
   DefinitionSource,
   DiagnosticsSource,
   EditorAction,
   HoverSource,
-} from './utils';
-import { EnrichedLanguageService } from './EnrichedLanguageService';
+} from "./utils";
+import { EnrichedLanguageService } from "./EnrichedLanguageService";
 import {
   GraphQLError,
   GraphQLSchema,
   isInterfaceType,
   isObjectType,
-} from 'graphql';
-import { emptyLocation, locToRange } from './utils';
-import { GraphQLEditorWorker } from 'graphql-editor-worker';
-import { EditorError } from '@/validation';
-import { monacoSetDecorations } from '@/editor/code/monaco/decorations';
-import { useTheme, useTreesState } from '@/state/containers';
-import { findCurrentNodeName } from '@/editor/code/guild/editor/onCursor';
-import { Maybe } from 'graphql-language-service';
-import { moveCursor } from '@/editor/code/guild/editor/onCursor/compare';
+} from "graphql";
+import { emptyLocation, locToRange } from "./utils";
+import { GraphQLEditorWorker } from "graphql-editor-worker";
+import { EditorError } from "@/validation";
+import { monacoSetDecorations } from "@/editor/code/monaco/decorations";
+import { useTheme, useTreesState } from "@/state/containers";
+import { findCurrentNodeName } from "@/editor/code/guild/editor/onCursor";
+import { Maybe } from "graphql-language-service";
+import { moveCursor } from "@/editor/code/guild/editor/onCursor/compare";
 
 export type SchemaEditorApi = {
   jumpToType(typeName: string): void;
@@ -41,7 +41,7 @@ export type SchemaServicesOptions = {
   select?: (
     name?:
       | Maybe<string>
-      | Maybe<{ operation: 'Query' | 'Mutation' | 'Subscription' }>,
+      | Maybe<{ operation: "Query" | "Mutation" | "Subscription" }>
   ) => void;
   onBlur?: (value: string) => void;
   onLanguageServiceReady?: (languageService: EnrichedLanguageService) => void;
@@ -49,12 +49,12 @@ export type SchemaServicesOptions = {
   onSchemaError?: (
     errors: [GraphQLError],
     sdl: string,
-    languageService: EnrichedLanguageService,
+    languageService: EnrichedLanguageService
   ) => void;
   sharedLanguageService?: EnrichedLanguageService;
   keyboardShortcuts?: (
     editorInstance: monaco.editor.IStandaloneCodeEditor,
-    monacoInstance: typeof monaco,
+    monacoInstance: typeof monaco
   ) => monaco.editor.IActionDescriptor[];
 };
 
@@ -65,7 +65,7 @@ const compileSchema = ({
   schema: string;
   libraries?: string;
 }) => {
-  return [schema, libraries || ''].join('\n');
+  return [schema, libraries || ""].join("\n");
 };
 
 const cursorIndex = {
@@ -73,12 +73,12 @@ const cursorIndex = {
 };
 
 export const useSchemaServices = (
-  options: Omit<SchemaServicesOptions, 'schema'> & {
+  options: Omit<SchemaServicesOptions, "schema"> & {
     schemaObj: {
       code?: string;
       isFromLocalChange?: boolean;
     };
-  } = { schemaObj: {} },
+  } = { schemaObj: {} }
 ) => {
   const [editorRef, setEditor] =
     React.useState<monaco.editor.IStandaloneCodeEditor | null>(null);
@@ -107,11 +107,11 @@ export const useSchemaServices = (
   }, [options.libraries, options.schemaObj.code]);
 
   const selectNodeUnderCursor = async <
-    T extends { lineNumber: number; column: number },
+    T extends { lineNumber: number; column: number }
   >(
     model: monaco.editor.ITextModel,
     e: T,
-    currentSelectedNode?: string,
+    currentSelectedNode?: string
   ) => {
     // move to worker
     languageService
@@ -123,7 +123,6 @@ export const useSchemaServices = (
           } = bridge;
           const n = findCurrentNodeName(state);
           if (n !== currentSelectedNode) {
-            console.log('SELECTING', n, currentSelectedNode);
             options.select(n);
           }
         }
@@ -137,8 +136,8 @@ export const useSchemaServices = (
     moveCursor({
       cursorIndex,
       editorRef,
-      newText: options.schemaObj.code || '',
-      previousText: previousSchema || '',
+      newText: options.schemaObj.code || "",
+      previousText: previousSchema || "",
     });
   }, [options.schemaObj.code]);
 
@@ -164,7 +163,7 @@ export const useSchemaServices = (
           id: action.id,
           label: action.label,
           keybindings: action.keybindings,
-          contextMenuGroupId: action.contextMenuGroupId || 'navigation',
+          contextMenuGroupId: action.contextMenuGroupId || "navigation",
           contextMenuOrder: action.contextMenuOrder,
           run: async (editor) => {
             const model = editor.getModel();
@@ -173,7 +172,7 @@ export const useSchemaServices = (
             if (model && position) {
               const bridge = await languageService.buildBridgeForProviders(
                 model,
-                position,
+                position
               );
 
               if (bridge) {
@@ -189,13 +188,12 @@ export const useSchemaServices = (
         editorRef,
         monacoRef,
         options.diagnosticsProviders || [],
-        options.decorationsProviders || [],
+        options.decorationsProviders || []
       );
 
       const onSelectCursor = (
-        e: monaco.editor.ICursorSelectionChangedEvent,
+        e: monaco.editor.ICursorSelectionChangedEvent
       ) => {
-        console.log(e);
         if (e.selection.startLineNumber !== e.selection.endLineNumber) return;
         if (e.selection.startColumn !== e.selection.endColumn) return;
         if (e.reason === 3) {
@@ -216,7 +214,7 @@ export const useSchemaServices = (
               column: e.selection.startColumn,
               lineNumber: e.selection.startLineNumber,
             },
-            selectedNodeId?.value?.name,
+            selectedNodeId?.value?.name
           );
         }
       };
@@ -225,15 +223,15 @@ export const useSchemaServices = (
 
       const definitionProviderDisposable =
         monacoRef.languages.registerDefinitionProvider(
-          'graphql',
+          "graphql",
           languageService.getDefinitionProvider(
-            options.definitionProviders || [],
-          ),
+            options.definitionProviders || []
+          )
         );
 
       const hoverDisposable = monacoRef.languages.registerHoverProvider(
-        'graphql',
-        languageService.getHoverProvider(options.hoverProviders || []),
+        "graphql",
+        languageService.getHoverProvider(options.hoverProviders || [])
       );
 
       return () => {
@@ -266,7 +264,7 @@ export const useSchemaServices = (
           decorationIds,
           m: monacoRef,
           monacoGql: editorRef,
-        }),
+        })
       );
     }
   }, [editorRef, monacoRef, codeErrors]);
@@ -288,7 +286,7 @@ export const useSchemaServices = (
         GraphQLEditorWorker.validate(currentValue, options.libraries).then(
           (errors) => {
             setCodeErrors(errors);
-          },
+          }
         );
       }
     },
@@ -302,7 +300,7 @@ export const useSchemaServices = (
             const range = locToRange(type.astNode.loc);
             editorRef?.revealPositionInCenter(
               { column: 0, lineNumber: range.startLineNumber },
-              0,
+              0
             );
           }
         }
@@ -319,7 +317,7 @@ export const useSchemaServices = (
                 const range = locToRange(field.astNode.loc);
                 editorRef?.revealPositionInCenter(
                   { column: 0, lineNumber: range.startLineNumber },
-                  0,
+                  0
                 );
               }
             }
@@ -339,7 +337,7 @@ export const useSchemaServices = (
             column: 0,
             lineNumber: lineNumber,
           },
-          0,
+          0
         );
       },
     } as SchemaEditorApi,

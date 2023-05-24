@@ -1,12 +1,12 @@
-import { createContainer } from 'unstated-next';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useTreesState } from '@/state/containers/trees';
+import { createContainer } from "unstated-next";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTreesState } from "@/state/containers/trees";
 import {
   AllTypes,
   getTypeName,
   ParserField,
   TypeDefinition,
-} from 'graphql-js-tree';
+} from "graphql-js-tree";
 
 export const toggleableTypes: AllTypes[] = [
   TypeDefinition.ObjectTypeDefinition,
@@ -16,17 +16,17 @@ export const toggleableTypes: AllTypes[] = [
 ];
 
 const useRelationNodes = createContainer(() => {
-  const { allNodes, setSelectedNodeId } = useTreesState();
+  const { allNodes, setSelectedNodeId, selectedNodeId, focusMode } =
+    useTreesState();
 
   const relationNodes = useMemo(
     () => allNodes.nodes.filter((n) => toggleableTypes.includes(n.data.type)),
-    [allNodes],
+    [allNodes]
   );
 
   const [nodesVisibilityArr, setNodesVisibilityArr] = useState(
-    relationNodes.map((el) => ({ id: el.id, isHidden: false })),
+    relationNodes.map((el) => ({ id: el.id, isHidden: false }))
   );
-  const [focusMode, setFocusMode] = useState<string>();
 
   useEffect(() => {
     setNodesVisibilityArr((prev) => {
@@ -47,17 +47,17 @@ const useRelationNodes = createContainer(() => {
 
   const hideRelationNodes = useCallback(() => {
     setNodesVisibilityArr((prev) =>
-      prev.map((el) => ({ id: el.id, isHidden: true })),
+      prev.map((el) => ({ id: el.id, isHidden: true }))
     );
-    setSelectedNodeId({ source: 'relation', value: undefined });
+    setSelectedNodeId({ source: "relation", value: undefined });
   }, []);
 
   const showRelationNodes = useCallback(
     () =>
       setNodesVisibilityArr((prev) =>
-        prev.map((el) => ({ id: el.id, isHidden: false })),
+        prev.map((el) => ({ id: el.id, isHidden: false }))
       ),
-    [],
+    []
   );
 
   const focusedNodes = useMemo(() => {
@@ -70,17 +70,21 @@ const useRelationNodes = createContainer(() => {
           .flatMap((a) => a.args)
           .map((ca) => getTypeName(ca.type.fieldType));
         const argChildren = allNodes.nodes.filter((an) =>
-          argChild.includes(an.name),
+          argChild.includes(an.name)
         );
         const children = allNodes.nodes.filter((an) => types.includes(an.name));
         const parents = allNodes.nodes.filter((an) =>
-          an.args.some((a) => getTypeName(a.type.fieldType) === n.name),
+          an.args.some(
+            (a) =>
+              getTypeName(a.type.fieldType) === n.name ||
+              a.args.some((aaa) => getTypeName(aaa.type.fieldType) === n.name)
+          )
         );
         const relatedFocusNodes = [...children, ...parents, ...argChildren, n];
         return relatedFocusNodes
           .filter(
             (n, i) =>
-              i === relatedFocusNodes.findIndex((rfn) => rfn.id === n.id),
+              i === relatedFocusNodes.findIndex((rfn) => rfn.id === n.id)
           )
           .filter((n) => toggleableTypes.includes(n.data.type));
       }
@@ -94,29 +98,21 @@ const useRelationNodes = createContainer(() => {
     });
   }, [nodesVisibilityArr, focusedNodes]);
 
-  const focusNode = useCallback((n: ParserField) => {
-    setSelectedNodeId({
-      source: 'deFocus',
-      value: {
-        id: n.id,
-        name: n.name,
-      },
-    });
-    setFocusMode(n.id);
-  }, []);
   const toggleNodeVisibility = useCallback(
     (node: ParserField) => {
       const newArr = [...nodesVisibilityArr];
       const foundIdx = newArr.findIndex((el) => el.id === node.id);
       newArr[foundIdx].isHidden = !newArr[foundIdx].isHidden;
       setNodesVisibilityArr(newArr);
+      selectedNodeId?.value?.id === node.id &&
+        setSelectedNodeId({ source: "navigation", value: undefined });
     },
-    [nodesVisibilityArr],
+    [nodesVisibilityArr]
   );
 
   const allVisible = useMemo(
     () => !nodesVisibilityArr.some((n) => n.isHidden),
-    [nodesVisibilityArr],
+    [nodesVisibilityArr]
   );
 
   return {
@@ -126,9 +122,6 @@ const useRelationNodes = createContainer(() => {
     showRelationNodes,
     filteredFocusedNodes,
     toggleNodeVisibility,
-    focusNode,
-    focusMode,
-    exitFocus: () => setFocusMode(undefined),
     allVisible,
     focusedNodes,
   };

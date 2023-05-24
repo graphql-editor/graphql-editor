@@ -166,7 +166,7 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
                 if (
                   activeNode?.args.length ||
                   activeNode?.data.type ===
-                    TypeSystemDefinition.DirectiveDefinition
+                  TypeSystemDefinition.DirectiveDefinition
                 ) {
                   exit();
                   return;

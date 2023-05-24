@@ -1,16 +1,16 @@
-import React, { useEffect, useRef } from 'react';
-import MonacoEditor, { EditorProps } from '@monaco-editor/react';
-import type * as monaco from 'monaco-editor';
-import { EnrichedLanguageService } from './EnrichedLanguageService';
-import { GraphQLError, GraphQLSchema } from 'graphql';
+import React, { useEffect, useRef } from "react";
+import MonacoEditor, { EditorProps } from "@monaco-editor/react";
+import type * as monaco from "monaco-editor";
+import { EnrichedLanguageService } from "./EnrichedLanguageService";
+import { GraphQLError, GraphQLSchema } from "graphql";
 import {
   SchemaEditorApi,
   SchemaServicesOptions,
   useSchemaServices,
-} from './use-schema-services';
-import { useErrorsState, useTheme } from '@/state/containers';
-import { theme as MonacoTheme } from '@/editor/code/monaco';
-import { findCurrentNodeName } from '@/editor/code/guild/editor/onCursor';
+} from "./use-schema-services";
+import { useErrorsState, useTheme } from "@/state/containers";
+import { theme as MonacoTheme } from "@/editor/code/monaco";
+import { findCurrentNodeName } from "@/editor/code/guild/editor/onCursor";
 
 export type SchemaEditorProps = SchemaServicesOptions & {
   onBlur?: (value: string) => void;
@@ -19,13 +19,13 @@ export type SchemaEditorProps = SchemaServicesOptions & {
   onSchemaError?: (
     errors: [GraphQLError],
     sdl: string,
-    languageService: EnrichedLanguageService,
+    languageService: EnrichedLanguageService
   ) => void;
-} & Omit<EditorProps, 'language'> & { libraries?: string };
+} & Omit<EditorProps, "language"> & { libraries?: string };
 
 function BaseSchemaEditor(
   props: SchemaEditorProps,
-  ref: React.ForwardedRef<SchemaEditorApi>,
+  ref: React.ForwardedRef<SchemaEditorApi>
 ) {
   const isFromLocalChange = useRef(false);
   const {
@@ -44,12 +44,12 @@ function BaseSchemaEditor(
       isFromLocalChange: isFromLocalChange.current,
     },
   });
-  const { lockCode, grafEditorErrors, setErrorNodeNames, grafErrorSchema } =
+  const { grafEditorErrors, setErrorNodeNames, grafErrorSchema } =
     useErrorsState();
 
   useEffect(() => {
     setErrorNodeNames(undefined);
-    if (languageService && lockCode && props.schema) {
+    if (languageService && props.schema) {
       Promise.all(
         grafEditorErrors.map((gee) => {
           if (grafErrorSchema && gee.row && gee.column) {
@@ -64,12 +64,12 @@ function BaseSchemaEditor(
                 }
               });
           }
-        }),
+        })
       ).then((erroringNodes) => {
         setErrorNodeNames(erroringNodes.filter(Boolean) as string[]);
       });
     }
-  }, [lockCode, grafEditorErrors, grafErrorSchema]);
+  }, [grafEditorErrors, grafErrorSchema]);
 
   useEffect(() => {
     if (editorRef)
@@ -94,7 +94,7 @@ function BaseSchemaEditor(
       onBlurHandler?.dispose();
 
       const subscription = editorRef.onDidBlurEditorText(() => {
-        props.onBlur && props.onBlur(editorRef.getValue() || '');
+        props.onBlur && props.onBlur(editorRef.getValue() || "");
       });
 
       setOnBlurSubscription(subscription);
@@ -108,7 +108,7 @@ function BaseSchemaEditor(
   }, [theme, monacoRef]);
   return (
     <MonacoEditor
-      height={'auto'}
+      height={"auto"}
       {...props}
       beforeMount={(monaco) => {
         setMonaco(monaco);
@@ -123,7 +123,7 @@ function BaseSchemaEditor(
       onChange={(newValue, ev) => {
         const isChangedFromOutside = ev.changes
           .map((c) =>
-            'forceMoveMarkers' in c ? (c as any).forceMoveMarkers : undefined,
+            "forceMoveMarkers" in c ? (c as any).forceMoveMarkers : undefined
           )
           .reduce((a, b) => a || b);
         isFromLocalChange.current = !isChangedFromOutside;
@@ -149,11 +149,11 @@ function BaseSchemaEditor(
                         undefined,
                         undefined,
                         undefined,
-                        e,
+                        e
                       ),
                     ],
                     newValue,
-                    languageService,
+                    languageService
                   );
                 }
               }

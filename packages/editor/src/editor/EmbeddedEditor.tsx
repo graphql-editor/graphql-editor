@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react';
-import { GraphQLEditorWorker } from 'graphql-editor-worker';
-import { useErrorsState, useTheme, useTreesState } from '@/state/containers';
-import { EditorTheme } from '@/gshared/theme/MainTheme';
-import styled from '@emotion/styled';
-import { ErrorsList } from '@/shared/errors/ErrorsList';
-import { PassedSchema } from '@/Models';
-import { NodeNavigation } from '@/shared/NodeNavigation';
-import { Relation } from '@/Relation/Relation';
+import React, { useEffect } from "react";
+import { GraphQLEditorWorker } from "graphql-editor-worker";
+import { useErrorsState, useTheme, useTreesState } from "@/state/containers";
+import { EditorTheme } from "@/gshared/theme/MainTheme";
+import styled from "@emotion/styled";
+import { ErrorsList } from "@/shared/errors/ErrorsList";
+import { PassedSchema } from "@/Models";
+import { NodeNavigation } from "@/shared/NodeNavigation";
+import { Relation } from "@/Relation/Relation";
 
 const Main = styled.div`
   display: flex;
@@ -39,7 +39,7 @@ const ErrorOuterContainer = styled.div<{ isOverflow?: boolean }>`
   width: 100%;
   position: relative;
   display: flex;
-  overflow-y: ${({ isOverflow }) => isOverflow && 'auto'};
+  overflow-y: ${({ isOverflow }) => isOverflow && "auto"};
   overflow-x: hidden;
 `;
 
@@ -54,7 +54,6 @@ export const EmbeddedEditor = ({ schema, theme }: EmbeddedEditorProps) => {
   const {
     grafErrors,
     setGrafErrors,
-    setLockCode,
     setGrafEditorErrors,
     setGrafErrorSchema,
     lockGraf,
@@ -83,14 +82,12 @@ export const EmbeddedEditor = ({ schema, theme }: EmbeddedEditorProps) => {
               const mapErrors = errors.map((e) => e.text);
               const msg = [
                 ...mapErrors.filter((e, i) => mapErrors.indexOf(e) === i),
-              ].join('\n\n');
+              ].join("\n\n");
               setGrafErrors(msg);
               setGrafEditorErrors(errors);
               setGrafErrorSchema(graphql);
-              setLockCode(msg);
               return;
             }
-            setLockCode(undefined);
             setGrafErrors(undefined);
             setGrafEditorErrors([]);
           });
@@ -98,7 +95,6 @@ export const EmbeddedEditor = ({ schema, theme }: EmbeddedEditorProps) => {
       });
     } catch (error) {
       const msg = (error as any).message;
-      setLockCode(msg);
       setGrafErrors(msg);
       return;
     }
@@ -107,7 +103,7 @@ export const EmbeddedEditor = ({ schema, theme }: EmbeddedEditorProps) => {
   return (
     <Main
       onKeyDown={(e) => {
-        if (e.key.toLowerCase() === 'f' && (e.metaKey || e.ctrlKey)) {
+        if (e.key.toLowerCase() === "f" && (e.metaKey || e.ctrlKey)) {
           e.preventDefault();
         }
       }}

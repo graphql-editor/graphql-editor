@@ -1,41 +1,45 @@
-import { useErrorsState } from '@/state/containers';
-import styled from '@emotion/styled';
-import React from 'react';
+import { useErrorsState } from "@/state/containers";
+import { useRouter } from "@/state/containers/router";
+import { Button, Stack } from "@aexol-studio/styling-system";
+import styled from "@emotion/styled";
+import React from "react";
 
 type ErrorItemProps = {
   error: string;
 };
 
-const ButtonStyles = styled.button`
-  border: 0;
-  background-color: ${({ theme }) => theme.neutral[600]};
-  color: ${({ theme }) => theme.text.default};
-  padding: 10px 50px;
-  cursor: pointer;
-  text-transform: uppercase;
-  border-radius: 4px;
+const Main = styled(Stack)`
+  padding: 1rem;
+  background-color: ${({ theme }) => theme.neutral[700]};
+  border-radius: ${(p) => p.theme.radius}px;
 `;
-
-const Main = styled.div``;
 
 const Message = styled.div`
   color: ${({ theme }) => theme.error};
   background-color: transparent;
-  white-space: pre-line;
+  white-space: pre-wrap;
   width: 100%;
 `;
 
 export const ErrorItem: React.FC<ErrorItemProps> = ({ error }) => {
   const { setErrorRowNumber } = useErrorsState();
-
-  const getRowNumber = () => parseInt(error.split(',')[1].split(':')[1]) + 1;
-  const cleanError = error.replaceAll('\\', '') + '}';
+  const { set } = useRouter();
+  const getRowNumber = () => parseInt(error.split(",")[1].split(":")[1]) + 1;
+  const cleanError = error.replaceAll("\\", "") + "}";
   return (
-    <Main>
+    <Main gap="1rem" align="end" direction="column">
       <Message>{cleanError}</Message>
-      <ButtonStyles onClick={() => setErrorRowNumber(getRowNumber())}>
+      <Button
+        variant="secondary"
+        onClick={() => {
+          setErrorRowNumber(getRowNumber());
+          set({
+            code: "on",
+          });
+        }}
+      >
         Resolve error
-      </ButtonStyles>
+      </Button>
     </Main>
   );
 };

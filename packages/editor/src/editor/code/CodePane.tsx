@@ -1,14 +1,14 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { settings } from './monaco';
-import { fontFamily } from '@/vars';
-import { useErrorsState, useTheme, useTreesState } from '@/state/containers';
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { settings } from "./monaco";
+import { fontFamily } from "@/vars";
+import { useErrorsState, useTheme, useTreesState } from "@/state/containers";
 
-import { SchemaEditorApi, SchemaEditor } from '@/editor/code/guild';
-import { theme as MonacoTheme } from '@/editor/code/monaco';
-import { OperationType } from 'graphql-js-tree';
-import { CodeContainer, ErrorLock } from '@/editor/code/style/Code';
-import { Maybe } from 'graphql-language-service';
-import { useDebouncedValue } from '@/shared/hooks/useDebouncedValue';
+import { SchemaEditorApi, SchemaEditor } from "@/editor/code/guild";
+import { theme as MonacoTheme } from "@/editor/code/monaco";
+import { OperationType } from "graphql-js-tree";
+import { CodeContainer } from "@/editor/code/style/Code";
+import { Maybe } from "graphql-language-service";
+import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 
 export interface CodePaneOuterProps {
   readonly?: boolean;
@@ -29,7 +29,7 @@ export const CodePane = (props: CodePaneProps) => {
   const { schema, readonly, onChange, libraries, fullScreen } = props;
   const { theme } = useTheme();
   const { selectedNodeId, setSelectedNodeId, allNodes } = useTreesState();
-  const { lockCode, errorRowNumber } = useErrorsState();
+  const { errorRowNumber } = useErrorsState();
   const [temporaryString, setTemporaryString] = useState(schema);
   const debouncedTemporaryString = useDebouncedValue(temporaryString, 1200);
 
@@ -40,7 +40,7 @@ export const CodePane = (props: CodePaneProps) => {
       fontFamily,
       readOnly: readonly,
     }),
-    [readonly],
+    [readonly]
   );
 
   useEffect(() => {
@@ -51,7 +51,7 @@ export const CodePane = (props: CodePaneProps) => {
 
   useEffect(() => {
     if (ref.current) {
-      if (selectedNodeId?.source === 'code') {
+      if (selectedNodeId?.source === "code") {
         return;
       }
       selectedNodeId?.value?.name
@@ -70,24 +70,25 @@ export const CodePane = (props: CodePaneProps) => {
     (
       e?:
         | Maybe<string>
-        | Maybe<{ operation: 'Query' | 'Mutation' | 'Subscription' }>,
+        | Maybe<{ operation: "Query" | "Mutation" | "Subscription" }>
     ) => {
       if (fullScreen) return;
       if (e) {
         const op =
-          typeof e === 'object' && e.operation
+          typeof e === "object" && e.operation
             ? (e.operation.toLowerCase() as OperationType)
             : undefined;
         const n = op
           ? allNodes.nodes.find((an) => an.type.operations?.includes(op))
           : allNodes.nodes.find((an) => an.name === e);
+        if (n?.id === selectedNodeId?.value?.id) return;
         setSelectedNodeId({
-          source: 'code',
+          source: "code",
           value: n ? { id: n.id, name: n.name } : undefined,
         });
       }
     },
-    [fullScreen, allNodes, setSelectedNodeId],
+    [fullScreen, allNodes, selectedNodeId, setSelectedNodeId]
   );
   return (
     <CodeContainer>
@@ -96,12 +97,12 @@ export const CodePane = (props: CodePaneProps) => {
           height="100%"
           ref={ref}
           beforeMount={(monaco) =>
-            monaco.editor.defineTheme('graphql-editor', MonacoTheme(theme))
+            monaco.editor.defineTheme("graphql-editor", MonacoTheme(theme))
           }
           onChange={(v) => {
             if (props.readonly) return;
             if (v === schema) return;
-            setTemporaryString(v || '');
+            setTemporaryString(v || "");
           }}
           onBlur={(v) => {
             if (props.readonly) return;
@@ -113,9 +114,6 @@ export const CodePane = (props: CodePaneProps) => {
           options={codeSettings}
           select={selectFunction}
         />
-      )}
-      {lockCode && (
-        <ErrorLock>{`Unable to parse GraphQL graph. Code editor is locked. Open graph editor to correct errors in GraphQL Schema. Message:\n${lockCode}`}</ErrorLock>
       )}
     </CodeContainer>
   );

@@ -6,7 +6,7 @@ import { TypeSystemDefinition } from 'graphql-js-tree';
 import { RELATION_CONSTANTS } from '@/Relation/PanZoom/LinesDiagram/Lines/constants';
 import { ActiveFieldName } from '@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveFieldName';
 import { ActiveType } from '@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveType';
-import { DOMClassNames } from '@/Relation/shared/DOMClassNames';
+import { DOMClassNames } from '@/shared/hooks/DOMClassNames';
 
 const Main = styled.div`
   position: relative;

@@ -1,14 +1,14 @@
-import { FieldsList } from '@/Docs/FieldsList';
-import { InterfacesList } from '@/Docs/InterfacesList';
-import { useTreesState } from '@/state/containers';
-import { fontFamilySans } from '@/vars';
-import { ParserField, getTypeName, compareParserFields } from 'graphql-js-tree';
-import React, { useMemo, useState } from 'react';
-import { Remarkable } from 'remarkable';
-import styled from '@emotion/styled';
-import { DescText, DescWrapper, Title } from '@/Docs/DocsStyles';
-import { Description } from '@/Docs/Description';
-import { PenLine } from '@aexol-studio/styling-system';
+import { FieldsList } from "@/Docs/FieldsList";
+import { InterfacesList } from "@/Docs/InterfacesList";
+import { useTreesState } from "@/state/containers";
+import { fontFamilySans } from "@/vars";
+import { ParserField, getTypeName, compareParserFields } from "graphql-js-tree";
+import React, { useMemo, useState } from "react";
+import { Remarkable } from "remarkable";
+import styled from "@emotion/styled";
+import { DescText, DescWrapper, Title } from "@/Docs/DocsStyles";
+import { Description } from "@/Docs/Description";
+import { PenLine } from "@aexol-studio/styling-system";
 
 const Wrapper = styled.div`
   font-family: ${fontFamilySans};
@@ -53,12 +53,12 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
           id: newSelectedNode[0].id,
           name: newSelectedNode[0].name,
         },
-        source: 'docs',
+        source: "docs",
       });
   };
 
   const description = useMemo(() => {
-    return node.description ? new Remarkable().render(node.description) : '';
+    return node.description ? new Remarkable().render(node.description) : "";
   }, [node.description]);
 
   const onSubmit = (description: string) => {
@@ -81,7 +81,7 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
             onSubmit(description);
             setIsEdit(false);
           }}
-          value={node.description || ''}
+          value={node.description || ""}
         />
       ) : (
         <DescWrapper
@@ -91,7 +91,7 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
         >
           <DescText
             dangerouslySetInnerHTML={{
-              __html: description || 'No description',
+              __html: description || "No description",
             }}
           />
           {!isReadonly && <PenLine />}

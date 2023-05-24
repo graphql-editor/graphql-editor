@@ -1,26 +1,26 @@
-import React, { useEffect, useImperativeHandle } from 'react';
-import { Menu } from './menu/Menu';
-import { CodePane } from './code';
-import { PassedSchema } from '@/Models';
-import { DynamicResize } from './code/Components';
-import { ParserTree } from 'graphql-js-tree';
-import { GraphQLEditorWorker } from 'graphql-editor-worker';
+import React, { useEffect, useImperativeHandle } from "react";
+import { Menu } from "./menu/Menu";
+import { CodePane } from "./code";
+import { PassedSchema } from "@/Models";
+import { DynamicResize } from "./code/Components";
+import { ParserTree } from "graphql-js-tree";
+import { GraphQLEditorWorker } from "graphql-editor-worker";
 import {
   useErrorsState,
   useTreesState,
   useTheme,
   useLayoutState,
-} from '@/state/containers';
+} from "@/state/containers";
 
-import { DiffEditor } from '@/DiffEditor';
-import { Relation } from '@/Relation/Relation';
-import { EditorTheme } from '@/gshared/theme/MainTheme';
-import { Docs } from '@/Docs/Docs';
-import { useSortState } from '@/state/containers/sort';
-import styled from '@emotion/styled';
-import { useRouter, EditorRoutes } from '@/state/containers/router';
-import { ErrorsList } from '@/shared/errors/ErrorsList';
-import { NodeNavigation } from '@/shared/NodeNavigation';
+import { DiffEditor } from "@/DiffEditor";
+import { Relation } from "@/Relation/Relation";
+import { EditorTheme } from "@/gshared/theme/MainTheme";
+import { Docs } from "@/Docs/Docs";
+import { useSortState } from "@/state/containers/sort";
+import styled from "@emotion/styled";
+import { useRouter, EditorRoutes } from "@/state/containers/router";
+import { ErrorsList } from "@/shared/errors/ErrorsList";
+import { NodeNavigation } from "@/shared/NodeNavigation";
 
 const Main = styled.div`
   display: flex;
@@ -64,7 +64,7 @@ const ErrorOuterContainer = styled.div<{ isOverflow?: boolean }>`
   width: 100%;
   position: relative;
   display: flex;
-  overflow-y: ${({ isOverflow }) => isOverflow && 'auto'};
+  overflow-y: ${({ isOverflow }) => isOverflow && "auto"};
   overflow-x: hidden;
 `;
 
@@ -98,8 +98,8 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
   (
     {
       schema = {
-        code: '',
-        libraries: '',
+        code: "",
+        libraries: "",
       },
       setSchema,
       diffSchemas,
@@ -110,13 +110,12 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
       onRouteChange,
       onNodeSelect,
     }: EditorProps,
-    ref,
+    ref
   ) => {
     const { setTheme } = useTheme();
     const {
       grafErrors,
       setGrafErrors,
-      setLockCode,
       setGrafEditorErrors,
       setGrafErrorSchema,
       lockGraf,
@@ -150,15 +149,17 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
       ref,
       () => ({
         selectNode: (nId) => {
+          if (nId === selectedNodeId?.value?.id) return;
           const n = allNodes.nodes.find((an) => an.id === nId);
           setSelectedNodeId({
-            source: 'routing',
+            source: "routing",
             value: nId
               ? {
                   id: nId,
-                  name: n?.name || '',
+                  name: n?.name || "",
                 }
               : undefined,
+            justCreated: selectedNodeId?.justCreated,
           });
         },
         route: (routes) => {
@@ -167,13 +168,13 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
           });
         },
       }),
-      [set, setSelectedNodeId, allNodes],
+      [set, setSelectedNodeId, allNodes]
     );
     useEffect(() => {
       if (
         onNodeSelect &&
         selectedNodeId &&
-        selectedNodeId.source !== 'routing'
+        selectedNodeId.source !== "routing"
       ) {
         onNodeSelect(selectedNodeId?.value?.id);
       }
@@ -214,7 +215,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
         if (tree.initial) {
           return;
         }
-        setSchema({ ...schema, isTree: true, code: '' });
+        setSchema({ ...schema, isTree: true, code: "" });
         return;
       }
       try {
@@ -226,24 +227,21 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
                   const mapErrors = errors.map((e) => e.text);
                   const msg = [
                     ...mapErrors.filter((e, i) => mapErrors.indexOf(e) === i),
-                  ].join('\n\n');
+                  ].join("\n\n");
                   setGrafErrors(msg);
                   setGrafEditorErrors(errors);
                   setGrafErrorSchema(graphql);
-                  setLockCode(msg);
                   return;
                 }
-                setLockCode(undefined);
                 setGrafErrors(undefined);
                 setGrafEditorErrors([]);
                 setSchema({ ...schema, code: graphql, isTree: true });
-              },
+              }
             );
           }
         });
       } catch (error) {
         const msg = (error as Error).message;
-        setLockCode(msg);
         setGrafErrors(msg);
         return;
       }
@@ -258,7 +256,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
     }, [schema]);
 
     useEffect(() => {
-      if (onRouteChange && routes.source === 'internal') {
+      if (onRouteChange && routes.source === "internal") {
         onRouteChange({
           ...routes,
         });
@@ -267,7 +265,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
     return (
       <Main
         onKeyDown={(e) => {
-          if (e.key.toLowerCase() === 'f' && (e.metaKey || e.ctrlKey)) {
+          if (e.key.toLowerCase() === "f" && (e.metaKey || e.ctrlKey)) {
             e.preventDefault();
           }
         }}
@@ -276,36 +274,36 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
           schema={schema.code}
           libraries={schema.libraries}
           path={path}
-          toggleCode={routes.code === 'on'}
+          toggleCode={routes.code === "on"}
           setSchema={setSchema}
           setToggleCode={() =>
             set(
               {
                 ...routes,
-                code: routes.code === 'off' ? 'on' : 'off',
-                source: 'internal',
+                code: routes.code === "off" ? "on" : "off",
+                source: "internal",
               },
-              'internal',
+              "internal"
             )
           }
           activePane={routes.pane}
-          excludePanes={diffSchemas ? undefined : ['diff']}
+          excludePanes={diffSchemas ? undefined : ["diff"]}
           setActivePane={(p) => {
             const newState: typeof routes = { ...routes, pane: p };
-            set(newState, 'internal');
+            set(newState, "internal");
           }}
         />
-        {routes.code === 'on' && routes.pane !== 'diff' && (
+        {routes.code === "on" && routes.pane !== "diff" && (
           <DynamicResize
             enable={{ right: true }}
-            disabledClass={!routes.pane ? 'full-screen-container' : undefined}
+            disabledClass={!routes.pane ? "full-screen-container" : undefined}
             resizeCallback={(e, r, c) => {
               setSidebarSize(c.getBoundingClientRect().width);
             }}
-            width={!routes.pane ? '100%' : sidebarSize}
+            width={!routes.pane ? "100%" : sidebarSize}
           >
             <Sidebar
-              className={!routes.pane ? 'full-screen-container' : undefined}
+              className={!routes.pane ? "full-screen-container" : undefined}
             >
               <CodePane
                 size={!routes.pane ? 100000 : sidebarSize}
@@ -320,18 +318,19 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
             </Sidebar>
           </DynamicResize>
         )}
-        {(routes.pane === 'relation' || routes.pane === 'docs') && (
+        {(routes.pane === "relation" || routes.pane === "docs") && (
           <ErrorOuterContainer>
-            {routes.pane === 'relation' && <Relation />}
-            {routes.pane === 'docs' && <Docs />}
+            {routes.pane === "relation" && <Relation />}
+            {routes.pane === "docs" && <Docs />}
             <NodeNavigation />
           </ErrorOuterContainer>
         )}
-        {routes.pane === 'diff' && diffSchemas && (
+        {routes.pane === "diff" && diffSchemas && (
           <DiffEditor schemas={diffSchemas} />
         )}
         {lockGraf && <ErrorsList> {errorsItems}</ErrorsList>}
       </Main>
     );
-  },
+  }
 );
+Editor.displayName = "Editor";

@@ -1,6 +1,6 @@
-import React from 'react';
-import { fontFamilySans } from '@/vars';
-import styled from '@emotion/styled';
+import React from "react";
+import { fontFamilySans } from "@/vars";
+import styled from "@emotion/styled";
 
 export const ErrorWrapper = styled.div`
   font-family: ${fontFamilySans};
@@ -16,12 +16,13 @@ export const ErrorWrapper = styled.div`
   z-index: 2;
 `;
 export const ErrorInside = styled.div`
-  width: 300px;
+  width: clamp(320px, 50%, 600px);
   height: 100%;
   overflow-y: auto;
   margin-left: auto;
   padding: 20px;
-  background-color: ${({ theme }) => theme.neutral[700]};
+  background-color: ${({ theme }) => theme.neutral[600]};
+  color: ${(p) => p.theme.text.active};
 `;
 
 export const ErrorLabel = styled.p`

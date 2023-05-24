@@ -1,24 +1,26 @@
-export const useDomOperations = (
+export const manageDomNode = (
   className: string | string[],
-  idClassName: string,
+  parentClass?: "focus" | "all"
 ) => {
   const selectAll = () =>
     document.querySelectorAll(
       Array.isArray(className)
-        ? className.map((c) => `.${c}`).join(',')
-        : `.${className}.${idClassName}`,
+        ? className.map((c) => `.${c}`).join(",")
+        : parentClass
+        ? `.${parentClass} .${className}`
+        : `.${className}`
     );
   const addClassToAll = (addedClassName: string) => {
     selectAll().forEach((e) => e.classList.add(addedClassName));
   };
   const removeClasses = (classesToRemove: string[]) => {
     selectAll().forEach((e) =>
-      classesToRemove.forEach((ctr) => e.classList.remove(ctr)),
+      classesToRemove.forEach((ctr) => e.classList.remove(ctr))
     );
   };
   const addClassByFn = (
     addedClassName: string,
-    fn: (element: Element) => boolean,
+    fn: (element: Element) => boolean
   ) => {
     selectAll().forEach((e) => {
       if (fn(e)) {
@@ -28,7 +30,7 @@ export const useDomOperations = (
   };
   const toggleClassByFn = (
     addedClassName: string,
-    fn: (element: Element) => boolean,
+    fn: (element: Element) => boolean
   ) => {
     selectAll().forEach((e) => {
       if (fn(e)) {

@@ -1,9 +1,9 @@
-import { Draw } from './Draw';
-import { getTypeName, ParserField } from 'graphql-js-tree';
-import React from 'react';
-import { useTheme } from '@/state/containers';
-import styled from '@emotion/styled';
-import { NumberNode } from 'graphql-editor-worker';
+import { Draw } from "./Draw";
+import { getTypeName, ParserField } from "graphql-js-tree";
+import React from "react";
+import { useTheme } from "@/state/containers";
+import styled from "@emotion/styled";
+import { NumberNode } from "graphql-editor-worker";
 
 const RelationsContainer = styled.svg`
   width: 100%;
@@ -24,13 +24,12 @@ export interface RelationPath {
   connectingField: ParserField;
 }
 interface LinesProps {
-  className: 'all' | 'focused';
   relations:
     | { to: RelationPath; from: RelationPath[]; fromLength: number }[]
     | undefined;
 }
 
-export const Lines: React.FC<LinesProps> = ({ relations, className }) => {
+export const Lines: React.FC<LinesProps> = ({ relations }) => {
   const { theme } = useTheme();
 
   return (
@@ -40,12 +39,11 @@ export const Lines: React.FC<LinesProps> = ({ relations, className }) => {
           const relationType = rf.connectingField.type.fieldType;
           return (
             <Draw
-              className={className}
               relationType={relationType}
               color={
                 theme.colors[
                   getTypeName(
-                    rf.field.parserField.type.fieldType,
+                    rf.field.parserField.type.fieldType
                   ) as keyof typeof theme.colors
                 ]
               }

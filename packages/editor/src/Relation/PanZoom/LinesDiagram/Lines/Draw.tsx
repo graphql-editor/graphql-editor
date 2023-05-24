@@ -1,8 +1,8 @@
-import { DOMClassNames } from '@/Relation/shared/DOMClassNames';
-import { transition } from '@/vars';
-import styled from '@emotion/styled';
-import { FieldType, Options } from 'graphql-js-tree';
-import React from 'react';
+import { DOMClassNames } from "@/shared/hooks/DOMClassNames";
+import { transition } from "@/vars";
+import styled from "@emotion/styled";
+import { FieldType, Options } from "graphql-js-tree";
+import React from "react";
 // import { RELATION_CONSTANTS } from './constants';
 
 interface Point {
@@ -26,13 +26,11 @@ export const Draw = ({
   to,
   color,
   relationType,
-  className,
 }: {
   from?: { x: number; y: number; id: string };
   to?: { x: number; y: number; id: string };
   color: string;
   relationType: FieldType;
-  className: 'all' | 'focused';
 }) => {
   const stroke = color;
   if (from && to) {
@@ -55,7 +53,7 @@ export const Draw = ({
     const maxBezier = 600.0;
     const bezierWeight = Math.min(
       0.9,
-      Math.max(-0.15, (maxBezier - Math.abs(f.y - t.y)) / maxBezier),
+      Math.max(-0.15, (maxBezier - Math.abs(f.y - t.y)) / maxBezier)
     );
 
     const bezierPoint1 = {
@@ -73,7 +71,7 @@ export const Draw = ({
             y: t.y,
           },
       bezierPoint1,
-      bezierWeight,
+      bezierWeight
     );
     const bezierPoint2 = {
       x: (f.x + center.x) / 2.0,
@@ -90,20 +88,20 @@ export const Draw = ({
             y: f.y,
           },
       bezierPoint2,
-      bezierWeight,
+      bezierWeight
     );
 
     return (
       <PathG
         data-from={from.id}
         data-to={to.id}
-        className={`${DOMClassNames.nodeConnection} ${className}`}
+        className={`${DOMClassNames.nodeConnection}`}
       >
         <path
           stroke={stroke}
           strokeWidth={fac}
           strokeDasharray={
-            relationType.type === Options.required ? undefined : '5 10'
+            relationType.type === Options.required ? undefined : "5 10"
           }
           d={`M ${t.x} ${t.y}
            Q ${bezier1.x} ${bezier1.y} ${center.x} ${center.y}
@@ -132,7 +130,7 @@ const PathG = styled.g`
     }
   }
   &.selection {
-    &.active {
+    &.${DOMClassNames.active} {
       opacity: 1;
     }
   }
