@@ -1,12 +1,12 @@
-import { NumberNode, sortNodesTs, storeCoordinates } from '@/tsAlgo';
-import { catchSchemaErrors, EditorError } from '@/validation';
+import { NumberNode, sortNodesTs, storeCoordinates } from "@/tsAlgo";
+import { catchSchemaErrors, EditorError } from "@/validation";
 import {
   Parser,
   ParserField,
   ParserTree,
   TreeToGraphQL,
-} from 'graphql-js-tree';
-import { getTokenAtPosition, IPosition } from 'graphql-language-service';
+} from "graphql-js-tree";
+import { getTokenAtPosition, IPosition } from "graphql-language-service";
 const ctx: Worker = self as any;
 
 export type WorkerEvents = {
@@ -33,7 +33,7 @@ export type WorkerEvents = {
   token: {
     args: {
       document: string;
-      position: Pick<IPosition, 'character' | 'line'>;
+      position: Pick<IPosition, "character" | "line">;
     };
     returned: string;
   };
@@ -54,7 +54,7 @@ export type WorkerEvents = {
 const receive =
   <T extends keyof WorkerEvents>(
     key: T,
-    fn: (args: WorkerEvents[T]['args']) => WorkerEvents[T]['returned'],
+    fn: (args: WorkerEvents[T]["args"]) => WorkerEvents[T]["returned"]
   ) =>
   (message: MessageEvent) => {
     const m = message.data;
@@ -77,20 +77,20 @@ const receive =
       }
   };
 
-ctx.addEventListener('message', (message) => {
-  receive('validate', (args) => catchSchemaErrors(args.schema, args.libraries))(
-    message,
+ctx.addEventListener("message", (message) => {
+  receive("validate", (args) => catchSchemaErrors(args.schema, args.libraries))(
+    message
   );
-  receive('parse', (args) => TreeToGraphQL.parse(args.tree))(message);
-  receive('parseSchema', (args) =>
-    Parser.parse(args.schema, [], args.libraries),
+  receive("parse", (args) => TreeToGraphQL.parse(args.tree))(message);
+  receive("parseSchema", (args) =>
+    Parser.parse(args.schema, [], args.libraries)
   )(message);
-  receive('token', (args) =>
+  receive("token", (args) =>
     JSON.stringify(
-      getTokenAtPosition(args.document, args.position as IPosition),
-    ),
+      getTokenAtPosition(args.document, args.position as IPosition)
+    )
   )(message);
-  receive('simulateSort', (args) => {
+  receive("simulateSort", (args) => {
     const sorted = sortNodesTs(args);
     if (sorted.alpha === 0) {
       return sorted.numberNodes;
@@ -100,13 +100,13 @@ ctx.addEventListener('message', (message) => {
         ? args.options.iterations || 200
         : Math.max(
             1,
-            Math.round(sorted.alpha * (args.options.iterations || 200)),
+            Math.round(sorted.alpha * (args.options.iterations || 200))
           );
     storeCoordinates(
       sorted.numberNodes,
       sorted.connections,
       iterations,
-      sorted.alpha,
+      sorted.alpha
     );
     return sorted.numberNodes;
   })(message);

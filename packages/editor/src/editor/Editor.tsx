@@ -328,7 +328,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
         {routes.pane === "diff" && diffSchemas && (
           <DiffEditor schemas={diffSchemas} />
         )}
-        {lockGraf && <ErrorsList> {errorsItems}</ErrorsList>}
+        {lockGraf && <ErrorsList>{errorsItems}</ErrorsList>}
       </Main>
     );
   }

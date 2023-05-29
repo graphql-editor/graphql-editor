@@ -170,10 +170,9 @@ export const useSchemaServices = (
             const position = editor.getPosition();
 
             if (model && position) {
-              const bridge = await languageService.buildBridgeForProviders(
-                model,
-                position
-              );
+              const bridge = await languageService
+                .buildBridgeForProviders(model, position)
+                .catch((e) => {});
 
               if (bridge) {
                 action.onRun({ editor: editorRef, monaco: monacoRef, bridge });

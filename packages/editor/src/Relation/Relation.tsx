@@ -15,7 +15,7 @@ export const Relation: React.FC = () => {
   const { activeNode, focusMode } = useTreesState();
   const { filteredFocusedNodes, filteredRelationNodes } =
     useRelationNodesState();
-  const { editMode } = useRelationsState();
+  const { editMode, ctrlToZoom } = useRelationsState();
   const { grafErrors } = useErrorsState();
   const isFocus = !!(focusMode && filteredFocusedNodes);
   const viewport = useMemo(() => {
@@ -25,7 +25,10 @@ export const Relation: React.FC = () => {
           initialScale={1}
           disabled={isFocus}
           maxScale={1.5}
-          wheel={{ activationKeys: ["Control", "OS", "Meta"], step: 0.03 }}
+          wheel={{
+            activationKeys: ctrlToZoom ? ["Control", "OS", "Meta"] : [],
+            step: 0.03,
+          }}
           minScale={0.1}
           limitToBounds={false}
         >
@@ -37,16 +40,21 @@ export const Relation: React.FC = () => {
         </TransformWrapper>
       </>
     );
-  }, [filteredRelationNodes, isFocus]);
+  }, [filteredRelationNodes, isFocus, ctrlToZoom]);
   return (
     <RelationContainer>
-      {!isFocus && viewport}
+      {viewport}
       {isFocus && (
         <FocusOverlay>
           <TransformWrapper
             initialScale={1}
             maxScale={1.5}
-            wheel={{ activationKeys: ["Control", "OS", "Meta"], step: 0.03 }}
+            wheel={{
+              activationKeys: ctrlToZoom
+                ? ["Control", "OS", "Meta"]
+                : undefined,
+              step: 0.03,
+            }}
             panning={{ velocityDisabled: false }}
             minScale={0.1}
             limitToBounds={false}

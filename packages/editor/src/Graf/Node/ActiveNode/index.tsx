@@ -1,33 +1,34 @@
-import React, { useEffect, useState, DragEvent } from 'react';
+import React, { useEffect, useState, DragEvent } from "react";
 import {
   ParserField,
   TypeSystemDefinition,
   TypeDefinition,
   getTypeName,
-} from 'graphql-js-tree';
-import { ActiveField } from '@/Graf/Node/Field';
+} from "graphql-js-tree";
+import { ActiveField } from "@/Graf/Node/Field";
 import {
   ActiveDescription,
   CreateNodeInterface,
   NodeInterface,
-} from '@/Graf/Node/components';
-import { useTreesState } from '@/state/containers/trees';
-import { TopNodeMenu } from '@/Graf/Node/ActiveNode/TopNodeMenu';
-import { isExtensionNode } from '@/GraphQL/Resolve';
+} from "@/Graf/Node/components";
+import { useTreesState } from "@/state/containers/trees";
+import { TopNodeMenu } from "@/Graf/Node/ActiveNode/TopNodeMenu";
+import { isExtensionNode } from "@/GraphQL/Resolve";
 
 import {
   dragLeaveHandler,
   dragOverHandler,
   dragStartHandler,
-} from '@/shared/dnd';
-import styled from '@emotion/styled';
-import { EditableText } from '@/Graf/Node/Field/EditableText';
-import { ActiveGrafType } from '@/Graf/Node/Field/ActiveGrafType';
+} from "@/shared/dnd";
+import styled from "@emotion/styled";
+import { EditableText } from "@/Graf/Node/Field/EditableText";
+import { ActiveGrafType } from "@/Graf/Node/Field/ActiveGrafType";
 import {
   CreateNodeDirective,
   DirectivePlacement,
-} from '@/Graf/Node/components/DirectivePlacement';
-import { DraggableProvider, useDraggable } from '@/Graf/state/draggable';
+} from "@/Graf/Node/components/DirectivePlacement";
+import { DraggableProvider, useDraggable } from "@/Graf/state/draggable";
+import { useRelationsState } from "@/state/containers";
 
 interface NodeProps {
   node: ParserField;
@@ -105,7 +106,7 @@ const DirectivePlacements = styled.div`
   border-bottom: 1px solid ${({ theme }) => theme.dividerMain};
 `;
 const NodeInterfaces = styled.div<{ isHidden?: boolean }>`
-  display: ${({ isHidden }) => (isHidden ? 'none' : 'flex')};
+  display: ${({ isHidden }) => (isHidden ? "none" : "flex")};
   max-width: 100%;
   flex-flow: row wrap;
   overflow-x: auto;
@@ -160,14 +161,16 @@ export const ActiveNode: React.FC<NodeProps> = ({
   parentNode,
   ...sharedProps
 }) => {
+  const { setEditMode } = useRelationsState();
+  const { setSelectedNodeId } = useTreesState();
   const [openedNode, setOpenedNode] = useState<{
     type:
-      | keyof Pick<ParserField, 'args' | 'directives'>
-      | 'output'
-      | 'directiveOutput';
+      | keyof Pick<ParserField, "args" | "directives">
+      | "output"
+      | "directiveOutput";
     index: number;
   }>();
-  const [dragOverName, setDragOverName] = useState('');
+  const [dragOverName, setDragOverName] = useState("");
   const { draggable } = useDraggable();
   const {
     allNodes,
@@ -190,14 +193,14 @@ export const ActiveNode: React.FC<NodeProps> = ({
       ? allNodes.nodes.find(
           (n) =>
             n.name === getTypeName(field.type.fieldType) &&
-            !isExtensionNode(n.data.type),
+            !isExtensionNode(n.data.type)
         )
       : undefined;
   };
 
   const dropHandler = (e: DragEvent, endNodeName: string) => {
     e.stopPropagation();
-    const startNodeName = e.dataTransfer.getData('startName');
+    const startNodeName = e.dataTransfer.getData("startName");
     if (endNodeName === startNodeName) return;
     if (node.args) {
       const startIdx = node.args.findIndex((a) => a.name === startNodeName);
@@ -213,11 +216,11 @@ export const ActiveNode: React.FC<NodeProps> = ({
   }, [selectedNodeId?.value?.id]);
 
   const openedNodeNode = openedNode
-    ? openedNode.type === 'directives'
+    ? openedNode.type === "directives"
       ? node.directives[openedNode.index]
-      : openedNode.type === 'args'
+      : openedNode.type === "args"
       ? node.args[openedNode.index]
-      : openedNode.type === 'directiveOutput'
+      : openedNode.type === "directiveOutput"
       ? findNodeByField(node.directives[openedNode.index])
       : findNodeByField(node.args[openedNode.index])
     : undefined;
@@ -236,7 +239,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
           });
         }}
         isLocked={isLocked}
-        value={node.description || ''}
+        value={node.description || ""}
       />
       {node.data.type === TypeSystemDefinition.DirectiveDefinition && (
         <DirectivePlacements>
@@ -249,7 +252,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                 updateNode(node, () => {
                   node.type.directiveOptions =
                     node.type.directiveOptions?.filter(
-                      (oldDirective) => oldDirective !== d,
+                      (oldDirective) => oldDirective !== d
                     );
                 });
               }}
@@ -270,7 +273,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
               onDelete={() => deImplementInterface(node, i)}
               onDetach={() => {
                 node.interfaces = node.interfaces?.filter(
-                  (oldInterface) => oldInterface !== i,
+                  (oldInterface) => oldInterface !== i
                 );
                 updateNode(node);
               }}
@@ -296,7 +299,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                 {...sharedProps}
                 readonly={isLocked}
                 parentNode={
-                  openedNode.type === 'args' || openedNode.type === 'directives'
+                  openedNode.type === "args" || openedNode.type === "directives"
                     ? {
                         indexInParent: openedNode.index,
                         node: node,
@@ -331,7 +334,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                 style={EditableTitle}
                 value={node.name}
                 exclude={Object.keys(parentTypes).filter(
-                  (pt) => pt !== node.name,
+                  (pt) => pt !== node.name
                 )}
                 onChange={(newName) => {
                   if (parentNode) {
@@ -341,7 +344,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                       {
                         ...node,
                         name: newName,
-                      },
+                      }
                     );
                     return;
                   }
@@ -358,7 +361,16 @@ export const ActiveNode: React.FC<NodeProps> = ({
               {...sharedProps}
               parentNode={parentNode?.node}
               isLibrary={libraryNode}
-              onDelete={() => removeNode(node)}
+              onDelete={() => {
+                removeNode(node);
+                if (!parentNode?.node) {
+                  setEditMode("");
+                  setSelectedNodeId({
+                    value: undefined,
+                    source: "relation",
+                  });
+                }
+              }}
               onDuplicate={() => sharedProps.onDuplicate?.(node)}
               onInputCreate={() => sharedProps.onInputCreate?.(node)}
               node={node}
@@ -369,7 +381,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
           <NodeFields>
             {node.directives?.map((d, i) => {
               const outputDisabled = !allNodes.nodes.find(
-                (n) => n.name === getTypeName(d.type.fieldType),
+                (n) => n.name === getTypeName(d.type.fieldType)
               );
               return (
                 <ActiveField
@@ -378,25 +390,25 @@ export const ActiveNode: React.FC<NodeProps> = ({
                   key={d.name + i}
                   onInputClick={() => {
                     setOpenedNode((oN) =>
-                      oN?.index === i && oN.type === 'directives'
+                      oN?.index === i && oN.type === "directives"
                         ? undefined
-                        : { type: 'directives', index: i },
+                        : { type: "directives", index: i }
                     );
                   }}
                   onOutputClick={() => {
                     setOpenedNode((oN) =>
-                      oN?.index === i && oN.type === 'directiveOutput'
+                      oN?.index === i && oN.type === "directiveOutput"
                         ? undefined
-                        : { type: 'directiveOutput', index: i },
+                        : { type: "directiveOutput", index: i }
                     );
                   }}
                   node={d}
                   inputOpen={
-                    openedNode?.type === 'directives' && openedNode?.index === i
+                    openedNode?.type === "directives" && openedNode?.index === i
                   }
                   outputDisabled={outputDisabled}
                   outputOpen={
-                    openedNode?.type === 'directiveOutput' &&
+                    openedNode?.type === "directiveOutput" &&
                     openedNode?.index === i
                   }
                   onUpdate={(updatedNode) => {
@@ -414,17 +426,17 @@ export const ActiveNode: React.FC<NodeProps> = ({
             })}
             {node.args?.map((a, i) => {
               const outputDisabled = !allNodes.nodes.find(
-                (n) => n.name === getTypeName(a.type.fieldType),
+                (n) => n.name === getTypeName(a.type.fieldType)
               );
               return (
                 <DndContainer
                   key={a.name}
                   id={a.name}
                   onDrop={(e) => {
-                    setDragOverName('');
+                    setDragOverName("");
                     dropHandler(e, a.name);
                   }}
-                  onDragEnd={() => setDragOverName('')}
+                  onDragEnd={() => setDragOverName("")}
                   onDragLeave={(e) => {
                     dragLeaveHandler(e);
                   }}
@@ -432,7 +444,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                     setDragOverName(a.name);
                     dragOverHandler(e);
                   }}
-                  className={a.name === dragOverName ? `drag-over` : ''}
+                  className={a.name === dragOverName ? `drag-over` : ""}
                 >
                   <div
                     draggable={!isLocked && draggable}
@@ -446,25 +458,25 @@ export const ActiveNode: React.FC<NodeProps> = ({
                       key={a.name}
                       onInputClick={() => {
                         setOpenedNode((oN) =>
-                          oN?.index === i && oN.type === 'args'
+                          oN?.index === i && oN.type === "args"
                             ? undefined
-                            : { type: 'args', index: i },
+                            : { type: "args", index: i }
                         );
                       }}
                       onOutputClick={() => {
                         setOpenedNode((oN) =>
-                          oN?.index === i && oN.type === 'output'
+                          oN?.index === i && oN.type === "output"
                             ? undefined
-                            : { type: 'output', index: i },
+                            : { type: "output", index: i }
                         );
                       }}
                       node={a}
                       inputOpen={
-                        openedNode?.type === 'args' && openedNode?.index === i
+                        openedNode?.type === "args" && openedNode?.index === i
                       }
                       outputDisabled={outputDisabled}
                       outputOpen={
-                        openedNode?.type === 'output' && openedNode?.index === i
+                        openedNode?.type === "output" && openedNode?.index === i
                       }
                       onDelete={() => removeFieldFromNode(node, a)}
                       onUpdate={(updatedNode) => {
@@ -478,7 +490,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
           </NodeFields>
         </NodeFieldsContainer>
       </MainNodeArea>
-      <div style={{ marginBottom: '1rem' }} />
+      <div style={{ marginBottom: "1rem" }} />
     </NodeContainer>
   );
 };

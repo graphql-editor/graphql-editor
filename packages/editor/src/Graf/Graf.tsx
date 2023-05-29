@@ -1,21 +1,21 @@
-import React, { useEffect } from 'react';
-import { fontFamilySans } from '@/vars';
-import { ActiveNode } from '@/Graf/Node';
-import { useTreesState } from '@/state/containers/trees';
+import React, { useEffect } from "react";
+import { fontFamilySans } from "@/vars";
+import { ActiveNode } from "@/Graf/Node";
+import { useTreesState } from "@/state/containers/trees";
 
-import { getScalarFields } from '@/Graf/utils/getScalarFields';
+import { getScalarFields } from "@/Graf/utils/getScalarFields";
 import {
   Options,
   ParserField,
   createParserField,
   TypeDefinition,
   TypeSystemDefinition,
-} from 'graphql-js-tree';
-import styled from '@emotion/styled';
-import { KeyboardActions, useIO } from '@/shared/hooks/io';
-import { DraggableProvider } from '@/Graf/state/draggable';
-import { useRelationsState } from '@/state/containers';
-import { Button, Stack, useToasts } from '@aexol-studio/styling-system';
+} from "graphql-js-tree";
+import styled from "@emotion/styled";
+import { KeyboardActions, useIO } from "@/shared/hooks/io";
+import { DraggableProvider } from "@/Graf/state/draggable";
+import { useRelationsState } from "@/state/containers";
+import { Button, Stack, useToasts } from "@aexol-studio/styling-system";
 
 const SubNodeContainer = styled.div`
   font-family: ${fontFamilySans};
@@ -67,26 +67,30 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
 
   const exit = () => {
     const d = activeNode?.data.type;
+    setSelectedNodeId({
+      source: "relation",
+      value: selectedNodeId?.value,
+    });
     if (
       d === TypeDefinition.EnumTypeDefinition ||
       d === TypeDefinition.ScalarTypeDefinition ||
       d === TypeSystemDefinition.DirectiveDefinition
     ) {
       setSelectedNodeId({
-        source: 'relation',
+        source: "relation",
         value: undefined,
       });
     }
-    setEditMode('');
+    setEditMode("");
   };
 
   const cancelCreate = () => {
     const allNodes = tree.nodes.filter(
-      (n) => n.id !== selectedNodeId?.value?.id,
+      (n) => n.id !== selectedNodeId?.value?.id
     );
-    setSelectedNodeId({ source: 'relation', value: undefined });
+    setSelectedNodeId({ source: "relation", value: undefined });
     setTree({ nodes: allNodes });
-    setEditMode('');
+    setEditMode("");
   };
   return (
     <SubNodeWrapper
@@ -107,9 +111,9 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
                 JSON.stringify(
                   createParserField({
                     ...rest,
-                    name: nodeToDuplicate?.name + 'Copy',
-                  }),
-                ),
+                    name: nodeToDuplicate?.name + "Copy",
+                  })
+                )
               ) as ParserField;
               allNodes.push(duplicatedNode);
               setSelectedNodeId({
@@ -117,7 +121,7 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
                   id: duplicatedNode.id,
                   name: duplicatedNode.name,
                 },
-                source: 'relation',
+                source: "relation",
               });
               setTree({ nodes: allNodes });
             }}
@@ -128,12 +132,12 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
                 directives: [],
                 type: {
                   fieldType: {
-                    name: 'input',
+                    name: "input",
                     type: Options.name,
                   },
                 },
                 data: { type: TypeDefinition.InputObjectTypeDefinition },
-                name: nodeToCreateInput.name + 'Input',
+                name: nodeToCreateInput.name + "Input",
               });
               updateNode(createdInput, () => {
                 tree.nodes.push(createdInput);
@@ -142,7 +146,7 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
                     id: createdInput.id,
                     name: createdInput.name,
                   },
-                  source: 'relation',
+                  source: "relation",
                 });
               });
             }}
@@ -166,14 +170,14 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
                 if (
                   activeNode?.args.length ||
                   activeNode?.data.type ===
-                  TypeSystemDefinition.DirectiveDefinition
+                    TypeSystemDefinition.DirectiveDefinition
                 ) {
                   exit();
                   return;
                 }
                 createToast({
-                  message: 'Node must have fields to be created',
-                  variant: 'error',
+                  message: "Node must have fields to be created",
+                  variant: "error",
                 });
               }}
             >

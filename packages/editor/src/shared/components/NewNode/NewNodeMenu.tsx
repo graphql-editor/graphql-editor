@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   createParserField,
   TypeDefinition,
@@ -7,13 +7,13 @@ import {
   TypeSystemDefinition,
   TypeSystemDefinitionDisplayMap,
   Directive,
-} from 'graphql-js-tree';
-import { useTreesState } from '@/state/containers/trees';
-import { Menu } from '@/Graf/Node/components';
-import styled from '@emotion/styled';
-import { transition } from '@/vars';
-import { Plus, Stack } from '@aexol-studio/styling-system';
-import { useRelationsState } from '@/state/containers';
+} from "graphql-js-tree";
+import { useTreesState } from "@/state/containers/trees";
+import { Menu } from "@/Graf/Node/components";
+import styled from "@emotion/styled";
+import { transition } from "@/vars";
+import { Plus, Stack } from "@aexol-studio/styling-system";
+import { useRelationsState } from "@/state/containers";
 
 interface NodeChangeFieldTypeMenuProps {
   hideMenu: () => void;
@@ -25,7 +25,7 @@ export const NewNodeMenu = React.forwardRef<
 >(({ hideMenu, ...props }, ref) => {
   const { setTree, tree, setSelectedNodeId } = useTreesState();
   const { setEditMode } = useRelationsState();
-  const [nodeName, setNodeName] = useState('');
+  const [nodeName, setNodeName] = useState("");
   const [creating, setCreating] = useState<
     TypeDefinition | TypeSystemDefinition
   >();
@@ -54,7 +54,7 @@ export const NewNodeMenu = React.forwardRef<
 
   const createNode = (
     data: TypeDefinition | TypeSystemDefinition,
-    type: string,
+    type: string
   ) => {
     const node = createParserField({
       data: {
@@ -76,7 +76,7 @@ export const NewNodeMenu = React.forwardRef<
     tree.nodes.push(node);
     setTree({ ...tree });
     setSelectedNodeId({
-      source: 'relation',
+      source: "relation",
       value: {
         id: node.id,
         name: node.name,
@@ -106,18 +106,18 @@ export const NewNodeMenu = React.forwardRef<
                   setNodeName(e.target.value);
                 }}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
+                  if (e.key === "Enter") {
                     createNode(nt.data, nt.type);
                     hideMenu();
                   }
-                  if (e.key === 'Escape') {
+                  if (e.key === "Escape") {
                     setCreating(undefined);
-                    setNodeName('');
+                    setNodeName("");
                   }
                 }}
                 onBlur={() => {
                   setCreating(undefined);
-                  setNodeName('');
+                  setNodeName("");
                 }}
               />
             )}
@@ -139,6 +139,7 @@ export const NewNodeMenu = React.forwardRef<
     </Menu>
   );
 });
+NewNodeMenu.displayName = "NewNodeMenu";
 const CreateNodeItem = styled.div<{ type: string }>`
   display: flex;
   justify-content: space-between;

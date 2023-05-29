@@ -56,6 +56,7 @@ export const SingleNodeInList: React.FC<{
         isHidden={node.isHidden}
         color={colorKey}
         className={DOMClassNames.navigationTitleSpan}
+        data-id={node.id}
       >
         <span>{node.name}</span>
         {isLibrary(node.id) && (

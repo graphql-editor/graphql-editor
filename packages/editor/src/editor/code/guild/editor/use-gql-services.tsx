@@ -1,25 +1,25 @@
-import React from 'react';
-import * as monaco from 'monaco-editor';
+import React from "react";
+import * as monaco from "monaco-editor";
 import {
   DecorationsSource,
   DefinitionSource,
   DiagnosticsSource,
   EditorAction,
   HoverSource,
-} from './utils';
-import { EnrichedLanguageService } from './EnrichedLanguageService';
-import { GraphQLError, GraphQLSchema } from 'graphql';
-import { GraphQLEditorWorker } from 'graphql-editor-worker';
-import { EditorError } from '@/validation';
-import { monacoSetDecorations } from '@/editor/code/monaco/decorations';
-import { useTheme } from '@/state/containers';
+} from "./utils";
+import { EnrichedLanguageService } from "./EnrichedLanguageService";
+import { GraphQLError, GraphQLSchema } from "graphql";
+import { GraphQLEditorWorker } from "graphql-editor-worker";
+import { EditorError } from "@/validation";
+import { monacoSetDecorations } from "@/editor/code/monaco/decorations";
+import { useTheme } from "@/state/containers";
 import {
   CompletionItem,
   ContextTokenForCodeMirror,
   getAutocompleteSuggestions,
   IRange,
   Maybe,
-} from 'graphql-language-service';
+} from "graphql-language-service";
 
 export type SchemaEditorApi = {};
 
@@ -39,12 +39,12 @@ export type SchemaServicesOptions = {
   onSchemaError?: (
     errors: [GraphQLError],
     sdl: string,
-    languageService: EnrichedLanguageService,
+    languageService: EnrichedLanguageService
   ) => void;
   sharedLanguageService?: EnrichedLanguageService;
   keyboardShortcuts?: (
     editorInstance: monaco.editor.IStandaloneCodeEditor,
-    monacoInstance: typeof monaco,
+    monacoInstance: typeof monaco
   ) => monaco.editor.IActionDescriptor[];
 };
 
@@ -55,7 +55,7 @@ const compileSchema = ({
   schema: string;
   libraries?: string;
 }) => {
-  return [schema, libraries || ''].join('\n');
+  return [schema, libraries || ""].join("\n");
 };
 
 export const useGqlServices = (options: SchemaServicesOptions = {}) => {
@@ -79,7 +79,7 @@ export const useGqlServices = (options: SchemaServicesOptions = {}) => {
           },
         },
       }),
-    [options.libraries, options.schema, options.sharedLanguageService],
+    [options.libraries, options.schema, options.sharedLanguageService]
   );
 
   React.useEffect(() => {
@@ -94,17 +94,16 @@ export const useGqlServices = (options: SchemaServicesOptions = {}) => {
           id: action.id,
           label: action.label,
           keybindings: action.keybindings,
-          contextMenuGroupId: action.contextMenuGroupId || 'navigation',
+          contextMenuGroupId: action.contextMenuGroupId || "navigation",
           contextMenuOrder: action.contextMenuOrder,
           run: async (editor) => {
             const model = editor.getModel();
             const position = editor.getPosition();
 
             if (model && position) {
-              const bridge = await languageService.buildBridgeForProviders(
-                model,
-                position,
-              );
+              const bridge = await languageService
+                .buildBridgeForProviders(model, position)
+                .catch((e) => {});
 
               if (bridge) {
                 action.onRun({ editor: editorRef, monaco: monacoRef, bridge });
@@ -119,26 +118,25 @@ export const useGqlServices = (options: SchemaServicesOptions = {}) => {
         editorRef,
         monacoRef,
         options.diagnosticsProviders || [],
-        options.decorationsProviders || [],
+        options.decorationsProviders || []
       );
       const completionProviderDisposable =
-        monacoRef.languages.registerCompletionItemProvider('graphql', {
+        monacoRef.languages.registerCompletionItemProvider("graphql", {
           provideCompletionItems: async (
             model: monaco.editor.IReadOnlyModel,
             position: monaco.Position,
             _context: monaco.languages.CompletionContext,
-            _token: monaco.CancellationToken,
+            _token: monaco.CancellationToken
           ) => {
-            const bridge = await languageService.buildBridgeForProviders(
-              model,
-              position,
-            );
+            const bridge = await languageService
+              .buildBridgeForProviders(model, position)
+              .catch((e) => {});
             if (bridge) {
               const suggestions = getAutocompleteSuggestions(
                 bridge.schema,
                 bridge.document,
                 bridge.position,
-                bridge.token as ContextTokenForCodeMirror,
+                bridge.token as ContextTokenForCodeMirror
               );
               return {
                 suggestions: suggestions.map((s) => toCompletion(s)),
@@ -150,15 +148,15 @@ export const useGqlServices = (options: SchemaServicesOptions = {}) => {
 
       const definitionProviderDisposable =
         monacoRef.languages.registerDefinitionProvider(
-          'graphql',
+          "graphql",
           languageService.getDefinitionProvider(
-            options.definitionProviders || [],
-          ),
+            options.definitionProviders || []
+          )
         );
 
       const hoverDisposable = monacoRef.languages.registerHoverProvider(
-        'graphql',
-        languageService.getHoverProvider(options.hoverProviders || []),
+        "graphql",
+        languageService.getHoverProvider(options.hoverProviders || [])
       );
       return () => {
         completionProviderDisposable && completionProviderDisposable.dispose();
@@ -188,7 +186,7 @@ export const useGqlServices = (options: SchemaServicesOptions = {}) => {
           decorationIds,
           m: monacoRef,
           monacoGql: editorRef,
-        }),
+        })
       );
     }
   }, [editorRef, monacoRef, codeErrors]);
@@ -210,7 +208,7 @@ export const useGqlServices = (options: SchemaServicesOptions = {}) => {
         GraphQLEditorWorker.validate(currentValue, options.libraries).then(
           (errors) => {
             setCodeErrors(errors);
-          },
+          }
         );
       }
     },
@@ -227,7 +225,7 @@ export function toMonacoRange(range: IRange): monaco.IRange {
 }
 export function toCompletion(
   entry: CompletionItem,
-  range?: IRange,
+  range?: IRange
 ): monaco.languages.CompletionItem {
   const results: monaco.languages.CompletionItem = {
     label: entry.label,
@@ -279,7 +277,7 @@ export enum CompletionItemKind {
 }
 
 export function toCompletionItemKind(
-  kind: CompletionItemKind,
+  kind: CompletionItemKind
 ): monaco.languages.CompletionItemKind {
   return kind in kindMap
     ? kindMap[kind]

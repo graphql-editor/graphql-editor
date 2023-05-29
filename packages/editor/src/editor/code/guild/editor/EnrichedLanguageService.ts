@@ -1,13 +1,13 @@
-import { GraphQLEditorWorker } from 'graphql-editor-worker';
-import { GraphQLSchema } from 'graphql';
+import { GraphQLEditorWorker } from "graphql-editor-worker";
+import { GraphQLSchema } from "graphql";
 import {
   LanguageService,
   getRange,
   IPosition as GraphQLPosition,
   ContextToken,
   Position,
-} from 'graphql-language-service';
-import type * as monaco from 'monaco-editor';
+} from "graphql-language-service";
+import type * as monaco from "monaco-editor";
 import {
   BridgeOptions,
   coreDefinitionSource,
@@ -20,18 +20,18 @@ import {
   toGraphQLPosition,
   toMonacoRange,
   removeFalsey,
-} from './utils';
+} from "./utils";
 
 export class EnrichedLanguageService extends LanguageService {
   async getNodeAtPosition(
     schema: GraphQLSchema,
     document: string,
-    position: GraphQLPosition,
+    position: GraphQLPosition
   ): Promise<ContextToken | null> {
     if (schema) {
       const token = await GraphQLEditorWorker.getTokenAtPosition(
         document,
-        position,
+        position
       );
       if (token) {
         return token;
@@ -43,7 +43,7 @@ export class EnrichedLanguageService extends LanguageService {
   public async getNodeFromErrorSchema(
     document: string,
     row: number,
-    column: number,
+    column: number
   ) {
     const graphQLPosition = new Position(row, column);
     const schema = await this.getSchema();
@@ -55,7 +55,7 @@ export class EnrichedLanguageService extends LanguageService {
     const tokenAtPosition = await this.getNodeAtPosition(
       schema,
       document,
-      graphQLPosition,
+      graphQLPosition
     );
 
     if (!tokenAtPosition) {
@@ -68,10 +68,10 @@ export class EnrichedLanguageService extends LanguageService {
   }
 
   public async buildBridgeForProviders<
-    T extends { lineNumber: number; column: number },
+    T extends { lineNumber: number; column: number }
   >(
     model: monaco.editor.ITextModel,
-    position: T,
+    position: T
   ): Promise<null | BridgeOptions> {
     const graphQLPosition = toGraphQLPosition(position);
     const document = model.getValue();
@@ -84,7 +84,7 @@ export class EnrichedLanguageService extends LanguageService {
     const tokenAtPosition = await this.getNodeAtPosition(
       schema,
       document,
-      graphQLPosition,
+      graphQLPosition
     );
 
     if (!tokenAtPosition) {
@@ -102,13 +102,16 @@ export class EnrichedLanguageService extends LanguageService {
   }
 
   getDefinitionProvider(
-    rawSources: DefinitionSource[],
+    rawSources: DefinitionSource[]
   ): monaco.languages.DefinitionProvider {
     const sources = [...rawSources, coreDefinitionSource];
 
     return {
       provideDefinition: async (model, position) => {
-        const bridge = await this.buildBridgeForProviders(model, position);
+        const bridge = await this.buildBridgeForProviders(
+          model,
+          position
+        ).catch((e) => {});
 
         if (!bridge) {
           return [];
@@ -119,7 +122,7 @@ export class EnrichedLanguageService extends LanguageService {
         ).filter(Boolean) as unknown as monaco.languages.Location[][];
 
         const items = ([] as monaco.languages.Location[]).concat(
-          ...nestedArrays,
+          ...nestedArrays
         );
 
         return items;
@@ -131,7 +134,9 @@ export class EnrichedLanguageService extends LanguageService {
     const sources = [...rawSources, coreHoverSource];
     return {
       provideHover: async (model, position) => {
-        const info = await this.buildBridgeForProviders(model, position);
+        const info = await this.buildBridgeForProviders(model, position).catch(
+          (e) => {}
+        );
 
         if (!info) {
           return;
@@ -144,7 +149,7 @@ export class EnrichedLanguageService extends LanguageService {
             } catch (e) {
               return null;
             }
-          }),
+          })
         );
 
         return {
@@ -155,8 +160,8 @@ export class EnrichedLanguageService extends LanguageService {
                 column: info.position.character,
                 line: info.position.line + 1,
               },
-              info.document,
-            ),
+              info.document
+            )
           ),
         };
       },
@@ -167,7 +172,7 @@ export class EnrichedLanguageService extends LanguageService {
     decorationSources: DecorationsSource[],
     model: monaco.editor.ITextModel,
     monacoInstance: typeof monaco,
-    editorInstance: monaco.editor.IStandaloneCodeEditor,
+    editorInstance: monaco.editor.IStandaloneCodeEditor
   ): Promise<void> {
     for (const source of decorationSources) {
       source.forDocument({
@@ -183,7 +188,7 @@ export class EnrichedLanguageService extends LanguageService {
   private async handleDiagnostics(
     rawDiagnosticsSources: DiagnosticsSource[],
     model: monaco.editor.ITextModel,
-    monacoInstance: typeof monaco,
+    monacoInstance: typeof monaco
   ): Promise<void> {
     const diagnosticsSources = [
       ...rawDiagnosticsSources,
@@ -202,28 +207,28 @@ export class EnrichedLanguageService extends LanguageService {
           } catch (e) {
             return null;
           }
-        }),
+        })
       )
     ).filter(removeFalsey);
 
     const markerData = ([] as monaco.editor.IMarkerData[]).concat(
-      ...nestedArrays,
+      ...nestedArrays
     );
 
-    monacoInstance.editor.setModelMarkers(model, 'graphql', markerData);
+    monacoInstance.editor.setModelMarkers(model, "graphql", markerData);
   }
 
   getModelChangeHandler(): (
     editorInstance: monaco.editor.IStandaloneCodeEditor,
     monacoInstance: typeof monaco,
     diagnosticsSources: DiagnosticsSource[],
-    decorationsSources: DecorationsSource[],
+    decorationsSources: DecorationsSource[]
   ) => void {
     return async (
       editorInstance,
       monacoInstance,
       diagnosticsSources,
-      decorationsSources,
+      decorationsSources
     ) => {
       const model = editorInstance.getModel();
 
@@ -237,7 +242,7 @@ export class EnrichedLanguageService extends LanguageService {
           decorationsSources,
           model,
           monacoInstance,
-          editorInstance,
+          editorInstance
         ),
       ]);
     };

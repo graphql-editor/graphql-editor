@@ -258,7 +258,9 @@ export const NodeNavigation = () => {
                 }}
                 value={q}
                 onClear={() => setQ("")}
-                onSubmit={() => {}}
+                onSubmit={() => {
+                  // no op
+                }}
               />
               <>
                 {allVisible ? (

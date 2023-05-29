@@ -2,7 +2,7 @@ import { NumberNode } from "graphql-editor-worker";
 import { manageDomNode } from "@/shared/hooks/manageDomNode";
 import { ReactZoomPanPinchState } from "react-zoom-pan-pinch";
 import { useRef } from "react";
-import { DOMClassNames, DOMEvents } from "@/shared/hooks/DOMClassNames";
+import { DOMClassNames } from "@/shared/hooks/DOMClassNames";
 
 export const useDomManagerTs = (parent: "focus" | "all") => {
   let parentClass = parent;
@@ -17,12 +17,16 @@ export const useDomManagerTs = (parent: "focus" | "all") => {
   const lodCache = useRef<"far">();
 
   const selectNode = (nodeId: string) => {
-    DOMEvents.selectNode.trigger(nodeId);
+    deselectNodes();
     DOMGraphNode.addClassToAll("selection");
     DOMGraphConnection.addClassToAll("selection");
     DOMNavigationNode.addClassByFn("active", (e) => {
       const htmlElem = e as HTMLDivElement;
-      return htmlElem.dataset.id === nodeId;
+      const m = htmlElem.dataset.id === nodeId;
+      if (m) {
+        htmlElem.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      return m;
     });
     DOMGraphConnection.addClassByFn("active", (e) => {
       const svgElem = e as SVGGElement;
@@ -43,6 +47,10 @@ export const useDomManagerTs = (parent: "focus" | "all") => {
     DOMGraphNode.addClassByFn("related", (e) => {
       return relatedNodeIdsToSelected.map((r) => `node-${r}`).includes(e.id);
     });
+  };
+  const showAllForExport = () => {
+    DOMGraphNode.addClassToAll("inViewport");
+    DOMGraphConnection.addClassToAll("inViewport");
   };
   const markInViewport = (nodesInViewport: string[]) => {
     const mappedNodes = nodesInViewport.map((r) => `node-${r}`);
@@ -128,6 +136,7 @@ export const useDomManagerTs = (parent: "focus" | "all") => {
     cullNodes,
     LoDNodes,
     changeZoomInTopBar,
+    showAllForExport,
     changeParentClass: (parent: "focus" | "all") => (parentClass = parent),
   };
 };

@@ -20,7 +20,7 @@ import {
 import { PassedSchema } from "@/Models";
 import { useErrorsState } from "@/state/containers";
 import { ActiveSource } from "@/editor/menu/Menu";
-import { useDomManagerTs } from "@/shared/hooks/useDomManager";
+import { DOMEvents } from "@/shared/hooks/DOMClassNames";
 
 type SelectedNodeId = {
   value?: {
@@ -47,8 +47,6 @@ const useTreesStateContainer = createContainer(() => {
   const [selectedNodeId, _setSelectedNodeId] = useState<SelectedNodeId>();
   const [readonly, setReadonly] = useState(false);
   const { setLockGraf, setCodeErrors, transformCodeError } = useErrorsState();
-  const { selectNode, deselectNodes, markRelated, changeParentClass } =
-    useDomManagerTs(focusMode ? "focus" : "all");
   const allNodes = useMemo(() => {
     return { nodes: tree.nodes.concat(libraryTree.nodes) };
   }, [libraryTree, tree]);
@@ -233,30 +231,11 @@ const useTreesStateContainer = createContainer(() => {
       .filter((n) => relatedToSelected?.includes(n.name))
       .map((n) => n.id);
   }, [relatedToSelected, allNodes]);
-
   const setSelectedNodeId = useCallback(
     (_selectedNodeId?: SelectedNodeId) => {
-      changeParentClass(focusMode ? "focus" : "all");
       const nodeId = _selectedNodeId?.value?.id;
-      if (!nodeId) {
-        deselectNodes();
-        return;
-      }
-      if (nodeId) {
-        deselectNodes();
-        selectNode(nodeId);
-        const rts = relatedToSelectedTypes(
-          allNodes.nodes.find((n) => n.id === nodeId)
-        );
-        const ids = allNodes.nodes
-          .filter((n) => rts?.includes(n.name))
-          .map((n) => n.id);
-
-        if (ids?.length) {
-          markRelated(ids);
-        }
-      }
-      if (_selectedNodeId.value?.id !== selectedNodeId?.value?.id) {
+      DOMEvents.selectNode.trigger(nodeId);
+      if (nodeId !== selectedNodeId?.value?.id) {
         setTimeout(() => _setSelectedNodeId(_selectedNodeId), 250);
       }
     },
@@ -397,16 +376,26 @@ const useTreesStateContainer = createContainer(() => {
     return node;
   };
 
-  const focusNode = useCallback((n: ParserField) => {
+  const focusNode = useCallback(
+    (n: ParserField) => {
+      setSelectedNodeId({
+        source: "deFocus",
+        value: {
+          id: n.id,
+          name: n.name,
+        },
+      });
+      setFocusMode(n.id);
+    },
+    [setSelectedNodeId, setFocusMode]
+  );
+  const exitFocus = useCallback(() => {
     setSelectedNodeId({
       source: "deFocus",
-      value: {
-        id: n.id,
-        name: n.name,
-      },
+      value: selectedNodeId?.value,
     });
-    setFocusMode(n.id);
-  }, []);
+    setFocusMode(undefined);
+  }, [selectedNodeId, setSelectedNodeId]);
   return {
     allNodes,
     tree,
@@ -428,6 +417,7 @@ const useTreesStateContainer = createContainer(() => {
     makeSnapshot,
     future,
     relatedNodeIdsToSelected,
+    relatedToSelectedTypes,
     relatedToSelected,
     parentTypes,
     scalars,
@@ -448,7 +438,7 @@ const useTreesStateContainer = createContainer(() => {
     // focus
     focusMode,
     focusNode,
-    exitFocus: () => setFocusMode(undefined),
+    exitFocus,
   };
 });
 

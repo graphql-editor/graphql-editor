@@ -18,6 +18,9 @@ export const ErrorWrapper = styled.div`
 export const ErrorInside = styled.div`
   width: clamp(320px, 50%, 600px);
   height: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 1rem;
   overflow-y: auto;
   margin-left: auto;
   padding: 20px;

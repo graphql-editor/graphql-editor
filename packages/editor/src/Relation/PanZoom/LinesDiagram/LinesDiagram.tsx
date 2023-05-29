@@ -3,7 +3,7 @@ import { useTreesState } from "@/state/containers/trees";
 import { Node } from "./Node";
 import styled from "@emotion/styled";
 import * as vars from "@/vars";
-import { ParserField, getTypeName } from "graphql-js-tree";
+import { ParserField, getTypeName, OperationType } from "graphql-js-tree";
 import { GraphQLEditorWorker, NumberNode } from "graphql-editor-worker";
 import { runAfterFramePaint } from "@/shared/hooks/useMarkFramePaint";
 import { useRelationsState } from "@/state/containers";
@@ -73,43 +73,110 @@ type LinesDiagramProps = {
 
 export const LinesDiagram: React.FC<LinesDiagramProps> = (props) => {
   const { nodes, setLoading, mainRef, nodesWithoutFilter } = props;
-  const { isLibrary, setSelectedNodeId, selectedNodeId } = useTreesState();
-  const { cullNodes, LoDNodes, changeZoomInTopBar } = useDomManagerTs(
-    props.parentClass
-  );
-  const { zoomToElement, instance } = useControls();
+  const {
+    isLibrary,
+    setSelectedNodeId,
+    selectedNodeId,
+    focusMode,
+    relatedToSelectedTypes,
+    allNodes,
+    activeNode,
+  } = useTreesState();
+  const {
+    cullNodes,
+    LoDNodes,
+    changeZoomInTopBar,
+    markRelated,
+    selectNode,
+    deselectNodes,
+  } = useDomManagerTs(props.parentClass);
+  const { setTransform, instance } = useControls();
   const { editMode } = useRelationsState();
   const {
     transformState: { scale },
   } = useTransformContext();
   const [simulatedNodes, setSimulatedNodes] = useState<NumberNode[]>();
 
+  const zoomToNode = (nodeX: number, nodeY: number) => {
+    const wrapper = instance.wrapperComponent;
+    if (wrapper) {
+      const size = wrapper.getBoundingClientRect();
+      const s = instance.transformState.scale;
+      const transformTo = {
+        x: -nodeX * s + size.width / 2.0,
+        y: -nodeY * s + size.height / 2.0,
+      };
+      setTransform(transformTo.x, transformTo.y, s, 200, "easeOut");
+    }
+  };
+
   useEffect(() => {
-    if (props.hide) return;
     const selectDisposable = DOMEvents.selectNode.disposable(
       (nodeId?: string) => {
         if (nodeId) {
-          zoomToElement(nodeId, instance.transformState.scale, 200);
+          const toNode = simulatedNodes?.find(
+            (sn) => sn.parserField.id === nodeId
+          );
+          selectNode(nodeId);
+          if (toNode) {
+            const rts = relatedToSelectedTypes(toNode.parserField);
+            const ids = allNodes.nodes
+              .filter((n) => rts?.includes(n.name))
+              .map((n) => n.id);
+
+            if (ids?.length) {
+              markRelated(ids);
+            }
+            zoomToNode(toNode.x, toNode.y);
+          }
+        } else {
+          deselectNodes();
         }
       }
     );
     return () => selectDisposable.dispose();
-  }, [simulatedNodes, props.hide]);
+  }, [simulatedNodes]);
+
+  useEffect(() => {
+    if (!selectedNodeId?.value?.id && simulatedNodes) {
+      const queryNode = simulatedNodes?.find((sn) =>
+        sn.parserField.type.operations?.includes(OperationType.query)
+      );
+      const mutationNode = simulatedNodes?.find((sn) =>
+        sn.parserField.type.operations?.includes(OperationType.mutation)
+      );
+      const subscriptionNode = simulatedNodes?.find((sn) =>
+        sn.parserField.type.operations?.includes(OperationType.subscription)
+      );
+
+      const centerToNode = queryNode || mutationNode || subscriptionNode;
+      if (centerToNode) {
+        zoomToNode(centerToNode.x, centerToNode.y);
+      }
+    }
+  }, [simulatedNodes]);
 
   useLayoutEffect(() => {
     if (!props.loading) {
       if (instance.wrapperComponent) {
         transformEffect(instance.transformState, instance.wrapperComponent);
-        setSelectedNodeId(selectedNodeId);
+        setSelectedNodeId(
+          activeNode
+            ? selectedNodeId
+            : {
+                source: "relation",
+                value: undefined,
+              }
+        );
       }
     }
-  }, [props.loading, simulatedNodes]);
+  }, [props.loading, focusMode]);
 
   const transformEffect = (
     state: ReactZoomPanPinchState,
     wrapper: HTMLDivElement
   ) => {
-    if (simulatedNodes) {
+    if (simulatedNodes && !props.hide) {
       const size = wrapper.getBoundingClientRect();
       changeZoomInTopBar(state.scale);
       if (!size) return;
@@ -164,19 +231,21 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = (props) => {
       let maxX = -Infinity;
       let maxY = -Infinity;
       positionedNodes.forEach((pn) => {
-        if (pn.x < minX) {
-          minX = pn.x;
+        const lastMinX = pn.x - pn.width;
+        const lastMinY = pn.y - pn.height;
+        if (lastMinX < minX) {
+          minX = lastMinX;
         }
-        if (pn.y < minY) {
-          minY = pn.y;
+        if (lastMinY < minY) {
+          minY = lastMinY;
         }
-        const lastX = pn.x + pn.width;
-        const lastY = pn.y + pn.height;
-        if (lastX > maxX) {
-          maxX = lastX;
+        const lastMaxX = pn.x + pn.width;
+        const lastMaxY = pn.y + pn.height;
+        if (lastMaxX > maxX) {
+          maxX = lastMaxX;
         }
-        if (lastY > maxY) {
-          maxY = lastY;
+        if (lastMaxY > maxY) {
+          maxY = lastMaxY;
         }
       });
       props.setViewportParams({

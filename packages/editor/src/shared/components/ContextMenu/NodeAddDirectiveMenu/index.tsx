@@ -1,20 +1,20 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Menu,
   MenuScrollingArea,
   MenuSearch,
   TypedMenuItem,
-} from '@/Graf/Node/components';
-import { ResolveDirectives } from '@/GraphQL/Resolve';
+} from "@/Graf/Node/components";
+import { ResolveDirectives } from "@/GraphQL/Resolve";
 import {
   ParserField,
   Instances,
   getTypeName,
   createParserField,
   Options,
-} from 'graphql-js-tree';
-import { useTreesState } from '@/state/containers/trees';
-import { sortNodes } from '@/shared/components/ContextMenu/sort';
+} from "graphql-js-tree";
+import { useTreesState } from "@/state/containers/trees";
+import { sortNodes } from "@/shared/components/ContextMenu/sort";
 
 interface NodeAddDirectiveMenuProps {
   node: ParserField;
@@ -26,15 +26,15 @@ export const NodeAddDirectiveMenu = React.forwardRef<
   NodeAddDirectiveMenuProps
 >(({ node, hideMenu, ...props }, ref) => {
   const { tree, libraryTree, setTree, allNodes } = useTreesState();
-  const [menuSearchValue, setMenuSearchValue] = useState('');
+  const [menuSearchValue, setMenuSearchValue] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const creationNodes = useMemo(
     () => ResolveDirectives(node, allNodes.nodes) || [],
-    [allNodes],
+    [allNodes]
   );
   const filteredNodes = useMemo(
     () => sortNodes(menuSearchValue, creationNodes),
-    [tree, libraryTree, menuSearchValue],
+    [tree, libraryTree, menuSearchValue]
   );
   useEffect(() => {
     if (!menuSearchValue) {
@@ -66,7 +66,7 @@ export const NodeAddDirectiveMenu = React.forwardRef<
         data: {
           type: Instances.Directive,
         },
-      }),
+      })
     );
     hideMenu();
     setTree({ ...tree });
@@ -75,7 +75,7 @@ export const NodeAddDirectiveMenu = React.forwardRef<
     <Menu
       {...props}
       ref={ref}
-      menuName={'Add directive'}
+      menuName={"Add directive"}
       onScroll={(e) => e.stopPropagation()}
       hideMenu={hideMenu}
     >
@@ -109,3 +109,4 @@ export const NodeAddDirectiveMenu = React.forwardRef<
     </Menu>
   );
 });
+NodeAddDirectiveMenu.displayName = "NodeAddDirectiveMenu";

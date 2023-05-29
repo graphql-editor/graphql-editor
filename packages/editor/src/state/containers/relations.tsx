@@ -5,6 +5,7 @@ const useRelationsContainer = createContainer(() => {
   const [baseTypesOn, setBaseTypesOn] = useState(true);
   const [inputsOn, setInputsOn] = useState(true);
   const [fieldsOn, setFieldsOn] = useState(true);
+  const [ctrlToZoom, setCtrlToZoom] = useState(true);
   const [editMode, setEditMode] = useState("");
 
   return {
@@ -16,6 +17,8 @@ const useRelationsContainer = createContainer(() => {
     setFieldsOn,
     inputsOn,
     setInputsOn,
+    ctrlToZoom,
+    setCtrlToZoom,
   };
 });
 

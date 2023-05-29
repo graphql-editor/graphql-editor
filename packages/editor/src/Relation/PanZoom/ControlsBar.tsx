@@ -29,6 +29,8 @@ export const ControlsBar: React.FC<{
     setFieldsOn,
     inputsOn,
     setInputsOn,
+    ctrlToZoom,
+    setCtrlToZoom,
   } = useRelationsState();
 
   const step = 0.2;
@@ -45,6 +47,12 @@ export const ControlsBar: React.FC<{
           </Button>
         )}
         {!readonly && !focusMode && <NewNode />}
+        <Checkbox
+          label="ctrl/cmd zoom"
+          labelPosition="start"
+          onChange={() => setCtrlToZoom(!ctrlToZoom)}
+          checked={ctrlToZoom}
+        />
         <ZoomWrapper>
           <IconWrapper
             data-tooltip="Zoom out"

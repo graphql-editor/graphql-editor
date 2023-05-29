@@ -26,6 +26,7 @@ import {
 } from "@/Relation/PanZoom/LinesDiagram/LinesDiagram";
 import { nodeFilter } from "@/Relation/shared/nodeFilter";
 import { useClickDetector } from "@/shared/hooks/useClickDetector";
+import { useDomManagerTs } from "@/shared/hooks/useDomManager";
 export const PanZoom: React.FC<{
   nodes: ParserField[];
   hide?: boolean;
@@ -39,10 +40,17 @@ export const PanZoom: React.FC<{
   const { setTransform } = useControls();
 
   const { getContext } = useTransformContext();
-  const { editMode, baseTypesOn, fieldsOn, inputsOn } = useRelationsState();
+  const { editMode, baseTypesOn, fieldsOn, inputsOn, ctrlToZoom } =
+    useRelationsState();
   const [largeSimulationLoading, setLargeSimulationLoading] = useState(false);
   const [zoomingMode, setZoomingMode] = useState<"zoom" | "pan">("pan");
   const [viewportParams, setViewportParams] = useState<ViewportParams>();
+  const [paramsBeforeExport, setParamsBeforeExport] = useState<{
+    x: number;
+    y: number;
+    scale: number;
+  }>();
+  const { showAllForExport } = useDomManagerTs(parentClass);
   const ref = useRef<ReactZoomPanPinchRef>(null);
 
   const filteredNodes = useMemo(() => {
@@ -53,28 +61,64 @@ export const PanZoom: React.FC<{
   }, [nodes, baseTypesOn, inputsOn]);
 
   const downloadPng = useCallback(() => {
-    if (mainRef.current === null || !viewportParams) {
-      return;
-    }
-    toPng(mainRef.current, {
-      cacheBust: true,
-      width: viewportParams.width,
-      height: viewportParams.height,
-    })
-      .then((dataUrl) => {
-        const link = document.createElement("a");
-        link.download = `${"relation_view"}`;
-        link.href = dataUrl;
-        link.click();
-      })
-      .catch((e) => {
-        console.log(e);
-        createToast({
-          message: "Export failed. Check browser console for details",
-          variant: "error",
-        });
+    if (viewportParams?.height) {
+      const ctx = getContext();
+      setParamsBeforeExport({
+        x: ctx.state.positionX,
+        y: ctx.state.positionY,
+        scale: ctx.state.scale,
       });
+      setTransform(
+        viewportParams.width / 2.0,
+        viewportParams.height / 2.0,
+        1,
+        0
+      );
+      setSelectedNodeId({ source: "relation", value: undefined });
+    }
   }, [mainRef, viewportParams]);
+
+  useEffect(() => {
+    if (paramsBeforeExport) {
+      setTimeout(() => {
+        showAllForExport();
+      }, 500);
+
+      setTimeout(() => {
+        const refElem = mainRef.current?.parentElement as HTMLDivElement;
+        if (!refElem || refElem === null || !viewportParams) {
+          return;
+        }
+        toPng(refElem, {
+          cacheBust: true,
+          width: viewportParams.width,
+          height: viewportParams.height,
+        })
+          .then((dataUrl) => {
+            const link = document.createElement("a");
+            link.download = `${"relation_view"}`;
+            link.href = dataUrl;
+            link.click();
+          })
+          .catch((e) => {
+            console.log(e);
+            createToast({
+              message: "Export failed. Check browser console for details",
+              variant: "error",
+            });
+          })
+          .finally(() => {
+            setTransform(
+              paramsBeforeExport.x,
+              paramsBeforeExport.y,
+              paramsBeforeExport.scale,
+              0
+            );
+            setParamsBeforeExport(undefined);
+          });
+      }, 2000);
+    }
+  }, [paramsBeforeExport, viewportParams]);
 
   useEffect(() => {
     const listenerDown = (ev: KeyboardEvent) => {
@@ -103,7 +147,7 @@ export const PanZoom: React.FC<{
     const scrollListener = (e: WheelEvent) => {
       e.preventDefault();
       if (!wrapperRef.current) return;
-      if (zoomingMode === "zoom") {
+      if (zoomingMode === "zoom" || !ctrlToZoom) {
         return;
       }
 
@@ -135,7 +179,7 @@ export const PanZoom: React.FC<{
       document.removeEventListener("wheel", scrollListenerZoom);
       wrapperRef.current?.removeEventListener("wheel", scrollListener);
     };
-  }, [ref, zoomingMode]);
+  }, [ref, zoomingMode, ctrlToZoom]);
   const memoizedDiagram = useMemo(() => {
     return (
       <LinesDiagram

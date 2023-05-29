@@ -1,6 +1,6 @@
-import { themed } from '@/Theming/utils';
-import { EditorError } from '@/validation';
-import type * as monaco from 'monaco-editor';
+import { themed } from "@/Theming/utils";
+import { EditorError } from "@/validation";
+import type * as monaco from "monaco-editor";
 export const mapEditorErrorToMonacoDecoration = themed(
   ({ error }) =>
     (m: typeof monaco) =>
@@ -8,7 +8,7 @@ export const mapEditorErrorToMonacoDecoration = themed(
       ({
         range: new m.Range((e.row || 0) + 1, 1, (e.row || 0) + 1, 1000),
         options: {
-          className: 'monacoError',
+          className: "monacoError",
           isWholeLine: true,
           minimap: {
             color: error.light,
@@ -22,7 +22,7 @@ export const mapEditorErrorToMonacoDecoration = themed(
           glyphMarginHoverMessage: {
             value: e.text,
           },
-          glyphMarginClassName: 'monacoMarginError',
+          glyphMarginClassName: "monacoMarginError",
         },
-      } as monaco.editor.IModelDeltaDecoration),
+      } as monaco.editor.IModelDeltaDecoration)
 );

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   TypeDefinition,
   ValueDefinition,
@@ -9,38 +9,38 @@ import {
   compileType,
   createParserField,
   TypeDefinitionDisplayMap,
-} from 'graphql-js-tree';
+} from "graphql-js-tree";
 import {
   MenuScrollingArea,
   DetailMenuItem,
   Menu,
-} from '@/Graf/Node/components';
+} from "@/Graf/Node/components";
 import {
   NodeAddDirectiveMenu,
   NodeDirectiveOptionsMenu,
   NodeAddFieldMenu,
   NodeOperationsMenu,
   ContextMenu,
-} from '@/shared/components/ContextMenu';
-import { useTreesState } from '@/state/containers/trees';
-import { getScalarFields } from '@/Graf/utils/getScalarFields';
-import styled from '@emotion/styled';
-import { ResolveExtension } from '@/GraphQL/Resolve';
-import { transition } from '@/vars';
+} from "@/shared/components/ContextMenu";
+import { useTreesState } from "@/state/containers/trees";
+import { getScalarFields } from "@/Graf/utils/getScalarFields";
+import styled from "@emotion/styled";
+import { ResolveExtension } from "@/GraphQL/Resolve";
+import { transition } from "@/vars";
 import {
   AtSign,
   DiagramProject,
   DotsHorizontal,
   PlusLarge,
   Stack,
-} from '@aexol-studio/styling-system';
+} from "@aexol-studio/styling-system";
 
 type PossibleMenus =
-  | 'field'
-  | 'interface'
-  | 'directive'
-  | 'options'
-  | 'operations';
+  | "field"
+  | "interface"
+  | "directive"
+  | "options"
+  | "operations";
 const NodeIconArea = styled.div<{ opened?: boolean }>`
   cursor: pointer;
   border-radius: ${(p) => p.theme.radius}px;
@@ -75,7 +75,7 @@ export const TopNodeMenu: React.FC<{
 
   const isCreateInputValid = () =>
     getScalarFields(node, scalars)?.length > 0 &&
-    node.data.type === 'ObjectTypeDefinition';
+    node.data.type === "ObjectTypeDefinition";
 
   const isRequiredMenuValid = () =>
     node.data.type === TypeDefinition.InterfaceTypeDefinition ||
@@ -90,7 +90,7 @@ export const TopNodeMenu: React.FC<{
 
   useEffect(() => {
     if (node.id === selectedNodeId?.value?.id && selectedNodeId.justCreated) {
-      setMenuOpen('field');
+      setMenuOpen("field");
     }
   }, [selectedNodeId?.value?.id]);
 
@@ -105,16 +105,16 @@ export const TopNodeMenu: React.FC<{
           {node.data.type !== TypeDefinition.ScalarTypeDefinition &&
             node.data.type !== ValueDefinition.EnumValueDefinition && (
               <ContextMenu
-                isOpen={menuOpen === 'field'}
+                isOpen={menuOpen === "field"}
                 close={() => setMenuOpen(undefined)}
                 Trigger={({ triggerProps }) => (
                   <NodeIconArea
                     {...triggerProps}
                     onClick={() => {
-                      setMenuOpen('field');
+                      setMenuOpen("field");
                     }}
                     title="Click to add field"
-                    opened={menuOpen === 'field'}
+                    opened={menuOpen === "field"}
                   >
                     <PlusLarge />
                   </NodeIconArea>
@@ -132,16 +132,16 @@ export const TopNodeMenu: React.FC<{
 
           {node.data.type !== Instances.Directive && (
             <ContextMenu
-              isOpen={menuOpen === 'directive'}
+              isOpen={menuOpen === "directive"}
               close={() => setMenuOpen(undefined)}
               Trigger={({ triggerProps }) => (
                 <NodeIconArea
                   {...triggerProps}
                   onClick={() => {
-                    setMenuOpen('directive');
+                    setMenuOpen("directive");
                   }}
                   title="Click to add directive"
-                  opened={menuOpen === 'directive'}
+                  opened={menuOpen === "directive"}
                 >
                   <AtSign />
                 </NodeIconArea>
@@ -171,15 +171,15 @@ export const TopNodeMenu: React.FC<{
           )}
           {node.data.type === TypeDefinition.ObjectTypeDefinition && (
             <ContextMenu
-              isOpen={menuOpen === 'operations'}
+              isOpen={menuOpen === "operations"}
               close={() => setMenuOpen(undefined)}
               Trigger={({ triggerProps }) => (
                 <NodeIconArea
                   {...triggerProps}
                   onClick={() => {
-                    setMenuOpen('operations');
+                    setMenuOpen("operations");
                   }}
-                  opened={menuOpen === 'operations'}
+                  opened={menuOpen === "operations"}
                   title="Click set schema query, mutation, subscription"
                 >
                   <DiagramProject />
@@ -200,23 +200,23 @@ export const TopNodeMenu: React.FC<{
 
       {!parentNode && (
         <ContextMenu
-          isOpen={menuOpen === 'options'}
+          isOpen={menuOpen === "options"}
           close={() => setMenuOpen(undefined)}
           Trigger={({ triggerProps }) => (
             <NodeIconArea
               {...triggerProps}
               onClick={() => {
-                setMenuOpen('options');
+                setMenuOpen("options");
               }}
               title="Click to see node actions"
-              opened={menuOpen === 'options'}
+              opened={menuOpen === "options"}
             >
               <DotsHorizontal />
             </NodeIconArea>
           )}
         >
           {({ layerProps }) => (
-            <Menu {...layerProps} menuName={'Node options'} hideMenu={hideMenu}>
+            <Menu {...layerProps} menuName={"Node options"} hideMenu={hideMenu}>
               <MenuScrollingArea>
                 {!isLibrary && (
                   <>
@@ -237,7 +237,7 @@ export const TopNodeMenu: React.FC<{
                               }
                             });
                             const idx = tree.nodes.findIndex(
-                              (n) => n.name === node.name,
+                              (n) => n.name === node.name
                             );
                             tree.nodes.splice(idx, 1, node);
                             setTree({ nodes: tree.nodes }, false);
@@ -249,7 +249,7 @@ export const TopNodeMenu: React.FC<{
                           onClick={() => {
                             node.args?.forEach((arg) => {
                               const argType = compileType(arg.type.fieldType);
-                              if (!argType.endsWith('!')) {
+                              if (!argType.endsWith("!")) {
                                 arg.type.fieldType = {
                                   type: Options.required,
                                   nest: arg.type.fieldType,
@@ -258,7 +258,7 @@ export const TopNodeMenu: React.FC<{
                             });
 
                             const idx = tree.nodes.findIndex(
-                              (n) => n.name === node.name,
+                              (n) => n.name === node.name
                             );
                             tree.nodes.splice(idx, 1, node);
                             setTree({ nodes: tree.nodes }, false);
@@ -297,7 +297,7 @@ export const TopNodeMenu: React.FC<{
                         id: extendNode.id,
                         name: extendNode.name,
                       },
-                      source: 'relation',
+                      source: "relation",
                     });
                   }}
                 >
