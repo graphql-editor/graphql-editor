@@ -1,6 +1,6 @@
 {
   "name": "svg-ts-sync",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "private": false,
   "license": "MIT",
   "description": "Sync folders with svg's to react typescript components",
