@@ -1,20 +1,20 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { ResolveCreateField } from '@/GraphQL/Resolve';
+import React, { useEffect, useMemo, useState } from "react";
+import { ResolveCreateField } from "@/GraphQL/Resolve";
 import {
   createParserField,
   generateNodeId,
   getTypeName,
   Options,
   ParserField,
-} from 'graphql-js-tree';
-import { useTreesState } from '@/state/containers/trees';
+} from "graphql-js-tree";
+import { useTreesState } from "@/state/containers/trees";
 import {
   Menu,
   MenuScrollingArea,
   MenuSearch,
   TypedMenuItem,
-} from '@/Graf/Node/components';
-import { sortNodes } from '@/shared/components/ContextMenu/sort';
+} from "@/Graf/Node/components";
+import { sortNodes } from "@/shared/components/ContextMenu/sort";
 interface NodeAddFieldMenuProps {
   node: ParserField;
   hideMenu: () => void;
@@ -25,7 +25,7 @@ export const NodeAddFieldMenu = React.forwardRef<
   NodeAddFieldMenuProps
 >(({ node, hideMenu, ...props }, ref) => {
   const { allNodes, addFieldToNode } = useTreesState();
-  const [menuSearchValue, setMenuSearchValue] = useState('');
+  const [menuSearchValue, setMenuSearchValue] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   useEffect(() => {
@@ -36,12 +36,12 @@ export const NodeAddFieldMenu = React.forwardRef<
 
   const creationNodes = useMemo(
     () => ResolveCreateField(node, allNodes.nodes) || [],
-    [allNodes],
+    [allNodes]
   );
 
   const filteredNodes = useMemo(
     () => sortNodes(menuSearchValue, creationNodes),
-    [creationNodes, menuSearchValue],
+    [creationNodes, menuSearchValue]
   );
 
   const fNLength = filteredNodes?.length || 1;
@@ -50,7 +50,7 @@ export const NodeAddFieldMenu = React.forwardRef<
 
   const addNode = (n: ParserField, name: string) => {
     const addedNode = createParserField(
-      JSON.parse(JSON.stringify(n)) as ParserField,
+      JSON.parse(JSON.stringify(n)) as ParserField
     );
     addFieldToNode(
       node,
@@ -62,7 +62,7 @@ export const NodeAddFieldMenu = React.forwardRef<
         value: undefined,
         interfaces: [],
         directives: [],
-        description: '',
+        description: "",
         type: {
           fieldType: {
             name: addedNode.name,
@@ -70,16 +70,16 @@ export const NodeAddFieldMenu = React.forwardRef<
           },
         },
       }),
-      name,
+      name
     );
-    setMenuSearchValue('');
+    setMenuSearchValue("");
     return;
   };
 
   return (
     <Menu
       {...props}
-      menuName={'Create Field'}
+      menuName={"Create Field"}
       onScroll={(e) => e.stopPropagation()}
       hideMenu={hideMenu}
       ref={ref}
@@ -89,7 +89,7 @@ export const NodeAddFieldMenu = React.forwardRef<
           if (filteredNodes && filteredNodes.length > 0) {
             addNode(
               filteredNodes[selectedNodeIndex],
-              menuSearchValue.split(' ')[0],
+              menuSearchValue.split(" ")[0]
             );
           }
         }}
@@ -106,12 +106,12 @@ export const NodeAddFieldMenu = React.forwardRef<
         {filteredNodes?.map((f, i) => (
           <TypedMenuItem
             key={f.name + menuSearchValue}
-            name={`${menuSearchValue.split(' ')[0]}`}
+            name={`${menuSearchValue.split(" ")[0]}`}
             type={f.name}
             dataType={getTypeName(f.type.fieldType)}
             selected={i === selectedNodeIndex}
             onClick={() => {
-              addNode(f, menuSearchValue.split(' ')[0]);
+              addNode(f, menuSearchValue.split(" ")[0]);
             }}
           />
         ))}
@@ -119,3 +119,4 @@ export const NodeAddFieldMenu = React.forwardRef<
     </Menu>
   );
 });
+NodeAddFieldMenu.displayName = "NodeAddFieldMenu";
