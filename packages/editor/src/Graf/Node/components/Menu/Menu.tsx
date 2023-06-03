@@ -1,13 +1,14 @@
-import React from 'react';
+import React from "react";
 
-import styled from '@emotion/styled';
-import { fontFamilySans } from '@/vars';
+import styled from "@emotion/styled";
+import { fontFamilySans } from "@/vars";
+import { motion } from "framer-motion";
 
-const Wrapper = styled.div`
+const Wrapper = styled(motion.div)`
   width: 220px;
   border-radius: ${(p) => p.theme.radius}px;
   font-family: ${fontFamilySans};
-  z-index: 22;
+  z-index: 2;
 `;
 
 const Content = styled.div`
@@ -39,12 +40,20 @@ interface MenuProps
 export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
   ({ children, hideMenu, menuName, ...props }, ref) => {
     return (
-      <Wrapper {...props} ref={ref}>
+      <Wrapper
+        {...(props as any)}
+        ref={ref}
+        transition={{ duration: 0.2 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+      >
         <Content>
           {menuName && <Title>{menuName}</Title>}
           {children}
         </Content>
       </Wrapper>
     );
-  },
+  }
 );
+Menu.displayName = "Menu";

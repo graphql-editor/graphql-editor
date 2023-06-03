@@ -10,6 +10,7 @@ import { TransformWrapper } from "react-zoom-pan-pinch";
 import { Graf } from "@/Graf/Graf";
 import styled from "@emotion/styled";
 import { Chip } from "@aexol-studio/styling-system";
+import { AnimatePresence } from "framer-motion";
 
 export const Relation: React.FC = () => {
   const { activeNode, focusMode } = useTreesState();
@@ -68,7 +69,9 @@ export const Relation: React.FC = () => {
           <Chip label={grafErrors} variant="warning" />
         </ErrorContainer>
       )}
-      {!!editMode && activeNode && <Graf node={activeNode} />}
+      <AnimatePresence>
+        {!!editMode && activeNode && <Graf node={activeNode} />}
+      </AnimatePresence>
     </RelationContainer>
   );
 };

@@ -16,6 +16,7 @@ import { KeyboardActions, useIO } from "@/shared/hooks/io";
 import { DraggableProvider } from "@/Graf/state/draggable";
 import { useRelationsState } from "@/state/containers";
 import { Button, Stack, useToasts } from "@aexol-studio/styling-system";
+import { motion } from "framer-motion";
 
 const SubNodeContainer = styled.div`
   font-family: ${fontFamilySans};
@@ -29,7 +30,7 @@ const SubNodeContainer = styled.div`
   height: 100%;
 `;
 
-const SubNodeWrapper = styled.div`
+const SubNodeWrapper = styled(motion.div)`
   width: 100%;
   bottom: 0;
   left: 0;
@@ -99,6 +100,10 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
         if (selectedNodeId?.justCreated) return;
         exit();
       }}
+      transition={{ duration: 0.2 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
     >
       <SubNodeContainer>
         <DraggableProvider>

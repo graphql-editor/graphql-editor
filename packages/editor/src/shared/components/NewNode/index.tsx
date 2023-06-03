@@ -14,7 +14,7 @@ export const NewNode: React.FC = () => {
         Trigger={({ triggerProps }) => (
           <Main {...triggerProps}>
             <Button size="small" variant="secondary" endAdornment={<Plus />}>
-              New node
+              node
             </Button>
           </Main>
         )}

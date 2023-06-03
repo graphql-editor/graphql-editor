@@ -1,5 +1,6 @@
-import React from 'react';
-import { useLayer, TriggerProps, LayerProps } from 'react-laag';
+import { AnimatePresence } from "framer-motion";
+import React from "react";
+import { useLayer, TriggerProps, LayerProps } from "react-laag";
 
 export const ContextMenu: React.FC<{
   isOpen: boolean;
@@ -12,7 +13,7 @@ export const ContextMenu: React.FC<{
     isOpen,
     onOutsideClick: close, // close the menu when the user clicks outside
     auto: true,
-    placement: 'bottom-start',
+    placement: "bottom-start",
     containerOffset: 8,
     triggerOffset: 8,
     arrowOffset: 8,
@@ -23,7 +24,9 @@ export const ContextMenu: React.FC<{
   return (
     <>
       {Trigger({ triggerProps })}
-      {renderLayer(<>{isOpen && children({ layerProps })}</>)}
+      {renderLayer(
+        <AnimatePresence>{isOpen && children({ layerProps })}</AnimatePresence>
+      )}
     </>
   );
 };

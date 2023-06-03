@@ -190,40 +190,36 @@ const useTreesStateContainer = createContainer(() => {
     }
   };
 
-  const relatedToSelectedTypes = useCallback(
-    (activeNode?: ParserField) => {
-      const notBaseTypes = activeNode?.args
-        .map((a) => getTypeName(a.type.fieldType))
-        .concat(
-          activeNode.args
-            .flatMap((ana) => ana.args)
-            .map((ana) => getTypeName(ana.type.fieldType))
-        )
-        .concat(
-          allNodes.nodes
-            .filter((an) =>
-              an.args.find(
-                (ana) =>
-                  getTypeName(ana.type.fieldType) === activeNode.name ||
-                  ana.args.find(
-                    (nestedArg) =>
-                      getTypeName(nestedArg.type.fieldType) === activeNode.name
-                  )
-              )
+  const relatedToSelectedTypes = (activeNode?: ParserField) => {
+    const parents = activeNode?.args
+      .flatMap((ana) => ana.args)
+      .map((ana) => getTypeName(ana.type.fieldType));
+    const inputs = allNodes.nodes
+      .filter((an) =>
+        an.args.find(
+          (ana) =>
+            getTypeName(ana.type.fieldType) === activeNode?.name ||
+            ana.args.find(
+              (nestedArg) =>
+                getTypeName(nestedArg.type.fieldType) === activeNode?.name
             )
-            .map((a) => a.name)
         )
-        .filter((n) => !isBaseScalar(n));
-      return notBaseTypes?.filter(
-        (t, index) => index === notBaseTypes.indexOf(t)
-      );
-    },
-    [JSON.stringify(activeNode)]
-  );
+      )
+      .map((a) => a.name);
+    const notBaseTypes = activeNode?.args
+      .map((a) => getTypeName(a.type.fieldType))
+      .concat(parents || [])
+      .concat(inputs)
+      .filter((n) => !isBaseScalar(n));
+    const filtered = notBaseTypes?.filter(
+      (t, index) => index === notBaseTypes.indexOf(t)
+    );
+    return filtered;
+  };
 
   const relatedToSelected = useMemo(
     () => relatedToSelectedTypes(activeNode),
-    [relatedToSelectedTypes, activeNode]
+    [activeNode]
   );
 
   const relatedNodeIdsToSelected = useMemo(() => {

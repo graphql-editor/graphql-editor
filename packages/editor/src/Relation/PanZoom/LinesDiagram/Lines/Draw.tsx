@@ -101,14 +101,14 @@ export const Draw = ({
           stroke={stroke}
           strokeWidth={fac}
           strokeDasharray={
-            relationType.type === Options.required ? undefined : "5 10"
+            relationType.type === Options.required ? undefined : "10 5"
           }
           d={`M ${t.x} ${t.y}
            Q ${bezier1.x} ${bezier1.y} ${center.x} ${center.y}
            Q ${bezier2.x} ${bezier2.y} ${f.x} ${f.y}`}
         />
-        <circle fill={stroke} stroke={stroke} r={7} cx={t.x + 2} cy={t.y + 2} />
-        <circle fill={stroke} stroke={stroke} r={7} cx={f.x + 2} cy={f.y + 2} />
+        <circle fill={stroke} stroke={stroke} r={4} cx={t.x} cy={t.y} />
+        <circle fill={stroke} stroke={stroke} r={8} cx={f.x} cy={f.y} />
       </PathG>
     );
   }
