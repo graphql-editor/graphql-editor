@@ -193,6 +193,7 @@ export const useSchemaServices = (
       const onSelectCursor = (
         e: monaco.editor.ICursorSelectionChangedEvent
       ) => {
+        if (e.source === "api") return false;
         if (e.selection.startLineNumber !== e.selection.endLineNumber) return;
         if (e.selection.startColumn !== e.selection.endColumn) return;
         if (e.reason === 3) {

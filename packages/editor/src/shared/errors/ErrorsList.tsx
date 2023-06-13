@@ -10,13 +10,13 @@ export const ErrorWrapper = styled.div`
   top: 0;
   font-size: 14px;
   left: 0;
-  background-color: ${({ theme }) => theme.neutral[700]}99;
+  backdrop-filter: blur(4px);
   cursor: default;
   color: ${({ theme }) => theme.error};
   z-index: 2;
 `;
 export const ErrorInside = styled.div`
-  width: clamp(320px, 50%, 600px);
+  width: clamp(200px, 20%, 600px);
   height: 100%;
   display: flex;
   flex-flow: column nowrap;
@@ -24,7 +24,7 @@ export const ErrorInside = styled.div`
   overflow-y: auto;
   margin-left: auto;
   padding: 20px;
-  background-color: ${({ theme }) => theme.neutral[600]};
+  background-color: ${({ theme }) => theme.neutral[500]};
   color: ${(p) => p.theme.text.active};
 `;
 

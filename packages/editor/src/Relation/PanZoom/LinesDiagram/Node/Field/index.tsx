@@ -1,12 +1,14 @@
-import React from 'react';
-import { useTreesState } from '@/state/containers/trees';
-import { FieldProps as GrafFieldProps } from '@/Graf/Node/models';
-import styled from '@emotion/styled';
-import { TypeSystemDefinition } from 'graphql-js-tree';
-import { RELATION_CONSTANTS } from '@/Relation/PanZoom/LinesDiagram/Lines/constants';
-import { ActiveFieldName } from '@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveFieldName';
-import { ActiveType } from '@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveType';
-import { DOMClassNames } from '@/shared/hooks/DOMClassNames';
+import React from "react";
+import { useTreesState } from "@/state/containers/trees";
+import { FieldProps as GrafFieldProps } from "@/Graf/Node/models";
+import styled from "@emotion/styled";
+import { TypeSystemDefinition } from "graphql-js-tree";
+import { RELATION_CONSTANTS } from "@/Relation/PanZoom/LinesDiagram/Lines/constants";
+import { ActiveFieldName } from "@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveFieldName";
+import { ActiveType } from "@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveType";
+import { DOMClassNames } from "@/shared/hooks/DOMClassNames";
+import { useRelationsState } from "@/state/containers";
+import { isEditableParentField } from "@/utils";
 
 const Main = styled.div`
   position: relative;
@@ -24,12 +26,13 @@ const Main = styled.div`
   }
 `;
 
-type FieldProps = Pick<GrafFieldProps, 'node'> & {
+type FieldProps = Pick<GrafFieldProps, "node"> & {
   showArgs?: boolean;
 };
 
 export const Field: React.FC<FieldProps> = ({ node }) => {
   const { parentTypes, setSelectedNodeId, getParentOfField } = useTreesState();
+  const { setEditMode } = useRelationsState();
   return (
     <Main
       className={DOMClassNames.nodeField}
@@ -37,8 +40,11 @@ export const Field: React.FC<FieldProps> = ({ node }) => {
         const parent = getParentOfField(node);
         if (parent) {
           e.stopPropagation();
+          if (isEditableParentField(parent)) {
+            setEditMode(parent.id);
+          }
           setSelectedNodeId({
-            source: 'relation',
+            source: "relation",
             value: {
               id: parent.id,
               name: parent.name,
@@ -51,7 +57,7 @@ export const Field: React.FC<FieldProps> = ({ node }) => {
         name={
           node.data.type !== TypeSystemDefinition.UnionMemberDefinition
             ? node.name
-            : ''
+            : ""
         }
         args={node.args}
         parentTypes={parentTypes}

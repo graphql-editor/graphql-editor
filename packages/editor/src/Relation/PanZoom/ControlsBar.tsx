@@ -14,11 +14,14 @@ import {
   Plus,
   Button,
   EyeAlt,
+  Tooltip,
+  RefreshCwAlt3,
 } from "@aexol-studio/styling-system";
 import { DOMClassNames } from "@/shared/hooks/DOMClassNames";
 export const ControlsBar: React.FC<{
   downloadPng: () => void;
-}> = ({ downloadPng }) => {
+  triggerResimulation: () => void;
+}> = ({ downloadPng, triggerResimulation }) => {
   const { readonly, exitFocus, focusMode } = useTreesState();
 
   const { zoomIn, zoomOut } = useControls();
@@ -55,18 +58,16 @@ export const ControlsBar: React.FC<{
         />
         <ZoomWrapper>
           <IconWrapper
-            data-tooltip="Zoom out"
             onClick={() => {
               zoomOut(step);
             }}
           >
             <Minus />
           </IconWrapper>
-          <TooltippedZoom data-tooltip="Ctrl/Cmd + Scroll to zoom in/out">
-            <span className={`${DOMClassNames.topBarZoom}`}></span>
+          <TooltippedZoom>
+            <span className={`${DOMClassNames.topBarZoom}`}>100%</span>
           </TooltippedZoom>
           <IconWrapper
-            data-tooltip="Zoom in"
             onClick={() => {
               zoomIn(step);
             }}
@@ -93,9 +94,20 @@ export const ControlsBar: React.FC<{
           onChange={() => setInputsOn(!inputsOn)}
           checked={inputsOn}
         />
-        <IconWrapper data-tooltip="Export to png" onClick={() => downloadPng()}>
-          <ImageSquareCheck />
-        </IconWrapper>
+        <Tooltip title="Export to png" position="left-bottom">
+          <IconWrapper onClick={() => downloadPng()}>
+            <ImageSquareCheck />
+          </IconWrapper>
+        </Tooltip>
+        <Tooltip title="Shuffle layout" position="left-bottom">
+          <IconWrapper
+            onClick={() => {
+              triggerResimulation();
+            }}
+          >
+            <RefreshCwAlt3 />
+          </IconWrapper>
+        </Tooltip>
       </Menu>
     </TopBar>
   );
@@ -115,32 +127,6 @@ const TooltippedZoom = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  &[data-tooltip] {
-    &:after {
-      content: attr(data-tooltip);
-      position: absolute;
-      pointer-events: none;
-      top: 44px;
-      right: 0px;
-      width: max-content;
-      color: ${({ theme }) => theme.text.default};
-      font-weight: 400;
-      background: #000000;
-      border: 1px solid ${({ theme }) => theme.text.disabled};
-      text-align: center;
-      padding: 5px 12px;
-      z-index: 100;
-      opacity: 0;
-      transition: opacity 0.25s ease-in-out;
-    }
-
-    &:hover {
-      &:after {
-        opacity: 1;
-        color: #e3f6fc;
-      }
-    }
-  }
 `;
 const IconWrapper = styled.div`
   position: relative;
@@ -154,33 +140,6 @@ const IconWrapper = styled.div`
   transition: ${vars.transition};
   :hover {
     color: ${({ theme }) => theme.text.default};
-  }
-
-  &[data-tooltip] {
-    &:after {
-      content: attr(data-tooltip);
-      position: absolute;
-      pointer-events: none;
-      top: 44px;
-      right: 0px;
-      width: max-content;
-      color: ${({ theme }) => theme.text.default};
-      font-weight: 400;
-      background: #000000;
-      border: 1px solid ${({ theme }) => theme.text.disabled};
-      text-align: center;
-      padding: 5px 12px;
-      z-index: 100;
-      opacity: 0;
-      transition: opacity 0.25s ease-in-out;
-    }
-
-    &:hover {
-      &:after {
-        opacity: 1;
-        color: #e3f6fc;
-      }
-    }
   }
 `;
 

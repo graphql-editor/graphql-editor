@@ -1,5 +1,5 @@
-import { diffChars } from 'diff';
-import type * as monaco from 'monaco-editor';
+import { diffChars } from "diff";
+import type * as monaco from "monaco-editor";
 
 export const getNewCursorIndex = ({
   oldSchema,
@@ -54,8 +54,8 @@ export const moveCursor = ({
   if (!model) return;
   let changedIndex = cursorIndex.index;
   changedIndex = getNewCursorIndex({
-    oldSchema: previousText || '',
-    newSchema: newText || '',
+    oldSchema: previousText || "",
+    newSchema: newText || "",
     cursorIndex: cursorIndex.index,
   });
   const newPosition = model.getPositionAt(changedIndex);

@@ -3,9 +3,9 @@ import {
   ParserField,
   TypeSystemDefinition,
   compileType,
-} from 'graphql-js-tree';
-import * as d3 from 'd3';
-import { WorkerEvents } from '@/worker/validation.worker';
+} from "graphql-js-tree";
+import * as d3 from "d3";
+import { WorkerEvents } from "@/worker/validation.worker";
 
 export interface NumberNode {
   id: string;
@@ -28,20 +28,20 @@ export function storeCoordinates(
   nodes: NumberNode[],
   connections: NumberConnection[],
   iterations: number,
-  alpha: number,
+  alpha: number
 ) {
   const simulation = d3
     .forceSimulation(nodes)
     .alpha(alpha)
     .force(
-      'link',
+      "link",
       d3.forceLink(connections).id((d) => {
         return (d as NumberNode).id;
-      }),
+      })
     )
-    .force('x', d3.forceX().strength(0.1))
-    .force('y', d3.forceY().strength(0.3))
-    .force('collide', () => createCollisionForce(nodes)(1, 2))
+    .force("x", d3.forceX().strength(0.3))
+    .force("y", d3.forceY().strength(0.3))
+    .force("collide", () => createCollisionForce(nodes)(1, 2))
     .stop();
   for (let i = 0; i < iterations; i++) {
     simulation.tick();
@@ -53,7 +53,7 @@ export function storeCoordinates(
 export const sortNodesTs = ({
   nodes,
   options: { existingNumberNodes, ignoreAlphaCalculation, alpha },
-}: WorkerEvents['simulateSort']['args']) => {
+}: WorkerEvents["simulateSort"]["args"]) => {
   let exisitingNodes = 0;
   let modifiedNodes = 0;
   const numberNodes = nodes.map((n) => {
@@ -70,7 +70,7 @@ export const sortNodesTs = ({
         ...n.args.map((a) => {
           const fieldArguments = a.args;
           const fieldArgumentsLengths = fieldArguments.map(
-            (fa) => fa.name.length + compileType(fa.type.fieldType).length,
+            (fa) => fa.name.length + compileType(fa.type.fieldType).length
           );
           const fieldArgumentCumulated = fieldArguments.length
             ? fieldArgumentsLengths.reduce((a, b) => a + b, 2)
@@ -83,7 +83,7 @@ export const sortNodesTs = ({
             2 +
             fieldArgumentCumulated
           );
-        }),
+        })
       ) * 8;
     const nameLength =
       8 * (n.name.length + compileType(n.type.fieldType).length + 1);
@@ -103,14 +103,14 @@ export const sortNodesTs = ({
       if (relatedNode.id === n.id) return;
       if (
         connections.find(
-          (c) => c.source === n.id && c.target === relatedNode.id,
+          (c) => c.source === n.id && c.target === relatedNode.id
         )
       ) {
         return;
       }
       if (
         connections.find(
-          (c) => c.source === relatedNode.id && c.target === n.id,
+          (c) => c.source === relatedNode.id && c.target === n.id
         )
       ) {
         return;
@@ -133,7 +133,12 @@ export const sortNodesTs = ({
 
   const modifyAlpha = modifiedNodes / numberNodes.length;
 
-  const a = removedAdded > 1 ? 1 : removedAdded === 1 ? 0.45 : modifyAlpha;
+  const a =
+    removedAdded > 1
+      ? 1
+      : removedAdded === 1
+      ? 1 / numberNodes.length
+      : modifyAlpha;
 
   const retAlpha = a;
 
@@ -148,7 +153,7 @@ export function createCollisionForce(nodes: NumberNode[]) {
   const quad = d3.quadtree(
     nodes,
     (d) => d.x,
-    (d) => d.y,
+    (d) => d.y
   );
 
   function force(alpha: number, iterations = 1) {
@@ -156,7 +161,7 @@ export function createCollisionForce(nodes: NumberNode[]) {
       for (const d of nodes) {
         quad.visit((q) => {
           let updated = false;
-          if ('data' in q && q.data && q.data !== d) {
+          if ("data" in q && q.data && q.data !== d) {
             let x = d.x - q.data.x,
               y = d.y - q.data.y,
               l,
@@ -195,3 +200,34 @@ export function createCollisionForce(nodes: NumberNode[]) {
 
   return force;
 }
+
+export const calcDimensions = (numberNodes: NumberNode[]) => {
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  numberNodes.forEach((pn) => {
+    const lastMinX = pn.x - pn.width;
+    const lastMinY = pn.y - pn.height;
+    if (lastMinX < minX) {
+      minX = lastMinX;
+    }
+    if (lastMinY < minY) {
+      minY = lastMinY;
+    }
+    const lastMaxX = pn.x + pn.width;
+    const lastMaxY = pn.y + pn.height;
+    if (lastMaxX > maxX) {
+      maxX = lastMaxX;
+    }
+    if (lastMaxY > maxY) {
+      maxY = lastMaxY;
+    }
+  });
+  return {
+    x: minX,
+    y: minY,
+    width: maxX - minX,
+    height: maxY - minY,
+  };
+};

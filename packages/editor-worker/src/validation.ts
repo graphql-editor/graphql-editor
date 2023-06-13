@@ -15,7 +15,7 @@ const GraphQLErrorToEditorErrors = (e: GraphQLError): EditorError[] => [
     (l) =>
       ({
         column: l.column,
-        row: l.line - 1,
+        row: l.line - 2,
         position: 1,
         text: e.message,
         type: "error",

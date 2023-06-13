@@ -1,4 +1,10 @@
-import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import React, {
+  useEffect,
+  useImperativeHandle,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useTreesState } from "@/state/containers/trees";
 import { Node } from "./Node";
 import styled from "@emotion/styled";
@@ -71,7 +77,14 @@ type LinesDiagramProps = {
   setViewportParams: (props: ViewportParams) => void;
 };
 
-export const LinesDiagram: React.FC<LinesDiagramProps> = (props) => {
+export interface LinesDiagramApi {
+  triggerResimulation: () => void;
+}
+
+export const LinesDiagram = React.forwardRef<
+  LinesDiagramApi,
+  LinesDiagramProps
+>((props, ref) => {
   const { nodes, setLoading, mainRef, nodesWithoutFilter } = props;
   const {
     isLibrary,
@@ -136,6 +149,26 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = (props) => {
     );
     return () => selectDisposable.dispose();
   }, [simulatedNodes]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      triggerResimulation: () => {
+        setLoading(true);
+        GraphQLEditorWorker.simulateSort({
+          nodes,
+          options: {
+            iterations: 200,
+            ignoreAlphaCalculation: true,
+          },
+        }).then(({ nodes: positionedNodes, ...positionParams }) => {
+          props.setViewportParams(positionParams);
+          setSimulatedNodes(positionedNodes);
+        });
+      },
+    }),
+    [nodes]
+  );
 
   useEffect(() => {
     if (!selectedNodeId?.value?.id && simulatedNodes) {
@@ -225,35 +258,8 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = (props) => {
         existingNumberNodes: simulatedNodes,
         iterations: 200,
       },
-    }).then((positionedNodes) => {
-      let minX = Infinity;
-      let minY = Infinity;
-      let maxX = -Infinity;
-      let maxY = -Infinity;
-      positionedNodes.forEach((pn) => {
-        const lastMinX = pn.x - pn.width;
-        const lastMinY = pn.y - pn.height;
-        if (lastMinX < minX) {
-          minX = lastMinX;
-        }
-        if (lastMinY < minY) {
-          minY = lastMinY;
-        }
-        const lastMaxX = pn.x + pn.width;
-        const lastMaxY = pn.y + pn.height;
-        if (lastMaxX > maxX) {
-          maxX = lastMaxX;
-        }
-        if (lastMaxY > maxY) {
-          maxY = lastMaxY;
-        }
-      });
-      props.setViewportParams({
-        x: minX,
-        y: minY,
-        width: maxX - minX,
-        height: maxY - minY,
-      });
+    }).then(({ nodes: positionedNodes, ...positionParams }) => {
+      props.setViewportParams(positionParams);
       setSimulatedNodes(positionedNodes);
     });
     return;
@@ -279,13 +285,6 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = (props) => {
 
     setRelations(
       simulatedNodes
-        .map((n) => ({
-          ...n,
-          parserField: {
-            ...n.parserField,
-            // args:unFilteredNodes.find(ufn => ufn.id === n.parserField.id)?.args || []
-          },
-        }))
         .map((n, i) => {
           const args =
             nodesWithoutFilter.find((ufn) => ufn.id === n.parserField.id)
@@ -338,4 +337,6 @@ export const LinesDiagram: React.FC<LinesDiagramProps> = (props) => {
       {SvgLinesContainer}
     </Main>
   );
-};
+});
+
+LinesDiagram.displayName = "LinesDiagram";

@@ -1,4 +1,9 @@
-import { NumberNode, sortNodesTs, storeCoordinates } from "@/tsAlgo";
+import {
+  NumberNode,
+  calcDimensions,
+  sortNodesTs,
+  storeCoordinates,
+} from "@/tsAlgo";
 import { catchSchemaErrors, EditorError } from "@/validation";
 import {
   Parser,
@@ -47,7 +52,13 @@ export type WorkerEvents = {
         alpha?: number;
       };
     };
-    returned: NumberNode[];
+    returned: {
+      nodes: NumberNode[];
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+    };
   };
 };
 
@@ -93,8 +104,12 @@ ctx.addEventListener("message", (message) => {
   receive("simulateSort", (args) => {
     const sorted = sortNodesTs(args);
     if (sorted.alpha === 0) {
-      return sorted.numberNodes;
+      return {
+        nodes: sorted.numberNodes,
+        ...calcDimensions(sorted.numberNodes),
+      };
     }
+
     const iterations =
       sorted.alpha === 1
         ? args.options.iterations || 200
@@ -108,6 +123,9 @@ ctx.addEventListener("message", (message) => {
       iterations,
       sorted.alpha
     );
-    return sorted.numberNodes;
+    return {
+      nodes: sorted.numberNodes,
+      ...calcDimensions(sorted.numberNodes),
+    };
   })(message);
 });

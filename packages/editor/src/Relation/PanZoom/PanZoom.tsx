@@ -22,6 +22,7 @@ import { ParserField } from "graphql-js-tree";
 import { ControlsBar } from "@/Relation/PanZoom/ControlsBar";
 import {
   LinesDiagram,
+  LinesDiagramApi,
   ViewportParams,
 } from "@/Relation/PanZoom/LinesDiagram/LinesDiagram";
 import { nodeFilter } from "@/Relation/shared/nodeFilter";
@@ -34,6 +35,7 @@ export const PanZoom: React.FC<{
 }> = ({ nodes, hide, parentClass }) => {
   const mainRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const linesRef = useRef<LinesDiagramApi>(null);
   const { setSelectedNodeId } = useTreesState();
   const { isClick, mouseDown } = useClickDetector();
   const { createToast } = useToasts();
@@ -128,7 +130,6 @@ export const PanZoom: React.FC<{
         ev.key === "OS" ||
         ev.key === "Meta"
       ) {
-        ev.preventDefault();
         setZoomingMode("zoom");
       }
     };
@@ -183,6 +184,7 @@ export const PanZoom: React.FC<{
   const memoizedDiagram = useMemo(() => {
     return (
       <LinesDiagram
+        ref={linesRef}
         hide={hide}
         nodes={filteredNodes}
         setViewportParams={(p) => setViewportParams(p)}
@@ -203,7 +205,12 @@ export const PanZoom: React.FC<{
   ]);
   return (
     <Wrapper className={parentClass}>
-      <ControlsBar downloadPng={downloadPng} />
+      <ControlsBar
+        triggerResimulation={() => {
+          linesRef.current?.triggerResimulation();
+        }}
+        downloadPng={downloadPng}
+      />
       <Main
         ref={wrapperRef}
         onMouseDown={mouseDown}
@@ -248,11 +255,12 @@ const Wrapper = styled.div`
 const LoadingContainer = styled.div`
   position: absolute;
   z-index: 2;
-  inset:0
+  inset: 0;
   padding: 2rem;
-  gap:1rem;
+  gap: 1rem;
   color: ${({ theme }) => theme.text.default};
-  background-color: ${({ theme }) => theme.neutral[600]};inset: 0;
+  background-color: ${({ theme }) => theme.neutral[600]};
+  inset: 0;
   font-family: ${fontFamilySans};
   display: flex;
   align-items: center;

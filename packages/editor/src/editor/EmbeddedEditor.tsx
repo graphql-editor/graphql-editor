@@ -56,7 +56,7 @@ export const EmbeddedEditor = ({ schema, theme }: EmbeddedEditorProps) => {
     setGrafErrors,
     setGrafEditorErrors,
     setGrafErrorSchema,
-    lockGraf,
+    codeErrors,
     errorsItems,
   } = useErrorsState();
 
@@ -112,7 +112,7 @@ export const EmbeddedEditor = ({ schema, theme }: EmbeddedEditorProps) => {
         <Relation />
         <NodeNavigation />
       </ErrorOuterContainer>
-      {lockGraf && <ErrorsList> {errorsItems}</ErrorsList>}
+      {codeErrors.length && <ErrorsList>{errorsItems}</ErrorsList>}
     </Main>
   );
 };

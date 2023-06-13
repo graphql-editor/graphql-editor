@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { OptionsMenu } from '@/Graf/Node/components';
-import { ParserField, OperationType } from 'graphql-js-tree';
-import { useTreesState } from '@/state/containers/trees';
+import React, { useState, useEffect } from "react";
+import { OptionsMenu } from "@/Graf/Node/components";
+import { ParserField, OperationType } from "graphql-js-tree";
+import { useTreesState } from "@/state/containers/trees";
 interface NodeOperationsMenuProps {
   node: ParserField;
   hideMenu: () => void;
@@ -12,7 +12,7 @@ const configureOpts = (node: ParserField) => {
   opts[OperationType.query] = !!operations.includes(OperationType.query);
   opts[OperationType.mutation] = !!operations.includes(OperationType.mutation);
   opts[OperationType.subscription] = !!operations.includes(
-    OperationType.subscription,
+    OperationType.subscription
   );
   return opts;
 };
@@ -20,7 +20,7 @@ export const NodeOperationsMenu = React.forwardRef<
   HTMLDivElement,
   NodeOperationsMenuProps
 >(({ node, hideMenu, ...props }, ref) => {
-  const { tree, setTree } = useTreesState();
+  const { setOperation, removeOperation } = useTreesState();
   const [opts, setOpts] = useState(configureOpts(node));
   useEffect(() => {
     setOpts(configureOpts(node));
@@ -30,31 +30,15 @@ export const NodeOperationsMenu = React.forwardRef<
       {...props}
       ref={ref}
       hideMenu={hideMenu}
-      menuName={'Operations'}
+      menuName={"Operations"}
       options={opts}
       onCheck={(o) => {
-        const turnOff = !!node.type.operations?.includes(o as OperationType);
-        tree.nodes.forEach((n) => {
-          const { operations } = n.type;
-          if (operations) {
-            const i = operations.findIndex((to) => to === o);
-            if (i !== -1) {
-              operations.splice(i, 1);
-            }
-          }
-        });
-        if (turnOff) {
-          node.type.operations = node.type.operations?.filter(
-            (opt) => opt !== o,
-          );
-        } else {
-          node.type.operations = [
-            ...(node.type.operations || []),
-            o as OperationType,
-          ];
-        }
-        setTree({ ...tree });
+        node.type.operations?.includes(o as OperationType)
+          ? removeOperation(node, o as OperationType)
+          : setOperation(node, o as OperationType);
       }}
     />
   );
 });
+
+NodeOperationsMenu.displayName = "NodeOperationsMenu";

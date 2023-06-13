@@ -17,6 +17,7 @@ import { DraggableProvider } from "@/Graf/state/draggable";
 import { useRelationsState } from "@/state/containers";
 import { Button, Stack, useToasts } from "@aexol-studio/styling-system";
 import { motion } from "framer-motion";
+import { isEditableParentField } from "@/utils";
 
 const SubNodeContainer = styled.div`
   font-family: ${fontFamilySans};
@@ -67,22 +68,17 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
   }, [snapshots, tree, selectedNodeId?.value?.id, readonly]);
 
   const exit = () => {
-    const d = activeNode?.data.type;
+    setEditMode("");
     setSelectedNodeId({
       source: "relation",
       value: selectedNodeId?.value,
     });
-    if (
-      d === TypeDefinition.EnumTypeDefinition ||
-      d === TypeDefinition.ScalarTypeDefinition ||
-      d === TypeSystemDefinition.DirectiveDefinition
-    ) {
+    if (activeNode && isEditableParentField(activeNode)) {
       setSelectedNodeId({
         source: "relation",
         value: undefined,
       });
     }
-    setEditMode("");
   };
 
   const cancelCreate = () => {

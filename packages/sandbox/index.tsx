@@ -1,12 +1,12 @@
-import { themeColors } from '@aexol-studio/styling-system';
-import styled from '@emotion/styled';
-import { vars } from 'graphql-editor';
-import { fontFamilySans } from 'graphql-editor/lib/vars';
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import * as apps from './apps';
+import { themeColors } from "@aexol-studio/styling-system";
+import styled from "@emotion/styled";
+import { vars } from "graphql-editor";
+import { fontFamilySans } from "graphql-editor/lib/vars";
+import React from "react";
+import { createRoot } from "react-dom/client";
+import * as apps from "./apps";
 
-const MainTheme = themeColors('graphqleditor', 'dark');
+const MainTheme = themeColors("graphqleditor", "dark");
 
 export type AppType = keyof typeof apps;
 const Wrapper = styled.div`
@@ -65,12 +65,17 @@ export const AppList = () => {
 
 export const App = () => {
   const s = new URLSearchParams(window.location.search);
-  const p = s.get('a');
+  const p = s.get("a");
   if (!p) {
     return <AppList />;
   }
-  return <>{apps[p]()}</>;
+  return <Styler>{apps[p]()}</Styler>;
 };
-const rootDiv = document.getElementById('root');
+const rootDiv = document.getElementById("root");
 const root = createRoot(rootDiv);
 root.render(<App />);
+
+const Styler = styled.div`
+  display: contents;
+  font-family: ${fontFamilySans};
+`;

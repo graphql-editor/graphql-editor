@@ -7,7 +7,6 @@ const useErrorsStateContainer = createContainer(() => {
   const [grafEditorErrors, setGrafEditorErrors] = useState<EditorError[]>([]);
   const [grafErrors, setGrafErrors] = useState<string>();
   const [grafErrorSchema, setGrafErrorSchema] = useState<string>();
-  const [lockGraf, setLockGraf] = useState<string>();
   const [errorRowNumber, setErrorRowNumber] = useState<number>();
   const [errorNodeNames, setErrorNodeNames] = useState<string[]>();
   const [errorsItems, setErrorsItems] = useState<JSX.Element[]>();
@@ -24,27 +23,18 @@ const useErrorsStateContainer = createContainer(() => {
     return errors;
   };
 
-  const generateErrorsText = () => {
-    if (lockGraf) {
-      const lockGrafArray = lockGraf.split("}").filter((ee) => ee);
-      const errors = lockGrafArray.map((e, i) => (
-        <ErrorItem key={i} error={e} />
-      ));
+  useEffect(() => {
+    if (codeErrors) {
+      const errors = codeErrors.map((e, i) => <ErrorItem key={i} error={e} />);
       setErrorsItems(errors);
     }
-  };
-
-  useEffect(() => {
-    generateErrorsText();
-  }, [lockGraf]);
+  }, [codeErrors]);
 
   return {
     codeErrors,
     setCodeErrors,
     grafErrors,
     setGrafErrors,
-    lockGraf,
-    setLockGraf,
     transformCodeError,
     errorRowNumber,
     setErrorRowNumber,
@@ -54,7 +44,6 @@ const useErrorsStateContainer = createContainer(() => {
     setGrafEditorErrors,
     grafErrorSchema,
     setGrafErrorSchema,
-    generateErrorsText,
     setErrorsItems,
     errorsItems,
   };

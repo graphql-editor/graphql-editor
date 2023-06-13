@@ -1,16 +1,21 @@
-import { ParserField } from "graphql-js-tree";
+import { OperationType, ParserField } from "graphql-js-tree";
 import React from "react";
 import styled from "@emotion/styled";
 import { fontFamilySans, transition } from "@/vars";
 import { EditorTheme } from "@/gshared/theme/MainTheme";
 import { ChevronDown } from "@aexol-studio/styling-system";
-import { SingleNodeInList } from "@/shared/NodeNavigation/SingleNodeInList";
+import {
+  SingleNodeInList,
+  SingleSchemaNodeInList,
+} from "@/shared/NodeNavigation/SingleNodeInList";
 
-const Title = styled.div<{
+interface TitleProps {
   open?: boolean;
   empty?: boolean;
   color: keyof EditorTheme["colors"];
-}>`
+}
+
+const Title = styled.div<TitleProps>`
   font-family: ${fontFamilySans};
   font-weight: 600;
   font-size: 14px;
@@ -76,6 +81,45 @@ export const NodeList: React.FC<NodeListI> = ({
             node={node}
           />
         ))}
+    </>
+  );
+};
+export const SchemaList: React.FC<Pick<NodeListI, "nodeList">> = ({
+  nodeList,
+}) => {
+  const empty = !nodeList?.length;
+  const queryNode = nodeList?.find((n) =>
+    n.type.operations?.includes(OperationType.query)
+  );
+  const mutationNode = nodeList?.find((n) =>
+    n.type.operations?.includes(OperationType.mutation)
+  );
+  const subscriptionNode = nodeList?.find((n) =>
+    n.type.operations?.includes(OperationType.subscription)
+  );
+  return (
+    <>
+      <Title color={"type"} empty={empty} open>
+        <div>Schema</div>
+      </Title>
+      <SingleSchemaNodeInList
+        node={queryNode}
+        schemaProps={{ name: "query", operationType: OperationType.query }}
+      />
+      <SingleSchemaNodeInList
+        node={mutationNode}
+        schemaProps={{
+          name: "mutation",
+          operationType: OperationType.mutation,
+        }}
+      />
+      <SingleSchemaNodeInList
+        node={subscriptionNode}
+        schemaProps={{
+          name: "subscription",
+          operationType: OperationType.subscription,
+        }}
+      />
     </>
   );
 };

@@ -17,7 +17,7 @@ export interface CodePaneOuterProps {
 export type CodePaneProps = {
   size: number | string;
   schema: string;
-  onChange: (v: string) => void;
+  onChange: (v: string, passGraphValidation?: boolean) => void;
   libraries?: string;
   fullScreen?: boolean;
 } & CodePaneOuterProps;
@@ -45,7 +45,7 @@ export const CodePane = (props: CodePaneProps) => {
 
   useEffect(() => {
     if (temporaryString !== schema) {
-      onChange(debouncedTemporaryString);
+      onChange(debouncedTemporaryString, true);
     }
   }, [debouncedTemporaryString]);
 

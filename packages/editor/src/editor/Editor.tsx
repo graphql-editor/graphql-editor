@@ -115,10 +115,10 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
     const { setTheme } = useTheme();
     const {
       grafErrors,
+      codeErrors,
       setGrafErrors,
       setGrafEditorErrors,
       setGrafErrorSchema,
-      lockGraf,
       errorsItems,
     } = useErrorsState();
     const {
@@ -307,8 +307,13 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
             >
               <CodePane
                 size={!routes.pane ? 100000 : sidebarSize}
-                onChange={(v) => {
-                  setSchema({ ...schema, code: v, isTree: false });
+                onChange={(v, passGraphValidation) => {
+                  setSchema({
+                    ...schema,
+                    code: v,
+                    isTree: false,
+                    passGraphValidation,
+                  });
                 }}
                 schema={schema.code}
                 fullScreen={!routes.pane}
@@ -328,7 +333,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
         {routes.pane === "diff" && diffSchemas && (
           <DiffEditor schemas={diffSchemas} />
         )}
-        {lockGraf && <ErrorsList>{errorsItems}</ErrorsList>}
+        {codeErrors.length && <ErrorsList>{errorsItems}</ErrorsList>}
       </Main>
     );
   }

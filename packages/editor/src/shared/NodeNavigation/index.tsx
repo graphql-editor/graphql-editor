@@ -1,7 +1,7 @@
 import { CollapseArrow } from "@/editor/menu/CollapseArrow";
 import { SearchInput } from "@/shared/components";
 import { useIO, KeyboardActions } from "@/shared/hooks/io";
-import { NodeList } from "@/shared/NodeNavigation/NodeList";
+import { NodeList, SchemaList } from "@/shared/NodeNavigation/NodeList";
 import { useRelationNodesState, useTreesState } from "@/state/containers";
 import { useSortState } from "@/state/containers/sort";
 import { fontFamilySans, transition } from "@/vars";
@@ -278,18 +278,7 @@ export const NodeNavigation = () => {
             </SearchWrapper>
           </TopMenusWrapper>
           <ListWrapper>
-            <NodeList
-              expanded={listExpanded}
-              setExpanded={(e) =>
-                setListExpanded((le) =>
-                  le.includes(e) ? le.filter((l) => l !== e) : [...le, e]
-                )
-              }
-              nodeList={splittedNodes?.schemaNodes}
-              visibleInRelationView
-              listTitle="Schema"
-              colorKey="type"
-            />
+            <SchemaList nodeList={splittedNodes?.schemaNodes} />
             <NodeList
               expanded={listExpanded}
               setExpanded={(e) =>

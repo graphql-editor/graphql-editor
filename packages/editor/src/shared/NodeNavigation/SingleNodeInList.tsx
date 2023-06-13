@@ -1,4 +1,6 @@
 import { EditorTheme } from "@/gshared/theme/MainTheme";
+import { SetOperationMenu } from "@/shared/NodeNavigation/SetOperationMenu";
+import { ContextMenu } from "@/shared/components/ContextMenu";
 import { DOMClassNames } from "@/shared/hooks/DOMClassNames";
 import {
   useTreesState,
@@ -13,10 +15,12 @@ import {
   Eye,
   Pen,
   Stack,
+  DotsHorizontal,
+  Typography,
 } from "@aexol-studio/styling-system";
 import styled from "@emotion/styled";
-import { ParserField } from "graphql-js-tree";
-import React, { createRef } from "react";
+import { OperationType, ParserField } from "graphql-js-tree";
+import React, { createRef, useState } from "react";
 
 type ToggleableParserField = ParserField & { isHidden?: boolean };
 
@@ -24,7 +28,10 @@ export const SingleNodeInList: React.FC<{
   node: ToggleableParserField;
   colorKey: keyof EditorTheme["colors"];
   visibleInRelationView?: true;
-}> = ({ node, colorKey, visibleInRelationView }) => {
+  schemaProps?: {
+    name: string;
+  };
+}> = ({ node, colorKey, visibleInRelationView, schemaProps }) => {
   const { setSelectedNodeId, isLibrary, focusNode } = useTreesState();
   const { toggleNodeVisibility } = useRelationNodesState();
   const { setEditMode } = useRelationsState();
@@ -58,6 +65,7 @@ export const SingleNodeInList: React.FC<{
         className={DOMClassNames.navigationTitleSpan}
         data-id={node.id}
       >
+        {schemaProps && <span>{schemaProps.name}</span>}
         <span>{node.name}</span>
         {isLibrary(node.id) && (
           <ExternalLibrary title="From external library">
@@ -109,6 +117,169 @@ export const SingleNodeInList: React.FC<{
           </IconContainer>
         </Actions>
       )}
+    </NavSingleBox>
+  );
+};
+export const SingleSchemaNodeInList: React.FC<{
+  node?: ToggleableParserField;
+  schemaProps: {
+    name: string;
+    operationType: OperationType;
+  };
+}> = ({ node, schemaProps }) => {
+  const { setSelectedNodeId, isLibrary, focusNode, setOperation } =
+    useTreesState();
+  const { toggleNodeVisibility } = useRelationNodesState();
+  const { setEditMode } = useRelationsState();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const ref = createRef<HTMLAnchorElement>();
+
+  return (
+    <NavSingleBox
+      color={"type"}
+      ref={ref}
+      className={DOMClassNames.navigationTitle}
+      data-id={node?.id}
+      onClick={() => {
+        if (!node) return;
+        if (node.isHidden) {
+          toggleNodeVisibility(node);
+        }
+        setSelectedNodeId({
+          value: {
+            id: node.id,
+            name: node.name,
+          },
+          source: "navigation",
+        });
+      }}
+    >
+      <NodeName
+        isHidden={node?.isHidden}
+        color={"type"}
+        className={DOMClassNames.navigationTitleSpan}
+        data-id={node?.id}
+      >
+        {schemaProps && (
+          <Typography variant="body2" color="active">
+            {schemaProps.name}
+          </Typography>
+        )}
+        {node && (
+          <>
+            <span>{node.name}</span>
+            {isLibrary(node.id) && (
+              <ExternalLibrary title="From external library">
+                <Link />
+              </ExternalLibrary>
+            )}
+          </>
+        )}
+      </NodeName>
+      <Actions align="center" gap="0.25rem">
+        <Stack align="center" gap="0.25rem">
+          {node && (
+            <>
+              <SelectedActions
+                className={DOMClassNames.navigationSelectedActions}
+              >
+                <IconContainer
+                  isHidden={node.isHidden}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    focusNode(node);
+                  }}
+                >
+                  <EagleEye height={20} />
+                </IconContainer>
+                <IconContainer
+                  isHidden={node.isHidden}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedNodeId({
+                      source: "navigation",
+                      value: {
+                        id: node.id,
+                        name: node.name,
+                      },
+                    });
+                    setEditMode(node.id);
+                  }}
+                >
+                  <Pen height={20} />
+                </IconContainer>
+
+                <ContextMenu
+                  isOpen={menuOpen}
+                  close={() => setMenuOpen(false)}
+                  Trigger={({ triggerProps }) => (
+                    <IconContainer
+                      {...triggerProps}
+                      onClick={() => {
+                        setMenuOpen(true);
+                      }}
+                    >
+                      <DotsHorizontal height={20} />
+                    </IconContainer>
+                  )}
+                >
+                  {({ layerProps }) => (
+                    <SetOperationMenu
+                      {...layerProps}
+                      operationType={schemaProps.operationType}
+                      onSelectType={(n) => {
+                        setOperation(n, schemaProps.operationType);
+                      }}
+                      hideMenu={() => {
+                        setMenuOpen(false);
+                      }}
+                    />
+                  )}
+                </ContextMenu>
+              </SelectedActions>
+            </>
+          )}
+        </Stack>
+        {node ? (
+          <IconContainer
+            isHidden={node.isHidden}
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleNodeVisibility(node);
+            }}
+          >
+            {node.isHidden ? <EyeSlash height={20} /> : <Eye height={20} />}
+          </IconContainer>
+        ) : (
+          <ContextMenu
+            isOpen={menuOpen}
+            close={() => setMenuOpen(false)}
+            Trigger={({ triggerProps }) => (
+              <IconContainer
+                {...triggerProps}
+                onClick={() => {
+                  setMenuOpen(true);
+                }}
+              >
+                <DotsHorizontal height={20} />
+              </IconContainer>
+            )}
+          >
+            {({ layerProps }) => (
+              <SetOperationMenu
+                operationType={schemaProps.operationType}
+                {...layerProps}
+                onSelectType={(n) => {
+                  setOperation(n, schemaProps.operationType);
+                }}
+                hideMenu={() => {
+                  setMenuOpen(false);
+                }}
+              />
+            )}
+          </ContextMenu>
+        )}
+      </Actions>
     </NavSingleBox>
   );
 };

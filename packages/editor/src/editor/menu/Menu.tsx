@@ -10,6 +10,7 @@ import {
   ArrowNarrowBottomAlignment,
   DropdownMenu,
   MenuItem,
+  Tooltip,
 } from "@aexol-studio/styling-system";
 import { PassedSchema } from "@/Models";
 import { ImportSchema } from "@/shared/dialogs/ImportSchema";
@@ -74,32 +75,6 @@ const MenuItem = styled.div<{
     color: ${({ theme }) => theme.accents[100]};
     font-weight: 600;
   }
-  &[data-tooltip] {
-    &:after {
-      content: attr(data-tooltip);
-      position: absolute;
-      pointer-events: none;
-      left: 67px;
-      width: max-content;
-      color: ${({ theme }) => theme.text.default};
-      font-weight: 400;
-      background: #000000;
-      border: 1px solid ${({ theme }) => theme.text.disabled};
-      border-radius: ${(p) => p.theme.radius}px;
-      text-align: center;
-      padding: 5px 12px;
-      z-index: 100;
-      opacity: 0;
-      transition: ${transition};
-    }
-
-    &:hover {
-      &:after {
-        opacity: 1;
-        color: #e3f6fc;
-      }
-    }
-  }
 `;
 
 export type ActiveSource =
@@ -142,90 +117,102 @@ export const Menu = ({
         saveToFile(path, schema);
       },
     },
-  ];
-  if (libraries) {
-    exportActions.push({
+    {
+      name: "Export libraries",
+      onClick: () => {
+        if (!libraries) return;
+        saveToFile(path, libraries);
+      },
+      disabled: !libraries,
+    },
+    {
       name: "Export schema with libraries",
       onClick: () => {
+        if (!libraries) return;
         saveToFile(path, [libraries, schema].join("\n"));
       },
-    });
-  }
+      disabled: !libraries,
+    },
+  ];
   return (
     <>
       <Sidebar>
-        <MenuItem
-          className={toggleCode ? "toggle-active" : ""}
-          onClick={() => {
-            if (!activePane || activePane === "diff") return;
-            setToggleCode(!toggleCode);
-          }}
-          isDisabled={activePane === "diff"}
-          data-tooltip="Toggle Code"
-          data-tour="toggle-code"
-        >
-          <Code />
-        </MenuItem>
-        {!excludePanes.includes("relation") && (
+        <Tooltip title="Toggle Code" position="right-bottom">
           <MenuItem
-            className={activePane === "relation" ? "active" : ""}
+            className={toggleCode ? "toggle-active" : ""}
             onClick={() => {
-              if (activePane === "relation" && toggleCode) {
-                setActivePane(undefined);
-                return;
-              }
-              setActivePane("relation");
+              if (!activePane || activePane === "diff") return;
+              setToggleCode(!toggleCode);
             }}
-            data-tooltip="Relation"
-            data-tour="relation"
+            isDisabled={activePane === "diff"}
+            data-tour="toggle-code"
           >
-            <Tool />
+            <Code />
           </MenuItem>
+        </Tooltip>
+        {!excludePanes.includes("relation") && (
+          <Tooltip title="Relations" position="right-center">
+            <MenuItem
+              className={activePane === "relation" ? "active" : ""}
+              onClick={() => {
+                if (activePane === "relation" && toggleCode) {
+                  setActivePane(undefined);
+                  return;
+                }
+                setActivePane("relation");
+              }}
+              data-tour="relation"
+            >
+              <Tool />
+            </MenuItem>
+          </Tooltip>
         )}
         {!excludePanes.includes("docs") && (
-          <MenuItem
-            className={activePane === "docs" ? "active" : ""}
-            onClick={() => {
-              if (activePane === "docs" && toggleCode) {
-                setActivePane(undefined);
-                return;
-              }
-              setActivePane("docs");
-            }}
-            data-tooltip="Documentation"
-            data-tour="documentation"
-          >
-            <File />
-          </MenuItem>
+          <Tooltip title="Documentation" position="right-center">
+            <MenuItem
+              className={activePane === "docs" ? "active" : ""}
+              onClick={() => {
+                if (activePane === "docs" && toggleCode) {
+                  setActivePane(undefined);
+                  return;
+                }
+                setActivePane("docs");
+              }}
+              data-tour="documentation"
+            >
+              <File />
+            </MenuItem>
+          </Tooltip>
         )}
         {!excludePanes.includes("diff") && (
-          <MenuItem
-            className={activePane === "diff" ? "active" : ""}
-            onClick={() => setActivePane("diff")}
-            data-tooltip="Diff"
-            data-tour="diff"
-          >
-            <Filter />
-          </MenuItem>
+          <Tooltip title="Compare versions" position="right-center">
+            <MenuItem
+              className={activePane === "diff" ? "active" : ""}
+              onClick={() => setActivePane("diff")}
+              data-tour="diff"
+            >
+              <Filter />
+            </MenuItem>
+          </Tooltip>
         )}
 
         <DropdownMenu
           actionType="icon"
-          dropdownPosition="right-center"
+          dropdownPosition="right-bottom"
           menuItems={exportActions}
           distanceX="10px"
         >
-          <MenuItem data-tooltip="Export schema" data-tour="export">
-            <ArrowNarrowUpMove />
-          </MenuItem>
+          <Tooltip title="Export schema" position="right-center">
+            <MenuItem data-tour="export">
+              <ArrowNarrowUpMove />
+            </MenuItem>
+          </Tooltip>
         </DropdownMenu>
-        <MenuItem
-          onClick={() => setImportOpen(true)}
-          data-tooltip="Import schema"
-          data-tour="import"
-        >
-          <ArrowNarrowBottomAlignment />
-        </MenuItem>
+        <Tooltip title="Import schema" position="right-center">
+          <MenuItem onClick={() => setImportOpen(true)} data-tour="import">
+            <ArrowNarrowBottomAlignment />
+          </MenuItem>
+        </Tooltip>
         <Filler />
       </Sidebar>
       <ImportSchema

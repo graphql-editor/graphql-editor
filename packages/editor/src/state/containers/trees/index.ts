@@ -46,7 +46,7 @@ const useTreesStateContainer = createContainer(() => {
   const [undos, setUndos] = useState<string[]>([]);
   const [selectedNodeId, _setSelectedNodeId] = useState<SelectedNodeId>();
   const [readonly, setReadonly] = useState(false);
-  const { setLockGraf, setCodeErrors, transformCodeError } = useErrorsState();
+  const { setCodeErrors, transformCodeError } = useErrorsState();
   const allNodes = useMemo(() => {
     return { nodes: tree.nodes.concat(libraryTree.nodes) };
   }, [libraryTree, tree]);
@@ -231,8 +231,13 @@ const useTreesStateContainer = createContainer(() => {
     (_selectedNodeId?: SelectedNodeId) => {
       const nodeId = _selectedNodeId?.value?.id;
       DOMEvents.selectNode.trigger(nodeId);
-      if (nodeId !== selectedNodeId?.value?.id) {
-        setTimeout(() => _setSelectedNodeId(_selectedNodeId), 250);
+      if (
+        nodeId !== selectedNodeId?.value?.id ||
+        _selectedNodeId?.justCreated !== selectedNodeId?.justCreated
+      ) {
+        setTimeout(() => {
+          return _setSelectedNodeId(_selectedNodeId);
+        }, 250);
       }
     },
     [_setSelectedNodeId, allNodes, selectedNodeId?.value?.id, focusMode]
@@ -271,9 +276,6 @@ const useTreesStateContainer = createContainer(() => {
         (errors) => {
           const tranformedErrors = transformCodeError(errors);
           setCodeErrors(tranformedErrors);
-          setLockGraf(
-            tranformedErrors.map((e) => JSON.stringify(e, null, 4)).join("\n")
-          );
         }
       );
     } catch (error) {
@@ -281,9 +283,6 @@ const useTreesStateContainer = createContainer(() => {
         (errors) => {
           const tranformedErrors = transformCodeError(errors);
           setCodeErrors(tranformedErrors);
-          setLockGraf(
-            tranformedErrors.map((e) => JSON.stringify(e, null, 4)).join("\n")
-          );
         }
       );
     }
@@ -355,6 +354,25 @@ const useTreesStateContainer = createContainer(() => {
         return;
       }
       mutationRoot.setValueNode(node, value);
+    });
+  };
+  const removeOperation = (node: ParserField, o: OperationType) => {
+    updateNode(node, () => {
+      node.type.operations = node.type.operations?.filter((opt) => opt !== o);
+    });
+  };
+  const setOperation = (node: ParserField, o: OperationType) => {
+    updateNode(node, () => {
+      tree.nodes.forEach((n) => {
+        const { operations } = n.type;
+        if (operations) {
+          const i = operations.findIndex((to) => to === o);
+          if (i !== -1) {
+            operations.splice(i, 1);
+          }
+        }
+      });
+      node.type.operations = [...(node.type.operations || []), o];
     });
   };
   const queryNode = useMemo(() => {
@@ -431,6 +449,8 @@ const useTreesStateContainer = createContainer(() => {
     implementInterface,
     deImplementInterface,
     setValue,
+    setOperation,
+    removeOperation,
     // focus
     focusMode,
     focusNode,

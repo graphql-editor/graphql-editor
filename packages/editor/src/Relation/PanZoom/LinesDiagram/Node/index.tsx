@@ -54,6 +54,7 @@ const Content = styled.div<ContentProps>`
     opacity: 0.3;
     &.active {
       opacity: 1;
+      visibility: visible;
       cursor: auto;
       border-color: ${({ theme, nodeType }) =>
         theme.colors[nodeType]
@@ -72,6 +73,7 @@ const Content = styled.div<ContentProps>`
       }
     }
     &.related {
+      visibility: visible;
       opacity: 1;
     }
   }
@@ -211,7 +213,7 @@ export const Node: React.FC<NodeProps> = (props) => {
   return (
     <Content
       width={numberNode.width}
-      className={`${DOMClassNames.node}`}
+      className={`${DOMClassNames.node} inViewport`}
       id={`node-${field.id}`}
       ref={nodeRef}
       isLibrary={isLibrary}

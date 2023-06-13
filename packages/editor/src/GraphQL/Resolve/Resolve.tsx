@@ -12,12 +12,12 @@ import {
   createParserField,
   Value,
   FieldType,
-} from 'graphql-js-tree';
-import { BuiltInScalars } from '@/GraphQL/Resolve/BuiltInNodes';
+} from "graphql-js-tree";
+import { BuiltInScalars } from "@/GraphQL/Resolve/BuiltInNodes";
 
 export const ResolveCreateField = (
   field: ParserField,
-  actualFields: ParserField[],
+  actualFields: ParserField[]
 ): ParserField[] | undefined => {
   const typeName = getTypeName(field.type.fieldType);
   if (
@@ -33,7 +33,7 @@ export const ResolveCreateField = (
           f.data.type === TypeDefinition.EnumTypeDefinition ||
           f.data.type === TypeDefinition.ScalarTypeDefinition ||
           f.data.type === TypeDefinition.UnionTypeDefinition ||
-          f.data.type === TypeDefinition.InterfaceTypeDefinition,
+          f.data.type === TypeDefinition.InterfaceTypeDefinition
       )
       .map((n) => ({
         ...n,
@@ -53,7 +53,7 @@ export const ResolveCreateField = (
         (f) =>
           f.data.type === TypeDefinition.InputObjectTypeDefinition ||
           f.data.type === TypeDefinition.EnumTypeDefinition ||
-          f.data.type === TypeDefinition.ScalarTypeDefinition,
+          f.data.type === TypeDefinition.ScalarTypeDefinition
       )
       .concat(BuiltInScalars)
       .map((n) => ({
@@ -75,7 +75,7 @@ export const ResolveCreateField = (
             type: Options.name,
           },
         },
-        name: '',
+        name: "",
       }),
     ];
   }
@@ -105,42 +105,54 @@ export const ResolveCreateField = (
     return undefined;
   }
   if (field.data.type === Instances.Directive) {
-    return actualFields
-      .find((a) => a.name === typeName)!
-      .args?.filter((a) => !field.args?.map((el) => el.name).includes(a.name))
-      .map((a) => {
-        return {
-          ...a,
-          data: {
-            type: Instances.Argument,
-          },
-          type: {
-            fieldType: {
-              name: a.name,
-              type: Options.name,
+    const typeNode = actualFields.find((a) => a.name === typeName);
+    return (
+      typeNode?.args
+        ?.filter((a) => !field.args?.map((el) => el.name).includes(a.name))
+        .map((a) => {
+          return {
+            ...a,
+            data: {
+              type: Instances.Argument,
             },
-          },
-          value: {
-            value: '',
-            type: checkValueType(a, actualFields),
-          },
-          args: [],
-        };
-      });
+            type: {
+              fieldType: {
+                name: a.name,
+                type: Options.name,
+              },
+            },
+            value: {
+              value: "",
+              type: checkValueType(a, actualFields),
+            },
+            args: [],
+          };
+        }) || []
+    );
   }
   return [];
 };
 
+export const ResolvePossibleOperationTypes = (
+  actualFields: ParserField[]
+): ParserField[] => {
+  return (
+    actualFields.filter(
+      (f) => f.data.type === TypeDefinition.ObjectTypeDefinition
+    ) || []
+  );
+};
+
 export const ResolveImplementInterface = (
   field: ParserField,
-  actualFields: ParserField[],
+  actualFields: ParserField[]
 ): ParserField[] | undefined => {
   if (
     field.data.type === TypeDefinition.ObjectTypeDefinition ||
     field.data.type === TypeDefinition.InterfaceTypeDefinition
   ) {
     return actualFields.filter(
-      (f) => f.data.type === TypeDefinition.InterfaceTypeDefinition,
+      (f) => f.data.type === TypeDefinition.InterfaceTypeDefinition
     );
   }
   return [];
@@ -199,16 +211,14 @@ const getAcceptedDirectives = (f: ParserField): Directive[] => {
 };
 export const ResolveDirectives = (
   field: ParserField,
-  actualFields: ParserField[],
+  actualFields: ParserField[]
 ): ParserField[] => {
   const acceptedDirectives = getAcceptedDirectives(field);
   return actualFields
     .filter((f) => f.data.type === TypeSystemDefinition.DirectiveDefinition)
     .filter(
       (f) =>
-        !!f.type.directiveOptions?.find((dO) =>
-          acceptedDirectives.includes(dO),
-        ),
+        !!f.type.directiveOptions?.find((dO) => acceptedDirectives.includes(dO))
     );
 };
 

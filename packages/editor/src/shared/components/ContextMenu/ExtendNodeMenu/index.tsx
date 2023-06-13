@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { ResolveExtension } from '@/GraphQL/Resolve';
+import React, { useMemo, useState } from "react";
+import { ResolveExtension } from "@/GraphQL/Resolve";
 import {
   TypeExtension,
   TypeSystemDefinition,
@@ -7,15 +7,15 @@ import {
   ParserField,
   Options,
   createParserField,
-} from 'graphql-js-tree';
-import { useTreesState } from '@/state/containers/trees';
+} from "graphql-js-tree";
+import { useTreesState } from "@/state/containers/trees";
 import {
   Menu,
   MenuScrollingArea,
   MenuSearch,
   MenuItem,
-} from '@/Graf/Node/components';
-import { sortNodes } from '@/shared/components/ContextMenu/sort';
+} from "@/Graf/Node/components";
+import { sortNodes } from "@/shared/components/ContextMenu/sort";
 
 interface ExtendNodeMenuProps {
   hideMenu: () => void;
@@ -26,7 +26,7 @@ export const ExtendNodeMenu = React.forwardRef<
   ExtendNodeMenuProps
 >(({ hideMenu, ...props }, ref) => {
   const { tree, allNodes, setTree, setSelectedNodeId } = useTreesState();
-  const [menuSearchValue, setMenuSearchValue] = useState('');
+  const [menuSearchValue, setMenuSearchValue] = useState("");
   const creationNodes = useMemo(
     () =>
       allNodes.nodes.filter(
@@ -39,13 +39,13 @@ export const ExtendNodeMenu = React.forwardRef<
             TypeExtension.ScalarTypeExtension,
             TypeExtension.UnionTypeExtension,
             TypeSystemDefinition.DirectiveDefinition,
-          ].find((o) => a.data.type === o),
+          ].find((o) => a.data.type === o)
       ) || [],
-    [allNodes],
+    [allNodes]
   );
   const filteredNodes = useMemo(
     () => sortNodes(menuSearchValue, creationNodes),
-    [allNodes, menuSearchValue],
+    [allNodes, menuSearchValue]
   );
 
   const onClickFilteredNode = (f: ParserField) => {
@@ -73,14 +73,14 @@ export const ExtendNodeMenu = React.forwardRef<
         id: extendNode.id,
         name: extendNode.name,
       },
-      source: 'relation',
+      source: "relation",
       justCreated: true,
     });
   };
   return (
     <Menu
       {...props}
-      menuName={'Extend node'}
+      menuName={"Extend node"}
       onScroll={(e) => e.stopPropagation()}
       hideMenu={hideMenu}
       ref={ref}
@@ -108,3 +108,5 @@ export const ExtendNodeMenu = React.forwardRef<
     </Menu>
   );
 });
+
+ExtendNodeMenu.displayName = "ExtendNodeMenu";

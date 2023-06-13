@@ -1,21 +1,21 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   GraphQLEditor,
   ExternalEditorAPI,
   Colors,
   PassedSchema,
   EditorRoutes,
-} from 'graphql-editor';
-import * as schemas from '../schema';
+} from "graphql-editor";
+import * as schemas from "../schema";
 
 const buttonStyle = {
-  position: 'absolute',
+  position: "absolute",
   zIndex: 33,
-  top: '65px',
-  right: '15px',
-  padding: '10px',
-  color: '#ffffff',
-  cursor: 'pointer',
+  top: "65px",
+  right: "15px",
+  padding: "10px",
+  color: "#ffffff",
+  cursor: "pointer",
   borderRadius: 4,
   backgroundColor: Colors.blue,
 } as const;
@@ -23,10 +23,10 @@ const buttonStyle = {
 export const googleState = () => {
   const [currentSchema, setCurrentSchema] = useState<PassedSchema>({
     code: schemas.billabeeSchema,
-    libraries: '',
+    libraries: "",
   });
-  const [r, setR] = useState<EditorRoutes>({ code: 'on', pane: 'docs' });
-  const [n, setN] = useState<string>('1392b05ce2df54');
+  const [r, setR] = useState<EditorRoutes>({ code: "on", pane: "docs" });
+  const [n, setN] = useState<string>("1392b05ce2df54");
 
   const editorRef = useRef<ExternalEditorAPI>();
 
@@ -46,19 +46,17 @@ export const googleState = () => {
         ref={editorRef}
         onNodeSelect={(n) => {
           console.log(n);
-          console.log('EDITOR SELECT NODE');
           setN(n);
         }}
         onRouteChange={(routes) => {
-          console.log('EDITOR ROUTE CHANGE');
           setR(routes);
         }}
         setSchema={(s) => {
           setCurrentSchema(s);
         }}
         diffSchemas={{
-          '1': schemas.googleDirectionsNew,
-          '2': schemas.googleDirectionsOld,
+          "1": schemas.googleDirectionsNew,
+          "2": schemas.googleDirectionsOld,
         }}
       />
     );
@@ -68,15 +66,15 @@ export const googleState = () => {
     <div
       style={{
         flex: 1,
-        width: '100%',
-        height: '100%',
-        alignSelf: 'stretch',
-        display: 'flex',
-        position: 'relative',
+        width: "100%",
+        height: "100%",
+        alignSelf: "stretch",
+        display: "flex",
+        position: "relative",
       }}
     >
       <div
-        onClick={() => setN('1dde4cbc7c784a')}
+        onClick={() => setN("1dde4cbc7c784a")}
         style={{
           ...buttonStyle,
         }}
@@ -88,7 +86,7 @@ export const googleState = () => {
         style={{
           ...buttonStyle,
           backgroundColor: Colors.orange,
-          right: '130px',
+          right: "130px",
         }}
       >
         deselect node
@@ -99,4 +97,4 @@ export const googleState = () => {
 };
 
 googleState.description =
-  'Google Directions GraphQL Schema. Contains diffs and router.';
+  "Google Directions GraphQL Schema. Contains diffs and router.";
