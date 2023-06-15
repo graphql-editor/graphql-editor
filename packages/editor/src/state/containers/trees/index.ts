@@ -410,6 +410,11 @@ const useTreesStateContainer = createContainer(() => {
     });
     setFocusMode(undefined);
   }, [selectedNodeId, setSelectedNodeId]);
+  const focusedNode = useMemo(() => {
+    if (!focusMode) return;
+    return allNodes.nodes.find((n) => n.id === focusMode);
+  }, [focusMode, allNodes]);
+
   return {
     allNodes,
     tree,
@@ -453,6 +458,7 @@ const useTreesStateContainer = createContainer(() => {
     removeOperation,
     // focus
     focusMode,
+    focusedNode,
     focusNode,
     exitFocus,
   };

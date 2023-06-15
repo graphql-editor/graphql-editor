@@ -10,6 +10,7 @@ import {
   createParserField,
   TypeDefinition,
   TypeSystemDefinition,
+  generateNodeId,
 } from "graphql-js-tree";
 import styled from "@emotion/styled";
 import { KeyboardActions, useIO } from "@/shared/hooks/io";
@@ -106,17 +107,22 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
           <ActiveNode
             readonly={readonly}
             onDuplicate={(nodeToDuplicate) => {
-              const allNodes = [...tree.nodes];
               const { ...rest } = node;
+              const newName = nodeToDuplicate?.name + "Copy";
               const duplicatedNode = JSON.parse(
                 JSON.stringify(
                   createParserField({
                     ...rest,
+                    id: generateNodeId(
+                      newName,
+                      nodeToDuplicate.data.type,
+                      nodeToDuplicate.args
+                    ),
                     name: nodeToDuplicate?.name + "Copy",
                   })
                 )
               ) as ParserField;
-              allNodes.push(duplicatedNode);
+              setTree({ nodes: [...tree.nodes, duplicatedNode] });
               setSelectedNodeId({
                 value: {
                   id: duplicatedNode.id,
@@ -124,7 +130,6 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
                 },
                 source: "relation",
               });
-              setTree({ nodes: allNodes });
             }}
             onInputCreate={(nodeToCreateInput) => {
               const createdInput = createParserField({

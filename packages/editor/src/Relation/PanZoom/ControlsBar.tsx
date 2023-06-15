@@ -13,16 +13,16 @@ import {
   Minus,
   Plus,
   Button,
-  EyeAlt,
   Tooltip,
   RefreshCwAlt3,
+  Xmark,
 } from "@aexol-studio/styling-system";
 import { DOMClassNames } from "@/shared/hooks/DOMClassNames";
 export const ControlsBar: React.FC<{
   downloadPng: () => void;
   triggerResimulation: () => void;
 }> = ({ downloadPng, triggerResimulation }) => {
-  const { readonly, exitFocus, focusMode } = useTreesState();
+  const { readonly, exitFocus, focusMode, focusedNode } = useTreesState();
 
   const { zoomIn, zoomOut } = useControls();
   const {
@@ -44,9 +44,9 @@ export const ControlsBar: React.FC<{
           <Button
             size="small"
             onClick={() => exitFocus()}
-            endAdornment={<EyeAlt />}
+            endAdornment={<Xmark />}
           >
-            Exit focus
+            <SpanFlow>{focusedNode?.name}</SpanFlow>
           </Button>
         )}
         {!readonly && !focusMode && <NewNode />}
@@ -112,6 +112,14 @@ export const ControlsBar: React.FC<{
     </TopBar>
   );
 };
+const SpanFlow = styled.span`
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  text-transform: none;
+`;
 const TooltippedZoom = styled.div`
   position: relative;
   font-size: 0.875rem;

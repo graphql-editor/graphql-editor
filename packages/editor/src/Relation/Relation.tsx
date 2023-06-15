@@ -51,9 +51,7 @@ export const Relation: React.FC = () => {
             initialScale={1}
             maxScale={1.5}
             wheel={{
-              activationKeys: ctrlToZoom
-                ? ["Control", "OS", "Meta"]
-                : undefined,
+              activationKeys: ctrlToZoom ? ["Control", "OS", "Meta"] : [],
               step: 0.03,
             }}
             panning={{ velocityDisabled: false }}

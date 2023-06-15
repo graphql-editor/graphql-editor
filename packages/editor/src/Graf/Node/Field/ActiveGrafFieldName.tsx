@@ -1,9 +1,9 @@
-import React from 'react';
-import { ParserField } from 'graphql-js-tree';
-import styled from '@emotion/styled';
-import { EditableText } from '@/Graf/Node/Field/EditableText';
-import { ActiveGrafType } from '@/Graf/Node/Field/ActiveGrafType';
-import { GRAF_FIELD_NAME_SIZE } from '@/Graf/constants';
+import React from "react";
+import { ParserField } from "graphql-js-tree";
+import styled from "@emotion/styled";
+import { EditableText } from "@/Graf/Node/Field/EditableText";
+import { ActiveGrafType } from "@/Graf/Node/Field/ActiveGrafType";
+import { GRAF_FIELD_NAME_SIZE } from "@/Graf/constants";
 
 const Main = styled.div`
   display: flex;
@@ -13,7 +13,7 @@ const Main = styled.div`
 `;
 
 export const ActiveGrafFieldName: React.FC<
-  Pick<ParserField, 'name' | 'args'> & {
+  Pick<ParserField, "name" | "args"> & {
     afterChange?: (newName: string) => void;
     parentTypes?: Record<string, string>;
   }

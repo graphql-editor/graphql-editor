@@ -1,7 +1,7 @@
-import React from 'react';
-import styled from '@emotion/styled';
-import * as vars from '@/vars';
-import { Plus, Search } from '@aexol-studio/styling-system';
+import React from "react";
+import styled from "@emotion/styled";
+import * as vars from "@/vars";
+import { Plus, Search } from "@aexol-studio/styling-system";
 
 interface MenuSearchProps {
   value: string;
@@ -9,12 +9,12 @@ interface MenuSearchProps {
   onClear: () => void;
   onSubmit: () => void;
   placeholder?: string;
-  icon?: 'search' | 'add';
+  icon?: "search" | "add";
 }
 
 const Wrapper = styled.div`
   position: relative;
-  max-width: 100%;
+  flex: 1;
 `;
 
 const Main = styled.input`
@@ -56,26 +56,19 @@ const SearchIconContainer = styled(IconContainerStyle)`
 
 export const SearchInput = React.forwardRef<HTMLInputElement, MenuSearchProps>(
   (
-    {
-      value,
-      onChange,
-      onClear,
-      onSubmit,
-      placeholder = 'Search...',
-      icon = 'search',
-    },
-    ref,
+    { value, onChange, onSubmit, placeholder = "Search...", icon = "search" },
+    ref
   ) => {
     return (
       <Wrapper>
         <SearchIconContainer>
-          {icon === 'search' && <Search />}
-          {icon === 'add' && <Plus />}
+          {icon === "search" && <Search />}
+          {icon === "add" && <Plus />}
         </SearchIconContainer>
         <Main
           ref={ref}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') {
+            if (e.key === "Enter") {
               onSubmit();
             }
           }}
@@ -86,5 +79,7 @@ export const SearchInput = React.forwardRef<HTMLInputElement, MenuSearchProps>(
         />
       </Wrapper>
     );
-  },
+  }
 );
+
+SearchInput.displayName = "SearchInput";

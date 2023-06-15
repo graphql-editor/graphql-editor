@@ -70,12 +70,7 @@ export const PanZoom: React.FC<{
         y: ctx.state.positionY,
         scale: ctx.state.scale,
       });
-      setTransform(
-        viewportParams.width / 2.0,
-        viewportParams.height / 2.0,
-        1,
-        0
-      );
+      setTransform(-viewportParams.x, -viewportParams.y, 1, 0);
       setSelectedNodeId({ source: "relation", value: undefined });
     }
   }, [mainRef, viewportParams]);

@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { fontFamilySans } from '@/vars';
-import styled from '@emotion/styled';
-import { GRAF_FIELD_NAME_SIZE } from '@/Graf/constants';
-import { useDraggable } from '@/Graf/state/draggable';
+import React, { useEffect, useRef, useState } from "react";
+import { fontFamilySans } from "@/vars";
+import styled from "@emotion/styled";
+import { GRAF_FIELD_NAME_SIZE } from "@/Graf/constants";
+import { useDraggable } from "@/Graf/state/draggable";
 
 const Input = styled.input<{ isError?: boolean; isEditable?: boolean }>`
   border: 0;
@@ -20,10 +20,9 @@ export const EditableText: React.FC<{
   style?: React.CSSProperties;
   exclude?: string[];
 }> = ({ value, onChange, style = {}, exclude = [] }) => {
-  const [editedValue, setEditedValue] = useState('');
+  const [editedValue, setEditedValue] = useState(value);
   const { setDraggable } = useDraggable();
   const [isError, setIsError] = useState(false);
-  const [w, setW] = useState(20);
   const spanRef = useRef<HTMLSpanElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const constantValueRef = useRef<string>(value);
@@ -53,17 +52,20 @@ export const EditableText: React.FC<{
       }
     };
   }, []);
-  useEffect(() => {
-    setIsError(exclude.includes(editedValue));
-  }, [editedValue]);
+
   useEffect(() => {
     setEditedValue(value);
   }, [value]);
+
   useEffect(() => {
-    if (spanRef.current?.offsetWidth) {
-      setW(spanRef.current.offsetWidth);
-    }
+    setIsError(exclude.includes(editedValue));
   }, [editedValue]);
+
+  useEffect(() => {
+    if (spanRef.current?.offsetWidth && inputRef.current) {
+      inputRef.current.style.width = spanRef.current.offsetWidth + "px";
+    }
+  });
   return (
     <>
       {onChange ? (
@@ -74,8 +76,8 @@ export const EditableText: React.FC<{
             isError={isError}
             value={editedValue}
             pattern="[_A-Za-z][_0-9A-Za-z]*"
-            style={{ width: `${w}px`, ...style }}
-            title={isError ? 'Name already exists' : 'rename'}
+            style={{ ...style }}
+            title={isError ? "Name already exists" : "rename"}
             onFocus={() => setDraggable(false)}
             onMouseDown={() => setDraggable(false)}
             onBlur={(e) => {
@@ -83,7 +85,7 @@ export const EditableText: React.FC<{
             }}
             onClick={(e) => (e.target as any).focus()}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') {
+              if (e.key === "Enter") {
                 inputRef?.current?.blur();
               }
             }}

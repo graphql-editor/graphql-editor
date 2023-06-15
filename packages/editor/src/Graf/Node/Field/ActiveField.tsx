@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Instances,
   TypeSystemDefinition,
   ValueDefinition,
-} from 'graphql-js-tree';
+} from "graphql-js-tree";
 import {
   ContextMenu,
   NodeChangeFieldTypeMenu,
   NodeTypeOptionsMenu,
-} from '@/shared/components/ContextMenu';
-import { useTreesState } from '@/state/containers/trees';
+} from "@/shared/components/ContextMenu";
+import { useTreesState } from "@/state/containers/trees";
 import {
   DetailMenuItem,
   EditableDefaultValue,
@@ -17,14 +17,14 @@ import {
   Menu,
   MenuScrollingArea,
   NodeFieldContainer,
-} from '@/Graf/Node/components';
-import { FieldProps } from '@/Graf/Node/models';
-import styled from '@emotion/styled';
-import { ActiveGrafFieldName } from '@/Graf/Node/Field/ActiveGrafFieldName';
-import { ActiveGrafType } from '@/Graf/Node/Field/ActiveGrafType';
-import { transition } from '@/vars';
-import { ActiveDirectiveName } from '@/Graf/Node/Field/ActiveDirectiveName';
-import { changeTypeName } from '@/utils';
+} from "@/Graf/Node/components";
+import { FieldProps } from "@/Graf/Node/models";
+import styled from "@emotion/styled";
+import { ActiveGrafFieldName } from "@/Graf/Node/Field/ActiveGrafFieldName";
+import { ActiveGrafType } from "@/Graf/Node/Field/ActiveGrafType";
+import { transition } from "@/vars";
+import { ActiveDirectiveName } from "@/Graf/Node/Field/ActiveDirectiveName";
+import { changeTypeName } from "@/utils";
 import {
   BracketsSquare,
   ChevronLeft,
@@ -32,7 +32,7 @@ import {
   Lock,
   Minus,
   Plus,
-} from '@aexol-studio/styling-system';
+} from "@aexol-studio/styling-system";
 
 export const ActiveField: React.FC<FieldProps> = ({
   node,
@@ -48,7 +48,7 @@ export const ActiveField: React.FC<FieldProps> = ({
   parentNode,
 }) => {
   const { parentTypes, readonly, setValue } = useTreesState();
-  const [menuOpen, setMenuOpen] = useState<'options' | 'details' | 'type'>();
+  const [menuOpen, setMenuOpen] = useState<"options" | "details" | "type">();
   const isEnumValue = node.data.type === ValueDefinition.EnumValueDefinition;
   const isInputValue =
     node.data.type === ValueDefinition.InputValueDefinition ||
@@ -88,7 +88,7 @@ export const ActiveField: React.FC<FieldProps> = ({
           ></ActiveGrafType>
           <LockContainer
             title={`This node comes from ${node.fromInterface?.join(
-              ', ',
+              ", "
             )} and is editable in parent node only`}
           >
             <Lock />
@@ -100,7 +100,7 @@ export const ActiveField: React.FC<FieldProps> = ({
         !isDirectiveNode &&
         !isFromInterface && (
           <ContextMenu
-            isOpen={menuOpen === 'type'}
+            isOpen={menuOpen === "type"}
             close={() => setMenuOpen(undefined)}
             Trigger={({ triggerProps }) => (
               <ActiveGrafType
@@ -108,7 +108,7 @@ export const ActiveField: React.FC<FieldProps> = ({
                 onClick={
                   !readonly && !isLocked
                     ? () =>
-                        setMenuOpen(menuOpen === 'type' ? undefined : 'type')
+                        setMenuOpen(menuOpen === "type" ? undefined : "type")
                     : undefined
                 }
                 type={node.type}
@@ -147,7 +147,7 @@ export const ActiveField: React.FC<FieldProps> = ({
         node.data.type !== TypeSystemDefinition.UnionMemberDefinition && (
           <Actions>
             <ContextMenu
-              isOpen={menuOpen === 'options'}
+              isOpen={menuOpen === "options"}
               close={() => setMenuOpen(undefined)}
               Trigger={({ triggerProps }) => {
                 return (
@@ -157,7 +157,7 @@ export const ActiveField: React.FC<FieldProps> = ({
                       closed: <BracketsSquare />,
                       open: <BracketsSquare />,
                     }}
-                    onClick={() => setMenuOpen('options')}
+                    onClick={() => setMenuOpen("options")}
                   />
                 );
               }}
@@ -185,7 +185,7 @@ export const ActiveField: React.FC<FieldProps> = ({
         )}
       {isInputValue && (
         <EditableDefaultValue
-          value={node.value?.value || ''}
+          value={node.value?.value || ""}
           onChange={
             isLocked
               ? undefined
@@ -208,14 +208,14 @@ export const ActiveField: React.FC<FieldProps> = ({
                 open: <Minus />,
               }}
               info={{
-                message: 'Field arguments and directives',
-                placement: 'left',
+                message: "Field arguments and directives",
+                placement: "left",
               }}
             />
           )}
         {!isLocked && !isFromInterface && (
           <ContextMenu
-            isOpen={menuOpen === 'details'}
+            isOpen={menuOpen === "details"}
             close={() => setMenuOpen(undefined)}
             Trigger={({ triggerProps }) => {
               return (
@@ -225,14 +225,14 @@ export const ActiveField: React.FC<FieldProps> = ({
                     closed: <DotsVertical />,
                     open: <DotsVertical />,
                   }}
-                  onClick={() => setMenuOpen('details')}
+                  onClick={() => setMenuOpen("details")}
                 />
               );
             }}
           >
             {({ layerProps }) => (
               <Menu
-                menuName={'Node options'}
+                menuName={"Node options"}
                 hideMenu={() => setMenuOpen(undefined)}
                 {...layerProps}
               >
@@ -263,7 +263,7 @@ export const ActiveField: React.FC<FieldProps> = ({
 
 const Actions = styled.div<{ toRight?: boolean }>`
   display: flex;
-  margin-left: ${({ toRight }) => (toRight ? 'auto' : 'unset')};
+  margin-left: ${({ toRight }) => (toRight ? "auto" : "unset")};
   z-index: 2;
 `;
 const OutputArrow = styled.div<{ opened?: boolean }>`
@@ -276,7 +276,7 @@ const OutputArrow = styled.div<{ opened?: boolean }>`
   margin: -0.5rem 0;
   svg {
     stroke: ${({ theme }) => theme.text.default};
-    rotate: ${({ opened }) => (opened ? '270deg' : '180deg')};
+    rotate: ${({ opened }) => (opened ? "270deg" : "180deg")};
     transition: ${transition};
   }
 `;

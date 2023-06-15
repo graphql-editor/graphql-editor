@@ -89,6 +89,8 @@ export const sortNodesTs = ({
       8 * (n.name.length + compileType(n.type.fieldType).length + 1);
     const nodeWidth = Math.max(fieldLengths, nameLength);
     return {
+      x: Math.floor(Math.random() * 1000),
+      y: Math.floor(Math.random() * 1000),
       ...existingNode,
       height: nodeHeight,
       width: nodeWidth,

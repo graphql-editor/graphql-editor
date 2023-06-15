@@ -17,6 +17,7 @@ import {
   Stack,
   DotsHorizontal,
   Typography,
+  Tooltip,
 } from "@aexol-studio/styling-system";
 import styled from "@emotion/styled";
 import { OperationType, ParserField } from "graphql-js-tree";
@@ -68,9 +69,11 @@ export const SingleNodeInList: React.FC<{
         {schemaProps && <span>{schemaProps.name}</span>}
         <span>{node.name}</span>
         {isLibrary(node.id) && (
-          <ExternalLibrary title="From external library">
-            <Link />
-          </ExternalLibrary>
+          <Tooltip title="From external library" position="top">
+            <ExternalLibrary>
+              <Link />
+            </ExternalLibrary>
+          </Tooltip>
         )}
       </NodeName>
       {visibleInRelationView && (
@@ -169,9 +172,11 @@ export const SingleSchemaNodeInList: React.FC<{
           <>
             <span>{node.name}</span>
             {isLibrary(node.id) && (
-              <ExternalLibrary title="From external library">
-                <Link />
-              </ExternalLibrary>
+              <Tooltip title="From external library" position="top">
+                <ExternalLibrary>
+                  <Link />
+                </ExternalLibrary>
+              </Tooltip>
             )}
           </>
         )}
@@ -289,6 +294,7 @@ const ExternalLibrary = styled.span`
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: default;
 `;
 
 const Actions = styled(Stack)`

@@ -5,7 +5,7 @@ import { NodeList, SchemaList } from "@/shared/NodeNavigation/NodeList";
 import { useRelationNodesState, useTreesState } from "@/state/containers";
 import { useSortState } from "@/state/containers/sort";
 import { fontFamilySans, transition } from "@/vars";
-import { Eye, EyeSlash } from "@aexol-studio/styling-system";
+import { Eye, EyeSlash, Tooltip } from "@aexol-studio/styling-system";
 import { keyframes } from "@emotion/react";
 import styled from "@emotion/styled";
 
@@ -60,7 +60,6 @@ const SearchWrapper = styled.div`
 const VisibilityBox = styled.div`
   display: flex;
   justify-content: flex-end;
-  gap: 0.5rem;
   align-items: center;
   font-family: ${fontFamilySans};
   font-size: 14px;
@@ -264,15 +263,17 @@ export const NodeNavigation = () => {
               />
               <>
                 {allVisible ? (
-                  <VisibilityBox onClick={hideRelationNodes}>
-                    <span>hide all</span>
-                    <EyeSlash />
-                  </VisibilityBox>
+                  <Tooltip title="hide all" position="left-bottom">
+                    <VisibilityBox onClick={hideRelationNodes}>
+                      <EyeSlash />
+                    </VisibilityBox>
+                  </Tooltip>
                 ) : (
-                  <VisibilityBox onClick={showRelationNodes}>
-                    <span>show all</span>
-                    <Eye />
-                  </VisibilityBox>
+                  <Tooltip title="show all" position="left-bottom">
+                    <VisibilityBox onClick={showRelationNodes}>
+                      <Eye />
+                    </VisibilityBox>
+                  </Tooltip>
                 )}
               </>
             </SearchWrapper>

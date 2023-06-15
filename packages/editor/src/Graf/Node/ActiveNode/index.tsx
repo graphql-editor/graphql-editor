@@ -275,6 +275,10 @@ export const ActiveNode: React.FC<NodeProps> = ({
                 node.interfaces = node.interfaces?.filter(
                   (oldInterface) => oldInterface !== i
                 );
+                node.args = node.args.map((a) => ({
+                  ...a,
+                  fromInterface: a.fromInterface?.filter((fi) => fi !== i),
+                }));
                 updateNode(node);
               }}
             >
