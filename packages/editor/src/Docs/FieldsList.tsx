@@ -1,25 +1,25 @@
-import { ArgumentsList } from '@/Docs/ArgumentsList';
-import { BuiltInScalars } from '@/GraphQL/Resolve';
+import { ArgumentsList } from "@/Docs/ArgumentsList";
+import { BuiltInScalars } from "@/GraphQL/Resolve";
 import {
   ParserField,
   getTypeName,
   compileType,
   compareParserFields,
-} from 'graphql-js-tree';
-import React, { useCallback, useState } from 'react';
-import { Remarkable } from 'remarkable';
+} from "graphql-js-tree";
+import React, { useCallback, useState } from "react";
+import { Remarkable } from "remarkable";
 import {
   DescText,
   DescWrapper,
   FieldText,
   Title,
   TypeText,
-} from '@/Docs/DocsStyles';
-import styled from '@emotion/styled';
-import { useTreesState } from '@/state/containers';
-import { Description } from '@/Docs/Description';
-import { PenLine, Stack } from '@aexol-studio/styling-system';
-import { transition } from '@/vars';
+} from "@/Docs/DocsStyles";
+import styled from "@emotion/styled";
+import { useTreesState } from "@/state/containers";
+import { Description } from "@/Docs/Description";
+import { PenLine, Stack } from "@aexol-studio/styling-system";
+import { transition } from "@/vars";
 
 const md = new Remarkable();
 
@@ -39,7 +39,7 @@ const FieldsWrapper = styled(Stack)`
 
 const TitleWrapper = styled.div<{ isType: boolean }>`
   display: flex;
-  cursor: ${({ isType }) => (isType ? 'pointer' : 'default')};
+  cursor: ${({ isType }) => (isType ? "pointer" : "default")};
 `;
 
 const IconWrapper = styled.div`
@@ -69,7 +69,7 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [editedIdx, setEditedIdx] = useState(-1);
 
-  const isReadonly = readonly || isLibrary(node.id);
+  const isReadonly = readonly || isLibrary(node);
 
   const onSubmit = useCallback(
     (description: string, idx: number) => {
@@ -80,7 +80,7 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
         setTree(tree);
       }
     },
-    [node, tree],
+    [node, tree]
   );
 
   return (
@@ -92,7 +92,7 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
             <TitleWrapper
               isType={
                 !BuiltInScalars.some(
-                  (scalar) => scalar.name === getTypeName(arg.type.fieldType),
+                  (scalar) => scalar.name === getTypeName(arg.type.fieldType)
                 )
               }
             >
@@ -102,7 +102,7 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
               ) : (
                 <TypeText
                   isScalar={BuiltInScalars.some(
-                    (scalar) => scalar.name === getTypeName(arg.type.fieldType),
+                    (scalar) => scalar.name === getTypeName(arg.type.fieldType)
                   )}
                   onClick={() => setNode(getTypeName(arg.type.fieldType))}
                 >
@@ -116,7 +116,7 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
                   onSubmit(description, i);
                   setIsEdit(false);
                 }}
-                value={arg.description || ''}
+                value={arg.description || ""}
               />
             )}
             {(!isEdit || editedIdx !== i) && !!arg.description && (
@@ -131,7 +131,7 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
               >
                 <DescText
                   dangerouslySetInnerHTML={{
-                    __html: md.render(arg.description || 'No description'),
+                    __html: md.render(arg.description || "No description"),
                   }}
                 />
               </DescWrapper>

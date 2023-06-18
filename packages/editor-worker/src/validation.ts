@@ -1,5 +1,6 @@
 import { buildSchema, validateSchema, parse, GraphQLError } from "graphql";
 import { validateSDL } from "graphql/validation/validate";
+import { mergeSDLs } from "graphql-js-tree";
 
 export interface EditorError {
   type: "error";
@@ -55,17 +56,23 @@ export const catchSchemaErrors = (
   schema: string,
   libraries = ""
 ): EditorError[] => {
-  const s = libraries + "\n" + schema;
+  const s = mergeSDLs(schema, libraries);
+  if (s.__typename === "error") {
+    return s.errors.map((e) => ({
+      type: "error",
+      text: `There is a conflict with library schema on Type.field: ${e.conflictingNode}.${e.conflictingField}`,
+    }));
+  }
   const paddingFunction = moveErrorsByLibraryPadding(libraries);
   try {
-    const errors = validateSDLErrors(s);
+    const errors = validateSDLErrors(s.sdl);
     if (errors.length > 0) {
       return errors
         .filter((e) => allowMultipleDirectivesAtLocation(e.text))
         .map(paddingFunction);
     }
     try {
-      return validateTypes(s).map(paddingFunction);
+      return validateTypes(s.sdl).map(paddingFunction);
     } catch (error) {
       console.log(error);
     }

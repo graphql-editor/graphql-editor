@@ -126,8 +126,9 @@ const EditNodeContainer = styled.div`
   position: absolute;
   right: 0;
   display: flex;
-  gap: 1px;
+  gap: 0.25rem;
   top: 0;
+  transform: translateY(calc(-100% - 0.5rem));
 `;
 const SmallClickableButton = styled.div`
   background-color: ${(p) => p.theme.neutral[400]};
@@ -146,10 +147,10 @@ const SmallClickableButton = styled.div`
   }
 `;
 const EditNodeClickableButton = styled(SmallClickableButton)`
-  border-top-right-radius: ${(p) => p.theme.radius}px;
+  border-radius: ${(p) => p.theme.radius}px;
 `;
 const FocusNodeClickableButton = styled(SmallClickableButton)`
-  border-bottom-left-radius: ${(p) => p.theme.radius}px;
+  border-radius: ${(p) => p.theme.radius}px;
 `;
 
 const NameInRelation = styled.span`

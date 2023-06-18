@@ -68,7 +68,7 @@ export const SingleNodeInList: React.FC<{
       >
         {schemaProps && <span>{schemaProps.name}</span>}
         <span>{node.name}</span>
-        {isLibrary(node.id) && (
+        {isLibrary(node) && (
           <Tooltip title="From external library" position="top">
             <ExternalLibrary>
               <Link />
@@ -171,7 +171,7 @@ export const SingleSchemaNodeInList: React.FC<{
         {node && (
           <>
             <span>{node.name}</span>
-            {isLibrary(node.id) && (
+            {isLibrary(node) && (
               <Tooltip title="From external library" position="top">
                 <ExternalLibrary>
                   <Link />

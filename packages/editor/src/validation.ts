@@ -1,8 +1,8 @@
-import { buildSchema, validateSchema, parse, GraphQLError } from 'graphql';
-import { validateSDL } from 'graphql/validation/validate';
+import { buildSchema, validateSchema, parse, GraphQLError } from "graphql";
+import { validateSDL } from "graphql/validation/validate";
 
 export interface EditorError {
-  type: 'error';
+  type: "error";
   text: string;
   row?: number;
   column?: number;
@@ -18,8 +18,8 @@ const GraphQLErrorToEditorErrors = (e: GraphQLError): EditorError[] => [
         row: l.line - 1,
         position: 1,
         text: e.message,
-        type: 'error',
-      } as EditorError),
+        type: "error",
+      } as EditorError)
   ),
 ];
 
@@ -39,7 +39,7 @@ const validateTypes = (s: string): EditorError[] => {
  * Extend code with library and remember library line size to move the error later
  */
 const moveErrorsByLibraryPadding = (libraries: string) => {
-  const libraryPadding = libraries.split('\n').length;
+  const libraryPadding = libraries.split("\n").length;
   return (error: EditorError): EditorError => {
     return {
       ...error,
@@ -53,9 +53,9 @@ const allowMultipleDirectivesAtLocation = (s: string) => {
 };
 export const catchSchemaErrors = (
   schema: string,
-  libraries: string = '',
+  libraries = ""
 ): EditorError[] => {
-  const s = libraries + '\n' + schema;
+  const s = libraries + "\n" + schema;
   const paddingFunction = moveErrorsByLibraryPadding(libraries);
   try {
     const errors = validateSDLErrors(s);

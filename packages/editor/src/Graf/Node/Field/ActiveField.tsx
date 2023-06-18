@@ -95,6 +95,15 @@ export const ActiveField: React.FC<FieldProps> = ({
           </LockContainer>
         </>
       )}
+      {node.fromLibrary && (
+        <>
+          <LockContainer
+            title={`This field comes from library and is a result of merge`}
+          >
+            <Lock />
+          </LockContainer>
+        </>
+      )}
       {!isEnumValue &&
         !isArgumentNode &&
         !isDirectiveNode &&

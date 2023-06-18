@@ -43,7 +43,7 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
 
   const [isEdit, setIsEdit] = useState(false);
 
-  const isReadonly = readonly || isLibrary(node.id);
+  const isReadonly = readonly || isLibrary(node);
 
   const setNode = (nodeName: string) => {
     const newSelectedNode = tree.nodes.filter((node) => node.name === nodeName);

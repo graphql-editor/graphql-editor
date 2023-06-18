@@ -25,7 +25,7 @@ export const NodeAddDirectiveMenu = React.forwardRef<
   HTMLDivElement,
   NodeAddDirectiveMenuProps
 >(({ node, hideMenu, ...props }, ref) => {
-  const { tree, libraryTree, setTree, allNodes } = useTreesState();
+  const { tree, setTree, allNodes } = useTreesState();
   const [menuSearchValue, setMenuSearchValue] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const creationNodes = useMemo(
@@ -34,7 +34,7 @@ export const NodeAddDirectiveMenu = React.forwardRef<
   );
   const filteredNodes = useMemo(
     () => sortNodes(menuSearchValue, creationNodes),
-    [tree, libraryTree, menuSearchValue]
+    [tree, menuSearchValue]
   );
   useEffect(() => {
     if (!menuSearchValue) {

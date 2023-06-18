@@ -4,9 +4,7 @@ import {
   ParserTree,
   ParserField,
   TypeDefinition,
-  Parser,
   getTypeName,
-  compareParserFields,
   mutate,
   OperationType,
   Instances,
@@ -47,9 +45,10 @@ const useTreesStateContainer = createContainer(() => {
   const [selectedNodeId, _setSelectedNodeId] = useState<SelectedNodeId>();
   const [readonly, setReadonly] = useState(false);
   const { setCodeErrors, transformCodeError } = useErrorsState();
+
   const allNodes = useMemo(() => {
-    return { nodes: tree.nodes.concat(libraryTree.nodes) };
-  }, [libraryTree, tree]);
+    return { nodes: tree.nodes };
+  }, [tree]);
 
   const activeNode = useMemo(() => {
     return allNodes.nodes.find((n) => n.id === selectedNodeId?.value?.id);
@@ -84,15 +83,7 @@ const useTreesStateContainer = createContainer(() => {
     [allNodes]
   );
 
-  const libraryNodeIds = useMemo(
-    () => libraryTree.nodes.map((n) => n.id),
-    [libraryTree]
-  );
-
-  const isLibrary = useCallback(
-    (id: string) => libraryNodeIds.includes(id),
-    [libraryNodeIds]
-  );
+  const isLibrary = useCallback((node: ParserField) => !!node.fromLibrary, []);
 
   const updateNode = (node: ParserField, fn?: () => void) => {
     const isSelected = node.id === selectedNodeId?.value?.id;
@@ -248,30 +239,17 @@ const useTreesStateContainer = createContainer(() => {
       return;
     }
     try {
-      if (schema.libraries) {
-        const excludeLibraryNodesFromDiagram = Parser.parse(schema.libraries);
-        await GraphQLEditorWorker.generateTree(
-          schema.code,
-          schema.libraries
-        ).then((parsedResult) => {
-          const nodes = parsedResult.nodes.filter(
-            (n) =>
-              !excludeLibraryNodesFromDiagram.nodes.find(compareParserFields(n))
-          );
-          setTree(
-            {
-              nodes,
-            },
-            true
-          );
-        });
-      } else {
-        await GraphQLEditorWorker.generateTree(schema.code).then(
-          (parsedCode) => {
-            setTree({ nodes: parsedCode.nodes }, true);
-          }
+      await GraphQLEditorWorker.generateTree(
+        schema.code,
+        schema.libraries
+      ).then((parsedResult) => {
+        setTree(
+          {
+            nodes: parsedResult.nodes,
+          },
+          true
         );
-      }
+      });
       await GraphQLEditorWorker.validate(schema.code, schema.libraries).then(
         (errors) => {
           const tranformedErrors = transformCodeError(errors);
@@ -414,7 +392,6 @@ const useTreesStateContainer = createContainer(() => {
     if (!focusMode) return;
     return allNodes.nodes.find((n) => n.id === focusMode);
   }, [focusMode, allNodes]);
-
   return {
     allNodes,
     tree,

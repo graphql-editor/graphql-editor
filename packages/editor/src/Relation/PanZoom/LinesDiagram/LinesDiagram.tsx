@@ -324,7 +324,7 @@ export const LinesDiagram = React.forwardRef<
       <>
         {simulatedNodes?.map((n) => (
           <NodePane x={n.x} id={`${n.id}`} y={n.y} key={n.parserField.id}>
-            <Node isLibrary={isLibrary(n.parserField.id)} numberNode={n} />
+            <Node isLibrary={isLibrary(n.parserField)} numberNode={n} />
           </NodePane>
         ))}
       </>

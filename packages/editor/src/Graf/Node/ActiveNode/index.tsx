@@ -186,7 +186,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
     removeFieldFromNode,
   } = useTreesState();
 
-  const libraryNode = isLibrary(node.id);
+  const libraryNode = isLibrary(node);
   const isLocked = !!sharedProps.readonly || libraryNode || readonly;
   const findNodeByField = (field?: ParserField) => {
     return field

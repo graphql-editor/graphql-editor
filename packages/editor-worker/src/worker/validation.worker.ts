@@ -10,6 +10,7 @@ import {
   ParserField,
   ParserTree,
   TreeToGraphQL,
+  mergeTrees,
 } from "graphql-js-tree";
 import { getTokenAtPosition, IPosition } from "graphql-language-service";
 const ctx: Worker = self as any;
@@ -92,10 +93,27 @@ ctx.addEventListener("message", (message) => {
   receive("validate", (args) => catchSchemaErrors(args.schema, args.libraries))(
     message
   );
-  receive("parse", (args) => TreeToGraphQL.parse(args.tree))(message);
-  receive("parseSchema", (args) =>
-    Parser.parse(args.schema, [], args.libraries)
+  receive("parse", (args) =>
+    TreeToGraphQL.parse({
+      nodes: args.tree.nodes
+        .filter((n) => !n.fromLibrary)
+        .map((n) => ({
+          ...n,
+          args: n.args.filter((a) => !a.fromLibrary),
+          directives: n.directives.filter((a) => !a.fromLibrary),
+        })),
+    })
   )(message);
+  receive("parseSchema", (args) => {
+    const mtress = mergeTrees(
+      Parser.parse(args.schema),
+      args.libraries ? Parser.parse(args.libraries) : { nodes: [] }
+    );
+    if (mtress.nodes) {
+      return mtress;
+    }
+    throw new Error("No nodes to parse");
+  })(message);
   receive("token", (args) =>
     JSON.stringify(
       getTokenAtPosition(args.document, args.position as IPosition)

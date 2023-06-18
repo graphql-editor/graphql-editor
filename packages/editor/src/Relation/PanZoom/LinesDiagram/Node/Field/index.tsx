@@ -9,6 +9,7 @@ import { ActiveType } from "@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveTyp
 import { DOMClassNames } from "@/shared/hooks/DOMClassNames";
 import { useRelationsState } from "@/state/containers";
 import { isEditableParentField } from "@/utils";
+import { Link } from "@aexol-studio/styling-system";
 
 const Main = styled.div`
   position: relative;
@@ -63,6 +64,7 @@ export const Field: React.FC<FieldProps> = ({ node }) => {
         parentTypes={parentTypes}
       />
       <ActiveType type={node.type} parentTypes={parentTypes} />
+      {node.fromLibrary && <Link />}
     </Main>
   );
 };

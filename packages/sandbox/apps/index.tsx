@@ -14,3 +14,4 @@ export * from "./Saleor";
 export * from "./collabeffect";
 export * from "./embeddedEditor";
 export * from "./Vertical";
+export * from "./mergedLibraries";
