@@ -1,10 +1,10 @@
-import React, { useMemo } from 'react';
-import { theme as MonacoTheme, diffEditorSettings } from './monaco';
+import React, { useMemo } from "react";
+import { theme as MonacoTheme, diffEditorSettings } from "./monaco";
 
-import { fontFamily } from '@/vars';
-import { useTheme } from '@/state/containers';
-import { SchemaDiffEditor } from '@/editor/code/guild';
-import { CodeContainer } from '@/editor/code/style/Code';
+import { fontFamily } from "@/vars";
+import { useTheme } from "@/state/containers";
+import { SchemaDiffEditor } from "@/editor/code/guild";
+import { CodeContainer } from "@/editor/code/style/Code";
 
 export type DiffEditorPaneProps = {
   size: number | string;
@@ -23,7 +23,7 @@ export const DiffEditorPane = ({ schema, newSchema }: DiffEditorPaneProps) => {
       ...diffEditorSettings,
       fontFamily,
     }),
-    [],
+    []
   );
   return (
     <>
@@ -32,7 +32,7 @@ export const DiffEditorPane = ({ schema, newSchema }: DiffEditorPaneProps) => {
           <SchemaDiffEditor
             height="100%"
             beforeMount={(monaco) =>
-              monaco.editor.defineTheme('graphql-editor', MonacoTheme(theme))
+              monaco.editor.defineTheme("graphql-editor", MonacoTheme(theme))
             }
             original={schema}
             modified={newSchema}

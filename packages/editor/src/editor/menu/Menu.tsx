@@ -93,6 +93,7 @@ export interface MenuProps {
   setActivePane: (pane?: ActivePane) => void;
   schema: string;
   libraries?: string;
+  readOnly?: boolean;
   setSchema: (props: PassedSchema, isInvalid?: boolean) => void;
   path: string;
 }
@@ -106,6 +107,7 @@ export const Menu = ({
   path,
   schema,
   libraries,
+  readOnly,
   excludePanes = [],
 }: MenuProps) => {
   const [importOpen, setImportOpen] = useState(false);
@@ -208,11 +210,13 @@ export const Menu = ({
             </MenuItem>
           </Tooltip>
         </DropdownMenu>
-        <Tooltip title="Import schema" position="right-center">
-          <MenuItem onClick={() => setImportOpen(true)} data-tour="import">
-            <ArrowNarrowBottomAlignment />
-          </MenuItem>
-        </Tooltip>
+        {!readOnly && (
+          <Tooltip title="Import schema" position="right-center">
+            <MenuItem onClick={() => setImportOpen(true)} data-tour="import">
+              <ArrowNarrowBottomAlignment />
+            </MenuItem>
+          </Tooltip>
+        )}
         <Filler />
       </Sidebar>
       <ImportSchema

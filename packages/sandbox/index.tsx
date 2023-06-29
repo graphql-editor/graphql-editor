@@ -5,6 +5,7 @@ import { fontFamilySans } from "graphql-editor/lib/vars";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import * as apps from "./apps";
+import { Global, css } from "@emotion/react";
 
 const MainTheme = themeColors("graphqleditor", "dark");
 
@@ -43,6 +44,82 @@ const Tile = styled.a`
 const Title = styled.div`
   margin: 10px;
 `;
+const GlobalStyles = () => (
+  <>
+    <Global
+      styles={css`
+        @font-face {
+          font-family: "Fira Sans";
+          src: url(${require("./assets/fira/woff2/FiraSans-Light.woff2")})
+            format("woff2");
+          src: url(${require("./assets/fira/woff/FiraSans-Light.woff")})
+            format("woff");
+          font-weight: 300;
+          font-style: normal;
+        }
+
+        @font-face {
+          font-family: "Fira Sans";
+          src: url(${require("./assets/fira/woff2/FiraSans-Regular.woff2")})
+            format("woff2");
+          src: url(${require("./assets/fira/woff/FiraSans-Regular.woff")})
+            format("woff");
+          font-weight: 400;
+          font-style: normal;
+        }
+        @font-face {
+          font-family: "Fira Sans";
+          src: url(${require("./assets/fira/woff2/FiraSans-Medium.woff2")})
+            format("woff2");
+          src: url(${require("./assets/fira/woff/FiraSans-Medium.woff")})
+            format("woff");
+          font-weight: 500;
+          font-style: normal;
+        }
+
+        @font-face {
+          font-family: "Fira Sans";
+          src: url(${require("./assets/fira/woff2/FiraSans-Bold.woff2")})
+            format("woff2");
+          src: url(${require("./assets/fira/woff/FiraSans-Bold.woff")})
+            format("woff");
+          font-weight: 700;
+          font-style: normal;
+        }
+        @font-face {
+          font-family: "Fira Mono";
+          src: url(${require("./assets/fira/woff2/FiraMono-Regular.woff2")})
+            format("woff2");
+          src: url(${require("./assets/fira/woff/FiraMono-Regular.woff")})
+            format("woff");
+          font-weight: 400;
+          font-style: normal;
+        }
+        @font-face {
+          font-family: "Fira Mono";
+          src: url(${require("./assets/fira/woff2/FiraMono-Bold.woff2")})
+            format("woff2");
+          src: url(${require("./assets/fira/woff/FiraMono-Bold.woff")})
+            format("woff");
+          font-weight: 600;
+          font-style: normal;
+        }
+        body {
+          font-size: 14px;
+          font-weight: 400;
+          font-family: "Fira Sans", "Helvetica Neue", Helvetica, Arial,
+            sans-serif;
+          button {
+            font-family: inherit;
+          }
+        }
+        *:focus {
+          outline: none;
+        }
+      `}
+    />
+  </>
+);
 
 export const AppList = () => {
   return (
@@ -53,7 +130,7 @@ export const AppList = () => {
       </Title>
       <Main>
         {Object.keys(apps).map((app) => (
-          <Tile href={`/?a=${app}`}>
+          <Tile key={app} href={`/?a=${app}`}>
             <b>{app}</b>
             <p>{apps[app].description}</p>
           </Tile>
@@ -69,7 +146,12 @@ export const App = () => {
   if (!p) {
     return <AppList />;
   }
-  return <Styler>{apps[p]()}</Styler>;
+  return (
+    <Styler>
+      <GlobalStyles />
+      {apps[p]()}
+    </Styler>
+  );
 };
 const rootDiv = document.getElementById("root");
 const root = createRoot(rootDiv);

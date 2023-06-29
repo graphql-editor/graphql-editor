@@ -74,8 +74,8 @@ export interface EditorProps {
   // Code and libraries
   schema: PassedSchema;
   // force expand/hide sidebar
-  // Record containing graphql schemas with "name" as a key and graphql schema as a "value"
-  diffSchemas?: Record<string, string>;
+  // schemas to compare usually latest its the first schema second one is compared
+  diffSchemas?: [string, string];
   // Function to be called when schema is set by the editor
   setSchema: (props: PassedSchema, isInvalid?: boolean) => void;
   // Function that could be fired if tree changes
@@ -276,6 +276,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
           path={path}
           toggleCode={routes.code === "on"}
           setSchema={setSchema}
+          readOnly={readonly}
           setToggleCode={() =>
             set(
               {

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { GraphQLEditor } from "graphql-editor";
-import { PassedSchema } from "graphql-editor";
+import { GraphQLEditor, PassedSchema } from "graphql-editor";
 import * as schemas from "../schema";
 
 export const libraries = () => {
@@ -42,10 +41,10 @@ export const libraries = () => {
         setSchema={(props) => {
           setMySchema(props);
         }}
-        diffSchemas={{
-          "1": schemas.finance + schemas.usersLibraryNew,
-          "2": schemas.finance + schemas.usersLibraryOld,
-        }}
+        diffSchemas={[
+          schemas.finance + schemas.usersLibraryNew,
+          schemas.finance + schemas.usersLibraryOld,
+        ]}
         schema={mySchema}
       />
     </div>
