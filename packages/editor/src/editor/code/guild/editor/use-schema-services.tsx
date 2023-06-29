@@ -285,6 +285,7 @@ export const useSchemaServices = (
       if (currentValue) {
         GraphQLEditorWorker.validate(currentValue, options.libraries).then(
           (errors) => {
+            console.log({ errors });
             setCodeErrors(errors);
           }
         );

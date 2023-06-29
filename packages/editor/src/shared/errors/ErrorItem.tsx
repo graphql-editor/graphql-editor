@@ -33,7 +33,7 @@ export const ErrorItem: React.FC<ErrorItemProps> = ({ error }) => {
   return (
     <Main gap="1rem" align="center">
       <Message>{error.text}</Message>
-      <Tooltip position="left-bottom" title={error.text}>
+      <Tooltip width={300} position="left-bottom" title={`${error.text}`}>
         <CircleInformation
           onClick={() => {
             setErrorRowNumber(error.row);
