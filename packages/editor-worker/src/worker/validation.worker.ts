@@ -51,6 +51,7 @@ export type WorkerEvents = {
         iterations?: number;
         ignoreAlphaCalculation?: boolean;
         alpha?: number;
+        maxHeight?: number;
       };
     };
     returned: {

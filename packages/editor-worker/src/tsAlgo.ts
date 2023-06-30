@@ -52,7 +52,12 @@ export function storeCoordinates(
 
 export const sortNodesTs = ({
   nodes,
-  options: { existingNumberNodes, ignoreAlphaCalculation, alpha },
+  options: {
+    existingNumberNodes,
+    ignoreAlphaCalculation,
+    alpha,
+    maxHeight = Infinity,
+  },
 }: WorkerEvents["simulateSort"]["args"]) => {
   let exisitingNodes = 0;
   let modifiedNodes = 0;
@@ -64,7 +69,7 @@ export const sortNodesTs = ({
         modifiedNodes += 1;
       }
     }
-    const nodeHeight = 43 + n.args.length * 26 + 12;
+    const nodeHeight = Math.min(43 + n.args.length * 26 + 12, maxHeight);
     const fieldLengths =
       Math.max(
         ...n.args.map((a) => {

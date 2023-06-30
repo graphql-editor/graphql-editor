@@ -11,9 +11,10 @@ import { Graf } from "@/Graf/Graf";
 import styled from "@emotion/styled";
 import { Chip } from "@aexol-studio/styling-system";
 import { AnimatePresence } from "framer-motion";
+import { BackgroundFTUX } from "@/Relation/FTUX/BackgroundFTUX";
 
 export const Relation: React.FC = () => {
-  const { activeNode, focusMode } = useTreesState();
+  const { activeNode, focusMode, allNodes } = useTreesState();
   const { filteredFocusedNodes, filteredRelationNodes } =
     useRelationNodesState();
   const { editMode, ctrlToZoom } = useRelationsState();
@@ -70,6 +71,11 @@ export const Relation: React.FC = () => {
       <AnimatePresence>
         {!!editMode && activeNode && <Graf node={activeNode} />}
       </AnimatePresence>
+      {!allNodes.nodes.length && (
+        <AnimatePresence>
+          <BackgroundFTUX />
+        </AnimatePresence>
+      )}
     </RelationContainer>
   );
 };
