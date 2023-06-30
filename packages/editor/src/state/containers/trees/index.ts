@@ -234,7 +234,7 @@ const useTreesStateContainer = createContainer(() => {
     [_setSelectedNodeId, allNodes, selectedNodeId?.value?.id, focusMode]
   );
   const generateTreeFromSchema = async (schema: PassedSchema) => {
-    if (!schema.code) {
+    if (!schema.code && !schema.libraries) {
       setTree({ nodes: [] }, true);
       return;
     }
