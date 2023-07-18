@@ -2,7 +2,7 @@ import React from "react";
 import { useTreesState } from "@/state/containers/trees";
 import { FieldProps as GrafFieldProps } from "@/Graf/Node/models";
 import styled from "@emotion/styled";
-import { TypeSystemDefinition } from "graphql-js-tree";
+import { ParserField, TypeSystemDefinition } from "graphql-js-tree";
 import { RELATION_CONSTANTS } from "@/Relation/PanZoom/LinesDiagram/Lines/constants";
 import { ActiveFieldName } from "@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveFieldName";
 import { ActiveType } from "@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveType";
@@ -34,24 +34,27 @@ type FieldProps = Pick<GrafFieldProps, "node"> & {
 export const Field: React.FC<FieldProps> = ({ node }) => {
   const { parentTypes, setSelectedNodeId, getParentOfField } = useTreesState();
   const { setEditMode } = useRelationsState();
+  const nodeClick = (n: ParserField) => {
+    const parent = getParentOfField(n);
+    if (parent) {
+      if (isEditableParentField(parent)) {
+        setEditMode(parent.id);
+      }
+      setSelectedNodeId({
+        source: "relation",
+        value: {
+          id: parent.id,
+          name: parent.name,
+        },
+      });
+    }
+  };
   return (
     <Main
       className={DOMClassNames.nodeField}
       onClick={(e) => {
-        const parent = getParentOfField(node);
-        if (parent) {
-          e.stopPropagation();
-          if (isEditableParentField(parent)) {
-            setEditMode(parent.id);
-          }
-          setSelectedNodeId({
-            source: "relation",
-            value: {
-              id: parent.id,
-              name: parent.name,
-            },
-          });
-        }
+        e.stopPropagation();
+        nodeClick(node);
       }}
     >
       <ActiveFieldName
@@ -62,8 +65,15 @@ export const Field: React.FC<FieldProps> = ({ node }) => {
         }
         args={node.args}
         parentTypes={parentTypes}
+        onClick={(n) => {
+          nodeClick(n);
+        }}
       />
-      <ActiveType type={node.type} parentTypes={parentTypes} />
+      <ActiveType
+        type={node.type}
+        parentTypes={parentTypes}
+        onClick={() => nodeClick(node)}
+      />
       {node.fromLibrary && <Link />}
     </Main>
   );

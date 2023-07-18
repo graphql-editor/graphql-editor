@@ -53,7 +53,10 @@ export const PanZoom: React.FC<{
     scale: number;
   }>();
   const { showAllForExport } = useDomManagerTs(parentClass);
+  const [loading, setLoading] = useState(false);
+  const [loadingCounter, setLoadingCounter] = useState(30);
   const ref = useRef<ReactZoomPanPinchRef>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval>>();
 
   const filteredNodes = useMemo(() => {
     return nodeFilter(nodes, {
@@ -76,10 +79,29 @@ export const PanZoom: React.FC<{
   }, [mainRef, viewportParams]);
 
   useEffect(() => {
+    if (largeSimulationLoading) {
+      setLoadingCounter(Math.floor(filteredNodes.length / 40));
+      intervalRef.current = setInterval(
+        () => setLoadingCounter((lc) => (lc - 1 >= 0 ? lc - 1 : 0)),
+        1000
+      );
+    } else {
+      clearInterval(intervalRef.current);
+      setLoadingCounter(30);
+    }
+  }, [largeSimulationLoading]);
+
+  useEffect(() => {
     if (paramsBeforeExport) {
+      setLoading(true);
+      setLoadingCounter(Math.floor(filteredNodes.length / 20));
       setTimeout(() => {
         showAllForExport();
       }, 500);
+      const interval = setInterval(
+        () => setLoadingCounter((lc) => (lc - 1 >= 0 ? lc - 1 : 0)),
+        1000
+      );
 
       setTimeout(() => {
         const refElem = mainRef.current?.parentElement as HTMLDivElement;
@@ -111,6 +133,8 @@ export const PanZoom: React.FC<{
               paramsBeforeExport.scale,
               0
             );
+            clearInterval(interval);
+            setLoading(false);
             setParamsBeforeExport(undefined);
           });
       }, 2000);
@@ -188,7 +212,9 @@ export const PanZoom: React.FC<{
         parentClass={parentClass}
         mainRef={mainRef}
         loading={largeSimulationLoading}
-        setLoading={(e) => setLargeSimulationLoading(e)}
+        setLoading={(e) => {
+          setLargeSimulationLoading(e);
+        }}
       />
     );
   }, [
@@ -227,7 +253,19 @@ export const PanZoom: React.FC<{
         {largeSimulationLoading && (
           <LoadingContainer>
             <Loader size="lg" />
-            <span>Loading {filteredNodes.length} nodes</span>
+            <span>
+              Loading {filteredNodes.length} nodes estimated time:{" "}
+              {loadingCounter} seconds
+            </span>
+          </LoadingContainer>
+        )}
+        {loading && (
+          <LoadingContainer>
+            <Loader size="lg" />
+            <span>
+              Exporting {filteredNodes.length} nodes estimated time:{" "}
+              {loadingCounter} seconds
+            </span>
           </LoadingContainer>
         )}
       </Main>

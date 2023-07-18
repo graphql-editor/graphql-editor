@@ -1,21 +1,28 @@
-import React, { useMemo } from 'react';
-import { ParserField } from 'graphql-js-tree';
-import { compileScalarTypes, compileTypeOptions } from '@/GraphQL/Compile';
-import styled from '@emotion/styled';
+import React, { useMemo } from "react";
+import { ParserField } from "graphql-js-tree";
+import { compileScalarTypes, compileTypeOptions } from "@/GraphQL/Compile";
+import styled from "@emotion/styled";
 export const ActiveType: React.FC<
-  Pick<ParserField, 'type'> & {
+  Pick<ParserField, "type"> & {
     parentTypes?: Record<string, string>;
     onClick?: () => void;
   }
 > = ({ type, parentTypes, onClick }) => {
   const compiledType = useMemo(
     () => compileTypeOptions({ type }),
-    [JSON.stringify(type)],
+    [JSON.stringify(type)]
   );
   const sType = useMemo(() => compileScalarTypes(type), [JSON.stringify(type)]);
   const color = parentTypes?.[sType] ? parentTypes[sType] : sType;
   return (
-    <AType onClick={onClick} color={color} clickable={!!onClick}>
+    <AType
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick?.();
+      }}
+      color={color}
+      clickable={!!onClick}
+    >
       {compiledType}
     </AType>
   );

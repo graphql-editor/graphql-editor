@@ -1,8 +1,8 @@
-import React from 'react';
-import { ParserField } from 'graphql-js-tree';
-import styled from '@emotion/styled';
-import { FIELD_NAME_SIZE } from '@/Graf/constants';
-import { ActiveType } from '@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveType';
+import React from "react";
+import { ParserField } from "graphql-js-tree";
+import styled from "@emotion/styled";
+import { FIELD_NAME_SIZE } from "@/Graf/constants";
+import { ActiveType } from "@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveType";
 
 const Main = styled.div`
   display: flex;
@@ -20,25 +20,31 @@ const Comma = styled.span`
 `;
 
 export const ActiveFieldName: React.FC<
-  Pick<ParserField, 'name' | 'args'> & {
+  Pick<ParserField, "name" | "args"> & {
     parentTypes?: Record<string, string>;
+    onClick?: (n: ParserField) => void;
   }
-> = ({ args, name, parentTypes }) => {
+> = ({ args, name, parentTypes, onClick }) => {
   if (args && args.length > 0) {
     return (
       <Main>
         <Name>{name}</Name>
         {args && (
           <>
-            {'('}
+            {"("}
             {args.map((a, i) => (
               <div key={a.name}>
                 <span>{a.name}</span>
-                :<ActiveType type={a.type} parentTypes={parentTypes} />
+                :
+                <ActiveType
+                  onClick={() => onClick?.(a)}
+                  type={a.type}
+                  parentTypes={parentTypes}
+                />
                 {i < args.length - 1 && <Comma>,</Comma>}
               </div>
             ))}
-            {')'}
+            {")"}
           </>
         )}
       </Main>

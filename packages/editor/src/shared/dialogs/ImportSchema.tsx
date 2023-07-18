@@ -1,4 +1,4 @@
-import { EditorDialog } from '@/shared/components';
+import { EditorDialog } from "@/shared/components";
 import {
   Button,
   TextField,
@@ -6,21 +6,21 @@ import {
   Stack,
   useToasts,
   Checkbox,
-} from '@aexol-studio/styling-system';
-import React, { useEffect, useState } from 'react';
+} from "@aexol-studio/styling-system";
+import React, { useEffect, useState } from "react";
 import {
   buildClientSchema,
   getIntrospectionQuery,
   GraphQLSchema,
   printSchema,
-} from 'graphql';
+} from "graphql";
 
 export const ImportSchema: React.FC<{
   onClose: () => void;
   open?: boolean;
   onImport: (schema: string) => void;
 }> = ({ onClose, open, onImport }) => {
-  const [importURL, setImportURL] = useState('');
+  const [importURL, setImportURL] = useState("");
   const [proxyImport, setProxyImport] = useState(false);
   const [headers, setHeaders] = useState<[string, string][]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -44,11 +44,11 @@ export const ImportSchema: React.FC<{
       }
       const lastHeader = headers[headers.length - 1];
       if (lastHeader[0]) {
-        headers.push(['', '']);
+        headers.push(["", ""]);
         setHeaders([...headers]);
       }
     } else {
-      headers.push(['', '']);
+      headers.push(["", ""]);
       setHeaders([...headers]);
     }
   }, [headers]);
@@ -58,26 +58,38 @@ export const ImportSchema: React.FC<{
     const url = importURL;
     const header = Object.fromEntries(headers.filter((h) => h[0] && h[1]));
     try {
-      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      if (!url.startsWith("http://") && !url.startsWith("https://")) {
         createToast({
           message: `Please add https:// or http:// at the beggining of your URL we don't want to guess it.`,
-          variant: 'error',
+          variant: "error",
         });
         return false;
       }
-      const newSchema = await Utils.getFromUrl(
-        proxyImport ? proxyUrl(url) : url,
-        header,
-      );
-      createToast({
-        message: 'Successfully loaded schema from URL',
-        variant: 'success',
-      });
-      return newSchema;
+      try {
+        const newSchema = await Utils.getFromUrl(
+          proxyImport ? proxyUrl(url) : url,
+          header
+        );
+        createToast({
+          message: "Successfully loaded schema from URL",
+          variant: "success",
+        });
+        return newSchema;
+      } catch (error) {
+        const newSchema = await Utils.getFromUrl(
+          !proxyImport ? proxyUrl(url) : url,
+          header
+        );
+        createToast({
+          message: "Successfully loaded schema from URL",
+          variant: "success",
+        });
+        return newSchema;
+      }
     } catch (error) {
       createToast({
         message: `${url} is not correct GraphQL endpoint or you don't have access. Might be also CORS issue.`,
-        variant: 'error',
+        variant: "error",
       });
       return false;
     } finally {
@@ -89,8 +101,8 @@ export const ImportSchema: React.FC<{
       <Button
         variant="secondary"
         onClick={() => {
-          const input = document.createElement('input');
-          input.type = 'file';
+          const input = document.createElement("input");
+          input.type = "file";
           input.onchange = (_) => {
             const files = input.files;
             if (files) {
@@ -180,14 +192,14 @@ export class Utils {
   static getFromUrl = async (
     url: string,
     header?: Record<string, string>,
-    signal?: AbortSignal,
+    signal?: AbortSignal
   ): Promise<string> => {
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...header,
     };
     const response = await fetch(url, {
-      method: 'POST',
+      method: "POST",
       signal: signal,
       headers,
       body: JSON.stringify({ query: getIntrospectionQuery() }),
@@ -205,9 +217,9 @@ export class Utils {
     const subscriptionType = schema.getSubscriptionType();
     let printedSchema = printSchema(schema);
     const schemaPrintedAtTheBeginning =
-      (queryType && queryType.name !== 'Query') ||
-      (mutationType && mutationType.name !== 'Mutation') ||
-      (subscriptionType && subscriptionType.name !== 'Subscription');
+      (queryType && queryType.name !== "Query") ||
+      (mutationType && mutationType.name !== "Mutation") ||
+      (subscriptionType && subscriptionType.name !== "Subscription");
 
     if (!schemaPrintedAtTheBeginning) {
       const addons = [];
@@ -221,15 +233,15 @@ export class Utils {
         addons.push(`subscription: ${subscriptionType.name}`);
       }
       if (addons.length > 0) {
-        printedSchema += `\nschema{\n\t${addons.join(',\n\t')}\n}`;
+        printedSchema += `\nschema{\n\t${addons.join(",\n\t")}\n}`;
       }
     }
-    printedSchema = printedSchema.replace(/^[*\s]*""""""[*]*$\n/gm, '');
+    printedSchema = printedSchema.replace(/^[*\s]*""""""[*]*$\n/gm, "");
     return printedSchema;
   };
 }
 const checkIfURLisLocalRegex = new RegExp(
-  /^(?:(https?):\/\/)?(localhost|127\.(\d+).*)(?::\d{2,5})?(?:[\/?#]\S*)?$/,
+  /^(?:(https?):\/\/)?(localhost|127\.(\d+).*)(?::\d{2,5})?(?:[\/?#]\S*)?$/
 );
 
 const checkIfURLisLocal = (url: string) => checkIfURLisLocalRegex.test(url);
