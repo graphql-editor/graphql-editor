@@ -1,9 +1,5 @@
-import {
-  NumberNode,
-  calcDimensions,
-  sortNodesTs,
-  storeCoordinates,
-} from "@/tsAlgo";
+import { ElkApi } from "@/elk-api";
+import { NumberNode, calcDimensions, sortNodesTs } from "@/tsAlgo";
 import { catchSchemaErrors, EditorError } from "@/validation";
 import {
   Parser,
@@ -67,18 +63,30 @@ export type WorkerEvents = {
 const receive =
   <T extends keyof WorkerEvents>(
     key: T,
-    fn: (args: WorkerEvents[T]["args"]) => WorkerEvents[T]["returned"]
+    fn: (
+      args: WorkerEvents[T]["args"]
+    ) => WorkerEvents[T]["returned"] | Promise<WorkerEvents[T]["returned"]>
   ) =>
   (message: MessageEvent) => {
     const m = message.data;
     if (m.event === key)
       try {
         const data = fn(m);
-        postMessage({
-          data,
-          event: key,
-          id: m.id,
-        });
+        if (typeof data === "object" && "then" in data) {
+          data.then((r) => {
+            postMessage({
+              data: r,
+              event: key,
+              id: m.id,
+            });
+          });
+        } else {
+          postMessage({
+            data,
+            event: key,
+            id: m.id,
+          });
+        }
       } catch (error: unknown) {
         if (error instanceof Error) {
           postMessage({
@@ -122,29 +130,48 @@ ctx.addEventListener("message", (message) => {
   )(message);
   receive("simulateSort", (args) => {
     const sorted = sortNodesTs(args);
-    if (sorted.alpha === 0) {
-      return {
-        nodes: sorted.numberNodes,
-        ...calcDimensions(sorted.numberNodes),
-      };
-    }
-
-    const iterations =
-      sorted.alpha === 1
-        ? args.options.iterations || 200
-        : Math.max(
-            1,
-            Math.round(sorted.alpha * (args.options.iterations || 200))
-          );
-    storeCoordinates(
-      sorted.numberNodes,
-      sorted.connections,
-      iterations,
-      sorted.alpha
-    );
-    return {
-      nodes: sorted.numberNodes,
-      ...calcDimensions(sorted.numberNodes),
-    };
+    const elk = new ElkApi();
+    return elk
+      .layout(
+        {
+          id: "root",
+          children: sorted.numberNodes.map((nn) => ({
+            id: nn.id,
+            x: nn.x - nn.width / 2.0,
+            y: nn.y - nn.height / 2.0,
+            width: nn.width,
+            height: nn.height,
+          })),
+          edges: sorted.connections.map((c, i) => ({
+            id: `e-${i}`,
+            sources: [c.source],
+            targets: [c.target],
+          })),
+        },
+        {
+          layoutOptions: {
+            "elk.spacing.nodeNode": "30.0",
+            "elk.edgeRouting": "ORTHOGONAL",
+            "elk.layered.spacing.nodeNodeBetweenLayers": "10.0",
+            "elk.layered.thoroughness": "20",
+          },
+        }
+      )
+      .then((v) => {
+        const elkNodes: NumberNode[] = sorted.numberNodes.map((nn) => ({
+          ...nn,
+          x:
+            (v.children?.find((c) => c.id === nn.id)?.x || nn.x) +
+            nn.width / 2.0,
+          y:
+            (v.children?.find((c) => c.id === nn.id)?.y || nn.y) +
+            nn.height / 2.0,
+        }));
+        // storeCoordinates(elkNodes, sorted.connections, 20, 0.03);
+        return {
+          nodes: elkNodes,
+          ...calcDimensions(elkNodes),
+        };
+      });
   })(message);
 });

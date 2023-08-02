@@ -14,3 +14,4 @@ export * from "./finance";
 export * from "./versioned";
 export * from "./saleor";
 export * from "./mergedLibs";
+export * from "./mmi";

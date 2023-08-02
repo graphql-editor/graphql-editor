@@ -1,9 +1,9 @@
-import { DocsElement } from '@/Docs/DocsElement';
-import { useIO, KeyboardActions } from '@/shared/hooks/io';
-import { useTreesState } from '@/state/containers';
-import styled from '@emotion/styled';
+import { DocsElement } from "@/Docs/DocsElement";
+import { useIO, KeyboardActions } from "@/shared/hooks/io";
+import { useTreesState } from "@/state/containers";
+import styled from "@emotion/styled";
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from "react";
 
 const Wrapper = styled.div`
   width: 100%;

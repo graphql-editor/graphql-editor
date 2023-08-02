@@ -1,9 +1,0 @@
-{
-  "repos": {
-    "https://github.com/graphql-editor/shared": {
-      "main": {
-        "gshared/theme": "./packages/editor/src/gshared/theme"
-      }
-    }
-  }
-}

@@ -1,6 +1,6 @@
 {
   "name": "graphql-editor",
-  "version": "6.8.2",
+  "version": "6.8.3",
   "private": false,
   "license": "MIT",
   "description": "Visual node editor for GraphQL",
@@ -11,8 +11,7 @@
     "build": "rimraf lib tsconfig.build.tsbuildinfo && ttsc --build tsconfig.build.json",
     "start": "ttsc --build tsconfig.build.json --watch",
     "test": "jest",
-    "domTree": "tree src/domStructure/domStructure.treelang -f ts > src/domStructure/domStructure.ts",
-    "updatedeps": "npm i graphql-zeus@latest graphsource@latest",
+    "updatedeps": "npm i graphql-js-tree@latest",
     "lint": "eslint \"./src/**/*.{ts,js}\" --quiet --fix && prettier --write \"./src/**/*.{ts,js}\" "
   },
   "resolutions": {
@@ -44,15 +43,14 @@
     "d3": "^7.8.4",
     "diff": "^5.1.0",
     "file-saver": "^2.0.5",
-    "framer": "^2.3.0",
+    "framer-motion": "^10.12.16",
     "fuzzyjs": "^5.0.1",
-    "graphql-editor-worker": "^6.8.2",
+    "graphql-editor-worker": "^6.8.3",
     "graphql-js-tree": "^0.4.0",
     "graphql-language-service": "3.1.4",
     "html-to-image": "^1.10.8",
     "re-resizable": "^6.9.1",
     "react-laag": "^2.0.4",
-    "react-transition-group": "^4.4.5",
     "react-zoom-pan-pinch": "^3.0.7",
     "remarkable": "^2.0.1",
     "unstated-next": "^1.1.0"
@@ -64,7 +62,6 @@
   },
   "devDependencies": {
     "@types/d3": "^7.4.0",
-    "@types/diff": "^5.0.2",
-    "@types/react-transition-group": "^4.4.5"
+    "@types/diff": "^5.0.2"
   }
 }

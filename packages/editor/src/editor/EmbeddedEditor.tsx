@@ -112,7 +112,7 @@ export const EmbeddedEditor = ({ schema, theme }: EmbeddedEditorProps) => {
         <Relation />
         <NodeNavigation />
       </ErrorOuterContainer>
-      {codeErrors.length && <ErrorsList>{errorsItems}</ErrorsList>}
+      {!!codeErrors.length && <ErrorsList>{errorsItems}</ErrorsList>}
     </Main>
   );
 };

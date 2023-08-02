@@ -80,7 +80,7 @@ export const PanZoom: React.FC<{
 
   useEffect(() => {
     if (largeSimulationLoading) {
-      setLoadingCounter(Math.floor(filteredNodes.length / 40));
+      setLoadingCounter(Math.floor(filteredNodes.length / 100));
       intervalRef.current = setInterval(
         () => setLoadingCounter((lc) => (lc - 1 >= 0 ? lc - 1 : 0)),
         1000

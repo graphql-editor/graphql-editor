@@ -1,8 +1,8 @@
-import { FieldText, TypeText } from '@/Docs/DocsStyles';
-import { BuiltInScalars } from '@/GraphQL/Resolve';
-import styled from '@emotion/styled';
-import { ParserField, getTypeName, compileType } from 'graphql-js-tree';
-import React from 'react';
+import { FieldText, TypeText } from "@/Docs/DocsStyles";
+import { BuiltInScalars } from "@/GraphQL/Resolve";
+import styled from "@emotion/styled";
+import { ParserField, getTypeName, compileType } from "graphql-js-tree";
+import React from "react";
 
 const ArgumentsWrapper = styled.div`
   display: flex;
@@ -37,19 +37,19 @@ export const ArgumentsList: React.FC<ArgumentsListI> = ({
               {a.name}:
               <TypeText
                 isScalar={BuiltInScalars.some(
-                  (scalar) => scalar.name === getTypeName(a.type.fieldType),
+                  (scalar) => scalar.name === getTypeName(a.type.fieldType)
                 )}
                 onClick={() => setNode(getTypeName(a.type.fieldType))}
               >
                 {compileType(a.type.fieldType)}
               </TypeText>
             </FieldDiv>
-            {i === argument.args?.length! - 1 ? (
+            {i === (argument.args?.length || 0) - 1 ? (
               <>
                 <FieldText>)</FieldText>
                 <TypeText
                   isScalar={BuiltInScalars.some(
-                    (scalar) => scalar.name === getTypeName(a.type.fieldType),
+                    (scalar) => scalar.name === getTypeName(a.type.fieldType)
                   )}
                   onClick={() => setNode(getTypeName(a.type.fieldType))}
                 >

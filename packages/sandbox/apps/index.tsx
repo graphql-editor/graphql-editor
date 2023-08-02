@@ -16,3 +16,4 @@ export * from "./collabeffect";
 export * from "./embeddedEditor";
 export * from "./Vertical";
 export * from "./mergedLibraries";
+export * from "./VeryLongSchema";

@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
-import styled from '@emotion/styled';
-import { fontFamilySans } from '@/vars';
+import React, { useEffect, useRef, useState } from "react";
+import styled from "@emotion/styled";
+import { fontFamilySans } from "@/vars";
 
 const Main = styled.textarea`
   background: ${({ theme }) => theme.neutral[600]};
@@ -33,9 +33,9 @@ export const Description: React.FC<{
   }, [value]);
   useEffect(() => {
     if (DescriptionRef.current) {
-      DescriptionRef.current.style.height = 'auto';
+      DescriptionRef.current.style.height = "auto";
       DescriptionRef.current.style.height =
-        DescriptionRef.current.scrollHeight + 'px';
+        DescriptionRef.current.scrollHeight + "px";
     }
   }, [DescriptionRef.current]);
   if (isLocked) {
@@ -62,15 +62,15 @@ export const Description: React.FC<{
       onMouseMove={(e) => e.stopPropagation()}
       autoFocus={true}
       onBlur={(e) => {
-        e.currentTarget.style.height = 'auto';
+        e.currentTarget.style.height = "auto";
         if (DescriptionRef.current) {
           onChange(text);
         }
       }}
       onChange={(e) => {
         setText(e.target.value);
-        e.currentTarget.style.height = 'auto';
-        e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
+        e.currentTarget.style.height = "auto";
+        e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
       }}
       value={text}
     />

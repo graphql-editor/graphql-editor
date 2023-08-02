@@ -39,8 +39,6 @@ export function storeCoordinates(
         return (d as NumberNode).id;
       })
     )
-    .force("x", d3.forceX().strength(0.3))
-    .force("y", d3.forceY().strength(0.3))
     .force("collide", () => createCollisionForce(nodes)(1, 2))
     .stop();
   for (let i = 0; i < iterations; i++) {
