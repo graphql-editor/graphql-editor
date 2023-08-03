@@ -13,5 +13,8 @@
   "plugins": [
     "react",
     "@typescript-eslint"
-  ]
+  ],
+  "ignorePatterns": [
+    "**/*.js"
+  ],
 }

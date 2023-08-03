@@ -67,36 +67,36 @@ const receive =
       args: WorkerEvents[T]["args"]
     ) => WorkerEvents[T]["returned"] | Promise<WorkerEvents[T]["returned"]>
   ) =>
-  (message: MessageEvent) => {
-    const m = message.data;
-    if (m.event === key)
-      try {
-        const data = fn(m);
-        if (typeof data === "object" && "then" in data) {
-          data.then((r) => {
+    (message: MessageEvent) => {
+      const m = message.data;
+      if (m.event === key)
+        try {
+          const data = fn(m);
+          if (typeof data === "object" && "then" in data) {
+            data.then((r) => {
+              postMessage({
+                data: r,
+                event: key,
+                id: m.id,
+              });
+            });
+          } else {
             postMessage({
-              data: r,
+              data,
               event: key,
               id: m.id,
             });
-          });
-        } else {
-          postMessage({
-            data,
-            event: key,
-            id: m.id,
-          });
+          }
+        } catch (error: unknown) {
+          if (error instanceof Error) {
+            postMessage({
+              error: error.message,
+              event: key,
+              id: m.id,
+            });
+          }
         }
-      } catch (error: unknown) {
-        if (error instanceof Error) {
-          postMessage({
-            error: error.message,
-            event: key,
-            id: m.id,
-          });
-        }
-      }
-  };
+    };
 
 ctx.addEventListener("message", (message) => {
   receive("validate", (args) => catchSchemaErrors(args.schema, args.libraries))(
@@ -151,9 +151,12 @@ ctx.addEventListener("message", (message) => {
         {
           layoutOptions: {
             "elk.spacing.nodeNode": "30.0",
-            "elk.edgeRouting": "ORTHOGONAL",
-            "elk.layered.spacing.nodeNodeBetweenLayers": "10.0",
-            "elk.layered.thoroughness": "20",
+            "elk.algorithm": "elk.layered",
+            "elk.layered.spacing.nodeNodeBetweenLayers": "100.0",
+            "elk.layered.thoroughness": "7",
+            "elk.direction": "RIGHT",
+            "elk.edgeRouting": "POLYLINE",
+            "elk.aspectRatio": "2.0f"
           },
         }
       )
