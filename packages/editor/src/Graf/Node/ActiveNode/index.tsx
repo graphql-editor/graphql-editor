@@ -29,6 +29,7 @@ import {
 } from "@/Graf/Node/components/DirectivePlacement";
 import { DraggableProvider, useDraggable } from "@/Graf/state/draggable";
 import { useRelationsState } from "@/state/containers";
+import { Tooltip } from "@aexol-studio/styling-system";
 
 interface NodeProps {
   node: ParserField;
@@ -245,20 +246,21 @@ export const ActiveNode: React.FC<NodeProps> = ({
         <DirectivePlacements>
           {!isLocked && <CreateNodeDirective node={node} isLocked={isLocked} />}
           {node.type.directiveOptions?.map((d) => (
-            <DirectivePlacement
-              key={d}
-              isLocked={isLocked}
-              onDelete={() => {
-                updateNode(node, () => {
-                  node.type.directiveOptions =
-                    node.type.directiveOptions?.filter(
-                      (oldDirective) => oldDirective !== d
-                    );
-                });
-              }}
-            >
-              {d}
-            </DirectivePlacement>
+            <Tooltip key={d} title="Detach directive">
+              <DirectivePlacement
+                isLocked={isLocked}
+                onDelete={() => {
+                  updateNode(node, () => {
+                    node.type.directiveOptions =
+                      node.type.directiveOptions?.filter(
+                        (oldDirective) => oldDirective !== d
+                      );
+                  });
+                }}
+              >
+                {d}
+              </DirectivePlacement>
+            </Tooltip>
           ))}
         </DirectivePlacements>
       )}
@@ -267,23 +269,24 @@ export const ActiveNode: React.FC<NodeProps> = ({
         <NodeInterfaces isHidden={libraryNode && !node.interfaces.length}>
           {!isLocked && <CreateNodeInterface node={node} isLocked={isLocked} />}
           {node.interfaces.map((i) => (
-            <NodeInterface
-              key={i}
-              isLocked={isLocked}
-              onDelete={() => deImplementInterface(node, i)}
-              onDetach={() => {
-                node.interfaces = node.interfaces?.filter(
-                  (oldInterface) => oldInterface !== i
-                );
-                node.args = node.args.map((a) => ({
-                  ...a,
-                  fromInterface: a.fromInterface?.filter((fi) => fi !== i),
-                }));
-                updateNode(node);
-              }}
-            >
-              {i}
-            </NodeInterface>
+            <Tooltip key={i} title="Interface options">
+              <NodeInterface
+                isLocked={isLocked}
+                onDelete={() => deImplementInterface(node, i)}
+                onDetach={() => {
+                  node.interfaces = node.interfaces?.filter(
+                    (oldInterface) => oldInterface !== i
+                  );
+                  node.args = node.args.map((a) => ({
+                    ...a,
+                    fromInterface: a.fromInterface?.filter((fi) => fi !== i),
+                  }));
+                  updateNode(node);
+                }}
+              >
+                {i}
+              </NodeInterface>
+            </Tooltip>
           ))}
         </NodeInterfaces>
       )}

@@ -22,6 +22,10 @@ import {
 } from "react-zoom-pan-pinch";
 import { useDomManagerTs } from "@/shared/hooks/useDomManager";
 import { DOMEvents } from "@/shared/hooks/DOMClassNames";
+import {
+  RELATION_NODE_MAX_FIELDS,
+  RELATION_NODE_MAX_WIDTH,
+} from "@/Relation/shared/nodeLook";
 
 const Main = styled.div`
   position: relative;
@@ -159,6 +163,8 @@ export const LinesDiagram = React.forwardRef<
           nodes,
           options: {
             iterations: 200,
+            maxFields: RELATION_NODE_MAX_FIELDS,
+            maxWidth: RELATION_NODE_MAX_WIDTH,
             ignoreAlphaCalculation: true,
           },
         }).then(({ nodes: positionedNodes, ...positionParams }) => {
@@ -257,6 +263,8 @@ export const LinesDiagram = React.forwardRef<
       options: {
         existingNumberNodes: simulatedNodes,
         iterations: 200,
+        maxWidth: RELATION_NODE_MAX_WIDTH,
+        maxFields: RELATION_NODE_MAX_FIELDS,
       },
     }).then(({ nodes: positionedNodes, ...positionParams }) => {
       props.setViewportParams(positionParams);

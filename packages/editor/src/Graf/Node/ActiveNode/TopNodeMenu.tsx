@@ -33,6 +33,7 @@ import {
   DotsHorizontal,
   PlusLarge,
   Stack,
+  Tooltip,
 } from "@aexol-studio/styling-system";
 
 type PossibleMenus =
@@ -108,16 +109,17 @@ export const TopNodeMenu: React.FC<{
                 isOpen={menuOpen === "field"}
                 close={() => setMenuOpen(undefined)}
                 Trigger={({ triggerProps }) => (
-                  <NodeIconArea
-                    {...triggerProps}
-                    onClick={() => {
-                      setMenuOpen("field");
-                    }}
-                    title="Click to add field"
-                    opened={menuOpen === "field"}
-                  >
-                    <PlusLarge />
-                  </NodeIconArea>
+                  <Tooltip title="Add field">
+                    <NodeIconArea
+                      {...triggerProps}
+                      onClick={() => {
+                        setMenuOpen("field");
+                      }}
+                      opened={menuOpen === "field"}
+                    >
+                      <PlusLarge />
+                    </NodeIconArea>
+                  </Tooltip>
                 )}
               >
                 {({ layerProps }) => (
@@ -135,16 +137,17 @@ export const TopNodeMenu: React.FC<{
               isOpen={menuOpen === "directive"}
               close={() => setMenuOpen(undefined)}
               Trigger={({ triggerProps }) => (
-                <NodeIconArea
-                  {...triggerProps}
-                  onClick={() => {
-                    setMenuOpen("directive");
-                  }}
-                  title="Click to add directive"
-                  opened={menuOpen === "directive"}
-                >
-                  <AtSign />
-                </NodeIconArea>
+                <Tooltip title="Add directive">
+                  <NodeIconArea
+                    {...triggerProps}
+                    onClick={() => {
+                      setMenuOpen("directive");
+                    }}
+                    opened={menuOpen === "directive"}
+                  >
+                    <AtSign />
+                  </NodeIconArea>{" "}
+                </Tooltip>
               )}
             >
               {({ layerProps }) => (
@@ -174,16 +177,17 @@ export const TopNodeMenu: React.FC<{
               isOpen={menuOpen === "operations"}
               close={() => setMenuOpen(undefined)}
               Trigger={({ triggerProps }) => (
-                <NodeIconArea
-                  {...triggerProps}
-                  onClick={() => {
-                    setMenuOpen("operations");
-                  }}
-                  opened={menuOpen === "operations"}
-                  title="Click set schema query, mutation, subscription"
-                >
-                  <DiagramProject />
-                </NodeIconArea>
+                <Tooltip title="Set schema query, mutation, subscription">
+                  <NodeIconArea
+                    {...triggerProps}
+                    onClick={() => {
+                      setMenuOpen("operations");
+                    }}
+                    opened={menuOpen === "operations"}
+                  >
+                    <DiagramProject />
+                  </NodeIconArea>
+                </Tooltip>
               )}
             >
               {({ layerProps }) => (
@@ -203,16 +207,17 @@ export const TopNodeMenu: React.FC<{
           isOpen={menuOpen === "options"}
           close={() => setMenuOpen(undefined)}
           Trigger={({ triggerProps }) => (
-            <NodeIconArea
-              {...triggerProps}
-              onClick={() => {
-                setMenuOpen("options");
-              }}
-              title="Click to see node actions"
-              opened={menuOpen === "options"}
-            >
-              <DotsHorizontal />
-            </NodeIconArea>
+            <Tooltip title="Node actions">
+              <NodeIconArea
+                {...triggerProps}
+                onClick={() => {
+                  setMenuOpen("options");
+                }}
+                opened={menuOpen === "options"}
+              >
+                <DotsHorizontal />
+              </NodeIconArea>
+            </Tooltip>
           )}
         >
           {({ layerProps }) => (

@@ -4,12 +4,22 @@ import React, { useMemo, useRef } from "react";
 import { fontFamilySans, transition } from "@/vars";
 import styled from "@emotion/styled";
 import { EditorTheme } from "@/gshared/theme/MainTheme";
-import { EagleEye, PenLine } from "@aexol-studio/styling-system";
+import {
+  ChevronRightDouble,
+  EagleEye,
+  PenLine,
+  Stack,
+  Tooltip,
+} from "@aexol-studio/styling-system";
 import { ActiveType } from "@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveType";
 import { Field } from "@/Relation/PanZoom/LinesDiagram/Node/Field";
 import { NumberNode } from "graphql-editor-worker";
 import { DOMClassNames } from "@/shared/hooks/DOMClassNames";
 import { useClickDetector } from "@/shared/hooks/useClickDetector";
+import {
+  RELATION_NODE_MAX_FIELDS,
+  RELATION_NODE_MAX_WIDTH,
+} from "@/Relation/shared/nodeLook";
 
 type NodeTypes = keyof EditorTheme["colors"];
 
@@ -21,7 +31,7 @@ interface ContentProps {
 }
 
 const Content = styled.div<ContentProps>`
-  width: ${(p) => p.width}px;
+  width: ${(p) => Math.min(p.width, RELATION_NODE_MAX_WIDTH)}px;
   background-color: ${({ theme }) => `${theme.neutral[600]}`};
   padding: 12px;
   position: relative;
@@ -81,6 +91,7 @@ const Content = styled.div<ContentProps>`
     display: none;
   }
   &.far {
+    width: ${(p) => p.width}px;
     border-width: 0;
     background-color: transparent;
     .graph-node-fields {
@@ -105,6 +116,7 @@ const Content = styled.div<ContentProps>`
 
 const NodeRelationFields = styled.div`
   transition: ${transition};
+  position: relative;
   margin-top: 24px;
 `;
 
@@ -133,12 +145,13 @@ const EditNodeContainer = styled.div`
 const SmallClickableButton = styled.div`
   background-color: ${(p) => p.theme.neutral[400]};
   color: ${(p) => p.theme.button.standalone.active};
-  width: 28px;
   height: 28px;
+  padding: 0.5rem 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: ${transition};
+  gap: 0.25rem;
   pointer-events: all;
   cursor: pointer;
   z-index: 1;
@@ -160,6 +173,24 @@ const NameInRelation = styled.span`
   font-family: ${fontFamilySans};
 `;
 
+const EditToSeeWhole = styled(Stack)`
+  padding: 1rem;
+  position: absolute;
+  z-index: 10;
+  color: ${(p) => p.theme.text.default};
+  margin: 1rem -12px;
+  background: ${(p) => p.theme.neutral[500]};
+  width: calc(100% + 26px);
+  border-bottom-left-radius: ${(p) => p.theme.radius}px;
+  border-bottom-right-radius: ${(p) => p.theme.radius}px;
+  cursor: pointer;
+  transition: ${transition};
+  :hover {
+    background: ${(p) => p.theme.neutral[450]};
+    color: ${(p) => p.theme.text.active};
+  }
+`;
+
 interface NodeProps {
   numberNode: NumberNode;
   isLibrary?: boolean;
@@ -176,9 +207,25 @@ export const Node: React.FC<NodeProps> = (props) => {
   const RelationFields = useMemo(() => {
     return (
       <NodeRelationFields className={`${DOMClassNames.nodeFields}`}>
-        {field.args.map((a) => (
+        {field.args.slice(0, RELATION_NODE_MAX_FIELDS).map((a) => (
           <Field key={a.name} node={a} />
         ))}
+        {field.args.length > RELATION_NODE_MAX_FIELDS && (
+          <EditToSeeWhole
+            onClick={(e) => {
+              e.stopPropagation();
+              setEditMode(field.id);
+            }}
+            align="center"
+            justify="center"
+          >
+            <span>
+              Open to see {field.args.length - RELATION_NODE_MAX_FIELDS} more
+              fields
+            </span>
+            <ChevronRightDouble />
+          </EditToSeeWhole>
+        )}
       </NodeRelationFields>
     );
   }, [JSON.stringify(field)]);
@@ -189,22 +236,28 @@ export const Node: React.FC<NodeProps> = (props) => {
         <NameInRelation>{field.name}</NameInRelation>
         <ActiveType type={field.type} />
         <EditNodeContainer className="editNode">
-          <FocusNodeClickableButton
-            onClick={(e) => {
-              e.stopPropagation();
-              focusNode(field);
-            }}
-          >
-            <EagleEye width={16} height={16} />
-          </FocusNodeClickableButton>
-          <EditNodeClickableButton
-            onClick={(e) => {
-              e.stopPropagation();
-              setEditMode(field.id);
-            }}
-          >
-            <PenLine width={16} height={16} />
-          </EditNodeClickableButton>
+          <Tooltip title="Focus node and related nodes">
+            <FocusNodeClickableButton
+              onClick={(e) => {
+                e.stopPropagation();
+                focusNode(field);
+              }}
+            >
+              <span>Focus</span>
+              <EagleEye width={16} height={16} />
+            </FocusNodeClickableButton>
+          </Tooltip>
+          <Tooltip title="Edit node">
+            <EditNodeClickableButton
+              onClick={(e) => {
+                e.stopPropagation();
+                setEditMode(field.id);
+              }}
+            >
+              <span>Edit</span>
+              <PenLine width={16} height={16} />
+            </EditNodeClickableButton>
+          </Tooltip>
         </EditNodeContainer>
       </NodeTitle>
     ),

@@ -47,7 +47,8 @@ export type WorkerEvents = {
         iterations?: number;
         ignoreAlphaCalculation?: boolean;
         alpha?: number;
-        maxHeight?: number;
+        maxFields?: number;
+        maxWidth?: number;
       };
     };
     returned: {
@@ -67,36 +68,36 @@ const receive =
       args: WorkerEvents[T]["args"]
     ) => WorkerEvents[T]["returned"] | Promise<WorkerEvents[T]["returned"]>
   ) =>
-    (message: MessageEvent) => {
-      const m = message.data;
-      if (m.event === key)
-        try {
-          const data = fn(m);
-          if (typeof data === "object" && "then" in data) {
-            data.then((r) => {
-              postMessage({
-                data: r,
-                event: key,
-                id: m.id,
-              });
-            });
-          } else {
+  (message: MessageEvent) => {
+    const m = message.data;
+    if (m.event === key)
+      try {
+        const data = fn(m);
+        if (typeof data === "object" && "then" in data) {
+          data.then((r) => {
             postMessage({
-              data,
+              data: r,
               event: key,
               id: m.id,
             });
-          }
-        } catch (error: unknown) {
-          if (error instanceof Error) {
-            postMessage({
-              error: error.message,
-              event: key,
-              id: m.id,
-            });
-          }
+          });
+        } else {
+          postMessage({
+            data,
+            event: key,
+            id: m.id,
+          });
         }
-    };
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          postMessage({
+            error: error.message,
+            event: key,
+            id: m.id,
+          });
+        }
+      }
+  };
 
 ctx.addEventListener("message", (message) => {
   receive("validate", (args) => catchSchemaErrors(args.schema, args.libraries))(
@@ -156,7 +157,7 @@ ctx.addEventListener("message", (message) => {
             "elk.layered.thoroughness": "7",
             "elk.direction": "RIGHT",
             "elk.edgeRouting": "POLYLINE",
-            "elk.aspectRatio": "2.0f"
+            "elk.aspectRatio": "2.0f",
           },
         }
       )

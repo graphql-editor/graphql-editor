@@ -17,4 +17,7 @@
   "ignorePatterns": [
     "**/*.js"
   ],
+  "rules": {
+    "react/display-name": "off"
+  }
 }

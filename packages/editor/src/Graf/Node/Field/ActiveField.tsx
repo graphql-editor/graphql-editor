@@ -16,7 +16,6 @@ import {
   FieldPort,
   Menu,
   MenuScrollingArea,
-  NodeFieldContainer,
 } from "@/Graf/Node/components";
 import { FieldProps } from "@/Graf/Node/models";
 import styled from "@emotion/styled";
@@ -32,7 +31,9 @@ import {
   Lock,
   Minus,
   Plus,
+  Tooltip,
 } from "@aexol-studio/styling-system";
+import { NodeFieldContainer } from "@/Graf/Node/Field/NodeFieldContainer";
 
 export const ActiveField: React.FC<FieldProps> = ({
   node,
@@ -112,17 +113,19 @@ export const ActiveField: React.FC<FieldProps> = ({
             isOpen={menuOpen === "type"}
             close={() => setMenuOpen(undefined)}
             Trigger={({ triggerProps }) => (
-              <ActiveGrafType
-                {...triggerProps}
-                onClick={
-                  !readonly && !isLocked
-                    ? () =>
-                        setMenuOpen(menuOpen === "type" ? undefined : "type")
-                    : undefined
-                }
-                type={node.type}
-                parentTypes={parentTypes}
-              ></ActiveGrafType>
+              <Tooltip title="Change field type">
+                <ActiveGrafType
+                  {...triggerProps}
+                  onClick={
+                    !readonly && !isLocked
+                      ? () =>
+                          setMenuOpen(menuOpen === "type" ? undefined : "type")
+                      : undefined
+                  }
+                  type={node.type}
+                  parentTypes={parentTypes}
+                ></ActiveGrafType>
+              </Tooltip>
             )}
           >
             {({ layerProps }) => (
@@ -160,14 +163,16 @@ export const ActiveField: React.FC<FieldProps> = ({
               close={() => setMenuOpen(undefined)}
               Trigger={({ triggerProps }) => {
                 return (
-                  <FieldPort
-                    {...triggerProps}
-                    icons={{
-                      closed: <BracketsSquare />,
-                      open: <BracketsSquare />,
-                    }}
-                    onClick={() => setMenuOpen("options")}
-                  />
+                  <Tooltip title="Set List/Required">
+                    <FieldPort
+                      {...triggerProps}
+                      icons={{
+                        closed: <BracketsSquare />,
+                        open: <BracketsSquare />,
+                      }}
+                      onClick={() => setMenuOpen("options")}
+                    />
+                  </Tooltip>
                 );
               }}
             >
@@ -204,23 +209,21 @@ export const ActiveField: React.FC<FieldProps> = ({
           }
         />
       )}
-      <Actions toRight>
+      <AbsoluteActions className="field-actions">
         {!inputDisabled &&
           !isArgumentNode &&
           !isFromInterface &&
           node.data.type !== TypeSystemDefinition.UnionMemberDefinition && (
-            <FieldPort
-              onClick={onInputClick}
-              open={inputOpen}
-              icons={{
-                closed: <Plus />,
-                open: <Minus />,
-              }}
-              info={{
-                message: "Field arguments and directives",
-                placement: "left",
-              }}
-            />
+            <Tooltip title="Field arguments and directives">
+              <FieldPort
+                onClick={onInputClick}
+                open={inputOpen}
+                icons={{
+                  closed: <Plus />,
+                  open: <Minus />,
+                }}
+              />
+            </Tooltip>
           )}
         {!isLocked && !isFromInterface && (
           <ContextMenu
@@ -228,23 +231,21 @@ export const ActiveField: React.FC<FieldProps> = ({
             close={() => setMenuOpen(undefined)}
             Trigger={({ triggerProps }) => {
               return (
-                <FieldPort
-                  {...triggerProps}
-                  icons={{
-                    closed: <DotsVertical />,
-                    open: <DotsVertical />,
-                  }}
-                  onClick={() => setMenuOpen("details")}
-                />
+                <Tooltip title="Field options">
+                  <FieldPort
+                    {...triggerProps}
+                    icons={{
+                      closed: <DotsVertical />,
+                      open: <DotsVertical />,
+                    }}
+                    onClick={() => setMenuOpen("details")}
+                  />
+                </Tooltip>
               );
             }}
           >
             {({ layerProps }) => (
-              <Menu
-                menuName={"Node options"}
-                hideMenu={() => setMenuOpen(undefined)}
-                {...layerProps}
-              >
+              <Menu hideMenu={() => setMenuOpen(undefined)} {...layerProps}>
                 <MenuScrollingArea>
                   <DetailMenuItem onClick={onDelete}>Delete</DetailMenuItem>
                 </MenuScrollingArea>
@@ -253,19 +254,21 @@ export const ActiveField: React.FC<FieldProps> = ({
           </ContextMenu>
         )}
         {!outputDisabled && (
-          <OutputArrow
-            className="node-field-port"
-            onClick={onOutputClick}
-            // info={{
-            //   message: `Expand ${getTypeName(node.type.fieldType)} details`,
-            //   placement: 'right',
-            // }}
-            opened={outputOpen}
-          >
-            <ChevronLeft />
-          </OutputArrow>
+          <Tooltip title="Expand type">
+            <OutputArrow
+              className="node-field-port"
+              onClick={onOutputClick}
+              // info={{
+              //   message: `Expand ${getTypeName(node.type.fieldType)} details`,
+              //   placement: 'right',
+              // }}
+              opened={outputOpen}
+            >
+              <ChevronLeft />
+            </OutputArrow>
+          </Tooltip>
         )}
-      </Actions>
+      </AbsoluteActions>
     </NodeFieldContainer>
   );
 };
@@ -274,6 +277,16 @@ const Actions = styled.div<{ toRight?: boolean }>`
   display: flex;
   margin-left: ${({ toRight }) => (toRight ? "auto" : "unset")};
   z-index: 2;
+`;
+const AbsoluteActions = styled.div`
+  display: flex;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  background-color: ${(p) => p.theme.neutral[450]};
+  padding: 0.5rem;
+  border-radius: ${(p) => p.theme.radius}px;
 `;
 const OutputArrow = styled.div<{ opened?: boolean }>`
   pointer-events: all;

@@ -3,10 +3,15 @@ import { ParserField } from "graphql-js-tree";
 import styled from "@emotion/styled";
 import { FIELD_NAME_SIZE } from "@/Graf/constants";
 import { ActiveType } from "@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveType";
+import { Stack } from "@aexol-studio/styling-system";
 
 const Main = styled.div`
   display: flex;
   flex-flow: row nowrap;
+  overflow-x: auto;
+  * {
+    text-overflow: ellipsis;
+  }
 `;
 
 const Name = styled.div`
@@ -33,7 +38,7 @@ export const ActiveFieldName: React.FC<
           <>
             {"("}
             {args.map((a, i) => (
-              <div key={a.name}>
+              <Stack key={a.name}>
                 <span>{a.name}</span>
                 :
                 <ActiveType
@@ -42,7 +47,7 @@ export const ActiveFieldName: React.FC<
                   parentTypes={parentTypes}
                 />
                 {i < args.length - 1 && <Comma>,</Comma>}
-              </div>
+              </Stack>
             ))}
             {")"}
           </>

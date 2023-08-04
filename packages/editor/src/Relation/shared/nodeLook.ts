@@ -1,0 +1,2 @@
+export const RELATION_NODE_MAX_FIELDS = 15;
+export const RELATION_NODE_MAX_WIDTH = 800;

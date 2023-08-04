@@ -54,7 +54,8 @@ export const sortNodesTs = ({
     existingNumberNodes,
     ignoreAlphaCalculation,
     alpha,
-    maxHeight = Infinity,
+    maxFields = Infinity,
+    maxWidth = Infinity,
   },
 }: WorkerEvents["simulateSort"]["args"]) => {
   let exisitingNodes = 0;
@@ -67,7 +68,8 @@ export const sortNodesTs = ({
         modifiedNodes += 1;
       }
     }
-    const nodeHeight = Math.min(43 + n.args.length * 26 + 12, maxHeight);
+    const fieldCount = Math.min(n.args.length, maxFields);
+    const nodeHeight = 43 + fieldCount * 26 + 12;
     const fieldLengths =
       Math.max(
         ...n.args.map((a) => {
@@ -90,7 +92,7 @@ export const sortNodesTs = ({
       ) * 8;
     const nameLength =
       8 * (n.name.length + compileType(n.type.fieldType).length + 1);
-    const nodeWidth = Math.max(fieldLengths, nameLength);
+    const nodeWidth = Math.min(Math.max(fieldLengths, nameLength), maxWidth);
     return {
       x: Math.floor(Math.random() * 1000),
       y: Math.floor(Math.random() * 1000),

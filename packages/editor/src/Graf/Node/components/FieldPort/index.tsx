@@ -1,5 +1,5 @@
-import styled from '@emotion/styled';
-import React from 'react';
+import styled from "@emotion/styled";
+import React from "react";
 
 interface FieldPortProps {
   onClick: () => void;
@@ -9,10 +9,6 @@ interface FieldPortProps {
     open: React.ReactNode;
   };
   children?: React.ReactNode;
-  info?: {
-    message: string;
-    placement: 'top' | 'bottom' | 'left' | 'right';
-  };
 }
 
 const Main = styled.div`
@@ -27,23 +23,18 @@ const Main = styled.div`
 `;
 
 export const FieldPort = React.forwardRef<HTMLDivElement, FieldPortProps>(
-  ({ children, onClick, open, info, icons }, ref) => {
+  ({ onClick, open, icons }, ref) => {
     const OpenComponent = icons.open;
     const ClosedComponent = icons.closed;
     return (
-      <Main
-        ref={ref}
-        title={info?.message}
-        className="node-field-port"
-        onClick={onClick}
-      >
+      <Main ref={ref} className="node-field-port" onClick={onClick}>
         <OpenerComponent className="opener-icon">
           {open && OpenComponent}
           {!open && ClosedComponent}
         </OpenerComponent>
       </Main>
     );
-  },
+  }
 );
 
 const OpenerComponent = styled.div`
