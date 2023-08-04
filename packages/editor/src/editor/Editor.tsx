@@ -1,6 +1,6 @@
 import React, { useEffect, useImperativeHandle } from "react";
 import { Menu } from "./menu/Menu";
-import { CodePane } from "./code";
+import { CodePane, DiffSchema } from "./code";
 import { PassedSchema } from "@/Models";
 import { DynamicResize } from "./code/Components";
 import { ParserTree } from "graphql-js-tree";
@@ -75,7 +75,7 @@ export interface EditorProps {
   schema: PassedSchema;
   // force expand/hide sidebar
   // schemas to compare usually latest its the first schema second one is compared
-  diffSchemas?: [string, string];
+  diffSchemas?: [DiffSchema, DiffSchema];
   // Function to be called when schema is set by the editor
   setSchema: (props: PassedSchema, isInvalid?: boolean) => void;
   // Function that could be fired if tree changes

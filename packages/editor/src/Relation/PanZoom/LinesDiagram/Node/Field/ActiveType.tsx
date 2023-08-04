@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { ParserField } from "graphql-js-tree";
 import { compileScalarTypes, compileTypeOptions } from "@/GraphQL/Compile";
 import styled from "@emotion/styled";
+import { transition } from "@/vars";
 export const ActiveType: React.FC<
   Pick<ParserField, "type"> & {
     parentTypes?: Record<string, string>;
@@ -14,14 +15,17 @@ export const ActiveType: React.FC<
   );
   const sType = useMemo(() => compileScalarTypes(type), [JSON.stringify(type)]);
   const color = parentTypes?.[sType] ? parentTypes[sType] : sType;
+  const isClickable = !!parentTypes?.[sType];
   return (
     <AType
       onClick={(e) => {
-        e.stopPropagation();
-        onClick?.();
+        if (onClick && isClickable) {
+          e.stopPropagation();
+          onClick?.();
+        }
       }}
       color={color}
-      clickable={!!onClick}
+      clickable={isClickable}
     >
       {compiledType}
     </AType>
@@ -35,4 +39,17 @@ const AType = styled.a<{ clickable?: boolean; color?: string }>`
         ? theme.colors[color as keyof typeof theme.colors]
         : theme.text.default
       : theme.text.default};
+  transition: ${transition};
+  :hover {
+    color: ${({ color, theme, clickable }) => {
+      if (!clickable) {
+        return color
+          ? theme.colors[color as keyof typeof theme.colors]
+            ? theme.colors[color as keyof typeof theme.colors]
+            : theme.text.default
+          : theme.text.default;
+      }
+      return theme.accents[100];
+    }};
+  }
 `;

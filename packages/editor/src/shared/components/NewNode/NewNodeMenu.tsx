@@ -23,7 +23,8 @@ export const NewNodeMenu = React.forwardRef<
   HTMLDivElement,
   NodeChangeFieldTypeMenuProps
 >(({ hideMenu, ...props }, ref) => {
-  const { setTree, tree, setSelectedNodeId } = useTreesState();
+  const { setTree, tree, setSelectedNodeId, idempotentOperationAssign } =
+    useTreesState();
   const { setEditMode } = useRelationsState();
   const [nodeName, setNodeName] = useState("");
   const [creating, setCreating] = useState<
@@ -73,6 +74,8 @@ export const NewNodeMenu = React.forwardRef<
           : {}),
       },
     });
+    idempotentOperationAssign(node);
+
     tree.nodes.push(node);
     setTree({ ...tree });
     setSelectedNodeId({

@@ -42,7 +42,7 @@ export const ActiveFieldName: React.FC<
                 <span>{a.name}</span>
                 :
                 <ActiveType
-                  onClick={() => onClick?.(a)}
+                  onClick={onClick ? () => onClick(a) : undefined}
                   type={a.type}
                   parentTypes={parentTypes}
                 />

@@ -9,7 +9,6 @@ import {
   EagleEye,
   PenLine,
   Stack,
-  Tooltip,
 } from "@aexol-studio/styling-system";
 import { ActiveType } from "@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveType";
 import { Field } from "@/Relation/PanZoom/LinesDiagram/Node/Field";
@@ -110,6 +109,7 @@ const Content = styled.div<ContentProps>`
     .editNode {
       scale: 2;
       transform: translate(0, -50%);
+      font-size: 14px;
     }
   }
 `;
@@ -145,8 +145,7 @@ const EditNodeContainer = styled.div`
 const SmallClickableButton = styled.div`
   background-color: ${(p) => p.theme.neutral[400]};
   color: ${(p) => p.theme.button.standalone.active};
-  height: 28px;
-  padding: 0.5rem 1rem;
+  padding: 0.25rem 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -236,28 +235,24 @@ export const Node: React.FC<NodeProps> = (props) => {
         <NameInRelation>{field.name}</NameInRelation>
         <ActiveType type={field.type} />
         <EditNodeContainer className="editNode">
-          <Tooltip title="Focus node and related nodes">
-            <FocusNodeClickableButton
-              onClick={(e) => {
-                e.stopPropagation();
-                focusNode(field);
-              }}
-            >
-              <span>Focus</span>
-              <EagleEye width={16} height={16} />
-            </FocusNodeClickableButton>
-          </Tooltip>
-          <Tooltip title="Edit node">
-            <EditNodeClickableButton
-              onClick={(e) => {
-                e.stopPropagation();
-                setEditMode(field.id);
-              }}
-            >
-              <span>Edit</span>
-              <PenLine width={16} height={16} />
-            </EditNodeClickableButton>
-          </Tooltip>
+          <FocusNodeClickableButton
+            onClick={(e) => {
+              e.stopPropagation();
+              focusNode(field);
+            }}
+          >
+            <span>Focus</span>
+            <EagleEye width={16} height={16} />
+          </FocusNodeClickableButton>
+          <EditNodeClickableButton
+            onClick={(e) => {
+              e.stopPropagation();
+              setEditMode(field.id);
+            }}
+          >
+            <span>Edit</span>
+            <PenLine width={16} height={16} />
+          </EditNodeClickableButton>
         </EditNodeContainer>
       </NodeTitle>
     ),

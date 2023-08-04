@@ -1,4 +1,3 @@
-//@ts-nocheck
 import React, { useState } from "react";
 import { GraphQLEditor } from "graphql-editor";
 import * as schemas from "../schema";
@@ -21,12 +20,15 @@ export const googlediff = () => {
       }}
     >
       <GraphQLEditor
+        path="googlediff"
         schema={currentSchema}
-        sidebarExpanded
         setSchema={(s) => {
           setCurrentSchema(s);
         }}
-        diffSchemas={[schemas.googleDirectionsNew, schemas.googleDirectionsOld]}
+        diffSchemas={[
+          { name: "new schema", content: schemas.googleDirectionsNew },
+          { content: schemas.googleDirectionsOld, name: "Old schema" },
+        ]}
       />
     </div>
   );

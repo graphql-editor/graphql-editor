@@ -1,26 +1,28 @@
-import React from 'react';
-import { Editor, EditorProps, ExternalEditorAPI } from './Editor';
+import React from "react";
+import { Editor, EditorProps, ExternalEditorAPI } from "./Editor";
 import {
   TreesStateProvider,
   ErrorsStateProvider,
   ThemeProvider,
   RelationsProvider,
   RelationNodesProvider,
-} from '@/state/containers';
-import { ThemeProvider as ScThemeProvider } from '@emotion/react';
-import { LayoutStateProvider } from '@/state/containers/layout';
-import { SortStateProvider } from '@/state/containers/sort';
-import { GqlEditor, GqlEditorProps } from '@/editor/GqlEditor';
-import { MainTheme } from '@/gshared/theme/MainTheme';
-import { RouterProvider, EditorRoutes } from '@/state/containers/router';
-import { EmbeddedEditor, EmbeddedEditorProps } from '@/editor/EmbeddedEditor';
-import { themeColors, ToastsProvider } from '@aexol-studio/styling-system';
+} from "@/state/containers";
+import { ThemeProvider as ScThemeProvider } from "@emotion/react";
+import { LayoutStateProvider } from "@/state/containers/layout";
+import { SortStateProvider } from "@/state/containers/sort";
+import { GqlEditor, GqlEditorProps } from "@/editor/GqlEditor";
+import { MainTheme } from "@/gshared/theme/MainTheme";
+import { RouterProvider, EditorRoutes } from "@/state/containers/router";
+import { EmbeddedEditor, EmbeddedEditorProps } from "@/editor/EmbeddedEditor";
+import { themeColors, ToastsProvider } from "@aexol-studio/styling-system";
 
 export { ExternalEditorAPI };
 
+export { DiffSchema } from "@/editor/code/DiffEditorPane";
+
 export const GraphQLEditor = React.forwardRef<ExternalEditorAPI, EditorProps>(
   ({ ...props }, ref) => {
-    const baseITheme = themeColors('graphqleditor', 'dark');
+    const baseITheme = themeColors("graphqleditor", "dark");
     const combinedTheme = {
       ...MainTheme,
       ...baseITheme,
@@ -49,11 +51,11 @@ export const GraphQLEditor = React.forwardRef<ExternalEditorAPI, EditorProps>(
         </RouterProvider>
       </ThemeProvider>
     );
-  },
+  }
 );
 
 export const EmbeddedGraphQLEditor = ({ ...props }: EmbeddedEditorProps) => {
-  const baseITheme = themeColors('graphqleditor', 'dark');
+  const baseITheme = themeColors("graphqleditor", "dark");
   const combinedTheme = {
     ...MainTheme,
     ...baseITheme,
@@ -85,7 +87,7 @@ export const EmbeddedGraphQLEditor = ({ ...props }: EmbeddedEditorProps) => {
 };
 
 export const GraphQLGqlEditor = ({ ...props }: GqlEditorProps) => {
-  const baseITheme = themeColors('graphqleditor', 'dark');
+  const baseITheme = themeColors("graphqleditor", "dark");
   const combinedTheme = {
     ...MainTheme,
     ...baseITheme,

@@ -1,12 +1,12 @@
 import React from "react";
-import { GraphQLEditor } from "graphql-editor";
+import { DiffSchema, GraphQLEditor } from "graphql-editor";
 import * as schemas from "../schema";
 
-export type SchemasVersions = [string, string];
+export type SchemasVersions = [DiffSchema, DiffSchema];
 
 const mockData: SchemasVersions = [
-  schemas.versionedUsersLibraryLatest,
-  schemas.versionedUsersLibrary01,
+  { content: schemas.versionedUsersLibraryLatest, name: "latest" },
+  { content: schemas.versionedUsersLibrary01, name: "oldVersion" },
 ];
 export const diff = () => {
   return (

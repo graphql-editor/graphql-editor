@@ -185,6 +185,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
     updateFieldOnNode,
     removeNode,
     removeFieldFromNode,
+    idempotentOperationAssign,
   } = useTreesState();
 
   const libraryNode = isLibrary(node);
@@ -355,6 +356,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                     );
                     return;
                   }
+                  idempotentOperationAssign(node);
                   renameNode(node, newName);
                 }}
               />

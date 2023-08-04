@@ -6,14 +6,18 @@ import { useTheme } from "@/state/containers";
 import { SchemaDiffEditor } from "@/editor/code/guild";
 import { CodeContainer } from "@/editor/code/style/Code";
 
+export interface DiffSchema {
+  name: string;
+  content: string;
+}
 export type DiffEditorPaneProps = {
   size: number | string;
-  schema: string;
-  newSchema: string;
+  schema: DiffSchema;
+  newSchema: DiffSchema;
 };
 
 /**
- * React compontent holding GraphQL IDE
+ * React component holding GraphQL IDE
  */
 export const DiffEditorPane = ({ schema, newSchema }: DiffEditorPaneProps) => {
   const { theme } = useTheme();
@@ -34,10 +38,14 @@ export const DiffEditorPane = ({ schema, newSchema }: DiffEditorPaneProps) => {
             beforeMount={(monaco) =>
               monaco.editor.defineTheme("graphql-editor", MonacoTheme(theme))
             }
-            original={schema}
-            modified={newSchema}
+            original={schema.content}
+            modified={newSchema.content}
             theme="graphql-editor"
-            options={codeSettings}
+            options={{
+              ...codeSettings,
+              modifiedAriaLabel: newSchema.name,
+              originalAriaLabel: schema.name,
+            }}
           />
         </CodeContainer>
       )}

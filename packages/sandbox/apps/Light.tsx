@@ -23,10 +23,6 @@ export const Light = () => {
         setSchema={(props) => {
           setMySchema(props);
         }}
-        diffSchemas={[
-          schemas.versionedUsersLibraryLatest,
-          schemas.versionedUsersLibrary01,
-        ]}
         schema={mySchema}
       />
     </div>

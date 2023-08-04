@@ -23,10 +23,6 @@ export const librariesEmptyCode = () => {
         setSchema={(props) => {
           setMySchema(props);
         }}
-        diffSchemas={[
-          schemas.finance + schemas.usersLibraryNew,
-          schemas.finance + schemas.usersLibraryOld,
-        ]}
         schema={mySchema}
       />
     </div>

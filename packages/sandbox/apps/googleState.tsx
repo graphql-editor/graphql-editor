@@ -54,7 +54,6 @@ export const googleState = () => {
         setSchema={(s) => {
           setCurrentSchema(s);
         }}
-        diffSchemas={[schemas.googleDirectionsNew, schemas.googleDirectionsOld]}
       />
     );
   }, [currentSchema, setCurrentSchema]);

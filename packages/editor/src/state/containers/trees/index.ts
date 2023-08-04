@@ -353,6 +353,35 @@ const useTreesStateContainer = createContainer(() => {
       node.type.operations = [...(node.type.operations || []), o];
     });
   };
+  const idempotentOperationAssign = (node: ParserField) => {
+    if (node.name.toLowerCase() === "query") {
+      if (
+        !allNodes.nodes.some((n) =>
+          n.type.operations?.includes(OperationType.query)
+        )
+      ) {
+        node.type.operations = [OperationType.query];
+      }
+    }
+    if (node.name.toLowerCase() === "mutation") {
+      if (
+        !allNodes.nodes.some((n) =>
+          n.type.operations?.includes(OperationType.mutation)
+        )
+      ) {
+        node.type.operations = [OperationType.mutation];
+      }
+    }
+    if (node.name.toLowerCase() === "subscription") {
+      if (
+        !allNodes.nodes.some((n) =>
+          n.type.operations?.includes(OperationType.subscription)
+        )
+      ) {
+        node.type.operations = [OperationType.subscription];
+      }
+    }
+  };
   const queryNode = useMemo(() => {
     const queryNode = allNodes.nodes.find((n) =>
       n.type.operations?.includes(OperationType.query)
@@ -433,6 +462,7 @@ const useTreesStateContainer = createContainer(() => {
     setValue,
     setOperation,
     removeOperation,
+    idempotentOperationAssign,
     // focus
     focusMode,
     focusedNode,

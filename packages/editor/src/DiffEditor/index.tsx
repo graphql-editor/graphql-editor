@@ -1,19 +1,20 @@
-import { DiffEditorPane } from "@/editor/code";
+import { DiffEditorPane, DiffSchema } from "@/editor/code";
 import styled from "@emotion/styled";
 import React, { useState } from "react";
 import { Parser, TreeToGraphQL } from "graphql-js-tree";
 import { useSortState } from "@/state/containers/sort";
 import { fontFamilySans } from "@/vars";
-import { Arrow_AZ } from "@aexol-studio/styling-system";
+import { Arrow_AZ, Stack, Typography } from "@aexol-studio/styling-system";
 
 interface DiffEditorProps {
-  schemas: [string, string];
+  schemas: [DiffSchema, DiffSchema];
 }
 
 const Main = styled.div`
   display: flex;
   width: 100%;
   flex-direction: column;
+  position: relative;
   background-color: ${({ theme }) => theme.neutral[600]};
 `;
 
@@ -66,11 +67,35 @@ export const DiffEditor = ({ schemas }: DiffEditorProps) => {
           <Arrow_AZ />
         </AZContainer>
       </TopBar>
+      <CompareBar justify="between" align="center">
+        <Typography fontWeight={600} variant="body2">
+          {schemas[0].name}
+        </Typography>
+        <Typography fontWeight={600} variant="body2">
+          {schemas[1].name}
+        </Typography>
+      </CompareBar>
       <DiffEditorPane
-        schema={isSortActive ? sortSchema(schemas[0]) : schemas[0]}
-        newSchema={isSortActive ? sortSchema(schemas[1]) : schemas[1]}
+        schema={
+          isSortActive
+            ? { content: sortSchema(schemas[0].content), name: schemas[0].name }
+            : schemas[0]
+        }
+        newSchema={
+          isSortActive
+            ? { content: sortSchema(schemas[1].content), name: schemas[1].name }
+            : schemas[1]
+        }
         size={`100vw-50px`}
       />
     </Main>
   );
 };
+
+const CompareBar = styled(Stack)`
+  padding-top: 3rem;
+  padding-left: 64px;
+  padding-right: 32px;
+  position: absolute;
+  width: 100%;
+`;
