@@ -78,13 +78,13 @@ export const DiffEditor = ({ schemas }: DiffEditorProps) => {
       <DiffEditorPane
         schema={
           isSortActive
-            ? { content: sortSchema(schemas[0].content), name: schemas[0].name }
-            : schemas[0]
+            ? { content: sortSchema(schemas[1].content), name: schemas[1].name }
+            : schemas[1]
         }
         newSchema={
           isSortActive
-            ? { content: sortSchema(schemas[1].content), name: schemas[1].name }
-            : schemas[1]
+            ? { content: sortSchema(schemas[0].content), name: schemas[0].name }
+            : schemas[0]
         }
         size={`100vw-50px`}
       />

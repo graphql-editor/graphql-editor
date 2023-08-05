@@ -213,6 +213,13 @@ export const Node: React.FC<NodeProps> = (props) => {
           <EditToSeeWhole
             onClick={(e) => {
               e.stopPropagation();
+              setSelectedNodeId({
+                value: {
+                  id: field.id,
+                  name: field.name,
+                },
+                source: "relation",
+              });
               setEditMode(field.id);
             }}
             align="center"
