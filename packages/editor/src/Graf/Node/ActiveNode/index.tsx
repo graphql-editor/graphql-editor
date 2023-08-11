@@ -356,7 +356,10 @@ export const ActiveNode: React.FC<NodeProps> = ({
                     );
                     return;
                   }
-                  idempotentOperationAssign(node);
+                  idempotentOperationAssign({
+                    ...node,
+                    name: newName,
+                  });
                   renameNode(node, newName);
                 }}
               />

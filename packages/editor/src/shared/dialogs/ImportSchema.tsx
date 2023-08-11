@@ -76,6 +76,20 @@ export const ImportSchema: React.FC<{
         });
         return newSchema;
       } catch (error) {
+        createToast({
+          message: `${
+            proxyImport
+              ? "Error with CORS proxy. "
+              : "Error without CORS proxy. "
+          }${
+            error instanceof Error
+              ? error.message
+              : `${url} is not correct GraphQL endpoint or you don't have access. Check your settings and try again`
+          }. Trying ${
+            proxyImport ? "Trying without proxy" : "Trying with proxy"
+          }, please wait...`,
+          variant: "error",
+        });
         const newSchema = await Utils.getFromUrl(
           !proxyImport ? proxyUrl(url) : url,
           header
@@ -88,7 +102,15 @@ export const ImportSchema: React.FC<{
       }
     } catch (error) {
       createToast({
-        message: `${url} is not correct GraphQL endpoint or you don't have access. Might be also CORS issue.`,
+        message: `${
+          !proxyImport
+            ? "Error with CORS proxy. "
+            : "Error without CORS proxy. "
+        }${
+          error instanceof Error
+            ? error.message
+            : `${url} is not correct GraphQL endpoint or you don't have access. Check your settings and try again`
+        }`,
         variant: "error",
       });
       return false;
@@ -204,6 +226,19 @@ export class Utils {
       headers,
       body: JSON.stringify({ query: getIntrospectionQuery() }),
     });
+    if (response.status !== 200) {
+      let textResponse = "";
+      try {
+        textResponse = await response.text();
+      } catch {
+        throw new Error(
+          `Response Status:${response.status}, Status text:${response.statusText}`
+        );
+      }
+      throw new Error(
+        `Response Status:${response.status}, Status text:${response.statusText}. ${textResponse}`
+      );
+    }
     const { data, errors } = await response.json();
     if (errors) {
       throw new Error(JSON.stringify(errors));

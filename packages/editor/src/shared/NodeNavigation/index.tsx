@@ -14,6 +14,9 @@ import {
   TypeDefinition,
   TypeSystemDefinition,
   TypeExtension,
+  TypeSystemExtension,
+  OperationType,
+  getTypeName,
 } from "graphql-js-tree";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
@@ -155,6 +158,7 @@ export const NodeNavigation = () => {
     const typeNodes: ParserField[] = [];
     const interfaceNodes: ParserField[] = [];
     const schemaNodes: ParserField[] = [];
+    const schemaExtensionNodes: ParserField[] = [];
     const directivesNodes: ParserField[] = [];
     const extEnumNodes: ParserField[] = [];
     const extUnionNodes: ParserField[] = [];
@@ -211,23 +215,56 @@ export const NodeNavigation = () => {
           directivesNodes.push(node);
           break;
         case TypeDefinition.ObjectTypeDefinition:
-          if (node.type.operations && node.type.operations.length > 0) {
-            schemaNodes.push(node);
-          } else {
-            typeNodes.push(node);
-          }
+          typeNodes.push(node);
+          break;
+        case TypeSystemDefinition.SchemaDefinition:
+          schemaNodes.push(node);
+          break;
+        case TypeSystemExtension.SchemaExtension:
+          schemaExtensionNodes.push(node);
           break;
       }
     });
+
+    const schemaNode = schemaNodes?.find(
+      (n) => n.data.type === TypeSystemDefinition.SchemaDefinition
+    );
+    const query = schemaNode?.args.find((a) => a.name === OperationType.query);
+    const mutation = schemaNode?.args.find(
+      (a) => a.name === OperationType.mutation
+    );
+    const subscription = schemaNode?.args.find(
+      (a) => a.name === OperationType.subscription
+    );
+    const queryNode =
+      query &&
+      typeNodes?.find((n) => n.name === getTypeName(query.type.fieldType));
+    const mutationNode =
+      mutation &&
+      typeNodes?.find((n) => n.name === getTypeName(mutation.type.fieldType));
+    const subscriptionNode =
+      subscription &&
+      typeNodes?.find(
+        (n) => n.name === getTypeName(subscription.type.fieldType)
+      );
+    const rootNodes = [
+      queryNode?.name,
+      subscriptionNode?.name,
+      mutationNode?.name,
+    ];
 
     return {
       enumNodes,
       unionNodes,
       inputNodes,
       scalarNodes,
-      typeNodes,
+      typeNodes: typeNodes.filter((tn) => !rootNodes.includes(tn.name)),
       interfaceNodes,
       schemaNodes,
+      queryNode,
+      mutationNode,
+      subscriptionNode,
+      schemaExtensionNodes,
       directivesNodes,
       extEnumNodes,
       extInputNodes,
@@ -279,7 +316,11 @@ export const NodeNavigation = () => {
             </SearchWrapper>
           </TopMenusWrapper>
           <ListWrapper>
-            <SchemaList nodeList={splittedNodes?.schemaNodes} />
+            <SchemaList
+              queryNode={splittedNodes.queryNode}
+              mutationNode={splittedNodes.mutationNode}
+              subscriptionNode={splittedNodes.subscriptionNode}
+            />
             <NodeList
               expanded={listExpanded}
               setExpanded={(e) =>
@@ -287,7 +328,7 @@ export const NodeNavigation = () => {
                   le.includes(e) ? le.filter((l) => l !== e) : [...le, e]
                 )
               }
-              nodeList={splittedNodes?.typeNodes}
+              nodeList={splittedNodes.typeNodes}
               visibleInRelationView
               listTitle="Types"
               colorKey="type"
@@ -299,7 +340,7 @@ export const NodeNavigation = () => {
                   le.includes(e) ? le.filter((l) => l !== e) : [...le, e]
                 )
               }
-              nodeList={splittedNodes?.interfaceNodes}
+              nodeList={splittedNodes.interfaceNodes}
               visibleInRelationView
               listTitle="Interface"
               colorKey="interface"
@@ -311,7 +352,7 @@ export const NodeNavigation = () => {
                   le.includes(e) ? le.filter((l) => l !== e) : [...le, e]
                 )
               }
-              nodeList={splittedNodes?.unionNodes}
+              nodeList={splittedNodes.unionNodes}
               visibleInRelationView
               listTitle="Unions"
               colorKey="union"
@@ -323,7 +364,7 @@ export const NodeNavigation = () => {
                   le.includes(e) ? le.filter((l) => l !== e) : [...le, e]
                 )
               }
-              nodeList={splittedNodes?.inputNodes}
+              nodeList={splittedNodes.inputNodes}
               visibleInRelationView
               listTitle="Inputs"
               colorKey="input"
@@ -335,7 +376,7 @@ export const NodeNavigation = () => {
                   le.includes(e) ? le.filter((l) => l !== e) : [...le, e]
                 )
               }
-              nodeList={splittedNodes?.enumNodes}
+              nodeList={splittedNodes.enumNodes}
               listTitle="Enums"
               colorKey="enum"
             />
@@ -346,7 +387,7 @@ export const NodeNavigation = () => {
                   le.includes(e) ? le.filter((l) => l !== e) : [...le, e]
                 )
               }
-              nodeList={splittedNodes?.scalarNodes}
+              nodeList={splittedNodes.scalarNodes}
               listTitle="Scalars"
               colorKey="scalar"
             />
@@ -357,7 +398,7 @@ export const NodeNavigation = () => {
                   le.includes(e) ? le.filter((l) => l !== e) : [...le, e]
                 )
               }
-              nodeList={splittedNodes?.directivesNodes}
+              nodeList={splittedNodes.directivesNodes}
               listTitle="Directives"
               colorKey="directive"
             />
@@ -369,7 +410,7 @@ export const NodeNavigation = () => {
                     le.includes(e) ? le.filter((l) => l !== e) : [...le, e]
                   )
                 }
-                nodeList={splittedNodes?.extTypeNodes}
+                nodeList={splittedNodes.extTypeNodes}
                 listTitle="Type Extensions"
                 colorKey="type"
               />

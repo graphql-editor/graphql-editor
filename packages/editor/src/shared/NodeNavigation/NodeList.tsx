@@ -84,22 +84,18 @@ export const NodeList: React.FC<NodeListI> = ({
     </>
   );
 };
-export const SchemaList: React.FC<Pick<NodeListI, "nodeList">> = ({
-  nodeList,
-}) => {
-  const empty = !nodeList?.length;
-  const queryNode = nodeList?.find((n) =>
-    n.type.operations?.includes(OperationType.query)
-  );
-  const mutationNode = nodeList?.find((n) =>
-    n.type.operations?.includes(OperationType.mutation)
-  );
-  const subscriptionNode = nodeList?.find((n) =>
-    n.type.operations?.includes(OperationType.subscription)
-  );
+export const SchemaList: React.FC<{
+  queryNode?: ParserField;
+  mutationNode?: ParserField;
+  subscriptionNode?: ParserField;
+}> = ({ queryNode, mutationNode, subscriptionNode }) => {
   return (
     <>
-      <Title color={"type"} empty={empty} open>
+      <Title
+        color={"type"}
+        empty={!queryNode && !mutationNode && !subscriptionNode}
+        open
+      >
         <div>Schema</div>
       </Title>
       <SingleSchemaNodeInList

@@ -18,6 +18,7 @@ import {
   DotsHorizontal,
   Typography,
   Tooltip,
+  Xmark,
 } from "@aexol-studio/styling-system";
 import styled from "@emotion/styled";
 import { OperationType, ParserField } from "graphql-js-tree";
@@ -130,8 +131,13 @@ export const SingleSchemaNodeInList: React.FC<{
     operationType: OperationType;
   };
 }> = ({ node, schemaProps }) => {
-  const { setSelectedNodeId, isLibrary, focusNode, setOperation } =
-    useTreesState();
+  const {
+    setSelectedNodeId,
+    isLibrary,
+    focusNode,
+    removeSchemaNodeField,
+    setOperationNode,
+  } = useTreesState();
   const { toggleNodeVisibility } = useRelationNodesState();
   const { setEditMode } = useRelationsState();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -192,6 +198,15 @@ export const SingleSchemaNodeInList: React.FC<{
                   isHidden={node.isHidden}
                   onClick={(e) => {
                     e.stopPropagation();
+                    removeSchemaNodeField(schemaProps.operationType);
+                  }}
+                >
+                  <Xmark height={20} />
+                </IconContainer>
+                <IconContainer
+                  isHidden={node.isHidden}
+                  onClick={(e) => {
+                    e.stopPropagation();
                     focusNode(node);
                   }}
                 >
@@ -213,34 +228,6 @@ export const SingleSchemaNodeInList: React.FC<{
                 >
                   <Pen height={20} />
                 </IconContainer>
-
-                <ContextMenu
-                  isOpen={menuOpen}
-                  close={() => setMenuOpen(false)}
-                  Trigger={({ triggerProps }) => (
-                    <IconContainer
-                      {...triggerProps}
-                      onClick={() => {
-                        setMenuOpen(true);
-                      }}
-                    >
-                      <DotsHorizontal height={20} />
-                    </IconContainer>
-                  )}
-                >
-                  {({ layerProps }) => (
-                    <SetOperationMenu
-                      {...layerProps}
-                      operationType={schemaProps.operationType}
-                      onSelectType={(n) => {
-                        setOperation(n, schemaProps.operationType);
-                      }}
-                      hideMenu={() => {
-                        setMenuOpen(false);
-                      }}
-                    />
-                  )}
-                </ContextMenu>
               </SelectedActions>
             </>
           )}
@@ -275,7 +262,7 @@ export const SingleSchemaNodeInList: React.FC<{
                 operationType={schemaProps.operationType}
                 {...layerProps}
                 onSelectType={(n) => {
-                  setOperation(n, schemaProps.operationType);
+                  setOperationNode(schemaProps.operationType, n);
                 }}
                 hideMenu={() => {
                   setMenuOpen(false);

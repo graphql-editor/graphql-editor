@@ -8,6 +8,10 @@ import {
   mutate,
   OperationType,
   Instances,
+  TypeSystemDefinition,
+  createPlainField,
+  createSchemaDefinition,
+  TypeSystemExtension,
 } from "graphql-js-tree";
 import { GraphQLEditorWorker } from "graphql-editor-worker";
 import {
@@ -334,58 +338,110 @@ const useTreesStateContainer = createContainer(() => {
       mutationRoot.setValueNode(node, value);
     });
   };
-  const removeOperation = (node: ParserField, o: OperationType) => {
-    updateNode(node, () => {
-      node.type.operations = node.type.operations?.filter((opt) => opt !== o);
-    });
-  };
-  const setOperation = (node: ParserField, o: OperationType) => {
-    updateNode(node, () => {
-      tree.nodes.forEach((n) => {
-        const { operations } = n.type;
-        if (operations) {
-          const i = operations.findIndex((to) => to === o);
-          if (i !== -1) {
-            operations.splice(i, 1);
-          }
-        }
-      });
-      node.type.operations = [...(node.type.operations || []), o];
-    });
-  };
   const idempotentOperationAssign = (node: ParserField) => {
-    if (node.name.toLowerCase() === "query") {
-      if (
-        !allNodes.nodes.some((n) =>
-          n.type.operations?.includes(OperationType.query)
-        )
-      ) {
-        node.type.operations = [OperationType.query];
-      }
+    const nodeName = node.name.toLowerCase();
+    console.log(nodeName);
+    if (
+      !(
+        nodeName === "query" ||
+        nodeName === "mutation" ||
+        nodeName === "subscription"
+      )
+    ) {
+      return;
     }
-    if (node.name.toLowerCase() === "mutation") {
-      if (
-        !allNodes.nodes.some((n) =>
-          n.type.operations?.includes(OperationType.mutation)
-        )
-      ) {
-        node.type.operations = [OperationType.mutation];
-      }
+    let schemaNode = allNodes.nodes.find(
+      (n) => n.data.type === TypeSystemDefinition.SchemaDefinition
+    );
+    if (!schemaNode) {
+      schemaNode = createSchemaDefinition({});
     }
-    if (node.name.toLowerCase() === "subscription") {
-      if (
-        !allNodes.nodes.some((n) =>
-          n.type.operations?.includes(OperationType.subscription)
-        )
-      ) {
-        node.type.operations = [OperationType.subscription];
-      }
+    if (
+      node.name.toLowerCase() === "query" &&
+      !schemaNode.args.find((a) => a.name === OperationType.query)
+    ) {
+      schemaNode.args.push(
+        createPlainField({ name: OperationType.query, type: node.name })
+      );
     }
+    if (
+      node.name.toLowerCase() === "mutation" &&
+      !schemaNode.args.find((a) => a.name === OperationType.mutation)
+    ) {
+      schemaNode.args.push(
+        createPlainField({ name: OperationType.mutation, type: node.name })
+      );
+    }
+    if (
+      node.name.toLowerCase() === "subscription" &&
+      !schemaNode.args.find((a) => a.name === OperationType.subscription)
+    ) {
+      schemaNode.args.push(
+        createPlainField({ name: OperationType.subscription, type: node.name })
+      );
+    }
+    tree.nodes = tree.nodes.filter(
+      (n) => n.data.type !== TypeSystemDefinition.SchemaDefinition
+    );
+    console.log(schemaNode);
+    tree.nodes.push(schemaNode);
+  };
+  const setOperationNode = (
+    operationType: OperationType,
+    node: ParserField
+  ) => {
+    let noSchemaDefinitionNode = true;
+    tree.nodes.forEach((n) => {
+      if (n.data.type === TypeSystemDefinition.SchemaDefinition) {
+        noSchemaDefinitionNode = false;
+        n.args = [
+          ...n.args.filter((a) => a.name !== operationType),
+          createPlainField({
+            name: operationType,
+            type: node.name,
+          }),
+        ];
+        console.log(n);
+      }
+    });
+    if (noSchemaDefinitionNode) {
+      tree.nodes.push(
+        createSchemaDefinition({
+          operations: {
+            [operationType]: node.name,
+          },
+        })
+      );
+    }
+    setTree(tree);
+  };
+  const removeSchemaNodeField = (operationType: OperationType) => {
+    let removeSchemaNodeDefinition = false;
+    tree.nodes.forEach((n) => {
+      if (n.data.type === TypeSystemDefinition.SchemaDefinition) {
+        n.args = n.args.filter((a) => a.name !== operationType);
+        if (n.args.length === 0) {
+          removeSchemaNodeDefinition = true;
+        }
+      }
+    });
+    if (removeSchemaNodeDefinition) {
+      tree.nodes = tree.nodes.filter(
+        (n) =>
+          n.data.type !== TypeSystemDefinition.SchemaDefinition &&
+          n.data.type !== TypeSystemExtension.SchemaExtension
+      );
+    }
+    setTree(tree);
   };
   const queryNode = useMemo(() => {
-    const queryNode = allNodes.nodes.find((n) =>
-      n.type.operations?.includes(OperationType.query)
+    const schemaNode = allNodes.nodes.find(
+      (n) => n.data.type === TypeSystemDefinition.SchemaDefinition
     );
+    const query = schemaNode?.args.find((a) => a.name === OperationType.query);
+    const queryNode =
+      query &&
+      allNodes.nodes.find((n) => n.name === getTypeName(query.type.fieldType));
     return queryNode;
   }, [allNodes]);
   const getParentOfField = (f: ParserField) => {
@@ -460,8 +516,9 @@ const useTreesStateContainer = createContainer(() => {
     implementInterface,
     deImplementInterface,
     setValue,
-    setOperation,
-    removeOperation,
+    //schema
+    setOperationNode,
+    removeSchemaNodeField,
     idempotentOperationAssign,
     // focus
     focusMode,

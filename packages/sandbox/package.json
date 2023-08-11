@@ -1,6 +1,6 @@
 {
   "name": "sandbox",
-  "version": "6.8.7",
+  "version": "6.8.8",
   "private": false,
   "license": "MIT",
   "description": "Visual node editor for GraphQL",
@@ -48,7 +48,7 @@
     "@aexol-studio/styling-system": "^0.0.8",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
-    "graphql-editor": "^6.8.7",
+    "graphql-editor": "^6.8.8",
     "graphql-js-tree": "^0.1.6"
   },
   "config": {

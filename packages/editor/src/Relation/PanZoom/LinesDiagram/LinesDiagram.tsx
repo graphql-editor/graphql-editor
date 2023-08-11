@@ -9,7 +9,7 @@ import { useTreesState } from "@/state/containers/trees";
 import { Node } from "./Node";
 import styled from "@emotion/styled";
 import * as vars from "@/vars";
-import { ParserField, getTypeName, OperationType } from "graphql-js-tree";
+import { ParserField, getTypeName } from "graphql-js-tree";
 import { GraphQLEditorWorker, NumberNode } from "graphql-editor-worker";
 import { runAfterFramePaint } from "@/shared/hooks/useMarkFramePaint";
 import { useRelationsState } from "@/state/containers";
@@ -178,19 +178,16 @@ export const LinesDiagram = React.forwardRef<
 
   useEffect(() => {
     if (!selectedNodeId?.value?.id && simulatedNodes) {
-      const queryNode = simulatedNodes?.find((sn) =>
-        sn.parserField.type.operations?.includes(OperationType.query)
+      const schemaNode = simulatedNodes?.find(
+        (sn) => sn.parserField.name === "Query"
       );
-      const mutationNode = simulatedNodes?.find((sn) =>
-        sn.parserField.type.operations?.includes(OperationType.mutation)
-      );
-      const subscriptionNode = simulatedNodes?.find((sn) =>
-        sn.parserField.type.operations?.includes(OperationType.subscription)
-      );
-
-      const centerToNode = queryNode || mutationNode || subscriptionNode;
-      if (centerToNode) {
-        zoomToNode(centerToNode.x, centerToNode.y);
+      if (schemaNode) {
+        zoomToNode(schemaNode.x, schemaNode.y);
+      } else {
+        if (simulatedNodes.length > 0) {
+          const randomFirstNode = simulatedNodes[0];
+          zoomToNode(randomFirstNode.x, randomFirstNode.y);
+        }
       }
     }
   }, [simulatedNodes]);

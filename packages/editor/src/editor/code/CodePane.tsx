@@ -5,7 +5,12 @@ import { useErrorsState, useTheme, useTreesState } from "@/state/containers";
 
 import { SchemaEditorApi, SchemaEditor } from "@/editor/code/guild";
 import { theme as MonacoTheme } from "@/editor/code/monaco";
-import { OperationType } from "graphql-js-tree";
+import {
+  OperationType,
+  ParserField,
+  TypeSystemDefinition,
+  getTypeName,
+} from "graphql-js-tree";
 import { CodeContainer } from "@/editor/code/style/Code";
 import { Maybe } from "graphql-language-service";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
@@ -78,9 +83,18 @@ export const CodePane = (props: CodePaneProps) => {
           typeof e === "object" && e.operation
             ? (e.operation.toLowerCase() as OperationType)
             : undefined;
-        const n = op
-          ? allNodes.nodes.find((an) => an.type.operations?.includes(op))
-          : allNodes.nodes.find((an) => an.name === e);
+        let n: ParserField | undefined;
+        if (op) {
+          const schemaNode = allNodes.nodes.find(
+            (n) => n.data.type === TypeSystemDefinition.SchemaDefinition
+          );
+          const opArg = schemaNode?.args.find((a) => a.name === op);
+          if (opArg) {
+            const opType = getTypeName(opArg.type.fieldType);
+            n = allNodes.nodes.find((n) => n.name === opType);
+          }
+        }
+        n = n || allNodes.nodes.find((an) => an.name === e);
         if (n?.id === selectedNodeId?.value?.id) return;
         setSelectedNodeId({
           source: "code",

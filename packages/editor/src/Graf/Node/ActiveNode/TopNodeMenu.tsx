@@ -19,7 +19,6 @@ import {
   NodeAddDirectiveMenu,
   NodeDirectiveOptionsMenu,
   NodeAddFieldMenu,
-  NodeOperationsMenu,
   ContextMenu,
 } from "@/shared/components/ContextMenu";
 import { useTreesState } from "@/state/containers/trees";
@@ -29,7 +28,6 @@ import { ResolveExtension } from "@/GraphQL/Resolve";
 import { transition } from "@/vars";
 import {
   AtSign,
-  DiagramProject,
   DotsHorizontal,
   PlusLarge,
   Stack,
@@ -169,33 +167,6 @@ export const TopNodeMenu: React.FC<{
                     />
                   )}
                 </>
-              )}
-            </ContextMenu>
-          )}
-          {node.data.type === TypeDefinition.ObjectTypeDefinition && (
-            <ContextMenu
-              isOpen={menuOpen === "operations"}
-              close={() => setMenuOpen(undefined)}
-              Trigger={({ triggerProps }) => (
-                <Tooltip title="Set schema query, mutation, subscription">
-                  <NodeIconArea
-                    {...triggerProps}
-                    onClick={() => {
-                      setMenuOpen("operations");
-                    }}
-                    opened={menuOpen === "operations"}
-                  >
-                    <DiagramProject />
-                  </NodeIconArea>
-                </Tooltip>
-              )}
-            >
-              {({ layerProps }) => (
-                <NodeOperationsMenu
-                  {...layerProps}
-                  node={node}
-                  hideMenu={hideMenu}
-                />
               )}
             </ContextMenu>
           )}

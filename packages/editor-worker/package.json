@@ -1,6 +1,6 @@
 {
   "name": "graphql-editor-worker",
-  "version": "6.8.7",
+  "version": "6.8.8",
   "private": false,
   "license": "MIT",
   "description": "Visual node editor for GraphQL",
@@ -30,7 +30,7 @@
     "@qix/elkjs-patched": "^0.8.0-patch3",
     "d3": "^7.8.4",
     "elkjs": "^0.8.2",
-    "graphql-js-tree": "^0.4.0",
+    "graphql-js-tree": "^1.0.1",
     "graphql-language-service": "3.1.4"
   },
   "config": {
