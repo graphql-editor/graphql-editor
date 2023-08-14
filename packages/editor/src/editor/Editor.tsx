@@ -200,7 +200,10 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
 
     useEffect(() => {
       if (schema.libraries) {
-        GraphQLEditorWorker.generateTree(schema.libraries).then(setLibraryTree);
+        GraphQLEditorWorker.generateTree({
+          schema: schema.libraries,
+          cutSchemaDefinition: true,
+        }).then(setLibraryTree);
       } else {
         setLibraryTree({ nodes: [] });
       }

@@ -6,6 +6,7 @@ import {
   ParserField,
   ParserTree,
   TreeToGraphQL,
+  TypeSystemDefinition,
   mergeTrees,
 } from "graphql-js-tree";
 import { getTokenAtPosition, IPosition } from "graphql-language-service";
@@ -29,6 +30,7 @@ export type WorkerEvents = {
     args: {
       schema: string;
       libraries?: string;
+      cutSchemaDefinition?: boolean;
     };
     returned: ParserTree;
   };
@@ -119,7 +121,16 @@ ctx.addEventListener("message", (message) => {
       Parser.parse(args.schema),
       args.libraries ? Parser.parse(args.libraries) : { nodes: [] }
     );
+    console.log(mtress, args);
     if (mtress.nodes) {
+      if (args.cutSchemaDefinition) {
+        return {
+          ...mtress,
+          nodes: mtress.nodes.filter(
+            (n) => n.data.type !== TypeSystemDefinition.SchemaDefinition
+          ),
+        };
+      }
       return mtress;
     }
     throw new Error("No nodes to parse");

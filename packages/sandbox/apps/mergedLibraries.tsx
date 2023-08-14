@@ -8,7 +8,6 @@ export const MergedLibraries = () => {
     code: schemas.mergedLibs.code,
     libraries: schemas.mergedLibs.libraries,
   });
-  console.log(mySchema);
   return (
     <div
       style={{

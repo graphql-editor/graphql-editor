@@ -243,10 +243,10 @@ const useTreesStateContainer = createContainer(() => {
       return;
     }
     try {
-      await GraphQLEditorWorker.generateTree(
-        schema.code,
-        schema.libraries
-      ).then((parsedResult) => {
+      await GraphQLEditorWorker.generateTree({
+        schema: schema.code,
+        libraries: schema.libraries,
+      }).then((parsedResult) => {
         setTree(
           {
             nodes: parsedResult.nodes,
@@ -340,7 +340,6 @@ const useTreesStateContainer = createContainer(() => {
   };
   const idempotentOperationAssign = (node: ParserField) => {
     const nodeName = node.name.toLowerCase();
-    console.log(nodeName);
     if (
       !(
         nodeName === "query" ||
@@ -383,7 +382,6 @@ const useTreesStateContainer = createContainer(() => {
     tree.nodes = tree.nodes.filter(
       (n) => n.data.type !== TypeSystemDefinition.SchemaDefinition
     );
-    console.log(schemaNode);
     tree.nodes.push(schemaNode);
   };
   const setOperationNode = (
@@ -401,7 +399,6 @@ const useTreesStateContainer = createContainer(() => {
             type: node.name,
           }),
         ];
-        console.log(n);
       }
     });
     if (noSchemaDefinitionNode) {

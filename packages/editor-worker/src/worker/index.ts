@@ -43,8 +43,16 @@ export class GraphQLEditorWorker {
   static generateCode(tree: ParserTree) {
     return send("parse", { tree });
   }
-  static generateTree(schema: string, libraries?: string) {
-    return send("parseSchema", { schema, libraries });
+  static generateTree({
+    schema,
+    libraries,
+    cutSchemaDefinition,
+  }: {
+    schema: string;
+    libraries?: string;
+    cutSchemaDefinition?: boolean;
+  }) {
+    return send("parseSchema", { schema, libraries, cutSchemaDefinition });
   }
   static getTokenAtPosition(
     document: string,

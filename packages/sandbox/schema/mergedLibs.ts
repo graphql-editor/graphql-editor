@@ -12,5 +12,11 @@ export const mergedLibs = {
     type Animal{
       kind: String
     }
+    type Query{
+      health: String
+    }
+    type Mutation{
+      health: String
+    }
 `,
 };

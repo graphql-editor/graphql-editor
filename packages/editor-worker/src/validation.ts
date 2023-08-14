@@ -70,6 +70,7 @@ export const catchSchemaErrors = (
       code = mergeResult.sdl;
     }
     const errors = validateSDLErrors(code);
+
     if (errors.length > 0) {
       return errors
         .filter((e) => allowMultipleDirectivesAtLocation(e.text))
