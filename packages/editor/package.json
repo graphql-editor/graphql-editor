@@ -1,6 +1,6 @@
 {
   "name": "graphql-editor",
-  "version": "6.8.9",
+  "version": "6.9.0",
   "private": false,
   "license": "MIT",
   "description": "Visual node editor for GraphQL",
@@ -45,8 +45,8 @@
     "file-saver": "^2.0.5",
     "framer-motion": "^10.12.16",
     "fuzzyjs": "^5.0.1",
-    "graphql-editor-worker": "^6.8.9",
-    "graphql-js-tree": "^1.0.2",
+    "graphql-editor-worker": "^6.9.0",
+    "graphql-js-tree": "^1.0.3",
     "graphql-language-service": "3.1.4",
     "html-to-image": "^1.10.8",
     "re-resizable": "^6.9.1",
