@@ -337,7 +337,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
         {routes.pane === "diff" && diffSchemas && (
           <DiffEditor schemas={diffSchemas} />
         )}
-        {codeErrors.length && <ErrorsList>{errorsItems}</ErrorsList>}
+        {!!codeErrors.length && <ErrorsList>{errorsItems}</ErrorsList>}
       </Main>
     );
   }

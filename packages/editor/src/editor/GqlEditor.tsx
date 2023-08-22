@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
-import { GqlCodePane } from './code';
-import { PassedSchema } from '@/Models';
-import { useTreesState, useTheme, useLayoutState } from '@/state/containers';
+import React, { useEffect } from "react";
+import { GqlCodePane } from "./code";
+import { PassedSchema } from "@/Models";
+import { useTreesState, useTheme, useLayoutState } from "@/state/containers";
 
-import { EditorTheme } from '@/gshared/theme/MainTheme';
-import styled from '@emotion/styled';
+import { EditorTheme } from "@/gshared/theme/MainTheme";
+import styled from "@emotion/styled";
 
 const Main = styled.div`
   display: flex;
@@ -27,8 +27,8 @@ export interface GqlEditorProps {
 export const GqlEditor = ({
   placeholder,
   schema = {
-    code: '',
-    libraries: '',
+    code: "",
+    libraries: "",
   },
   gql,
   readonly: editorReadOnly,
@@ -53,7 +53,7 @@ export const GqlEditor = ({
   return (
     <Main
       onKeyDown={(e) => {
-        if (e.key.toLowerCase() === 'f' && (e.metaKey || e.ctrlKey)) {
+        if (e.key.toLowerCase() === "f" && (e.metaKey || e.ctrlKey)) {
           e.preventDefault();
         }
       }}
@@ -64,7 +64,7 @@ export const GqlEditor = ({
         onChange={(v, isInvalid) => {
           setGql(v);
         }}
-        schema={[schema.libraries || '', schema.code].join('\n')}
+        schema={[schema.libraries || "", schema.code].join("\n")}
         placeholder={placeholder}
         readonly={readonly}
       />
