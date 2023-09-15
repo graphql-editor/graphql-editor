@@ -12,6 +12,9 @@
     },
     {
       "path": "./packages/svg-ts-sync"
+    },
+    {
+      "path": "./packages/socket-live-test"
     }
   ]
 }

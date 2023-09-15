@@ -13,7 +13,8 @@
     "run-all-debug": "npm run build --ws --if-present && concurrently \"npm run start -w graphql-editor-worker\" \"npm run start -w graphql-editor\" \"npm run start -w sandbox\" \"firefox -start-debugger-server\" ",
     "regenerate-icons": "npm run run -w svg-ts-sync -- ./svg ./packages/editor/src/icons",
     "update-deps": "npm i graphql-js-tree@latest -w graphql-editor && npm i graphql-js-tree@latest -w graphql-editor-worker",
-    "patchVersion": "npm version patch --ws --save"
+    "patchVersion": "npm version patch --ws --save",
+    "socket": "npm run start -w socket-live-test"
   },
   "resolutions": {
     "@types/react": "^16.9.11"
@@ -75,7 +76,8 @@
       "./packages/editor-worker",
       "./packages/editor",
       "./packages/svg-ts-sync",
-      "./packages/sandbox"
+      "./packages/sandbox",
+      "./packages/socket-live-test"
     ]
   }
 }

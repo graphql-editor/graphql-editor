@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useImperativeHandle } from "react";
 import MonacoEditor, { EditorProps } from "@monaco-editor/react";
 import type * as monaco from "monaco-editor";
 import { EnrichedLanguageService } from "./EnrichedLanguageService";
@@ -12,7 +12,7 @@ import { useErrorsState, useTheme } from "@/state/containers";
 import { theme as MonacoTheme } from "@/editor/code/monaco";
 import { findCurrentNodeName } from "@/editor/code/guild/editor/onCursor";
 
-export type SchemaEditorProps = SchemaServicesOptions & {
+export type LiveSchemaEditorProps = SchemaServicesOptions & {
   onBlur?: (value: string) => void;
   onLanguageServiceReady?: (languageService: EnrichedLanguageService) => void;
   onSchemaChange?: (schema: GraphQLSchema, sdl: string) => void;
@@ -21,13 +21,16 @@ export type SchemaEditorProps = SchemaServicesOptions & {
     sdl: string,
     languageService: EnrichedLanguageService
   ) => void;
-} & Omit<EditorProps, "language"> & { libraries?: string };
+} & Omit<EditorProps, "language">;
+
+export type LiveSchemaEditorApi = SchemaEditorApi & {
+  receive: (e: monaco.editor.IModelContentChangedEvent) => void;
+};
 
 function BaseSchemaEditor(
-  props: SchemaEditorProps,
-  ref: React.ForwardedRef<SchemaEditorApi>
+  props: LiveSchemaEditorProps,
+  ref: React.ForwardedRef<LiveSchemaEditorApi>
 ) {
-  const isFromLocalChange = useRef(false);
   const {
     languageService,
     setMonaco,
@@ -37,12 +40,9 @@ function BaseSchemaEditor(
     editorRef,
     setSchema,
     onValidate,
+    receive,
   } = useSchemaServices({
     ...props,
-    schemaObj: {
-      code: props.schema,
-      isFromLocalChange: isFromLocalChange.current,
-    },
   });
   const { grafEditorErrors, setErrorNodeNames, grafErrorSchema } =
     useErrorsState();
@@ -78,9 +78,13 @@ function BaseSchemaEditor(
 
   const { theme } = useTheme();
 
-  React.useImperativeHandle(ref, () => editorApi, [editorRef, languageService]);
+  useImperativeHandle(ref, () => ({ ...editorApi, receive }), [
+    editorRef,
+    languageService,
+    receive,
+  ]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (languageService && props.onLanguageServiceReady) {
       props.onLanguageServiceReady(languageService);
     }
@@ -89,14 +93,12 @@ function BaseSchemaEditor(
   const [onBlurHandler, setOnBlurSubscription] =
     React.useState<monaco.IDisposable>();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (editorRef && props.onBlur) {
       onBlurHandler?.dispose();
-
       const subscription = editorRef.onDidBlurEditorText(() => {
         props.onBlur && props.onBlur(editorRef.getValue() || "");
       });
-
       setOnBlurSubscription(subscription);
     }
   }, [props.onBlur, editorRef]);
@@ -121,13 +123,6 @@ function BaseSchemaEditor(
       keepCurrentModel
       onValidate={onValidate}
       onChange={(newValue, ev) => {
-        const isChangedFromOutside = ev.changes
-          .map((c) =>
-            "forceMoveMarkers" in c ? (c as any).forceMoveMarkers : undefined
-          )
-          .reduce((a, b) => a || b);
-        isFromLocalChange.current = !isChangedFromOutside;
-
         props.onChange && props.onChange(newValue, ev);
         if (newValue) {
           setSchema(newValue)
@@ -162,9 +157,9 @@ function BaseSchemaEditor(
       }}
       options={{ glyphMargin: true, ...(props.options || {}) }}
       language="graphql"
-      value={props.schema}
+      defaultValue={props.schema?.code}
     />
   );
 }
 
-export const SchemaEditor = React.forwardRef(BaseSchemaEditor);
+export const LiveSchemaEditor = React.forwardRef(BaseSchemaEditor);

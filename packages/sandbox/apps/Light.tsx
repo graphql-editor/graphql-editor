@@ -6,6 +6,7 @@ export const Light = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
     code: schemas.food,
     libraries: "",
+    source: "outside",
   });
   return (
     <div

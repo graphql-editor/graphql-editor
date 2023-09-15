@@ -1,21 +1,22 @@
-import React, { useState } from 'react';
-import { GraphQLEditor, PassedSchema } from 'graphql-editor';
-import * as schemas from '../schema';
+import React, { useState } from "react";
+import { GraphQLEditor, PassedSchema } from "graphql-editor";
+import * as schemas from "../schema";
 
 export const error = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
     code: schemas.errorSchema,
-    libraries: '',
+    libraries: "",
+    source: "outside",
   });
   return (
     <div
       style={{
         flex: 1,
-        width: '100%',
-        height: '100%',
-        alignSelf: 'stretch',
-        display: 'flex',
-        position: 'relative',
+        width: "100%",
+        height: "100%",
+        alignSelf: "stretch",
+        display: "flex",
+        position: "relative",
       }}
     >
       <GraphQLEditor
@@ -29,4 +30,4 @@ export const error = () => {
   );
 };
 
-error.description = 'GraphQL schema that contains errors.';
+error.description = "GraphQL schema that contains errors.";

@@ -6,6 +6,7 @@ export const librariesEmptyCode = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
     code: "",
     libraries: schemas.usersLibraryNew,
+    source: "outside",
   });
   return (
     <div

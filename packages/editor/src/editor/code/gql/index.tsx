@@ -6,6 +6,7 @@ import { SchemaEditorApi } from "@/editor/code/guild";
 import { settings, theme as MonacoTheme } from "@/editor/code/monaco";
 import { GqlSchemaEditor } from "@/editor/code/guild/editor/GqlSchemaEditor";
 import { CodeContainer } from "@/editor/code/style/Code";
+import { PassedSchema } from "@/Models";
 
 export interface GqlCodePaneOuterProps {
   readonly?: boolean;
@@ -14,10 +15,9 @@ export interface GqlCodePaneOuterProps {
 
 export type GqlCodePaneProps = {
   size: number | string;
-  schema: string;
+  schema: PassedSchema;
   gql: string;
   onChange: (v: string, isInvalid?: string) => void;
-  libraries?: string;
 } & GqlCodePaneOuterProps;
 
 /**

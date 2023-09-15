@@ -17,3 +17,4 @@ export * from "./embeddedEditor";
 export * from "./Vertical";
 export * from "./mergedLibraries";
 export * from "./VeryLongSchema";
+export * from "./livesocket";

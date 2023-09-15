@@ -7,6 +7,7 @@ export const Vertical = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
     code: verticalSchema,
     libraries: "",
+    source: "outside",
   });
   return (
     <div

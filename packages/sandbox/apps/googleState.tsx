@@ -24,6 +24,7 @@ export const googleState = () => {
   const [currentSchema, setCurrentSchema] = useState<PassedSchema>({
     code: schemas.billabeeSchema,
     libraries: "",
+    source: "outside",
   });
   const [r, setR] = useState<EditorRoutes>({ code: "on", pane: "docs" });
   const [n, setN] = useState<string>("1392b05ce2df54");

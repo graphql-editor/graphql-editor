@@ -7,6 +7,7 @@ export const VeryLongSchema = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
     code: schemas.VeryLongSchema,
     libraries: "",
+    source: "outside",
   });
   return (
     <div

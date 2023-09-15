@@ -29,6 +29,7 @@ export const GqlEditor = ({
   schema = {
     code: "",
     libraries: "",
+    source: "outside",
   },
   gql,
   readonly: editorReadOnly,
@@ -61,10 +62,10 @@ export const GqlEditor = ({
       <GqlCodePane
         gql={gql}
         size={sidebarSize}
-        onChange={(v, isInvalid) => {
+        onChange={(v) => {
           setGql(v);
         }}
-        schema={[schema.libraries || "", schema.code].join("\n")}
+        schema={schema}
         placeholder={placeholder}
         readonly={readonly}
       />

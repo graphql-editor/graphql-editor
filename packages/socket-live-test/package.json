@@ -1,0 +1,16 @@
+{
+  "name": "socket-live-test",
+  "version": "1.0.1",
+  "description": "testing editor live",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc --watch",
+    "start": "rimraf lib && rimraf tsconfig.tsbuildinfo && tsc --build && node lib/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "socket.io": "^4.7.2"
+  }
+}

@@ -1,6 +1,6 @@
 import React, { useEffect, useImperativeHandle } from "react";
 import { Menu } from "./menu/Menu";
-import { CodePane, DiffSchema } from "./code";
+import { CodePane, CodePaneApi, CodePaneProps, DiffSchema } from "./code";
 import { PassedSchema } from "@/Models";
 import { DynamicResize } from "./code/Components";
 import { ParserTree } from "graphql-js-tree";
@@ -21,6 +21,7 @@ import styled from "@emotion/styled";
 import { useRouter, EditorRoutes } from "@/state/containers/router";
 import { ErrorsList } from "@/shared/errors/ErrorsList";
 import { NodeNavigation } from "@/shared/NodeNavigation";
+import type * as monaco from "monaco-editor";
 
 const Main = styled.div`
   display: flex;
@@ -68,7 +69,7 @@ const ErrorOuterContainer = styled.div<{ isOverflow?: boolean }>`
   overflow-x: hidden;
 `;
 
-export interface EditorProps {
+export interface EditorProps extends Pick<CodePaneProps, "onContentChange"> {
   // Code in editor is readonly
   readonly?: boolean;
   // Code and libraries
@@ -92,6 +93,8 @@ export interface EditorProps {
 export interface ExternalEditorAPI {
   selectNode: (selectedNodeId?: string) => void;
   route: (r: EditorRoutes) => void;
+  currentRoute: EditorRoutes;
+  receive: (change: monaco.editor.IModelContentChangedEvent) => void;
 }
 
 export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
@@ -100,6 +103,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
       schema = {
         code: "",
         libraries: "",
+        source: "outside",
       },
       setSchema,
       diffSchemas,
@@ -109,7 +113,8 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
       theme,
       onRouteChange,
       onNodeSelect,
-    }: EditorProps,
+      onContentChange,
+    },
     ref
   ) => {
     const { setTheme } = useTheme();
@@ -139,6 +144,8 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
     const { setSidebarSize, sidebarSize } = useLayoutState();
     const { routes, set } = useRouter();
 
+    const codePaneApi: React.ForwardedRef<CodePaneApi> = React.createRef();
+
     const reset = () => {
       setSnapshots([]);
       setUndos([]);
@@ -167,8 +174,12 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
             ...routes,
           });
         },
+        receive: (e) => {
+          codePaneApi.current?.receive(e);
+        },
+        currentRoute: routes,
       }),
-      [set, setSelectedNodeId, allNodes]
+      [set, setSelectedNodeId, allNodes, codePaneApi, routes]
     );
     useEffect(() => {
       if (
@@ -218,7 +229,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
         if (tree.initial) {
           return;
         }
-        setSchema({ ...schema, isTree: true, code: "" });
+        setSchema({ ...schema, source: "tree", code: "" });
         return;
       }
       try {
@@ -238,7 +249,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
                 }
                 setGrafErrors(undefined);
                 setGrafEditorErrors([]);
-                setSchema({ ...schema, code: graphql, isTree: true });
+                setSchema({ ...schema, code: graphql, source: "tree" });
               }
             );
           }
@@ -252,7 +263,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
     }, [tree]);
 
     useEffect(() => {
-      if (schema.isTree) {
+      if (schema.source === "tree") {
         return;
       }
       generateTreeFromSchema(schema);
@@ -297,31 +308,36 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
             set(newState, "internal");
           }}
         />
-        {routes.code === "on" && routes.pane !== "diff" && (
+        {routes.pane !== "diff" && (
           <DynamicResize
             enable={{ right: true }}
             disabledClass={!routes.pane ? "full-screen-container" : undefined}
             resizeCallback={(e, r, c) => {
               setSidebarSize(c.getBoundingClientRect().width);
             }}
-            width={!routes.pane ? "100%" : sidebarSize}
+            width={
+              !routes.pane ? "100%" : routes.code === "on" ? sidebarSize : 0
+            }
           >
             <Sidebar
               className={!routes.pane ? "full-screen-container" : undefined}
             >
               <CodePane
-                size={!routes.pane ? 100000 : sidebarSize}
+                size={
+                  !routes.pane ? 100000 : routes.code === "on" ? sidebarSize : 0
+                }
                 onChange={(v, passGraphValidation) => {
                   setSchema({
                     ...schema,
                     code: v,
-                    isTree: false,
+                    source: "code",
                     passGraphValidation,
                   });
                 }}
-                schema={schema.code}
+                ref={codePaneApi}
+                onContentChange={onContentChange}
+                schema={schema}
                 fullScreen={!routes.pane}
-                libraries={schema.libraries}
                 readonly={readonly}
               />
             </Sidebar>

@@ -5,6 +5,7 @@ import * as schemas from "../schema";
 export const libraries = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
     code: "",
+    source: "outside",
   });
   useEffect(() => {
     setTimeout(

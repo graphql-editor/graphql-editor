@@ -227,6 +227,7 @@ export const Menu = ({
         onImport={(s) => {
           setSchema({
             code: s,
+            source: "outside",
           });
         }}
       />

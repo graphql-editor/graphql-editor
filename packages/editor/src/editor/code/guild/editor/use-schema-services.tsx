@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type * as monaco from "monaco-editor";
 import {
   DecorationsSource,
@@ -8,12 +8,7 @@ import {
   HoverSource,
 } from "./utils";
 import { EnrichedLanguageService } from "./EnrichedLanguageService";
-import {
-  GraphQLError,
-  GraphQLSchema,
-  isInterfaceType,
-  isObjectType,
-} from "graphql";
+import { GraphQLError, GraphQLSchema } from "graphql";
 import { emptyLocation, locToRange } from "./utils";
 import { GraphQLEditorWorker } from "graphql-editor-worker";
 import { EditorError } from "@/validation";
@@ -21,22 +16,21 @@ import { monacoSetDecorations } from "@/editor/code/monaco/decorations";
 import { useTheme, useTreesState } from "@/state/containers";
 import { findCurrentNodeName } from "@/editor/code/guild/editor/onCursor";
 import { Maybe } from "graphql-language-service";
-import { moveCursor } from "@/editor/code/guild/editor/onCursor/compare";
+import { PassedSchema } from "@/Models";
 
 export type SchemaEditorApi = {
   jumpToType(typeName: string): void;
-  jumpToField(typeName: string, fieldName: string): void;
   deselect(): void;
   jumpToError(rowNumber: number): void;
 };
 
 export type SchemaServicesOptions = {
-  schema?: string;
-  libraries?: string;
+  schema?: PassedSchema;
   hoverProviders?: HoverSource[];
   definitionProviders?: DefinitionSource[];
   diagnosticsProviders?: DiagnosticsSource[];
   decorationsProviders?: DecorationsSource[];
+  onContentChange?: (v: monaco.editor.IModelContentChangedEvent) => void;
   actions?: EditorAction[];
   select?: (
     name?:
@@ -72,29 +66,25 @@ const cursorIndex = {
   index: -1,
 };
 
-export const useSchemaServices = (
-  options: Omit<SchemaServicesOptions, "schema"> & {
-    schemaObj: {
-      code?: string;
-      isFromLocalChange?: boolean;
-    };
-  } = { schemaObj: {} }
-) => {
+export const useSchemaServices = (options: SchemaServicesOptions) => {
   const [editorRef, setEditor] =
-    React.useState<monaco.editor.IStandaloneCodeEditor | null>(null);
-  const [codeErrors, setCodeErrors] = React.useState<EditorError[]>([]);
-  const [decorationIds, setDecorationIds] = React.useState<string[]>([]);
-  const [monacoRef, setMonaco] = React.useState<typeof monaco | null>(null);
-  const previousSchema = usePrevious(options.schemaObj.code);
+    useState<monaco.editor.IStandaloneCodeEditor | null>(null);
+  const [codeErrors, setCodeErrors] = useState<EditorError[]>([]);
+  const [decorationIds, setDecorationIds] = useState<string[]>([]);
+  const [monacoRef, setMonaco] = useState<typeof monaco | null>(null);
   const { tree, selectedNodeId } = useTreesState();
+  const isExternal = useRef(false);
   const { theme } = useTheme();
   // move to worker
   const languageService = React.useMemo(() => {
     return (
       options.sharedLanguageService ||
       new EnrichedLanguageService({
-        schemaString: options.schemaObj.code
-          ? compileSchema({ ...options, schema: options.schemaObj.code })
+        schemaString: options.schema?.code
+          ? compileSchema({
+              libraries: options.schema.libraries,
+              schema: options.schema.code,
+            })
           : undefined,
         schemaConfig: {
           buildSchemaOptions: {
@@ -104,7 +94,7 @@ export const useSchemaServices = (
         },
       })
     );
-  }, [options.libraries, options.schemaObj.code]);
+  }, [options.schema?.libraries, options.schema?.code]);
 
   const selectNodeUnderCursor = async <
     T extends { lineNumber: number; column: number }
@@ -127,21 +117,12 @@ export const useSchemaServices = (
           }
         }
       })
-      .catch((e) => {});
+      .catch(() => {
+        //noop
+      });
   };
 
-  React.useEffect(() => {
-    const model = editorRef?.getModel();
-    if (!model || !editorRef || options.schemaObj.isFromLocalChange) return;
-    moveCursor({
-      cursorIndex,
-      editorRef,
-      newText: options.schemaObj.code || "",
-      previousText: previousSchema || "",
-    });
-  }, [options.schemaObj.code]);
-
-  React.useEffect(() => {
+  useEffect(() => {
     if (tree.schema) {
       const model = editorRef?.getModel();
       if (model) {
@@ -151,7 +132,14 @@ export const useSchemaServices = (
     }
   }, [tree]);
 
-  React.useEffect(() => {
+  useEffect(() => {
+    if (options.schema?.source !== "code") {
+      const model = editorRef?.getModel();
+      model?.setValue(options.schema?.code || "");
+    }
+  }, [options.schema]);
+
+  useEffect(() => {
     if (monacoRef && editorRef) {
       if (options.keyboardShortcuts) {
         for (const action of options.keyboardShortcuts(editorRef, monacoRef)) {
@@ -172,7 +160,9 @@ export const useSchemaServices = (
             if (model && position) {
               const bridge = await languageService
                 .buildBridgeForProviders(model, position)
-                .catch((e) => {});
+                .catch(() => {
+                  //noop
+                });
 
               if (bridge) {
                 action.onRun({ editor: editorRef, monaco: monacoRef, bridge });
@@ -234,10 +224,19 @@ export const useSchemaServices = (
         languageService.getHoverProvider(options.hoverProviders || [])
       );
 
+      const liveDisposable = editorRef.onDidChangeModelContent((e) => {
+        if (isExternal.current === false) {
+          options.onContentChange?.(e);
+        } else {
+          isExternal.current = false;
+        }
+      });
+
       return () => {
         hoverDisposable && hoverDisposable.dispose();
         definitionProviderDisposable && definitionProviderDisposable.dispose();
         cursorSelectionDisposable && cursorSelectionDisposable.dispose();
+        liveDisposable && liveDisposable.dispose();
       };
     }
 
@@ -256,7 +255,12 @@ export const useSchemaServices = (
     selectedNodeId?.value?.id,
   ]);
 
-  React.useEffect(() => {
+  const receive = (e: monaco.editor.IModelContentChangedEvent) => {
+    isExternal.current = true;
+    editorRef?.getModel()?.applyEdits(e.changes);
+  };
+
+  useEffect(() => {
     if (codeErrors && editorRef && monacoRef) {
       setDecorationIds(
         monacoSetDecorations(theme)({
@@ -270,6 +274,7 @@ export const useSchemaServices = (
   }, [editorRef, monacoRef, codeErrors]);
 
   return {
+    receive,
     codeErrors,
     setEditor,
     setMonaco,
@@ -283,12 +288,12 @@ export const useSchemaServices = (
     onValidate: () => {
       const currentValue = editorRef?.getModel()?.getValue();
       if (currentValue) {
-        GraphQLEditorWorker.validate(currentValue, options.libraries).then(
-          (errors) => {
-            console.log({ errors });
-            setCodeErrors(errors);
-          }
-        );
+        GraphQLEditorWorker.validate(
+          currentValue,
+          options.schema?.libraries
+        ).then((errors) => {
+          setCodeErrors(errors);
+        });
       }
     },
     editorApi: {
@@ -306,26 +311,9 @@ export const useSchemaServices = (
           }
         }
       },
-      jumpToField: (typeName: string, fieldName: string) => {
-        languageService.getSchema().then((schema) => {
-          if (schema) {
-            const type = schema.getType(typeName);
-
-            if (type && (isObjectType(type) || isInterfaceType(type))) {
-              const field = type.getFields()[fieldName];
-
-              if (field?.astNode?.loc) {
-                const range = locToRange(field.astNode.loc);
-                editorRef?.revealPositionInCenter(
-                  { column: 0, lineNumber: range.startLineNumber },
-                  0
-                );
-              }
-            }
-          }
-        });
+      deselect: () => {
+        editorRef?.setSelection(emptyLocation);
       },
-      deselect: () => editorRef?.setSelection(emptyLocation),
       jumpToError: (lineNumber: number) => {
         editorRef?.setSelection({
           startLineNumber: lineNumber,
@@ -344,10 +332,3 @@ export const useSchemaServices = (
     } as SchemaEditorApi,
   };
 };
-function usePrevious<T>(value: T) {
-  const ref = useRef<T>();
-  React.useEffect(() => {
-    ref.current = value; //assign the value of ref to the argument
-  }, [value]); //this code will run when the value of 'value' changes
-  return ref.current; //in the end, return the current ref value.
-}

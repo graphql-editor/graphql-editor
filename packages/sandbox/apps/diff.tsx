@@ -5,8 +5,8 @@ import * as schemas from "../schema";
 export type SchemasVersions = [DiffSchema, DiffSchema];
 
 const mockData: SchemasVersions = [
-  { content: schemas.versionedUsersLibraryLatest, name: "latest" },
   { content: schemas.versionedUsersLibrary01, name: "oldVersion" },
+  { content: schemas.versionedUsersLibraryLatest, name: "latest" },
 ];
 export const diff = () => {
   return (
@@ -22,7 +22,10 @@ export const diff = () => {
     >
       <GraphQLEditor
         path="diff"
-        schema={{ code: schemas.versionedUsersLibraryLatest }}
+        schema={{
+          code: schemas.versionedUsersLibraryLatest,
+          source: "outside",
+        }}
         setSchema={() => {}}
         diffSchemas={mockData}
       />

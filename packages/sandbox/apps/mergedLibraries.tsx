@@ -7,6 +7,7 @@ export const MergedLibraries = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
     code: schemas.mergedLibs.code,
     libraries: schemas.mergedLibs.libraries,
+    source: "outside",
   });
   return (
     <div

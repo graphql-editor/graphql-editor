@@ -18,11 +18,9 @@ function BaseSchemaDiffEditor(
 ) {
   const originalSchemaService = useSchemaServices({
     ...props,
-    schemaObj: { code: props.schema },
   });
   const modifiedSchemaService = useSchemaServices({
     ...props,
-    schemaObj: { code: props.schema },
   });
 
   React.useImperativeHandle(

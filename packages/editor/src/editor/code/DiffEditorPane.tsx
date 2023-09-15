@@ -38,13 +38,13 @@ export const DiffEditorPane = ({ schema, newSchema }: DiffEditorPaneProps) => {
             beforeMount={(monaco) =>
               monaco.editor.defineTheme("graphql-editor", MonacoTheme(theme))
             }
-            original={schema.content}
-            modified={newSchema.content}
+            original={newSchema.content}
+            modified={schema.content}
             theme="graphql-editor"
             options={{
               ...codeSettings,
-              modifiedAriaLabel: newSchema.name,
-              originalAriaLabel: schema.name,
+              modifiedAriaLabel: schema.name,
+              originalAriaLabel: newSchema.name,
             }}
           />
         </CodeContainer>

@@ -7,6 +7,7 @@ export const googlediff = () => {
   const [currentSchema, setCurrentSchema] = useState<PassedSchema>({
     code: schemas.googleDirectionsNew,
     libraries: "",
+    source: "outside",
   });
   return (
     <div

@@ -121,7 +121,6 @@ ctx.addEventListener("message", (message) => {
       Parser.parse(args.schema),
       args.libraries ? Parser.parse(args.libraries) : { nodes: [] }
     );
-    console.log(mtress, args);
     if (mtress.nodes) {
       if (args.cutSchemaDefinition) {
         return {

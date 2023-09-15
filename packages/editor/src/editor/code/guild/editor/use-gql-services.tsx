@@ -20,12 +20,10 @@ import {
   IRange,
   Maybe,
 } from "graphql-language-service";
-
-export type SchemaEditorApi = {};
+import { PassedSchema } from "@/Models";
 
 export type SchemaServicesOptions = {
-  schema?: string;
-  libraries?: string;
+  schema?: PassedSchema;
   gql?: string;
   hoverProviders?: HoverSource[];
   definitionProviders?: DefinitionSource[];
@@ -70,7 +68,10 @@ export const useGqlServices = (options: SchemaServicesOptions = {}) => {
       options.sharedLanguageService ||
       new EnrichedLanguageService({
         schemaString: options.schema
-          ? compileSchema({ ...options, schema: options.schema })
+          ? compileSchema({
+              libraries: options.schema.libraries,
+              schema: options.schema.code,
+            })
           : undefined,
         schemaConfig: {
           buildSchemaOptions: {
@@ -79,7 +80,11 @@ export const useGqlServices = (options: SchemaServicesOptions = {}) => {
           },
         },
       }),
-    [options.libraries, options.schema, options.sharedLanguageService]
+    [
+      options.schema?.libraries,
+      options.schema?.code,
+      options.sharedLanguageService,
+    ]
   );
 
   React.useEffect(() => {
@@ -103,7 +108,9 @@ export const useGqlServices = (options: SchemaServicesOptions = {}) => {
             if (model && position) {
               const bridge = await languageService
                 .buildBridgeForProviders(model, position)
-                .catch((e) => {});
+                .catch(() => {
+                  //noop
+                });
 
               if (bridge) {
                 action.onRun({ editor: editorRef, monaco: monacoRef, bridge });
@@ -130,7 +137,9 @@ export const useGqlServices = (options: SchemaServicesOptions = {}) => {
           ) => {
             const bridge = await languageService
               .buildBridgeForProviders(model, position)
-              .catch((e) => {});
+              .catch(() => {
+                //noop
+              });
             if (bridge) {
               const suggestions = getAutocompleteSuggestions(
                 bridge.schema,
@@ -205,11 +214,12 @@ export const useGqlServices = (options: SchemaServicesOptions = {}) => {
     onValidate: () => {
       const currentValue = editorRef?.getModel()?.getValue();
       if (currentValue) {
-        GraphQLEditorWorker.validate(currentValue, options.libraries).then(
-          (errors) => {
-            setCodeErrors(errors);
-          }
-        );
+        GraphQLEditorWorker.validate(
+          currentValue,
+          options.schema?.libraries
+        ).then((errors) => {
+          setCodeErrors(errors);
+        });
       }
     },
   };

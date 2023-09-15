@@ -1,5 +1,5 @@
-import React from 'react';
-import { Enable, Resizable, ResizeCallback } from 're-resizable';
+import React, { useEffect } from "react";
+import { Enable, Resizable, ResizeCallback } from "re-resizable";
 
 export interface TitleOfPaneProps {
   children: React.ReactNode;
@@ -17,10 +17,12 @@ export const DynamicResize: React.FunctionComponent<{
   width,
   resizeCallback,
   disabledClass,
-  maxWidth = '94%',
-  minWidth = '90',
+  maxWidth = "94%",
+  minWidth = "90",
   enable,
 }) => {
+  const ref = React.createRef<Resizable>();
+
   if (disabledClass) {
     return <div className={disabledClass}>{children}</div>;
   }
@@ -29,16 +31,24 @@ export const DynamicResize: React.FunctionComponent<{
     left: enable?.left ? enable.left : false,
     right: enable?.right ? enable.right : false,
   };
+  useEffect(() => {
+    if (width !== ref.current?.state.width) {
+      ref.current?.setState({
+        width,
+      });
+    }
+  }, [width]);
 
   return (
     <Resizable
       defaultSize={{
         width,
-        height: '100%',
+        height: "100%",
       }}
+      ref={ref}
       style={{
-        display: 'flex',
-        flexFlow: 'row nowrap',
+        display: "flex",
+        flexFlow: "row nowrap",
         zIndex: 3,
       }}
       onResize={resizeCallback}

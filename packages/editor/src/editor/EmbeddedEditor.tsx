@@ -67,7 +67,7 @@ export const EmbeddedEditor = ({ schema, theme }: EmbeddedEditorProps) => {
   }, [theme]);
 
   useEffect(() => {
-    if (schema.isTree) {
+    if (schema.source === "tree") {
       return;
     }
     generateTreeFromSchema(schema);

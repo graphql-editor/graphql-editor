@@ -1,6 +1,6 @@
 export interface PassedSchema {
   code: string;
   libraries?: string;
-  isTree?: boolean;
+  source: "tree" | "code" | "outside";
   passGraphValidation?: boolean;
 }
