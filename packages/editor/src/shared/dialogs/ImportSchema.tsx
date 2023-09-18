@@ -12,6 +12,7 @@ import {
   buildClientSchema,
   getIntrospectionQuery,
   GraphQLSchema,
+  IntrospectionSchema,
   printSchema,
 } from "graphql";
 
@@ -120,26 +121,75 @@ export const ImportSchema: React.FC<{
   };
   return (
     <EditorDialog title="Import schema" onClose={onClose} open={!!open}>
-      <Button
-        variant="secondary"
-        onClick={() => {
-          const input = document.createElement("input");
-          input.type = "file";
-          input.onchange = (_) => {
-            const files = input.files;
-            if (files) {
-              const f = files[0];
-              f.text().then((content) => {
-                onImport(content);
-                onClose();
-              });
-            }
-          };
-          input.click();
-        }}
-      >
-        Upload from file
-      </Button>
+      <Stack gap={"1rem"}>
+        <Button
+          variant="secondary"
+          onClick={() => {
+            const input = document.createElement("input");
+            input.type = "file";
+            input.onchange = (_) => {
+              const files = input.files;
+              if (files) {
+                const f = files[0];
+                f.text()
+                  .then((content) => {
+                    onImport(content);
+                    onClose();
+                  })
+                  .catch((e) => {
+                    e instanceof Error
+                      ? createToast({
+                          message: e.message,
+                          variant: "error",
+                        })
+                      : createToast({
+                          message: "Unkown import error",
+                          variant: "error",
+                        });
+                  });
+              }
+            };
+            input.click();
+          }}
+        >
+          from GraphQL File
+        </Button>
+        <Button
+          variant="secondary"
+          onClick={() => {
+            const input = document.createElement("input");
+            input.type = "file";
+            input.onchange = (_) => {
+              const files = input.files;
+              if (files) {
+                const f = files[0];
+                f.text()
+                  .then((content) => {
+                    const r = JSON.parse(content) as JSONGraphQLSchema;
+                    const graphqlSchema = buildClientSchema(r);
+                    const printedStringSchema = printSchema(graphqlSchema);
+                    onImport(printedStringSchema);
+                    onClose();
+                  })
+                  .catch((e) => {
+                    e instanceof Error
+                      ? createToast({
+                          message: e.message,
+                          variant: "error",
+                        })
+                      : createToast({
+                          message: "Unkown import error",
+                          variant: "error",
+                        });
+                  });
+              }
+            };
+            input.click();
+          }}
+        >
+          from JSON file
+        </Button>
+      </Stack>
       <Stack direction="column">
         <TextField
           value={importURL}
@@ -286,4 +336,8 @@ export const proxyUrl = (url: string) => {
     return url;
   }
   return `https://proxy.graphqleditor.com/?url=${encodeURIComponent(url)}`;
+};
+
+type JSONGraphQLSchema = {
+  __schema: IntrospectionSchema;
 };
