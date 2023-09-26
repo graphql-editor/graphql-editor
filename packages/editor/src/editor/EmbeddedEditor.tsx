@@ -109,7 +109,11 @@ export const EmbeddedEditor = ({ schema, theme }: EmbeddedEditorProps) => {
       }}
     >
       <ErrorOuterContainer>
-        <Relation />
+        <Relation
+          setInitialSchema={(s) => {
+            //noop
+          }}
+        />
         <NodeNavigation />
       </ErrorOuterContainer>
       {!!codeErrors.length && <ErrorsList>{errorsItems}</ErrorsList>}

@@ -5,20 +5,28 @@ import {
   useRelationsState,
   useTreesState,
 } from "@/state/containers";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { TransformWrapper } from "react-zoom-pan-pinch";
 import { Graf } from "@/Graf/Graf";
 import styled from "@emotion/styled";
 import { Chip } from "@aexol-studio/styling-system";
 import { AnimatePresence } from "framer-motion";
 import { BackgroundFTUX } from "@/Relation/FTUX/BackgroundFTUX";
+import { useRouter } from "@/state/containers/router";
+import { ImportSchema } from "@/shared/dialogs/ImportSchema";
 
-export const Relation: React.FC = () => {
+export const Relation: React.FC<{ setInitialSchema: (s: string) => void }> = ({
+  setInitialSchema,
+}) => {
   const { activeNode, focusMode, allNodes } = useTreesState();
   const { filteredFocusedNodes, filteredRelationNodes } =
     useRelationNodesState();
   const { editMode, ctrlToZoom } = useRelationsState();
+  const { set, routes } = useRouter();
   const { grafErrors } = useErrorsState();
+  const [popupsState, setPopupsState] = useState({
+    import: false,
+  });
   const isFocus = !!(focusMode && filteredFocusedNodes);
   const viewport = useMemo(() => {
     return (
@@ -73,9 +81,31 @@ export const Relation: React.FC = () => {
       </AnimatePresence>
       {!allNodes.nodes.length && (
         <AnimatePresence>
-          <BackgroundFTUX />
+          <BackgroundFTUX
+            showCode={routes.code === "off"}
+            onStartCoding={() => {
+              set(
+                {
+                  ...routes,
+                  code: routes.code === "off" ? "on" : "off",
+                  source: "internal",
+                },
+                "internal"
+              );
+            }}
+            onImport={() => {
+              setPopupsState({ import: true });
+            }}
+          />
         </AnimatePresence>
       )}
+      <ImportSchema
+        onClose={() => setPopupsState({ import: false })}
+        onImport={(s) => {
+          setInitialSchema(s);
+        }}
+        open={popupsState.import}
+      />
     </RelationContainer>
   );
 };

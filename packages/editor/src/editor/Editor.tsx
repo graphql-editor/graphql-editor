@@ -345,7 +345,17 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
         )}
         {(routes.pane === "relation" || routes.pane === "docs") && (
           <ErrorOuterContainer>
-            {routes.pane === "relation" && <Relation />}
+            {routes.pane === "relation" && (
+              <Relation
+                setInitialSchema={(s) =>
+                  setSchema({
+                    code: s,
+                    libraries: schema.libraries,
+                    source: "outside",
+                  })
+                }
+              />
+            )}
             {routes.pane === "docs" && <Docs />}
             <NodeNavigation />
           </ErrorOuterContainer>
