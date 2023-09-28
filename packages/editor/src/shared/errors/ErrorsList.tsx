@@ -1,7 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { fontFamilySans } from "@/vars";
 import styled from "@emotion/styled";
-import { Stack, Typography } from "@aexol-studio/styling-system";
+import {
+  ChevronDownDouble,
+  ChevronUpDouble,
+  Stack,
+  Typography,
+} from "@aexol-studio/styling-system";
 
 export const ErrorWrapper = styled(Stack)`
   font-family: ${fontFamilySans};
@@ -29,10 +34,15 @@ const List = styled(Stack)`
   padding: 0.5rem;
 `;
 const SmallLabel = styled(Typography)``;
+const IconBox = styled(Stack)`
+  cursor: pointer;
+  color: ${(p) => p.theme.text.default};
+`;
 
 export const ErrorsList: React.FC<{
   children?: React.ReactNode;
 }> = ({ children }) => {
+  const [shrink, setShrink] = useState(false);
   return (
     <ErrorWrapper
       direction="column"
@@ -41,16 +51,24 @@ export const ErrorsList: React.FC<{
       onClick={(e) => e.stopPropagation()}
     >
       <Errors gap="0.5rem" direction="column">
-        <SmallLabel
-          variant="caption"
-          textTransform="uppercase"
-          fontWeight={700}
-        >
-          problems
-        </SmallLabel>
-        <List gap="0.25rem" direction="column">
-          {children}
-        </List>
+        <Stack justify="between">
+          <SmallLabel
+            variant="caption"
+            textTransform="uppercase"
+            fontWeight={700}
+          >
+            problems
+          </SmallLabel>
+          <IconBox align="center" onClick={() => setShrink(!shrink)}>
+            {!shrink && <ChevronDownDouble />}
+            {shrink && <ChevronUpDouble />}
+          </IconBox>
+        </Stack>
+        {!shrink && (
+          <List gap="0.25rem" direction="column">
+            {children}
+          </List>
+        )}
       </Errors>
     </ErrorWrapper>
   );

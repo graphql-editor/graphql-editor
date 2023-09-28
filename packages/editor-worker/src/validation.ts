@@ -50,6 +50,11 @@ const moveErrorsByLibraryPadding = (libraries: string) => {
 const allowMultipleDirectivesAtLocation = (s: string) => {
   return !s.match(new RegExp(/directive(.*)can only be used once/));
 };
+
+const allowNoSchemaDefinition = (s: string) => {
+  return !s.includes("Query root type must be provided");
+};
+
 export const catchSchemaErrors = (
   schema: string,
   libraries = ""
@@ -72,6 +77,7 @@ export const catchSchemaErrors = (
     if (errors.length > 0) {
       return errors
         .filter((e) => allowMultipleDirectivesAtLocation(e.message))
+        .filter((e) => allowNoSchemaDefinition(e.message))
         .map((e) => {
           return paddingFunction({
             __typename: "local",
@@ -79,12 +85,15 @@ export const catchSchemaErrors = (
           });
         });
     }
-    return validateTypes(code).map((e) => {
-      return paddingFunction({
-        __typename: "local",
-        error: e,
+    return validateTypes(code)
+      .filter((e) => allowMultipleDirectivesAtLocation(e.message))
+      .filter((e) => allowNoSchemaDefinition(e.message))
+      .map((e) => {
+        return paddingFunction({
+          __typename: "local",
+          error: e,
+        });
       });
-    });
   } catch (error) {
     if (
       typeof error === "object" &&

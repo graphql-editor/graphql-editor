@@ -10,7 +10,7 @@ type ErrorItemProps = {
 };
 
 const Main = styled(Stack)`
-  color: ${({ theme }) => theme.error.light};
+  color: ${({ theme }) => theme.text.default};
   font-size: 0.75rem;
 `;
 
