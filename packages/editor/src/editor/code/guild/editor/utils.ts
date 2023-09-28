@@ -1,4 +1,4 @@
-import { GraphQLSchema, Location } from 'graphql';
+import { GraphQLSchema, Location } from "graphql";
 import {
   Position,
   IRange as GraphQLRange,
@@ -7,10 +7,10 @@ import {
   ContextToken,
   getHoverInformation,
   getRange,
-  DIAGNOSTIC_SEVERITY,
-} from 'graphql-language-service';
-import type * as monaco from 'monaco-editor';
-import type { EnrichedLanguageService } from './EnrichedLanguageService';
+} from "graphql-language-service";
+import * as monaco from "monaco-editor";
+import type { EnrichedLanguageService } from "./EnrichedLanguageService";
+import { GraphQLEditorWorker } from "graphql-editor-worker";
 
 export { getRange };
 
@@ -45,13 +45,13 @@ export type BridgeOptions = {
 
 export type HoverSource = {
   forNode(
-    options: BridgeOptions,
+    options: BridgeOptions
   ): monaco.IMarkdownString | null | Promise<monaco.IMarkdownString | null>;
 };
 
 export type DiagnosticsSource = {
   forDocument(
-    options: Pick<BridgeOptions, 'document' | 'languageService' | 'model'>,
+    options: Pick<BridgeOptions, "document" | "languageService" | "model">
   ):
     | monaco.editor.IMarkerData[]
     | null
@@ -59,42 +59,59 @@ export type DiagnosticsSource = {
 };
 
 export const coreDiagnosticsSource: DiagnosticsSource = {
-  async forDocument({ model, document, languageService }) {
-    return languageService
-      .getDiagnostics(model.uri.toString(), document)
-      .then((diag) => diag.map(toMarkerData))
-      .catch((e) => {
-        if ('message' in e && 'locations' in e) {
-          return [
-            toMarkerData({
-              severity: DIAGNOSTIC_SEVERITY.Error,
-              message: e.message,
-              source: 'GraphQL: Syntax',
-              range: getRange(e.locations[0], document),
-            }),
-          ];
-        } else {
-          // console.warn(`GraphQL getDiagnostics failed unexpected error: `, e);
-          return [];
-        }
-      });
+  async forDocument({ document }) {
+    const errors = await GraphQLEditorWorker.validate(document);
+    const markers = errors.flatMap((e) => {
+      if (e.__typename === "global") {
+        return [
+          {
+            startColumn: 0,
+            startLineNumber: 0,
+            endLineNumber: 1000,
+            message: e.text,
+            severity: monaco.MarkerSeverity.Error,
+            endColumn: 1000,
+          } as monaco.editor.IMarkerData,
+        ];
+      }
+      return (
+        e.error.locations?.map((l) => {
+          const r = getRange(
+            {
+              ...l,
+              line: l.line + 1,
+              column: l.column + 1,
+            },
+            document
+          );
+          return {
+            endColumn: r.end.character + 1,
+            startColumn: r.start.character + 1,
+            startLineNumber: r.start.line + 1,
+            endLineNumber: r.end.line + 1,
+            message: e.error.message,
+          } as monaco.editor.IMarkerData;
+        }) || []
+      );
+    });
+    return markers;
   },
 };
 
 export type DecorationsSource = {
   forDocument(
-    options: Pick<BridgeOptions, 'document' | 'languageService' | 'model'> & {
+    options: Pick<BridgeOptions, "document" | "languageService" | "model"> & {
       editor:
         | monaco.editor.IStandaloneCodeEditor
         | monaco.editor.IStandaloneDiffEditor;
       monaco: typeof monaco;
-    },
+    }
   ): void | Promise<void>;
 };
 
 export type DefinitionSource = {
   forNode(
-    options: BridgeOptions,
+    options: BridgeOptions
   ):
     | monaco.languages.Definition[]
     | null
@@ -103,7 +120,7 @@ export type DefinitionSource = {
 
 export const coreDefinitionSource: DefinitionSource = {
   forNode: ({ schema, model, token }) => {
-    if (token.state && token.state.kind === 'NamedType' && token.state.name) {
+    if (token.state && token.state.kind === "NamedType" && token.state.name) {
       const type = schema.getType(token.state.name);
 
       if (type && type.astNode && type.astNode.loc) {
@@ -133,18 +150,18 @@ export const coreHoverSource: HoverSource = {
 
 export const debugHoverSource: HoverSource = {
   forNode: ({ token }) => ({
-    value: '```json\n' + JSON.stringify(token.state, null, 2) + '\n```',
+    value: "```json\n" + JSON.stringify(token.state, null, 2) + "\n```",
   }),
 };
 
 export function toGraphQLPosition<
-  T extends { lineNumber: number; column: number },
+  T extends { lineNumber: number; column: number }
 >(position: T): GraphQLPosition {
   return new Position(position.lineNumber - 1, position.column - 1);
 }
 
 export function toMarkerData(
-  diagnostic: Diagnostic,
+  diagnostic: Diagnostic
 ): monaco.editor.IMarkerData {
   return {
     startLineNumber: diagnostic.range.start.line + 1,
@@ -191,8 +208,8 @@ export type EditorAction = {
 
 export function showWidgetInPosition(
   editorInstance: monaco.editor.IStandaloneCodeEditor,
-  position: BridgeOptions['position'],
-  htmlElement: HTMLElement,
+  position: BridgeOptions["position"],
+  htmlElement: HTMLElement
 ): void {
   editorInstance.changeViewZones(function (changeAccessor) {
     changeAccessor.addZone({

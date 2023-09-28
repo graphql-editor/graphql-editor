@@ -118,14 +118,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
     ref
   ) => {
     const { setTheme } = useTheme();
-    const {
-      grafErrors,
-      codeErrors,
-      setGrafErrors,
-      setGrafEditorErrors,
-      setGrafErrorSchema,
-      errorsItems,
-    } = useErrorsState();
+    const { codeErrors, errorsItems, setCodeErrors } = useErrorsState();
     const {
       tree,
       setTree,
@@ -149,7 +142,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
     const reset = () => {
       setSnapshots([]);
       setUndos([]);
-      setGrafErrors(undefined);
+      setCodeErrors([]);
     };
 
     useImperativeHandle(
@@ -234,21 +227,10 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
       }
       try {
         GraphQLEditorWorker.generateCode(tree).then((graphql) => {
-          if (graphql !== schema.code || (grafErrors?.length || 0) > 0) {
+          if (graphql !== schema.code) {
             GraphQLEditorWorker.validate(graphql, schema.libraries).then(
               (errors) => {
-                if (errors.length > 0) {
-                  const mapErrors = errors.map((e) => e.text);
-                  const msg = [
-                    ...mapErrors.filter((e, i) => mapErrors.indexOf(e) === i),
-                  ].join("\n\n");
-                  setGrafErrors(msg);
-                  setGrafEditorErrors(errors);
-                  setGrafErrorSchema(graphql);
-                  return;
-                }
-                setGrafErrors(undefined);
-                setGrafEditorErrors([]);
+                setCodeErrors(errors);
                 setSchema({ ...schema, code: graphql, source: "tree" });
               }
             );
@@ -256,7 +238,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
         });
       } catch (error) {
         const msg = (error as Error).message;
-        setGrafErrors(msg);
+        setCodeErrors([{ text: msg, __typename: "global" }]);
         return;
       }
       onTreeChange?.(tree);
@@ -358,15 +340,15 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
             )}
             {routes.pane === "docs" && <Docs />}
             <NodeNavigation />
+            {!!codeErrors.length &&
+              (routes.pane === "docs" || routes.pane === "relation") && (
+                <ErrorsList>{errorsItems}</ErrorsList>
+              )}
           </ErrorOuterContainer>
         )}
         {routes.pane === "diff" && diffSchemas && (
           <DiffEditor schemas={diffSchemas} />
         )}
-        {!!codeErrors.length &&
-          (routes.pane === "docs" || routes.pane === "relation") && (
-            <ErrorsList>{errorsItems}</ErrorsList>
-          )}
       </Main>
     );
   }

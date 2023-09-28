@@ -49,7 +49,7 @@ export const CodePane = React.forwardRef<CodePaneApi, CodePaneProps>(
     const { selectedNodeId, setSelectedNodeId, allNodes } = useTreesState();
     const { errorRowNumber } = useErrorsState();
     const [temporaryString, setTemporaryString] = useState(schema.code);
-    const debouncedTemporaryString = useDebouncedValue(temporaryString, 1200);
+    const debouncedTemporaryString = useDebouncedValue(temporaryString, 800);
 
     const liveEditorApi: React.ForwardedRef<LiveSchemaEditorApi> =
       React.createRef();

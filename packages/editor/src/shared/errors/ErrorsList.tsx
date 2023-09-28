@@ -1,46 +1,57 @@
 import React from "react";
 import { fontFamilySans } from "@/vars";
 import styled from "@emotion/styled";
+import { Stack, Typography } from "@aexol-studio/styling-system";
 
-export const ErrorWrapper = styled.div`
+export const ErrorWrapper = styled(Stack)`
   font-family: ${fontFamilySans};
-  width: 100%;
   height: 100%;
   position: absolute;
   top: 0;
-  font-size: 14px;
-  left: 0;
-  backdrop-filter: blur(4px);
-  cursor: default;
-  color: ${({ theme }) => theme.error};
+  right: 0;
   z-index: 2;
+  width: 24rem;
+  pointer-events: none;
+  padding: 1rem;
 `;
-export const ErrorInside = styled.div`
-  width: clamp(200px, 20%, 600px);
-  height: 100%;
-  display: flex;
-  flex-flow: column nowrap;
-  gap: 1rem;
-  overflow-y: auto;
-  margin-left: auto;
-  padding: 20px;
-  background-color: ${({ theme }) => theme.neutral[500]};
-  color: ${(p) => p.theme.text.active};
+export const ErrorLabel = styled.p`
+  color: ${(p) => p.theme.text.default};
+`;
+const Errors = styled(Stack)`
+  pointer-events: all;
+  background-color: ${(p) => p.theme.neutral[400]};
+  padding: 0.5rem;
+  border-radius: ${(p) => p.theme.radius}px;
 `;
 
-export const ErrorLabel = styled.p`
-  width: 90%;
+const List = styled(Stack)`
+  background-color: ${(p) => p.theme.neutral[450]};
+  padding: 0.5rem;
 `;
+const SmallLabel = styled(Typography)``;
 
 export const ErrorsList: React.FC<{
   children?: React.ReactNode;
 }> = ({ children }) => {
   return (
-    <ErrorWrapper onClick={(e) => e.stopPropagation()}>
-      <ErrorInside>
-        <ErrorLabel>{`Unable to parse GraphQL code. Graf editor is locked. Open "<>" code editor to correct errors in GraphQL Schema. Message:`}</ErrorLabel>
-        {children}
-      </ErrorInside>
+    <ErrorWrapper
+      direction="column"
+      gap="1rem"
+      justify="end"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <Errors gap="0.5rem" direction="column">
+        <SmallLabel
+          variant="caption"
+          textTransform="uppercase"
+          fontWeight={700}
+        >
+          problems
+        </SmallLabel>
+        <List gap="0.25rem" direction="column">
+          {children}
+        </List>
+      </Errors>
     </ErrorWrapper>
   );
 };

@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { GraphQLEditorWorker } from "graphql-editor-worker";
 import { useErrorsState, useTheme, useTreesState } from "@/state/containers";
 import { EditorTheme } from "@/gshared/theme/MainTheme";
 import styled from "@emotion/styled";
@@ -50,15 +49,8 @@ export interface EmbeddedEditorProps {
 
 export const EmbeddedEditor = ({ schema, theme }: EmbeddedEditorProps) => {
   const { setTheme } = useTheme();
-  const { generateTreeFromSchema, tree } = useTreesState();
-  const {
-    grafErrors,
-    setGrafErrors,
-    setGrafEditorErrors,
-    setGrafErrorSchema,
-    codeErrors,
-    errorsItems,
-  } = useErrorsState();
+  const { generateTreeFromSchema } = useTreesState();
+  const { codeErrors, errorsItems } = useErrorsState();
 
   useEffect(() => {
     if (theme) {
@@ -72,33 +64,6 @@ export const EmbeddedEditor = ({ schema, theme }: EmbeddedEditorProps) => {
     }
     generateTreeFromSchema(schema);
   }, [schema]);
-
-  useEffect(() => {
-    try {
-      GraphQLEditorWorker.generateCode(tree).then((graphql) => {
-        if ((grafErrors?.length || 0) > 0) {
-          GraphQLEditorWorker.validate(graphql).then((errors) => {
-            if (errors.length > 0) {
-              const mapErrors = errors.map((e) => e.text);
-              const msg = [
-                ...mapErrors.filter((e, i) => mapErrors.indexOf(e) === i),
-              ].join("\n\n");
-              setGrafErrors(msg);
-              setGrafEditorErrors(errors);
-              setGrafErrorSchema(graphql);
-              return;
-            }
-            setGrafErrors(undefined);
-            setGrafEditorErrors([]);
-          });
-        }
-      });
-    } catch (error) {
-      const msg = (error as any).message;
-      setGrafErrors(msg);
-      return;
-    }
-  }, [tree]);
 
   return (
     <Main

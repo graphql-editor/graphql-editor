@@ -2,38 +2,28 @@ import { buildSchema, validateSchema, parse, GraphQLError } from "graphql";
 import { validateSDL } from "graphql/validation/validate";
 import { mergeSDLs } from "graphql-js-tree";
 
-export interface EditorError {
-  type: "error";
+export type GlobalGraphQLError = {
+  __typename: "global";
   text: string;
-  row?: number;
-  column?: number;
-  position?: number;
-  libraryError?: string;
-}
-
-const GraphQLErrorToEditorErrors = (e: GraphQLError): EditorError[] => [
-  ...(e.locations || []).map(
-    (l) =>
-      ({
-        column: l.column,
-        row: l.line - 2,
-        position: 1,
-        text: e.message,
-        type: "error",
-      } as EditorError)
-  ),
-];
-
-const validateSDLErrors = (s: string): EditorError[] => {
-  const schema = parse(s);
-  const errors = validateSDL(schema);
-  return errors.map(GraphQLErrorToEditorErrors).flat(1);
 };
 
-const validateTypes = (s: string): EditorError[] => {
+export type LocalGraphQLError = {
+  __typename: "local";
+  error: GraphQLError;
+};
+
+export type EditorError = GlobalGraphQLError | LocalGraphQLError;
+
+const validateSDLErrors = (s: string) => {
+  const schema = parse(s);
+  const errors = validateSDL(schema);
+  return errors;
+};
+
+const validateTypes = (s: string) => {
   const schema = buildSchema(s);
   const errors = validateSchema(schema);
-  return errors.map(GraphQLErrorToEditorErrors).flat(1);
+  return errors;
 };
 
 /**
@@ -41,10 +31,18 @@ const validateTypes = (s: string): EditorError[] => {
  */
 const moveErrorsByLibraryPadding = (libraries: string) => {
   const libraryPadding = libraries.split("\n").length;
-  return (error: EditorError): EditorError => {
+  const libraryLength = libraries.length;
+  return (error: LocalGraphQLError): LocalGraphQLError => {
     return {
       ...error,
-      row: (error.row || 0) - libraryPadding,
+      error: {
+        ...error.error,
+        locations: error.error.locations?.map((l) => ({
+          ...l,
+          line: l.line - libraryPadding,
+        })),
+        positions: error.error.positions?.map((p) => p - libraryLength),
+      },
     };
   };
 };
@@ -63,8 +61,8 @@ export const catchSchemaErrors = (
       const mergeResult = mergeSDLs(schema, libraries);
       if (mergeResult.__typename === "error") {
         return mergeResult.errors.map((e) => ({
-          type: "error",
           text: `There is a conflict with library schema on Type.field: ${e.conflictingNode}.${e.conflictingField}`,
+          __typename: "global",
         }));
       }
       code = mergeResult.sdl;
@@ -73,10 +71,20 @@ export const catchSchemaErrors = (
 
     if (errors.length > 0) {
       return errors
-        .filter((e) => allowMultipleDirectivesAtLocation(e.text))
-        .map(paddingFunction);
+        .filter((e) => allowMultipleDirectivesAtLocation(e.message))
+        .map((e) => {
+          return paddingFunction({
+            __typename: "local",
+            error: e,
+          });
+        });
     }
-    return validateTypes(code).map(paddingFunction);
+    return validateTypes(code).map((e) => {
+      return paddingFunction({
+        __typename: "local",
+        error: e,
+      });
+    });
   } catch (error) {
     if (
       typeof error === "object" &&
@@ -91,16 +99,14 @@ export const catchSchemaErrors = (
         message: string;
       };
       return [
-        paddingFunction({
+        {
+          __typename: "global",
           text: e.message as string,
-          type: "error",
-          column: 0,
-          row: 0,
-        } as EditorError),
+        },
       ];
     }
     const er = error as GraphQLError;
-    return GraphQLErrorToEditorErrors(er).map(paddingFunction);
+    return [{ __typename: "local", error: er }];
   }
   return [];
 };

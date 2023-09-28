@@ -5,7 +5,6 @@ import {
   getRange,
   IPosition as GraphQLPosition,
   ContextToken,
-  Position,
 } from "graphql-language-service";
 import type * as monaco from "monaco-editor";
 import {
@@ -40,33 +39,6 @@ export class EnrichedLanguageService extends LanguageService {
 
     return null;
   }
-  public async getNodeFromErrorSchema(
-    document: string,
-    row: number,
-    column: number
-  ) {
-    const graphQLPosition = new Position(row, column);
-    const schema = await this.getSchema();
-
-    if (!schema) {
-      return null;
-    }
-
-    const tokenAtPosition = await this.getNodeAtPosition(
-      schema,
-      document,
-      graphQLPosition
-    );
-
-    if (!tokenAtPosition) {
-      return null;
-    }
-
-    return {
-      token: tokenAtPosition,
-    };
-  }
-
   public async buildBridgeForProviders<
     T extends { lineNumber: number; column: number }
   >(
@@ -111,7 +83,9 @@ export class EnrichedLanguageService extends LanguageService {
         const bridge = await this.buildBridgeForProviders(
           model,
           position
-        ).catch((e) => {});
+        ).catch(() => {
+          //noop
+        });
 
         if (!bridge) {
           return [];
@@ -135,7 +109,9 @@ export class EnrichedLanguageService extends LanguageService {
     return {
       provideHover: async (model, position) => {
         const info = await this.buildBridgeForProviders(model, position).catch(
-          (e) => {}
+          () => {
+            //noop
+          }
         );
 
         if (!info) {
@@ -199,11 +175,12 @@ export class EnrichedLanguageService extends LanguageService {
       await Promise.all(
         diagnosticsSources.map(async (source) => {
           try {
-            return await source.forDocument({
+            const s = await source.forDocument({
               languageService: this,
               model,
               document: model.getValue().toString(),
             });
+            return s;
           } catch (e) {
             return null;
           }

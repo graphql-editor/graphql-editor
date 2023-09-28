@@ -8,9 +8,8 @@ import {
   SchemaServicesOptions,
   useSchemaServices,
 } from "./use-schema-services";
-import { useErrorsState, useTheme } from "@/state/containers";
+import { useTheme } from "@/state/containers";
 import { theme as MonacoTheme } from "@/editor/code/monaco";
-import { findCurrentNodeName } from "@/editor/code/guild/editor/onCursor";
 
 export type LiveSchemaEditorProps = SchemaServicesOptions & {
   onBlur?: (value: string) => void;
@@ -44,32 +43,6 @@ function BaseSchemaEditor(
   } = useSchemaServices({
     ...props,
   });
-  const { grafEditorErrors, setErrorNodeNames, grafErrorSchema } =
-    useErrorsState();
-
-  useEffect(() => {
-    setErrorNodeNames(undefined);
-    if (languageService && props.schema) {
-      Promise.all(
-        grafEditorErrors.map((gee) => {
-          if (grafErrorSchema && gee.row && gee.column) {
-            return languageService
-              .getNodeFromErrorSchema(grafErrorSchema, gee.row, gee.column)
-              .then((e) => {
-                if (e?.token) {
-                  const node = findCurrentNodeName(e.token.state);
-                  if (node) {
-                    return node;
-                  }
-                }
-              });
-          }
-        })
-      ).then((erroringNodes) => {
-        setErrorNodeNames(erroringNodes.filter(Boolean) as string[]);
-      });
-    }
-  }, [grafEditorErrors, grafErrorSchema]);
 
   useEffect(() => {
     if (editorRef)
@@ -121,10 +94,10 @@ function BaseSchemaEditor(
         props.onMount && props.onMount(editor, monaco);
       }}
       keepCurrentModel
-      onValidate={onValidate}
       onChange={(newValue, ev) => {
         props.onChange && props.onChange(newValue, ev);
         if (newValue) {
+          onValidate();
           setSchema(newValue)
             .then((schema) => {
               if (schema) {

@@ -48,7 +48,7 @@ const useTreesStateContainer = createContainer(() => {
   const [undos, setUndos] = useState<string[]>([]);
   const [selectedNodeId, _setSelectedNodeId] = useState<SelectedNodeId>();
   const [readonly, setReadonly] = useState(false);
-  const { setCodeErrors, transformCodeError } = useErrorsState();
+  const { setCodeErrors } = useErrorsState();
 
   const allNodes = useMemo(() => {
     return { nodes: tree.nodes };
@@ -256,15 +256,13 @@ const useTreesStateContainer = createContainer(() => {
       });
       await GraphQLEditorWorker.validate(schema.code, schema.libraries).then(
         (errors) => {
-          const tranformedErrors = transformCodeError(errors);
-          setCodeErrors(tranformedErrors);
+          setCodeErrors(errors);
         }
       );
     } catch (error) {
       await GraphQLEditorWorker.validate(schema.code, schema.libraries).then(
         (errors) => {
-          const tranformedErrors = transformCodeError(errors);
-          setCodeErrors(tranformedErrors);
+          setCodeErrors(errors);
         }
       );
     }

@@ -1,7 +1,7 @@
-import { mapEditorErrorToMonacoDecoration } from '@/editor/code/monaco/errors';
-import { themed } from '@/Theming/utils';
-import { EditorError } from '@/validation';
-import type * as monaco from 'monaco-editor';
+import { mapEditorErrorToMonacoDecoration } from "@/editor/code/monaco/errors";
+import { themed } from "@/Theming/utils";
+import { EditorError } from "graphql-editor-worker/lib/validation";
+import type * as monaco from "monaco-editor";
 
 export const monacoSetDecorations = themed(
   (theme) =>
@@ -16,13 +16,13 @@ export const monacoSetDecorations = themed(
       monacoGql: monaco.editor.IStandaloneCodeEditor;
       decorationIds: string[];
     }) => {
-      const monacoDecorations = codeErrors.map(
-        mapEditorErrorToMonacoDecoration(theme)(m),
+      const monacoDecorations = codeErrors.flatMap(
+        mapEditorErrorToMonacoDecoration(theme)(m)
       );
       const newDecorationIds = monacoGql.deltaDecorations(
         decorationIds,
-        monacoDecorations,
+        monacoDecorations
       );
       return newDecorationIds;
-    },
+    }
 );

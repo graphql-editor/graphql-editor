@@ -120,7 +120,6 @@ export const PanZoom: React.FC<{
             link.click();
           })
           .catch((e) => {
-            console.log(e);
             createToast({
               message: "Export failed. Check browser console for details",
               variant: "error",

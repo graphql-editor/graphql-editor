@@ -11,12 +11,12 @@ import { EnrichedLanguageService } from "./EnrichedLanguageService";
 import { GraphQLError, GraphQLSchema } from "graphql";
 import { emptyLocation, locToRange } from "./utils";
 import { GraphQLEditorWorker } from "graphql-editor-worker";
-import { EditorError } from "@/validation";
 import { monacoSetDecorations } from "@/editor/code/monaco/decorations";
 import { useTheme, useTreesState } from "@/state/containers";
 import { findCurrentNodeName } from "@/editor/code/guild/editor/onCursor";
 import { Maybe } from "graphql-language-service";
 import { PassedSchema } from "@/Models";
+import { EditorError } from "graphql-editor-worker/lib/validation";
 
 export type SchemaEditorApi = {
   jumpToType(typeName: string): void;
@@ -69,7 +69,9 @@ const cursorIndex = {
 export const useSchemaServices = (options: SchemaServicesOptions) => {
   const [editorRef, setEditor] =
     useState<monaco.editor.IStandaloneCodeEditor | null>(null);
-  const [codeErrors, setCodeErrors] = useState<EditorError[]>([]);
+  const [internalCodeErrors, setInternalCodeErrors] = useState<EditorError[]>(
+    []
+  );
   const [decorationIds, setDecorationIds] = useState<string[]>([]);
   const [monacoRef, setMonaco] = useState<typeof monaco | null>(null);
   const { tree, selectedNodeId } = useTreesState();
@@ -252,6 +254,7 @@ export const useSchemaServices = (options: SchemaServicesOptions) => {
     options.definitionProviders,
     options.hoverProviders,
     options.select,
+    options.schema,
     selectedNodeId?.value?.id,
   ]);
 
@@ -261,21 +264,21 @@ export const useSchemaServices = (options: SchemaServicesOptions) => {
   };
 
   useEffect(() => {
-    if (codeErrors && editorRef && monacoRef) {
+    if (internalCodeErrors && editorRef && monacoRef) {
       setDecorationIds(
         monacoSetDecorations(theme)({
-          codeErrors,
+          codeErrors: internalCodeErrors,
           decorationIds,
           m: monacoRef,
           monacoGql: editorRef,
         })
       );
     }
-  }, [editorRef, monacoRef, codeErrors]);
+  }, [editorRef, monacoRef, internalCodeErrors]);
 
   return {
     receive,
-    codeErrors,
+    codeErrors: internalCodeErrors,
     setEditor,
     setMonaco,
     editorRef,
@@ -292,23 +295,27 @@ export const useSchemaServices = (options: SchemaServicesOptions) => {
           currentValue,
           options.schema?.libraries
         ).then((errors) => {
-          setCodeErrors(errors);
+          setInternalCodeErrors(errors);
         });
       }
     },
     editorApi: {
       jumpToType: async (typeName: string) => {
-        const schema =
-          languageService.schema || (await languageService.getSchema());
-        if (schema) {
-          const type = schema.getType(typeName);
-          if (type?.astNode?.loc) {
-            const range = locToRange(type.astNode.loc);
-            editorRef?.revealPositionInCenter(
-              { column: 0, lineNumber: range.startLineNumber },
-              0
-            );
+        try {
+          const schema =
+            languageService.schema || (await languageService.getSchema());
+          if (schema) {
+            const type = schema.getType(typeName);
+            if (type?.astNode?.loc) {
+              const range = locToRange(type.astNode.loc);
+              editorRef?.revealPositionInCenter(
+                { column: 0, lineNumber: range.startLineNumber },
+                0
+              );
+            }
           }
+        } catch (error) {
+          //noop
         }
       },
       deselect: () => {

@@ -1,12 +1,8 @@
 import { useErrorsState } from "@/state/containers";
 import { useRouter } from "@/state/containers/router";
-import { EditorError } from "@/validation";
-import {
-  CircleInformation,
-  Stack,
-  Tooltip,
-} from "@aexol-studio/styling-system";
+import { Stack, Tooltip } from "@aexol-studio/styling-system";
 import styled from "@emotion/styled";
+import { EditorError } from "graphql-editor-worker/lib/validation";
 import React from "react";
 
 type ErrorItemProps = {
@@ -14,13 +10,11 @@ type ErrorItemProps = {
 };
 
 const Main = styled(Stack)`
-  padding: 1rem;
-  background-color: ${({ theme }) => theme.neutral[600]};
-  border-radius: ${(p) => p.theme.radius}px;
+  color: ${({ theme }) => theme.error.light};
+  font-size: 0.75rem;
 `;
 
 const Message = styled.div`
-  color: ${({ theme }) => theme.error};
   background-color: transparent;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -30,17 +24,26 @@ const Message = styled.div`
 export const ErrorItem: React.FC<ErrorItemProps> = ({ error }) => {
   const { setErrorRowNumber } = useErrorsState();
   const { set } = useRouter();
+  const errorText =
+    error.__typename === "global" ? error.text : error.error.message;
+  const errorRow =
+    error.__typename === "global" ? 0 : error.error.locations?.[0]?.line || 0;
   return (
-    <Main gap="1rem" align="center">
-      <Message>{error.text}</Message>
-      <Tooltip width={300} position="left-bottom" title={`${error.text}`}>
-        <CircleInformation
-          onClick={() => {
-            setErrorRowNumber(error.row);
-            set({ code: "on" });
-          }}
-        />
-      </Tooltip>
-    </Main>
+    <Tooltip
+      width={300}
+      position="top-left"
+      title={`${errorText}\nClick to go to this error.`}
+    >
+      <Main
+        onClick={() => {
+          setErrorRowNumber(errorRow);
+          set({ code: "on" });
+        }}
+        align="center"
+        justify="between"
+      >
+        <Message>{errorText}</Message>
+      </Main>
+    </Tooltip>
   );
 };

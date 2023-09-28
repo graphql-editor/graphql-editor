@@ -10,7 +10,6 @@ import {
 import { EnrichedLanguageService } from "./EnrichedLanguageService";
 import { GraphQLError, GraphQLSchema } from "graphql";
 import { GraphQLEditorWorker } from "graphql-editor-worker";
-import { EditorError } from "@/validation";
 import { monacoSetDecorations } from "@/editor/code/monaco/decorations";
 import { useTheme } from "@/state/containers";
 import {
@@ -21,6 +20,7 @@ import {
   Maybe,
 } from "graphql-language-service";
 import { PassedSchema } from "@/Models";
+import { EditorError } from "graphql-editor-worker/lib/validation";
 
 export type SchemaServicesOptions = {
   schema?: PassedSchema;
@@ -59,7 +59,9 @@ const compileSchema = ({
 export const useGqlServices = (options: SchemaServicesOptions = {}) => {
   const [editorRef, setEditor] =
     React.useState<monaco.editor.IStandaloneCodeEditor | null>(null);
-  const [codeErrors, setCodeErrors] = React.useState<EditorError[]>([]);
+  const [internalCodeErrors, setInternalCodeErrors] = React.useState<
+    EditorError[]
+  >([]);
   const [decorationIds, setDecorationIds] = React.useState<string[]>([]);
   const [monacoRef, setMonaco] = React.useState<typeof monaco | null>(null);
   const { theme } = useTheme();
@@ -188,20 +190,20 @@ export const useGqlServices = (options: SchemaServicesOptions = {}) => {
   ]);
 
   React.useEffect(() => {
-    if (codeErrors && editorRef && monacoRef) {
+    if (internalCodeErrors && editorRef && monacoRef) {
       setDecorationIds(
         monacoSetDecorations(theme)({
-          codeErrors,
+          codeErrors: internalCodeErrors,
           decorationIds,
           m: monacoRef,
           monacoGql: editorRef,
         })
       );
     }
-  }, [editorRef, monacoRef, codeErrors]);
+  }, [editorRef, monacoRef, internalCodeErrors]);
 
   return {
-    codeErrors,
+    codeErrors: internalCodeErrors,
     setEditor,
     setMonaco,
     editorRef,
@@ -218,7 +220,7 @@ export const useGqlServices = (options: SchemaServicesOptions = {}) => {
           currentValue,
           options.schema?.libraries
         ).then((errors) => {
-          setCodeErrors(errors);
+          setInternalCodeErrors(errors);
         });
       }
     },

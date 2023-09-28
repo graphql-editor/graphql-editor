@@ -1,6 +1,5 @@
 import { PanZoom } from "@/Relation/PanZoom/PanZoom";
 import {
-  useErrorsState,
   useRelationNodesState,
   useRelationsState,
   useTreesState,
@@ -9,7 +8,6 @@ import React, { useMemo, useState } from "react";
 import { TransformWrapper } from "react-zoom-pan-pinch";
 import { Graf } from "@/Graf/Graf";
 import styled from "@emotion/styled";
-import { Chip } from "@aexol-studio/styling-system";
 import { AnimatePresence } from "framer-motion";
 import { BackgroundFTUX } from "@/Relation/FTUX/BackgroundFTUX";
 import { useRouter } from "@/state/containers/router";
@@ -23,7 +21,6 @@ export const Relation: React.FC<{ setInitialSchema: (s: string) => void }> = ({
     useRelationNodesState();
   const { editMode, ctrlToZoom } = useRelationsState();
   const { set, routes } = useRouter();
-  const { grafErrors } = useErrorsState();
   const [popupsState, setPopupsState] = useState({
     import: false,
   });
@@ -71,11 +68,6 @@ export const Relation: React.FC<{ setInitialSchema: (s: string) => void }> = ({
           </TransformWrapper>
         </FocusOverlay>
       )}
-      {grafErrors && (
-        <ErrorContainer>
-          <Chip label={grafErrors} variant="warning" />
-        </ErrorContainer>
-      )}
       <AnimatePresence>
         {!!editMode && activeNode && <Graf node={activeNode} />}
       </AnimatePresence>
@@ -114,13 +106,7 @@ const RelationContainer = styled.div`
   height: 100%;
   position: relative;
 `;
-const ErrorContainer = styled.div`
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  padding: 1rem;
-  z-index: 2;
-`;
+
 const FocusOverlay = styled.div`
   z-index: 2;
   width: 100%;

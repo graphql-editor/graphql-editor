@@ -4,6 +4,7 @@ export * from "./google";
 export * from "./googleDiff";
 export * from "./github";
 export * from "./builtInDirectives";
+export * from "./exoticDirectives";
 export * from "./nullInput";
 export * from "./errorSchema";
 export * from "./food";

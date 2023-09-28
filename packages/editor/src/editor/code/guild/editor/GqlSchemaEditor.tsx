@@ -4,9 +4,8 @@ import type * as monaco from "monaco-editor";
 import { EnrichedLanguageService } from "./EnrichedLanguageService";
 import { GraphQLError, GraphQLSchema } from "graphql";
 import { SchemaServicesOptions } from "./use-schema-services";
-import { useErrorsState, useTheme } from "@/state/containers";
+import { useTheme } from "@/state/containers";
 import { theme as MonacoTheme } from "@/editor/code/monaco";
-import { findCurrentNodeName } from "@/editor/code/guild/editor/onCursor";
 import { useGqlServices } from "@/editor/code/guild/editor/use-gql-services";
 
 export type GqlSchemaEditorProps = SchemaServicesOptions & {
@@ -32,32 +31,6 @@ function BaseGqlEditor(props: GqlSchemaEditorProps) {
     editorRef,
     onValidate,
   } = useGqlServices(props);
-  const { grafEditorErrors, setErrorNodeNames, grafErrorSchema } =
-    useErrorsState();
-
-  useEffect(() => {
-    setErrorNodeNames(undefined);
-    if (languageService && props.schema) {
-      Promise.all(
-        grafEditorErrors.map((gee) => {
-          if (grafErrorSchema && gee.row && gee.column) {
-            return languageService
-              .getNodeFromErrorSchema(grafErrorSchema, gee.row, gee.column)
-              .then((e) => {
-                if (e?.token) {
-                  const node = findCurrentNodeName(e.token.state);
-                  if (node) {
-                    return node;
-                  }
-                }
-              });
-          }
-        })
-      ).then((erroringNodes) => {
-        setErrorNodeNames(erroringNodes.filter(Boolean) as string[]);
-      });
-    }
-  }, [grafEditorErrors, grafErrorSchema]);
 
   useEffect(() => {
     if (editorRef)

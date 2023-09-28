@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",
-    "@monaco-editor/react": "^4.5.1",
+    "@monaco-editor/react": "^4.5.2",
     "@types/classnames": "^2.3.0",
     "@types/faker": "^5.5.8",
     "@types/file-saver": "^2.0.5",
@@ -51,7 +51,7 @@
     "eslint-plugin-react": "^7.22.0",
     "husky": "^7.0.2",
     "jest": "^27.2.0",
-    "monaco-editor": "^0.39.0",
+    "monaco-editor": "^0.43.0",
     "prettier": "^2.4.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
