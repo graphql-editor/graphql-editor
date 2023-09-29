@@ -6,6 +6,7 @@ import {
   ThemeProvider,
   RelationsProvider,
   RelationNodesProvider,
+  useErrorsState,
 } from "@/state/containers";
 import { ThemeProvider as ScThemeProvider } from "@emotion/react";
 import { LayoutStateProvider } from "@/state/containers/layout";
@@ -15,6 +16,8 @@ import { MainTheme } from "@/gshared/theme/MainTheme";
 import { RouterProvider, EditorRoutes } from "@/state/containers/router";
 import { EmbeddedEditor, EmbeddedEditorProps } from "@/editor/EmbeddedEditor";
 import { themeColors, ToastsProvider } from "@aexol-studio/styling-system";
+import { CodePane, CodePaneApi, CodePaneProps } from "@/editor/code";
+import { ErrorsList } from "@/shared/errors/ErrorsList";
 
 export { ExternalEditorAPI };
 
@@ -112,4 +115,48 @@ export const GraphQLGqlEditor = ({ ...props }: GqlEditorProps) => {
     </ThemeProvider>
   );
 };
+
+const SdlEditor = React.forwardRef<CodePaneApi, CodePaneProps>((props, ref) => {
+  const { errorsItems } = useErrorsState();
+  return (
+    <>
+      <CodePane {...props} ref={ref} />
+      {!!errorsItems?.length && <ErrorsList>{errorsItems}</ErrorsList>}
+    </>
+  );
+});
+
+export const GraphQLSdlCodeDisplay = React.forwardRef<
+  CodePaneApi,
+  Pick<EditorProps, "path" | "schema" | "theme">
+>(({ ...props }, ref) => {
+  const baseITheme = themeColors("graphqleditor", "dark");
+  const combinedTheme = {
+    ...MainTheme,
+    ...baseITheme,
+  };
+  const theme = props.theme || combinedTheme;
+  return (
+    <ThemeProvider initialState={theme}>
+      <ErrorsStateProvider>
+        <TreesStateProvider>
+          <ScThemeProvider theme={theme}>
+            <ToastsProvider>
+              <SdlEditor
+                schema={props.schema}
+                onChange={() => {
+                  //noop readonly
+                }}
+                size={500}
+                readonly
+                fullScreen
+                ref={ref}
+              />
+            </ToastsProvider>
+          </ScThemeProvider>
+        </TreesStateProvider>
+      </ErrorsStateProvider>
+    </ThemeProvider>
+  );
+});
 export { EditorRoutes };

@@ -191,7 +191,6 @@ export class EnrichedLanguageService extends LanguageService {
     const markerData = ([] as monaco.editor.IMarkerData[]).concat(
       ...nestedArrays
     );
-
     monacoInstance.editor.setModelMarkers(model, "graphql", markerData);
   }
 
