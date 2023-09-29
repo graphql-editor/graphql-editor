@@ -174,7 +174,9 @@ export const useSchemaServices = (options: SchemaServicesOptions) => {
         });
       }
 
-      const handler = languageService.getModelChangeHandler();
+      const handler = languageService.getModelChangeHandler(
+        options.schema?.libraries
+      );
       handler(
         editorRef,
         monacoRef,

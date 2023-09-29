@@ -6,7 +6,7 @@ import {
   IPosition as GraphQLPosition,
   ContextToken,
 } from "graphql-language-service";
-import type * as monaco from "monaco-editor";
+import * as monaco from "monaco-editor";
 import {
   BridgeOptions,
   coreDefinitionSource,
@@ -20,6 +20,7 @@ import {
   toMonacoRange,
   removeFalsey,
 } from "./utils";
+import { mergeSDLs } from "graphql-js-tree";
 
 export class EnrichedLanguageService extends LanguageService {
   async getNodeAtPosition(
@@ -164,7 +165,8 @@ export class EnrichedLanguageService extends LanguageService {
   private async handleDiagnostics(
     rawDiagnosticsSources: DiagnosticsSource[],
     model: monaco.editor.ITextModel,
-    monacoInstance: typeof monaco
+    monacoInstance: typeof monaco,
+    libraries?: string
   ): Promise<void> {
     const diagnosticsSources = [
       ...rawDiagnosticsSources,
@@ -175,10 +177,34 @@ export class EnrichedLanguageService extends LanguageService {
       await Promise.all(
         diagnosticsSources.map(async (source) => {
           try {
+            let c = model.getValue().toString();
+            if (libraries) {
+              const result = mergeSDLs(model.getValue().toString(), libraries);
+              if (result.__typename === "error") {
+                return [
+                  {
+                    message:
+                      "Cannot merge nodes: " +
+                      result.errors
+                        .map(
+                          (e) => `${e.conflictingNode}.${e.conflictingField}`
+                        )
+                        .join(","),
+                    endColumn: 1000,
+                    endLineNumber: 19999,
+                    startColumn: 0,
+                    startLineNumber: 0,
+                    severity: monaco.MarkerSeverity.Warning,
+                  },
+                ];
+              } else {
+                c = result.sdl;
+              }
+            }
             const s = await source.forDocument({
               languageService: this,
               model,
-              document: model.getValue().toString(),
+              document: c,
             });
             return s;
           } catch (e) {
@@ -194,7 +220,9 @@ export class EnrichedLanguageService extends LanguageService {
     monacoInstance.editor.setModelMarkers(model, "graphql", markerData);
   }
 
-  getModelChangeHandler(): (
+  getModelChangeHandler(
+    libraries?: string
+  ): (
     editorInstance: monaco.editor.IStandaloneCodeEditor,
     monacoInstance: typeof monaco,
     diagnosticsSources: DiagnosticsSource[],
@@ -213,7 +241,12 @@ export class EnrichedLanguageService extends LanguageService {
       }
 
       await Promise.all([
-        this.handleDiagnostics(diagnosticsSources, model, monacoInstance),
+        this.handleDiagnostics(
+          diagnosticsSources,
+          model,
+          monacoInstance,
+          libraries
+        ),
         this.handleDecorations(
           decorationsSources,
           model,
