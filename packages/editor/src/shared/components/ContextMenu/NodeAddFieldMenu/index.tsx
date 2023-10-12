@@ -62,6 +62,7 @@ export const NodeAddFieldMenu = React.forwardRef<
         value: undefined,
         interfaces: [],
         directives: [],
+        fromLibrary: false,
         description: "",
         type: {
           fieldType: {
