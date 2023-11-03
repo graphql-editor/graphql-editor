@@ -107,18 +107,29 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
           <ActiveNode
             readonly={readonly}
             onDuplicate={(nodeToDuplicate) => {
-              const { ...rest } = node;
+              const { ...rest } = nodeToDuplicate;
               const newName = nodeToDuplicate?.name + "Copy";
+              const newId = generateNodeId(
+                newName,
+                nodeToDuplicate.data.type,
+                nodeToDuplicate.args
+              );
+              const copyOfNodeAlreadyExists = tree.nodes.find(
+                (node) => node.id === newId
+              );
+              if (copyOfNodeAlreadyExists) {
+                createToast({
+                  message: "A copy of node already exists",
+                  variant: "error",
+                });
+                return;
+              }
               const duplicatedNode = JSON.parse(
                 JSON.stringify(
                   createParserField({
                     ...rest,
-                    id: generateNodeId(
-                      newName,
-                      nodeToDuplicate.data.type,
-                      nodeToDuplicate.args
-                    ),
-                    name: nodeToDuplicate?.name + "Copy",
+                    id: newId,
+                    name: newName,
                   })
                 )
               ) as ParserField;
