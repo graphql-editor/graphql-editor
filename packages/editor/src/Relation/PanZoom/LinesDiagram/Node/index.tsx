@@ -1,5 +1,5 @@
 import { useRelationsState, useTreesState } from "@/state/containers";
-import { getTypeName, ParserField } from "graphql-js-tree";
+import { getTypeName } from "graphql-js-tree";
 import React, { useMemo, useRef } from "react";
 import { fontFamilySans, transition } from "@/vars";
 import styled from "@emotion/styled";
@@ -204,9 +204,9 @@ export const Node: React.FC<NodeProps> = (props) => {
   const { isClick, mouseDown } = useClickDetector();
   const nodeRef = useRef<HTMLDivElement>(null);
 
-  const isFieldFocused = (focusField: ParserField) => {
-    return focusMode === focusField.id;
-  };
+  const isFieldFocused = useMemo(() => {
+    return focusMode === field.id;
+  }, [field]);
 
   const RelationFields = useMemo(() => {
     return (
@@ -250,14 +250,14 @@ export const Node: React.FC<NodeProps> = (props) => {
           <FocusNodeClickableButton
             onClick={(e) => {
               e.stopPropagation();
-              if (isFieldFocused(field)) {
+              if (isFieldFocused) {
                 exitFocus();
               } else {
                 focusNode(field);
               }
             }}
           >
-            <span>{isFieldFocused(field) ? "Unfocus" : "Focus"}</span>
+            <span>{isFieldFocused ? "Unfocus" : "Focus"}</span>
             <EagleEye width={16} height={16} />
           </FocusNodeClickableButton>
           <EditNodeClickableButton
