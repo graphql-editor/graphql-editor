@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { fontFamilySans } from "@/vars";
 import { ActiveNode } from "@/Graf/Node";
 import { useTreesState } from "@/state/containers/trees";
@@ -90,6 +90,46 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
     setTree({ nodes: allNodes });
     setEditMode("");
   };
+
+  const handleNodeDuplication = useCallback((nodeToDuplicate: ParserField) => {
+    for (let i=1;;i++) {
+      const { ...rest } = nodeToDuplicate;
+      const newName = `${nodeToDuplicate?.name}Copy${i}`;
+      const newId = generateNodeId(
+        newName,
+        nodeToDuplicate.data.type,
+        nodeToDuplicate.args
+      );
+      const copyOfNodeAlreadyExists = tree.nodes.find(
+        (node) => node.id === newId
+      );
+
+      if (!copyOfNodeAlreadyExists) {
+        const duplicatedNode = JSON.parse(
+          JSON.stringify(
+            createParserField({
+              ...rest,
+              id: newId,
+              name: newName,
+            })
+          )
+        ) as ParserField;
+
+        setTree({ nodes: [...tree.nodes, duplicatedNode] });
+
+        setSelectedNodeId({
+          value: {
+            id: duplicatedNode.id,
+            name: duplicatedNode.name,
+          },
+          source: "relation",
+        });
+
+        return;
+      } 
+    }
+  }, [tree.nodes])
+
   return (
     <SubNodeWrapper
       onClick={(e) => {
@@ -106,42 +146,7 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
         <DraggableProvider>
           <ActiveNode
             readonly={readonly}
-            onDuplicate={(nodeToDuplicate) => {
-              const { ...rest } = nodeToDuplicate;
-              const newName = nodeToDuplicate?.name + "Copy";
-              const newId = generateNodeId(
-                newName,
-                nodeToDuplicate.data.type,
-                nodeToDuplicate.args
-              );
-              const copyOfNodeAlreadyExists = tree.nodes.find(
-                (node) => node.id === newId
-              );
-              if (copyOfNodeAlreadyExists) {
-                createToast({
-                  message: "A copy of node already exists",
-                  variant: "error",
-                });
-                return;
-              }
-              const duplicatedNode = JSON.parse(
-                JSON.stringify(
-                  createParserField({
-                    ...rest,
-                    id: newId,
-                    name: newName,
-                  })
-                )
-              ) as ParserField;
-              setTree({ nodes: [...tree.nodes, duplicatedNode] });
-              setSelectedNodeId({
-                value: {
-                  id: duplicatedNode.id,
-                  name: duplicatedNode.name,
-                },
-                source: "relation",
-              });
-            }}
+            onDuplicate={handleNodeDuplication}
             onInputCreate={(nodeToCreateInput) => {
               const createdInput = createParserField({
                 args: getScalarFields(node, scalars),
