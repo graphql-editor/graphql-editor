@@ -22,7 +22,7 @@ export const ControlsBar: React.FC<{
   downloadPng: () => void;
   triggerResimulation: () => void;
 }> = ({ downloadPng, triggerResimulation }) => {
-  const { readonly, exitFocus, focusMode, focusedNode } = useTreesState();
+  const { readonly, exitFocus, focusMode, focusedNode, libraryTree } = useTreesState();
 
   const { zoomIn, zoomOut } = useControls();
   const {
@@ -34,6 +34,8 @@ export const ControlsBar: React.FC<{
     setInputsOn,
     ctrlToZoom,
     setCtrlToZoom,
+    libraryNodesOn,
+    setLibraryNodesOn,
   } = useRelationsState();
 
   const step = 0.2;
@@ -75,6 +77,14 @@ export const ControlsBar: React.FC<{
             <Plus />
           </IconWrapper>
         </ZoomWrapper>
+        {libraryTree.nodes.length && (
+          <Checkbox
+            label="library nodes"
+            labelPosition="start"
+            onChange={() => setLibraryNodesOn(!libraryNodesOn)}
+            checked={libraryNodesOn}
+          />
+        )}
         <Checkbox
           label="fields"
           labelPosition="start"
