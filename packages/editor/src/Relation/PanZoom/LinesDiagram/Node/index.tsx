@@ -206,7 +206,7 @@ export const Node: React.FC<NodeProps> = (props) => {
 
   const isFieldFocused = useMemo(() => {
     return focusMode === field.id;
-  }, [field]);
+  }, [field, focusMode]);
 
   const RelationFields = useMemo(() => {
     return (
