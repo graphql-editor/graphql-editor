@@ -86,23 +86,27 @@ export const ActiveField: React.FC<FieldProps> = ({
           <ActiveGrafType
             type={node.type}
             parentTypes={parentTypes}
-          ></ActiveGrafType>
-          <LockContainer
-            title={`This node comes from ${node.fromInterface?.join(
-              ", "
-            )} and is editable in parent node only`}
+          />
+          <Tooltip
+            title={`This node comes from ${node.fromInterface?.join(", ")} and is editable in parent node only`}
+            position="top-left"
           >
-            <Lock />
-          </LockContainer>
+              <LockContainer>
+                <Lock />
+              </LockContainer>
+            </Tooltip>
         </>
       )}
       {node.fromLibrary && (
         <>
-          <LockContainer
+          <Tooltip
             title={`This field comes from library and is a result of merge`}
+            position="top-left"
           >
-            <Lock />
-          </LockContainer>
+            <LockContainer>
+              <Lock />
+            </LockContainer>
+          </Tooltip>
         </>
       )}
       {!isEnumValue &&

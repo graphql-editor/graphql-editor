@@ -3,6 +3,7 @@ import { fontFamilySans } from "@/vars";
 import styled from "@emotion/styled";
 import { GRAF_FIELD_NAME_SIZE } from "@/Graf/constants";
 import { useDraggable } from "@/Graf/state/draggable";
+import { Tooltip } from "@aexol-studio/styling-system";
 
 const Input = styled.input<{ isError?: boolean; isEditable?: boolean }>`
   border: 0;
@@ -70,30 +71,31 @@ export const EditableText: React.FC<{
     <>
       {onChange ? (
         <>
-          <Input
-            id={genericId.current}
-            ref={inputRef}
-            isError={isError}
-            value={editedValue}
-            pattern="[_A-Za-z][_0-9A-Za-z]*"
-            style={{ ...style }}
-            title={isError ? "Name already exists" : "rename"}
-            onFocus={() => setDraggable(false)}
-            onMouseDown={() => setDraggable(false)}
-            onBlur={(e) => {
-              checkEdit();
-            }}
-            onClick={(e) => (e.target as any).focus()}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                inputRef?.current?.blur();
-              }
-            }}
-            onChange={(e) => {
-              setEditedValue(e.target.value);
-              valueRef.current = e.target.value;
-            }}
-          />
+          <Tooltip title={isError ? "Name already exists" : "rename"}>
+            <Input
+              id={genericId.current}
+              ref={inputRef}
+              isError={isError}
+              value={editedValue}
+              pattern="[_A-Za-z][_0-9A-Za-z]*"
+              style={{ ...style }}
+              onFocus={() => setDraggable(false)}
+              onMouseDown={() => setDraggable(false)}
+              onBlur={(e) => {
+                checkEdit();
+              }}
+              onClick={(e) => (e.target as any).focus()}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  inputRef?.current?.blur();
+                }
+              }}
+              onChange={(e) => {
+                setEditedValue(e.target.value);
+                valueRef.current = e.target.value;
+              }}
+            />
+          </Tooltip>
           <HiddenSpan style={{ ...style }} ref={spanRef}>
             {editedValue}
           </HiddenSpan>
