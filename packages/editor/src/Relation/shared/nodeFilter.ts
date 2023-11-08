@@ -6,6 +6,7 @@ export const nodeFilter = (
   options: {
     inputsOn?: boolean;
     baseTypesOn?: boolean;
+    libraryNodesOn?: boolean;
   },
 ) => {
   const scalarTypes = nodes
@@ -19,8 +20,22 @@ export const nodeFilter = (
       args: n.args?.filter((a) => !isScalarArgument(a, scalarTypes)),
     }));
 
-  return options.inputsOn ? withoutScalars : filterInputs(withoutScalars);
+  if (!options.inputsOn && !options.libraryNodesOn) {
+    return filterLibraryNodes(filterInputs(withoutScalars));
+  } else if (options.inputsOn && !options.libraryNodesOn) {
+    return filterLibraryNodes(withoutScalars);
+  } else if (!options.inputsOn && options.libraryNodesOn) {
+    return filterInputs(withoutScalars);
+  }
+
+  return withoutScalars;
 };
 
 const filterInputs = (nodes: ParserField[]) =>
   nodes.filter((n) => n.data.type !== TypeDefinition.InputObjectTypeDefinition);
+
+const filterLibraryNodes = (nodes: ParserField[]) =>
+  nodes.filter((n) => !n.fromLibrary).map((n) => ({
+    ...n,
+    args: n.args?.filter((a) => !a.fromLibrary),
+  }));

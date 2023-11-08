@@ -42,7 +42,7 @@ export const PanZoom: React.FC<{
   const { setTransform } = useControls();
 
   const { getContext } = useTransformContext();
-  const { editMode, baseTypesOn, fieldsOn, inputsOn, ctrlToZoom } =
+  const { editMode, baseTypesOn, fieldsOn, inputsOn, ctrlToZoom, libraryNodesOn } =
     useRelationsState();
   const [largeSimulationLoading, setLargeSimulationLoading] = useState(false);
   const [zoomingMode, setZoomingMode] = useState<"zoom" | "pan">("pan");
@@ -62,8 +62,9 @@ export const PanZoom: React.FC<{
     return nodeFilter(nodes, {
       baseTypesOn,
       inputsOn,
+      libraryNodesOn,
     });
-  }, [nodes, baseTypesOn, inputsOn]);
+  }, [nodes, baseTypesOn, inputsOn, libraryNodesOn]);
 
   const downloadPng = useCallback(() => {
     if (viewportParams?.height) {
