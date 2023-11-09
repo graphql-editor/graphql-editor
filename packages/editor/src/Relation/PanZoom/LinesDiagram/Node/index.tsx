@@ -198,10 +198,15 @@ interface NodeProps {
 export const Node: React.FC<NodeProps> = (props) => {
   const { numberNode, isLibrary } = props;
   const { parserField: field } = numberNode;
-  const { setSelectedNodeId, focusNode } = useTreesState();
+  const { setSelectedNodeId, focusNode, focusMode, exitFocus } =
+    useTreesState();
   const { setEditMode } = useRelationsState();
   const { isClick, mouseDown } = useClickDetector();
   const nodeRef = useRef<HTMLDivElement>(null);
+
+  const isFieldFocused = useMemo(() => {
+    return focusMode === field.id;
+  }, [field, focusMode]);
 
   const RelationFields = useMemo(() => {
     return (
@@ -245,10 +250,14 @@ export const Node: React.FC<NodeProps> = (props) => {
           <FocusNodeClickableButton
             onClick={(e) => {
               e.stopPropagation();
-              focusNode(field);
+              if (isFieldFocused) {
+                exitFocus();
+              } else {
+                focusNode(field);
+              }
             }}
           >
-            <span>Focus</span>
+            <span>{isFieldFocused ? "Unfocus" : "Focus"}</span>
             <EagleEye width={16} height={16} />
           </FocusNodeClickableButton>
           <EditNodeClickableButton
