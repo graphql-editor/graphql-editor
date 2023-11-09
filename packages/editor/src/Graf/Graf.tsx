@@ -91,44 +91,47 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
     setEditMode("");
   };
 
-  const handleNodeDuplication = useCallback((nodeToDuplicate: ParserField) => {
-    for (let i=1;;i++) {
-      const { ...rest } = nodeToDuplicate;
-      const newName = `${nodeToDuplicate?.name}Copy${i}`;
-      const newId = generateNodeId(
-        newName,
-        nodeToDuplicate.data.type,
-        nodeToDuplicate.args
-      );
-      const copyOfNodeAlreadyExists = tree.nodes.find(
-        (node) => node.id === newId
-      );
+  const handleNodeDuplication = useCallback(
+    (nodeToDuplicate: ParserField) => {
+      for (let i = 1; ; i++) {
+        const { ...rest } = nodeToDuplicate;
+        const newName = `${nodeToDuplicate?.name}Copy${i}`;
+        const newId = generateNodeId(
+          newName,
+          nodeToDuplicate.data.type,
+          nodeToDuplicate.args
+        );
+        const copyOfNodeAlreadyExists = tree.nodes.find(
+          (node) => node.id === newId
+        );
 
-      if (!copyOfNodeAlreadyExists) {
-        const duplicatedNode = JSON.parse(
-          JSON.stringify(
-            createParserField({
-              ...rest,
-              id: newId,
-              name: newName,
-            })
-          )
-        ) as ParserField;
+        if (!copyOfNodeAlreadyExists) {
+          const duplicatedNode = JSON.parse(
+            JSON.stringify(
+              createParserField({
+                ...rest,
+                id: newId,
+                name: newName,
+              })
+            )
+          ) as ParserField;
 
-        setTree({ nodes: [...tree.nodes, duplicatedNode] });
+          setTree({ nodes: [...tree.nodes, duplicatedNode] });
 
-        setSelectedNodeId({
-          value: {
-            id: duplicatedNode.id,
-            name: duplicatedNode.name,
-          },
-          source: "relation",
-        });
+          setSelectedNodeId({
+            value: {
+              id: duplicatedNode.id,
+              name: duplicatedNode.name,
+            },
+            source: "relation",
+          });
 
-        return;
-      } 
-    }
-  }, [tree.nodes])
+          return;
+        }
+      }
+    },
+    [tree.nodes]
+  );
 
   return (
     <SubNodeWrapper

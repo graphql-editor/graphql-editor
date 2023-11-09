@@ -42,8 +42,14 @@ export const PanZoom: React.FC<{
   const { setTransform } = useControls();
 
   const { getContext } = useTransformContext();
-  const { editMode, baseTypesOn, fieldsOn, inputsOn, ctrlToZoom, libraryNodesOn } =
-    useRelationsState();
+  const {
+    editMode,
+    baseTypesOn,
+    fieldsOn,
+    inputsOn,
+    ctrlToZoom,
+    libraryNodesOn,
+  } = useRelationsState();
   const [largeSimulationLoading, setLargeSimulationLoading] = useState(false);
   const [zoomingMode, setZoomingMode] = useState<"zoom" | "pan">("pan");
   const [viewportParams, setViewportParams] = useState<ViewportParams>();
