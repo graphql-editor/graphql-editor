@@ -83,18 +83,17 @@ export const ActiveField: React.FC<FieldProps> = ({
         )}
       {isFromInterface && (
         <>
-          <ActiveGrafType
-            type={node.type}
-            parentTypes={parentTypes}
-          />
+          <ActiveGrafType type={node.type} parentTypes={parentTypes} />
           <Tooltip
-            title={`This node comes from ${node.fromInterface?.join(", ")} and is editable in parent node only`}
+            title={`This node comes from ${node.fromInterface?.join(
+              ", "
+            )} and is editable in parent node only`}
             position="top-left"
           >
-              <LockContainer>
-                <Lock />
-              </LockContainer>
-            </Tooltip>
+            <LockContainer>
+              <Lock />
+            </LockContainer>
+          </Tooltip>
         </>
       )}
       {node.fromLibrary && (
