@@ -25,6 +25,8 @@ import { DOMEvents } from "@/shared/hooks/DOMClassNames";
 import {
   RELATION_NODE_MAX_FIELDS,
   RELATION_NODE_MAX_WIDTH,
+  PRINT_PREVIEW_RELATION_NODE_MAX_FIELDS,
+  PRINT_PREVIEW_RELATION_NODE_MAX_WIDTH,
 } from "@/Relation/shared/nodeLook";
 
 const Main = styled.div`
@@ -108,7 +110,7 @@ export const LinesDiagram = React.forwardRef<
     deselectNodes,
   } = useDomManagerTs(props.parentClass);
   const { setTransform, instance } = useControls();
-  const { editMode } = useRelationsState();
+  const { editMode, printPreviewActive } = useRelationsState();
   const {
     transformState: { scale },
   } = useTransformContext();
@@ -163,8 +165,12 @@ export const LinesDiagram = React.forwardRef<
           nodes,
           options: {
             iterations: 200,
-            maxFields: RELATION_NODE_MAX_FIELDS,
-            maxWidth: RELATION_NODE_MAX_WIDTH,
+            maxFields: printPreviewActive
+              ? PRINT_PREVIEW_RELATION_NODE_MAX_FIELDS
+              : RELATION_NODE_MAX_FIELDS,
+            maxWidth: printPreviewActive
+              ? PRINT_PREVIEW_RELATION_NODE_MAX_WIDTH
+              : RELATION_NODE_MAX_WIDTH,
             ignoreAlphaCalculation: true,
           },
         }).then(({ nodes: positionedNodes, ...positionParams }) => {
@@ -173,7 +179,7 @@ export const LinesDiagram = React.forwardRef<
         });
       },
     }),
-    [nodes]
+    [nodes, printPreviewActive]
   );
 
   useEffect(() => {
@@ -260,15 +266,19 @@ export const LinesDiagram = React.forwardRef<
       options: {
         existingNumberNodes: simulatedNodes,
         iterations: 200,
-        maxWidth: RELATION_NODE_MAX_WIDTH,
-        maxFields: RELATION_NODE_MAX_FIELDS,
+        maxWidth: printPreviewActive
+          ? PRINT_PREVIEW_RELATION_NODE_MAX_WIDTH
+          : RELATION_NODE_MAX_WIDTH,
+        maxFields: printPreviewActive
+          ? PRINT_PREVIEW_RELATION_NODE_MAX_FIELDS
+          : RELATION_NODE_MAX_FIELDS,
       },
     }).then(({ nodes: positionedNodes, ...positionParams }) => {
       props.setViewportParams(positionParams);
       setSimulatedNodes(positionedNodes);
     });
     return;
-  }, [nodes]);
+  }, [nodes, printPreviewActive]);
 
   useLayoutEffect(() => {
     if (!simulatedNodes) {
@@ -317,7 +327,9 @@ export const LinesDiagram = React.forwardRef<
             }
         )
     );
-    runAfterFramePaint(() => setLoading(false));
+    runAfterFramePaint(() => {
+      setLoading(false);
+    });
   }, [simulatedNodes]);
 
   const SvgLinesContainer = useMemo(() => {

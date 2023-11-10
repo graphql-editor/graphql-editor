@@ -5,10 +5,12 @@ import { FIELD_NAME_SIZE } from "@/Graf/constants";
 import { ActiveType } from "@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveType";
 import { Stack } from "@aexol-studio/styling-system";
 
-const Main = styled.div`
+const Main = styled.div<{ printPreviewActive: boolean }>`
   display: flex;
-  flex-flow: row nowrap;
-  overflow-x: auto;
+  flex-flow: ${({ printPreviewActive }) =>
+    printPreviewActive ? "row wrap" : "row nowrap"};
+  overflow-x: ${({ printPreviewActive }) =>
+    printPreviewActive ? "unset" : "auto"};
   * {
     text-overflow: ellipsis;
   }
@@ -26,13 +28,14 @@ const Comma = styled.span`
 
 export const ActiveFieldName: React.FC<
   Pick<ParserField, "name" | "args"> & {
+    printPreviewActive: boolean;
     parentTypes?: Record<string, string>;
     onClick?: (n: ParserField) => void;
   }
-> = ({ args, name, parentTypes, onClick }) => {
+> = ({ args, name, parentTypes, onClick, printPreviewActive }) => {
   if (args && args.length > 0) {
     return (
-      <Main>
+      <Main printPreviewActive={printPreviewActive}>
         <Name>{name}</Name>
         {args && (
           <>

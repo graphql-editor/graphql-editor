@@ -26,6 +26,7 @@ export const Relation: React.FC<{ setInitialSchema: (s: string) => void }> = ({
   });
   const isFocus = !!(focusMode && filteredFocusedNodes);
   const viewport = useMemo(() => {
+    console.timeLog("ddddviewport rerender");
     return (
       <>
         <TransformWrapper

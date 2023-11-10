@@ -8,6 +8,8 @@ const useRelationsContainer = createContainer(() => {
   const [ctrlToZoom, setCtrlToZoom] = useState(true);
   const [editMode, setEditMode] = useState("");
   const [libraryNodesOn, setLibraryNodesOn] = useState(true);
+  const [printPreviewActive, setPrintPreviewActive] = useState(false);
+  const [printPreviewReady, setPrintPreviewReady] = useState(false);
 
   return {
     setBaseTypesOn,
@@ -22,6 +24,10 @@ const useRelationsContainer = createContainer(() => {
     setCtrlToZoom,
     libraryNodesOn,
     setLibraryNodesOn,
+    printPreviewActive,
+    setPrintPreviewActive,
+    printPreviewReady,
+    setPrintPreviewReady,
   };
 });
 

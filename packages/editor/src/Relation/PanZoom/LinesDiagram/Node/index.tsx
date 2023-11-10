@@ -16,6 +16,8 @@ import { NumberNode } from "graphql-editor-worker";
 import { DOMClassNames } from "@/shared/hooks/DOMClassNames";
 import { useClickDetector } from "@/shared/hooks/useClickDetector";
 import {
+  PRINT_PREVIEW_RELATION_NODE_MAX_FIELDS,
+  PRINT_PREVIEW_RELATION_NODE_MAX_WIDTH,
   RELATION_NODE_MAX_FIELDS,
   RELATION_NODE_MAX_WIDTH,
 } from "@/Relation/shared/nodeLook";
@@ -27,10 +29,17 @@ interface ContentProps {
   isLibrary?: boolean;
   readOnly?: boolean;
   width: number;
+  printPreviewActive: boolean;
 }
 
 const Content = styled.div<ContentProps>`
-  width: ${(p) => Math.min(p.width, RELATION_NODE_MAX_WIDTH)}px;
+  width: ${(p) =>
+    Math.min(
+      p.width,
+      p.printPreviewActive
+        ? PRINT_PREVIEW_RELATION_NODE_MAX_WIDTH
+        : RELATION_NODE_MAX_WIDTH
+    )}px;
   background-color: ${({ theme }) => `${theme.neutral[600]}`};
   padding: 12px;
   position: relative;
@@ -200,7 +209,7 @@ export const Node: React.FC<NodeProps> = (props) => {
   const { parserField: field } = numberNode;
   const { setSelectedNodeId, focusNode, focusMode, exitFocus } =
     useTreesState();
-  const { setEditMode } = useRelationsState();
+  const { setEditMode, printPreviewActive } = useRelationsState();
   const { isClick, mouseDown } = useClickDetector();
   const nodeRef = useRef<HTMLDivElement>(null);
 
@@ -209,12 +218,15 @@ export const Node: React.FC<NodeProps> = (props) => {
   }, [field, focusMode]);
 
   const RelationFields = useMemo(() => {
+    const maxFields = printPreviewActive
+      ? PRINT_PREVIEW_RELATION_NODE_MAX_FIELDS
+      : RELATION_NODE_MAX_FIELDS;
     return (
       <NodeRelationFields className={`${DOMClassNames.nodeFields}`}>
-        {field.args.slice(0, RELATION_NODE_MAX_FIELDS).map((a) => (
+        {field.args.slice(0, maxFields).map((a) => (
           <Field key={a.name} node={a} />
         ))}
-        {field.args.length > RELATION_NODE_MAX_FIELDS && (
+        {field.args.length > maxFields && (
           <EditToSeeWhole
             onClick={(e) => {
               e.stopPropagation();
@@ -230,16 +242,13 @@ export const Node: React.FC<NodeProps> = (props) => {
             align="center"
             justify="center"
           >
-            <span>
-              Open to see {field.args.length - RELATION_NODE_MAX_FIELDS} more
-              fields
-            </span>
+            <span>Open to see {field.args.length - maxFields} more fields</span>
             <ChevronRightDouble />
           </EditToSeeWhole>
         )}
       </NodeRelationFields>
     );
-  }, [JSON.stringify(field)]);
+  }, [JSON.stringify(field), printPreviewActive]);
 
   const NodeContent = useMemo(
     () => (
@@ -298,6 +307,7 @@ export const Node: React.FC<NodeProps> = (props) => {
           source: "relation",
         });
       }}
+      printPreviewActive={printPreviewActive}
     >
       {NodeContent}
       {RelationFields}

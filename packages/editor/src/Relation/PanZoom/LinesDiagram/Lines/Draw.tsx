@@ -3,7 +3,6 @@ import { transition } from "@/vars";
 import styled from "@emotion/styled";
 import { FieldType, Options } from "graphql-js-tree";
 import React from "react";
-// import { RELATION_CONSTANTS } from './constants';
 
 interface Point {
   x: number;

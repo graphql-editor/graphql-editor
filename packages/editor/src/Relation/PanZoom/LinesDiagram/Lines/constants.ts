@@ -5,3 +5,5 @@ export const RELATION_CONSTANTS = {
   TOP_HEIGHT: 52,
   SEARCHBAR_HEIGHT: 30,
 };
+
+export const PRINT_PREVIEW_FIELD_HEIGHT = "auto";
