@@ -21,7 +21,7 @@ jobs:
       - name: Install wrangler
         run: npm i wrangler
       - name: Idempotent project create
-        run: npx wrangler pages project create graphql-editor-dev
+        run: npx wrangler pages project create graphql-editor-dev --production-branch develop
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
