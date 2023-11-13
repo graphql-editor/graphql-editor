@@ -16,3 +16,12 @@ jobs:
         run: npm install
       - name: Build
         run: npm run build --ws --if-present
+      - name: Build landing
+        run: npm run build-web -w sandbox
+      - name: Install wrangler
+        run: npm i wrangler
+      - name: Idempotent project create
+        run: npx wrangler pages project create graphql-editor-dev
+        continue-on-error: true
+      - name: Publish output
+        run: npx wrangler pages deploy ./packages/sandbox/out --branch develop --project-name graphql-editor-dev

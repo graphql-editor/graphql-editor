@@ -7,6 +7,7 @@ build
 dist
 docs-dist
 lib
+packages/sandbox/out
 .idea
 .docz
 .tscache
