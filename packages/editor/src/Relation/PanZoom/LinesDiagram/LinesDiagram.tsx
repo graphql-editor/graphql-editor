@@ -110,7 +110,8 @@ export const LinesDiagram = React.forwardRef<
     deselectNodes,
   } = useDomManagerTs(props.parentClass);
   const { setTransform, instance } = useControls();
-  const { editMode, printPreviewActive } = useRelationsState();
+  const { editMode, printPreviewActive, setPrintPreviewReady } =
+    useRelationsState();
   const {
     transformState: { scale },
   } = useTransformContext();
@@ -329,8 +330,11 @@ export const LinesDiagram = React.forwardRef<
     );
     runAfterFramePaint(() => {
       setLoading(false);
+      if (printPreviewActive) {
+        setPrintPreviewReady(true);
+      }
     });
-  }, [simulatedNodes]);
+  }, [simulatedNodes, printPreviewActive]);
 
   const SvgLinesContainer = useMemo(() => {
     return <Lines relations={relations} />;

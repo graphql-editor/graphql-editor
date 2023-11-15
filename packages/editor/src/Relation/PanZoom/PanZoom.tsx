@@ -51,6 +51,8 @@ export const PanZoom: React.FC<{
     libraryNodesOn,
     setPrintPreviewActive,
     setPrintPreviewReady,
+    printPreviewReady,
+    printPreviewActive,
   } = useRelationsState();
   const [largeSimulationLoading, setLargeSimulationLoading] = useState(false);
   const [zoomingMode, setZoomingMode] = useState<"zoom" | "pan">("pan");
@@ -74,10 +76,8 @@ export const PanZoom: React.FC<{
     });
   }, [nodes, baseTypesOn, inputsOn, libraryNodesOn]);
 
-  const downloadPng = useCallback(() => {
-    setPrintPreviewActive(true);
-
-    setTimeout(() => {
+  useEffect(() => {
+    if (printPreviewReady && printPreviewActive) {
       if (viewportParams?.height) {
         const ctx = getContext();
         setParamsBeforeExport({
@@ -85,11 +85,13 @@ export const PanZoom: React.FC<{
           y: ctx.state.positionY,
           scale: ctx.state.scale,
         });
-        setTransform(-viewportParams.x, -viewportParams.y, 1, 0);
-        setSelectedNodeId({ source: "relation", value: undefined });
       }
-    }, 10000);
-  }, [mainRef, viewportParams]);
+    }
+  }, [printPreviewReady, viewportParams, mainRef]);
+
+  const downloadPng = useCallback(() => {
+    setPrintPreviewActive(true);
+  }, []);
 
   useEffect(() => {
     if (largeSimulationLoading) {
@@ -105,7 +107,7 @@ export const PanZoom: React.FC<{
   }, [largeSimulationLoading]);
 
   useEffect(() => {
-    if (paramsBeforeExport) {
+    if (paramsBeforeExport && viewportParams) {
       setLoading(true);
       setLoadingCounter(Math.floor(filteredNodes.length / 20));
       setTimeout(() => {
@@ -117,6 +119,8 @@ export const PanZoom: React.FC<{
       );
 
       setTimeout(() => {
+        setTransform(-viewportParams.x, -viewportParams.y, 1, 0);
+        setSelectedNodeId({ source: "relation", value: undefined });
         const refElem = mainRef.current?.parentElement as HTMLDivElement;
         if (!refElem || refElem === null || !viewportParams) {
           return;
@@ -139,6 +143,8 @@ export const PanZoom: React.FC<{
             });
           })
           .finally(() => {
+            setPrintPreviewActive(false);
+            setPrintPreviewReady(false);
             setTransform(
               paramsBeforeExport.x,
               paramsBeforeExport.y,
@@ -148,8 +154,6 @@ export const PanZoom: React.FC<{
             clearInterval(interval);
             setLoading(false);
             setParamsBeforeExport(undefined);
-            setPrintPreviewActive(false);
-            setPrintPreviewReady(false);
           });
       }, 2000);
     }

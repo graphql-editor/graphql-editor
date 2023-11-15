@@ -19,36 +19,37 @@ export const Relation: React.FC<{ setInitialSchema: (s: string) => void }> = ({
   const { activeNode, focusMode, allNodes } = useTreesState();
   const { filteredFocusedNodes, filteredRelationNodes } =
     useRelationNodesState();
-  const { editMode, ctrlToZoom } = useRelationsState();
+  const { editMode, ctrlToZoom, printPreviewActive } = useRelationsState();
   const { set, routes } = useRouter();
   const [popupsState, setPopupsState] = useState({
     import: false,
   });
   const isFocus = !!(focusMode && filteredFocusedNodes);
   const viewport = useMemo(() => {
-    console.timeLog("ddddviewport rerender");
     return (
       <>
-        <TransformWrapper
-          initialScale={1}
-          disabled={isFocus}
-          maxScale={1.5}
-          wheel={{
-            activationKeys: ctrlToZoom ? ["Control", "OS", "Meta"] : [],
-            step: 0.03,
-          }}
-          minScale={0.1}
-          limitToBounds={false}
-        >
-          <PanZoom
-            hide={isFocus}
-            parentClass="all"
-            nodes={filteredRelationNodes}
-          />
-        </TransformWrapper>
+        {(!printPreviewActive || !isFocus) && (
+          <TransformWrapper
+            initialScale={1}
+            disabled={isFocus}
+            maxScale={1.5}
+            wheel={{
+              activationKeys: ctrlToZoom ? ["Control", "OS", "Meta"] : [],
+              step: 0.03,
+            }}
+            minScale={0.1}
+            limitToBounds={false}
+          >
+            <PanZoom
+              hide={isFocus}
+              parentClass="all"
+              nodes={filteredRelationNodes}
+            />
+          </TransformWrapper>
+        )}
       </>
     );
-  }, [filteredRelationNodes, isFocus, ctrlToZoom]);
+  }, [filteredRelationNodes, isFocus, ctrlToZoom, printPreviewActive]);
   return (
     <RelationContainer>
       {viewport}
