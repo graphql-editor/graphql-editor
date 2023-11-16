@@ -9,6 +9,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "start": "webpack serve --port 1568 --hot --open",
+    "build-web": "webpack build --config ./webpack.build.js --progress",
     "start-ci": "webpack serve --config ./webpack.config.ci.js --port 1568 --hot --open",
     "e2e:test": "cypress open",
     "lint": "eslint \"./src/**/*.{ts,js}\" --quiet --fix && prettier --write \"./src/**/*.{ts,js}\" "

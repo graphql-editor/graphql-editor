@@ -1,7 +1,7 @@
 on:
   push:
-    branches:
-      - develop
+    branches-ignore:    
+      - master
 jobs:
   develop:
     runs-on: ubuntu-latest
@@ -16,3 +16,19 @@ jobs:
         run: npm install
       - name: Build
         run: npm run build --ws --if-present
+      - name: Build landing
+        run: npm run build-web -w sandbox
+      - name: Install wrangler
+        run: npm i wrangler
+      - name: Idempotent project create
+        run: npx wrangler pages project create graphql-editor-dev --production-branch develop
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+        continue-on-error: true
+      - name: Publish output
+        run: npx wrangler pages deploy ./packages/sandbox/out --branch ${GITHUB_REF##*/} --project-name graphql-editor-dev
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
