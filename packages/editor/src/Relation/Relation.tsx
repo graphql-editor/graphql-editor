@@ -28,25 +28,25 @@ export const Relation: React.FC<{ setInitialSchema: (s: string) => void }> = ({
   const viewport = useMemo(() => {
     return (
       <>
-        {(!printPreviewActive || !isFocus) && (
-          <TransformWrapper
-            initialScale={1}
-            disabled={isFocus}
-            maxScale={1.5}
-            wheel={{
-              activationKeys: ctrlToZoom ? ["Control", "OS", "Meta"] : [],
-              step: 0.03,
-            }}
-            minScale={0.1}
-            limitToBounds={false}
-          >
+        <TransformWrapper
+          initialScale={1}
+          disabled={isFocus}
+          maxScale={1.5}
+          wheel={{
+            activationKeys: ctrlToZoom ? ["Control", "OS", "Meta"] : [],
+            step: 0.03,
+          }}
+          minScale={0.1}
+          limitToBounds={false}
+        >
+          {(!printPreviewActive || !isFocus) && (
             <PanZoom
               hide={isFocus}
               parentClass="all"
               nodes={filteredRelationNodes}
             />
-          </TransformWrapper>
-        )}
+          )}
+        </TransformWrapper>
       </>
     );
   }, [filteredRelationNodes, isFocus, ctrlToZoom, printPreviewActive]);

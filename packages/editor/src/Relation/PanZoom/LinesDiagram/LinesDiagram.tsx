@@ -110,8 +110,12 @@ export const LinesDiagram = React.forwardRef<
     deselectNodes,
   } = useDomManagerTs(props.parentClass);
   const { setTransform, instance } = useControls();
-  const { editMode, printPreviewActive, setPrintPreviewReady } =
-    useRelationsState();
+  const {
+    editMode,
+    printPreviewActive,
+    printPreviewReady,
+    setPrintPreviewReady,
+  } = useRelationsState();
   const {
     transformState: { scale },
   } = useTransformContext();
@@ -131,31 +135,33 @@ export const LinesDiagram = React.forwardRef<
   };
 
   useEffect(() => {
-    const selectDisposable = DOMEvents.selectNode.disposable(
-      (nodeId?: string) => {
-        if (nodeId) {
-          const toNode = simulatedNodes?.find(
-            (sn) => sn.parserField.id === nodeId
-          );
-          selectNode(nodeId);
-          if (toNode) {
-            const rts = relatedToSelectedTypes(toNode.parserField);
-            const ids = allNodes.nodes
-              .filter((n) => rts?.includes(n.name))
-              .map((n) => n.id);
+    if (!printPreviewActive) {
+      const selectDisposable = DOMEvents.selectNode.disposable(
+        (nodeId?: string) => {
+          if (nodeId) {
+            const toNode = simulatedNodes?.find(
+              (sn) => sn.parserField.id === nodeId
+            );
+            selectNode(nodeId);
+            if (toNode) {
+              const rts = relatedToSelectedTypes(toNode.parserField);
+              const ids = allNodes.nodes
+                .filter((n) => rts?.includes(n.name))
+                .map((n) => n.id);
 
-            if (ids?.length) {
-              markRelated(ids);
+              if (ids?.length) {
+                markRelated(ids);
+              }
+              zoomToNode(toNode.x, toNode.y);
             }
-            zoomToNode(toNode.x, toNode.y);
+          } else {
+            deselectNodes();
           }
-        } else {
-          deselectNodes();
         }
-      }
-    );
-    return () => selectDisposable.dispose();
-  }, [simulatedNodes]);
+      );
+      return () => selectDisposable.dispose();
+    }
+  }, [simulatedNodes, printPreviewActive]);
 
   useImperativeHandle(
     ref,
@@ -166,12 +172,8 @@ export const LinesDiagram = React.forwardRef<
           nodes,
           options: {
             iterations: 200,
-            maxFields: printPreviewActive
-              ? PRINT_PREVIEW_RELATION_NODE_MAX_FIELDS
-              : RELATION_NODE_MAX_FIELDS,
-            maxWidth: printPreviewActive
-              ? PRINT_PREVIEW_RELATION_NODE_MAX_WIDTH
-              : RELATION_NODE_MAX_WIDTH,
+            maxFields: RELATION_NODE_MAX_FIELDS,
+            maxWidth: RELATION_NODE_MAX_WIDTH,
             ignoreAlphaCalculation: true,
           },
         }).then(({ nodes: positionedNodes, ...positionParams }) => {
@@ -180,11 +182,11 @@ export const LinesDiagram = React.forwardRef<
         });
       },
     }),
-    [nodes, printPreviewActive]
+    [nodes]
   );
 
   useEffect(() => {
-    if (!selectedNodeId?.value?.id && simulatedNodes) {
+    if (!selectedNodeId?.value?.id && simulatedNodes && !printPreviewActive) {
       const schemaNode = simulatedNodes?.find(
         (sn) => sn.parserField.name === "Query"
       );
@@ -197,7 +199,7 @@ export const LinesDiagram = React.forwardRef<
         }
       }
     }
-  }, [simulatedNodes]);
+  }, [simulatedNodes, printPreviewActive]);
 
   useLayoutEffect(() => {
     if (!props.loading) {
@@ -219,7 +221,7 @@ export const LinesDiagram = React.forwardRef<
     state: ReactZoomPanPinchState,
     wrapper: HTMLDivElement
   ) => {
-    if (simulatedNodes && !props.hide) {
+    if (simulatedNodes && !props.hide && !printPreviewActive) {
       const size = wrapper.getBoundingClientRect();
       changeZoomInTopBar(state.scale);
       if (!size) return;
@@ -330,11 +332,11 @@ export const LinesDiagram = React.forwardRef<
     );
     runAfterFramePaint(() => {
       setLoading(false);
-      if (printPreviewActive) {
+      if (printPreviewActive && !printPreviewReady && !props.hide) {
         setPrintPreviewReady(true);
       }
     });
-  }, [simulatedNodes, printPreviewActive]);
+  }, [simulatedNodes, printPreviewActive, printPreviewReady, props.hide]);
 
   const SvgLinesContainer = useMemo(() => {
     return <Lines relations={relations} />;

@@ -52,7 +52,6 @@ export const PanZoom: React.FC<{
     setPrintPreviewActive,
     setPrintPreviewReady,
     printPreviewReady,
-    printPreviewActive,
   } = useRelationsState();
   const [largeSimulationLoading, setLargeSimulationLoading] = useState(false);
   const [zoomingMode, setZoomingMode] = useState<"zoom" | "pan">("pan");
@@ -76,22 +75,19 @@ export const PanZoom: React.FC<{
     });
   }, [nodes, baseTypesOn, inputsOn, libraryNodesOn]);
 
-  useEffect(() => {
-    if (printPreviewReady && printPreviewActive) {
-      if (viewportParams?.height) {
-        const ctx = getContext();
-        setParamsBeforeExport({
-          x: ctx.state.positionX,
-          y: ctx.state.positionY,
-          scale: ctx.state.scale,
-        });
-      }
-    }
-  }, [printPreviewReady, viewportParams, mainRef]);
-
   const downloadPng = useCallback(() => {
-    setPrintPreviewActive(true);
-  }, []);
+    if (viewportParams?.height) {
+      //setLargeSimulationLoading(true);
+      setSelectedNodeId({ source: "relation", value: undefined });
+      setPrintPreviewActive(true);
+      const ctx = getContext();
+      setParamsBeforeExport({
+        x: ctx.state.positionX,
+        y: ctx.state.positionY,
+        scale: ctx.state.scale,
+      });
+    }
+  }, [mainRef, JSON.stringify(viewportParams)]);
 
   useEffect(() => {
     if (largeSimulationLoading) {
@@ -107,7 +103,7 @@ export const PanZoom: React.FC<{
   }, [largeSimulationLoading]);
 
   useEffect(() => {
-    if (paramsBeforeExport && viewportParams) {
+    if (paramsBeforeExport && viewportParams && printPreviewReady && !hide) {
       setLoading(true);
       setLoadingCounter(Math.floor(filteredNodes.length / 20));
       setTimeout(() => {
@@ -120,7 +116,6 @@ export const PanZoom: React.FC<{
 
       setTimeout(() => {
         setTransform(-viewportParams.x, -viewportParams.y, 1, 0);
-        setSelectedNodeId({ source: "relation", value: undefined });
         const refElem = mainRef.current?.parentElement as HTMLDivElement;
         if (!refElem || refElem === null || !viewportParams) {
           return;
@@ -151,13 +146,18 @@ export const PanZoom: React.FC<{
               paramsBeforeExport.scale,
               0
             );
+            setParamsBeforeExport(undefined);
             clearInterval(interval);
             setLoading(false);
-            setParamsBeforeExport(undefined);
           });
       }, 2000);
     }
-  }, [paramsBeforeExport, viewportParams]);
+  }, [
+    JSON.stringify(paramsBeforeExport),
+    JSON.stringify(viewportParams),
+    printPreviewReady,
+    hide,
+  ]);
 
   useEffect(() => {
     const listenerDown = (ev: KeyboardEvent) => {
