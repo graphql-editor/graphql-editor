@@ -34,7 +34,6 @@ export const Lines: React.FC<LinesProps> = ({ relations }) => {
   return (
     <RelationsContainer>
       {relations?.map((r, index) => {
-        console.log("check i", r.interfaces);
         return (
           <>
             {r.from?.map((rf, relationNumber) => {
