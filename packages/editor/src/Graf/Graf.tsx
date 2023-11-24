@@ -1,5 +1,4 @@
 import React, { useEffect, useCallback } from "react";
-import { fontFamilySans } from "@/vars";
 import { ActiveNode } from "@/Graf/Node";
 import { useTreesState } from "@/state/containers/trees";
 
@@ -21,7 +20,7 @@ import { motion } from "framer-motion";
 import { isEditableParentField } from "@/utils";
 
 const SubNodeContainer = styled.div`
-  font-family: ${fontFamilySans};
+  font-family: ${({ theme }) => theme.fontFamilySans};
   transition: max-width 0.5s ease-in-out;
   max-width: 80%;
   bottom: 0;

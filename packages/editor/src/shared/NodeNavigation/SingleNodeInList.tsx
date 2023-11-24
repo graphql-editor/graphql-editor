@@ -7,7 +7,7 @@ import {
   useRelationNodesState,
   useRelationsState,
 } from "@/state/containers";
-import { fontFamilySans, transition } from "@/vars";
+import { transition } from "@/vars";
 import {
   Link,
   EagleEye,
@@ -332,7 +332,7 @@ const NodeName = styled.div<{
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-family: ${fontFamilySans};
+  font-family: ${({ theme }) => theme.fontFamilySans};
   font-size: 14px;
   color: ${({ theme }) => theme.text.default};
   transition: ${transition};

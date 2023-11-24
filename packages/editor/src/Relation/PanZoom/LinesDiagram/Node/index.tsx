@@ -1,7 +1,7 @@
 import { useRelationsState, useTreesState } from "@/state/containers";
 import { getTypeName } from "graphql-js-tree";
 import React, { useMemo, useRef } from "react";
-import { fontFamilySans, transition } from "@/vars";
+import { transition } from "@/vars";
 import styled from "@emotion/styled";
 import { EditorTheme } from "@/gshared/theme/MainTheme";
 import {
@@ -39,7 +39,7 @@ const Content = styled.div<ContentProps>`
   transition: 0.25s all ease-in-out;
   z-index: 1;
   flex: 1 0 auto;
-  font-family: ${fontFamilySans};
+  font-family: ${({ theme }) => theme.fontFamilySans};
   font-size: 14px;
   max-width: 66vw;
   visibility: hidden;
@@ -169,7 +169,7 @@ const NameInRelation = styled.span`
   margin-right: 5px;
   color: ${({ theme }) => theme.text.active};
   padding: 0;
-  font-family: ${fontFamilySans};
+  font-family: ${({ theme }) => theme.fontFamilySans};
 `;
 
 const EditToSeeWhole = styled(Stack)`

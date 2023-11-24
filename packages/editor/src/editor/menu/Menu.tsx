@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "@emotion/styled";
-import { fontFamilySans, transition } from "@/vars";
+import { transition } from "@/vars";
 import {
   Tool,
   Code,
@@ -46,7 +46,7 @@ const MenuItem = styled.div<{
   color: ${({ theme, isDisabled }) =>
     isDisabled ? theme.text.disabled : theme.text.default};
   padding: 1rem;
-  font-family: ${fontFamilySans};
+  font-family: ${({ theme }) => theme.fontFamilySans};
   cursor: ${({ isDisabled }) => (isDisabled ? "not-allowed" : "pointer")};
   transition: all 0.25s ease;
   overflow: visible;

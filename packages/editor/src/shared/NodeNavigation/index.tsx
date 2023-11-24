@@ -4,7 +4,7 @@ import { useIO, KeyboardActions } from "@/shared/hooks/io";
 import { NodeList, SchemaList } from "@/shared/NodeNavigation/NodeList";
 import { useRelationNodesState, useTreesState } from "@/state/containers";
 import { useSortState } from "@/state/containers/sort";
-import { fontFamilySans, transition } from "@/vars";
+import { transition } from "@/vars";
 import { Eye, EyeSlash, Tooltip } from "@aexol-studio/styling-system";
 import { keyframes } from "@emotion/react";
 import styled from "@emotion/styled";
@@ -64,7 +64,7 @@ const VisibilityBox = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  font-family: ${fontFamilySans};
+  font-family: ${({ theme }) => theme.fontFamilySans};
   font-size: 14px;
   cursor: pointer;
   color: ${({ theme }) => theme.text.disabled};
@@ -80,7 +80,7 @@ const VisibilityBox = styled.div`
 
 const Header = styled.div`
   font-size: 16px;
-  font-family: ${fontFamilySans};
+  font-family: ${({ theme }) => theme.fontFamilySans};
   font-weight: 500;
   color: ${({ theme }) => theme.text.disabled};
   white-space: nowrap;

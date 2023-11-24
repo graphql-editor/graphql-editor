@@ -6,7 +6,6 @@ import React, {
   useState,
 } from "react";
 import { settings } from "./monaco";
-import { fontFamily } from "@/vars";
 import { useErrorsState, useTheme, useTreesState } from "@/state/containers";
 
 import {
@@ -57,7 +56,7 @@ export const CodePane = React.forwardRef<CodePaneApi, CodePaneProps>(
     const codeSettings = useMemo(
       () => ({
         ...settings,
-        fontFamily,
+        fontFamily: theme.fontFamily,
         readOnly: readonly,
       }),
       [readonly]
