@@ -1,13 +1,13 @@
 import { themeColors } from "@aexol-studio/styling-system";
 import styled from "@emotion/styled";
 import { vars } from "graphql-editor";
-import { fontFamilySans } from "graphql-editor/lib/vars";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import * as apps from "./apps";
 import { Global, css } from "@emotion/react";
 
 const MainTheme = themeColors("graphqleditor", "dark");
+const fontFamilySans = `'Times New Roman'`;
 
 export type AppType = keyof typeof apps;
 const Wrapper = styled.div`
