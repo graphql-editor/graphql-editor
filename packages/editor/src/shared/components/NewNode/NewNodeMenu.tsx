@@ -12,7 +12,7 @@ import { useTreesState } from "@/state/containers/trees";
 import { Menu } from "@/Graf/Node/components";
 import styled from "@emotion/styled";
 import { transition } from "@/vars";
-import { Plus, Stack } from "@aexol-studio/styling-system";
+import { Plus, Stack, useToasts } from "@aexol-studio/styling-system";
 import { useRelationsState } from "@/state/containers";
 
 interface NodeChangeFieldTypeMenuProps {
@@ -23,6 +23,7 @@ export const NewNodeMenu = React.forwardRef<
   HTMLDivElement,
   NodeChangeFieldTypeMenuProps
 >(({ hideMenu, ...props }, ref) => {
+  const { createToast } = useToasts();
   const { setTree, tree, setSelectedNodeId, idempotentOperationAssign } =
     useTreesState();
   const { setEditMode } = useRelationsState();
@@ -57,36 +58,50 @@ export const NewNodeMenu = React.forwardRef<
     data: TypeDefinition | TypeSystemDefinition,
     type: string
   ) => {
-    const node = createParserField({
-      data: {
-        type: data,
-      },
-      name: nodeName,
-      type: {
-        fieldType: {
-          name: type,
-          type: Options.name,
+    const doesNodeAlreadyExist = tree.nodes.find(
+      (node) =>
+        node.name.toLowerCase() === nodeName.toLowerCase() &&
+        node.data.type === data
+    );
+    if (doesNodeAlreadyExist) {
+      setNodeName("");
+      createToast({
+        message: "Node creation failed. Node already exists.",
+        variant: "error",
+      });
+    } else {
+      const node = createParserField({
+        data: {
+          type: data,
         },
-        ...(data === TypeSystemDefinition.DirectiveDefinition
-          ? {
-              directiveOptions: [Directive.OBJECT],
-            }
-          : {}),
-      },
-    });
-    idempotentOperationAssign(node);
+        name: nodeName,
+        type: {
+          fieldType: {
+            name: type,
+            type: Options.name,
+          },
+          ...(data === TypeSystemDefinition.DirectiveDefinition
+            ? {
+                directiveOptions: [Directive.OBJECT],
+              }
+            : {}),
+        },
+      });
+      idempotentOperationAssign(node);
 
-    tree.nodes.push(node);
-    setTree({ ...tree });
-    setSelectedNodeId({
-      source: "relation",
-      value: {
-        id: node.id,
-        name: node.name,
-      },
-      justCreated: true,
-    });
-    setEditMode(node.id);
+      tree.nodes.push(node);
+      setTree({ ...tree });
+      setSelectedNodeId({
+        source: "relation",
+        value: {
+          id: node.id,
+          name: node.name,
+        },
+        justCreated: true,
+      });
+      setEditMode(node.id);
+      hideMenu();
+    }
   };
 
   return (
@@ -111,7 +126,6 @@ export const NewNodeMenu = React.forwardRef<
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     createNode(nt.data, nt.type);
-                    hideMenu();
                   }
                   if (e.key === "Escape") {
                     setCreating(undefined);
