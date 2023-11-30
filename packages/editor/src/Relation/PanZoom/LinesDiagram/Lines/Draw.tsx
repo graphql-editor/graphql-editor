@@ -114,7 +114,7 @@ export const Draw = ({
         <path
           stroke={stroke}
           strokeWidth={fac}
-          strokeDasharray={getLineType()}
+          strokeDasharray={getLineType}
           d={`M ${t.x} ${t.y}
            Q ${bezier1.x} ${bezier1.y} ${center.x} ${center.y}
            Q ${bezier2.x} ${bezier2.y} ${f.x} ${f.y}`}
