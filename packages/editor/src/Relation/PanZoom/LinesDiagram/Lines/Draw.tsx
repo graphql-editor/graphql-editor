@@ -39,7 +39,7 @@ export const Draw = ({
       relationType.type === Options.name &&
       relationType.name === "refInterface"
     ) {
-      return "2 5";
+      return "2 7";
     }
     if (relationType.type === Options.required) {
       return undefined;

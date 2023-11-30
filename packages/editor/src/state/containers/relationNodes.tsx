@@ -80,7 +80,21 @@ const useRelationNodes = createContainer(() => {
               a.args.some((aaa) => getTypeName(aaa.type.fieldType) === n.name)
           )
         );
-        const relatedFocusNodes = [...children, ...parents, ...argChildren, n];
+        const interfacesRelatedToNode = allNodes.nodes.filter((node) =>
+          n.interfaces.includes(node.name)
+        );
+        const nodesRelatedToInterface =
+          n.data.type === TypeDefinition.InterfaceTypeDefinition
+            ? allNodes.nodes.filter((node) => node.interfaces.includes(n.name))
+            : [];
+        const relatedFocusNodes = [
+          ...children,
+          ...parents,
+          ...argChildren,
+          ...interfacesRelatedToNode,
+          ...nodesRelatedToInterface,
+          n,
+        ];
         return relatedFocusNodes
           .filter(
             (n, i) =>
