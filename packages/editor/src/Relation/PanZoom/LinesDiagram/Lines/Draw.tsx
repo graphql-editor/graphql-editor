@@ -2,7 +2,7 @@ import { DOMClassNames } from "@/shared/hooks/DOMClassNames";
 import { transition } from "@/vars";
 import styled from "@emotion/styled";
 import { FieldType, Options } from "graphql-js-tree";
-import React, { useCallback } from "react";
+import React, { useMemo } from "react";
 // import { RELATION_CONSTANTS } from './constants';
 
 interface Point {
@@ -34,7 +34,7 @@ export const Draw = ({
 }) => {
   const stroke = color;
 
-  const getLineType = useCallback(() => {
+  const getLineType = useMemo(() => {
     if (
       relationType.type === Options.name &&
       relationType.name === "refInterface"
@@ -114,7 +114,7 @@ export const Draw = ({
         <path
           stroke={stroke}
           strokeWidth={fac}
-          strokeDasharray={getLineType()}
+          strokeDasharray={getLineType}
           d={`M ${t.x} ${t.y}
            Q ${bezier1.x} ${bezier1.y} ${center.x} ${center.y}
            Q ${bezier2.x} ${bezier2.y} ${f.x} ${f.y}`}
