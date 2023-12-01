@@ -139,7 +139,6 @@ const TooltippedZoom = styled.div`
   border: 0;
   text-align: center;
   color: ${({ theme }) => theme.text.default};
-  font-family: ${({ theme }) => theme.fontFamilySans};
   cursor: pointer;
   border-radius: 4px;
   display: flex;
@@ -151,7 +150,6 @@ const IconWrapper = styled.div`
   font-size: 12px;
   font-weight: 500;
   color: ${({ theme }) => theme.text.disabled};
-  font-family: ${({ theme }) => theme.fontFamilySans};
   cursor: pointer;
   display: flex;
   user-select: none;
@@ -173,6 +171,7 @@ const ZoomWrapper = styled.div`
   border-width: 1px;
   border-radius: ${(p) => p.theme.radius}px;
   gap: 8px;
+  font-family: ${({ theme }) => theme.fontFamilySans};
 `;
 
 const Menu = styled.div`

@@ -7,7 +7,7 @@ import * as apps from "./apps";
 import { Global, css } from "@emotion/react";
 
 const MainTheme = themeColors("graphqleditor", "dark");
-const fontFamilySans = `'Times New Roman'`;
+const fontFamilySans = "Arial";
 
 export type AppType = keyof typeof apps;
 const Wrapper = styled.div`

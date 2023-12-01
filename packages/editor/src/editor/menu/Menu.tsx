@@ -29,6 +29,7 @@ const Sidebar = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1px;
+  font-family: ${({ theme }) => theme.fontFamilySans};
 `;
 const Filler = styled.div`
   flex: 1;

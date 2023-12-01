@@ -17,9 +17,6 @@ export const MainTheme = {
   fontFamilySans: `'Fira Sans', 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace`,
 };
 
-type MainThemeType = Omit<typeof MainTheme, "fontFamily" | "fontFamilySans"> & {
-  fontFamily?: string;
-  fontFamilySans?: string;
-};
+type MainThemeType = typeof MainTheme;
 
 export type EditorTheme = ITheme & MainThemeType;
