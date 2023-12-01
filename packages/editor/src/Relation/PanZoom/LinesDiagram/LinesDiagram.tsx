@@ -84,6 +84,13 @@ export interface LinesDiagramApi {
   triggerResimulation: () => void;
 }
 
+export interface RelationInterface {
+  to: RelationPath;
+  from: RelationPath[];
+  fromLength: number;
+  interfaces: NumberNode[];
+}
+
 export const LinesDiagram = React.forwardRef<
   LinesDiagramApi,
   LinesDiagramProps
@@ -240,10 +247,7 @@ export const LinesDiagram = React.forwardRef<
     }
   }, [props.fieldsOn]);
 
-  const [relations, setRelations] =
-    useState<
-      { to: RelationPath; from: RelationPath[]; fromLength: number }[]
-    >();
+  const [relations, setRelations] = useState<RelationInterface[]>();
 
   useEffect(() => {
     // compose existing positions
@@ -304,6 +308,11 @@ export const LinesDiagram = React.forwardRef<
                 return nodes.filter((node, i) => nodes.indexOf(node) === i);
               })
               .filter((o) => !!o),
+            interfaces: n.parserField.interfaces
+              .map((interfaceName) =>
+                simulatedNodes.find((n) => n.parserField.name === interfaceName)
+              )
+              .filter((i) => !!i),
           };
         })
         .filter((n) => n.from)
@@ -313,6 +322,7 @@ export const LinesDiagram = React.forwardRef<
               from: RelationPath[];
               to: RelationPath;
               fromLength: number;
+              interfaces: NumberNode[];
             }
         )
     );

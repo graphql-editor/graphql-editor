@@ -1,13 +1,21 @@
-import { BuiltInScalars } from '@/GraphQL/Resolve/BuiltInNodes';
-import { ParserField } from 'graphql-js-tree';
-import { match as ftest } from 'fuzzyjs';
+import { BuiltInScalars } from "@/GraphQL/Resolve/BuiltInNodes";
+import { ParserField } from "graphql-js-tree";
+import { match as ftest } from "fuzzyjs";
 const bar = 10;
 export const sortNodes = (menuSearchValue: string, fields: ParserField[]) => {
-  const [fieldName, fieldType] = menuSearchValue.split(' ');
+  const [fieldName, fieldType] = menuSearchValue.split(" ");
   const searchValue = (fieldType || fieldName).toLowerCase();
   const scalars = fields.filter((a) =>
-    BuiltInScalars.find((b) => a.name === b.name),
+    BuiltInScalars.find((b) => a.name === b.name)
   );
+  const matchingScalars = scalars.filter((scalar) =>
+    scalar.name.toLowerCase().startsWith(searchValue)
+  );
+  const sortedScalars = [
+    ...matchingScalars,
+    ...scalars.filter((el) => !matchingScalars.some((s) => s.name === el.name)),
+  ];
+
   fields = fields.filter((a) => !BuiltInScalars.find((b) => a.name === b.name));
   const exactMatchFields: ParserField[] = [];
   const worseMatchFields: ParserField[] = [];
@@ -34,5 +42,5 @@ export const sortNodes = (menuSearchValue: string, fields: ParserField[]) => {
       worseMatchFields.push(r.f);
     }
   });
-  return [...exactMatchFields, ...scalars, ...worseMatchFields];
+  return [...exactMatchFields, ...sortedScalars, ...worseMatchFields];
 };

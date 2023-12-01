@@ -24,7 +24,7 @@ import {
 import { useTreesState } from "@/state/containers/trees";
 import { getScalarFields } from "@/Graf/utils/getScalarFields";
 import styled from "@emotion/styled";
-import { ResolveExtension } from "@/GraphQL/Resolve";
+import { ResolveExtension, isExtensionNode } from "@/GraphQL/Resolve";
 import { transition } from "@/vars";
 import {
   AtSign,
@@ -246,40 +246,42 @@ export const TopNodeMenu: React.FC<{
                     )}
                   </>
                 )}
-                <DetailMenuItem
-                  onClick={() => {
-                    const extendNode = createParserField({
-                      data: {
-                        type: ResolveExtension(node.data.type),
-                      },
-                      description: undefined,
-                      type: {
-                        fieldType: {
-                          name: TypeDefinitionDisplayMap[
-                            ResolveExtension(node.data.type)
-                          ],
-                          type: Options.name,
+                {!isExtensionNode(node.data.type) && (
+                  <DetailMenuItem
+                    onClick={() => {
+                      const extendNode = createParserField({
+                        data: {
+                          type: ResolveExtension(node.data.type),
                         },
-                      },
-                      name: node.name,
-                      args: [],
-                      interfaces: [],
-                      directives: [],
-                    });
-                    tree.nodes.push(extendNode);
-                    setTree({ ...tree });
-                    setSelectedNodeId({
-                      value: {
-                        id: extendNode.id,
-                        name: extendNode.name,
-                      },
-                      source: "relation",
-                    });
-                  }}
-                >
-                  Extend node
-                </DetailMenuItem>
-                {onDuplicate && (
+                        description: undefined,
+                        type: {
+                          fieldType: {
+                            name: TypeDefinitionDisplayMap[
+                              ResolveExtension(node.data.type)
+                            ],
+                            type: Options.name,
+                          },
+                        },
+                        name: node.name,
+                        args: [],
+                        interfaces: [],
+                        directives: [],
+                      });
+                      tree.nodes.push(extendNode);
+                      setTree({ ...tree });
+                      setSelectedNodeId({
+                        value: {
+                          id: extendNode.id,
+                          name: extendNode.name,
+                        },
+                        source: "relation",
+                      });
+                    }}
+                  >
+                    Extend node
+                  </DetailMenuItem>
+                )}
+                {!isExtensionNode(node.data.type) && onDuplicate && (
                   <DetailMenuItem
                     onClick={() => {
                       setCloseMenu((prevValue) => !prevValue);

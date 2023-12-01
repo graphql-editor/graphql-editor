@@ -201,10 +201,22 @@ const useTreesStateContainer = createContainer(() => {
         )
       )
       .map((a) => a.name);
+    const interfacesRelatedToActiveNode = allNodes.nodes
+      .filter((node) => activeNode?.interfaces.includes(node.name))
+      .map((a) => a.name);
+    const nodesRelatedToActiveInterface =
+      activeNode &&
+      activeNode.data.type === TypeDefinition.InterfaceTypeDefinition
+        ? allNodes.nodes
+            .filter((node) => node.interfaces.includes(activeNode.name))
+            .map((a) => a.name)
+        : [];
     const notBaseTypes = activeNode?.args
       .map((a) => getTypeName(a.type.fieldType))
       .concat(parents || [])
       .concat(inputs)
+      .concat(interfacesRelatedToActiveNode)
+      .concat(nodesRelatedToActiveInterface)
       .filter((n) => !isBaseScalar(n));
     const filtered = notBaseTypes?.filter(
       (t, index) => index === notBaseTypes.indexOf(t)
