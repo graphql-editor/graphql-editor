@@ -28,6 +28,12 @@ export const ImportSchema: React.FC<{
   const { createToast } = useToasts();
 
   useEffect(() => {
+    setImportURL("");
+    setHeaders([]);
+    setProxyImport(false);
+  }, [open]);
+
+  useEffect(() => {
     if (headers.length) {
       if (headers.length > 1) {
         const lastHeader = headers[headers.length - 1];
