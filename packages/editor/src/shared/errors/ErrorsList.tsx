@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { fontFamilySans } from "@/vars";
 import styled from "@emotion/styled";
 import {
   ChevronDownDouble,
@@ -9,7 +8,7 @@ import {
 } from "@aexol-studio/styling-system";
 
 export const ErrorWrapper = styled(Stack)`
-  font-family: ${fontFamilySans};
+  font-family: ${({ theme }) => theme.fontFamilySans};
   height: 100%;
   position: absolute;
   top: 0;

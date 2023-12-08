@@ -25,6 +25,8 @@ export const github = () => {
           setMySchema(props);
         }}
         schema={mySchema}
+        fontFamily="Times New Roman"
+        fontFamilySans="Arial"
       />
     </div>
   );

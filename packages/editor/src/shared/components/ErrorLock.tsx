@@ -1,6 +1,5 @@
-import { fontFamily } from '@/vars';
-import React from 'react';
-import styled from '@emotion/styled';
+import React from "react";
+import styled from "@emotion/styled";
 
 const Main = styled.div`
   width: 100%;
@@ -13,7 +12,7 @@ const Main = styled.div`
 `;
 
 const Message = styled.textarea`
-  font-family: ${fontFamily};
+  font-family: ${({ theme }) => theme.fontFamily};
   font-size: 14px;
   padding: 30px;
   color: ${({ theme }) => theme.error};

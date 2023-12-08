@@ -1,12 +1,11 @@
-import { fontFamilySans } from '@/vars';
-import styled from '@emotion/styled';
-import React from 'react';
+import styled from "@emotion/styled";
+import React from "react";
 
 const StyledHeading = styled.h1`
   font-size: 14px;
   font-weight: 500;
   color: ${({ theme }) => theme.text.disabled};
-  font-family: ${fontFamilySans};
+  font-family: ${({ theme }) => theme.fontFamilySans};
 `;
 
 interface HeadingProps {

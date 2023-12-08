@@ -3,7 +3,6 @@ import styled from "@emotion/styled";
 import React, { useState } from "react";
 import { Parser, TreeToGraphQL } from "graphql-js-tree";
 import { useSortState } from "@/state/containers/sort";
-import { fontFamilySans } from "@/vars";
 import { Arrow_AZ, Stack, Typography } from "@aexol-studio/styling-system";
 
 interface DiffEditorProps {
@@ -32,7 +31,7 @@ const Heading = styled.h1`
   font-size: 14px;
   font-weight: 500;
   color: ${({ theme }) => theme.text.disabled};
-  font-family: ${fontFamilySans};
+  font-family: ${({ theme }) => theme.fontFamilySans};
 `;
 
 const AZContainer = styled.div<{ active?: boolean }>`

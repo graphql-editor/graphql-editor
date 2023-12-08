@@ -29,6 +29,8 @@ export const GraphQLEditor = React.forwardRef<ExternalEditorAPI, EditorProps>(
     const combinedTheme = {
       ...MainTheme,
       ...baseITheme,
+      ...(props.fontFamily && { fontFamily: props.fontFamily }),
+      ...(props.fontFamilySans && { fontFamilySans: props.fontFamilySans }),
     };
     const theme = props.theme || combinedTheme;
     return (

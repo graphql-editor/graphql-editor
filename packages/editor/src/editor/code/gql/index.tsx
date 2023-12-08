@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo } from "react";
-import { fontFamily } from "@/vars";
 import { useErrorsState, useTheme, useTreesState } from "@/state/containers";
 
 import { SchemaEditorApi } from "@/editor/code/guild";
@@ -33,7 +32,7 @@ export const GqlCodePane = (props: GqlCodePaneProps) => {
   const codeSettings = useMemo(
     () => ({
       ...settings,
-      fontFamily,
+      fontFamily: theme.fontFamily,
       readOnly: readonly,
     }),
     [readonly]

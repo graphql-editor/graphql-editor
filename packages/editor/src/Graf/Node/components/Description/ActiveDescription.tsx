@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import styled from '@emotion/styled';
-import { fontFamilySans } from '@/vars';
+import React, { useEffect, useRef, useState } from "react";
+import styled from "@emotion/styled";
 
 const Main = styled.textarea`
   background: ${({ theme }) => theme.neutral[600]};
@@ -13,7 +12,7 @@ const Main = styled.textarea`
   cursor: pointer;
   border-top-left-radius: 0.5rem;
   border-top-right-radius: 0.5rem;
-  font-family: ${fontFamilySans};
+  font-family: ${({ theme }) => theme.fontFamilySans};
   font-size: 14px;
   &:focus {
     cursor: auto;
@@ -63,11 +62,11 @@ export const ActiveDescription: React.FC<{
         onClick={(e) => e.stopPropagation()}
         onMouseMove={(e) => e.stopPropagation()}
         onFocus={(e) => {
-          e.currentTarget.style.height = 'auto';
-          e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
+          e.currentTarget.style.height = "auto";
+          e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
         }}
         onBlur={(e) => {
-          e.currentTarget.style.height = 'auto';
+          e.currentTarget.style.height = "auto";
           if (isLocked) return;
           if (DescriptionRef.current) {
             currentRef.current = text;
@@ -78,8 +77,8 @@ export const ActiveDescription: React.FC<{
           if (isLocked) return;
           setText(e.target.value);
           destroyRef.current = e.target.value;
-          e.currentTarget.style.height = 'auto';
-          e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
+          e.currentTarget.style.height = "auto";
+          e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
         }}
         value={text}
       />

@@ -59,4 +59,5 @@ const Container = styled(Stack)`
   position: absolute;
   top: 0;
   left: 0;
+  font-family: ${({ theme }) => theme.fontFamilySans};
 `;

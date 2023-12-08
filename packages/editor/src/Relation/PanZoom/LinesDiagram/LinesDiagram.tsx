@@ -8,7 +8,6 @@ import React, {
 import { useTreesState } from "@/state/containers/trees";
 import { Node } from "./Node";
 import styled from "@emotion/styled";
-import * as vars from "@/vars";
 import { ParserField, getTypeName } from "graphql-js-tree";
 import { GraphQLEditorWorker, NumberNode } from "graphql-editor-worker";
 import { runAfterFramePaint } from "@/shared/hooks/useMarkFramePaint";
@@ -30,7 +29,7 @@ import {
 const Main = styled.div`
   position: relative;
   overflow-x: visible;
-  font-family: ${vars.fontFamilySans};
+  font-family: ${({ theme }) => theme.fontFamilySans};
   align-items: flex-start;
   display: flex;
   padding: 20px;

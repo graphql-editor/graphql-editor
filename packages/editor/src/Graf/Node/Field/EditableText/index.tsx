@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { fontFamilySans } from "@/vars";
 import styled from "@emotion/styled";
 import { GRAF_FIELD_NAME_SIZE } from "@/Graf/constants";
 import { useDraggable } from "@/Graf/state/draggable";
@@ -10,7 +9,7 @@ const Input = styled.input<{ isError?: boolean; isEditable?: boolean }>`
   background-color: transparent;
   min-width: auto;
   padding: 0;
-  font-family: ${fontFamilySans};
+  font-family: ${({ theme }) => theme.fontFamilySans};
   font-size: ${GRAF_FIELD_NAME_SIZE}px;
   color: inherit;
 `;
@@ -110,7 +109,7 @@ export const EditableText: React.FC<{
 const HiddenSpan = styled.span`
   visibility: hidden;
   padding: 0;
-  font-family: ${fontFamilySans};
+  font-family: ${({ theme }) => theme.fontFamilySans};
   left: 0;
   position: absolute;
   pointer-events: none;

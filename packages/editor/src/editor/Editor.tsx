@@ -88,6 +88,9 @@ export interface EditorProps extends Pick<CodePaneProps, "onContentChange"> {
   onNodeSelect?: (selectedNodeId?: string) => void;
   // name of the schema file
   path: string;
+  // Editor custom fonts without whole theme needed to be passed
+  fontFamily?: string;
+  fontFamilySans?: string;
 }
 
 export interface ExternalEditorAPI {
