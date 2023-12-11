@@ -84,7 +84,7 @@ type LinesDiagramProps = {
 };
 
 export interface LinesDiagramApi {
-  triggerResimulation: () => void;
+  triggerResimulation: (pp?: boolean) => void;
 }
 
 export const LinesDiagram = React.forwardRef<
@@ -115,6 +115,7 @@ export const LinesDiagram = React.forwardRef<
     printPreviewActive,
     printPreviewReady,
     setPrintPreviewReady,
+    setPrintPreviewActive,
   } = useRelationsState();
   const {
     transformState: { scale },
@@ -135,45 +136,54 @@ export const LinesDiagram = React.forwardRef<
   };
 
   useEffect(() => {
-    if (!printPreviewActive) {
-      const selectDisposable = DOMEvents.selectNode.disposable(
-        (nodeId?: string) => {
-          if (nodeId) {
-            const toNode = simulatedNodes?.find(
-              (sn) => sn.parserField.id === nodeId
-            );
-            selectNode(nodeId);
-            if (toNode) {
-              const rts = relatedToSelectedTypes(toNode.parserField);
-              const ids = allNodes.nodes
-                .filter((n) => rts?.includes(n.name))
-                .map((n) => n.id);
+    const selectDisposable = DOMEvents.selectNode.disposable(
+      (nodeId?: string) => {
+        if (nodeId) {
+          const toNode = simulatedNodes?.find(
+            (sn) => sn.parserField.id === nodeId
+          );
+          selectNode(nodeId);
+          if (toNode) {
+            const rts = relatedToSelectedTypes(toNode.parserField);
+            const ids = allNodes.nodes
+              .filter((n) => rts?.includes(n.name))
+              .map((n) => n.id);
 
-              if (ids?.length) {
-                markRelated(ids);
-              }
-              zoomToNode(toNode.x, toNode.y);
+            if (ids?.length) {
+              markRelated(ids);
             }
-          } else {
-            deselectNodes();
+            zoomToNode(toNode.x, toNode.y);
           }
+        } else {
+          deselectNodes();
         }
-      );
-      return () => selectDisposable.dispose();
-    }
-  }, [simulatedNodes, printPreviewActive]);
+      }
+    );
+    return () => selectDisposable.dispose();
+  }, [simulatedNodes]);
 
   useImperativeHandle(
     ref,
     () => ({
-      triggerResimulation: () => {
+      triggerResimulation: (pp?: boolean) => {
         setLoading(true);
+        if (pp === true) {
+          setPrintPreviewActive(true);
+        } else if (pp === false) {
+          setPrintPreviewActive(true);
+        }
+
+        console.log("ppp", pp);
         GraphQLEditorWorker.simulateSort({
           nodes,
           options: {
             iterations: 200,
-            maxFields: RELATION_NODE_MAX_FIELDS,
-            maxWidth: RELATION_NODE_MAX_WIDTH,
+            maxWidth: pp
+              ? PRINT_PREVIEW_RELATION_NODE_MAX_WIDTH
+              : RELATION_NODE_MAX_WIDTH,
+            maxFields: pp
+              ? PRINT_PREVIEW_RELATION_NODE_MAX_FIELDS
+              : RELATION_NODE_MAX_FIELDS,
             ignoreAlphaCalculation: true,
           },
         }).then(({ nodes: positionedNodes, ...positionParams }) => {
@@ -199,7 +209,7 @@ export const LinesDiagram = React.forwardRef<
         }
       }
     }
-  }, [simulatedNodes, printPreviewActive]);
+  }, [simulatedNodes]);
 
   useLayoutEffect(() => {
     if (!props.loading) {
@@ -281,7 +291,7 @@ export const LinesDiagram = React.forwardRef<
       setSimulatedNodes(positionedNodes);
     });
     return;
-  }, [nodes, printPreviewActive]);
+  }, [nodes]);
 
   useLayoutEffect(() => {
     if (!simulatedNodes) {
@@ -336,7 +346,7 @@ export const LinesDiagram = React.forwardRef<
         setPrintPreviewReady(true);
       }
     });
-  }, [simulatedNodes, printPreviewActive, printPreviewReady, props.hide]);
+  }, [simulatedNodes, printPreviewReady, props.hide]);
 
   const SvgLinesContainer = useMemo(() => {
     return <Lines relations={relations} />;

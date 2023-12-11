@@ -52,6 +52,7 @@ export const PanZoom: React.FC<{
     setPrintPreviewActive,
     setPrintPreviewReady,
     printPreviewReady,
+    printPreviewActive,
   } = useRelationsState();
   const [largeSimulationLoading, setLargeSimulationLoading] = useState(false);
   const [zoomingMode, setZoomingMode] = useState<"zoom" | "pan">("pan");
@@ -77,7 +78,21 @@ export const PanZoom: React.FC<{
 
   const downloadPng = useCallback(() => {
     if (viewportParams?.height) {
+      linesRef.current?.triggerResimulation(true);
       //setLargeSimulationLoading(true);
+      // setSelectedNodeId({ source: "relation", value: undefined });
+      // setPrintPreviewActive(true);
+      // const ctx = getContext();
+      // setParamsBeforeExport({
+      //   x: ctx.state.positionX,
+      //   y: ctx.state.positionY,
+      //   scale: ctx.state.scale,
+      // });
+    }
+  }, [mainRef, JSON.stringify(viewportParams)]);
+
+  useEffect(() => {
+    if (printPreviewReady && printPreviewActive) {
       setSelectedNodeId({ source: "relation", value: undefined });
       setPrintPreviewActive(true);
       const ctx = getContext();
@@ -87,7 +102,7 @@ export const PanZoom: React.FC<{
         scale: ctx.state.scale,
       });
     }
-  }, [mainRef, JSON.stringify(viewportParams)]);
+  }, [printPreviewActive, printPreviewReady]);
 
   useEffect(() => {
     if (largeSimulationLoading) {
