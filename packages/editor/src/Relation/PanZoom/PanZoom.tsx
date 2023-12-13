@@ -79,22 +79,11 @@ export const PanZoom: React.FC<{
   const downloadPng = useCallback(() => {
     if (viewportParams?.height) {
       linesRef.current?.triggerResimulation(true);
-      //setLargeSimulationLoading(true);
-      // setSelectedNodeId({ source: "relation", value: undefined });
-      // setPrintPreviewActive(true);
-      // const ctx = getContext();
-      // setParamsBeforeExport({
-      //   x: ctx.state.positionX,
-      //   y: ctx.state.positionY,
-      //   scale: ctx.state.scale,
-      // });
     }
   }, [mainRef, JSON.stringify(viewportParams)]);
 
   useEffect(() => {
     if (printPreviewReady && printPreviewActive) {
-      setSelectedNodeId({ source: "relation", value: undefined });
-      setPrintPreviewActive(true);
       const ctx = getContext();
       setParamsBeforeExport({
         x: ctx.state.positionX,

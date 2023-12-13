@@ -255,33 +255,35 @@ export const Node: React.FC<NodeProps> = (props) => {
       <NodeTitle className={`${DOMClassNames.nodeTitle}`}>
         <NameInRelation>{field.name}</NameInRelation>
         <ActiveType type={field.type} />
-        <EditNodeContainer className="editNode">
-          <FocusNodeClickableButton
-            onClick={(e) => {
-              e.stopPropagation();
-              if (isFieldFocused) {
-                exitFocus();
-              } else {
-                focusNode(field);
-              }
-            }}
-          >
-            <span>{isFieldFocused ? "Unfocus" : "Focus"}</span>
-            <EagleEye width={16} height={16} />
-          </FocusNodeClickableButton>
-          <EditNodeClickableButton
-            onClick={(e) => {
-              e.stopPropagation();
-              setEditMode(field.id);
-            }}
-          >
-            <span>Edit</span>
-            <PenLine width={16} height={16} />
-          </EditNodeClickableButton>
-        </EditNodeContainer>
+        {!printPreviewActive && (
+          <EditNodeContainer className="editNode">
+            <FocusNodeClickableButton
+              onClick={(e) => {
+                e.stopPropagation();
+                if (isFieldFocused) {
+                  exitFocus();
+                } else {
+                  focusNode(field);
+                }
+              }}
+            >
+              <span>{isFieldFocused ? "Unfocus" : "Focus"}</span>
+              <EagleEye width={16} height={16} />
+            </FocusNodeClickableButton>
+            <EditNodeClickableButton
+              onClick={(e) => {
+                e.stopPropagation();
+                setEditMode(field.id);
+              }}
+            >
+              <span>Edit</span>
+              <PenLine width={16} height={16} />
+            </EditNodeClickableButton>
+          </EditNodeContainer>
+        )}
       </NodeTitle>
     ),
-    [field]
+    [field, printPreviewActive]
   );
 
   return (

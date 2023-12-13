@@ -165,23 +165,21 @@ export const LinesDiagram = React.forwardRef<
   useImperativeHandle(
     ref,
     () => ({
-      triggerResimulation: (pp?: boolean) => {
+      triggerResimulation: (print?: boolean) => {
         setLoading(true);
-        if (pp === true) {
-          setPrintPreviewActive(true);
-        } else if (pp === false) {
+        if (print) {
           setPrintPreviewActive(true);
         }
 
-        console.log("ppp", pp);
+        console.log("ppp", print);
         GraphQLEditorWorker.simulateSort({
           nodes,
           options: {
             iterations: 200,
-            maxWidth: pp
+            maxWidth: print
               ? PRINT_PREVIEW_RELATION_NODE_MAX_WIDTH
               : RELATION_NODE_MAX_WIDTH,
-            maxFields: pp
+            maxFields: print
               ? PRINT_PREVIEW_RELATION_NODE_MAX_FIELDS
               : RELATION_NODE_MAX_FIELDS,
             ignoreAlphaCalculation: true,

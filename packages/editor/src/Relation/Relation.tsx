@@ -19,7 +19,7 @@ export const Relation: React.FC<{ setInitialSchema: (s: string) => void }> = ({
   const { activeNode, focusMode, allNodes } = useTreesState();
   const { filteredFocusedNodes, filteredRelationNodes } =
     useRelationNodesState();
-  const { editMode, ctrlToZoom, printPreviewActive } = useRelationsState();
+  const { editMode, ctrlToZoom } = useRelationsState();
   const { set, routes } = useRouter();
   const [popupsState, setPopupsState] = useState({
     import: false,
@@ -39,17 +39,15 @@ export const Relation: React.FC<{ setInitialSchema: (s: string) => void }> = ({
           minScale={0.1}
           limitToBounds={false}
         >
-          {(!printPreviewActive || !isFocus) && (
-            <PanZoom
-              hide={isFocus}
-              parentClass="all"
-              nodes={filteredRelationNodes}
-            />
-          )}
+          <PanZoom
+            hide={isFocus}
+            parentClass="all"
+            nodes={filteredRelationNodes}
+          />
         </TransformWrapper>
       </>
     );
-  }, [filteredRelationNodes, isFocus, ctrlToZoom, printPreviewActive]);
+  }, [filteredRelationNodes, isFocus, ctrlToZoom]);
   return (
     <RelationContainer>
       {viewport}
