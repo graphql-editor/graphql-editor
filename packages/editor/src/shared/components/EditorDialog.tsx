@@ -1,14 +1,13 @@
-import { fontFamilySans } from '@/vars';
 import {
   Dialog,
   Typography,
   Stack,
   DialogProps,
-} from '@aexol-studio/styling-system';
-import styled from '@emotion/styled';
-import React from 'react';
+} from "@aexol-studio/styling-system";
+import styled from "@emotion/styled";
+import React from "react";
 export const EditorDialog: React.FC<
-  React.PropsWithChildren<Omit<DialogProps, 'backdrop'> & { title: string }>
+  React.PropsWithChildren<Omit<DialogProps, "backdrop"> & { title: string }>
 > = ({ children, title, ...props }) => {
   return (
     <Dialog backdrop="blur" {...props}>
@@ -30,5 +29,5 @@ const DialogContent = styled.div`
   background-color: ${(p) => p.theme.neutral[600]};
   min-width: 480px;
   padding: 2rem;
-  font-family: ${fontFamilySans};
+  font-family: ${({ theme }) => theme.fontFamilySans};
 `;

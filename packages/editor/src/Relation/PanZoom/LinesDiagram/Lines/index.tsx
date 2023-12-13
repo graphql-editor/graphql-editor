@@ -1,9 +1,10 @@
 import { Draw } from "./Draw";
-import { getTypeName, ParserField } from "graphql-js-tree";
+import { getTypeName, Options, ParserField } from "graphql-js-tree";
 import React from "react";
 import { useTheme } from "@/state/containers";
 import styled from "@emotion/styled";
 import { NumberNode } from "graphql-editor-worker";
+import { RelationInterface } from "../LinesDiagram";
 
 const RelationsContainer = styled.svg`
   width: 100%;
@@ -24,9 +25,7 @@ export interface RelationPath {
   connectingField: ParserField;
 }
 interface LinesProps {
-  relations:
-    | { to: RelationPath; from: RelationPath[]; fromLength: number }[]
-    | undefined;
+  relations: RelationInterface[] | undefined;
 }
 
 export const Lines: React.FC<LinesProps> = ({ relations }) => {
@@ -35,24 +34,40 @@ export const Lines: React.FC<LinesProps> = ({ relations }) => {
   return (
     <RelationsContainer>
       {relations?.map((r, index) => {
-        return r.from?.map((rf, relationNumber) => {
-          const relationType = rf.connectingField.type.fieldType;
-          return (
-            <Draw
-              relationType={relationType}
-              color={
-                theme.colors[
-                  getTypeName(
-                    rf.field.parserField.type.fieldType
-                  ) as keyof typeof theme.colors
-                ]
-              }
-              key={`${index}-${rf.index}-${relationNumber}-${rf.field.parserField.name}-${rf.connectingField.name}`}
-              from={rf.field}
-              to={r.to.field}
-            />
-          );
-        });
+        return (
+          <>
+            {r.from?.map((rf, relationNumber) => {
+              const relationType = rf.connectingField.type.fieldType;
+              return (
+                <Draw
+                  relationType={relationType}
+                  color={
+                    theme.colors[
+                      getTypeName(
+                        rf.field.parserField.type.fieldType
+                      ) as keyof typeof theme.colors
+                    ]
+                  }
+                  key={`${index}-${rf.index}-${relationNumber}-${rf.field.parserField.name}-${rf.connectingField.name}`}
+                  from={rf.field}
+                  to={r.to.field}
+                />
+              );
+            })}
+            {r.interfaces.map((refNode, refNodeNumber) => (
+              <Draw
+                relationType={{
+                  name: "refInterface",
+                  type: Options.name,
+                }}
+                color={theme.colors["interface"]}
+                key={`${index}-${refNode.id}-${refNode.parserField.name}-${refNodeNumber}-${r.to.field.id}`}
+                from={refNode}
+                to={r.to.field}
+              />
+            ))}
+          </>
+        );
       })}
     </RelationsContainer>
   );

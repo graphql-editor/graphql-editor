@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
 import { theme as MonacoTheme, diffEditorSettings } from "./monaco";
 
-import { fontFamily } from "@/vars";
 import { useTheme } from "@/state/containers";
 import { SchemaDiffEditor } from "@/editor/code/guild";
 import { CodeContainer } from "@/editor/code/style/Code";
@@ -25,7 +24,7 @@ export const DiffEditorPane = ({ schema, newSchema }: DiffEditorPaneProps) => {
   const codeSettings = useMemo(
     () => ({
       ...diffEditorSettings,
-      fontFamily,
+      fontFamily: theme.fontFamily,
     }),
     []
   );

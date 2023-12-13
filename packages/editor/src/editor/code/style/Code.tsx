@@ -1,5 +1,4 @@
-import styled from '@emotion/styled';
-import { fontFamily } from '@/vars';
+import styled from "@emotion/styled";
 
 export const CodeContainer = styled.div`
   flex: 1;
@@ -34,7 +33,7 @@ export const ErrorLock = styled.div`
   background: ${({ theme }) => theme.neutral[600]};
   cursor: pointer;
   color: ${({ theme }) => theme.error};
-  font-family: ${fontFamily};
+  font-family: ${({ theme }) => theme.fontFamily};
   font-size: 14px;
   padding: 30px;
 `;

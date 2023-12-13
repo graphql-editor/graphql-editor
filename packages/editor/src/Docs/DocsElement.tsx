@@ -1,7 +1,6 @@
 import { FieldsList } from "@/Docs/FieldsList";
 import { InterfacesList } from "@/Docs/InterfacesList";
 import { useTreesState } from "@/state/containers";
-import { fontFamilySans } from "@/vars";
 import { ParserField, getTypeName, compareParserFields } from "graphql-js-tree";
 import React, { useMemo, useState } from "react";
 import { Remarkable } from "remarkable";
@@ -11,7 +10,7 @@ import { Description } from "@/Docs/Description";
 import { PenLine } from "@aexol-studio/styling-system";
 
 const Wrapper = styled.div`
-  font-family: ${fontFamilySans};
+  font-family: ${({ theme }) => theme.fontFamilySans};
   font-size: 14px;
   padding: 40px 50px;
   max-width: 960px;

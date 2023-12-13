@@ -1,7 +1,7 @@
 import { OperationType, ParserField } from "graphql-js-tree";
 import React from "react";
 import styled from "@emotion/styled";
-import { fontFamilySans, transition } from "@/vars";
+import { transition } from "@/vars";
 import { EditorTheme } from "@/gshared/theme/MainTheme";
 import { ChevronDown } from "@aexol-studio/styling-system";
 import {
@@ -16,7 +16,7 @@ interface TitleProps {
 }
 
 const Title = styled.div<TitleProps>`
-  font-family: ${fontFamilySans};
+  font-family: ${({ theme }) => theme.fontFamilySans};
   font-weight: 600;
   font-size: 14px;
   cursor: ${({ empty }) => (empty ? "auto" : "pointer")};

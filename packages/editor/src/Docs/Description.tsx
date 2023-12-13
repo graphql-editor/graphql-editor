@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "@emotion/styled";
-import { fontFamilySans } from "@/vars";
 
 const Main = styled.textarea`
   background: ${({ theme }) => theme.neutral[600]};
@@ -12,7 +11,7 @@ const Main = styled.textarea`
   resize: none;
   outline: none;
   cursor: pointer;
-  font-family: ${fontFamilySans};
+  font-family: ${({ theme }) => theme.fontFamilySans};
   &:focus {
     cursor: auto;
   }

@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { fontFamilySans, transition } from '@/vars';
-import styled from '@emotion/styled';
+import React, { useState } from "react";
+import { transition } from "@/vars";
+import styled from "@emotion/styled";
 
 const Input = styled.input`
   border: 0;
   background: ${({ theme }) => theme.neutral[600]}00;
   color: ${({ theme }) => theme.text.default};
   min-width: 18ch;
-  font-family: ${fontFamilySans};
+  font-family: ${({ theme }) => theme.fontFamilySans};
   font-size: 12px;
   text-align: left;
   padding: 0.25rem 1rem;
@@ -47,7 +47,7 @@ export const EditableDefaultValue: React.FC<EditableDefaultValueProps> = ({
         onBlur={checkEdit}
         placeholder="Default value"
         onKeyDown={(e) => {
-          if (e.key === 'Enter') {
+          if (e.key === "Enter") {
             checkEdit();
           }
         }}

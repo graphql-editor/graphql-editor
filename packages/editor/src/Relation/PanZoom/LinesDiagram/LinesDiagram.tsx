@@ -8,7 +8,6 @@ import React, {
 import { useTreesState } from "@/state/containers/trees";
 import { Node } from "./Node";
 import styled from "@emotion/styled";
-import * as vars from "@/vars";
 import { ParserField, getTypeName } from "graphql-js-tree";
 import { GraphQLEditorWorker, NumberNode } from "graphql-editor-worker";
 import { runAfterFramePaint } from "@/shared/hooks/useMarkFramePaint";
@@ -32,7 +31,7 @@ import {
 const Main = styled.div`
   position: relative;
   overflow-x: visible;
-  font-family: ${vars.fontFamilySans};
+  font-family: ${({ theme }) => theme.fontFamilySans};
   align-items: flex-start;
   display: flex;
   padding: 20px;
@@ -85,6 +84,13 @@ type LinesDiagramProps = {
 
 export interface LinesDiagramApi {
   triggerResimulation: (pp?: boolean) => void;
+}
+
+export interface RelationInterface {
+  to: RelationPath;
+  from: RelationPath[];
+  fromLength: number;
+  interfaces: NumberNode[];
 }
 
 export const LinesDiagram = React.forwardRef<
@@ -258,10 +264,7 @@ export const LinesDiagram = React.forwardRef<
     }
   }, [props.fieldsOn]);
 
-  const [relations, setRelations] =
-    useState<
-      { to: RelationPath; from: RelationPath[]; fromLength: number }[]
-    >();
+  const [relations, setRelations] = useState<RelationInterface[]>();
 
   useEffect(() => {
     // compose existing positions
@@ -326,6 +329,11 @@ export const LinesDiagram = React.forwardRef<
                 return nodes.filter((node, i) => nodes.indexOf(node) === i);
               })
               .filter((o) => !!o),
+            interfaces: n.parserField.interfaces
+              .map((interfaceName) =>
+                simulatedNodes.find((n) => n.parserField.name === interfaceName)
+              )
+              .filter((i) => !!i),
           };
         })
         .filter((n) => n.from)
@@ -335,6 +343,7 @@ export const LinesDiagram = React.forwardRef<
               from: RelationPath[];
               to: RelationPath;
               fromLength: number;
+              interfaces: NumberNode[];
             }
         )
     );

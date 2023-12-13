@@ -1,13 +1,12 @@
 import React from "react";
 
 import styled from "@emotion/styled";
-import { fontFamilySans } from "@/vars";
 import { motion } from "framer-motion";
 
 const Wrapper = styled(motion.div)`
   width: 220px;
   border-radius: ${(p) => p.theme.radius}px;
-  font-family: ${fontFamilySans};
+  font-family: ${({ theme }) => theme.fontFamilySans};
   z-index: 2;
 `;
 

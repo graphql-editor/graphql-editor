@@ -1,5 +1,4 @@
 import React from "react";
-import { fontFamilySans } from "@/vars";
 import { useTreesState } from "@/state/containers/trees";
 import { useRelationsState } from "@/state/containers";
 import styled from "@emotion/styled";
@@ -140,7 +139,6 @@ const TooltippedZoom = styled.div`
   border: 0;
   text-align: center;
   color: ${({ theme }) => theme.text.default};
-  font-family: ${fontFamilySans};
   cursor: pointer;
   border-radius: 4px;
   display: flex;
@@ -152,7 +150,6 @@ const IconWrapper = styled.div`
   font-size: 12px;
   font-weight: 500;
   color: ${({ theme }) => theme.text.disabled};
-  font-family: ${fontFamilySans};
   cursor: pointer;
   display: flex;
   user-select: none;
@@ -174,11 +171,12 @@ const ZoomWrapper = styled.div`
   border-width: 1px;
   border-radius: ${(p) => p.theme.radius}px;
   gap: 8px;
+  font-family: ${({ theme }) => theme.fontFamilySans};
 `;
 
 const Menu = styled.div`
   display: flex;
-  font-family: ${fontFamilySans};
+  font-family: ${({ theme }) => theme.fontFamilySans};
   gap: 12px;
   align-items: center;
   position: relative;

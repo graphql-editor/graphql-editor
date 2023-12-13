@@ -28,6 +28,12 @@ export const ImportSchema: React.FC<{
   const { createToast } = useToasts();
 
   useEffect(() => {
+    setImportURL("");
+    setHeaders([]);
+    setProxyImport(false);
+  }, [open]);
+
+  useEffect(() => {
     if (headers.length) {
       if (headers.length > 1) {
         const lastHeader = headers[headers.length - 1];
@@ -207,7 +213,10 @@ export const ImportSchema: React.FC<{
           />
           <Typography variant="caption">Headers</Typography>
         </Stack>
-        <Stack direction="column">
+        <Stack
+          direction="column"
+          css={{ maxHeight: "22rem", overflow: "auto", marginBottom: "1rem" }}
+        >
           {headers.map(([k, v], i) => (
             <Stack key={i} gap="1rem">
               <TextField

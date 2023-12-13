@@ -5,7 +5,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { fontFamily, fontFamilySans } from "@/vars";
 import { useTreesState } from "@/state/containers/trees";
 import { useRelationsState } from "@/state/containers";
 import styled from "@emotion/styled";
@@ -316,7 +315,7 @@ const LoadingContainer = styled.div`
   color: ${({ theme }) => theme.text.default};
   background-color: ${({ theme }) => theme.neutral[600]};
   inset: 0;
-  font-family: ${fontFamilySans};
+  font-family: ${({ theme }) => theme.fontFamilySans};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -327,7 +326,7 @@ const Main = styled.div`
   width: 100%;
   position: relative;
   display: flex;
-  font-family: ${fontFamily};
+  font-family: ${({ theme }) => theme.fontFamily};
   justify-content: flex-end;
   cursor: grab;
 `;
