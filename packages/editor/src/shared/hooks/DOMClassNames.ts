@@ -16,6 +16,7 @@ export const DOMClassNames = {
 export const DOMEvents = {
   selectNode: {
     trigger: (id?: string) => {
+      console.log("iiii");
       document.dispatchEvent(
         new CustomEvent<{ id?: string }>("selectnode", { detail: { id } })
       );

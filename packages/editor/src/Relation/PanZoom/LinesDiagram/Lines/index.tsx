@@ -26,9 +26,13 @@ export interface RelationPath {
 }
 interface LinesProps {
   relations: RelationInterface[] | undefined;
+  isPrintPreviewActive: boolean;
 }
 
-export const Lines: React.FC<LinesProps> = ({ relations }) => {
+export const Lines: React.FC<LinesProps> = ({
+  relations,
+  isPrintPreviewActive,
+}) => {
   const { theme } = useTheme();
 
   return (
@@ -51,6 +55,7 @@ export const Lines: React.FC<LinesProps> = ({ relations }) => {
                   key={`${index}-${rf.index}-${relationNumber}-${rf.field.parserField.name}-${rf.connectingField.name}`}
                   from={rf.field}
                   to={r.to.field}
+                  isPrintPreviewActive={isPrintPreviewActive}
                 />
               );
             })}
@@ -64,6 +69,7 @@ export const Lines: React.FC<LinesProps> = ({ relations }) => {
                 key={`${index}-${refNode.id}-${refNode.parserField.name}-${refNodeNumber}-${r.to.field.id}`}
                 from={refNode}
                 to={r.to.field}
+                isPrintPreviewActive={isPrintPreviewActive}
               />
             ))}
           </>

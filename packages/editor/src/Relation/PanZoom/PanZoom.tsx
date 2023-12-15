@@ -48,10 +48,8 @@ export const PanZoom: React.FC<{
     inputsOn,
     ctrlToZoom,
     libraryNodesOn,
-    setPrintPreviewActive,
-    setPrintPreviewReady,
     printPreviewReady,
-    printPreviewActive,
+    setPrintPreviewReady,
   } = useRelationsState();
   const [largeSimulationLoading, setLargeSimulationLoading] = useState(false);
   const [zoomingMode, setZoomingMode] = useState<"zoom" | "pan">("pan");
@@ -77,20 +75,15 @@ export const PanZoom: React.FC<{
 
   const downloadPng = useCallback(() => {
     if (viewportParams?.height) {
-      linesRef.current?.triggerResimulation(true);
-    }
-  }, [mainRef, JSON.stringify(viewportParams)]);
-
-  useEffect(() => {
-    if (printPreviewReady && printPreviewActive) {
       const ctx = getContext();
       setParamsBeforeExport({
         x: ctx.state.positionX,
         y: ctx.state.positionY,
         scale: ctx.state.scale,
       });
+      linesRef.current?.triggerResimulation(true);
     }
-  }, [printPreviewActive, printPreviewReady]);
+  }, [mainRef, JSON.stringify(viewportParams)]);
 
   useEffect(() => {
     if (largeSimulationLoading) {
@@ -119,6 +112,7 @@ export const PanZoom: React.FC<{
 
       setTimeout(() => {
         setTransform(-viewportParams.x, -viewportParams.y, 1, 0);
+        setSelectedNodeId({ source: "relation", value: undefined });
         const refElem = mainRef.current?.parentElement as HTMLDivElement;
         if (!refElem || refElem === null || !viewportParams) {
           return;
@@ -141,7 +135,7 @@ export const PanZoom: React.FC<{
             });
           })
           .finally(() => {
-            setPrintPreviewActive(false);
+            linesRef.current?.triggerResimulation(false);
             setPrintPreviewReady(false);
             setTransform(
               paramsBeforeExport.x,

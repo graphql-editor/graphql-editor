@@ -69,7 +69,7 @@ const Content = styled.div<ContentProps>`
     visibility: visible;
   }
   &.selection {
-    opacity: 0.3;
+    opacity: ${({ printPreviewActive }) => (printPreviewActive ? "1" : "0.3")};
     &.active {
       opacity: 1;
       visibility: visible;
@@ -283,7 +283,7 @@ export const Node: React.FC<NodeProps> = (props) => {
         )}
       </NodeTitle>
     ),
-    [field, printPreviewActive]
+    [JSON.stringify(field), printPreviewActive, isFieldFocused]
   );
 
   return (

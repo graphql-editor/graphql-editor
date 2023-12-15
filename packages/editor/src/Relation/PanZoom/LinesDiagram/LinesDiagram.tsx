@@ -173,11 +173,10 @@ export const LinesDiagram = React.forwardRef<
     () => ({
       triggerResimulation: (print?: boolean) => {
         setLoading(true);
-        if (print) {
-          setPrintPreviewActive(true);
+        if (print !== undefined) {
+          setPrintPreviewActive(print);
         }
 
-        console.log("ppp", print);
         GraphQLEditorWorker.simulateSort({
           nodes,
           options: {
@@ -235,7 +234,7 @@ export const LinesDiagram = React.forwardRef<
     state: ReactZoomPanPinchState,
     wrapper: HTMLDivElement
   ) => {
-    if (simulatedNodes && !props.hide && !printPreviewActive) {
+    if (simulatedNodes && !props.hide) {
       const size = wrapper.getBoundingClientRect();
       changeZoomInTopBar(state.scale);
       if (!size) return;
@@ -349,14 +348,16 @@ export const LinesDiagram = React.forwardRef<
     );
     runAfterFramePaint(() => {
       setLoading(false);
-      if (printPreviewActive && !printPreviewReady && !props.hide) {
+      if (printPreviewActive && !printPreviewReady) {
         setPrintPreviewReady(true);
       }
     });
-  }, [simulatedNodes, printPreviewReady, props.hide]);
+  }, [simulatedNodes]);
 
   const SvgLinesContainer = useMemo(() => {
-    return <Lines relations={relations} />;
+    return (
+      <Lines relations={relations} isPrintPreviewActive={printPreviewActive} />
+    );
   }, [relations]);
 
   const NodesContainer = useMemo(() => {
