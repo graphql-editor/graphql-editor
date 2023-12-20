@@ -51,7 +51,8 @@ const Content = styled.div<ContentProps>`
   font-family: ${({ theme }) => theme.fontFamilySans};
   font-size: 14px;
   max-width: 66vw;
-  visibility: hidden;
+  visibility: ${({ printPreviewActive }) =>
+    printPreviewActive ? "visible" : "hidden"};
   cursor: pointer;
   border-width: 2px;
   border-style: ${({ isLibrary }) => (isLibrary ? "dashed" : "solid")};
