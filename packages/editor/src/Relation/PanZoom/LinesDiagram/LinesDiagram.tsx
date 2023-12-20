@@ -83,7 +83,7 @@ type LinesDiagramProps = {
 };
 
 export interface LinesDiagramApi {
-  triggerResimulation: (pp?: boolean) => void;
+  triggerResimulation: (printingProcessingFlag?: boolean) => void;
 }
 
 export interface RelationInterface {
@@ -171,20 +171,20 @@ export const LinesDiagram = React.forwardRef<
   useImperativeHandle(
     ref,
     () => ({
-      triggerResimulation: (print?: boolean) => {
+      triggerResimulation: (printingProcessingFlag?: boolean) => {
         setLoading(true);
-        if (print !== undefined) {
-          setPrintPreviewActive(print);
+        if (printingProcessingFlag !== undefined) {
+          setPrintPreviewActive(printingProcessingFlag);
         }
 
         GraphQLEditorWorker.simulateSort({
           nodes,
           options: {
             iterations: 200,
-            maxWidth: print
+            maxWidth: printingProcessingFlag
               ? PRINT_PREVIEW_RELATION_NODE_MAX_WIDTH
               : RELATION_NODE_MAX_WIDTH,
-            maxFields: print
+            maxFields: printingProcessingFlag
               ? PRINT_PREVIEW_RELATION_NODE_MAX_FIELDS
               : RELATION_NODE_MAX_FIELDS,
             ignoreAlphaCalculation: true,
