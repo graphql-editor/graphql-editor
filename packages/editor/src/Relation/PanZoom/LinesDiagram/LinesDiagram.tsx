@@ -350,6 +350,8 @@ export const LinesDiagram = React.forwardRef<
       setLoading(false);
       if (printPreviewActive && !printPreviewReady) {
         setPrintPreviewReady(true);
+      } else if (!printPreviewActive && printPreviewReady) {
+        setPrintPreviewReady(false);
       }
     });
   }, [simulatedNodes]);

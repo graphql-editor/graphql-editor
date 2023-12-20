@@ -26,7 +26,6 @@ import {
 } from "@/Relation/PanZoom/LinesDiagram/LinesDiagram";
 import { nodeFilter } from "@/Relation/shared/nodeFilter";
 import { useClickDetector } from "@/shared/hooks/useClickDetector";
-import { useDomManagerTs } from "@/shared/hooks/useDomManager";
 export const PanZoom: React.FC<{
   nodes: ParserField[];
   hide?: boolean;
@@ -49,7 +48,7 @@ export const PanZoom: React.FC<{
     ctrlToZoom,
     libraryNodesOn,
     printPreviewReady,
-    setPrintPreviewReady,
+    printPreviewActive,
   } = useRelationsState();
   const [largeSimulationLoading, setLargeSimulationLoading] = useState(false);
   const [zoomingMode, setZoomingMode] = useState<"zoom" | "pan">("pan");
@@ -59,9 +58,10 @@ export const PanZoom: React.FC<{
     y: number;
     scale: number;
   }>();
-  const { showAllForExport } = useDomManagerTs(parentClass);
   const [loading, setLoading] = useState(false);
   const [loadingCounter, setLoadingCounter] = useState(30);
+  const [isGraphReloadingAfterPrint, setIsGraphReloadingAfterPrint] =
+    useState(false);
   const ref = useRef<ReactZoomPanPinchRef>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
 
@@ -75,6 +75,7 @@ export const PanZoom: React.FC<{
 
   const downloadPng = useCallback(() => {
     if (viewportParams?.height) {
+      setLoading(true);
       const ctx = getContext();
       setParamsBeforeExport({
         x: ctx.state.positionX,
@@ -99,17 +100,14 @@ export const PanZoom: React.FC<{
   }, [largeSimulationLoading]);
 
   useEffect(() => {
-    if (paramsBeforeExport && viewportParams && printPreviewReady && !hide) {
-      setLoading(true);
-      setLoadingCounter(Math.floor(filteredNodes.length / 20));
-      setTimeout(() => {
-        showAllForExport();
-      }, 500);
-      const interval = setInterval(
-        () => setLoadingCounter((lc) => (lc - 1 >= 0 ? lc - 1 : 0)),
-        1000
-      );
-
+    if (
+      paramsBeforeExport &&
+      viewportParams &&
+      printPreviewReady &&
+      printPreviewActive &&
+      !hide &&
+      !isGraphReloadingAfterPrint
+    ) {
       setTimeout(() => {
         setTransform(-viewportParams.x, -viewportParams.y, 1, 0);
         setSelectedNodeId({ source: "relation", value: undefined });
@@ -135,17 +133,8 @@ export const PanZoom: React.FC<{
             });
           })
           .finally(() => {
+            setIsGraphReloadingAfterPrint(true);
             linesRef.current?.triggerResimulation(false);
-            setPrintPreviewReady(false);
-            setTransform(
-              paramsBeforeExport.x,
-              paramsBeforeExport.y,
-              paramsBeforeExport.scale,
-              0
-            );
-            setParamsBeforeExport(undefined);
-            clearInterval(interval);
-            setLoading(false);
           });
       }, 2000);
     }
@@ -154,7 +143,30 @@ export const PanZoom: React.FC<{
     JSON.stringify(viewportParams),
     printPreviewReady,
     hide,
+    isGraphReloadingAfterPrint,
+    printPreviewActive,
   ]);
+
+  useEffect(() => {
+    if (
+      paramsBeforeExport &&
+      isGraphReloadingAfterPrint &&
+      !largeSimulationLoading &&
+      !printPreviewReady
+    ) {
+      setTimeout(() => {
+        setTransform(
+          paramsBeforeExport.x,
+          paramsBeforeExport.y,
+          paramsBeforeExport.scale,
+          0
+        );
+        setParamsBeforeExport(undefined);
+        setIsGraphReloadingAfterPrint(false);
+        setLoading(false);
+      }, 1000);
+    }
+  }, [isGraphReloadingAfterPrint, largeSimulationLoading]);
 
   useEffect(() => {
     const listenerDown = (ev: KeyboardEvent) => {
@@ -277,10 +289,7 @@ export const PanZoom: React.FC<{
         {loading && (
           <LoadingContainer>
             <Loader size="lg" />
-            <span>
-              Exporting {filteredNodes.length} nodes estimated time:{" "}
-              {loadingCounter} seconds
-            </span>
+            <span>Exporting {filteredNodes.length} nodes</span>
           </LoadingContainer>
         )}
       </Main>

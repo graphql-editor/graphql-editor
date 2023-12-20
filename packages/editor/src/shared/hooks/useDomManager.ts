@@ -48,10 +48,6 @@ export const useDomManagerTs = (parent: "focus" | "all") => {
       return relatedNodeIdsToSelected.map((r) => `node-${r}`).includes(e.id);
     });
   };
-  const showAllForExport = () => {
-    DOMGraphNode.addClassToAll("inViewport");
-    DOMGraphConnection.addClassToAll("inViewport");
-  };
   const markInViewport = (nodesInViewport: string[]) => {
     const mappedNodes = nodesInViewport.map((r) => `node-${r}`);
     DOMGraphConnection.toggleClassByFn("inViewport", (e) => {
@@ -136,7 +132,6 @@ export const useDomManagerTs = (parent: "focus" | "all") => {
     cullNodes,
     LoDNodes,
     changeZoomInTopBar,
-    showAllForExport,
     changeParentClass: (parent: "focus" | "all") => (parentClass = parent),
   };
 };
