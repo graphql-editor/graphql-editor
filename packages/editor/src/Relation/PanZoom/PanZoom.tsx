@@ -26,7 +26,6 @@ import {
 } from "@/Relation/PanZoom/LinesDiagram/LinesDiagram";
 import { nodeFilter } from "@/Relation/shared/nodeFilter";
 import { useClickDetector } from "@/shared/hooks/useClickDetector";
-import { useDomManagerTs } from "@/shared/hooks/useDomManager";
 export const PanZoom: React.FC<{
   nodes: ParserField[];
   hide?: boolean;
@@ -48,6 +47,8 @@ export const PanZoom: React.FC<{
     inputsOn,
     ctrlToZoom,
     libraryNodesOn,
+    printPreviewReady,
+    printPreviewActive,
   } = useRelationsState();
   const [largeSimulationLoading, setLargeSimulationLoading] = useState(false);
   const [zoomingMode, setZoomingMode] = useState<"zoom" | "pan">("pan");
@@ -57,9 +58,10 @@ export const PanZoom: React.FC<{
     y: number;
     scale: number;
   }>();
-  const { showAllForExport } = useDomManagerTs(parentClass);
   const [loading, setLoading] = useState(false);
   const [loadingCounter, setLoadingCounter] = useState(30);
+  const [isGraphReloadingAfterPrint, setIsGraphReloadingAfterPrint] =
+    useState(false);
   const ref = useRef<ReactZoomPanPinchRef>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
 
@@ -73,16 +75,16 @@ export const PanZoom: React.FC<{
 
   const downloadPng = useCallback(() => {
     if (viewportParams?.height) {
+      setLoading(true);
       const ctx = getContext();
       setParamsBeforeExport({
         x: ctx.state.positionX,
         y: ctx.state.positionY,
         scale: ctx.state.scale,
       });
-      setTransform(-viewportParams.x, -viewportParams.y, 1, 0);
-      setSelectedNodeId({ source: "relation", value: undefined });
+      linesRef.current?.triggerResimulation(true);
     }
-  }, [mainRef, viewportParams]);
+  }, [mainRef, JSON.stringify(viewportParams)]);
 
   useEffect(() => {
     if (largeSimulationLoading) {
@@ -98,18 +100,17 @@ export const PanZoom: React.FC<{
   }, [largeSimulationLoading]);
 
   useEffect(() => {
-    if (paramsBeforeExport) {
-      setLoading(true);
-      setLoadingCounter(Math.floor(filteredNodes.length / 20));
+    if (
+      paramsBeforeExport &&
+      viewportParams &&
+      printPreviewReady &&
+      printPreviewActive &&
+      !hide &&
+      !isGraphReloadingAfterPrint
+    ) {
       setTimeout(() => {
-        showAllForExport();
-      }, 500);
-      const interval = setInterval(
-        () => setLoadingCounter((lc) => (lc - 1 >= 0 ? lc - 1 : 0)),
-        1000
-      );
-
-      setTimeout(() => {
+        setTransform(-viewportParams.x, -viewportParams.y, 1, 0);
+        setSelectedNodeId({ source: "relation", value: undefined });
         const refElem = mainRef.current?.parentElement as HTMLDivElement;
         if (!refElem || refElem === null || !viewportParams) {
           return;
@@ -132,19 +133,40 @@ export const PanZoom: React.FC<{
             });
           })
           .finally(() => {
-            setTransform(
-              paramsBeforeExport.x,
-              paramsBeforeExport.y,
-              paramsBeforeExport.scale,
-              0
-            );
-            clearInterval(interval);
-            setLoading(false);
-            setParamsBeforeExport(undefined);
+            setIsGraphReloadingAfterPrint(true);
+            linesRef.current?.triggerResimulation(false);
           });
       }, 2000);
     }
-  }, [paramsBeforeExport, viewportParams]);
+  }, [
+    JSON.stringify(paramsBeforeExport),
+    JSON.stringify(viewportParams),
+    printPreviewReady,
+    hide,
+    isGraphReloadingAfterPrint,
+    printPreviewActive,
+  ]);
+
+  useEffect(() => {
+    if (
+      paramsBeforeExport &&
+      isGraphReloadingAfterPrint &&
+      !largeSimulationLoading &&
+      !printPreviewReady
+    ) {
+      setTimeout(() => {
+        setTransform(
+          paramsBeforeExport.x,
+          paramsBeforeExport.y,
+          paramsBeforeExport.scale,
+          0
+        );
+        setParamsBeforeExport(undefined);
+        setIsGraphReloadingAfterPrint(false);
+        setLoading(false);
+      }, 1000);
+    }
+  }, [isGraphReloadingAfterPrint, largeSimulationLoading]);
 
   useEffect(() => {
     const listenerDown = (ev: KeyboardEvent) => {
@@ -267,10 +289,7 @@ export const PanZoom: React.FC<{
         {loading && (
           <LoadingContainer>
             <Loader size="lg" />
-            <span>
-              Exporting {filteredNodes.length} nodes estimated time:{" "}
-              {loadingCounter} seconds
-            </span>
+            <span>Exporting {filteredNodes.length} nodes</span>
           </LoadingContainer>
         )}
       </Main>

@@ -3,7 +3,6 @@ import { transition } from "@/vars";
 import styled from "@emotion/styled";
 import { FieldType, Options } from "graphql-js-tree";
 import React, { useMemo } from "react";
-// import { RELATION_CONSTANTS } from './constants';
 
 interface Point {
   x: number;
@@ -26,11 +25,13 @@ export const Draw = ({
   to,
   color,
   relationType,
+  isPrintPreviewActive,
 }: {
   from?: { x: number; y: number; id: string };
   to?: { x: number; y: number; id: string };
   color: string;
   relationType: FieldType;
+  isPrintPreviewActive: boolean;
 }) => {
   const stroke = color;
 
@@ -110,6 +111,7 @@ export const Draw = ({
         data-from={from.id}
         data-to={to.id}
         className={`${DOMClassNames.nodeConnection}`}
+        isPrintPreviewActive={isPrintPreviewActive}
       >
         <path
           stroke={stroke}
@@ -132,13 +134,13 @@ const isArrayType = (f: FieldType) =>
     ? f.nest.type === Options.array
     : f.type === Options.array;
 
-const PathG = styled.g`
-  opacity: 0;
+const PathG = styled.g<{ isPrintPreviewActive: boolean }>`
+  opacity: ${({ isPrintPreviewActive }) => (isPrintPreviewActive ? 1 : 0)};
   transition: ${transition};
   &.inViewport {
     opacity: 1;
     &.selection {
-      opacity: 0;
+      opacity: ${({ isPrintPreviewActive }) => (isPrintPreviewActive ? 1 : 0)};
     }
   }
   &.selection {

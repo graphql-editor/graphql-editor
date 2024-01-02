@@ -24,6 +24,8 @@ import { DOMEvents } from "@/shared/hooks/DOMClassNames";
 import {
   RELATION_NODE_MAX_FIELDS,
   RELATION_NODE_MAX_WIDTH,
+  PRINT_PREVIEW_RELATION_NODE_MAX_FIELDS,
+  PRINT_PREVIEW_RELATION_NODE_MAX_WIDTH,
 } from "@/Relation/shared/nodeLook";
 
 const Main = styled.div`
@@ -81,7 +83,7 @@ type LinesDiagramProps = {
 };
 
 export interface LinesDiagramApi {
-  triggerResimulation: () => void;
+  triggerResimulation: (printingProcessingFlag?: boolean) => void;
 }
 
 export interface RelationInterface {
@@ -114,7 +116,13 @@ export const LinesDiagram = React.forwardRef<
     deselectNodes,
   } = useDomManagerTs(props.parentClass);
   const { setTransform, instance } = useControls();
-  const { editMode } = useRelationsState();
+  const {
+    editMode,
+    printPreviewActive,
+    printPreviewReady,
+    setPrintPreviewReady,
+    setPrintPreviewActive,
+  } = useRelationsState();
   const {
     transformState: { scale },
   } = useTransformContext();
@@ -163,14 +171,22 @@ export const LinesDiagram = React.forwardRef<
   useImperativeHandle(
     ref,
     () => ({
-      triggerResimulation: () => {
+      triggerResimulation: (printingProcessingFlag?: boolean) => {
         setLoading(true);
+        if (printingProcessingFlag !== undefined) {
+          setPrintPreviewActive(printingProcessingFlag);
+        }
+
         GraphQLEditorWorker.simulateSort({
           nodes,
           options: {
             iterations: 200,
-            maxFields: RELATION_NODE_MAX_FIELDS,
-            maxWidth: RELATION_NODE_MAX_WIDTH,
+            maxWidth: printingProcessingFlag
+              ? PRINT_PREVIEW_RELATION_NODE_MAX_WIDTH
+              : RELATION_NODE_MAX_WIDTH,
+            maxFields: printingProcessingFlag
+              ? PRINT_PREVIEW_RELATION_NODE_MAX_FIELDS
+              : RELATION_NODE_MAX_FIELDS,
             ignoreAlphaCalculation: true,
           },
         }).then(({ nodes: positionedNodes, ...positionParams }) => {
@@ -183,7 +199,7 @@ export const LinesDiagram = React.forwardRef<
   );
 
   useEffect(() => {
-    if (!selectedNodeId?.value?.id && simulatedNodes) {
+    if (!selectedNodeId?.value?.id && simulatedNodes && !printPreviewActive) {
       const schemaNode = simulatedNodes?.find(
         (sn) => sn.parserField.name === "Query"
       );
@@ -263,8 +279,12 @@ export const LinesDiagram = React.forwardRef<
       options: {
         existingNumberNodes: simulatedNodes,
         iterations: 200,
-        maxWidth: RELATION_NODE_MAX_WIDTH,
-        maxFields: RELATION_NODE_MAX_FIELDS,
+        maxWidth: printPreviewActive
+          ? PRINT_PREVIEW_RELATION_NODE_MAX_WIDTH
+          : RELATION_NODE_MAX_WIDTH,
+        maxFields: printPreviewActive
+          ? PRINT_PREVIEW_RELATION_NODE_MAX_FIELDS
+          : RELATION_NODE_MAX_FIELDS,
       },
     }).then(({ nodes: positionedNodes, ...positionParams }) => {
       props.setViewportParams(positionParams);
@@ -326,11 +346,20 @@ export const LinesDiagram = React.forwardRef<
             }
         )
     );
-    runAfterFramePaint(() => setLoading(false));
+    runAfterFramePaint(() => {
+      setLoading(false);
+      if (printPreviewActive && !printPreviewReady) {
+        setPrintPreviewReady(true);
+      } else if (!printPreviewActive && printPreviewReady) {
+        setPrintPreviewReady(false);
+      }
+    });
   }, [simulatedNodes]);
 
   const SvgLinesContainer = useMemo(() => {
-    return <Lines relations={relations} />;
+    return (
+      <Lines relations={relations} isPrintPreviewActive={printPreviewActive} />
+    );
   }, [relations]);
 
   const NodesContainer = useMemo(() => {
