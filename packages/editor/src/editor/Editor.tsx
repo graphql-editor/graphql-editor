@@ -342,7 +342,15 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
               />
             )}
             {routes.pane === "docs" && <Docs />}
-            <NodeNavigation />
+            <NodeNavigation
+              isCollapsed={routes.navigationCollapsed}
+              setIsCollapsed={(collapsed) => {
+                set({
+                  ...routes,
+                  navigationCollapsed: collapsed,
+                });
+              }}
+            />
             {!!codeErrors.length &&
               (routes.pane === "docs" || routes.pane === "relation") && (
                 <ErrorsList>{errorsItems}</ErrorsList>

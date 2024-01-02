@@ -84,7 +84,15 @@ function BaseGqlEditor(props: GqlSchemaEditorProps) {
           props.setGql(newValue);
         }
       }}
-      options={{ glyphMargin: true, ...(props.options || {}) }}
+      options={{
+        glyphMargin: true,
+        lineNumbersMinChars: 2,
+        minimap: {
+          enabled: true,
+          size: "fit",
+        },
+        ...(props.options || {}),
+      }}
       language="graphql"
       value={props.gql}
     />

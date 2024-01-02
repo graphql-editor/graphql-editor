@@ -15,6 +15,7 @@ interface MenuSearchProps {
 const Wrapper = styled.div`
   position: relative;
   flex: 1;
+  display: flex;
 `;
 
 const Main = styled.input`
@@ -24,7 +25,7 @@ const Main = styled.input`
   width: 100%;
   min-width: 0;
   height: 36px;
-  padding: 0 12px 0 44px;
+  padding: 0 2.5rem 0 0.5rem;
   font-size: 14px;
   outline: 0;
   position: relative;
@@ -47,6 +48,7 @@ const IconContainerStyle = styled.span`
   align-items: center;
   justify-content: center;
   z-index: 1;
+  right: 0.5rem;
 `;
 
 const SearchIconContainer = styled(IconContainerStyle)`
@@ -61,10 +63,6 @@ export const SearchInput = React.forwardRef<HTMLInputElement, MenuSearchProps>(
   ) => {
     return (
       <Wrapper>
-        <SearchIconContainer>
-          {icon === "search" && <Search />}
-          {icon === "add" && <Plus />}
-        </SearchIconContainer>
         <Main
           ref={ref}
           onKeyDown={(e) => {
@@ -77,6 +75,10 @@ export const SearchInput = React.forwardRef<HTMLInputElement, MenuSearchProps>(
           value={value}
           onChange={(e) => onChange(e.target.value)}
         />
+        <SearchIconContainer>
+          {icon === "search" && <Search />}
+          {icon === "add" && <Plus />}
+        </SearchIconContainer>
       </Wrapper>
     );
   }

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useErrorsState, useTheme, useTreesState } from "@/state/containers";
 import { EditorTheme } from "@/gshared/theme/MainTheme";
 import styled from "@emotion/styled";
@@ -51,6 +51,7 @@ export const EmbeddedEditor = ({ schema, theme }: EmbeddedEditorProps) => {
   const { setTheme } = useTheme();
   const { generateTreeFromSchema } = useTreesState();
   const { codeErrors, errorsItems } = useErrorsState();
+  const [isCollapsed, setIsCollapsed] = useState<boolean>();
 
   useEffect(() => {
     if (theme) {
@@ -79,7 +80,10 @@ export const EmbeddedEditor = ({ schema, theme }: EmbeddedEditorProps) => {
             //noop
           }}
         />
-        <NodeNavigation />
+        <NodeNavigation
+          isCollapsed={isCollapsed}
+          setIsCollapsed={(c) => setIsCollapsed(c)}
+        />
       </ErrorOuterContainer>
       {!!codeErrors.length && <ErrorsList>{errorsItems}</ErrorsList>}
     </Main>

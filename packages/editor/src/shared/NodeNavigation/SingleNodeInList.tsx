@@ -10,10 +10,8 @@ import {
 import { transition } from "@/vars";
 import {
   Link,
-  EagleEye,
   EyeSlash,
   Eye,
-  Pen,
   Stack,
   DotsHorizontal,
   Typography,
@@ -34,7 +32,7 @@ export const SingleNodeInList: React.FC<{
     name: string;
   };
 }> = ({ node, colorKey, visibleInRelationView, schemaProps }) => {
-  const { setSelectedNodeId, isLibrary, focusNode } = useTreesState();
+  const { setSelectedNodeId, isLibrary } = useTreesState();
   const { toggleNodeVisibility } = useRelationNodesState();
   const { setEditMode } = useRelationsState();
   const ref = createRef<HTMLAnchorElement>();
@@ -79,37 +77,6 @@ export const SingleNodeInList: React.FC<{
       </NodeName>
       {visibleInRelationView && (
         <Actions align="center" gap="0.25rem">
-          <Stack align="center" gap="0.25rem">
-            <SelectedActions
-              className={DOMClassNames.navigationSelectedActions}
-            >
-              <IconContainer
-                isHidden={node.isHidden}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  focusNode(node);
-                }}
-              >
-                <EagleEye height={20} />
-              </IconContainer>
-              <IconContainer
-                isHidden={node.isHidden}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedNodeId({
-                    source: "navigation",
-                    value: {
-                      id: node.id,
-                      name: node.name,
-                    },
-                  });
-                  setEditMode(node.id);
-                }}
-              >
-                <Pen height={20} />
-              </IconContainer>
-            </SelectedActions>
-          </Stack>
           <IconContainer
             isHidden={node.isHidden}
             onClick={(e) => {
@@ -117,7 +84,7 @@ export const SingleNodeInList: React.FC<{
               toggleNodeVisibility(node);
             }}
           >
-            {node.isHidden ? <EyeSlash height={20} /> : <Eye height={20} />}
+            {node.isHidden ? <EyeSlash height={16} /> : <Eye height={16} />}
           </IconContainer>
         </Actions>
       )}
@@ -134,12 +101,10 @@ export const SingleSchemaNodeInList: React.FC<{
   const {
     setSelectedNodeId,
     isLibrary,
-    focusNode,
     removeSchemaNodeField,
     setOperationNode,
   } = useTreesState();
   const { toggleNodeVisibility } = useRelationNodesState();
-  const { setEditMode } = useRelationsState();
   const [menuOpen, setMenuOpen] = useState(false);
   const ref = createRef<HTMLAnchorElement>();
 
@@ -170,7 +135,7 @@ export const SingleSchemaNodeInList: React.FC<{
         data-id={node?.id}
       >
         {schemaProps && (
-          <Typography variant="body2" color="active">
+          <Typography variant="caption" color="active">
             {schemaProps.name}
           </Typography>
         )}
@@ -201,32 +166,7 @@ export const SingleSchemaNodeInList: React.FC<{
                     removeSchemaNodeField(schemaProps.operationType);
                   }}
                 >
-                  <Xmark height={20} />
-                </IconContainer>
-                <IconContainer
-                  isHidden={node.isHidden}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    focusNode(node);
-                  }}
-                >
-                  <EagleEye height={20} />
-                </IconContainer>
-                <IconContainer
-                  isHidden={node.isHidden}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedNodeId({
-                      source: "navigation",
-                      value: {
-                        id: node.id,
-                        name: node.name,
-                      },
-                    });
-                    setEditMode(node.id);
-                  }}
-                >
-                  <Pen height={20} />
+                  <Xmark height={16} />
                 </IconContainer>
               </SelectedActions>
             </>
@@ -240,7 +180,7 @@ export const SingleSchemaNodeInList: React.FC<{
               toggleNodeVisibility(node);
             }}
           >
-            {node.isHidden ? <EyeSlash height={20} /> : <Eye height={20} />}
+            {node.isHidden ? <EyeSlash height={16} /> : <Eye height={16} />}
           </IconContainer>
         ) : (
           <ContextMenu
@@ -253,7 +193,7 @@ export const SingleSchemaNodeInList: React.FC<{
                   setMenuOpen(true);
                 }}
               >
-                <DotsHorizontal height={20} />
+                <DotsHorizontal height={16} />
               </IconContainer>
             )}
           >
@@ -333,16 +273,19 @@ const NodeName = styled.div<{
   align-items: center;
   gap: 0.5rem;
   font-family: ${({ theme }) => theme.fontFamilySans};
-  font-size: 14px;
+  font-size: 0.8rem;
   color: ${({ theme }) => theme.text.default};
   transition: ${transition};
   opacity: ${({ isHidden }) => (isHidden ? 0.25 : 1)};
-  overflow-x: hidden;
-  text-overflow: ellipsis;
+  min-width: 0;
   width: 28ch;
   white-space: nowrap;
   &:hover {
     color: ${({ theme, color }) => theme.colors[color]};
+  }
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 `;
 

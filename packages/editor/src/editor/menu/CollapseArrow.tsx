@@ -2,7 +2,7 @@ import { ChevronLeftDouble } from "@aexol-studio/styling-system";
 import styled from "@emotion/styled";
 import React from "react";
 
-const Container = styled.div<{ isCollapsed: boolean; isRight?: true }>`
+const Container = styled.div<{ isCollapsed?: boolean; isRight?: true }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -12,7 +12,7 @@ const Container = styled.div<{ isCollapsed: boolean; isRight?: true }>`
   border-radius: ${(p) => p.theme.radius}px;
   background-color: ${({ theme }) => theme.neutral[600]};
   position: absolute;
-  z-index: 1;
+  z-index: 2;
   top: 50%;
   right: ${({ isRight }) => (isRight ? "unset" : 0)};
   left: ${({ isRight }) => (isRight ? 0 : "unset")};
@@ -34,7 +34,7 @@ const Container = styled.div<{ isCollapsed: boolean; isRight?: true }>`
 `;
 
 interface CollapseArrowProps {
-  isCollapsed: boolean;
+  isCollapsed?: boolean;
   toggle: () => void;
   isRight?: true;
 }

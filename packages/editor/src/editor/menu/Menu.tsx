@@ -25,7 +25,7 @@ const Sidebar = styled.div`
   border-left-width: 1px;
   position: relative;
   transition: width 0.5s ease-in-out;
-  width: calc(2rem + 20px);
+  width: 2rem;
   display: flex;
   flex-direction: column;
   gap: 1px;
@@ -46,7 +46,8 @@ const MenuItem = styled.div<{
   align-items: center;
   color: ${({ theme, isDisabled }) =>
     isDisabled ? theme.text.disabled : theme.text.default};
-  padding: 1rem;
+  width: 2rem;
+  height: 2rem;
   font-family: ${({ theme }) => theme.fontFamilySans};
   cursor: ${({ isDisabled }) => (isDisabled ? "not-allowed" : "pointer")};
   transition: all 0.25s ease;
