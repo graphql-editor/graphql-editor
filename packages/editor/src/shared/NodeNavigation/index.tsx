@@ -24,7 +24,7 @@ const Container = styled.div`
   position: relative;
 `;
 
-const ListContainer = styled.div<{ isCollapsed: boolean }>`
+const ListContainer = styled.div<{ isCollapsed?: boolean }>`
   display: flex;
   flex-flow: column nowrap;
   overflow-y: auto;
@@ -33,13 +33,13 @@ const ListContainer = styled.div<{ isCollapsed: boolean }>`
   border-left: ${({ theme }) => theme.black} 2px solid;
   height: 100%;
   transition: width 0.5s ease-in-out;
-  width: ${({ isCollapsed }) => (isCollapsed ? "50px" : "24rem")};
+  width: ${({ isCollapsed }) => (isCollapsed ? "50px" : "18rem")};
   overflow-y: ${({ isCollapsed }) => (isCollapsed ? "hidden" : "auto")};
 `;
 
 const ListWrapper = styled.div`
   width: 100%;
-  padding: 0 1rem 100px;
+  padding: 0 1rem 100px 0;
   position: relative;
 `;
 
@@ -57,7 +57,6 @@ const SearchWrapper = styled.div`
   align-items: center;
   gap: 0.5rem;
   justify-content: space-between;
-  margin-bottom: 1rem;
 `;
 
 const VisibilityBox = styled.div`
@@ -100,12 +99,12 @@ const onShow = keyframes`
     }
 `;
 
-const Expanded = styled.div<{ isCollapsed: boolean }>`
+const Expanded = styled.div<{ isCollapsed?: boolean }>`
   display: ${({ isCollapsed }) => (isCollapsed ? "none" : "block")};
   animation: ${onShow} 0.8s ease;
 `;
 
-const VerticalTitle = styled(Header)<{ isCollapsed: boolean }>`
+const VerticalTitle = styled(Header)<{ isCollapsed?: boolean }>`
   align-items: center;
   margin-top: 1rem;
   writing-mode: tb-rl;
@@ -115,7 +114,13 @@ const VerticalTitle = styled(Header)<{ isCollapsed: boolean }>`
   animation: ${onShow} 0.8s ease;
 `;
 
-export const NodeNavigation = () => {
+export const NodeNavigation = ({
+  isCollapsed,
+  setIsCollapsed,
+}: {
+  isCollapsed?: boolean;
+  setIsCollapsed: (collapsed?: boolean) => void;
+}) => {
   const { allNodes, focusMode } = useTreesState();
   const { focusedNodes } = useRelationNodesState();
   const {
@@ -126,7 +131,6 @@ export const NodeNavigation = () => {
   } = useRelationNodesState();
   const { sortAlphabetically } = useSortState();
   const [q, setQ] = useState("");
-  const [isCollapsed, setIsCollapsed] = useState(false);
   const [listExpanded, setListExpanded] = useState<Array<string>>([
     "Types",
     "Schema",
@@ -281,7 +285,7 @@ export const NodeNavigation = () => {
         <CollapseArrow
           isCollapsed={isCollapsed}
           isRight
-          toggle={() => setIsCollapsed((prev) => !prev)}
+          toggle={() => setIsCollapsed(!isCollapsed)}
         />
         <VerticalTitle isCollapsed={isCollapsed}>Navigation</VerticalTitle>
         <Expanded isCollapsed={isCollapsed}>

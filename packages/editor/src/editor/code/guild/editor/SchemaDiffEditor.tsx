@@ -51,7 +51,15 @@ function BaseSchemaDiffEditor(
         modifiedSchemaService.setEditor(editor.getModifiedEditor());
         props.onMount && props.onMount(editor, monaco);
       }}
-      options={{ glyphMargin: true, ...(props.options || {}) }}
+      options={{
+        glyphMargin: true,
+        lineNumbersMinChars: 2,
+        minimap: {
+          enabled: true,
+          size: "fit",
+        },
+        ...(props.options || {}),
+      }}
       language="graphql"
     />
   );

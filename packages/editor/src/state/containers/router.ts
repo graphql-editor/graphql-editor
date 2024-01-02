@@ -1,17 +1,19 @@
-import { ActivePane } from '@/editor/menu/Menu';
-import { useState } from 'react';
-import { createContainer } from 'unstated-next';
+import { ActivePane } from "@/editor/menu/Menu";
+import { useState } from "react";
+import { createContainer } from "unstated-next";
 
 type ValuesType = {
   pane?: ActivePane;
-  code: 'on' | 'off';
-  source?: 'internal' | 'initial';
+  code: "on" | "off";
+  source?: "internal" | "initial";
+  navigationCollapsed?: boolean;
 };
 
 const defaultValues: ValuesType = {
-  pane: 'relation',
-  code: 'off' as 'on' | 'off',
-  source: 'initial',
+  pane: "relation",
+  code: "off" as "on" | "off",
+  navigationCollapsed: false,
+  source: "initial",
 };
 
 export type EditorRoutes = typeof defaultValues;
@@ -20,7 +22,7 @@ export const useRouterContainer = createContainer(() => {
   const [path, setPath] = useState(defaultValues);
   const set = (
     props: Partial<typeof defaultValues>,
-    source?: ValuesType['source'],
+    source?: ValuesType["source"]
   ) => {
     setPath((p) => ({ ...p, ...props, source }));
   };

@@ -24,6 +24,7 @@ const Title = styled.div<TitleProps>`
     empty ? theme.text.disabled : theme.text.active};
   margin: 0;
   padding-bottom: 5px;
+  padding-left: 1rem;
   margin-right: 3px;
   display: flex;
   justify-content: space-between;
@@ -69,7 +70,7 @@ export const NodeList: React.FC<NodeListI> = ({
         open={open}
       >
         <div>{listTitle}</div>
-        {!empty && <ChevronDown />}
+        {!empty && <ChevronDown width={18} />}
       </Title>
       {open &&
         nodeList &&

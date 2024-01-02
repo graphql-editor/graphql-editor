@@ -128,7 +128,16 @@ function BaseSchemaEditor(
             });
         }
       }}
-      options={{ glyphMargin: true, ...(props.options || {}) }}
+      options={{
+        glyphMargin: true,
+        lineNumbersMinChars: 2,
+        fontSize: 11,
+        minimap: {
+          enabled: true,
+          size: "fit",
+        },
+        ...(props.options || {}),
+      }}
       language="graphql"
       defaultValue={props.schema?.code}
     />
