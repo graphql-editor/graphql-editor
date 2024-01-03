@@ -187,8 +187,3 @@ const Menu = styled.div`
   position: relative;
   justify-content: flex-end;
 `;
-
-styled(Checkbox)`
-  label {
-  }
-`;
