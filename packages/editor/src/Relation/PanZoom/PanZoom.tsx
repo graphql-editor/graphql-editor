@@ -27,7 +27,7 @@ import {
 import { nodeFilter } from "@/Relation/shared/nodeFilter";
 import { useClickDetector } from "@/shared/hooks/useClickDetector";
 
-const MAX_SCHEMA_SIZE = 40000;
+const MAX_SCHEMA_SIZE = 20000 * 20000;
 
 export const PanZoom: React.FC<{
   nodes: ParserField[];
