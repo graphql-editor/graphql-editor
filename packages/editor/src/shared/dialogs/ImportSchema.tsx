@@ -210,7 +210,7 @@ export const ImportSchema: React.FC<{
             label="Proxy to avoid CORS"
             checked={proxyImport}
             onChange={() => setProxyImport(!proxyImport)}
-            wrapperCss={{ fontWeight: 400 }}
+            wrapperCss={{ fontWeight: 300 }}
           />
           <Typography variant="caption">Headers</Typography>
         </Stack>
