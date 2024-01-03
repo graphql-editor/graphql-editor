@@ -57,6 +57,7 @@ export const ControlsBar: React.FC<{
           labelPosition="start"
           onChange={() => setCtrlToZoom(!ctrlToZoom)}
           checked={ctrlToZoom}
+          wrapperCss={{ fontWeight: 400 }}
         />
         <ZoomWrapper>
           <IconWrapper
@@ -83,6 +84,7 @@ export const ControlsBar: React.FC<{
             labelPosition="start"
             onChange={() => setLibraryNodesOn(!libraryNodesOn)}
             checked={libraryNodesOn}
+            wrapperCss={{ fontWeight: 400 }}
           />
         )}
         <Checkbox
@@ -90,6 +92,7 @@ export const ControlsBar: React.FC<{
           labelPosition="start"
           onChange={() => setFieldsOn(!fieldsOn)}
           checked={fieldsOn}
+          wrapperCss={{ fontWeight: 400 }}
         />
         <Checkbox
           label="scalars"
@@ -97,12 +100,14 @@ export const ControlsBar: React.FC<{
           labelPosition="start"
           onChange={() => setBaseTypesOn(!baseTypesOn)}
           checked={fieldsOn ? baseTypesOn : false}
+          wrapperCss={{ fontWeight: 400 }}
         />
         <Checkbox
           label="inputs"
           labelPosition="start"
           onChange={() => setInputsOn(!inputsOn)}
           checked={inputsOn}
+          wrapperCss={{ fontWeight: 400 }}
         />
         <Tooltip title="Export to png" position="left-bottom">
           <IconWrapper onClick={() => downloadPng()}>
@@ -181,4 +186,9 @@ const Menu = styled.div`
   align-items: center;
   position: relative;
   justify-content: flex-end;
+`;
+
+styled(Checkbox)`
+  label {
+  }
 `;
