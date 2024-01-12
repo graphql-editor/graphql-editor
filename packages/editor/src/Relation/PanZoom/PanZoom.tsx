@@ -83,6 +83,9 @@ export const PanZoom: React.FC<{
           message:
             "Schema is too big to be printed as a whole. Please focus some nodes or hide part of them before printing.",
           variant: "error",
+          closeMethod: {
+            method: "closeManually",
+          },
         });
         return;
       }
