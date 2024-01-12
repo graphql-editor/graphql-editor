@@ -67,7 +67,7 @@ export const ImportSchema: React.FC<{
     try {
       if (!url.startsWith("http://") && !url.startsWith("https://")) {
         createToast({
-          message: `Please add https:// or http:// at the beggining of your URL we don't want to guess it.`,
+          message: `Please add https:// or http:// at the beginning of your URL we don't want to guess it.`,
           variant: "error",
         });
         return false;
@@ -149,7 +149,7 @@ export const ImportSchema: React.FC<{
                           variant: "error",
                         })
                       : createToast({
-                          message: "Unkown import error",
+                          message: "Unknown import error",
                           variant: "error",
                         });
                   });
@@ -184,7 +184,7 @@ export const ImportSchema: React.FC<{
                           variant: "error",
                         })
                       : createToast({
-                          message: "Unkown import error",
+                          message: "Unknown import error",
                           variant: "error",
                         });
                   });
@@ -210,6 +210,7 @@ export const ImportSchema: React.FC<{
             label="Proxy to avoid CORS"
             checked={proxyImport}
             onChange={() => setProxyImport(!proxyImport)}
+            wrapperCss={{ fontWeight: 300 }}
           />
           <Typography variant="caption">Headers</Typography>
         </Stack>

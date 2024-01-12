@@ -26,6 +26,9 @@ import {
 } from "@/Relation/PanZoom/LinesDiagram/LinesDiagram";
 import { nodeFilter } from "@/Relation/shared/nodeFilter";
 import { useClickDetector } from "@/shared/hooks/useClickDetector";
+
+const MAX_SCHEMA_SIZE = 20000 * 20000;
+
 export const PanZoom: React.FC<{
   nodes: ParserField[];
   hide?: boolean;
@@ -74,7 +77,18 @@ export const PanZoom: React.FC<{
   }, [nodes, baseTypesOn, inputsOn, libraryNodesOn]);
 
   const downloadPng = useCallback(() => {
-    if (viewportParams?.height) {
+    if (viewportParams?.height && viewportParams?.width) {
+      if (viewportParams.height * viewportParams.width > MAX_SCHEMA_SIZE) {
+        createToast({
+          message:
+            "Schema is too big to be printed as a whole. Please focus some nodes or hide part of them before printing.",
+          variant: "error",
+          closeMethod: {
+            method: "closeManually",
+          },
+        });
+        return;
+      }
       setLoading(true);
       const ctx = getContext();
       setParamsBeforeExport({

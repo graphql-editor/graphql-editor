@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@aexol-studio/hooks": "^0.1.28",
-    "@aexol-studio/styling-system": "^0.1.28",
+    "@aexol-studio/styling-system": "^0.2.6",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
     "color2k": "^1.2.4",
