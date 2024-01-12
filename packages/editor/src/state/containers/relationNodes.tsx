@@ -28,6 +28,10 @@ const useRelationNodes = createContainer(() => {
     relationNodes.map((el) => ({ id: el.id, isHidden: false }))
   );
 
+  const [typeRelatedToFocusedNode, setTypeRelatedToFocusedNode] = useState<
+    ParserField[]
+  >([]);
+
   useEffect(() => {
     setNodesVisibilityArr((prev) => {
       const newArray = relationNodes.map((el) => {
@@ -105,12 +109,56 @@ const useRelationNodes = createContainer(() => {
     }
     return;
   }, [focusMode]);
+
   const filteredFocusedNodes = useMemo(() => {
     return focusedNodes?.filter((el) => {
       const foundNode = nodesVisibilityArr.find((el2) => el2.id === el.id);
       return foundNode ? !foundNode.isHidden : true;
     });
   }, [nodesVisibilityArr, focusedNodes]);
+
+  useEffect(() => {
+    setTypeRelatedToFocusedNode([]);
+  }, [focusMode]);
+
+  const setTypeRelatedNodesToFocusedNode = useCallback(
+    (node: ParserField) => {
+      const alreadyExistsInTypeRelatedToFocusedNode =
+        typeRelatedToFocusedNode.find((el) => el.id === node.id);
+      const alreadyExistsInFocusedNodes = focusedNodes?.find(
+        (el) => el.id === node.id
+      );
+      const isToggleableTypeNode = toggleableTypes.includes(node.data.type);
+      if (
+        !alreadyExistsInTypeRelatedToFocusedNode &&
+        !alreadyExistsInFocusedNodes &&
+        isToggleableTypeNode
+      ) {
+        setTypeRelatedToFocusedNode([...typeRelatedToFocusedNode, node]);
+      }
+    },
+    [focusedNodes, typeRelatedToFocusedNode]
+  );
+
+  useEffect(() => {
+    if (typeRelatedToFocusedNode.length) {
+      setSelectedNodeId({
+        source: "relation",
+        value: {
+          id: typeRelatedToFocusedNode[typeRelatedToFocusedNode.length - 1].id,
+          name: typeRelatedToFocusedNode[typeRelatedToFocusedNode.length - 1]
+            .name,
+        },
+      });
+    }
+  }, [typeRelatedToFocusedNode]);
+
+  const filteredTypeRelatedToFocusedNode = useMemo(() => {
+    return typeRelatedToFocusedNode?.filter((el) => {
+      const foundNode = nodesVisibilityArr.find((el2) => el2.id === el.id);
+      return foundNode ? !foundNode.isHidden : true;
+    });
+  }, [nodesVisibilityArr, typeRelatedToFocusedNode]);
 
   const toggleNodeVisibility = useCallback(
     (node: ParserField) => {
@@ -138,6 +186,9 @@ const useRelationNodes = createContainer(() => {
     toggleNodeVisibility,
     allVisible,
     focusedNodes,
+    typeRelatedToFocusedNode,
+    filteredTypeRelatedToFocusedNode,
+    setTypeRelatedNodesToFocusedNode,
   };
 });
 

@@ -206,10 +206,10 @@ const useTreesStateContainer = createContainer(() => {
       .map((a) => a.name);
     const nodesRelatedToActiveInterface =
       activeNode &&
-      activeNode.data.type === TypeDefinition.InterfaceTypeDefinition
+        activeNode.data.type === TypeDefinition.InterfaceTypeDefinition
         ? allNodes.nodes
-            .filter((node) => node.interfaces.includes(activeNode.name))
-            .map((a) => a.name)
+          .filter((node) => node.interfaces.includes(activeNode.name))
+          .map((a) => a.name)
         : [];
     const notBaseTypes = activeNode?.args
       .map((a) => getTypeName(a.type.fieldType))

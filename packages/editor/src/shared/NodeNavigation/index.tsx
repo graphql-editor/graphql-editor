@@ -122,7 +122,7 @@ export const NodeNavigation = ({
   setIsCollapsed: (collapsed?: boolean) => void;
 }) => {
   const { allNodes, focusMode } = useTreesState();
-  const { focusedNodes } = useRelationNodesState();
+  const { focusedNodes, typeRelatedToFocusedNode } = useRelationNodesState();
   const {
     nodesVisibilityArr,
     hideRelationNodes,
@@ -170,7 +170,10 @@ export const NodeNavigation = ({
     const extScalarNodes: ParserField[] = [];
     const extTypeNodes: ParserField[] = [];
     const extInterfaceNodes: ParserField[] = [];
-    const mainNodes = focusMode && focusedNodes ? focusedNodes : allNodes.nodes;
+    const mainNodes =
+      focusMode && focusedNodes
+        ? [...focusedNodes, ...typeRelatedToFocusedNode]
+        : allNodes.nodes;
 
     const filteredNodes = mainNodes
       .filter((n) => n.name.toLowerCase().includes(q.toLowerCase()))
@@ -277,7 +280,14 @@ export const NodeNavigation = ({
       extTypeNodes,
       extUnionNodes,
     };
-  }, [allNodes, nodesVisibilityArr, q, focusedNodes, focusMode]);
+  }, [
+    allNodes,
+    nodesVisibilityArr,
+    q,
+    focusedNodes,
+    focusMode,
+    typeRelatedToFocusedNode,
+  ]);
 
   return (
     <Container>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { ParserField } from "graphql-js-tree";
 import styled from "@emotion/styled";
 import { FIELD_NAME_SIZE } from "@/Graf/constants";
@@ -33,6 +33,16 @@ export const ActiveFieldName: React.FC<
     onClick?: (n: ParserField) => void;
   }
 > = ({ args, name, parentTypes, onClick, printPreviewActive }) => {
+  const handleClickOnParamType = useCallback(
+    (field: ParserField) => {
+      if (!onClick) {
+        return undefined;
+      }
+      onClick(field);
+    },
+    [onClick]
+  );
+
   if (args && args.length > 0) {
     return (
       <Main printPreviewActive={printPreviewActive}>
@@ -45,7 +55,7 @@ export const ActiveFieldName: React.FC<
                 <span>{a.name}</span>
                 :
                 <ActiveType
-                  onClick={onClick ? () => onClick(a) : undefined}
+                  onClick={() => handleClickOnParamType(a)}
                   type={a.type}
                   parentTypes={parentTypes}
                 />

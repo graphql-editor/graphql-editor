@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { useTreesState } from "@/state/containers/trees";
 import { FieldProps as GrafFieldProps } from "@/Graf/Node/models";
 import styled from "@emotion/styled";
@@ -10,7 +10,7 @@ import {
 import { ActiveFieldName } from "@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveFieldName";
 import { ActiveType } from "@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveType";
 import { DOMClassNames } from "@/shared/hooks/DOMClassNames";
-import { useRelationsState } from "@/state/containers";
+import { useRelationNodesState, useRelationsState } from "@/state/containers";
 import { isEditableParentField } from "@/utils";
 import { Link } from "@aexol-studio/styling-system";
 
@@ -41,21 +41,41 @@ type FieldProps = Pick<GrafFieldProps, "node"> & {
 export const Field: React.FC<FieldProps> = ({ node }) => {
   const { parentTypes, setSelectedNodeId, getParentOfField } = useTreesState();
   const { setEditMode, printPreviewActive } = useRelationsState();
-  const nodeClick = (n: ParserField) => {
-    const parent = getParentOfField(n);
-    if (parent) {
-      if (isEditableParentField(parent)) {
-        setEditMode(parent.id);
+  const {
+    setTypeRelatedNodesToFocusedNode,
+    typeRelatedToFocusedNode,
+    focusedNodes,
+  } = useRelationNodesState();
+  const nodeClick = useCallback(
+    (n: ParserField) => {
+      const parent = getParentOfField(n);
+      if (parent) {
+        if (isEditableParentField(parent)) {
+          setEditMode(parent.id);
+          return;
+        }
+        setTypeRelatedNodesToFocusedNode(parent);
+        const alreadyExistsInTypeRelatedToFocusedNode =
+          typeRelatedToFocusedNode.find((el) => el.id === parent.id);
+        const alreadyExistsInFocusedNodes = focusedNodes?.find(
+          (el) => el.id === parent.id
+        );
+        if (
+          alreadyExistsInFocusedNodes ||
+          alreadyExistsInTypeRelatedToFocusedNode
+        ) {
+          setSelectedNodeId({
+            source: "relation",
+            value: {
+              id: parent.id,
+              name: parent.name,
+            },
+          });
+        }
       }
-      setSelectedNodeId({
-        source: "relation",
-        value: {
-          id: parent.id,
-          name: parent.name,
-        },
-      });
-    }
-  };
+    },
+    [typeRelatedToFocusedNode, focusedNodes]
+  );
   return (
     <Main
       className={DOMClassNames.nodeField}
@@ -81,7 +101,9 @@ export const Field: React.FC<FieldProps> = ({ node }) => {
       <ActiveType
         type={node.type}
         parentTypes={parentTypes}
-        onClick={() => nodeClick(node)}
+        onClick={() => {
+          nodeClick(node);
+        }}
       />
       {node.fromLibrary && <Link />}
     </Main>
