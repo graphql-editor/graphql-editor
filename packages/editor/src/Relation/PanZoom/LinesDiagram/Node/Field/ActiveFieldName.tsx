@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { ParserField } from "graphql-js-tree";
 import styled from "@emotion/styled";
 import { FIELD_NAME_SIZE } from "@/Graf/constants";
