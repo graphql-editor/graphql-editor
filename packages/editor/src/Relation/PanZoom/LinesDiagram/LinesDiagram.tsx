@@ -137,9 +137,7 @@ export const LinesDiagram = React.forwardRef<
         x: -nodeX * s + size.width / 2.0,
         y: -nodeY * s + size.height / 2.0,
       };
-      setTimeout(() => {
-        setTransform(transformTo.x, transformTo.y, s, 200, "easeOut");
-      }, 250);
+      setTransform(transformTo.x, transformTo.y, s, 200, "easeOut");
     }
   };
 
