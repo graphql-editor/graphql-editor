@@ -137,7 +137,9 @@ export const LinesDiagram = React.forwardRef<
         x: -nodeX * s + size.width / 2.0,
         y: -nodeY * s + size.height / 2.0,
       };
-      setTransform(transformTo.x, transformTo.y, s, 200, "easeOut");
+      setTimeout(() => {
+        setTransform(transformTo.x, transformTo.y, s, 200, "easeOut");
+      }, 250);
     }
   };
 
@@ -228,7 +230,7 @@ export const LinesDiagram = React.forwardRef<
         );
       }
     }
-  }, [props.loading, focusMode]);
+  }, [props.loading, focusMode, activeNode]);
 
   const transformEffect = (
     state: ReactZoomPanPinchState,

@@ -39,12 +39,14 @@ type FieldProps = Pick<GrafFieldProps, "node"> & {
 };
 
 export const Field: React.FC<FieldProps> = ({ node }) => {
-  const { parentTypes, setSelectedNodeId, getParentOfField } = useTreesState();
+  const { parentTypes, setSelectedNodeId, getParentOfField, focusMode } =
+    useTreesState();
   const { setEditMode, printPreviewActive } = useRelationsState();
   const {
     setTypeRelatedNodesToFocusedNode,
     typeRelatedToFocusedNode,
     focusedNodes,
+    filteredFocusedNodes,
   } = useRelationNodesState();
   const nodeClick = useCallback(
     (n: ParserField) => {
@@ -54,24 +56,18 @@ export const Field: React.FC<FieldProps> = ({ node }) => {
           setEditMode(parent.id);
           return;
         }
-        setTypeRelatedNodesToFocusedNode(parent);
-        const alreadyExistsInTypeRelatedToFocusedNode =
-          typeRelatedToFocusedNode.find((el) => el.id === parent.id);
-        const alreadyExistsInFocusedNodes = focusedNodes?.find(
-          (el) => el.id === parent.id
-        );
-        if (
-          alreadyExistsInFocusedNodes ||
-          alreadyExistsInTypeRelatedToFocusedNode
-        ) {
-          setSelectedNodeId({
-            source: "relation",
-            value: {
-              id: parent.id,
-              name: parent.name,
-            },
-          });
+        const isFocus = !!(focusMode && filteredFocusedNodes);
+        if (isFocus) {
+          setTypeRelatedNodesToFocusedNode(parent);
         }
+
+        setSelectedNodeId({
+          source: "relation",
+          value: {
+            id: parent.id,
+            name: parent.name,
+          },
+        });
       }
     },
     [typeRelatedToFocusedNode, focusedNodes]

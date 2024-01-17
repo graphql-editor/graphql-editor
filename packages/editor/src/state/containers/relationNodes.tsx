@@ -140,19 +140,6 @@ const useRelationNodes = createContainer(() => {
     [focusedNodes, typeRelatedToFocusedNode]
   );
 
-  useEffect(() => {
-    if (typeRelatedToFocusedNode.length) {
-      setSelectedNodeId({
-        source: "relation",
-        value: {
-          id: typeRelatedToFocusedNode[typeRelatedToFocusedNode.length - 1].id,
-          name: typeRelatedToFocusedNode[typeRelatedToFocusedNode.length - 1]
-            .name,
-        },
-      });
-    }
-  }, [typeRelatedToFocusedNode]);
-
   const filteredTypeRelatedToFocusedNode = useMemo(() => {
     return typeRelatedToFocusedNode?.filter((el) => {
       const foundNode = nodesVisibilityArr.find((el2) => el2.id === el.id);
