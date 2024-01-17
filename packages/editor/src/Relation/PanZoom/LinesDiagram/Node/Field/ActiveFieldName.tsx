@@ -33,16 +33,6 @@ export const ActiveFieldName: React.FC<
     onClick?: (n: ParserField) => void;
   }
 > = ({ args, name, parentTypes, onClick, printPreviewActive }) => {
-  const handleClickOnParamType = useCallback(
-    (field: ParserField) => {
-      if (!onClick) {
-        return undefined;
-      }
-      onClick(field);
-    },
-    [onClick]
-  );
-
   if (args && args.length > 0) {
     return (
       <Main printPreviewActive={printPreviewActive}>
@@ -55,7 +45,7 @@ export const ActiveFieldName: React.FC<
                 <span>{a.name}</span>
                 :
                 <ActiveType
-                  onClick={() => handleClickOnParamType(a)}
+                  onClick={onClick ? () => onClick(a) : undefined}
                   type={a.type}
                   parentTypes={parentTypes}
                 />
