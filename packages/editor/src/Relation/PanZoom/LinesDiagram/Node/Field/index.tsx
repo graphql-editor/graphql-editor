@@ -42,8 +42,11 @@ export const Field: React.FC<FieldProps> = ({ node }) => {
   const { parentTypes, setSelectedNodeId, getParentOfField, focusMode } =
     useTreesState();
   const { setEditMode, printPreviewActive } = useRelationsState();
-  const { setTypeRelatedNodesToFocusedNode, filteredFocusedNodes } =
-    useRelationNodesState();
+  const {
+    setTypeRelatedNodesToFocusedNode,
+    filteredFocusedNodes,
+    typeRelatedToFocusedNode,
+  } = useRelationNodesState();
   const nodeClick = useCallback(
     (n: ParserField) => {
       const parent = getParentOfField(n);
@@ -66,7 +69,7 @@ export const Field: React.FC<FieldProps> = ({ node }) => {
         });
       }
     },
-    [focusMode, filteredFocusedNodes]
+    [focusMode, filteredFocusedNodes, typeRelatedToFocusedNode]
   );
   return (
     <Main
