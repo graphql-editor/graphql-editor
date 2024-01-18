@@ -1,4 +1,5 @@
 import { CollapseArrow } from "@/editor/menu/CollapseArrow";
+import { dataIt } from "@/Models/dataIds";
 import { SearchInput } from "@/shared/components";
 import { useIO, KeyboardActions } from "@/shared/hooks/io";
 import { NodeList, SchemaList } from "@/shared/NodeNavigation/NodeList";
@@ -29,8 +30,8 @@ const ListContainer = styled.div<{ isCollapsed?: boolean }>`
   flex-flow: column nowrap;
   overflow-y: auto;
   overflow-x: hidden;
-  background: ${({ theme }) => theme.neutral[600]};
-  border-left: ${({ theme }) => theme.black} 2px solid;
+  background: ${({ theme }) => theme.neutrals.L6};
+  border-left: ${({ theme }) => theme.neutrals.L8} 2px solid;
   height: 100%;
   transition: width 0.5s ease-in-out;
   width: ${({ isCollapsed }) => (isCollapsed ? "50px" : "18rem")};
@@ -47,7 +48,7 @@ const TopMenusWrapper = styled.div`
   position: sticky;
   width: 100%;
   top: 0;
-  background: ${({ theme }) => theme.neutral[600]};
+  background: ${({ theme }) => theme.neutrals.L6};
   z-index: 2;
   padding: 1rem;
 `;
@@ -280,7 +281,7 @@ export const NodeNavigation = ({
   }, [allNodes, nodesVisibilityArr, q, focusedNodes, focusMode]);
 
   return (
-    <Container>
+    <Container {...dataIt("navigation")}>
       <ListContainer isCollapsed={isCollapsed}>
         <CollapseArrow
           isCollapsed={isCollapsed}
@@ -301,6 +302,7 @@ export const NodeNavigation = ({
                 onSubmit={() => {
                   // no op
                 }}
+                {...dataIt("search")}
               />
               <>
                 {allVisible ? (
@@ -333,7 +335,6 @@ export const NodeNavigation = ({
                 )
               }
               nodeList={splittedNodes.typeNodes}
-              visibleInRelationView
               listTitle="Types"
               colorKey="type"
             />
@@ -345,7 +346,6 @@ export const NodeNavigation = ({
                 )
               }
               nodeList={splittedNodes.interfaceNodes}
-              visibleInRelationView
               listTitle="Interface"
               colorKey="interface"
             />
@@ -357,7 +357,6 @@ export const NodeNavigation = ({
                 )
               }
               nodeList={splittedNodes.unionNodes}
-              visibleInRelationView
               listTitle="Unions"
               colorKey="union"
             />
@@ -369,7 +368,6 @@ export const NodeNavigation = ({
                 )
               }
               nodeList={splittedNodes.inputNodes}
-              visibleInRelationView
               listTitle="Inputs"
               colorKey="input"
             />

@@ -1,5 +1,5 @@
-import React from 'react';
-import styled from '@emotion/styled';
+import React from "react";
+import styled from "@emotion/styled";
 
 interface MenuItemProps {
   onClick?: () => void;
@@ -20,7 +20,7 @@ const MenuItemText = styled.span`
   width: 100%;
 
   &:hover {
-    color: ${({ theme }) => theme.accents[200]};
+    color: ${({ theme }) => theme.accent.L2};
   }
 `;
 

@@ -47,7 +47,7 @@ export const PanZoom: React.FC<{
     editMode,
     baseTypesOn,
     fieldsOn,
-    inputsOn,
+    omitNodes,
     ctrlToZoom,
     libraryNodesOn,
     printPreviewReady,
@@ -71,10 +71,10 @@ export const PanZoom: React.FC<{
   const filteredNodes = useMemo(() => {
     return nodeFilter(nodes, {
       baseTypesOn,
-      inputsOn,
+      omitNodes,
       libraryNodesOn,
     });
-  }, [nodes, baseTypesOn, inputsOn, libraryNodesOn]);
+  }, [nodes, baseTypesOn, omitNodes, libraryNodesOn]);
 
   const downloadPng = useCallback(() => {
     if (viewportParams?.height && viewportParams?.width) {
@@ -320,7 +320,7 @@ const Wrapper = styled.div`
   height: 100%;
   overflow: hidden;
   transition: ${vars.transition};
-  background: ${({ theme }) => theme.neutral[600]};
+  background: ${({ theme }) => theme.neutrals.L6};
 `;
 
 const LoadingContainer = styled.div`
@@ -330,7 +330,7 @@ const LoadingContainer = styled.div`
   padding: 2rem;
   gap: 1rem;
   color: ${({ theme }) => theme.text.default};
-  background-color: ${({ theme }) => theme.neutral[600]};
+  background-color: ${({ theme }) => theme.neutrals.L6};
   inset: 0;
   font-family: ${({ theme }) => theme.fontFamilySans};
   display: flex;

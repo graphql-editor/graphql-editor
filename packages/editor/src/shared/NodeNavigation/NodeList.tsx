@@ -47,7 +47,6 @@ interface NodeListI {
   expanded: Array<string>;
   setExpanded: (e: string) => void;
   colorKey: keyof EditorTheme["colors"];
-  visibleInRelationView?: true;
 }
 
 export const NodeList: React.FC<NodeListI> = ({
@@ -56,7 +55,6 @@ export const NodeList: React.FC<NodeListI> = ({
   setExpanded,
   expanded,
   colorKey,
-  visibleInRelationView,
 }) => {
   const open = expanded.includes(listTitle);
   const empty = !nodeList?.length;
@@ -75,12 +73,7 @@ export const NodeList: React.FC<NodeListI> = ({
       {open &&
         nodeList &&
         nodeList.map((node) => (
-          <SingleNodeInList
-            key={node.id}
-            colorKey={colorKey}
-            visibleInRelationView={visibleInRelationView}
-            node={node}
-          />
+          <SingleNodeInList key={node.id} colorKey={colorKey} node={node} />
         ))}
     </>
   );

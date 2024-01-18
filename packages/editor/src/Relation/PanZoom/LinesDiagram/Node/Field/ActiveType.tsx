@@ -49,7 +49,7 @@ const AType = styled.a<{ clickable?: boolean; color?: string }>`
             : theme.text.default
           : theme.text.default;
       }
-      return theme.accents[100];
+      return theme.accent.L1;
     }};
   }
 `;

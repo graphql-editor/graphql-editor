@@ -287,7 +287,7 @@ const AbsoluteActions = styled.div`
   top: 0;
   right: 0;
   z-index: 2;
-  background-color: ${(p) => p.theme.neutral[450]};
+  background-color: ${(p) => p.theme.neutrals.L4};
   padding: 0.5rem;
   border-radius: ${(p) => p.theme.radius}px;
 `;

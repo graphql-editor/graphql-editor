@@ -81,7 +81,7 @@ const NodeContainer = styled.div`
   break-inside: avoid;
   min-width: 24rem;
   max-height: 100%;
-  background-color: ${({ theme }) => theme.neutral[500]};
+  background-color: ${({ theme }) => theme.neutrals.L5};
   display: flex;
   flex-flow: column nowrap;
   border-radius: ${(p) => p.theme.radius}px;
@@ -127,11 +127,11 @@ const GapBar = styled.div`
   width: 100%;
   height: 100%;
   pointer-events: all;
-  background-color: ${({ theme }) => theme.neutral[600]}99;
+  background-color: ${({ theme }) => theme.neutrals.L6}99;
   transition: 0.25s background-color ease-in-out;
 
   &:hover {
-    background-color: ${({ theme }) => theme.neutral[600]}11;
+    background-color: ${({ theme }) => theme.neutrals.L6}11;
   }
 `;
 

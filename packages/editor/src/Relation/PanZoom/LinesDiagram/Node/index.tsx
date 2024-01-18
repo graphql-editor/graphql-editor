@@ -40,7 +40,7 @@ const Content = styled.div<ContentProps>`
         ? PRINT_PREVIEW_RELATION_NODE_MAX_WIDTH
         : RELATION_NODE_MAX_WIDTH
     )}px;
-  background-color: ${({ theme }) => `${theme.neutral[600]}`};
+  background-color: ${({ theme }) => `${theme.neutrals.L6}`};
   padding: 12px;
   position: relative;
   text-rendering: optimizeSpeed;
@@ -59,9 +59,7 @@ const Content = styled.div<ContentProps>`
   border-color: ${({ theme }) => `${theme.dividerMain}88`};
   &:hover {
     border-color: ${({ theme, nodeType }) =>
-      theme.colors[nodeType]
-        ? theme.colors[nodeType]
-        : `${theme.accents[100]}00`};
+      theme.colors[nodeType] ? theme.colors[nodeType] : `${theme.accent.L1}00`};
   }
   .graph-field {
     pointer-events: none;
@@ -133,7 +131,7 @@ const NodeRelationFields = styled.div`
 const NodeTitle = styled.div`
   position: absolute;
   align-items: center;
-  /* background-color: ${({ theme }) => `${theme.neutral[600]}`}; */
+  /* background-color: ${({ theme }) => `${theme.neutrals.L6}`}; */
   color: ${({ theme }) => theme.text.active};
   font-size: 14px;
   font-weight: 500;
@@ -153,7 +151,7 @@ const EditNodeContainer = styled.div`
   transform: translateY(calc(-100% - 0.5rem));
 `;
 const SmallClickableButton = styled.div`
-  background-color: ${(p) => p.theme.neutral[400]};
+  background-color: ${(p) => p.theme.neutrals.L4};
   color: ${(p) => p.theme.button.standalone.active};
   padding: 0.25rem 0.5rem;
   display: flex;
@@ -165,7 +163,7 @@ const SmallClickableButton = styled.div`
   cursor: pointer;
   z-index: 1;
   :hover {
-    background-color: ${(p) => p.theme.neutral[200]};
+    background-color: ${(p) => p.theme.neutrals.L2};
   }
 `;
 const EditNodeClickableButton = styled(SmallClickableButton)`
@@ -188,14 +186,14 @@ const EditToSeeWhole = styled(Stack)`
   z-index: 10;
   color: ${(p) => p.theme.text.default};
   margin: 1rem -12px;
-  background: ${(p) => p.theme.neutral[500]};
+  background: ${(p) => p.theme.neutrals.L5};
   width: calc(100% + 26px);
   border-bottom-left-radius: ${(p) => p.theme.radius}px;
   border-bottom-right-radius: ${(p) => p.theme.radius}px;
   cursor: pointer;
   transition: ${transition};
   :hover {
-    background: ${(p) => p.theme.neutral[450]};
+    background: ${(p) => p.theme.neutrals.L4};
     color: ${(p) => p.theme.text.active};
   }
 `;

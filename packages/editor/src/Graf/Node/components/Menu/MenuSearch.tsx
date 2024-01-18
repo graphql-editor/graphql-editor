@@ -1,6 +1,6 @@
-import React, { useRef } from 'react';
+import React, { useRef } from "react";
 
-import styled from '@emotion/styled';
+import styled from "@emotion/styled";
 
 interface MenuSearchProps {
   value: string;
@@ -18,7 +18,7 @@ const Wrapper = styled.div`
 `;
 
 const Main = styled.input`
-  background-color: ${({ theme }) => theme.neutral[700]};
+  background-color: ${({ theme }) => theme.neutrals.L7};
   border-radius: ${(p) => p.theme.radius}px;
   color: ${({ theme }) => theme.text.default};
   width: auto;
@@ -28,12 +28,12 @@ const Main = styled.input`
   font-size: 14px;
   outline: 0;
   position: relative;
-  border: 1px solid ${({ theme }) => theme.neutral[200]};
+  border: 1px solid ${({ theme }) => theme.neutrals.L2};
   &::placeholder {
     color: ${({ theme }) => theme.text.disabled};
   }
   &:focus {
-    border-color: ${({ theme }) => theme.accents[200]};
+    border-color: ${({ theme }) => theme.accent.L2};
   }
 `;
 
@@ -41,7 +41,7 @@ export const MenuSearch: React.FC<MenuSearchProps> = ({
   value,
   onChange,
   onSubmit,
-  placeholder = 'Search...',
+  placeholder = "Search...",
 }) => {
   const ref = useRef<HTMLInputElement>(null);
   return (
@@ -50,7 +50,7 @@ export const MenuSearch: React.FC<MenuSearchProps> = ({
         autoFocus
         ref={ref}
         onKeyDown={(e) => {
-          if (e.key === 'Enter') {
+          if (e.key === "Enter") {
             onSubmit();
           }
         }}

@@ -10,7 +10,7 @@ const Wrapper = styled.div`
   height: 100%;
   display: flex;
   position: relative;
-  background: ${({ theme }) => theme.neutral[600]};
+  background: ${({ theme }) => theme.neutrals.L6};
   flex-direction: row;
   align-items: stretch;
 `;
@@ -18,7 +18,7 @@ const Wrapper = styled.div`
 const SelectedNodeWrapper = styled.div`
   flex: 1;
   overflow-y: auto;
-  background-color: ${({ theme }) => theme.neutral[600]};
+  background-color: ${({ theme }) => theme.neutrals.L6};
   overflow-x: hidden;
   height: 100%;
 `;

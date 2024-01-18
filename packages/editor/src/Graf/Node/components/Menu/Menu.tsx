@@ -11,7 +11,7 @@ const Wrapper = styled(motion.div)`
 `;
 
 const Content = styled.div`
-  background: ${({ theme }) => theme.neutral[400]};
+  background: ${({ theme }) => theme.neutrals.L4};
   border-radius: ${(p) => p.theme.radius}px;
   padding: 0;
   box-shadow: ${({ theme }) => theme.shadow};

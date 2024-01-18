@@ -23,13 +23,13 @@ export const ErrorLabel = styled.p`
 `;
 const Errors = styled(Stack)`
   pointer-events: all;
-  background-color: ${(p) => p.theme.neutral[400]};
+  background-color: ${(p) => p.theme.neutrals.L4};
   padding: 0.5rem;
   border-radius: ${(p) => p.theme.radius}px;
 `;
 
 const List = styled(Stack)`
-  background-color: ${(p) => p.theme.neutral[450]};
+  background-color: ${(p) => p.theme.neutrals.L4};
   padding: 0.5rem;
 `;
 const SmallLabel = styled(Typography)``;

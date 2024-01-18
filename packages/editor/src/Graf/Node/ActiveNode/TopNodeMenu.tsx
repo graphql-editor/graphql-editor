@@ -45,10 +45,10 @@ const NodeIconArea = styled.div<{ opened?: boolean }>`
   border-radius: ${(p) => p.theme.radius}px;
   transition: ${transition};
   &:hover {
-    color: ${({ theme }) => theme.accents[200]};
+    color: ${({ theme }) => theme.accent.L2};
   }
   color: ${({ opened, theme }) =>
-    opened ? theme.accents[200] : theme.text.default};
+    opened ? theme.accent.L2 : theme.text.default};
 `;
 
 export const TopNodeMenu: React.FC<{

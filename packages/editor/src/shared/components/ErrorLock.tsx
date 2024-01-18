@@ -7,7 +7,7 @@ const Main = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  background-color: ${({ theme }) => theme.neutral[600]};
+  background-color: ${({ theme }) => theme.neutrals.L6};
   cursor: pointer;
 `;
 
@@ -16,7 +16,7 @@ const Message = styled.textarea`
   font-size: 14px;
   padding: 30px;
   color: ${({ theme }) => theme.error};
-  background-color: ${({ theme }) => theme.neutral[600]};
+  background-color: ${({ theme }) => theme.neutrals.L6};
   border: 0;
   position: relative;
   width: 100%;

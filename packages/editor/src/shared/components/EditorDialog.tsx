@@ -26,7 +26,7 @@ const Title = styled(Typography)`
 `;
 
 const DialogContent = styled.div`
-  background-color: ${(p) => p.theme.neutral[600]};
+  background-color: ${(p) => p.theme.neutrals.L6};
   min-width: 480px;
   padding: 2rem;
   font-family: ${({ theme }) => theme.fontFamilySans};

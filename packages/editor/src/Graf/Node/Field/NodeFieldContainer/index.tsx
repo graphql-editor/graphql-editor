@@ -15,7 +15,7 @@ export const NodeFieldContainer = styled.div<{
   position: relative;
   border: 1px solid
     ${({ theme, active }) =>
-      active ? theme.neutral[600] : `${theme.neutral[600]}00`};
+      active ? theme.neutrals.L6 : `${theme.neutrals.L6}00`};
   .field-actions {
     opacity: 0;
     pointer-events: none;
@@ -38,7 +38,7 @@ export const NodeFieldContainer = styled.div<{
   }
 
   :hover {
-    border: 1px solid ${({ theme }) => theme.neutral[600]};
+    border: 1px solid ${({ theme }) => theme.neutrals.L6};
     .node-field-port {
       opacity: 1;
       pointer-events: all;

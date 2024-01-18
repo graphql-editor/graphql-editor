@@ -1,8 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from "react";
 
-import styled from '@emotion/styled';
-import { EditorTheme } from '@/gshared/theme/MainTheme';
-import { transition } from '@/vars';
+import styled from "@emotion/styled";
+import { EditorTheme } from "@/gshared/theme/MainTheme";
+import { transition } from "@/vars";
 
 interface TypedMenuItemProps {
   onClick: () => void;
@@ -12,7 +12,7 @@ interface TypedMenuItemProps {
   selected?: boolean;
 }
 
-type NodeTypes = keyof EditorTheme['colors'];
+type NodeTypes = keyof EditorTheme["colors"];
 
 const Main = styled.div<{ isSelected?: boolean }>`
   display: flex;
@@ -22,17 +22,17 @@ const Main = styled.div<{ isSelected?: boolean }>`
   border-radius: ${(p) => p.theme.radius}px;
   scroll-snap-align: end;
   background-color: ${({ isSelected, theme }) =>
-    isSelected && theme.neutral[500]};
+    isSelected && theme.neutrals.L5};
   transition: ${transition};
   &:hover {
-    color: ${({ theme }) => theme.accents[100]};
+    color: ${({ theme }) => theme.accent.L1};
   }
 `;
 
 const MenuItemName = styled.span`
   transition: ${transition};
   &:hover {
-    color: ${({ theme }) => theme.accents[100]};
+    color: ${({ theme }) => theme.accent.L1};
   }
 `;
 
@@ -45,7 +45,7 @@ const MenuItemType = styled.span<{ nodeType: NodeTypes }>`
   color: ${({ theme, nodeType }) =>
     theme.colors[nodeType] ? theme.colors[nodeType] : theme.text.active};
   &:hover {
-    color: ${({ theme }) => theme.accents[100]};
+    color: ${({ theme }) => theme.accent.L1};
   }
 `;
 
@@ -59,7 +59,7 @@ export const TypedMenuItem: React.FC<TypedMenuItemProps> = ({
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (selected) {
-      ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      ref.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   }, [selected]);
 

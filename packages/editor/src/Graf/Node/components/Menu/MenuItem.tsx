@@ -1,8 +1,8 @@
-import React from 'react';
-import { ParserField, getTypeName } from 'graphql-js-tree';
+import React from "react";
+import { ParserField, getTypeName } from "graphql-js-tree";
 
-import styled from '@emotion/styled';
-import { EditorTheme } from '@/gshared/theme/MainTheme';
+import styled from "@emotion/styled";
+import { EditorTheme } from "@/gshared/theme/MainTheme";
 
 interface MenuItemProps {
   node: ParserField;
@@ -10,7 +10,7 @@ interface MenuItemProps {
   name?: string;
 }
 
-type NodeTypes = keyof EditorTheme['colors'];
+type NodeTypes = keyof EditorTheme["colors"];
 
 const Main = styled.div`
   display: flex;
@@ -26,7 +26,7 @@ const MenuItemText = styled.span<{ nodeType: NodeTypes }>`
     theme.colors[nodeType] ? theme.colors[nodeType] : theme.text.active};
 
   &:hover {
-    color: ${({ theme }) => theme.accents[100]};
+    color: ${({ theme }) => theme.accent.L1};
   }
 `;
 

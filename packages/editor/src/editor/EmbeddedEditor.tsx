@@ -16,15 +16,15 @@ const Main = styled.div`
   overflow-y: clip;
 
   scrollbar-color: ${({ theme }) =>
-    `${theme.neutral[500]} ${theme.neutral[600]}`};
+    `${theme.neutrals.L5} ${theme.neutrals.L6}`};
   *::-webkit-scrollbar {
-    background: ${({ theme }) => theme.neutral[500]};
+    background: ${({ theme }) => theme.neutrals.L5};
   }
   *::-webkit-scrollbar-thumb {
-    background: ${({ theme }) => theme.neutral[500]};
+    background: ${({ theme }) => theme.neutrals.L5};
   }
   *::-webkit-scrollbar-track {
-    background: ${({ theme }) => theme.neutral[600]};
+    background: ${({ theme }) => theme.neutrals.L6};
   }
 
   .full-screen-container {
