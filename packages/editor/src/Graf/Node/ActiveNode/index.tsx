@@ -466,7 +466,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                   >
                     <ActiveField
                       parentNode={node}
-                      isLocked={isLocked}
+                      isLocked={isLocked || a.fromLibrary}
                       key={a.name}
                       onInputClick={() => {
                         setOpenedNode((oN) =>
