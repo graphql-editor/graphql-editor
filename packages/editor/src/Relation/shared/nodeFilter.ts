@@ -1,6 +1,6 @@
 import { isScalarArgument } from "@/GraphQL/Resolve";
 import { OmitNodes } from "@/Relation/shared/models";
-import { ParserField, TypeDefinition } from "graphql-js-tree";
+import { ParserField, TypeDefinition, TypeExtension } from "graphql-js-tree";
 
 export const nodeFilter = (
   nodes: ParserField[],
@@ -23,6 +23,24 @@ export const nodeFilter = (
             : undefined;
         if (nodeType && options.omitNodes[nodeType]) {
           return false;
+        }
+        if (n.data.type === TypeExtension.ObjectTypeExtension) {
+          return !options.omitNodes[TypeDefinition.ObjectTypeDefinition];
+        }
+        if (n.data.type === TypeExtension.EnumTypeExtension) {
+          return !options.omitNodes[TypeDefinition.EnumTypeDefinition];
+        }
+        if (n.data.type === TypeExtension.InputObjectTypeExtension) {
+          return !options.omitNodes[TypeDefinition.InputObjectTypeDefinition];
+        }
+        if (n.data.type === TypeExtension.InterfaceTypeExtension) {
+          return !options.omitNodes[TypeDefinition.InterfaceTypeDefinition];
+        }
+        if (n.data.type === TypeExtension.ScalarTypeExtension) {
+          return !options.omitNodes[TypeDefinition.ScalarTypeDefinition];
+        }
+        if (n.data.type === TypeExtension.UnionTypeExtension) {
+          return !options.omitNodes[TypeDefinition.UnionTypeDefinition];
         }
         return true;
       }

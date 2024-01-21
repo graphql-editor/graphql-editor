@@ -72,13 +72,14 @@ const CreateNodeItem = styled.div<{ type?: string; active?: boolean }>`
   justify-content: space-between;
   align-items: center;
   padding: 0 1rem;
-  height: 3rem;
-  font-size: 16px;
+  height: 2rem;
+  font-size: 0.75rem;
   cursor: pointer;
   color: ${({ theme, active }) =>
     active ? theme.text.default : theme.text.disabled};
   svg {
     color: ${({ theme }) => theme.text.default};
+    height: 1rem;
   }
 
   background-color: ${({ theme }) => theme.neutrals.L5};
@@ -94,7 +95,7 @@ const CreateNodeItem = styled.div<{ type?: string; active?: boolean }>`
   }
 `;
 const CreateNodeName = styled.div`
-  font-size: 16px;
+  font-size: 0.75rem;
 `;
 
 const PaddingContainer = styled(Stack)`
