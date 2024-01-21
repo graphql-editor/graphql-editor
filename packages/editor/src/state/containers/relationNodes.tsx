@@ -6,15 +6,24 @@ import {
   getTypeName,
   ParserField,
   TypeDefinition,
+  TypeExtension,
+  TypeSystemDefinition,
 } from "graphql-js-tree";
 
 export const toggleableTypes: AllTypes[] = [
   TypeDefinition.ObjectTypeDefinition,
+  TypeExtension.ObjectTypeExtension,
   TypeDefinition.UnionTypeDefinition,
+  TypeExtension.UnionTypeExtension,
   TypeDefinition.InterfaceTypeDefinition,
+  TypeExtension.InterfaceTypeExtension,
   TypeDefinition.InputObjectTypeDefinition,
+  TypeExtension.InputObjectTypeExtension,
   TypeDefinition.EnumTypeDefinition,
+  TypeExtension.EnumTypeExtension,
   TypeDefinition.ScalarTypeDefinition,
+  TypeExtension.ScalarTypeExtension,
+  TypeSystemDefinition.DirectiveDefinition,
 ];
 
 const useRelationNodes = createContainer(() => {

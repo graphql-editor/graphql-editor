@@ -24,7 +24,6 @@ export const Relation: React.FC<{ setInitialSchema: (s: string) => void }> = ({
   const [popupsState, setPopupsState] = useState({
     import: false,
   });
-  console.log(filteredRelationNodes);
   const isFocus = !!(focusMode && filteredFocusedNodes);
   const viewport = useMemo(() => {
     return (

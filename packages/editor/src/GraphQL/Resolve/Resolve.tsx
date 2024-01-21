@@ -151,9 +151,9 @@ export const ResolveImplementInterface = (
     field.data.type === TypeDefinition.ObjectTypeDefinition ||
     field.data.type === TypeDefinition.InterfaceTypeDefinition
   ) {
-    return actualFields.filter(
-      (f) => f.data.type === TypeDefinition.InterfaceTypeDefinition
-    );
+    return actualFields
+      .filter((f) => f.data.type === TypeDefinition.InterfaceTypeDefinition)
+      .filter((f) => f.name !== field.name);
   }
   return [];
 };

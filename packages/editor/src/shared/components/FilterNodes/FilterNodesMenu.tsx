@@ -1,5 +1,5 @@
 import React from "react";
-import { TypeDefinition } from "graphql-js-tree";
+import { TypeDefinition, TypeSystemDefinition } from "graphql-js-tree";
 import { Menu } from "@/Graf/Node/components";
 import styled from "@emotion/styled";
 import { transition } from "@/vars";
@@ -26,6 +26,7 @@ export const FilterNodesMenu = React.forwardRef<
     ["enum", TypeDefinition.EnumTypeDefinition],
     ["type", TypeDefinition.ObjectTypeDefinition],
     ["input", TypeDefinition.InputObjectTypeDefinition],
+    ["directive", TypeSystemDefinition.DirectiveDefinition],
   ];
 
   return (

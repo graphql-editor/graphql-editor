@@ -1,14 +1,14 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { ResolveImplementInterface } from '@/GraphQL/Resolve';
-import { getTypeName, ParserField } from 'graphql-js-tree';
-import { useTreesState } from '@/state/containers/trees';
+import React, { useEffect, useMemo, useState } from "react";
+import { ResolveImplementInterface } from "@/GraphQL/Resolve";
+import { getTypeName, ParserField } from "graphql-js-tree";
+import { useTreesState } from "@/state/containers/trees";
 import {
   Menu,
   MenuScrollingArea,
   MenuSearch,
   TypedMenuItem,
-} from '@/Graf/Node/components';
-import { sortNodes } from '@/shared/components/ContextMenu/sort';
+} from "@/Graf/Node/components";
+import { sortNodes } from "@/shared/components/ContextMenu/sort";
 
 interface NodeImplementInterfacesMenuProps {
   node: ParserField;
@@ -20,20 +20,20 @@ export const NodeImplementInterfacesMenu = React.forwardRef<
   NodeImplementInterfacesMenuProps
 >(({ node, hideMenu, ...props }, ref) => {
   const { allNodes, implementInterface } = useTreesState();
-  const [menuSearchValue, setMenuSearchValue] = useState('');
+  const [menuSearchValue, setMenuSearchValue] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const creationNodes = useMemo(
     () =>
       ResolveImplementInterface(node, allNodes.nodes)?.filter(
-        (a) => !node.interfaces?.includes(a.name),
+        (a) => !node.interfaces?.includes(a.name)
       ) || [],
-    [allNodes],
+    [allNodes]
   );
 
   const filteredNodes = useMemo(
     () => sortNodes(menuSearchValue, creationNodes),
-    [creationNodes, menuSearchValue],
+    [creationNodes, menuSearchValue]
   );
 
   useEffect(() => {
@@ -53,7 +53,7 @@ export const NodeImplementInterfacesMenu = React.forwardRef<
   return (
     <Menu
       {...props}
-      menuName={'Implement interface'}
+      menuName={"Implement interface"}
       onScroll={(e) => e.stopPropagation()}
       hideMenu={() => hideMenu()}
       ref={ref}

@@ -280,6 +280,13 @@ export const NodeNavigation = ({
     };
   }, [allNodes, nodesVisibilityArr, q, focusedNodes, focusMode]);
 
+  const allExtensionNodes = splittedNodes.extTypeNodes.concat(
+    splittedNodes.extInterfaceNodes,
+    splittedNodes.extEnumNodes,
+    splittedNodes.extInputNodes,
+    splittedNodes.extScalarNodes,
+    splittedNodes.extUnionNodes
+  );
   return (
     <Container {...dataIt("navigation")}>
       <ListContainer isCollapsed={isCollapsed}>
@@ -404,7 +411,7 @@ export const NodeNavigation = ({
               listTitle="Directives"
               colorKey="directive"
             />
-            {!!splittedNodes.extTypeNodes.length && (
+            {!!allExtensionNodes.length && (
               <NodeList
                 expanded={listExpanded}
                 setExpanded={(e) =>
@@ -412,9 +419,9 @@ export const NodeNavigation = ({
                     le.includes(e) ? le.filter((l) => l !== e) : [...le, e]
                   )
                 }
-                nodeList={splittedNodes.extTypeNodes}
-                listTitle="Type Extensions"
-                colorKey="type"
+                nodeList={allExtensionNodes}
+                listTitle="Extensions"
+                colorKey="extend"
               />
             )}
           </ListWrapper>
