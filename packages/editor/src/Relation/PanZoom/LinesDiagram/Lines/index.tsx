@@ -39,7 +39,7 @@ export const Lines: React.FC<LinesProps> = ({
     <RelationsContainer>
       {relations?.map((r, index) => {
         return (
-          <>
+          <React.Fragment key={index}>
             {r.from?.map((rf, relationNumber) => {
               const relationType = rf.connectingField.type.fieldType;
               return (
@@ -72,7 +72,7 @@ export const Lines: React.FC<LinesProps> = ({
                 isPrintPreviewActive={isPrintPreviewActive}
               />
             ))}
-          </>
+          </React.Fragment>
         );
       })}
     </RelationsContainer>

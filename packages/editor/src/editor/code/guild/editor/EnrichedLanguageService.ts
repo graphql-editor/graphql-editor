@@ -19,6 +19,7 @@ import {
   toGraphQLPosition,
   toMonacoRange,
   removeFalsey,
+  cutUnnecessary,
 } from "./utils";
 import { mergeSDLs } from "graphql-js-tree";
 
@@ -198,7 +199,7 @@ export class EnrichedLanguageService extends LanguageService {
                   },
                 ];
               } else {
-                c = result.sdl;
+                c = [c, cutUnnecessary(c, libraries)].join("\n");
               }
             }
             const s = await source.forDocument({

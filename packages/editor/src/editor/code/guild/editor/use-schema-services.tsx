@@ -6,6 +6,7 @@ import {
   DiagnosticsSource,
   EditorAction,
   HoverSource,
+  validationMerge,
 } from "./utils";
 import { EnrichedLanguageService } from "./EnrichedLanguageService";
 import { GraphQLError, GraphQLSchema } from "graphql";
@@ -52,16 +53,6 @@ export type SchemaServicesOptions = {
   ) => monaco.editor.IActionDescriptor[];
 };
 
-const compileSchema = ({
-  schema,
-  libraries,
-}: {
-  schema: string;
-  libraries?: string;
-}) => {
-  return [schema, libraries || ""].join("\n");
-};
-
 const cursorIndex = {
   index: -1,
 };
@@ -83,10 +74,9 @@ export const useSchemaServices = (options: SchemaServicesOptions) => {
       options.sharedLanguageService ||
       new EnrichedLanguageService({
         schemaString: options.schema?.code
-          ? compileSchema({
-              libraries: options.schema.libraries,
-              schema: options.schema.code,
-            })
+          ? options.schema.libraries
+            ? validationMerge(options.schema.code, options.schema.libraries)
+            : options.schema.code
           : undefined,
         schemaConfig: {
           buildSchemaOptions: {
@@ -287,7 +277,9 @@ export const useSchemaServices = (options: SchemaServicesOptions) => {
     monacoRef,
     languageService,
     setSchema: (newValue: string) => {
-      const fullSchema = compileSchema({ ...options, schema: newValue });
+      const fullSchema = options.schema?.libraries
+        ? validationMerge(newValue, options.schema?.libraries)
+        : newValue;
       return languageService.trySchema(fullSchema);
     },
     onValidate: () => {
