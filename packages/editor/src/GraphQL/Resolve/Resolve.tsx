@@ -149,6 +149,8 @@ export const ResolveImplementInterface = (
 ): ParserField[] | undefined => {
   if (
     field.data.type === TypeDefinition.ObjectTypeDefinition ||
+    field.data.type === TypeExtension.ObjectTypeExtension ||
+    field.data.type === TypeExtension.InterfaceTypeExtension ||
     field.data.type === TypeDefinition.InterfaceTypeDefinition
   ) {
     return actualFields

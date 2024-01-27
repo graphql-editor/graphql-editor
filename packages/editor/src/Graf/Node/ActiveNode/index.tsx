@@ -4,6 +4,7 @@ import {
   TypeSystemDefinition,
   TypeDefinition,
   getTypeName,
+  TypeExtension,
 } from "graphql-js-tree";
 import { ActiveField } from "@/Graf/Node/Field";
 import {
@@ -232,17 +233,20 @@ export const ActiveNode: React.FC<NodeProps> = ({
       onWheel={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}
     >
-      <ActiveDescription
-        onChange={(d) => {
-          if (d === node.description) return;
-          //TODO: Add change description in js-tree
-          updateNode(node, () => {
-            node.description = d;
-          });
-        }}
-        isLocked={isLocked}
-        value={node.description || ""}
-      />
+      {/* Extension nodes should not have description following the GraphQL Spec */}
+      {!isExtensionNode(node.data.type) && (
+        <ActiveDescription
+          onChange={(d) => {
+            if (d === node.description) return;
+            //TODO: Add change description in js-tree
+            updateNode(node, () => {
+              node.description = d;
+            });
+          }}
+          isLocked={isLocked}
+          value={node.description || ""}
+        />
+      )}
       {node.data.type === TypeSystemDefinition.DirectiveDefinition && (
         <DirectivePlacements>
           {!isLocked && <CreateNodeDirective node={node} isLocked={isLocked} />}
@@ -266,6 +270,8 @@ export const ActiveNode: React.FC<NodeProps> = ({
         </DirectivePlacements>
       )}
       {(node.data.type === TypeDefinition.ObjectTypeDefinition ||
+        node.data.type === TypeExtension.ObjectTypeExtension ||
+        node.data.type === TypeExtension.InterfaceTypeExtension ||
         node.data.type === TypeDefinition.InterfaceTypeDefinition) && (
         <NodeInterfaces isHidden={libraryNode && !node.interfaces.length}>
           {!isLocked && <CreateNodeInterface node={node} isLocked={isLocked} />}
