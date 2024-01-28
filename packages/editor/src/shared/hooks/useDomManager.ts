@@ -126,6 +126,7 @@ export const useDomManagerTs = (parent: "focus" | "all") => {
     }
   };
   return {
+    lodCache,
     selectNode,
     deselectNodes,
     markRelated,

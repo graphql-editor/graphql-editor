@@ -170,8 +170,8 @@ export const ActiveField: React.FC<FieldProps> = ({
                     <FieldPort
                       {...triggerProps}
                       icons={{
-                        closed: <BracketsSquare />,
-                        open: <BracketsSquare />,
+                        closed: <BracketsSquare width={18} height={18} />,
+                        open: <BracketsSquare width={18} height={18} />,
                       }}
                       onClick={() => setMenuOpen("options")}
                     />
@@ -222,8 +222,8 @@ export const ActiveField: React.FC<FieldProps> = ({
                 onClick={onInputClick}
                 open={inputOpen}
                 icons={{
-                  closed: <Plus />,
-                  open: <Minus />,
+                  closed: <Plus width={18} height={18} />,
+                  open: <Minus width={18} height={18} />,
                 }}
               />
             </Tooltip>
@@ -238,8 +238,8 @@ export const ActiveField: React.FC<FieldProps> = ({
                   <FieldPort
                     {...triggerProps}
                     icons={{
-                      closed: <DotsVertical />,
-                      open: <DotsVertical />,
+                      closed: <DotsVertical width={18} height={18} />,
+                      open: <DotsVertical width={18} height={18} />,
                     }}
                     onClick={() => setMenuOpen("details")}
                   />
@@ -267,7 +267,7 @@ export const ActiveField: React.FC<FieldProps> = ({
               // }}
               opened={outputOpen}
             >
-              <ChevronLeft />
+              <ChevronLeft width={18} height={18} />
             </OutputArrow>
           </Tooltip>
         )}
@@ -283,13 +283,9 @@ const Actions = styled.div<{ toRight?: boolean }>`
 `;
 const AbsoluteActions = styled.div`
   display: flex;
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 2;
-  background-color: ${(p) => p.theme.neutrals.L4};
-  padding: 0.5rem;
-  border-radius: ${(p) => p.theme.radius}px;
+  margin-left: auto;
+  margin-right: -0.5rem;
+  border-radius: ${(p) => p.theme.border.primary.radius}px;
 `;
 const OutputArrow = styled.div<{ opened?: boolean }>`
   pointer-events: all;
@@ -297,8 +293,7 @@ const OutputArrow = styled.div<{ opened?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem;
-  margin: -0.5rem 0;
+  padding: 0.25rem;
   svg {
     stroke: ${({ theme }) => theme.text.default};
     rotate: ${({ opened }) => (opened ? "270deg" : "180deg")};

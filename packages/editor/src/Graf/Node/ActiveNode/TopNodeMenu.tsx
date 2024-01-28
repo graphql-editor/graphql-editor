@@ -42,7 +42,8 @@ type PossibleMenus =
   | "operations";
 const NodeIconArea = styled.div<{ opened?: boolean }>`
   cursor: pointer;
-  border-radius: ${(p) => p.theme.radius}px;
+  display: flex;
+  align-items: center;
   transition: ${transition};
   &:hover {
     color: ${({ theme }) => theme.accent.L2};
@@ -98,7 +99,7 @@ export const TopNodeMenu: React.FC<{
   };
 
   return (
-    <Stack direction="row" gap="0.5rem">
+    <Stack direction="row" gap="0.5rem" align="center">
       {!isLibrary && (
         <>
           {node.data.type !== TypeDefinition.ScalarTypeDefinition &&
@@ -115,7 +116,7 @@ export const TopNodeMenu: React.FC<{
                       }}
                       opened={menuOpen === "field"}
                     >
-                      <PlusLarge />
+                      <PlusLarge width={18} height={18} />
                     </NodeIconArea>
                   </Tooltip>
                 )}
@@ -143,7 +144,7 @@ export const TopNodeMenu: React.FC<{
                     }}
                     opened={menuOpen === "directive"}
                   >
-                    <AtSign />
+                    <AtSign width={18} height={18} />
                   </NodeIconArea>{" "}
                 </Tooltip>
               )}
@@ -186,7 +187,7 @@ export const TopNodeMenu: React.FC<{
                 }}
                 opened={menuOpen === "options"}
               >
-                <DotsHorizontal />
+                <DotsHorizontal width={18} height={18} />
               </NodeIconArea>
             </Tooltip>
           )}

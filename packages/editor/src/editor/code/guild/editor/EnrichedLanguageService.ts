@@ -23,6 +23,9 @@ import {
 } from "./utils";
 import { mergeSDLs } from "graphql-js-tree";
 
+// TODO: cache decorations and diagnostics
+// const lastHandledForDocument = "";
+
 export class EnrichedLanguageService extends LanguageService {
   async getNodeAtPosition(
     schema: GraphQLSchema,
@@ -173,12 +176,11 @@ export class EnrichedLanguageService extends LanguageService {
       ...rawDiagnosticsSources,
       coreDiagnosticsSource,
     ];
-
     const nestedArrays = (
       await Promise.all(
         diagnosticsSources.map(async (source) => {
+          let c = model.getValue().toString();
           try {
-            let c = model.getValue().toString();
             if (libraries) {
               const result = mergeSDLs(model.getValue().toString(), libraries);
               if (result.__typename === "error") {

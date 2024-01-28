@@ -110,7 +110,7 @@ export const Draw = ({
       <PathG
         data-from={from.id}
         data-to={to.id}
-        className={`${DOMClassNames.nodeConnection}`}
+        className={`${DOMClassNames.nodeConnection} inViewport`}
         isPrintPreviewActive={isPrintPreviewActive}
       >
         <path

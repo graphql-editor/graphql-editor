@@ -13,8 +13,7 @@ interface FieldPortProps {
 
 const Main = styled.div`
   position: relative;
-  padding: 0.5rem;
-  margin: -0.5rem 0;
+  padding: 0.25rem;
   align-items: center;
   justify-content: center;
   cursor: pointer;

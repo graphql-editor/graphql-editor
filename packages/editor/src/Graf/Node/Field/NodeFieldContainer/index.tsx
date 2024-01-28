@@ -10,7 +10,7 @@ export const NodeFieldContainer = styled.div<{
   gap: 0.25rem;
   color: ${({ theme }) => theme.text.default};
   margin: 0;
-  padding: 0.5rem 1rem;
+  padding: 0.25rem 1rem;
   transition: border-color 0.25s ease-in-out;
   position: relative;
   border: 1px solid

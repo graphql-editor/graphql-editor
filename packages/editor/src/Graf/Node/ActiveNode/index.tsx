@@ -138,7 +138,6 @@ const GapBar = styled.div`
 
 const NodeArea = styled.div`
   min-width: 80%;
-  max-width: 50vw;
   left: 30%;
   position: absolute;
   padding: 3.5rem 2rem;

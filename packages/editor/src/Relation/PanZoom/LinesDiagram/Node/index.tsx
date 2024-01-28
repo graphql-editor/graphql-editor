@@ -201,10 +201,11 @@ const EditToSeeWhole = styled(Stack)`
 interface NodeProps {
   numberNode: NumberNode;
   isLibrary?: boolean;
+  isReadOnly?: boolean;
 }
 
 export const Node: React.FC<NodeProps> = (props) => {
-  const { numberNode, isLibrary } = props;
+  const { numberNode, isLibrary, isReadOnly } = props;
   const { parserField: field } = numberNode;
   const { setSelectedNodeId, focusNode, focusMode, exitFocus } =
     useTreesState();
@@ -275,8 +276,12 @@ export const Node: React.FC<NodeProps> = (props) => {
                 setEditMode(field.id);
               }}
             >
-              <span>Edit</span>
-              <PenLine width={16} height={16} />
+              <span>{isReadOnly ? "Expand" : "Edit"}</span>
+              {isReadOnly ? (
+                <ChevronRightDouble width={16} height={16} />
+              ) : (
+                <PenLine width={16} height={16} />
+              )}
             </EditNodeClickableButton>
           </EditNodeContainer>
         )}
