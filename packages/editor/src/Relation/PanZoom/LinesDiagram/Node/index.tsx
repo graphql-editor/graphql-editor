@@ -33,13 +33,10 @@ interface ContentProps {
 }
 
 const Content = styled.div<ContentProps>`
-  width: ${(p) =>
-    Math.min(
-      p.width,
-      p.printPreviewActive
-        ? PRINT_PREVIEW_RELATION_NODE_MAX_WIDTH
-        : RELATION_NODE_MAX_WIDTH
-    )}px;
+  max-width: ${(p) =>
+    p.printPreviewActive
+      ? PRINT_PREVIEW_RELATION_NODE_MAX_WIDTH
+      : RELATION_NODE_MAX_WIDTH};
   background-color: ${({ theme }) => `${theme.neutrals.L6}`};
   padding: 12px;
   position: relative;
@@ -141,6 +138,16 @@ const NodeTitle = styled.div`
   left: 0;
   top: 0;
   right: 0;
+`;
+const NodeTitlePlaceholder = styled.div`
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+  transition: ${transition};
+  display: flex;
+  pointer-events: none;
+  visibility: hidden;
+  height: 0;
 `;
 const EditNodeContainer = styled.div`
   position: absolute;
@@ -252,40 +259,46 @@ export const Node: React.FC<NodeProps> = (props) => {
 
   const NodeContent = useMemo(
     () => (
-      <NodeTitle className={`${DOMClassNames.nodeTitle}`}>
-        <NameInRelation>{field.name}</NameInRelation>
-        <ActiveType type={field.type} />
-        {!printPreviewActive && (
-          <EditNodeContainer className="editNode">
-            <FocusNodeClickableButton
-              onClick={(e) => {
-                e.stopPropagation();
-                if (isFieldFocused) {
-                  exitFocus();
-                } else {
-                  focusNode(field);
-                }
-              }}
-            >
-              <span>{isFieldFocused ? "Unfocus" : "Focus"}</span>
-              <EagleEye width={16} height={16} />
-            </FocusNodeClickableButton>
-            <EditNodeClickableButton
-              onClick={(e) => {
-                e.stopPropagation();
-                setEditMode(field.id);
-              }}
-            >
-              <span>{isReadOnly ? "Expand" : "Edit"}</span>
-              {isReadOnly ? (
-                <ChevronRightDouble width={16} height={16} />
-              ) : (
-                <PenLine width={16} height={16} />
-              )}
-            </EditNodeClickableButton>
-          </EditNodeContainer>
-        )}
-      </NodeTitle>
+      <>
+        <NodeTitlePlaceholder>
+          <NameInRelation>{field.name}</NameInRelation>
+          <ActiveType type={field.type} />
+        </NodeTitlePlaceholder>
+        <NodeTitle className={`${DOMClassNames.nodeTitle}`}>
+          <NameInRelation>{field.name}</NameInRelation>
+          <ActiveType type={field.type} />
+          {!printPreviewActive && (
+            <EditNodeContainer className="editNode">
+              <FocusNodeClickableButton
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (isFieldFocused) {
+                    exitFocus();
+                  } else {
+                    focusNode(field);
+                  }
+                }}
+              >
+                <span>{isFieldFocused ? "Unfocus" : "Focus"}</span>
+                <EagleEye width={16} height={16} />
+              </FocusNodeClickableButton>
+              <EditNodeClickableButton
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEditMode(field.id);
+                }}
+              >
+                <span>{isReadOnly ? "Expand" : "Edit"}</span>
+                {isReadOnly ? (
+                  <ChevronRightDouble width={16} height={16} />
+                ) : (
+                  <PenLine width={16} height={16} />
+                )}
+              </EditNodeClickableButton>
+            </EditNodeContainer>
+          )}
+        </NodeTitle>
+      </>
     ),
     [JSON.stringify(field), printPreviewActive, isFieldFocused]
   );
