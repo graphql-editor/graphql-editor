@@ -53,10 +53,10 @@ export const useDomManagerTs = (parent: "focus" | "all") => {
     DOMGraphConnection.toggleClassByFn("inViewport", (e) => {
       const svgElem = e as SVGGElement;
       return !!(
-        svgElem.dataset["from"] &&
-        nodesInViewport.includes(svgElem.dataset["from"]) &&
-        svgElem.dataset["to"] &&
-        nodesInViewport.includes(svgElem.dataset["to"])
+        (svgElem.dataset["from"] &&
+          nodesInViewport.includes(svgElem.dataset["from"])) ||
+        (svgElem.dataset["to"] &&
+          nodesInViewport.includes(svgElem.dataset["to"]))
       );
     });
     DOMGraphNode.toggleClassByFn("inViewport", (e) => {
@@ -66,7 +66,8 @@ export const useDomManagerTs = (parent: "focus" | "all") => {
   const cullNodes = (
     nodes: NumberNode[],
     state: ReactZoomPanPinchState,
-    size: DOMRect
+    size: DOMRect,
+    extraAreaPercentage = 0.0
   ) => {
     const pan = {
       x: state.positionX / state.scale,
@@ -78,8 +79,8 @@ export const useDomManagerTs = (parent: "focus" | "all") => {
       h: size.height / state.scale,
     };
     const bb = {
-      x: [-pan.x, -pan.x + viewport.w],
-      y: [-pan.y, -pan.y + viewport.h],
+      x: [-pan.x, -pan.x + viewport.w * (1 + extraAreaPercentage)],
+      y: [-pan.y, -pan.y + viewport.h * (1 + extraAreaPercentage)],
     };
     const activeNodes = nodes
       .filter((node) => {

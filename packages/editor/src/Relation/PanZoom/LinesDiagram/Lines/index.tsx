@@ -34,7 +34,8 @@ export const Lines: React.FC<LinesProps> = ({
   isPrintPreviewActive,
 }) => {
   const { theme } = useTheme();
-
+  const relationCount = relations?.length || 0;
+  const optimized = relationCount > 200;
   return (
     <RelationsContainer>
       {relations?.map((r, index) => {
@@ -44,6 +45,7 @@ export const Lines: React.FC<LinesProps> = ({
               const relationType = rf.connectingField.type.fieldType;
               return (
                 <Draw
+                  optimized={optimized}
                   relationType={relationType}
                   color={
                     theme.colors[
@@ -61,6 +63,7 @@ export const Lines: React.FC<LinesProps> = ({
             })}
             {r.interfaces.map((refNode, refNodeNumber) => (
               <Draw
+                optimized={optimized}
                 relationType={{
                   name: "refInterface",
                   type: Options.name,

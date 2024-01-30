@@ -26,26 +26,27 @@ export const Draw = ({
   color,
   relationType,
   isPrintPreviewActive,
+  optimized,
 }: {
   from?: { x: number; y: number; id: string };
   to?: { x: number; y: number; id: string };
   color: string;
   relationType: FieldType;
   isPrintPreviewActive: boolean;
+  optimized?: boolean;
 }) => {
   const stroke = color;
-
-  const getLineType = useMemo(() => {
+  const fac = useMemo(() => {
     if (
       relationType.type === Options.name &&
       relationType.name === "refInterface"
     ) {
-      return "2 7";
+      return 1;
     }
     if (relationType.type === Options.required) {
-      return undefined;
+      return 2;
     }
-    return "10 5";
+    return 1;
   }, [relationType]);
 
   if (from && to) {
@@ -57,8 +58,6 @@ export const Draw = ({
       x: to.x,
       y: to.y,
     };
-    const isArray = isArrayType(relationType);
-    const fac = isArray ? 5 : 2;
 
     const upDown = f.y > t.y;
     const center = {
@@ -105,9 +104,10 @@ export const Draw = ({
       bezierPoint2,
       bezierWeight
     );
+    const PathComponent = optimized ? OptimizedPathG : PathG;
 
     return (
-      <PathG
+      <PathComponent
         data-from={from.id}
         data-to={to.id}
         className={`${DOMClassNames.nodeConnection} inViewport`}
@@ -116,23 +116,15 @@ export const Draw = ({
         <path
           stroke={stroke}
           strokeWidth={fac}
-          strokeDasharray={getLineType}
           d={`M ${t.x} ${t.y}
            Q ${bezier1.x} ${bezier1.y} ${center.x} ${center.y}
            Q ${bezier2.x} ${bezier2.y} ${f.x} ${f.y}`}
         />
-        <circle fill={stroke} stroke={stroke} r={4} cx={t.x} cy={t.y} />
-        <circle fill={stroke} stroke={stroke} r={8} cx={f.x} cy={f.y} />
-      </PathG>
+      </PathComponent>
     );
   }
   return <></>;
 };
-
-const isArrayType = (f: FieldType) =>
-  f.type === Options.required
-    ? f.nest.type === Options.array
-    : f.type === Options.array;
 
 const PathG = styled.g<{ isPrintPreviewActive: boolean }>`
   opacity: ${({ isPrintPreviewActive }) => (isPrintPreviewActive ? 1 : 0)};
@@ -146,6 +138,24 @@ const PathG = styled.g<{ isPrintPreviewActive: boolean }>`
   &.selection {
     &.${DOMClassNames.active} {
       opacity: 1;
+    }
+  }
+`;
+
+const OptimizedPathG = styled.g<{ isPrintPreviewActive: boolean }>`
+  visibility: ${({ isPrintPreviewActive }) =>
+    isPrintPreviewActive ? "visible" : "hidden"};
+  transition: ${transition};
+  &.inViewport {
+    visibility: visible;
+    &.selection {
+      visibility: ${({ isPrintPreviewActive }) =>
+        isPrintPreviewActive ? "visible" : "hidden"};
+    }
+  }
+  &.selection {
+    &.${DOMClassNames.active} {
+      visibility: visible;
     }
   }
 `;

@@ -133,7 +133,6 @@ const NodeTitle = styled.div`
   font-size: 14px;
   font-weight: 500;
   padding: 12px;
-  transition: ${transition};
   display: flex;
   left: 0;
   top: 0;
@@ -143,7 +142,6 @@ const NodeTitlePlaceholder = styled.div`
   align-items: center;
   font-size: 14px;
   font-weight: 500;
-  transition: ${transition};
   display: flex;
   pointer-events: none;
   visibility: hidden;
@@ -209,6 +207,7 @@ interface NodeProps {
   numberNode: NumberNode;
   isLibrary?: boolean;
   isReadOnly?: boolean;
+  optimized?: boolean;
 }
 
 export const Node: React.FC<NodeProps> = (props) => {

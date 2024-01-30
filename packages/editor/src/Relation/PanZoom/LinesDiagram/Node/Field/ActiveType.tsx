@@ -2,7 +2,6 @@ import React, { useMemo } from "react";
 import { ParserField } from "graphql-js-tree";
 import { compileScalarTypes, compileTypeOptions } from "@/GraphQL/Compile";
 import styled from "@emotion/styled";
-import { transition } from "@/vars";
 export const ActiveType: React.FC<
   Pick<ParserField, "type"> & {
     parentTypes?: Record<string, string>;
@@ -39,7 +38,6 @@ const AType = styled.a<{ clickable?: boolean; color?: string }>`
         ? theme.colors[color as keyof typeof theme.colors]
         : theme.text.default
       : theme.text.default};
-  transition: ${transition};
   :hover {
     color: ${({ color, theme, clickable }) => {
       if (!clickable) {

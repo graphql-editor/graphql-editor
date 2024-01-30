@@ -94,6 +94,8 @@ export interface RelationInterface {
   interfaces: NumberNode[];
 }
 
+let lastTimestamp = 0;
+
 export const LinesDiagram = React.forwardRef<
   LinesDiagramApi,
   LinesDiagramProps
@@ -237,9 +239,15 @@ export const LinesDiagram = React.forwardRef<
   ) => {
     if (simulatedNodes && !props.hide) {
       const size = wrapper.getBoundingClientRect();
-      changeZoomInTopBar(state.scale);
+      changeZoomInTopBar;
+      // changeZoomInTopBar(state.scale);
       if (!size) return;
-      requestAnimationFrame(() => {
+      requestAnimationFrame((timeStamp) => {
+        const delta = timeStamp - lastTimestamp;
+        if (delta < 60) {
+          return;
+        }
+        lastTimestamp = timeStamp;
         cullNodes(simulatedNodes, state, size);
         if (props.fieldsOn) {
           LoDNodes(state.scale);
