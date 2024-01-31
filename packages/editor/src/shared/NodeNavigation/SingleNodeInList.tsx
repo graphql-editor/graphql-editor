@@ -2,11 +2,7 @@ import { EditorTheme } from "@/gshared/theme/MainTheme";
 import { SetOperationMenu } from "@/shared/NodeNavigation/SetOperationMenu";
 import { ContextMenu } from "@/shared/components/ContextMenu";
 import { DOMClassNames } from "@/shared/hooks/DOMClassNames";
-import {
-  useTreesState,
-  useRelationNodesState,
-  useRelationsState,
-} from "@/state/containers";
+import { useTreesState, useRelationNodesState } from "@/state/containers";
 import { transition } from "@/vars";
 import {
   Link,
@@ -27,14 +23,12 @@ type ToggleableParserField = ParserField & { isHidden?: boolean };
 export const SingleNodeInList: React.FC<{
   node: ToggleableParserField;
   colorKey: keyof EditorTheme["colors"];
-  visibleInRelationView?: true;
   schemaProps?: {
     name: string;
   };
-}> = ({ node, colorKey, visibleInRelationView, schemaProps }) => {
+}> = ({ node, colorKey, schemaProps }) => {
   const { setSelectedNodeId, isLibrary } = useTreesState();
   const { toggleNodeVisibility } = useRelationNodesState();
-  const { setEditMode } = useRelationsState();
   const ref = createRef<HTMLAnchorElement>();
 
   return (
@@ -54,9 +48,6 @@ export const SingleNodeInList: React.FC<{
           },
           source: "navigation",
         });
-        if (!visibleInRelationView) {
-          setEditMode(node.id);
-        }
       }}
     >
       <NodeName
@@ -75,19 +66,17 @@ export const SingleNodeInList: React.FC<{
           </Tooltip>
         )}
       </NodeName>
-      {visibleInRelationView && (
-        <Actions align="center" gap="0.25rem">
-          <IconContainer
-            isHidden={node.isHidden}
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleNodeVisibility(node);
-            }}
-          >
-            {node.isHidden ? <EyeSlash height={16} /> : <Eye height={16} />}
-          </IconContainer>
-        </Actions>
-      )}
+      <Actions align="center" gap="0.25rem">
+        <IconContainer
+          isHidden={node.isHidden}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleNodeVisibility(node);
+          }}
+        >
+          {node.isHidden ? <EyeSlash height={16} /> : <Eye height={16} />}
+        </IconContainer>
+      </Actions>
     </NavSingleBox>
   );
 };
@@ -247,18 +236,18 @@ const NavSingleBox = styled.a<{
   padding: 0.5rem 0 0.5rem 1rem;
   margin-left: 1rem;
   transition: ${transition};
-  background-color: ${(p) => p.theme.neutral[600]};
+  background-color: ${(p) => p.theme.neutrals.L6};
   &.${DOMClassNames.active} {
     .${DOMClassNames.navigationSelectedActions} {
       pointer-events: auto;
       opacity: 1;
     }
     .${DOMClassNames.navigationTitleSpan} {
-      color: ${(p) => p.theme.accents[200]};
+      color: ${(p) => p.theme.accent.L2};
     }
   }
   :hover {
-    background-color: ${(p) => p.theme.neutral[500]};
+    background-color: ${(p) => p.theme.neutrals.L5};
     svg {
       opacity: 1;
     }

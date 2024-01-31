@@ -11,6 +11,12 @@ import {
 import * as monaco from "monaco-editor";
 import type { EnrichedLanguageService } from "./EnrichedLanguageService";
 import { GraphQLEditorWorker } from "graphql-editor-worker";
+import {
+  Parser,
+  TypeSystemDefinition,
+  TypeSystemExtension,
+  TreeToGraphQL,
+} from "graphql-js-tree";
 
 export { getRange };
 
@@ -219,3 +225,23 @@ export function showWidgetInPosition(
     });
   });
 }
+
+export const cutUnnecessary = (baseTree: string, librarySchema: string) => {
+  const baseSchemaTree = Parser.parse(baseTree).nodes.map((n) => n.name);
+  const addedSchemaTree = Parser.parse(librarySchema).nodes.filter(
+    (n) =>
+      !baseSchemaTree.includes(n.name) &&
+      n.data.type !== TypeSystemDefinition.SchemaDefinition &&
+      n.data.type !== TypeSystemExtension.SchemaExtension
+  );
+  return TreeToGraphQL.parse({
+    nodes: addedSchemaTree,
+  });
+};
+export const validationMerge = (base: string, libraries: string) => {
+  try {
+    return [base, cutUnnecessary(base, libraries)].join("\n");
+  } catch (error) {
+    return [base, libraries].join("\n");
+  }
+};

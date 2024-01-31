@@ -33,14 +33,11 @@ interface ContentProps {
 }
 
 const Content = styled.div<ContentProps>`
-  width: ${(p) =>
-    Math.min(
-      p.width,
-      p.printPreviewActive
-        ? PRINT_PREVIEW_RELATION_NODE_MAX_WIDTH
-        : RELATION_NODE_MAX_WIDTH
-    )}px;
-  background-color: ${({ theme }) => `${theme.neutral[600]}`};
+  max-width: ${(p) =>
+    p.printPreviewActive
+      ? PRINT_PREVIEW_RELATION_NODE_MAX_WIDTH
+      : RELATION_NODE_MAX_WIDTH};
+  background-color: ${({ theme }) => `${theme.neutrals.L6}`};
   padding: 12px;
   position: relative;
   text-rendering: optimizeSpeed;
@@ -59,9 +56,7 @@ const Content = styled.div<ContentProps>`
   border-color: ${({ theme }) => `${theme.dividerMain}88`};
   &:hover {
     border-color: ${({ theme, nodeType }) =>
-      theme.colors[nodeType]
-        ? theme.colors[nodeType]
-        : `${theme.accents[100]}00`};
+      theme.colors[nodeType] ? theme.colors[nodeType] : `${theme.accent.L1}00`};
   }
   .graph-field {
     pointer-events: none;
@@ -133,16 +128,24 @@ const NodeRelationFields = styled.div`
 const NodeTitle = styled.div`
   position: absolute;
   align-items: center;
-  /* background-color: ${({ theme }) => `${theme.neutral[600]}`}; */
+  /* background-color: ${({ theme }) => `${theme.neutrals.L6}`}; */
   color: ${({ theme }) => theme.text.active};
   font-size: 14px;
   font-weight: 500;
   padding: 12px;
-  transition: ${transition};
   display: flex;
   left: 0;
   top: 0;
   right: 0;
+`;
+const NodeTitlePlaceholder = styled.div`
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  pointer-events: none;
+  visibility: hidden;
+  height: 0;
 `;
 const EditNodeContainer = styled.div`
   position: absolute;
@@ -153,7 +156,7 @@ const EditNodeContainer = styled.div`
   transform: translateY(calc(-100% - 0.5rem));
 `;
 const SmallClickableButton = styled.div`
-  background-color: ${(p) => p.theme.neutral[400]};
+  background-color: ${(p) => p.theme.neutrals.L4};
   color: ${(p) => p.theme.button.standalone.active};
   padding: 0.25rem 0.5rem;
   display: flex;
@@ -165,7 +168,7 @@ const SmallClickableButton = styled.div`
   cursor: pointer;
   z-index: 1;
   :hover {
-    background-color: ${(p) => p.theme.neutral[200]};
+    background-color: ${(p) => p.theme.neutrals.L2};
   }
 `;
 const EditNodeClickableButton = styled(SmallClickableButton)`
@@ -188,14 +191,14 @@ const EditToSeeWhole = styled(Stack)`
   z-index: 10;
   color: ${(p) => p.theme.text.default};
   margin: 1rem -12px;
-  background: ${(p) => p.theme.neutral[500]};
+  background: ${(p) => p.theme.neutrals.L5};
   width: calc(100% + 26px);
   border-bottom-left-radius: ${(p) => p.theme.radius}px;
   border-bottom-right-radius: ${(p) => p.theme.radius}px;
   cursor: pointer;
   transition: ${transition};
   :hover {
-    background: ${(p) => p.theme.neutral[450]};
+    background: ${(p) => p.theme.neutrals.L4};
     color: ${(p) => p.theme.text.active};
   }
 `;
@@ -203,10 +206,12 @@ const EditToSeeWhole = styled(Stack)`
 interface NodeProps {
   numberNode: NumberNode;
   isLibrary?: boolean;
+  isReadOnly?: boolean;
+  optimized?: boolean;
 }
 
 export const Node: React.FC<NodeProps> = (props) => {
-  const { numberNode, isLibrary } = props;
+  const { numberNode, isLibrary, isReadOnly } = props;
   const { parserField: field } = numberNode;
   const { setSelectedNodeId, focusNode, focusMode, exitFocus } =
     useTreesState();
@@ -253,36 +258,46 @@ export const Node: React.FC<NodeProps> = (props) => {
 
   const NodeContent = useMemo(
     () => (
-      <NodeTitle className={`${DOMClassNames.nodeTitle}`}>
-        <NameInRelation>{field.name}</NameInRelation>
-        <ActiveType type={field.type} />
-        {!printPreviewActive && (
-          <EditNodeContainer className="editNode">
-            <FocusNodeClickableButton
-              onClick={(e) => {
-                e.stopPropagation();
-                if (isFieldFocused) {
-                  exitFocus();
-                } else {
-                  focusNode(field);
-                }
-              }}
-            >
-              <span>{isFieldFocused ? "Unfocus" : "Focus"}</span>
-              <EagleEye width={16} height={16} />
-            </FocusNodeClickableButton>
-            <EditNodeClickableButton
-              onClick={(e) => {
-                e.stopPropagation();
-                setEditMode(field.id);
-              }}
-            >
-              <span>Edit</span>
-              <PenLine width={16} height={16} />
-            </EditNodeClickableButton>
-          </EditNodeContainer>
-        )}
-      </NodeTitle>
+      <>
+        <NodeTitlePlaceholder>
+          <NameInRelation>{field.name}</NameInRelation>
+          <ActiveType type={field.type} />
+        </NodeTitlePlaceholder>
+        <NodeTitle className={`${DOMClassNames.nodeTitle}`}>
+          <NameInRelation>{field.name}</NameInRelation>
+          <ActiveType type={field.type} />
+          {!printPreviewActive && (
+            <EditNodeContainer className="editNode">
+              <FocusNodeClickableButton
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (isFieldFocused) {
+                    exitFocus();
+                  } else {
+                    focusNode(field);
+                  }
+                }}
+              >
+                <span>{isFieldFocused ? "Unfocus" : "Focus"}</span>
+                <EagleEye width={16} height={16} />
+              </FocusNodeClickableButton>
+              <EditNodeClickableButton
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEditMode(field.id);
+                }}
+              >
+                <span>{isReadOnly ? "Expand" : "Edit"}</span>
+                {isReadOnly ? (
+                  <ChevronRightDouble width={16} height={16} />
+                ) : (
+                  <PenLine width={16} height={16} />
+                )}
+              </EditNodeClickableButton>
+            </EditNodeContainer>
+          )}
+        </NodeTitle>
+      </>
     ),
     [JSON.stringify(field), printPreviewActive, isFieldFocused]
   );

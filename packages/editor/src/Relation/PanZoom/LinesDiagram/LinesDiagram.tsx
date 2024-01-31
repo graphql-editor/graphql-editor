@@ -78,6 +78,7 @@ type LinesDiagramProps = {
   loading?: boolean;
   fieldsOn?: boolean;
   hide?: boolean;
+  isReadOnly?: boolean;
   parentClass: "focus" | "all";
   setViewportParams: (props: ViewportParams) => void;
 };
@@ -93,11 +94,13 @@ export interface RelationInterface {
   interfaces: NumberNode[];
 }
 
+let lastTimestamp = 0;
+
 export const LinesDiagram = React.forwardRef<
   LinesDiagramApi,
   LinesDiagramProps
 >((props, ref) => {
-  const { nodes, setLoading, mainRef, nodesWithoutFilter } = props;
+  const { nodes, setLoading, mainRef, nodesWithoutFilter, isReadOnly } = props;
   const {
     isLibrary,
     setSelectedNodeId,
@@ -110,6 +113,7 @@ export const LinesDiagram = React.forwardRef<
   const {
     cullNodes,
     LoDNodes,
+    lodCache,
     changeZoomInTopBar,
     markRelated,
     selectNode,
@@ -127,7 +131,6 @@ export const LinesDiagram = React.forwardRef<
     transformState: { scale },
   } = useTransformContext();
   const [simulatedNodes, setSimulatedNodes] = useState<NumberNode[]>();
-
   const zoomToNode = (nodeX: number, nodeY: number) => {
     const wrapper = instance.wrapperComponent;
     if (wrapper) {
@@ -236,9 +239,15 @@ export const LinesDiagram = React.forwardRef<
   ) => {
     if (simulatedNodes && !props.hide) {
       const size = wrapper.getBoundingClientRect();
-      changeZoomInTopBar(state.scale);
+      changeZoomInTopBar;
+      // changeZoomInTopBar(state.scale);
       if (!size) return;
-      requestAnimationFrame(() => {
+      requestAnimationFrame((timeStamp) => {
+        const delta = timeStamp - lastTimestamp;
+        if (delta < 60) {
+          return;
+        }
+        lastTimestamp = timeStamp;
         cullNodes(simulatedNodes, state, size);
         if (props.fieldsOn) {
           LoDNodes(state.scale);
@@ -349,8 +358,10 @@ export const LinesDiagram = React.forwardRef<
     runAfterFramePaint(() => {
       setLoading(false);
       if (printPreviewActive && !printPreviewReady) {
+        lodCache.current = undefined;
         setPrintPreviewReady(true);
       } else if (!printPreviewActive && printPreviewReady) {
+        lodCache.current = undefined;
         setPrintPreviewReady(false);
       }
     });
@@ -367,7 +378,11 @@ export const LinesDiagram = React.forwardRef<
       <>
         {simulatedNodes?.map((n) => (
           <NodePane x={n.x} id={`${n.id}`} y={n.y} key={n.parserField.id}>
-            <Node isLibrary={isLibrary(n.parserField)} numberNode={n} />
+            <Node
+              isReadOnly={isReadOnly}
+              isLibrary={isLibrary(n.parserField)}
+              numberNode={n}
+            />
           </NodePane>
         ))}
       </>

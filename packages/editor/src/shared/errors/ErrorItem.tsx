@@ -36,7 +36,7 @@ export const ErrorItem: React.FC<ErrorItemProps> = ({ error }) => {
     >
       <Main
         onClick={() => {
-          setErrorRowNumber(errorRow);
+          setErrorRowNumber(errorRow + 1);
           set({ code: "on" });
         }}
         align="center"

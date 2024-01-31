@@ -4,6 +4,7 @@ import {
   TypeSystemDefinition,
   TypeDefinition,
   getTypeName,
+  TypeExtension,
 } from "graphql-js-tree";
 import { ActiveField } from "@/Graf/Node/Field";
 import {
@@ -81,7 +82,7 @@ const NodeContainer = styled.div`
   break-inside: avoid;
   min-width: 24rem;
   max-height: 100%;
-  background-color: ${({ theme }) => theme.neutral[500]};
+  background-color: ${({ theme }) => theme.neutrals.L5};
   display: flex;
   flex-flow: column nowrap;
   border-radius: ${(p) => p.theme.radius}px;
@@ -127,17 +128,16 @@ const GapBar = styled.div`
   width: 100%;
   height: 100%;
   pointer-events: all;
-  background-color: ${({ theme }) => theme.neutral[600]}99;
+  background-color: ${({ theme }) => theme.neutrals.L6}99;
   transition: 0.25s background-color ease-in-out;
 
   &:hover {
-    background-color: ${({ theme }) => theme.neutral[600]}11;
+    background-color: ${({ theme }) => theme.neutrals.L6}11;
   }
 `;
 
 const NodeArea = styled.div`
   min-width: 80%;
-  max-width: 50vw;
   left: 30%;
   position: absolute;
   padding: 3.5rem 2rem;
@@ -232,17 +232,20 @@ export const ActiveNode: React.FC<NodeProps> = ({
       onWheel={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}
     >
-      <ActiveDescription
-        onChange={(d) => {
-          if (d === node.description) return;
-          //TODO: Add change description in js-tree
-          updateNode(node, () => {
-            node.description = d;
-          });
-        }}
-        isLocked={isLocked}
-        value={node.description || ""}
-      />
+      {/* Extension nodes should not have description following the GraphQL Spec */}
+      {!isExtensionNode(node.data.type) && (
+        <ActiveDescription
+          onChange={(d) => {
+            if (d === node.description) return;
+            //TODO: Add change description in js-tree
+            updateNode(node, () => {
+              node.description = d;
+            });
+          }}
+          isLocked={isLocked}
+          value={node.description || ""}
+        />
+      )}
       {node.data.type === TypeSystemDefinition.DirectiveDefinition && (
         <DirectivePlacements>
           {!isLocked && <CreateNodeDirective node={node} isLocked={isLocked} />}
@@ -266,6 +269,8 @@ export const ActiveNode: React.FC<NodeProps> = ({
         </DirectivePlacements>
       )}
       {(node.data.type === TypeDefinition.ObjectTypeDefinition ||
+        node.data.type === TypeExtension.ObjectTypeExtension ||
+        node.data.type === TypeExtension.InterfaceTypeExtension ||
         node.data.type === TypeDefinition.InterfaceTypeDefinition) && (
         <NodeInterfaces isHidden={libraryNode && !node.interfaces.length}>
           {!isLocked && <CreateNodeInterface node={node} isLocked={isLocked} />}
@@ -466,7 +471,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                   >
                     <ActiveField
                       parentNode={node}
-                      isLocked={isLocked}
+                      isLocked={isLocked || a.fromLibrary}
                       key={a.name}
                       onInputClick={() => {
                         setOpenedNode((oN) =>

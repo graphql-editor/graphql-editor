@@ -19,8 +19,12 @@ import {
   toGraphQLPosition,
   toMonacoRange,
   removeFalsey,
+  cutUnnecessary,
 } from "./utils";
 import { mergeSDLs } from "graphql-js-tree";
+
+// TODO: cache decorations and diagnostics
+// const lastHandledForDocument = "";
 
 export class EnrichedLanguageService extends LanguageService {
   async getNodeAtPosition(
@@ -172,12 +176,11 @@ export class EnrichedLanguageService extends LanguageService {
       ...rawDiagnosticsSources,
       coreDiagnosticsSource,
     ];
-
     const nestedArrays = (
       await Promise.all(
         diagnosticsSources.map(async (source) => {
+          let c = model.getValue().toString();
           try {
-            let c = model.getValue().toString();
             if (libraries) {
               const result = mergeSDLs(model.getValue().toString(), libraries);
               if (result.__typename === "error") {
@@ -198,7 +201,7 @@ export class EnrichedLanguageService extends LanguageService {
                   },
                 ];
               } else {
-                c = result.sdl;
+                c = [c, cutUnnecessary(c, libraries)].join("\n");
               }
             }
             const s = await source.forDocument({

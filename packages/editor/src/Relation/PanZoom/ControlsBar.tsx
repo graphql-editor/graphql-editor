@@ -13,120 +13,99 @@ import {
   Plus,
   Button,
   Tooltip,
-  RefreshCwAlt3,
   Xmark,
+  CodeFork,
+  Stack,
 } from "@aexol-studio/styling-system";
 import { DOMClassNames } from "@/shared/hooks/DOMClassNames";
+import { FilterNodes } from "@/shared/components/FilterNodes";
+import { dataIt } from "@/Models/dataIds";
 export const ControlsBar: React.FC<{
   downloadPng: () => void;
   triggerResimulation: () => void;
-}> = ({ downloadPng, triggerResimulation }) => {
+}> = ({ downloadPng }) => {
   const { readonly, exitFocus, focusMode, focusedNode, libraryTree } =
     useTreesState();
 
   const { zoomIn, zoomOut } = useControls();
-  const {
-    setBaseTypesOn,
-    baseTypesOn,
-    fieldsOn,
-    setFieldsOn,
-    inputsOn,
-    setInputsOn,
-    ctrlToZoom,
-    setCtrlToZoom,
-    libraryNodesOn,
-    setLibraryNodesOn,
-  } = useRelationsState();
+  const { fieldsOn, setFieldsOn, libraryNodesOn, setLibraryNodesOn } =
+    useRelationsState();
 
   const step = 0.2;
   return (
     <TopBar>
       <Menu>
-        {focusMode && (
-          <Button
-            size="small"
-            onClick={() => exitFocus()}
-            endAdornment={<Xmark />}
-          >
-            <SpanFlow>{focusedNode?.name}</SpanFlow>
-          </Button>
-        )}
-        {!readonly && !focusMode && <NewNode />}
-        <Checkbox
-          label="ctrl/cmd zoom"
-          labelPosition="start"
-          onChange={() => setCtrlToZoom(!ctrlToZoom)}
-          checked={ctrlToZoom}
-          wrapperCss={{ fontWeight: 300 }}
-        />
-        <ZoomWrapper>
-          <IconWrapper
-            onClick={() => {
-              zoomOut(step);
-            }}
-          >
-            <Minus />
-          </IconWrapper>
-          <TooltippedZoom>
-            <span className={`${DOMClassNames.topBarZoom}`}>100%</span>
-          </TooltippedZoom>
-          <IconWrapper
-            onClick={() => {
-              zoomIn(step);
-            }}
-          >
-            <Plus />
-          </IconWrapper>
-        </ZoomWrapper>
-        {!!libraryTree.nodes.length && (
-          <Checkbox
-            label="library nodes"
-            labelPosition="start"
-            onChange={() => setLibraryNodesOn(!libraryNodesOn)}
-            checked={libraryNodesOn}
-            wrapperCss={{ fontWeight: 300 }}
-          />
-        )}
-        <Checkbox
-          label="fields"
-          labelPosition="start"
-          onChange={() => setFieldsOn(!fieldsOn)}
-          checked={fieldsOn}
-          wrapperCss={{ fontWeight: 300 }}
-        />
-        <Checkbox
-          label="scalars"
-          disabled={!fieldsOn}
-          labelPosition="start"
-          onChange={() => setBaseTypesOn(!baseTypesOn)}
-          checked={fieldsOn ? baseTypesOn : false}
-          wrapperCss={{ fontWeight: 300 }}
-        />
-        <Checkbox
-          label="inputs"
-          labelPosition="start"
-          onChange={() => setInputsOn(!inputsOn)}
-          checked={inputsOn}
-          wrapperCss={{ fontWeight: 300 }}
-        />
-        <Tooltip title="Export to png" position="left-bottom">
-          <IconWrapper onClick={() => downloadPng()}>
-            <ImageSquareCheck />
-          </IconWrapper>
-        </Tooltip>
-        <Tooltip title="Shuffle layout" position="left-bottom">
-          <IconWrapper
-            onClick={() => {
-              triggerResimulation();
-            }}
-          >
-            <RefreshCwAlt3 />
-          </IconWrapper>
-        </Tooltip>
+        <Stack align="center" gap={"1rem"}>
+          {focusMode && (
+            <Button
+              {...dataIt("defocus")}
+              size="small"
+              onClick={() => exitFocus()}
+              endAdornment={<Xmark />}
+            >
+              <SpanFlow>{focusedNode?.name}</SpanFlow>
+            </Button>
+          )}
+          {!readonly && !focusMode && <NewNode />}
+        </Stack>
+        <Stack align="center" gap={"1rem"}>
+          {!!libraryTree.nodes.length && (
+            <Checkbox
+              {...dataIt("libraryNodes")}
+              label="library nodes"
+              labelPosition="start"
+              onChange={() => setLibraryNodesOn(!libraryNodesOn)}
+              checked={libraryNodesOn}
+              wrapperCss={{ fontWeight: 300 }}
+            />
+          )}
+          <FilterNodes />
+          <Tooltip title="Relations only" position="left-bottom">
+            <IconWrapper
+              {...dataIt("relationsOnly")}
+              active={!fieldsOn}
+              onClick={() => {
+                setFieldsOn(!fieldsOn);
+              }}
+            >
+              <CodeFork />
+            </IconWrapper>
+          </Tooltip>
+          <Tooltip title="Export to png" position="left-bottom">
+            <IconWrapper {...dataIt("export")} onClick={() => downloadPng()}>
+              <ImageSquareCheck />
+            </IconWrapper>
+          </Tooltip>
+          <ZoomWrapper>
+            <IconWrapper
+              onClick={() => {
+                zoomOut(step);
+              }}
+            >
+              <Minus />
+            </IconWrapper>
+            <Tooltip
+              position="left-bottom"
+              title="Click ctrl/cmd + scroll mouse to zoom"
+            >
+              <TooltippedZoom {...dataIt("zoom")}>
+                <span className={`${DOMClassNames.topBarZoom}`}>100%</span>
+              </TooltippedZoom>
+            </Tooltip>
+            <IconWrapper
+              onClick={() => {
+                zoomIn(step);
+              }}
+            >
+              <Plus />
+            </IconWrapper>
+          </ZoomWrapper>
+        </Stack>
       </Menu>
     </TopBar>
   );
 };
+
 const SpanFlow = styled.span`
   max-width: 150px;
   overflow: hidden;
@@ -150,17 +129,18 @@ const TooltippedZoom = styled.div`
   justify-content: center;
   align-items: center;
 `;
-const IconWrapper = styled.div`
+const IconWrapper = styled.div<{ active?: boolean }>`
   position: relative;
   font-size: 12px;
   font-weight: 500;
-  color: ${({ theme }) => theme.text.disabled};
+  color: ${({ theme, active }) =>
+    active ? theme.text.active : theme.text.disabled};
   cursor: pointer;
   display: flex;
   user-select: none;
   transition: ${vars.transition};
   :hover {
-    color: ${({ theme }) => theme.text.default};
+    color: ${({ theme }) => theme.text.active};
   }
 `;
 
@@ -170,8 +150,8 @@ const ZoomWrapper = styled.div`
   justify-content: center;
   align-items: center;
   padding: 0.275rem 0.75rem;
-  background-color: ${({ theme }) => theme.neutral[700]};
-  border-color: ${({ theme }) => theme.neutral[200]};
+  background-color: ${({ theme }) => theme.neutrals.L7};
+  border-color: ${({ theme }) => theme.neutrals.L2};
   border-style: solid;
   border-width: 1px;
   border-radius: ${(p) => p.theme.radius}px;
@@ -182,8 +162,9 @@ const ZoomWrapper = styled.div`
 const Menu = styled.div`
   display: flex;
   font-family: ${({ theme }) => theme.fontFamilySans};
-  gap: 12px;
+  gap: 1rem;
   align-items: center;
   position: relative;
-  justify-content: flex-end;
+  justify-content: space-between;
+  width: 100%;
 `;

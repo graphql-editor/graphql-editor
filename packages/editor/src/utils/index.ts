@@ -1,10 +1,4 @@
-import {
-  FieldType,
-  Options,
-  ParserField,
-  TypeDefinition,
-  TypeSystemDefinition,
-} from "graphql-js-tree";
+import { FieldType, Options } from "graphql-js-tree";
 
 export const changeTypeName = (field: FieldType, newName: string) => {
   const changeFieldName = (field: FieldType, newName: string): void => {
@@ -17,15 +11,4 @@ export const changeTypeName = (field: FieldType, newName: string) => {
   };
   changeFieldName(field, newName);
   return field;
-};
-
-export const isEditableParentField = (p: ParserField) => {
-  if (
-    p.data.type === TypeDefinition.EnumTypeDefinition ||
-    p.data.type === TypeDefinition.ScalarTypeDefinition ||
-    p.data.type === TypeSystemDefinition.DirectiveDefinition
-  ) {
-    return true;
-  }
-  return false;
 };

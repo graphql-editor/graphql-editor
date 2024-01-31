@@ -14,7 +14,7 @@ const Main = styled.div`
   width: 100%;
   flex-direction: column;
   position: relative;
-  background-color: ${({ theme }) => theme.neutral[600]};
+  background-color: ${({ theme }) => theme.neutrals.L6};
 `;
 
 const TopBar = styled.div`
@@ -24,7 +24,7 @@ const TopBar = styled.div`
   justify-content: space-between;
   align-items: center;
   position: relative;
-  border-bottom: 2px solid ${({ theme }) => theme.black};
+  border-bottom: 2px solid ${({ theme }) => theme.neutrals.L8};
 `;
 
 const Heading = styled.h1`
@@ -39,7 +39,7 @@ const AZContainer = styled.div<{ active?: boolean }>`
   cursor: pointer;
   align-items: center;
   color: ${({ theme, active }) =>
-    active ? theme.accents[200] : theme.text.disabled};
+    active ? theme.accent.L2 : theme.text.disabled};
 `;
 
 export const DiffEditor = ({ schemas }: DiffEditorProps) => {

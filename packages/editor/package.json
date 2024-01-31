@@ -1,6 +1,6 @@
 {
   "name": "graphql-editor",
-  "version": "7.0.2",
+  "version": "7.1.5",
   "private": false,
   "license": "MIT",
   "description": "Visual node editor for GraphQL",
@@ -35,8 +35,8 @@
     "worker-loader": ">=3.0.8"
   },
   "dependencies": {
-    "@aexol-studio/hooks": "^0.1.28",
-    "@aexol-studio/styling-system": "^0.2.6",
+    "@aexol-studio/hooks": "^0.2.8",
+    "@aexol-studio/styling-system": "^0.2.8",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
     "color2k": "^1.2.4",
@@ -45,15 +45,16 @@
     "file-saver": "^2.0.5",
     "framer-motion": "^10.12.16",
     "fuzzyjs": "^5.0.1",
-    "graphql-editor-worker": "^7.0.2",
-    "graphql-js-tree": "^1.0.5",
+    "graphql-editor-worker": "^7.1.5",
+    "graphql-js-tree": "^1.0.9",
     "graphql-language-service": "3.1.4",
     "html-to-image": "^1.10.8",
     "re-resizable": "^6.9.1",
     "react-laag": "^2.0.4",
     "react-zoom-pan-pinch": "^3.0.7",
     "remarkable": "^2.0.1",
-    "unstated-next": "^1.1.0"
+    "unstated-next": "^1.1.0",
+    "yup": "^1.3.3"
   },
   "config": {
     "commitizen": {

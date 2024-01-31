@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import styled from '@emotion/styled';
+import React, { useState } from "react";
+import styled from "@emotion/styled";
 import {
   ContextMenu,
   NodeDirectiveOptionsMenu,
-} from '@/shared/components/ContextMenu';
-import { ParserField } from 'graphql-js-tree';
-import { transition } from '@/vars';
+} from "@/shared/components/ContextMenu";
+import { ParserField } from "graphql-js-tree";
+import { transition } from "@/vars";
 
 interface NodeDirectiveProps {
   onDelete: () => void;
@@ -19,12 +19,11 @@ const NodeDirectiveBlock = styled.div<{ isLocked?: boolean }>`
   font-size: 12px;
   border-radius: ${(p) => p.theme.radius}px;
   position: relative;
-  cursor: pointer;
   transition: ${transition};
   cursor: pointer;
   border: 1px solid currentColor;
   &:hover {
-    border: 1px ${({ isLocked }) => (isLocked ? 'solid' : 'dashed')}
+    border: 1px ${({ isLocked }) => (isLocked ? "solid" : "dashed")}
       currentColor;
   }
 `;

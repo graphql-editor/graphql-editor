@@ -37,7 +37,7 @@ export const PanZoom: React.FC<{
   const mainRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const linesRef = useRef<LinesDiagramApi>(null);
-  const { setSelectedNodeId } = useTreesState();
+  const { setSelectedNodeId, readonly: isReadOnly } = useTreesState();
   const { isClick, mouseDown } = useClickDetector();
   const { createToast } = useToasts();
   const { setTransform } = useControls();
@@ -47,7 +47,7 @@ export const PanZoom: React.FC<{
     editMode,
     baseTypesOn,
     fieldsOn,
-    inputsOn,
+    omitNodes,
     ctrlToZoom,
     libraryNodesOn,
     printPreviewReady,
@@ -71,10 +71,10 @@ export const PanZoom: React.FC<{
   const filteredNodes = useMemo(() => {
     return nodeFilter(nodes, {
       baseTypesOn,
-      inputsOn,
+      omitNodes,
       libraryNodesOn,
     });
-  }, [nodes, baseTypesOn, inputsOn, libraryNodesOn]);
+  }, [nodes, baseTypesOn, omitNodes, libraryNodesOn]);
 
   const downloadPng = useCallback(() => {
     if (viewportParams?.height && viewportParams?.width) {
@@ -211,7 +211,6 @@ export const PanZoom: React.FC<{
       if (zoomingMode === "zoom" || !ctrlToZoom) {
         return;
       }
-
       const factor =
         (e.detail
           ? -e.detail / 3
@@ -219,15 +218,32 @@ export const PanZoom: React.FC<{
           ? (e as unknown as { wheelDelta: number }).wheelDelta
           : 0) * 2;
       const transformState = getContext().instance.transformState;
-      const newX = e.deltaX
-        ? (transformState.positionX || 0) + factor
-        : transformState.positionX || 0;
-
-      const newY = e.deltaY
-        ? (transformState.positionY || 0) + factor
-        : transformState.positionY || 0;
-
-      setTransform(newX, newY, transformState.scale, 300, "easeOutCubic");
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+        // horizontal pan
+        const newX = e.deltaX
+          ? (transformState.positionX || 0) + factor
+          : transformState.positionX || 0;
+        setTransform(
+          newX,
+          transformState.positionY,
+          transformState.scale,
+          300,
+          "easeOutCubic"
+        );
+        return;
+      } else {
+        // vertical pan
+        const newY = e.deltaY
+          ? (transformState.positionY || 0) + factor
+          : transformState.positionY || 0;
+        setTransform(
+          transformState.positionX,
+          newY,
+          transformState.scale,
+          300,
+          "easeOutCubic"
+        );
+      }
     };
     wrapperRef.current?.addEventListener("wheel", scrollListener);
     document.addEventListener("wheel", scrollListenerZoom);
@@ -246,6 +262,7 @@ export const PanZoom: React.FC<{
       <LinesDiagram
         ref={linesRef}
         hide={hide}
+        isReadOnly={isReadOnly}
         nodes={filteredNodes}
         setViewportParams={(p) => setViewportParams(p)}
         fieldsOn={fieldsOn}
@@ -320,7 +337,7 @@ const Wrapper = styled.div`
   height: 100%;
   overflow: hidden;
   transition: ${vars.transition};
-  background: ${({ theme }) => theme.neutral[600]};
+  background: ${({ theme }) => theme.neutrals.L6};
 `;
 
 const LoadingContainer = styled.div`
@@ -330,7 +347,7 @@ const LoadingContainer = styled.div`
   padding: 2rem;
   gap: 1rem;
   color: ${({ theme }) => theme.text.default};
-  background-color: ${({ theme }) => theme.neutral[600]};
+  background-color: ${({ theme }) => theme.neutrals.L6};
   inset: 0;
   font-family: ${({ theme }) => theme.fontFamilySans};
   display: flex;

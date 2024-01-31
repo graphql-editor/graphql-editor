@@ -1,6 +1,12 @@
 import { buildSchema, validateSchema, parse, GraphQLError } from "graphql";
 import { validateSDL } from "graphql/validation/validate";
-import { mergeSDLs } from "graphql-js-tree";
+import {
+  Parser,
+  TreeToGraphQL,
+  TypeSystemDefinition,
+  TypeSystemExtension,
+  mergeSDLs,
+} from "graphql-js-tree";
 
 export type GlobalGraphQLError = {
   __typename: "global";
@@ -29,9 +35,7 @@ const validateTypes = (s: string) => {
 /**
  * Extend code with library and remember library line size to move the error later
  */
-const moveErrorsByLibraryPadding = (libraries: string) => {
-  const libraryPadding = libraries.split("\n").length;
-  const libraryLength = libraries.length;
+const moveErrorsByLibraryPadding = () => {
   return (error: LocalGraphQLError): LocalGraphQLError => {
     return {
       ...error,
@@ -39,9 +43,10 @@ const moveErrorsByLibraryPadding = (libraries: string) => {
         ...error.error,
         locations: error.error.locations?.map((l) => ({
           ...l,
-          line: l.line - libraryPadding,
+          line: l.line - 1,
+          column: l.column - 1,
         })),
-        positions: error.error.positions?.map((p) => p - libraryLength),
+        positions: error.error.positions,
       },
     };
   };
@@ -59,7 +64,7 @@ export const catchSchemaErrors = (
   schema: string,
   libraries = ""
 ): EditorError[] => {
-  const paddingFunction = moveErrorsByLibraryPadding(libraries);
+  const paddingFunction = moveErrorsByLibraryPadding();
   try {
     let code = schema;
     if (libraries) {
@@ -70,10 +75,9 @@ export const catchSchemaErrors = (
           __typename: "global",
         }));
       }
-      code = mergeResult.sdl;
+      code = [schema, cutUnnecessary(schema, libraries)].join("\n");
     }
     const errors = validateSDLErrors(code);
-
     if (errors.length > 0) {
       return errors
         .filter((e) => allowMultipleDirectivesAtLocation(e.message))
@@ -118,4 +122,16 @@ export const catchSchemaErrors = (
     return [{ __typename: "local", error: er }];
   }
   return [];
+};
+const cutUnnecessary = (baseTree: string, librarySchema: string) => {
+  const baseSchemaTree = Parser.parse(baseTree).nodes.map((n) => n.name);
+  const addedSchemaTree = Parser.parse(librarySchema).nodes.filter(
+    (n) =>
+      !baseSchemaTree.includes(n.name) &&
+      n.data.type !== TypeSystemDefinition.SchemaDefinition &&
+      n.data.type !== TypeSystemExtension.SchemaExtension
+  );
+  return TreeToGraphQL.parse({
+    nodes: addedSchemaTree,
+  });
 };

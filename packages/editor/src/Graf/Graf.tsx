@@ -17,7 +17,6 @@ import { DraggableProvider } from "@/Graf/state/draggable";
 import { useRelationsState } from "@/state/containers";
 import { Button, Stack, useToasts } from "@aexol-studio/styling-system";
 import { motion } from "framer-motion";
-import { isEditableParentField } from "@/utils";
 
 const SubNodeContainer = styled.div`
   font-family: ${({ theme }) => theme.fontFamilySans};
@@ -73,7 +72,7 @@ export const Graf: React.FC<{ node: ParserField }> = ({ node }) => {
       source: "relation",
       value: selectedNodeId?.value,
     });
-    if (activeNode && isEditableParentField(activeNode)) {
+    if (activeNode) {
       setSelectedNodeId({
         source: "relation",
         value: undefined,

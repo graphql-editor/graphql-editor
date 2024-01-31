@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { OptionsMenu } from '@/Graf/Node/components';
+import React, { useState, useEffect } from "react";
+import { OptionsMenu } from "@/Graf/Node/components";
 import {
   ParserField,
   compileType,
   getTypeName,
   decompileType,
   FieldType,
-} from 'graphql-js-tree';
+} from "graphql-js-tree";
 interface NodeTypeOptionsMenuProps {
   node: ParserField;
   hideMenu: () => void;
@@ -38,7 +38,7 @@ export const NodeTypeOptionsMenu = React.forwardRef<
     <OptionsMenu
       {...props}
       ref={ref}
-      menuName={'Node kind'}
+      menuName={"Node kind"}
       hideMenu={hideMenu}
       options={opts}
       onCheck={(o) => {

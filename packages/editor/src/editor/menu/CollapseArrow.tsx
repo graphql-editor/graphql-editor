@@ -10,7 +10,7 @@ const Container = styled.div<{ isCollapsed?: boolean; isRight?: true }>`
   height: 24px;
   width: 20px;
   border-radius: ${(p) => p.theme.radius}px;
-  background-color: ${({ theme }) => theme.neutral[600]};
+  background-color: ${({ theme }) => theme.neutrals.L6};
   position: absolute;
   z-index: 2;
   top: 50%;
@@ -19,10 +19,10 @@ const Container = styled.div<{ isCollapsed?: boolean; isRight?: true }>`
   translate: ${({ isRight }) => (isRight ? "-50% -50%" : "50% -50%")};
   color: ${({ theme }) => theme.text.default};
   transition: color 0.25s ease;
-  background-color: ${(p) => p.theme.neutral[400]};
+  background-color: ${(p) => p.theme.neutrals.L4};
 
   &:hover {
-    color: ${({ theme }) => theme.accents[200]};
+    color: ${({ theme }) => theme.accent.L2};
   }
 
   svg {

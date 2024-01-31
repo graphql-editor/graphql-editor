@@ -4,7 +4,7 @@ import styled from "@emotion/styled";
 
 const Input = styled.input`
   border: 0;
-  background: ${({ theme }) => theme.neutral[600]}00;
+  background: ${({ theme }) => theme.neutrals.L6}00;
   color: ${({ theme }) => theme.text.default};
   min-width: 18ch;
   font-family: ${({ theme }) => theme.fontFamilySans};
@@ -13,10 +13,10 @@ const Input = styled.input`
   padding: 0.25rem 1rem;
   outline: 0;
   transition: ${transition};
-  border-bottom: 1px solid ${({ theme }) => theme.accents[200]}00;
+  border-bottom: 1px solid ${({ theme }) => theme.accent.L2}00;
   :focus {
     outline: 0;
-    border-bottom: 1px solid ${({ theme }) => theme.accents[200]};
+    border-bottom: 1px solid ${({ theme }) => theme.accent.L2};
   }
 `;
 

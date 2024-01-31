@@ -19,7 +19,7 @@ const Wrapper = styled.div`
 `;
 
 const Main = styled.input`
-  background-color: ${({ theme }) => theme.neutral[700]};
+  background-color: ${({ theme }) => theme.neutrals.L7};
   border-radius: ${(p) => p.theme.radius}px;
   color: ${({ theme }) => theme.text.default};
   width: 100%;
@@ -29,7 +29,7 @@ const Main = styled.input`
   font-size: 14px;
   outline: 0;
   position: relative;
-  border-color: ${(p) => p.theme.neutral[200]};
+  border-color: ${(p) => p.theme.neutrals.L2};
   border-width: 1px;
   border-style: solid;
   transition: ${vars.transition};
@@ -37,7 +37,7 @@ const Main = styled.input`
     color: ${({ theme }) => theme.text.disabled};
   }
   :focus {
-    border-color: ${({ theme }) => theme.accents[200]};
+    border-color: ${({ theme }) => theme.accent.L2};
   }
 `;
 

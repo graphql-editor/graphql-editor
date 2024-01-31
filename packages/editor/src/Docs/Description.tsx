@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import styled from "@emotion/styled";
 
 const Main = styled.textarea`
-  background: ${({ theme }) => theme.neutral[600]};
+  background: ${({ theme }) => theme.neutrals.L6};
   color: ${({ theme }) => theme.text.default};
   font-size: 14px;
   width: 100%;

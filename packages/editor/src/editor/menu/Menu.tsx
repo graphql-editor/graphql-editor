@@ -15,12 +15,13 @@ import {
 import { PassedSchema } from "@/Models";
 import { ImportSchema } from "@/shared/dialogs/ImportSchema";
 import { useFileOperations } from "@/editor/menu/Tools/FileOperations";
+import { dataIt } from "@/Models/dataIds";
 
 const Sidebar = styled.div`
-  background: ${({ theme }) => theme.neutral[600]};
+  background: ${({ theme }) => theme.neutrals.L6};
   color: ${({ theme }) => theme.text.disabled};
   z-index: 4;
-  border: 0 solid ${({ theme }) => theme.black};
+  border: 0 solid ${({ theme }) => theme.neutrals.L8};
   border-right-width: 1px;
   border-left-width: 1px;
   position: relative;
@@ -33,7 +34,7 @@ const Sidebar = styled.div`
 `;
 const Filler = styled.div`
   flex: 1;
-  background-color: ${({ theme }) => theme.neutral[600]};
+  background-color: ${({ theme }) => theme.neutrals.L6};
 `;
 
 const MenuItem = styled.div<{
@@ -53,14 +54,14 @@ const MenuItem = styled.div<{
   transition: all 0.25s ease;
   overflow: visible;
   user-select: none;
-  background-color: ${({ theme }) => theme.neutral[500]};
-  border-bottom: ${(p) => p.theme.black} 1px solid;
+  background-color: ${({ theme }) => theme.neutrals.L5};
+  border-bottom: ${(p) => p.theme.neutrals.L8} 1px solid;
 
   &:hover {
     background-color: ${({ theme, isDisabled }) =>
-      !isDisabled && theme.neutral[500]};
+      !isDisabled && theme.neutrals.L5};
     color: ${({ isDisabled, theme }) =>
-      isDisabled ? theme.text.disabled : theme.accents[200]};
+      isDisabled ? theme.text.disabled : theme.accent.L2};
   }
 
   svg {
@@ -70,11 +71,11 @@ const MenuItem = styled.div<{
   }
 
   &.active {
-    color: ${({ theme }) => theme.accents[200]};
+    color: ${({ theme }) => theme.accent.L2};
     font-weight: 600;
   }
   &.toggle-active {
-    color: ${({ theme }) => theme.accents[100]};
+    color: ${({ theme }) => theme.accent.L1};
     font-weight: 600;
   }
 `;
@@ -149,7 +150,7 @@ export const Menu = ({
               setToggleCode(!toggleCode);
             }}
             isDisabled={activePane === "diff"}
-            data-tour="toggle-code"
+            {...dataIt("menuCode")}
           >
             <Code />
           </MenuItem>
@@ -165,7 +166,7 @@ export const Menu = ({
                 }
                 setActivePane("relation");
               }}
-              data-tour="relation"
+              {...dataIt("menuRelations")}
             >
               <Tool />
             </MenuItem>
@@ -182,7 +183,7 @@ export const Menu = ({
                 }
                 setActivePane("docs");
               }}
-              data-tour="documentation"
+              {...dataIt("menuDocs")}
             >
               <File />
             </MenuItem>
@@ -193,7 +194,7 @@ export const Menu = ({
             <MenuItem
               className={activePane === "diff" ? "active" : ""}
               onClick={() => setActivePane("diff")}
-              data-tour="diff"
+              {...dataIt("menuDiff")}
             >
               <Filter />
             </MenuItem>
@@ -207,14 +208,18 @@ export const Menu = ({
           distanceX="10px"
         >
           <Tooltip title="Export schema" position="right-center">
-            <MenuItem data-tour="export">
+            <MenuItem {...dataIt("menuExport")} data-tour="export">
               <ArrowNarrowUpMove />
             </MenuItem>
           </Tooltip>
         </DropdownMenu>
         {!readOnly && (
           <Tooltip title="Import schema" position="right-center">
-            <MenuItem onClick={() => setImportOpen(true)} data-tour="import">
+            <MenuItem
+              {...dataIt("menuImport")}
+              onClick={() => setImportOpen(true)}
+              data-tour="import"
+            >
               <ArrowNarrowBottomAlignment />
             </MenuItem>
           </Tooltip>

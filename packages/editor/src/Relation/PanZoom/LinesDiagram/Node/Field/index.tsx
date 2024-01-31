@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { useTreesState } from "@/state/containers/trees";
 import { FieldProps as GrafFieldProps } from "@/Graf/Node/models";
 import styled from "@emotion/styled";
@@ -11,7 +11,6 @@ import { ActiveFieldName } from "@/Relation/PanZoom/LinesDiagram/Node/Field/Acti
 import { ActiveType } from "@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveType";
 import { DOMClassNames } from "@/shared/hooks/DOMClassNames";
 import { useRelationNodesState, useRelationsState } from "@/state/containers";
-import { isEditableParentField } from "@/utils";
 import { Link } from "@aexol-studio/styling-system";
 
 const Main = styled.div<{ printPreviewActive: boolean }>`
@@ -30,7 +29,7 @@ const Main = styled.div<{ printPreviewActive: boolean }>`
   transition: background-color 0.25s ease-in-out;
   cursor: pointer;
   &:hover {
-    background-color: ${({ theme }) => theme.neutral[500]};
+    background-color: ${({ theme }) => theme.neutrals.L5};
   }
 `;
 
@@ -41,36 +40,26 @@ type FieldProps = Pick<GrafFieldProps, "node"> & {
 export const Field: React.FC<FieldProps> = ({ node }) => {
   const { parentTypes, setSelectedNodeId, getParentOfField, focusMode } =
     useTreesState();
-  const { setEditMode, printPreviewActive } = useRelationsState();
-  const {
-    setTypeRelatedNodesToFocusedNode,
-    filteredFocusedNodes,
-    typeRelatedToFocusedNode,
-  } = useRelationNodesState();
-  const nodeClick = useCallback(
-    (n: ParserField) => {
-      const parent = getParentOfField(n);
-      if (parent) {
-        if (isEditableParentField(parent)) {
-          setEditMode(parent.id);
-          return;
-        }
-        const isFocus = !!(focusMode && filteredFocusedNodes);
-        if (isFocus) {
-          setTypeRelatedNodesToFocusedNode(parent);
-        }
-
-        setSelectedNodeId({
-          source: "relation",
-          value: {
-            id: parent.id,
-            name: parent.name,
-          },
-        });
+  const { printPreviewActive } = useRelationsState();
+  const { setTypeRelatedNodesToFocusedNode, filteredFocusedNodes } =
+    useRelationNodesState();
+  const nodeClick = (n: ParserField) => {
+    const parent = getParentOfField(n);
+    if (parent) {
+      const isFocus = !!(focusMode && filteredFocusedNodes);
+      if (isFocus) {
+        setTypeRelatedNodesToFocusedNode(parent);
       }
-    },
-    [focusMode, filteredFocusedNodes, typeRelatedToFocusedNode]
-  );
+
+      setSelectedNodeId({
+        source: "relation",
+        value: {
+          id: parent.id,
+          name: parent.name,
+        },
+      });
+    }
+  };
   return (
     <Main
       className={DOMClassNames.nodeField}

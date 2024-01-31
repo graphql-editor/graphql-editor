@@ -1,15 +1,16 @@
 import { createContainer } from "unstated-next";
 import { useState } from "react";
+import { OmitNodes } from "@/Relation/shared/models";
 
 const useRelationsContainer = createContainer(() => {
   const [baseTypesOn, setBaseTypesOn] = useState(true);
-  const [inputsOn, setInputsOn] = useState(true);
   const [fieldsOn, setFieldsOn] = useState(true);
   const [ctrlToZoom, setCtrlToZoom] = useState(true);
   const [editMode, setEditMode] = useState("");
   const [libraryNodesOn, setLibraryNodesOn] = useState(true);
   const [printPreviewActive, setPrintPreviewActive] = useState(false);
   const [printPreviewReady, setPrintPreviewReady] = useState(false);
+  const [omitNodes, setOmitNodes] = useState<OmitNodes>();
 
   return {
     setBaseTypesOn,
@@ -18,8 +19,6 @@ const useRelationsContainer = createContainer(() => {
     setEditMode,
     fieldsOn,
     setFieldsOn,
-    inputsOn,
-    setInputsOn,
     ctrlToZoom,
     setCtrlToZoom,
     libraryNodesOn,
@@ -28,6 +27,8 @@ const useRelationsContainer = createContainer(() => {
     setPrintPreviewActive,
     printPreviewReady,
     setPrintPreviewReady,
+    omitNodes,
+    setOmitNodes,
   };
 });
 
