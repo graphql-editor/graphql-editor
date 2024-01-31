@@ -76,6 +76,7 @@ const useRelationNodes = createContainer(() => {
   );
 
   const focusedNodes = useMemo(() => {
+    setTypeRelatedToFocusedNode([]);
     const nId = focusMode;
     if (nId) {
       const n = allNodes.nodes.find((an) => an.id === nId);
@@ -127,10 +128,6 @@ const useRelationNodes = createContainer(() => {
       return foundNode ? !foundNode.isHidden : true;
     });
   }, [nodesVisibilityArr, focusedNodes]);
-
-  useEffect(() => {
-    setTypeRelatedToFocusedNode([]);
-  }, [focusMode]);
 
   const setTypeRelatedNodesToFocusedNode = useCallback(
     (node: ParserField) => {
