@@ -17,14 +17,23 @@ export const Relation: React.FC<{ setInitialSchema: (s: string) => void }> = ({
   setInitialSchema,
 }) => {
   const { activeNode, focusMode, allNodes } = useTreesState();
-  const { filteredFocusedNodes, filteredRelationNodes } =
-    useRelationNodesState();
+  const {
+    filteredFocusedNodes,
+    filteredRelationNodes,
+    filteredTypeRelatedToFocusedNode,
+  } = useRelationNodesState();
   const { editMode, ctrlToZoom } = useRelationsState();
   const { set, routes } = useRouter();
   const [popupsState, setPopupsState] = useState({
     import: false,
   });
   const isFocus = !!(focusMode && filteredFocusedNodes);
+  const nodesToShow = useMemo(() => {
+    return [
+      ...(filteredFocusedNodes || []),
+      ...filteredTypeRelatedToFocusedNode,
+    ];
+  }, [filteredFocusedNodes, filteredTypeRelatedToFocusedNode]);
   const viewport = useMemo(() => {
     return (
       <>
@@ -64,7 +73,7 @@ export const Relation: React.FC<{ setInitialSchema: (s: string) => void }> = ({
             minScale={0.1}
             limitToBounds={false}
           >
-            <PanZoom parentClass="focus" nodes={filteredFocusedNodes} />
+            <PanZoom parentClass="focus" nodes={nodesToShow} />
           </TransformWrapper>
         </FocusOverlay>
       )}
