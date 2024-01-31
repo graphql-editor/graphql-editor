@@ -206,10 +206,10 @@ const useTreesStateContainer = createContainer(() => {
       .map((a) => a.name);
     const nodesRelatedToActiveInterface =
       activeNode &&
-      activeNode.data.type === TypeDefinition.InterfaceTypeDefinition
+        activeNode.data.type === TypeDefinition.InterfaceTypeDefinition
         ? allNodes.nodes
-            .filter((node) => node.interfaces.includes(activeNode.name))
-            .map((a) => a.name)
+          .filter((node) => node.interfaces.includes(activeNode.name))
+          .map((a) => a.name)
         : [];
     const notBaseTypes = activeNode?.args
       .map((a) => getTypeName(a.type.fieldType))
@@ -237,12 +237,12 @@ const useTreesStateContainer = createContainer(() => {
   const setSelectedNodeId = useCallback(
     (_selectedNodeId?: SelectedNodeId) => {
       const nodeId = _selectedNodeId?.value?.id;
-      DOMEvents.selectNode.trigger(nodeId);
       if (
         nodeId !== selectedNodeId?.value?.id ||
         _selectedNodeId?.justCreated !== selectedNodeId?.justCreated
       ) {
         setTimeout(() => {
+          DOMEvents.selectNode.trigger(nodeId);
           return _setSelectedNodeId(_selectedNodeId);
         }, 250);
       }
