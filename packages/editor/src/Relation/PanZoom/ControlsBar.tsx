@@ -23,7 +23,8 @@ import { dataIt } from "@/Models/dataIds";
 export const ControlsBar: React.FC<{
   downloadPng: () => void;
   triggerResimulation: () => void;
-}> = ({ downloadPng }) => {
+  title?: React.ReactNode;
+}> = ({ downloadPng, title }) => {
   const { readonly, exitFocus, focusMode, focusedNode, libraryTree } =
     useTreesState();
 
@@ -47,6 +48,7 @@ export const ControlsBar: React.FC<{
             </Button>
           )}
           {!readonly && !focusMode && <NewNode />}
+          {title}
         </Stack>
         <Stack align="center" gap={"1rem"}>
           {!!libraryTree.nodes.length && (

@@ -88,6 +88,7 @@ export interface EditorProps extends Pick<CodePaneProps, "onContentChange"> {
   onNodeSelect?: (selectedNodeId?: string) => void;
   // name of the schema file
   path: string;
+  title?: React.ReactNode;
   // Editor custom fonts without whole theme needed to be passed
   fontFamily?: string;
   fontFamilySans?: string;
@@ -117,6 +118,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
       onRouteChange,
       onNodeSelect,
       onContentChange,
+      title,
     },
     ref
   ) => {
@@ -332,6 +334,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
           <ErrorOuterContainer>
             {routes.pane === "relation" && (
               <Relation
+                title={title}
                 setInitialSchema={(s) =>
                   setSchema({
                     code: s,
