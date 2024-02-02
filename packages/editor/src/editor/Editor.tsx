@@ -69,7 +69,8 @@ const ErrorOuterContainer = styled.div<{ isOverflow?: boolean }>`
   overflow-x: hidden;
 `;
 
-export interface EditorProps extends Pick<CodePaneProps, "onContentChange"> {
+export interface EditorProps
+  extends Pick<CodePaneProps, "onContentChange" | "onEditorMount"> {
   // Code in editor is readonly
   readonly?: boolean;
   // Code and libraries
@@ -119,6 +120,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
       onNodeSelect,
       onContentChange,
       title,
+      onEditorMount,
     },
     ref
   ) => {
@@ -321,6 +323,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
                     passGraphValidation,
                   });
                 }}
+                onEditorMount={onEditorMount}
                 ref={codePaneApi}
                 onContentChange={onContentChange}
                 schema={schema}

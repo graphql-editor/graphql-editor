@@ -13,6 +13,7 @@ import { theme as MonacoTheme } from "@/editor/code/monaco";
 
 export type LiveSchemaEditorProps = SchemaServicesOptions & {
   onBlur?: (value: string) => void;
+  onEditorMount?: (editor: monaco.editor.IStandaloneCodeEditor) => void;
   onLanguageServiceReady?: (languageService: EnrichedLanguageService) => void;
   onSchemaChange?: (schema: GraphQLSchema, sdl: string) => void;
   onSchemaError?: (
@@ -45,14 +46,15 @@ function BaseSchemaEditor(
   });
 
   useEffect(() => {
-    if (editorRef)
+    if (editorRef) {
+      props.onEditorMount?.(editorRef);
       editorRef?.revealPositionInCenter({ column: 0, lineNumber: 0 });
-  }, [editorRef]);
+    }
+  }, [editorRef, props.onEditorMount]);
 
   const { theme } = useTheme();
 
   useImperativeHandle(ref, () => ({ ...editorApi, receive }), [
-    editorRef,
     languageService,
     receive,
   ]);
