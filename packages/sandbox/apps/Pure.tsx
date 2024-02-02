@@ -27,6 +27,8 @@ export const Pure = () => {
           });
         }}
         schema={mySchema}
+        disableImport
+        disableExport
       />
     </div>
   );

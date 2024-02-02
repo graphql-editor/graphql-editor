@@ -99,6 +99,8 @@ export interface MenuProps {
   readOnly?: boolean;
   setSchema: (props: PassedSchema, isInvalid?: boolean) => void;
   path: string;
+  disableImport?: boolean;
+  disableExport?: boolean;
 }
 
 export const Menu = ({
@@ -112,6 +114,8 @@ export const Menu = ({
   libraries,
   readOnly,
   excludePanes = [],
+  disableImport,
+  disableExport,
 }: MenuProps) => {
   const [importOpen, setImportOpen] = useState(false);
   const { saveToFile } = useFileOperations();
@@ -201,19 +205,21 @@ export const Menu = ({
           </Tooltip>
         )}
 
-        <DropdownMenu
-          actionType="icon"
-          dropdownPosition="right-bottom"
-          menuItems={exportActions}
-          distanceX="10px"
-        >
-          <Tooltip title="Export schema" position="right-center">
-            <MenuItem {...dataIt("menuExport")} data-tour="export">
-              <ArrowNarrowUpMove />
-            </MenuItem>
-          </Tooltip>
-        </DropdownMenu>
-        {!readOnly && (
+        {!disableExport && (
+          <DropdownMenu
+            actionType="icon"
+            dropdownPosition="right-bottom"
+            menuItems={exportActions}
+            distanceX="10px"
+          >
+            <Tooltip title="Export schema" position="right-center">
+              <MenuItem {...dataIt("menuExport")} data-tour="export">
+                <ArrowNarrowUpMove />
+              </MenuItem>
+            </Tooltip>
+          </DropdownMenu>
+        )}
+        {!readOnly && !disableImport && (
           <Tooltip title="Import schema" position="right-center">
             <MenuItem
               {...dataIt("menuImport")}
