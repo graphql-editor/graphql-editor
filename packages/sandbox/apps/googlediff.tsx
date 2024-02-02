@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { GraphQLEditor } from "graphql-editor";
 import * as schemas from "../schema";
 import { PassedSchema } from "graphql-editor";
+import { Typography } from "@aexol-studio/styling-system";
 
 export const googlediff = () => {
   const [currentSchema, setCurrentSchema] = useState<PassedSchema>({
@@ -26,6 +27,11 @@ export const googlediff = () => {
         setSchema={(s) => {
           setCurrentSchema(s);
         }}
+        title={
+          <Typography css={{ marginLeft: 0 }}>
+            https://schema.google.com/graphql
+          </Typography>
+        }
         diffSchemas={[
           { name: "new schema", content: schemas.googleDirectionsNew },
           { content: schemas.googleDirectionsOld, name: "Old schema" },

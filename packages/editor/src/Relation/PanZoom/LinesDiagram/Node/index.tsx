@@ -119,7 +119,16 @@ const Content = styled.div<ContentProps>`
   }
 `;
 
-const NodeRelationFields = styled.div`
+const NodeRelationFields = styled.div<
+  Pick<ContentProps, "width" | "printPreviewActive">
+>`
+  width: ${(p) =>
+    Math.min(
+      p.width,
+      p.printPreviewActive
+        ? PRINT_PREVIEW_RELATION_NODE_MAX_WIDTH
+        : RELATION_NODE_MAX_WIDTH
+    )}px;
   transition: ${transition};
   position: relative;
   margin-top: 24px;
@@ -228,7 +237,11 @@ export const Node: React.FC<NodeProps> = (props) => {
       ? PRINT_PREVIEW_RELATION_NODE_MAX_FIELDS
       : RELATION_NODE_MAX_FIELDS;
     return (
-      <NodeRelationFields className={`${DOMClassNames.nodeFields}`}>
+      <NodeRelationFields
+        printPreviewActive={printPreviewActive}
+        width={numberNode.width}
+        className={`${DOMClassNames.nodeFields}`}
+      >
         {field.args.slice(0, maxFields).map((a) => (
           <Field key={a.name} node={a} />
         ))}

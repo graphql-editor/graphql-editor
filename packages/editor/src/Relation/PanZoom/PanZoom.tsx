@@ -32,8 +32,9 @@ const MAX_SCHEMA_SIZE = 20000 * 20000;
 export const PanZoom: React.FC<{
   nodes: ParserField[];
   hide?: boolean;
+  title?: React.ReactNode;
   parentClass: "focus" | "all";
-}> = ({ nodes, hide, parentClass }) => {
+}> = ({ nodes, hide, parentClass, title }) => {
   const mainRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const linesRef = useRef<LinesDiagramApi>(null);
@@ -285,6 +286,7 @@ export const PanZoom: React.FC<{
   return (
     <Wrapper className={parentClass}>
       <ControlsBar
+        title={title}
         triggerResimulation={() => {
           linesRef.current?.triggerResimulation();
         }}

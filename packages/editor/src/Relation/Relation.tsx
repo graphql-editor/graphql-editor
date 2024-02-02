@@ -13,9 +13,10 @@ import { BackgroundFTUX } from "@/Relation/FTUX/BackgroundFTUX";
 import { useRouter } from "@/state/containers/router";
 import { ImportSchema } from "@/shared/dialogs/ImportSchema";
 
-export const Relation: React.FC<{ setInitialSchema: (s: string) => void }> = ({
-  setInitialSchema,
-}) => {
+export const Relation: React.FC<{
+  setInitialSchema: (s: string) => void;
+  title?: React.ReactNode;
+}> = ({ setInitialSchema, title }) => {
   const { activeNode, focusMode, allNodes } = useTreesState();
   const {
     filteredFocusedNodes,
@@ -52,6 +53,7 @@ export const Relation: React.FC<{ setInitialSchema: (s: string) => void }> = ({
             hide={isFocus}
             parentClass="all"
             nodes={filteredRelationNodes}
+            title={title}
           />
         </TransformWrapper>
       </>
@@ -73,7 +75,7 @@ export const Relation: React.FC<{ setInitialSchema: (s: string) => void }> = ({
             minScale={0.1}
             limitToBounds={false}
           >
-            <PanZoom parentClass="focus" nodes={nodesToShow} />
+            <PanZoom title={title} parentClass="focus" nodes={nodesToShow} />
           </TransformWrapper>
         </FocusOverlay>
       )}
