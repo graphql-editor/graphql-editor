@@ -23,9 +23,6 @@ export const useDomManagerTs = (parent: "focus" | "all") => {
     DOMNavigationNode.addClassByFn("active", (e) => {
       const htmlElem = e as HTMLDivElement;
       const m = htmlElem.dataset.id === nodeId;
-      if (m) {
-        htmlElem.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
       return m;
     });
     DOMGraphConnection.addClassByFn("active", (e) => {
