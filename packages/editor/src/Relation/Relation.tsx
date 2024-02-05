@@ -39,6 +39,7 @@ export const Relation: React.FC<{
           }}
           minScale={0.1}
           limitToBounds={false}
+          zoomAnimation={{ disabled: true }}
         >
           <PanZoom
             hide={isFocus}
@@ -65,6 +66,7 @@ export const Relation: React.FC<{
             panning={{ velocityDisabled: false }}
             minScale={0.1}
             limitToBounds={false}
+            zoomAnimation={{ disabled: true }}
           >
             <PanZoom
               title={title}
