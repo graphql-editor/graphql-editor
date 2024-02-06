@@ -46,6 +46,13 @@ export const Field: React.FC<FieldProps> = ({ node }) => {
   const nodeClick = (n: ParserField) => {
     const parent = getParentOfField(n);
     if (parent) {
+      const isFocus = !!(focusMode && filteredFocusedNodes);
+      if (isFocus) {
+        setTypeRelatedNodesToFocusedNode(parent);
+        if (!filteredFocusedNodes.find((ffn) => ffn.id === parent.id)) {
+          return;
+        }
+      }
       setSelectedNodeId({
         source: "relation",
         value: {
@@ -53,11 +60,6 @@ export const Field: React.FC<FieldProps> = ({ node }) => {
           name: parent.name,
         },
       });
-
-      const isFocus = !!(focusMode && filteredFocusedNodes);
-      if (isFocus) {
-        setTypeRelatedNodesToFocusedNode(parent);
-      }
     }
   };
   return (

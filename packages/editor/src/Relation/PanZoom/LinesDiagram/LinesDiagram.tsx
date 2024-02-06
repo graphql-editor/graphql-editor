@@ -239,7 +239,8 @@ export const LinesDiagram = React.forwardRef<
   ) => {
     if (simulatedNodes && !props.hide) {
       const size = wrapper.getBoundingClientRect();
-      changeZoomInTopBar(state.scale);
+      changeZoomInTopBar;
+      // changeZoomInTopBar(state.scale);
       if (!size) return;
       requestAnimationFrame((timeStamp) => {
         const delta = timeStamp - lastTimestamp;
