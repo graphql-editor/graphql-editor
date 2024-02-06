@@ -93,6 +93,8 @@ export interface EditorProps
   // Editor custom fonts without whole theme needed to be passed
   fontFamily?: string;
   fontFamilySans?: string;
+  disableExport?: boolean;
+  disableImport?: boolean;
 }
 
 export interface ExternalEditorAPI {
@@ -120,6 +122,8 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
       onNodeSelect,
       onContentChange,
       title,
+      disableExport,
+      disableImport,
       onEditorMount,
     },
     ref
@@ -296,6 +300,8 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
             const newState: typeof routes = { ...routes, pane: p };
             set(newState, "internal");
           }}
+          disableExport={disableExport}
+          disableImport={disableImport}
         />
         {routes.pane !== "diff" && (
           <DynamicResize
