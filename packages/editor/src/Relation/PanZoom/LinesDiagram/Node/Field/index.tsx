@@ -10,7 +10,7 @@ import {
 import { ActiveFieldName } from "@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveFieldName";
 import { ActiveType } from "@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveType";
 import { DOMClassNames } from "@/shared/hooks/DOMClassNames";
-import { useRelationsState } from "@/state/containers";
+import { useRelationNodesState, useRelationsState } from "@/state/containers";
 import { Link } from "@aexol-studio/styling-system";
 
 const Main = styled.div<{ printPreviewActive: boolean }>`
@@ -38,8 +38,11 @@ type FieldProps = Pick<GrafFieldProps, "node"> & {
 };
 
 export const Field: React.FC<FieldProps> = ({ node }) => {
-  const { parentTypes, setSelectedNodeId, getParentOfField } = useTreesState();
+  const { parentTypes, setSelectedNodeId, getParentOfField, focusMode } =
+    useTreesState();
   const { printPreviewActive } = useRelationsState();
+  const { setTypeRelatedNodesToFocusedNode, filteredFocusedNodes } =
+    useRelationNodesState();
   const nodeClick = (n: ParserField) => {
     const parent = getParentOfField(n);
     if (parent) {
@@ -50,6 +53,11 @@ export const Field: React.FC<FieldProps> = ({ node }) => {
           name: parent.name,
         },
       });
+
+      const isFocus = !!(focusMode && filteredFocusedNodes);
+      if (isFocus) {
+        setTypeRelatedNodesToFocusedNode(parent);
+      }
     }
   };
   return (

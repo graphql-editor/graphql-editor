@@ -18,14 +18,23 @@ export const Relation: React.FC<{
   title?: React.ReactNode;
 }> = ({ setInitialSchema, title }) => {
   const { activeNode, focusMode, allNodes } = useTreesState();
-  const { filteredFocusedNodes, filteredRelationNodes } =
-    useRelationNodesState();
+  const {
+    filteredFocusedNodes,
+    filteredRelationNodes,
+    filteredTypeRelatedToFocusedNode,
+  } = useRelationNodesState();
   const { editMode, ctrlToZoom } = useRelationsState();
   const { set, routes } = useRouter();
   const [popupsState, setPopupsState] = useState({
     import: false,
   });
   const isFocus = !!(focusMode && filteredFocusedNodes);
+  const nodesToShow = useMemo(() => {
+    return [
+      ...(filteredFocusedNodes || []),
+      ...filteredTypeRelatedToFocusedNode,
+    ];
+  }, [filteredFocusedNodes, filteredTypeRelatedToFocusedNode]);
   const viewport = useMemo(() => {
     return (
       <>
@@ -39,6 +48,7 @@ export const Relation: React.FC<{
           }}
           minScale={0.1}
           limitToBounds={false}
+          zoomAnimation={{ disabled: true }}
         >
           <PanZoom
             hide={isFocus}
@@ -65,12 +75,9 @@ export const Relation: React.FC<{
             panning={{ velocityDisabled: false }}
             minScale={0.1}
             limitToBounds={false}
+            zoomAnimation={{ disabled: true }}
           >
-            <PanZoom
-              title={title}
-              parentClass="focus"
-              nodes={filteredFocusedNodes}
-            />
+            <PanZoom title={title} parentClass="focus" nodes={nodesToShow} />
           </TransformWrapper>
         </FocusOverlay>
       )}

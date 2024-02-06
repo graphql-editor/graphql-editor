@@ -24,6 +24,7 @@ import { CodeContainer } from "@/editor/code/style/Code";
 import { Maybe } from "graphql-language-service";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import { PassedSchema } from "@/Models";
+import type * as monaco from "monaco-editor";
 
 export interface CodePaneOuterProps {
   readonly?: boolean;
@@ -33,6 +34,7 @@ export type CodePaneProps = Pick<LiveSchemaEditorProps, "onContentChange"> & {
   size: number | string;
   schema: PassedSchema;
   onChange: (v: string, passGraphValidation?: boolean) => void;
+  onEditorMount?: (editor: monaco.editor.IStandaloneCodeEditor) => void;
   fullScreen?: boolean;
 } & CodePaneOuterProps;
 
@@ -137,6 +139,7 @@ export const CodePane = React.forwardRef<CodePaneApi, CodePaneProps>(
             onContentChange={props.onContentChange}
             height="100%"
             ref={liveEditorApi}
+            onEditorMount={props.onEditorMount}
             beforeMount={(monaco) =>
               monaco.editor.defineTheme("graphql-editor", MonacoTheme(theme))
             }

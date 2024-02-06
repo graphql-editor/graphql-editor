@@ -23,6 +23,7 @@ export type SchemaEditorApi = {
   jumpToType(typeName: string): void;
   deselect(): void;
   jumpToError(rowNumber: number): void;
+  editor?: monaco.editor.IStandaloneCodeEditor;
 };
 
 export type SchemaServicesOptions = {

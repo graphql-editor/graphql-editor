@@ -2,30 +2,10 @@ import React, { useEffect, useMemo, useState } from "react";
 import { GraphQLEditor } from "graphql-editor";
 import { PassedSchema } from "graphql-editor";
 import { ExternalEditorAPI } from "graphql-editor";
-import { io } from "socket.io-client";
+import * as Y from "yjs";
+import { WebsocketProvider } from "y-websocket";
+import { MonacoBinding } from "y-monaco";
 import type * as monaco from "monaco-editor";
-const cyrb53 = (str, seed = 0) => {
-  let h1 = 0xdeadbeef ^ seed,
-    h2 = 0x41c6ce57 ^ seed;
-  for (let i = 0, ch; i < str.length; i++) {
-    ch = str.charCodeAt(i);
-    h1 = Math.imul(h1 ^ ch, 2654435761);
-    h2 = Math.imul(h2 ^ ch, 1597334677);
-  }
-  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
-  h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
-  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
-  h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-
-  return 4294967296 * (2097151 & h2) + (h1 >>> 0);
-};
-
-type SocketEvent = {
-  author: string;
-  hash: number;
-  changes: monaco.editor.IModelContentChangedEvent;
-};
-
 const initial = `
 type Person{
   name: String!
@@ -34,9 +14,9 @@ type Person{
   lastName:String
 }
 `;
-const s = io("localhost:3030");
 
 export const LiveSocketTest = () => {
+  const [e, setE] = useState<monaco.editor.IStandaloneCodeEditor>();
   const [currentSchema, setCurrentSchema] = useState<PassedSchema>({
     code: initial,
     libraries: "",
@@ -47,17 +27,31 @@ export const LiveSocketTest = () => {
   const liveEditorApi: React.ForwardedRef<ExternalEditorAPI> =
     React.createRef();
   useEffect(() => {
-    const codeListener = s.on("code", (e) => {
-      const received = e as SocketEvent;
-      if (received.author !== author) {
-        liveEditorApi.current?.receive(received.changes);
-        return;
-      }
-    });
-    return () => {
-      codeListener.off();
-    };
-  }, [author, liveEditorApi]);
+    liveEditorApi.current.route({ code: "on" });
+    if (e) {
+      console.log("AIMHERE");
+      const ydoc = new Y.Doc();
+      const provider = new WebsocketProvider(
+        "wss://localhost:3030",
+        "monaco",
+        ydoc
+      );
+      const type = ydoc.getText("monaco");
+
+      const monacoBinding = new MonacoBinding(
+        type,
+        e.getModel(),
+        new Set([e]),
+        provider.awareness
+      );
+      provider.connect();
+
+      return () => {
+        monacoBinding.destroy();
+        provider.destroy();
+      };
+    }
+  }, [author, e]);
   return (
     <div
       style={{
@@ -71,12 +65,12 @@ export const LiveSocketTest = () => {
     >
       <GraphQLEditor
         path="collab"
-        onContentChange={(e) => {
-          s.emit("code", {
-            changes: e,
-            author,
-            hash: cyrb53(currentSchema.code),
-          } as SocketEvent);
+        onEditorMount={(editor) => {
+          console.log("SET EDITOR");
+          setE(editor);
+        }}
+        onContentChange={() => {
+          //nope
         }}
         ref={liveEditorApi}
         schema={currentSchema}

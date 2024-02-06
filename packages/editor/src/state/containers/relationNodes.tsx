@@ -39,6 +39,10 @@ const useRelationNodes = createContainer(() => {
     relationNodes.map((el) => ({ id: el.id, isHidden: false }))
   );
 
+  const [typeRelatedToFocusedNode, setTypeRelatedToFocusedNode] = useState<
+    ParserField[]
+  >([]);
+
   useEffect(() => {
     setNodesVisibilityArr((prev) => {
       const newArray = relationNodes.map((el) => {
@@ -72,6 +76,7 @@ const useRelationNodes = createContainer(() => {
   );
 
   const focusedNodes = useMemo(() => {
+    setTypeRelatedToFocusedNode([]);
     const nId = focusMode;
     if (nId) {
       const n = allNodes.nodes.find((an) => an.id === nId);
@@ -140,6 +145,32 @@ const useRelationNodes = createContainer(() => {
     [nodesVisibilityArr]
   );
 
+  const setTypeRelatedNodesToFocusedNode = useCallback(
+    (node: ParserField) => {
+      const alreadyExistsInTypeRelatedToFocusedNode =
+        typeRelatedToFocusedNode.find((el) => el.id === node.id);
+      const alreadyExistsInFocusedNodes = focusedNodes?.find(
+        (el) => el.id === node.id
+      );
+      const isToggleableTypeNode = toggleableTypes.includes(node.data.type);
+      if (
+        !alreadyExistsInTypeRelatedToFocusedNode &&
+        !alreadyExistsInFocusedNodes &&
+        isToggleableTypeNode
+      ) {
+        setTypeRelatedToFocusedNode([...typeRelatedToFocusedNode, node]);
+      }
+    },
+    [focusedNodes, typeRelatedToFocusedNode]
+  );
+
+  const filteredTypeRelatedToFocusedNode = useMemo(() => {
+    return typeRelatedToFocusedNode?.filter((el) => {
+      const foundNode = nodesVisibilityArr.find((el2) => el2.id === el.id);
+      return foundNode ? !foundNode.isHidden : true;
+    });
+  }, [nodesVisibilityArr, typeRelatedToFocusedNode]);
+
   return {
     filteredRelationNodes,
     nodesVisibilityArr,
@@ -149,6 +180,9 @@ const useRelationNodes = createContainer(() => {
     toggleNodeVisibility,
     allVisible,
     focusedNodes,
+    typeRelatedToFocusedNode,
+    filteredTypeRelatedToFocusedNode,
+    setTypeRelatedNodesToFocusedNode,
   };
 });
 
