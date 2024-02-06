@@ -221,14 +221,13 @@ export const LinesDiagram = React.forwardRef<
     if (!props.loading) {
       if (instance.wrapperComponent) {
         transformEffect(instance.transformState, instance.wrapperComponent);
-        setSelectedNodeId(
-          activeNode
-            ? selectedNodeId
-            : {
-                source: "relation",
-                value: undefined,
-              }
-        );
+        setSelectedNodeId({
+          source: "relation",
+          value:
+            activeNode && selectedNodeId?.value
+              ? selectedNodeId.value
+              : undefined,
+        });
       }
     }
   }, [props.loading, focusMode]);

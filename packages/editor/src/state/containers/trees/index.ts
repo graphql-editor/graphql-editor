@@ -235,14 +235,16 @@ const useTreesStateContainer = createContainer(() => {
       .map((n) => n.id);
   }, [relatedToSelected, allNodes]);
   const setSelectedNodeId = useCallback(
-    (_selectedNodeId?: SelectedNodeId) => {
+    (_selectedNodeId: SelectedNodeId) => {
       const nodeId = _selectedNodeId?.value?.id;
       if (
         nodeId !== selectedNodeId?.value?.id ||
         _selectedNodeId?.justCreated !== selectedNodeId?.justCreated
       ) {
         DOMEvents.selectNode.trigger(nodeId);
-        return _setSelectedNodeId(_selectedNodeId);
+        setTimeout(() => {
+          return _setSelectedNodeId(_selectedNodeId);
+        }, 250);
       }
     },
     [_setSelectedNodeId, allNodes, selectedNodeId?.value?.id, focusMode]

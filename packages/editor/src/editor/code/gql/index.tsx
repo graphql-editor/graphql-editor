@@ -76,15 +76,13 @@ export const GqlCodePane = (props: GqlCodePaneProps) => {
           select={(e) => {
             if (e) {
               const n = allNodes.nodes.find((an) => an.name === e);
-              setSelectedNodeId(
-                n && {
-                  source: "code",
-                  value: {
-                    id: n.id,
-                    name: n.name,
-                  },
-                }
-              );
+              setSelectedNodeId({
+                source: "code",
+                value: n && {
+                  id: n.id,
+                  name: n.name,
+                },
+              });
             }
           }}
         />
