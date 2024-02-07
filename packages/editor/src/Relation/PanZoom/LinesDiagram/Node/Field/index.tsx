@@ -38,14 +38,40 @@ type FieldProps = Pick<GrafFieldProps, "node"> & {
 };
 
 export const Field: React.FC<FieldProps> = ({ node }) => {
-  const { parentTypes, setSelectedNodeId, getParentOfField, focusMode } =
-    useTreesState();
+  const {
+    parentTypes,
+    setSelectedNodeId,
+    setSelectedNodeIdThatWillBeAdded,
+    getParentOfField,
+    focusMode,
+  } = useTreesState();
   const { printPreviewActive } = useRelationsState();
-  const { setTypeRelatedNodesToFocusedNode, filteredFocusedNodes } =
-    useRelationNodesState();
+  const {
+    setTypeRelatedNodesToFocusedNode,
+    filteredFocusedNodes,
+    filteredTypeRelatedToFocusedNode,
+  } = useRelationNodesState();
   const nodeClick = (n: ParserField) => {
     const parent = getParentOfField(n);
     if (parent) {
+      const isFocus = !!(focusMode && filteredFocusedNodes);
+      if (isFocus) {
+        setTypeRelatedNodesToFocusedNode(parent);
+        if (
+          !filteredFocusedNodes
+            .concat(filteredTypeRelatedToFocusedNode)
+            .find((ffn) => ffn.id === parent.id)
+        ) {
+          setSelectedNodeIdThatWillBeAdded({
+            source: "relation",
+            value: {
+              id: parent.id,
+              name: parent.name,
+            },
+          });
+          return;
+        }
+      }
       setSelectedNodeId({
         source: "relation",
         value: {
@@ -53,13 +79,6 @@ export const Field: React.FC<FieldProps> = ({ node }) => {
           name: parent.name,
         },
       });
-      const isFocus = !!(focusMode && filteredFocusedNodes);
-      if (isFocus) {
-        setTypeRelatedNodesToFocusedNode(parent);
-        if (!filteredFocusedNodes.find((ffn) => ffn.id === parent.id)) {
-          return;
-        }
-      }
     }
   };
   return (

@@ -249,6 +249,18 @@ const useTreesStateContainer = createContainer(() => {
     },
     [_setSelectedNodeId, allNodes, selectedNodeId?.value?.id, focusMode]
   );
+  const setSelectedNodeIdThatWillBeAdded = useCallback(
+    (_selectedNodeId: SelectedNodeId) => {
+      const nodeId = _selectedNodeId?.value?.id;
+      if (
+        nodeId !== selectedNodeId?.value?.id ||
+        _selectedNodeId?.justCreated !== selectedNodeId?.justCreated
+      ) {
+        return _setSelectedNodeId(_selectedNodeId);
+      }
+    },
+    [_setSelectedNodeId, allNodes, selectedNodeId?.value?.id, focusMode]
+  );
   const generateTreeFromSchema = async (schema: PassedSchema) => {
     if (!schema.code && !schema.libraries) {
       setTree({ nodes: [] }, true);
@@ -494,6 +506,7 @@ const useTreesStateContainer = createContainer(() => {
     setSnapshots,
     selectedNodeId,
     setSelectedNodeId,
+    setSelectedNodeIdThatWillBeAdded,
     queryNode,
     getParentOfField,
     activeNode,
