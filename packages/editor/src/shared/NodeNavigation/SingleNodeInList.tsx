@@ -1,8 +1,13 @@
+import { Menu } from "@/Graf/Node/components";
 import { EditorTheme } from "@/gshared/theme/MainTheme";
 import { SetOperationMenu } from "@/shared/NodeNavigation/SetOperationMenu";
 import { ContextMenu } from "@/shared/components/ContextMenu";
 import { DOMClassNames } from "@/shared/hooks/DOMClassNames";
-import { useTreesState, useRelationNodesState } from "@/state/containers";
+import {
+  useTreesState,
+  useRelationNodesState,
+  useRelationsState,
+} from "@/state/containers";
 import { transition } from "@/vars";
 import {
   Link,
@@ -26,9 +31,12 @@ export const SingleNodeInList: React.FC<{
   schemaProps?: {
     name: string;
   };
-}> = ({ node, colorKey, schemaProps }) => {
-  const { setSelectedNodeId, isLibrary } = useTreesState();
+  activeContext: boolean;
+  setActive: (node: ToggleableParserField | null) => void;
+}> = ({ node, colorKey, schemaProps, activeContext, setActive }) => {
+  const { setSelectedNodeId, isLibrary, removeNode, tree } = useTreesState();
   const { toggleNodeVisibility } = useRelationNodesState();
+  const { setEditMode } = useRelationsState();
   const ref = createRef<HTMLAnchorElement>();
 
   return (
@@ -49,15 +57,69 @@ export const SingleNodeInList: React.FC<{
           source: "navigation",
         });
       }}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        setActive(node);
+      }}
     >
       <NodeName
         isHidden={node.isHidden}
         color={colorKey}
         className={DOMClassNames.navigationTitleSpan}
         data-id={node.id}
+        isContextMenuShown={activeContext}
       >
         {schemaProps && <span>{schemaProps.name}</span>}
-        <span>{node.name}</span>
+        <ContextMenu
+          isOpen={activeContext}
+          close={() => {
+            setActive(null);
+            setEditMode("");
+          }}
+          Trigger={({ triggerProps }) => (
+            <span {...triggerProps}>{node.name}</span>
+          )}
+        >
+          {({ layerProps }) => (
+            <Menu
+              {...layerProps}
+              hideMenu={() => {
+                setActive(null);
+                setEditMode("");
+              }}
+            >
+              <ContextMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedNodeId({
+                    value: {
+                      id: node.id,
+                      name: node.name,
+                    },
+                    source: "navigation",
+                  });
+                  setEditMode(node.id);
+                }}
+              >
+                Edit node
+              </ContextMenuItem>
+              <ContextMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEditMode("");
+                  const currentNode = tree.nodes.find(
+                    (el) => el.id === node.id
+                  );
+                  if (currentNode) {
+                    removeNode(currentNode);
+                  }
+                }}
+              >
+                Delete node
+              </ContextMenuItem>
+            </Menu>
+          )}
+        </ContextMenu>
         {isLibrary(node) && (
           <Tooltip title="From external library" position="top">
             <ExternalLibrary>
@@ -257,20 +319,23 @@ const NavSingleBox = styled.a<{
 const NodeName = styled.div<{
   color: keyof EditorTheme["colors"];
   isHidden?: boolean;
+  isContextMenuShown?: boolean;
 }>`
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-family: ${({ theme }) => theme.fontFamilySans};
   font-size: 0.8rem;
-  color: ${({ theme }) => theme.text.default};
+  color: ${({ theme, isContextMenuShown }) =>
+    isContextMenuShown ? theme.text.active : theme.text.default};
   transition: ${transition};
   opacity: ${({ isHidden }) => (isHidden ? 0.25 : 1)};
   min-width: 0;
   width: 28ch;
   white-space: nowrap;
   &:hover {
-    color: ${({ theme, color }) => theme.colors[color]};
+    color: ${({ theme, color, isContextMenuShown }) =>
+      isContextMenuShown ? theme.text.active : theme.colors[color]};
   }
   span {
     overflow: hidden;
@@ -290,5 +355,17 @@ const IconContainer = styled.div<{
   svg {
     opacity: ${({ isHidden }) => (isHidden ? 0.25 : 1.0)};
     transition: ${transition};
+  }
+`;
+
+const ContextMenuItem = styled.div`
+  padding: 12px;
+  transition: color 0.25s ease-in-out;
+  cursor: pointer;
+  color: ${({ theme }) => theme.text.active};
+  width: 100%;
+
+  &:hover {
+    color: ${({ theme }) => theme.accent.L2};
   }
 `;
