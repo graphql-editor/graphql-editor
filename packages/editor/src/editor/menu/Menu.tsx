@@ -9,7 +9,7 @@ import {
   ArrowNarrowUpMove,
   ArrowNarrowBottomAlignment,
   DropdownMenu,
-  MenuItem,
+  MenuItem as MI,
   Tooltip,
 } from "@aexol-studio/styling-system";
 import { PassedSchema } from "@/Models";
@@ -21,12 +21,11 @@ const Sidebar = styled.div`
   background: ${({ theme }) => theme.neutrals.L6};
   color: ${({ theme }) => theme.text.disabled};
   z-index: 4;
-  border: 0 solid ${({ theme }) => theme.neutrals.L8};
+  border: 0 solid ${({ theme }) => theme.neutrals.L7};
   border-right-width: 1px;
   border-left-width: 1px;
   position: relative;
   transition: width 0.5s ease-in-out;
-  width: 2rem;
   display: flex;
   flex-direction: column;
   gap: 1px;
@@ -55,7 +54,7 @@ const MenuItem = styled.div<{
   overflow: visible;
   user-select: none;
   background-color: ${({ theme }) => theme.neutrals.L5};
-  border-bottom: ${(p) => p.theme.neutrals.L8} 1px solid;
+  border-bottom: ${(p) => p.theme.neutrals.L7} 1px solid;
 
   &:hover {
     background-color: ${({ theme, isDisabled }) =>
@@ -66,7 +65,7 @@ const MenuItem = styled.div<{
 
   svg {
     flex-shrink: 0;
-    height: 20px;
+    height: 1.25rem;
     transition: ${transition};
   }
 
@@ -119,7 +118,7 @@ export const Menu = ({
 }: MenuProps) => {
   const [importOpen, setImportOpen] = useState(false);
   const { saveToFile } = useFileOperations();
-  const exportActions: MenuItem[] = [
+  const exportActions: MI[] = [
     {
       name: "Export schema",
       onClick: () => {

@@ -122,13 +122,15 @@ const Content = styled.div<ContentProps>`
 const NodeRelationFields = styled.div<
   Pick<ContentProps, "width" | "printPreviewActive">
 >`
-  width: ${(p) =>
-    Math.min(
-      p.width,
-      p.printPreviewActive
-        ? PRINT_PREVIEW_RELATION_NODE_MAX_WIDTH
-        : RELATION_NODE_MAX_WIDTH
-    )}px;
+  width: calc(
+    ${(p) =>
+        Math.min(
+          p.width,
+          p.printPreviewActive
+            ? PRINT_PREVIEW_RELATION_NODE_MAX_WIDTH
+            : RELATION_NODE_MAX_WIDTH
+        )}px - 24px
+  );
   transition: ${transition};
   position: relative;
   margin-top: 24px;
