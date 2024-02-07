@@ -72,22 +72,13 @@ export const SingleNodeInList: React.FC<{
         {schemaProps && <span>{schemaProps.name}</span>}
         <ContextMenu
           isOpen={activeContext}
-          close={() => {
-            setActive(null);
-            setEditMode("");
-          }}
+          close={() => setActive(null)}
           Trigger={({ triggerProps }) => (
             <span {...triggerProps}>{node.name}</span>
           )}
         >
           {({ layerProps }) => (
-            <Menu
-              {...layerProps}
-              hideMenu={() => {
-                setActive(null);
-                setEditMode("");
-              }}
-            >
+            <Menu {...layerProps} hideMenu={() => setActive(null)}>
               <ContextMenuItem
                 onClick={(e) => {
                   e.stopPropagation();
