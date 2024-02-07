@@ -46,6 +46,7 @@ export const SingleNodeInList: React.FC<{
       className={DOMClassNames.navigationTitle}
       data-id={node.id}
       onClick={() => {
+        setEditMode("");
         if (node.isHidden) {
           toggleNodeVisibility(node);
         }
