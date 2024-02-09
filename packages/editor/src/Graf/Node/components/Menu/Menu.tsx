@@ -5,7 +5,8 @@ import { motion } from "framer-motion";
 
 const Wrapper = styled(motion.div)`
   width: 220px;
-  border-radius: ${(p) => p.theme.radius}px;
+  border-radius: ${(p) => p.theme.border.primary.radius}px;
+  border: 1px solid ${(p) => p.theme.neutrals.L3};
   font-family: ${({ theme }) => theme.fontFamilySans};
   z-index: 2;
 `;
@@ -21,10 +22,10 @@ const Content = styled.div`
 `;
 
 const Title = styled.div`
-  padding: 16px;
-  font-size: 14px;
+  padding: 0.5rem;
+  font-size: 0.875rem;
   color: ${({ theme }) => theme.text.contrast};
-  border-bottom: 1px solid ${(p) => p.theme.dividerSecondary};
+  border-bottom: 1px solid ${(p) => p.theme.neutrals.L2};
 `;
 
 interface MenuProps

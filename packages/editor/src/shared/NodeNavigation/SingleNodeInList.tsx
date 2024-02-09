@@ -3,6 +3,7 @@ import { EditorTheme } from "@/gshared/theme/MainTheme";
 import { SetOperationMenu } from "@/shared/NodeNavigation/SetOperationMenu";
 import { ContextMenu } from "@/shared/components/ContextMenu";
 import { DOMClassNames } from "@/shared/hooks/DOMClassNames";
+import { manageDomNode } from "@/shared/hooks/manageDomNode";
 import {
   useTreesState,
   useRelationNodesState,
@@ -25,6 +26,18 @@ import React, { createRef, useState } from "react";
 
 type ToggleableParserField = ParserField & { isHidden?: boolean };
 
+const selectNavigationNodeOnly = (nodeId: string) => {
+  const DOMNavigationNode = manageDomNode(DOMClassNames.navigationTitle);
+  DOMNavigationNode.removeClasses(["active"]);
+  DOMNavigationNode.addClassByFn("active", (e) => {
+    const htmlElem = e as HTMLDivElement;
+    const m = htmlElem.dataset.id === nodeId;
+    if (m) {
+      htmlElem.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    return m;
+  });
+};
 export const SingleNodeInList: React.FC<{
   node: ToggleableParserField;
   colorKey: keyof EditorTheme["colors"];
@@ -50,6 +63,7 @@ export const SingleNodeInList: React.FC<{
         if (node.isHidden) {
           toggleNodeVisibility(node);
         }
+        selectNavigationNodeOnly(node.id);
         setSelectedNodeId({
           value: {
             id: node.id,
@@ -80,35 +94,40 @@ export const SingleNodeInList: React.FC<{
         >
           {({ layerProps }) => (
             <Menu {...layerProps} hideMenu={() => setActive(null)}>
-              <ContextMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedNodeId({
-                    value: {
-                      id: node.id,
-                      name: node.name,
-                    },
-                    source: "navigation",
-                  });
-                  setEditMode(node.id);
-                }}
-              >
-                Edit node
-              </ContextMenuItem>
-              <ContextMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setEditMode("");
-                  const currentNode = tree.nodes.find(
-                    (el) => el.id === node.id
-                  );
-                  if (currentNode) {
-                    removeNode(currentNode);
-                  }
-                }}
-              >
-                Delete node
-              </ContextMenuItem>
+              <NodeNavContextStack direction="column" gap="0.25rem">
+                <ContextMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    selectNavigationNodeOnly(node.id);
+
+                    setSelectedNodeId({
+                      value: {
+                        id: node.id,
+                        name: node.name,
+                      },
+                      source: "navigation",
+                    });
+
+                    setEditMode(node.id);
+                  }}
+                >
+                  Edit node
+                </ContextMenuItem>
+                <ContextMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditMode("");
+                    const currentNode = tree.nodes.find(
+                      (el) => el.id === node.id
+                    );
+                    if (currentNode) {
+                      removeNode(currentNode);
+                    }
+                  }}
+                >
+                  Delete node
+                </ContextMenuItem>
+              </NodeNavContextStack>
             </Menu>
           )}
         </ContextMenu>
@@ -162,6 +181,7 @@ export const SingleSchemaNodeInList: React.FC<{
         if (node.isHidden) {
           toggleNodeVisibility(node);
         }
+        selectNavigationNodeOnly(node.id);
         setSelectedNodeId({
           value: {
             id: node.id,
@@ -350,14 +370,21 @@ const IconContainer = styled.div<{
   }
 `;
 
+const NodeNavContextStack = styled(Stack)`
+  width: 100%;
+  padding: 0.25rem;
+`;
+
 const ContextMenuItem = styled.div`
-  padding: 12px;
-  transition: color 0.25s ease-in-out;
+  padding: 0.25rem;
+  font-size: 0.75rem;
+  transition: background-color 0.25s ease-in-out;
   cursor: pointer;
   color: ${({ theme }) => theme.text.active};
   width: 100%;
+  background-color: ${(p) => p.theme.neutrals.L4};
 
   &:hover {
-    color: ${({ theme }) => theme.accent.L2};
+    background-color: ${(p) => p.theme.neutrals.L2};
   }
 `;

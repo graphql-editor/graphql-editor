@@ -16,7 +16,8 @@ type NodeTypes = keyof EditorTheme["colors"];
 
 const Main = styled.div<{ isSelected?: boolean }>`
   display: flex;
-  padding: 8px 16px;
+  padding: 0.5rem;
+  gap: 0.5rem;
   font-size: 14px;
   cursor: pointer;
   border-radius: ${(p) => p.theme.radius}px;
@@ -37,10 +38,9 @@ const MenuItemName = styled.span`
 `;
 
 const MenuItemType = styled.span<{ nodeType: NodeTypes }>`
-  font-size: 14px;
+  font-size: 0.875rem;
   display: flex;
   align-items: flex-start;
-  margin-left: 4px;
   transition: ${transition};
   color: ${({ theme, nodeType }) =>
     theme.colors[nodeType] ? theme.colors[nodeType] : theme.text.active};

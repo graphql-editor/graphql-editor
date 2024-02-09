@@ -1,18 +1,25 @@
-import { transition } from '@/vars';
-import styled from '@emotion/styled';
+import { transition } from "@/vars";
+import { Typography } from "@aexol-studio/styling-system";
+import styled from "@emotion/styled";
 
-export const DescText = styled.p`
+export const DescText = styled.div`
   color: ${({ theme }) => theme.text.default};
-  margin: 0;
-  font-size: 14px;
+  padding: 0.5rem;
+  font-size: 0.875rem;
   p {
+    font-size: 0.875rem;
     margin: 0;
+  }
+  h1 {
+    font-size: 0.875rem;
+    margin: 0;
+    margin-bottom: 0.5rem;
   }
 `;
 
 export const FieldText = styled.p`
   color: ${({ theme }) => theme.text.active};
-  font-size: 14px;
+  font-size: 1rem;
   margin: 0;
   line-height: 1.6;
   padding-left: 2px;
@@ -21,7 +28,7 @@ export const FieldText = styled.p`
 export const TypeText = styled.p<{ isScalar?: boolean }>`
   color: ${({ isScalar, theme: { colors } }) =>
     isScalar ? colors.scalar : colors.type};
-  font-size: 14px;
+  font-size: 1rem;
   padding-left: 8px;
   margin: 0;
   transition: ${transition};
@@ -32,16 +39,9 @@ export const TypeText = styled.p<{ isScalar?: boolean }>`
   }
 `;
 
-export const Title = styled.div<{ subTitle: boolean }>`
-  color: ${({ theme, subTitle }) =>
-    subTitle ? theme.text.default : theme.text.active};
-  font-size: 18px;
-  margin: ${({ subTitle }) => (subTitle ? '18px 0px' : '0px 0px 4px 0px')};
-  font-weight: bold;
-
-  h3 {
-    font-size: inherit;
-  }
+export const Title = styled(Typography)`
+  color: ${({ theme }) => theme.text.active};
+  font-family: ${({ theme }) => theme.fontFamilySans};
 `;
 
 export const DescWrapper = styled.div<{
@@ -51,7 +51,9 @@ export const DescWrapper = styled.div<{
   display: flex;
   flex-direction: row;
   align-items: center;
-  cursor: ${({ readonly }) => (readonly ? 'auto' : 'pointer')};
+  padding: 1rem;
+  background-color: ${(p) => p.theme.neutrals.L5};
+  cursor: ${({ readonly }) => (readonly ? "auto" : "pointer")};
 
   svg {
     color: ${({ theme }) => theme.text.default};

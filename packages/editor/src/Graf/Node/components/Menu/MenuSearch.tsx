@@ -12,7 +12,7 @@ interface MenuSearchProps {
 const Wrapper = styled.div`
   position: relative;
   max-width: 100%;
-  padding: 0 1rem;
+  padding: 0 0.5rem;
   gap: 0.5rem;
   display: flex;
 `;
