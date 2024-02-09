@@ -27,6 +27,7 @@ import {
   PRINT_PREVIEW_RELATION_NODE_MAX_FIELDS,
   PRINT_PREVIEW_RELATION_NODE_MAX_WIDTH,
 } from "@/Relation/shared/nodeLook";
+import { isExtensionNode } from "@/GraphQL/Resolve";
 
 const Main = styled.div`
   position: relative;
@@ -92,6 +93,7 @@ export interface RelationInterface {
   from: RelationPath[];
   fromLength: number;
   interfaces: NumberNode[];
+  extensions: NumberNode[];
 }
 
 let lastTimestamp = 0;
@@ -107,7 +109,6 @@ export const LinesDiagram = React.forwardRef<
     selectedNodeId,
     focusMode,
     relatedToSelectedTypes,
-    allNodes,
     activeNode,
   } = useTreesState();
   const {
@@ -154,9 +155,7 @@ export const LinesDiagram = React.forwardRef<
           selectNode(nodeId);
           if (toNode) {
             const rts = relatedToSelectedTypes(toNode.parserField);
-            const ids = allNodes.nodes
-              .filter((n) => rts?.includes(n.name))
-              .map((n) => n.id);
+            const ids = rts?.map((n) => n.id);
 
             if (ids?.length) {
               markRelated(ids);
@@ -340,18 +339,19 @@ export const LinesDiagram = React.forwardRef<
                 simulatedNodes.find((n) => n.parserField.name === interfaceName)
               )
               .filter((i) => !!i),
+            extensions:
+              (!isExtensionNode(n.parserField.data.type) &&
+                simulatedNodes.filter(
+                  (node) =>
+                    isExtensionNode(node.parserField.data.type) &&
+                    node.parserField.name === n?.parserField.name &&
+                    node.id !== n.id
+                )) ||
+              [],
           };
         })
         .filter((n) => n.from)
-        .map(
-          (n) =>
-            n as {
-              from: RelationPath[];
-              to: RelationPath;
-              fromLength: number;
-              interfaces: NumberNode[];
-            }
-        )
+        .map((n) => n as RelationInterface)
     );
     runAfterFramePaint(() => {
       setLoading(false);

@@ -9,6 +9,7 @@ import {
   TypeExtension,
   TypeSystemDefinition,
 } from "graphql-js-tree";
+import { isExtensionNode } from "@/GraphQL/Resolve";
 
 export const toggleableTypes: AllTypes[] = [
   TypeDefinition.ObjectTypeDefinition,
@@ -103,13 +104,27 @@ const useRelationNodes = createContainer(() => {
           n.data.type === TypeDefinition.InterfaceTypeDefinition
             ? allNodes.nodes.filter((node) => node.interfaces.includes(n.name))
             : [];
+
+        const nodeExtensions = allNodes.nodes.filter(
+          (node) => isExtensionNode(node.data.type) && node.name === n?.name
+        );
+        const basicNodeToNodeExtension =
+          (isExtensionNode(n?.data.type) &&
+            allNodes.nodes.filter(
+              (node) =>
+                node.name === n.name &&
+                !isExtensionNode(node.data.type) &&
+                node.id !== n.id
+            )) ||
+          [];
         const relatedFocusNodes = [
           ...children,
           ...parents,
           ...argChildren,
           ...interfacesRelatedToNode,
           ...nodesRelatedToInterface,
-          n,
+          ...(isExtensionNode(n.data.type) ? basicNodeToNodeExtension : [n]),
+          ...nodeExtensions,
         ];
         return relatedFocusNodes
           .filter(

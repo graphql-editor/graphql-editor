@@ -75,6 +75,20 @@ export const Lines: React.FC<LinesProps> = ({
                 isPrintPreviewActive={isPrintPreviewActive}
               />
             ))}
+            {r.extensions.map((refNode, refNodeNumber) => (
+              <Draw
+                optimized={optimized}
+                relationType={{
+                  name: "refExtension",
+                  type: Options.name,
+                }}
+                color={theme.colors["extend"]}
+                key={`${index}-${refNode.id}-${refNode.parserField.name}-${refNodeNumber}-${r.to.field.id}`}
+                from={refNode}
+                to={r.to.field}
+                isPrintPreviewActive={isPrintPreviewActive}
+              />
+            ))}
           </React.Fragment>
         );
       })}
