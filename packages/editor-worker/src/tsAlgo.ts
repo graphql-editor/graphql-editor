@@ -3,6 +3,7 @@ import {
   ParserField,
   TypeSystemDefinition,
   compileType,
+  TypeExtension,
 } from "graphql-js-tree";
 import * as d3 from "d3";
 import { WorkerEvents } from "@/worker/validation.worker";
@@ -106,6 +107,30 @@ export const sortNodesTs = ({
   const connections: NumberConnection[] = [];
   const idempotentInsert = (n: ParserField, tname: string) => {
     const relatedNode = nodes.find((n) => n.name === tname);
+    const extensionNodes = !Object.keys(TypeExtension).includes(n.data.type)
+      ? nodes.filter(
+          (extNode) =>
+            Object.keys(TypeExtension).includes(extNode.data.type) &&
+            n.name === extNode.name
+        )
+      : [];
+    for (const extNode of extensionNodes) {
+      if (extNode.id === n.id) return;
+      if (
+        connections.find((c) => c.source === n.id && c.target === extNode.id)
+      ) {
+        return;
+      }
+      if (
+        connections.find((c) => c.source === extNode.id && c.target === n.id)
+      ) {
+        return;
+      }
+      connections.push({
+        source: n.id,
+        target: extNode.id,
+      });
+    }
     if (relatedNode) {
       if (relatedNode.id === n.id) return;
       if (
