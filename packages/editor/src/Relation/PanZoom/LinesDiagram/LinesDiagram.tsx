@@ -305,7 +305,9 @@ export const LinesDiagram = React.forwardRef<
     }
     const findRelative = (a: ParserField, index: number) => {
       const pn = simulatedNodes.find(
-        (nf) => nf.parserField.name === getTypeName(a.type.fieldType)
+        (nf) =>
+          nf.parserField.name === getTypeName(a.type.fieldType) &&
+          !isExtensionNode(nf.parserField.data.type)
       );
       if (!pn) {
         return;

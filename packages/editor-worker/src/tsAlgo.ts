@@ -106,7 +106,34 @@ export const sortNodesTs = ({
   });
   const connections: NumberConnection[] = [];
   const idempotentInsert = (n: ParserField, tname: string) => {
-    const relatedNode = nodes.find((n) => n.name === tname);
+    const relatedNode = nodes.find(
+      (n) =>
+        n.name === tname && !Object.keys(TypeExtension).includes(n.data.type)
+    );
+    if (relatedNode) {
+      if (relatedNode.id === n.id) return;
+      if (
+        connections.find(
+          (c) => c.source === n.id && c.target === relatedNode.id
+        )
+      ) {
+        return;
+      }
+      if (
+        connections.find(
+          (c) => c.source === relatedNode.id && c.target === n.id
+        )
+      ) {
+        return;
+      }
+      if (n.name === "neworpan" || n.name === "Coords") {
+        console.log("source", n.id, "target", relatedNode.id);
+      }
+      connections.push({
+        source: n.id,
+        target: relatedNode.id,
+      });
+    }
     const extensionNodes = !Object.keys(TypeExtension).includes(n.data.type)
       ? nodes.filter(
           (extNode) =>
@@ -129,27 +156,6 @@ export const sortNodesTs = ({
       connections.push({
         source: n.id,
         target: extNode.id,
-      });
-    }
-    if (relatedNode) {
-      if (relatedNode.id === n.id) return;
-      if (
-        connections.find(
-          (c) => c.source === n.id && c.target === relatedNode.id
-        )
-      ) {
-        return;
-      }
-      if (
-        connections.find(
-          (c) => c.source === relatedNode.id && c.target === n.id
-        )
-      ) {
-        return;
-      }
-      connections.push({
-        source: n.id,
-        target: relatedNode.id,
       });
     }
   };
