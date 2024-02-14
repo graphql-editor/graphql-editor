@@ -22,6 +22,7 @@ export interface NumberNode {
 export interface NumberConnection {
   source: string;
   target: string;
+  connectionType?: string;
 }
 
 export function storeCoordinates(
@@ -106,6 +107,9 @@ export const sortNodesTs = ({
   const connections: NumberConnection[] = [];
   const idempotentInsert = (n: ParserField, tname: string) => {
     const relatedNode = nodes.find((n) => n.name === tname);
+    const interfaces = n.interfaces.map((interfaceName) =>
+      nodes.find((n) => n.name === interfaceName)
+    );
     if (relatedNode) {
       if (relatedNode.id === n.id) return;
       if (
@@ -126,6 +130,30 @@ export const sortNodesTs = ({
         source: n.id,
         target: relatedNode.id,
       });
+    }
+    for (const interfaceNode of interfaces) {
+      if (interfaceNode) {
+        if (interfaceNode.id === n.id) return;
+        if (
+          connections.find(
+            (c) => c.source === n.id && c.target === interfaceNode.id
+          )
+        ) {
+          return;
+        }
+        if (
+          connections.find(
+            (c) => c.source === interfaceNode.id && c.target === n.id
+          )
+        ) {
+          return;
+        }
+        connections.push({
+          source: n.id,
+          target: interfaceNode?.id,
+          connectionType: "interface",
+        });
+      }
     }
   };
   for (const n of nodes) {
