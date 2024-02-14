@@ -4,12 +4,13 @@ import styled from "@emotion/styled";
 const Main = styled.textarea`
   background: ${({ theme }) => theme.neutrals.L6};
   color: ${({ theme }) => theme.text.default};
-  font-size: 14px;
   width: 100%;
   margin: 0;
   border: 0;
+  padding: 0.5rem;
   resize: none;
   outline: none;
+  font-size: 0.875rem;
   cursor: pointer;
   font-family: ${({ theme }) => theme.fontFamilySans};
   &:focus {

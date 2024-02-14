@@ -1,5 +1,5 @@
 import { OperationType, ParserField } from "graphql-js-tree";
-import React from "react";
+import React, { useState } from "react";
 import styled from "@emotion/styled";
 import { transition } from "@/vars";
 import { EditorTheme } from "@/gshared/theme/MainTheme";
@@ -58,6 +58,8 @@ export const NodeList: React.FC<NodeListI> = ({
 }) => {
   const open = expanded.includes(listTitle);
   const empty = !nodeList?.length;
+  const [activeContextNode, setActiveContextNode] =
+    useState<ToggleableParserField | null>(null);
 
   return (
     <>
@@ -73,7 +75,15 @@ export const NodeList: React.FC<NodeListI> = ({
       {open &&
         nodeList &&
         nodeList.map((node) => (
-          <SingleNodeInList key={node.id} colorKey={colorKey} node={node} />
+          <SingleNodeInList
+            key={node.id}
+            colorKey={colorKey}
+            node={node}
+            activeContext={activeContextNode === node}
+            setActive={(node: ToggleableParserField | null) =>
+              setActiveContextNode(node)
+            }
+          />
         ))}
     </>
   );

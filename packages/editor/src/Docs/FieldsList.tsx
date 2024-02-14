@@ -31,7 +31,7 @@ const ListWrapper = styled(Stack)`
 `;
 
 const FieldsWrapper = styled(Stack)`
-  border: 1px solid ${(p) => p.theme.dividerMain};
+  border: 1px solid ${(p) => p.theme.neutrals.L5};
   position: relative;
   padding: 1rem;
   border-radius: ${(p) => p.theme.radius}px;
@@ -85,7 +85,7 @@ export const FieldsList: React.FC<FieldsListI> = ({ node, setNode }) => {
 
   return (
     <>
-      <Title subTitle>Fields</Title>
+      <Title variant="H3 SB">Fields</Title>
       <ListWrapper direction="column" gap="1rem">
         {node.args?.map((arg, i) => (
           <FieldsWrapper key={i} direction="column" gap="0.5rem">

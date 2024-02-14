@@ -7,16 +7,17 @@ import { Remarkable } from "remarkable";
 import styled from "@emotion/styled";
 import { DescText, DescWrapper, Title } from "@/Docs/DocsStyles";
 import { Description } from "@/Docs/Description";
-import { PenLine } from "@aexol-studio/styling-system";
+import { PenLine, Stack } from "@aexol-studio/styling-system";
+import { isExtensionNode } from "@/GraphQL/Resolve";
 
-const Wrapper = styled.div`
+const Wrapper = styled(Stack)`
   font-family: ${({ theme }) => theme.fontFamilySans};
   font-size: 14px;
-  padding: 40px 50px;
+  padding: 5rem;
   max-width: 960px;
 `;
 
-const Top = styled.div`
+const Top = styled(Stack)`
   display: flex;
   align-items: flex-start;
 `;
@@ -24,7 +25,7 @@ const Top = styled.div`
 const Type = styled.div`
   color: ${({ theme }) => theme.colors.type};
   margin-left: 4px;
-  font-size: 10px;
+  font-size: 1.25rem;
 `;
 
 const Line = styled.div`
@@ -43,6 +44,7 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
   const [isEdit, setIsEdit] = useState(false);
 
   const isReadonly = readonly || isLibrary(node);
+  const isExtension = isExtensionNode(node.data.type);
 
   const setNode = (nodeName: string) => {
     const newSelectedNode = tree.nodes.filter((node) => node.name === nodeName);
@@ -69,34 +71,39 @@ export const DocsElement: React.FC<DocsElementI> = ({ node }) => {
   };
 
   return (
-    <Wrapper>
-      <Top>
-        <Title subTitle={false}>{node.name}</Title>
+    <Wrapper direction="column" gap="1rem">
+      <Top gap="0.5rem">
+        <Title variant="H2 SB" color="active">
+          {node.name}
+        </Title>
         <Type>{getTypeName(node.type.fieldType)}</Type>
       </Top>
-      {isEdit ? (
-        <Description
-          onChange={(description: string) => {
-            onSubmit(description);
-            setIsEdit(false);
-          }}
-          value={node.description || ""}
-        />
-      ) : (
+      {!isExtension && (
         <DescWrapper
           readonly={isReadonly}
           isSvgVisible={!description}
           onClick={() => !isReadonly && setIsEdit(true)}
         >
-          <DescText
-            dangerouslySetInnerHTML={{
-              __html: description || "No description",
-            }}
-          />
-          {!isReadonly && <PenLine />}
+          {isEdit ? (
+            <Description
+              onChange={(description: string) => {
+                onSubmit(description);
+                setIsEdit(false);
+              }}
+              value={node.description || ""}
+            />
+          ) : (
+            <>
+              <DescText
+                dangerouslySetInnerHTML={{
+                  __html: description || "No description",
+                }}
+              />
+              {!isReadonly && <PenLine />}
+            </>
+          )}
         </DescWrapper>
       )}
-      <Line />
       {node.interfaces && node.interfaces.length > 0 && (
         <InterfacesList setNode={setNode} interfacesList={node.interfaces} />
       )}

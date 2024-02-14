@@ -1,6 +1,7 @@
 import React from "react";
 import { transition } from "@/vars";
 import styled from "@emotion/styled";
+import { Title } from "@/Docs/DocsStyles";
 
 const Interface = styled.p`
   color: ${({ theme }) => theme.colors.interface};
@@ -26,12 +27,6 @@ const InterfacesWrapper = styled.div`
   margin-left: 14px;
 `;
 
-const Title = styled.h3`
-  color: ${({ theme }) => theme.text.disabled};
-  font-family: ${({ theme }) => theme.fontFamilySans};
-  font-size: 18px;
-`;
-
 interface InterfacesListI {
   interfacesList: string[];
   setNode: (nodeName: string) => void;
@@ -43,7 +38,7 @@ export const InterfacesList: React.FC<InterfacesListI> = ({
 }) => {
   return (
     <>
-      <Title>Interfaces</Title>
+      <Title variant="H3 SB">Interfaces</Title>
       <InterfacesWrapper>
         {interfacesList.map((name) => (
           <Interface key={name} onClick={() => setNode(name)}>

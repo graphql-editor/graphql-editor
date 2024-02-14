@@ -12,7 +12,7 @@ const ArgumentsWrapper = styled.div`
 const FieldDiv = styled.div`
   display: flex;
   color: ${({ theme }) => theme.text.default};
-  font-size: 14px;
+  font-size: 1rem;
   margin: 0;
   line-height: 1.6;
   padding-left: 2px;

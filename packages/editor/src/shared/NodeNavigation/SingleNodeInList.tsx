@@ -1,8 +1,14 @@
+import { Menu } from "@/Graf/Node/components";
 import { EditorTheme } from "@/gshared/theme/MainTheme";
 import { SetOperationMenu } from "@/shared/NodeNavigation/SetOperationMenu";
 import { ContextMenu } from "@/shared/components/ContextMenu";
 import { DOMClassNames } from "@/shared/hooks/DOMClassNames";
-import { useTreesState, useRelationNodesState } from "@/state/containers";
+import { manageDomNode } from "@/shared/hooks/manageDomNode";
+import {
+  useTreesState,
+  useRelationNodesState,
+  useRelationsState,
+} from "@/state/containers";
 import { transition } from "@/vars";
 import {
   Link,
@@ -20,15 +26,30 @@ import React, { createRef, useState } from "react";
 
 type ToggleableParserField = ParserField & { isHidden?: boolean };
 
+const selectNavigationNodeOnly = (nodeId: string) => {
+  const DOMNavigationNode = manageDomNode(DOMClassNames.navigationTitle);
+  DOMNavigationNode.removeClasses(["active"]);
+  DOMNavigationNode.addClassByFn("active", (e) => {
+    const htmlElem = e as HTMLDivElement;
+    const m = htmlElem.dataset.id === nodeId;
+    if (m) {
+      htmlElem.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    return m;
+  });
+};
 export const SingleNodeInList: React.FC<{
   node: ToggleableParserField;
   colorKey: keyof EditorTheme["colors"];
   schemaProps?: {
     name: string;
   };
-}> = ({ node, colorKey, schemaProps }) => {
-  const { setSelectedNodeId, isLibrary } = useTreesState();
+  activeContext: boolean;
+  setActive: (node: ToggleableParserField | null) => void;
+}> = ({ node, colorKey, schemaProps, activeContext, setActive }) => {
+  const { setSelectedNodeId, isLibrary, removeNode, tree } = useTreesState();
   const { toggleNodeVisibility } = useRelationNodesState();
+  const { setEditMode } = useRelationsState();
   const ref = createRef<HTMLAnchorElement>();
 
   return (
@@ -38,9 +59,11 @@ export const SingleNodeInList: React.FC<{
       className={DOMClassNames.navigationTitle}
       data-id={node.id}
       onClick={() => {
+        setEditMode("");
         if (node.isHidden) {
           toggleNodeVisibility(node);
         }
+        selectNavigationNodeOnly(node.id);
         setSelectedNodeId({
           value: {
             id: node.id,
@@ -49,15 +72,65 @@ export const SingleNodeInList: React.FC<{
           source: "navigation",
         });
       }}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        setActive(node);
+      }}
     >
       <NodeName
         isHidden={node.isHidden}
         color={colorKey}
         className={DOMClassNames.navigationTitleSpan}
         data-id={node.id}
+        isContextMenuShown={activeContext}
       >
         {schemaProps && <span>{schemaProps.name}</span>}
-        <span>{node.name}</span>
+        <ContextMenu
+          isOpen={activeContext}
+          close={() => setActive(null)}
+          Trigger={({ triggerProps }) => (
+            <span {...triggerProps}>{node.name}</span>
+          )}
+        >
+          {({ layerProps }) => (
+            <Menu {...layerProps} hideMenu={() => setActive(null)}>
+              <NodeNavContextStack direction="column" gap="0.25rem">
+                <ContextMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    selectNavigationNodeOnly(node.id);
+
+                    setSelectedNodeId({
+                      value: {
+                        id: node.id,
+                        name: node.name,
+                      },
+                      source: "navigation",
+                    });
+
+                    setEditMode(node.id);
+                  }}
+                >
+                  Edit node
+                </ContextMenuItem>
+                <ContextMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditMode("");
+                    const currentNode = tree.nodes.find(
+                      (el) => el.id === node.id
+                    );
+                    if (currentNode) {
+                      removeNode(currentNode);
+                    }
+                  }}
+                >
+                  Delete node
+                </ContextMenuItem>
+              </NodeNavContextStack>
+            </Menu>
+          )}
+        </ContextMenu>
         {isLibrary(node) && (
           <Tooltip title="From external library" position="top">
             <ExternalLibrary>
@@ -108,6 +181,7 @@ export const SingleSchemaNodeInList: React.FC<{
         if (node.isHidden) {
           toggleNodeVisibility(node);
         }
+        selectNavigationNodeOnly(node.id);
         setSelectedNodeId({
           value: {
             id: node.id,
@@ -257,20 +331,23 @@ const NavSingleBox = styled.a<{
 const NodeName = styled.div<{
   color: keyof EditorTheme["colors"];
   isHidden?: boolean;
+  isContextMenuShown?: boolean;
 }>`
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-family: ${({ theme }) => theme.fontFamilySans};
   font-size: 0.8rem;
-  color: ${({ theme }) => theme.text.default};
+  color: ${({ theme, isContextMenuShown }) =>
+    isContextMenuShown ? theme.text.active : theme.text.default};
   transition: ${transition};
   opacity: ${({ isHidden }) => (isHidden ? 0.25 : 1)};
   min-width: 0;
   width: 28ch;
   white-space: nowrap;
   &:hover {
-    color: ${({ theme, color }) => theme.colors[color]};
+    color: ${({ theme, color, isContextMenuShown }) =>
+      isContextMenuShown ? theme.text.active : theme.colors[color]};
   }
   span {
     overflow: hidden;
@@ -290,5 +367,24 @@ const IconContainer = styled.div<{
   svg {
     opacity: ${({ isHidden }) => (isHidden ? 0.25 : 1.0)};
     transition: ${transition};
+  }
+`;
+
+const NodeNavContextStack = styled(Stack)`
+  width: 100%;
+  padding: 0.25rem;
+`;
+
+const ContextMenuItem = styled.div`
+  padding: 0.25rem;
+  font-size: 0.75rem;
+  transition: background-color 0.25s ease-in-out;
+  cursor: pointer;
+  color: ${({ theme }) => theme.text.active};
+  width: 100%;
+  background-color: ${(p) => p.theme.neutrals.L4};
+
+  &:hover {
+    background-color: ${(p) => p.theme.neutrals.L2};
   }
 `;

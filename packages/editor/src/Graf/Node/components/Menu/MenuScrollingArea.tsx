@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
-import styled from '@emotion/styled';
+import React, { useEffect } from "react";
+import styled from "@emotion/styled";
 
 const Main = styled.div`
   color: ${({ theme }) => theme.text.default};
   max-height: 200px;
   overflow-y: auto;
-  padding: 16px;
+  padding: 0.5rem 0.5rem 0.5rem 0.5rem;
   scroll-snap-type: y mandatory;
 `;
 
@@ -28,19 +28,19 @@ export const MenuScrollingArea: React.FC<MenuScrollingAreaProps> = ({
   useEffect(() => {
     function downHandler(e: KeyboardEvent) {
       const { key } = e;
-      if (key === 'ArrowDown') {
+      if (key === "ArrowDown") {
         e.preventDefault();
         controls?.arrowDown?.();
       }
-      if (key === 'ArrowUp') {
+      if (key === "ArrowUp") {
         e.preventDefault();
         controls?.arrowUp?.();
       }
     }
-    window.addEventListener('keydown', downHandler);
+    window.addEventListener("keydown", downHandler);
     // Remove event listeners on cleanup
     return () => {
-      window.removeEventListener('keydown', downHandler);
+      window.removeEventListener("keydown", downHandler);
     };
   }, []);
   return <Main {...props}>{children}</Main>;
