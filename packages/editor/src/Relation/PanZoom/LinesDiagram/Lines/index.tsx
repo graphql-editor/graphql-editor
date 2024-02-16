@@ -3,8 +3,7 @@ import { getTypeName, Options, ParserField } from "graphql-js-tree";
 import React from "react";
 import { useTheme } from "@/state/containers";
 import styled from "@emotion/styled";
-import { NumberNode } from "graphql-editor-worker";
-import { RelationInterface } from "../LinesDiagram";
+import { NumberNode, RelativeNumberConnection } from "graphql-editor-worker";
 
 const RelationsContainer = styled.svg`
   width: 100%;
@@ -25,7 +24,7 @@ export interface RelationPath {
   connectingField: ParserField;
 }
 interface LinesProps {
-  relations: RelationInterface[] | undefined;
+  relations: RelativeNumberConnection[] | undefined;
   isPrintPreviewActive: boolean;
 }
 
@@ -41,54 +40,32 @@ export const Lines: React.FC<LinesProps> = ({
       {relations?.map((r, index) => {
         return (
           <React.Fragment key={index}>
-            {r.from?.map((rf, relationNumber) => {
-              const relationType = rf.connectingField.type.fieldType;
-              return (
-                <Draw
-                  optimized={optimized}
-                  relationType={relationType}
-                  color={
-                    theme.colors[
+            <Draw
+              optimized={optimized}
+              relationType={
+                r.target?.parserField.type.fieldType || {
+                  type: Options.name,
+                  name: "",
+                }
+              }
+              color={
+                r.connectionType
+                  ? theme.colors[r.connectionType as keyof typeof theme.colors]
+                  : theme.colors[
                       getTypeName(
-                        rf.field.parserField.type.fieldType
+                        r.target?.parserField.type.fieldType || {
+                          type: Options.name,
+                          name: "",
+                        }
                       ) as keyof typeof theme.colors
                     ]
-                  }
-                  key={`${index}-${rf.index}-${relationNumber}-${rf.field.parserField.name}-${rf.connectingField.name}`}
-                  from={rf.field}
-                  to={r.to.field}
-                  isPrintPreviewActive={isPrintPreviewActive}
-                />
-              );
-            })}
-            {r.interfaces.map((refNode, refNodeNumber) => (
-              <Draw
-                optimized={optimized}
-                relationType={{
-                  name: "refInterface",
-                  type: Options.name,
-                }}
-                color={theme.colors["interface"]}
-                key={`${index}-${refNode.id}-${refNode.parserField.name}-${refNodeNumber}-${r.to.field.id}`}
-                from={refNode}
-                to={r.to.field}
-                isPrintPreviewActive={isPrintPreviewActive}
-              />
-            ))}
-            {r.extensions.map((refNode, refNodeNumber) => (
-              <Draw
-                optimized={optimized}
-                relationType={{
-                  name: "refExtension",
-                  type: Options.name,
-                }}
-                color={theme.colors["extend"]}
-                key={`${index}-${refNode.id}-${refNode.parserField.name}-${refNodeNumber}-${r.to.field.id}`}
-                from={refNode}
-                to={r.to.field}
-                isPrintPreviewActive={isPrintPreviewActive}
-              />
-            ))}
+              }
+              key={`${index}}-${index}-${r.source?.parserField.name}-${r.target?.parserField.name}`}
+              from={r.source}
+              to={r.target}
+              isPrintPreviewActive={isPrintPreviewActive}
+            />
+            );
           </React.Fragment>
         );
       })}

@@ -8,8 +8,12 @@ import React, {
 import { useTreesState } from "@/state/containers/trees";
 import { Node } from "./Node";
 import styled from "@emotion/styled";
-import { ParserField, getTypeName } from "graphql-js-tree";
-import { GraphQLEditorWorker, NumberNode } from "graphql-editor-worker";
+import { ParserField } from "graphql-js-tree";
+import {
+  GraphQLEditorWorker,
+  NumberNode,
+  RelativeNumberConnection,
+} from "graphql-editor-worker";
 import { runAfterFramePaint } from "@/shared/hooks/useMarkFramePaint";
 import { useRelationsState } from "@/state/containers";
 import { RelationPath, Lines } from "@/Relation/PanZoom/LinesDiagram/Lines";
@@ -102,7 +106,7 @@ export const LinesDiagram = React.forwardRef<
   LinesDiagramApi,
   LinesDiagramProps
 >((props, ref) => {
-  const { nodes, setLoading, mainRef, nodesWithoutFilter, isReadOnly } = props;
+  const { nodes, setLoading, mainRef, isReadOnly } = props;
   const {
     isLibrary,
     setSelectedNodeId,
@@ -132,6 +136,7 @@ export const LinesDiagram = React.forwardRef<
     transformState: { scale },
   } = useTransformContext();
   const [simulatedNodes, setSimulatedNodes] = useState<NumberNode[]>();
+  const [connections, setConnections] = useState<RelativeNumberConnection[]>();
   const zoomToNode = (nodeX: number, nodeY: number) => {
     const wrapper = instance.wrapperComponent;
     if (wrapper) {
@@ -194,6 +199,7 @@ export const LinesDiagram = React.forwardRef<
         }).then(({ nodes: positionedNodes, ...positionParams }) => {
           props.setViewportParams(positionParams);
           setSimulatedNodes(positionedNodes);
+          setConnections(connections);
         });
       },
     }),
@@ -269,7 +275,7 @@ export const LinesDiagram = React.forwardRef<
     }
   }, [props.fieldsOn]);
 
-  const [relations, setRelations] = useState<RelationInterface[]>();
+  //const [relations, setRelations] = useState<RelationInterface[]>();
 
   useEffect(() => {
     // compose existing positions
@@ -292,9 +298,10 @@ export const LinesDiagram = React.forwardRef<
           ? PRINT_PREVIEW_RELATION_NODE_MAX_FIELDS
           : RELATION_NODE_MAX_FIELDS,
       },
-    }).then(({ nodes: positionedNodes, ...positionParams }) => {
+    }).then(({ nodes: positionedNodes, connections, ...positionParams }) => {
       props.setViewportParams(positionParams);
       setSimulatedNodes(positionedNodes);
+      setConnections(connections);
     });
     return;
   }, [nodes]);
@@ -303,58 +310,6 @@ export const LinesDiagram = React.forwardRef<
     if (!simulatedNodes) {
       return;
     }
-    const findRelative = (a: ParserField, index: number) => {
-      const pn = simulatedNodes.find(
-        (nf) =>
-          nf.parserField.name === getTypeName(a.type.fieldType) &&
-          !isExtensionNode(nf.parserField.data.type)
-      );
-      if (!pn) {
-        return;
-      }
-      return {
-        field: pn,
-        index,
-        connectingField: a,
-      } as RelationPath;
-    };
-
-    setRelations(
-      simulatedNodes
-        .map((n, i) => {
-          const args =
-            nodesWithoutFilter.find((ufn) => ufn.id === n.parserField.id)
-              ?.args || n.parserField.args;
-          return {
-            to: { field: n, connectingField: n.parserField, index: i },
-            fromLength: n.parserField.args?.length || 0,
-            from: args
-              .flatMap((a, index) => {
-                const argNodes = a.args.map((ar, ind) => findRelative(ar, ind));
-                const main = findRelative(a, index);
-                const nodes = [main, ...argNodes];
-                return nodes.filter((node, i) => nodes.indexOf(node) === i);
-              })
-              .filter((o) => !!o),
-            interfaces: n.parserField.interfaces
-              .map((interfaceName) =>
-                simulatedNodes.find((n) => n.parserField.name === interfaceName)
-              )
-              .filter((i) => !!i),
-            extensions:
-              (!isExtensionNode(n.parserField.data.type) &&
-                simulatedNodes.filter(
-                  (node) =>
-                    isExtensionNode(node.parserField.data.type) &&
-                    node.parserField.name === n?.parserField.name &&
-                    node.id !== n.id
-                )) ||
-              [],
-          };
-        })
-        .filter((n) => n.from)
-        .map((n) => n as RelationInterface)
-    );
     runAfterFramePaint(() => {
       setLoading(false);
       DOMEvents.selectNode.trigger(selectedNodeId?.value?.id);
@@ -370,9 +325,12 @@ export const LinesDiagram = React.forwardRef<
 
   const SvgLinesContainer = useMemo(() => {
     return (
-      <Lines relations={relations} isPrintPreviewActive={printPreviewActive} />
+      <Lines
+        relations={connections}
+        isPrintPreviewActive={printPreviewActive}
+      />
     );
-  }, [relations]);
+  }, [connections]);
 
   const NodesContainer = useMemo(() => {
     return (

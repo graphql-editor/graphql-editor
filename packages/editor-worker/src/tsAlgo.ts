@@ -23,6 +23,7 @@ export interface NumberNode {
 export interface NumberConnection {
   source: string;
   target: string;
+  connectionType?: string;
 }
 
 export function storeCoordinates(
@@ -106,9 +107,9 @@ export const sortNodesTs = ({
   });
   const connections: NumberConnection[] = [];
   const idempotentInsert = (n: ParserField, tname: string) => {
-    const relatedNode = nodes.find(
-      (n) =>
-        n.name === tname && !Object.keys(TypeExtension).includes(n.data.type)
+    const relatedNode = nodes.find((n) => n.name === tname);
+    const interfaces = n.interfaces.map((interfaceName) =>
+      nodes.find((n) => n.name === interfaceName)
     );
     if (relatedNode) {
       if (relatedNode.id === n.id) return;
@@ -134,29 +135,29 @@ export const sortNodesTs = ({
         target: relatedNode.id,
       });
     }
-    const extensionNodes = !Object.keys(TypeExtension).includes(n.data.type)
-      ? nodes.filter(
-          (extNode) =>
-            Object.keys(TypeExtension).includes(extNode.data.type) &&
-            n.name === extNode.name
-        )
-      : [];
-    for (const extNode of extensionNodes) {
-      if (extNode.id === n.id) return;
-      if (
-        connections.find((c) => c.source === n.id && c.target === extNode.id)
-      ) {
-        return;
+    for (const interfaceNode of interfaces) {
+      if (interfaceNode) {
+        if (interfaceNode.id === n.id) return;
+        if (
+          connections.find(
+            (c) => c.source === n.id && c.target === interfaceNode.id
+          )
+        ) {
+          return;
+        }
+        if (
+          connections.find(
+            (c) => c.source === interfaceNode.id && c.target === n.id
+          )
+        ) {
+          return;
+        }
+        connections.push({
+          source: n.id,
+          target: interfaceNode?.id,
+          connectionType: "interface",
+        });
       }
-      if (
-        connections.find((c) => c.source === extNode.id && c.target === n.id)
-      ) {
-        return;
-      }
-      connections.push({
-        source: n.id,
-        target: extNode.id,
-      });
     }
   };
   for (const n of nodes) {
@@ -175,8 +176,8 @@ export const sortNodesTs = ({
     removedAdded > 1
       ? 1
       : removedAdded === 1
-      ? 1 / numberNodes.length
-      : modifyAlpha;
+        ? 1 / numberNodes.length
+        : modifyAlpha;
 
   const retAlpha = a;
 
