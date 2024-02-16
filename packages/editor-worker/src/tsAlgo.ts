@@ -111,6 +111,13 @@ export const sortNodesTs = ({
     const interfaces = n.interfaces.map((interfaceName) =>
       nodes.find((n) => n.name === interfaceName)
     );
+    const baseNodeForExtension =
+      Object.keys(TypeExtension).includes(n.data.type) &&
+      nodes.find(
+        (baseNode) =>
+          n.name === baseNode.name &&
+          !Object.keys(TypeExtension).includes(baseNode.data.type)
+      );
     if (relatedNode) {
       if (relatedNode.id === n.id) return;
       if (
@@ -158,6 +165,28 @@ export const sortNodesTs = ({
           connectionType: "interface",
         });
       }
+    }
+    if (baseNodeForExtension) {
+      if (baseNodeForExtension.id === n.id) return;
+      if (
+        connections.find(
+          (c) => c.source === n.id && c.target === baseNodeForExtension.id
+        )
+      ) {
+        return;
+      }
+      if (
+        connections.find(
+          (c) => c.source === baseNodeForExtension.id && c.target === n.id
+        )
+      ) {
+        return;
+      }
+      connections.push({
+        source: n.id,
+        target: baseNodeForExtension?.id,
+        connectionType: "extend",
+      });
     }
   };
   for (const n of nodes) {

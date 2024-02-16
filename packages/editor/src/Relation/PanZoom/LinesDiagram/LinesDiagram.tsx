@@ -31,7 +31,6 @@ import {
   PRINT_PREVIEW_RELATION_NODE_MAX_FIELDS,
   PRINT_PREVIEW_RELATION_NODE_MAX_WIDTH,
 } from "@/Relation/shared/nodeLook";
-import { isExtensionNode } from "@/GraphQL/Resolve";
 
 const Main = styled.div`
   position: relative;
