@@ -107,7 +107,10 @@ export const sortNodesTs = ({
   });
   const connections: NumberConnection[] = [];
   const idempotentInsert = (n: ParserField, tname: string) => {
-    const relatedNode = nodes.find((n) => n.name === tname);
+    const relatedNode = nodes.find(
+      (n) =>
+        n.name === tname && !Object.keys(TypeExtension).includes(n.data.type)
+    );
     const interfaces = n.interfaces.map((interfaceName) =>
       nodes.find((n) => n.name === interfaceName)
     );
@@ -205,8 +208,8 @@ export const sortNodesTs = ({
     removedAdded > 1
       ? 1
       : removedAdded === 1
-        ? 1 / numberNodes.length
-        : modifyAlpha;
+      ? 1 / numberNodes.length
+      : modifyAlpha;
 
   const retAlpha = a;
 
