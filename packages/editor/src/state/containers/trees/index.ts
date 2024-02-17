@@ -186,38 +186,57 @@ const useTreesStateContainer = createContainer(() => {
   };
 
   const relatedToSelectedTypes = (activeNode?: ParserField) => {
-    const parents = activeNode?.args
-      .flatMap((ana) => ana.args)
-      .map((ana) => getTypeName(ana.type.fieldType));
-    const inputs = allNodes.nodes
-      .filter((an) =>
-        an.args.find(
-          (ana) =>
-            getTypeName(ana.type.fieldType) === activeNode?.name ||
-            ana.args.find(
-              (nestedArg) =>
-                getTypeName(nestedArg.type.fieldType) === activeNode?.name
-            )
-        )
+    const parents = activeNode?.args.flatMap((ana) => ana.args);
+    const inputs = allNodes.nodes.filter((an) =>
+      an.args.find(
+        (ana) =>
+          getTypeName(ana.type.fieldType) === activeNode?.name ||
+          ana.args.find(
+            (nestedArg) =>
+              getTypeName(nestedArg.type.fieldType) === activeNode?.name
+          )
       )
-      .map((a) => a.name);
-    const interfacesRelatedToActiveNode = allNodes.nodes
-      .filter((node) => activeNode?.interfaces.includes(node.name))
-      .map((a) => a.name);
+    );
+    const interfacesRelatedToActiveNode = allNodes.nodes.filter((node) =>
+      activeNode?.interfaces.includes(node.name)
+    );
     const nodesRelatedToActiveInterface =
       activeNode &&
-      activeNode.data.type === TypeDefinition.InterfaceTypeDefinition
-        ? allNodes.nodes
-            .filter((node) => node.interfaces.includes(activeNode.name))
-            .map((a) => a.name)
+        activeNode.data.type === TypeDefinition.InterfaceTypeDefinition
+        ? allNodes.nodes.filter((node) =>
+          node.interfaces.includes(activeNode.name)
+        )
         : [];
-    const notBaseTypes = activeNode?.args
-      .map((a) => getTypeName(a.type.fieldType))
+    const nodeExtensions = allNodes.nodes.filter(
+      (node) =>
+        isExtensionNode(node.data.type) &&
+        node.name === activeNode?.name &&
+        node.id !== activeNode.id
+    );
+    const basicNodeToNodeExtension =
+      (activeNode &&
+        isExtensionNode(activeNode?.data.type) &&
+        allNodes.nodes.filter(
+          (node) =>
+            node.name === activeNode.name &&
+            !isExtensionNode(node.data.type) &&
+            node.id !== activeNode.id
+        )) ||
+      [];
+    const argsTypeRelated = allNodes.nodes.filter((node) =>
+      activeNode?.args
+        .map((arg) => getTypeName(arg.type.fieldType))
+        .includes(node.name)
+    );
+
+    const notBaseTypes = argsTypeRelated
       .concat(parents || [])
       .concat(inputs)
       .concat(interfacesRelatedToActiveNode)
       .concat(nodesRelatedToActiveInterface)
-      .filter((n) => !isBaseScalar(n));
+      .concat(nodeExtensions)
+      .concat(basicNodeToNodeExtension)
+      .filter((n) => !isBaseScalar(n.name));
     const filtered = notBaseTypes?.filter(
       (t, index) => index === notBaseTypes.indexOf(t)
     );
@@ -230,9 +249,7 @@ const useTreesStateContainer = createContainer(() => {
   );
 
   const relatedNodeIdsToSelected = useMemo(() => {
-    return allNodes.nodes
-      .filter((n) => relatedToSelected?.includes(n.name))
-      .map((n) => n.id);
+    return relatedToSelected?.map((n) => n.id);
   }, [relatedToSelected, allNodes]);
   const setSelectedNodeId = useCallback(
     (_selectedNodeId: SelectedNodeId) => {

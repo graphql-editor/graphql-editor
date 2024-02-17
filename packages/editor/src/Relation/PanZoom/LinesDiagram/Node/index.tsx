@@ -245,7 +245,7 @@ export const Node: React.FC<NodeProps> = (props) => {
         className={`${DOMClassNames.nodeFields}`}
       >
         {field.args.slice(0, maxFields).map((a) => (
-          <Field key={a.name} node={a} />
+          <Field key={a.id} node={a} />
         ))}
         {field.args.length > maxFields && (
           <EditToSeeWhole

@@ -11,6 +11,11 @@ import {
 } from "graphql-js-tree";
 import { getTokenAtPosition, IPosition } from "graphql-language-service";
 const ctx: Worker = self as any;
+export interface RelativeNumberConnection {
+  source?: NumberNode;
+  target?: NumberNode;
+  connectionType?: string;
+}
 
 export type WorkerEvents = {
   validate: {
@@ -59,6 +64,7 @@ export type WorkerEvents = {
       y: number;
       width: number;
       height: number;
+      connections: RelativeNumberConnection[];
     };
   };
 };
@@ -182,8 +188,16 @@ ctx.addEventListener("message", (message) => {
             nn.height / 2.0,
         }));
         // storeCoordinates(elkNodes, sorted.connections, 20, 0.03);
+        const relativeConnections = sorted.connections.map((connection) => {
+          return {
+            source: elkNodes.find((el) => el.id === connection.source),
+            target: elkNodes.find((el) => el.id === connection.target),
+            connectionType: connection.connectionType,
+          };
+        });
         return {
           nodes: elkNodes,
+          connections: relativeConnections,
           ...calcDimensions(elkNodes),
         };
       });
