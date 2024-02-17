@@ -1,6 +1,6 @@
 {
   "name": "graphql-editor-worker",
-  "version": "7.2.2",
+  "version": "7.2.3",
   "private": false,
   "license": "MIT",
   "description": "Visual node editor for GraphQL",

@@ -38,7 +38,11 @@ export const PanZoom: React.FC<{
   const mainRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const linesRef = useRef<LinesDiagramApi>(null);
-  const { setSelectedNodeId, readonly: isReadOnly } = useTreesState();
+  const {
+    setSelectedNodeId,
+    readonly: isReadOnly,
+    activeNode,
+  } = useTreesState();
   const { isClick, mouseDown } = useClickDetector();
   const { createToast } = useToasts();
   const { setTransform } = useControls();
@@ -304,7 +308,7 @@ export const PanZoom: React.FC<{
           wrapperStyle={{
             flex: 1,
             height: "100%",
-            filter: editMode ? `blur(4px)` : `blur(0px)`,
+            filter: activeNode && editMode ? `blur(4px)` : `blur(0px)`,
             transition: "all 0.25s ease-in-out",
           }}
         >

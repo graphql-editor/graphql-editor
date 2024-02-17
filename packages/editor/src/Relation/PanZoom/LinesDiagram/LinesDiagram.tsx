@@ -274,8 +274,6 @@ export const LinesDiagram = React.forwardRef<
     }
   }, [props.fieldsOn]);
 
-  //const [relations, setRelations] = useState<RelationInterface[]>();
-
   useEffect(() => {
     // compose existing positions
     if (!nodes.length) {
