@@ -4,6 +4,7 @@ import styled from "@emotion/styled";
 import { EditableText } from "@/Graf/Node/Field/EditableText";
 import { ActiveGrafType } from "@/Graf/Node/Field/ActiveGrafType";
 import { GRAF_FIELD_NAME_SIZE } from "@/Graf/constants";
+import { dataIt } from "@/Models";
 
 const Main = styled.div`
   display: flex;
@@ -20,7 +21,7 @@ export const ActiveGrafFieldName: React.FC<
 > = ({ args, name, afterChange, parentTypes }) => {
   if (args && args.length > 0) {
     return (
-      <Main>
+      <Main {...dataIt("fieldName")}>
         <EditableText value={name} onChange={afterChange} />(
         {afterChange &&
           args.map((a, i) => (

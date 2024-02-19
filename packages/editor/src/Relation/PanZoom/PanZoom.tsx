@@ -26,6 +26,7 @@ import {
 } from "@/Relation/PanZoom/LinesDiagram/LinesDiagram";
 import { nodeFilter } from "@/Relation/shared/nodeFilter";
 import { useClickDetector } from "@/shared/hooks/useClickDetector";
+import { dataIt } from "@/Models";
 
 const MAX_SCHEMA_SIZE = 20000 * 20000;
 
@@ -146,8 +147,9 @@ export const PanZoom: React.FC<{
             link.click();
           })
           .catch((e) => {
+            const message = e instanceof Error ? e.message : "Unknown error";
             createToast({
-              message: "Export failed. Check browser console for details",
+              message: "Export failed: " + message,
               variant: "error",
             });
           })
@@ -288,7 +290,7 @@ export const PanZoom: React.FC<{
     hide,
   ]);
   return (
-    <Wrapper className={parentClass}>
+    <Wrapper {...dataIt("relationView")} className={parentClass}>
       <ControlsBar
         title={title}
         triggerResimulation={() => {

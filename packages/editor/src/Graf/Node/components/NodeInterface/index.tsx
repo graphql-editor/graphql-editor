@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
-import styled from '@emotion/styled';
+import React, { useState } from "react";
+import styled from "@emotion/styled";
 import {
   ContextMenu,
   NodeImplementInterfacesMenu,
-} from '@/shared/components/ContextMenu';
-import { ParserField } from 'graphql-js-tree';
-import { transition } from '@/vars';
+} from "@/shared/components/ContextMenu";
+import { ParserField } from "graphql-js-tree";
+import { transition } from "@/vars";
 import {
   DetailMenuItem,
   Menu,
   MenuScrollingArea,
-} from '@/Graf/Node/components/Menu';
+} from "@/Graf/Node/components/Menu";
+import { dataIt } from "@/Models";
 
 interface NodeInterfaceProps {
   onDelete: () => void;
@@ -28,7 +29,7 @@ const NodeInterfaceBlock = styled.div<{ isLocked?: boolean }>`
   cursor: pointer;
   border: 1px solid currentColor;
   &:hover {
-    border: 1px ${({ isLocked }) => (isLocked ? 'solid' : 'dashed')}
+    border: 1px ${({ isLocked }) => (isLocked ? "solid" : "dashed")}
       currentColor;
   }
 `;
@@ -64,7 +65,7 @@ export const NodeInterface: React.FC<NodeInterfaceProps> = ({
       {({ layerProps }) => (
         <Menu
           {...layerProps}
-          menuName={'Detach interface'}
+          menuName={"Detach interface"}
           onScroll={(e) => e.stopPropagation()}
           hideMenu={() => setMenuOpen(false)}
         >
@@ -117,6 +118,7 @@ export const CreateNodeInterface: React.FC<CreateNodeInterfaceProps> = ({
       close={() => setMenuOpen(false)}
       Trigger={({ triggerProps }) => (
         <CreateNodeInterfaceBlock
+          {...dataIt("implementInterface")}
           {...triggerProps}
           onClick={(e) => {
             if (isLocked) {

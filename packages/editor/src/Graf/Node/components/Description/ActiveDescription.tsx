@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "@emotion/styled";
+import { dataIt } from "@/Models";
 
 const Main = styled.textarea`
   background: ${({ theme }) => theme.neutrals.L6};
@@ -53,7 +54,7 @@ export const ActiveDescription: React.FC<{
   }, []);
 
   return (
-    <MainWrapper>
+    <MainWrapper {...dataIt("nodeDescription")}>
       <Main
         rows={1}
         data-gramm_editor="false"

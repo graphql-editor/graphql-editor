@@ -23,7 +23,7 @@ import {
 import { CodeContainer } from "@/editor/code/style/Code";
 import { Maybe } from "graphql-language-service";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
-import { PassedSchema } from "@/Models";
+import { PassedSchema, dataIt } from "@/Models";
 import type * as monaco from "monaco-editor";
 
 export interface CodePaneOuterProps {
@@ -133,7 +133,7 @@ export const CodePane = React.forwardRef<CodePaneApi, CodePaneProps>(
       [fullScreen, allNodes, selectedNodeId, setSelectedNodeId]
     );
     return (
-      <CodeContainer>
+      <CodeContainer {...dataIt("codeView")}>
         {theme && (
           <LiveSchemaEditor
             onContentChange={props.onContentChange}

@@ -33,6 +33,7 @@ import {
   Stack,
   Tooltip,
 } from "@aexol-studio/styling-system";
+import { dataIt } from "@/Models";
 
 type PossibleMenus =
   | "field"
@@ -110,6 +111,7 @@ export const TopNodeMenu: React.FC<{
                 Trigger={({ triggerProps }) => (
                   <Tooltip title="Add field">
                     <NodeIconArea
+                      {...dataIt("addField")}
                       {...triggerProps}
                       onClick={() => {
                         setMenuOpen("field");
@@ -138,6 +140,7 @@ export const TopNodeMenu: React.FC<{
               Trigger={({ triggerProps }) => (
                 <Tooltip title="Add directive">
                   <NodeIconArea
+                    {...dataIt("addDirective")}
                     {...triggerProps}
                     onClick={() => {
                       setMenuOpen("directive");
@@ -181,6 +184,7 @@ export const TopNodeMenu: React.FC<{
           Trigger={({ triggerProps }) => (
             <Tooltip title="Node actions">
               <NodeIconArea
+                {...dataIt("nodeOptions")}
                 {...triggerProps}
                 onClick={() => {
                   setMenuOpen("options");

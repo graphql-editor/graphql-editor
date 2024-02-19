@@ -1,6 +1,6 @@
 {
   "name": "socket-live-test",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "description": "testing editor live",
   "main": "index.js",
   "type": "module",

@@ -1,11 +1,12 @@
-import React, { useMemo } from 'react';
-import { ParserField } from 'graphql-js-tree';
-import { compileScalarTypes, compileTypeOptions } from '@/GraphQL/Compile';
-import styled from '@emotion/styled';
-import { GRAF_FIELD_TYPE_SIZE } from '@/Graf/constants';
+import React, { useMemo } from "react";
+import { ParserField } from "graphql-js-tree";
+import { compileScalarTypes, compileTypeOptions } from "@/GraphQL/Compile";
+import styled from "@emotion/styled";
+import { GRAF_FIELD_TYPE_SIZE } from "@/Graf/constants";
+import { dataIt } from "@/Models";
 export const ActiveGrafType = React.forwardRef<
   HTMLAnchorElement,
-  Pick<ParserField, 'type'> & {
+  Pick<ParserField, "type"> & {
     parentTypes?: Record<string, string>;
     onClick?: () => void;
     children?: React.ReactNode;
@@ -13,16 +14,17 @@ export const ActiveGrafType = React.forwardRef<
 >(({ type, parentTypes, onClick, children }, ref) => {
   const compiledType = useMemo(
     () => compileTypeOptions({ type }),
-    [JSON.stringify(type)],
+    [JSON.stringify(type)]
   );
   const sType = useMemo(() => compileScalarTypes(type), [JSON.stringify(type)]);
   const color = parentTypes?.[sType] ? parentTypes[sType] : sType;
 
   return (
     <Type
+      {...dataIt("fieldType")}
       ref={ref}
       color={color}
-      cursor={onClick ? 'pointer' : 'default'}
+      cursor={onClick ? "pointer" : "default"}
       onClick={onClick}
     >
       <span>{compiledType}</span>
@@ -31,7 +33,7 @@ export const ActiveGrafType = React.forwardRef<
   );
 });
 
-const Type = styled.a<{ color: string; cursor: 'pointer' | 'default' }>`
+const Type = styled.a<{ color: string; cursor: "pointer" | "default" }>`
   color: ${({ color, theme }) =>
     color
       ? theme.colors[color as keyof typeof theme.colors]

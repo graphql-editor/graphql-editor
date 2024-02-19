@@ -8,7 +8,7 @@ import React, { useState } from "react";
 export const NewNode: React.FC = () => {
   const [open, setOpen] = useState(false);
   return (
-    <MainContent {...dataIt("new")} onClick={() => setOpen(true)}>
+    <MainContent {...dataIt("newNode")} onClick={() => setOpen(true)}>
       <ContextMenu
         isOpen={open}
         close={() => setOpen(false)}

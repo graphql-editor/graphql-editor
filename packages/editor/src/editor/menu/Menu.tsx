@@ -144,7 +144,7 @@ export const Menu = ({
   ];
   return (
     <>
-      <Sidebar>
+      <Sidebar {...dataIt("sidebar")}>
         <Tooltip title="Toggle Code" position="right-bottom">
           <MenuItem
             className={toggleCode ? "toggle-active" : ""}

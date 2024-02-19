@@ -21,6 +21,7 @@ import {
   RELATION_NODE_MAX_FIELDS,
   RELATION_NODE_MAX_WIDTH,
 } from "@/Relation/shared/nodeLook";
+import { dataIt } from "@/Models";
 
 type NodeTypes = keyof EditorTheme["colors"];
 
@@ -284,6 +285,7 @@ export const Node: React.FC<NodeProps> = (props) => {
           {!printPreviewActive && (
             <EditNodeContainer className="editNode">
               <FocusNodeClickableButton
+                {...dataIt("nodeFocus")}
                 onClick={(e) => {
                   e.stopPropagation();
                   if (isFieldFocused) {
@@ -297,6 +299,7 @@ export const Node: React.FC<NodeProps> = (props) => {
                 <EagleEye width={16} height={16} />
               </FocusNodeClickableButton>
               <EditNodeClickableButton
+                {...dataIt("nodeEditExpand")}
                 onClick={(e) => {
                   e.stopPropagation();
                   setEditMode(field.id);
@@ -319,6 +322,7 @@ export const Node: React.FC<NodeProps> = (props) => {
 
   return (
     <Content
+      {...dataIt("graphNode")}
       width={numberNode.width}
       className={`${DOMClassNames.node} inViewport`}
       id={`node-${field.id}`}

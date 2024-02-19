@@ -31,6 +31,7 @@ import {
 import { DraggableProvider, useDraggable } from "@/Graf/state/draggable";
 import { useRelationsState } from "@/state/containers";
 import { Tooltip } from "@aexol-studio/styling-system";
+import { dataIt } from "@/Models";
 
 interface NodeProps {
   node: ParserField;
@@ -228,6 +229,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
     : undefined;
   return (
     <NodeContainer
+      {...dataIt("activeNode")}
       className={`NodeBackground-${getTypeName(node.type.fieldType)}`}
       onWheel={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}

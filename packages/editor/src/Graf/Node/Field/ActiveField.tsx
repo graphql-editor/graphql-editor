@@ -34,6 +34,7 @@ import {
   Tooltip,
 } from "@aexol-studio/styling-system";
 import { NodeFieldContainer } from "@/Graf/Node/Field/NodeFieldContainer";
+import { dataIt } from "@/Models";
 
 export const ActiveField: React.FC<FieldProps> = ({
   node,
@@ -59,6 +60,7 @@ export const ActiveField: React.FC<FieldProps> = ({
   const isFromInterface = !!node.fromInterface?.length;
   return (
     <NodeFieldContainer
+      {...dataIt("nodeField")}
       fromInterface={!!node.fromInterface?.length}
       active={!!(inputOpen || menuOpen || outputOpen)}
     >
@@ -168,6 +170,7 @@ export const ActiveField: React.FC<FieldProps> = ({
                 return (
                   <Tooltip title="Set List/Required">
                     <FieldPort
+                      {...dataIt("fieldList")}
                       {...triggerProps}
                       icons={{
                         closed: <BracketsSquare width={18} height={18} />,
@@ -219,6 +222,7 @@ export const ActiveField: React.FC<FieldProps> = ({
           node.data.type !== TypeSystemDefinition.UnionMemberDefinition && (
             <Tooltip title="Field arguments and directives">
               <FieldPort
+                {...dataIt("fieldArgs")}
                 onClick={onInputClick}
                 open={inputOpen}
                 icons={{
@@ -236,6 +240,7 @@ export const ActiveField: React.FC<FieldProps> = ({
               return (
                 <Tooltip title="Field options">
                   <FieldPort
+                    {...dataIt("fieldOptions")}
                     {...triggerProps}
                     icons={{
                       closed: <DotsVertical width={18} height={18} />,
@@ -259,6 +264,7 @@ export const ActiveField: React.FC<FieldProps> = ({
         {!outputDisabled && (
           <Tooltip title="Expand type">
             <OutputArrow
+              {...dataIt("fieldArgs")}
               className="node-field-port"
               onClick={onOutputClick}
               // info={{
