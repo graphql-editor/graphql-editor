@@ -195,11 +195,13 @@ export const LinesDiagram = React.forwardRef<
               : RELATION_NODE_MAX_FIELDS,
             ignoreAlphaCalculation: true,
           },
-        }).then(({ nodes: positionedNodes, ...positionParams }) => {
-          props.setViewportParams(positionParams);
-          setSimulatedNodes(positionedNodes);
-          setConnections(connections);
-        });
+        }).then(
+          ({ nodes: positionedNodes, connections, ...positionParams }) => {
+            props.setViewportParams(positionParams);
+            setSimulatedNodes(positionedNodes);
+            setConnections(connections);
+          }
+        );
       },
     }),
     [nodes]
