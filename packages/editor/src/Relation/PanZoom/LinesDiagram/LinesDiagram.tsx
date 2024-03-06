@@ -99,8 +99,6 @@ export interface RelationInterface {
   extensions: NumberNode[];
 }
 
-let lastTimestamp = 0;
-
 export const LinesDiagram = React.forwardRef<
   LinesDiagramApi,
   LinesDiagramProps
@@ -246,12 +244,7 @@ export const LinesDiagram = React.forwardRef<
       const size = wrapper.getBoundingClientRect();
       changeZoomInTopBar(state.scale);
       if (!size) return;
-      requestAnimationFrame((timeStamp) => {
-        const delta = timeStamp - lastTimestamp;
-        if (delta < 60) {
-          return;
-        }
-        lastTimestamp = timeStamp;
+      requestAnimationFrame(() => {
         cullNodes(simulatedNodes, state, size);
         if (props.fieldsOn) {
           LoDNodes(state.scale);
