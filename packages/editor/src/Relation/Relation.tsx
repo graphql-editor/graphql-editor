@@ -61,9 +61,38 @@ export const Relation: React.FC<{
     );
   }, [filteredRelationNodes, isFocus, ctrlToZoom]);
 
-  if (!allNodes.nodes.length) {
-    return (
-      <RelationContainer>
+  return (
+    <RelationContainer>
+      {allNodes.nodes.length ? (
+        <>
+          {viewport}
+          {isFocus && (
+            <FocusOverlay>
+              <TransformWrapper
+                initialScale={1}
+                maxScale={1.5}
+                wheel={{
+                  activationKeys: ctrlToZoom ? ["Control", "OS", "Meta"] : [],
+                  step: 0.03,
+                }}
+                panning={{ velocityDisabled: false }}
+                minScale={0.1}
+                limitToBounds={false}
+                zoomAnimation={{ disabled: true }}
+              >
+                <PanZoom
+                  title={title}
+                  parentClass="focus"
+                  nodes={nodesToShow}
+                />
+              </TransformWrapper>
+            </FocusOverlay>
+          )}
+          <AnimatePresence>
+            {!!editMode && activeNode && <Graf node={activeNode} />}
+          </AnimatePresence>
+        </>
+      ) : (
         <AnimatePresence>
           <BackgroundFTUX
             showCode={routes.code === "off"}
@@ -82,41 +111,14 @@ export const Relation: React.FC<{
             }}
           />
         </AnimatePresence>
-        <ImportSchema
-          onClose={() => setPopupsState({ import: false })}
-          onImport={(s) => {
-            setInitialSchema(s);
-          }}
-          open={popupsState.import}
-        />
-        ;
-      </RelationContainer>
-    );
-  }
-  return (
-    <RelationContainer>
-      {viewport}
-      {isFocus && (
-        <FocusOverlay>
-          <TransformWrapper
-            initialScale={1}
-            maxScale={1.5}
-            wheel={{
-              activationKeys: ctrlToZoom ? ["Control", "OS", "Meta"] : [],
-              step: 0.03,
-            }}
-            panning={{ velocityDisabled: false }}
-            minScale={0.1}
-            limitToBounds={false}
-            zoomAnimation={{ disabled: true }}
-          >
-            <PanZoom title={title} parentClass="focus" nodes={nodesToShow} />
-          </TransformWrapper>
-        </FocusOverlay>
       )}
-      <AnimatePresence>
-        {!!editMode && activeNode && <Graf node={activeNode} />}
-      </AnimatePresence>
+      <ImportSchema
+        onClose={() => setPopupsState({ import: false })}
+        onImport={(s) => {
+          setInitialSchema(s);
+        }}
+        open={popupsState.import}
+      />
     </RelationContainer>
   );
 };
