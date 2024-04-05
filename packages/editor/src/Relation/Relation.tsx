@@ -60,31 +60,39 @@ export const Relation: React.FC<{
       </>
     );
   }, [filteredRelationNodes, isFocus, ctrlToZoom]);
+
   return (
     <RelationContainer>
-      {viewport}
-      {isFocus && (
-        <FocusOverlay>
-          <TransformWrapper
-            initialScale={1}
-            maxScale={1.5}
-            wheel={{
-              activationKeys: ctrlToZoom ? ["Control", "OS", "Meta"] : [],
-              step: 0.03,
-            }}
-            panning={{ velocityDisabled: false }}
-            minScale={0.1}
-            limitToBounds={false}
-            zoomAnimation={{ disabled: true }}
-          >
-            <PanZoom title={title} parentClass="focus" nodes={nodesToShow} />
-          </TransformWrapper>
-        </FocusOverlay>
-      )}
-      <AnimatePresence>
-        {!!editMode && activeNode && <Graf node={activeNode} />}
-      </AnimatePresence>
-      {!allNodes.nodes.length && (
+      {allNodes.nodes.length ? (
+        <>
+          {viewport}
+          {isFocus && (
+            <FocusOverlay>
+              <TransformWrapper
+                initialScale={1}
+                maxScale={1.5}
+                wheel={{
+                  activationKeys: ctrlToZoom ? ["Control", "OS", "Meta"] : [],
+                  step: 0.03,
+                }}
+                panning={{ velocityDisabled: false }}
+                minScale={0.1}
+                limitToBounds={false}
+                zoomAnimation={{ disabled: true }}
+              >
+                <PanZoom
+                  title={title}
+                  parentClass="focus"
+                  nodes={nodesToShow}
+                />
+              </TransformWrapper>
+            </FocusOverlay>
+          )}
+          <AnimatePresence>
+            {!!editMode && activeNode && <Graf node={activeNode} />}
+          </AnimatePresence>
+        </>
+      ) : (
         <AnimatePresence>
           <BackgroundFTUX
             showCode={routes.code === "off"}
@@ -118,6 +126,7 @@ const RelationContainer = styled.div`
   width: 100%;
   height: 100%;
   position: relative;
+  background: ${({ theme }) => theme.neutrals.L6};
 `;
 
 const FocusOverlay = styled.div`
