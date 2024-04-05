@@ -60,6 +60,39 @@ export const Relation: React.FC<{
       </>
     );
   }, [filteredRelationNodes, isFocus, ctrlToZoom]);
+
+  if (!allNodes.nodes.length) {
+    return (
+      <RelationContainer>
+        <AnimatePresence>
+          <BackgroundFTUX
+            showCode={routes.code === "off"}
+            onStartCoding={() => {
+              set(
+                {
+                  ...routes,
+                  code: routes.code === "off" ? "on" : "off",
+                  source: "internal",
+                },
+                "internal"
+              );
+            }}
+            onImport={() => {
+              setPopupsState({ import: true });
+            }}
+          />
+        </AnimatePresence>
+        <ImportSchema
+          onClose={() => setPopupsState({ import: false })}
+          onImport={(s) => {
+            setInitialSchema(s);
+          }}
+          open={popupsState.import}
+        />
+        ;
+      </RelationContainer>
+    );
+  }
   return (
     <RelationContainer>
       {viewport}
@@ -84,33 +117,6 @@ export const Relation: React.FC<{
       <AnimatePresence>
         {!!editMode && activeNode && <Graf node={activeNode} />}
       </AnimatePresence>
-      {!allNodes.nodes.length && (
-        <AnimatePresence>
-          <BackgroundFTUX
-            showCode={routes.code === "off"}
-            onStartCoding={() => {
-              set(
-                {
-                  ...routes,
-                  code: routes.code === "off" ? "on" : "off",
-                  source: "internal",
-                },
-                "internal"
-              );
-            }}
-            onImport={() => {
-              setPopupsState({ import: true });
-            }}
-          />
-        </AnimatePresence>
-      )}
-      <ImportSchema
-        onClose={() => setPopupsState({ import: false })}
-        onImport={(s) => {
-          setInitialSchema(s);
-        }}
-        open={popupsState.import}
-      />
     </RelationContainer>
   );
 };
@@ -118,6 +124,7 @@ const RelationContainer = styled.div`
   width: 100%;
   height: 100%;
   position: relative;
+  background: ${({ theme }) => theme.neutrals.L6};
 `;
 
 const FocusOverlay = styled.div`
