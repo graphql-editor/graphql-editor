@@ -345,6 +345,7 @@ const Wrapper = styled.div`
   height: 100%;
   overflow: hidden;
   transition: ${vars.transition};
+  background: ${({ theme }) => theme.neutrals.L6};
 `;
 
 const LoadingContainer = styled.div`
