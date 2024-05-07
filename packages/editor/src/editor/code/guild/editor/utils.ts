@@ -150,7 +150,7 @@ export const coreDefinitionSource: DefinitionSource = {
 
 export const coreHoverSource: HoverSource = {
   forNode: ({ schema, document, position, token }) => ({
-    value: getHoverInformation(schema, document, position, token) as string,
+    value: getHoverInformation(schema as any, document, position, token) as string,
   }),
 };
 

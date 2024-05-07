@@ -50,7 +50,7 @@
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "graphql-editor": "^7.2.8",
-    "graphql-js-tree": "^0.1.6",
+    "graphql-js-tree": "^2.0.1",
     "socket.io-client": "^4.7.2",
     "y-monaco": "^0.1.5",
     "y-websocket": "^1.5.3",
