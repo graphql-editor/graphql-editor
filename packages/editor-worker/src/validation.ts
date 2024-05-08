@@ -47,7 +47,7 @@ const moveErrorsByLibraryPadding = () => {
           column: l.column - 1,
         })),
         positions: error.error.positions,
-      },
+      } as GraphQLError,
     };
   };
 };
