@@ -34,7 +34,6 @@
     "fork-ts-checker-webpack-plugin": "^6.3.3",
     "html-loader": "^2.1.2",
     "html-webpack-plugin": "^5.3.2",
-    "react-hot-loader": "^4.13.0",
     "react-refresh": "^0.14.0",
     "style-loader": "^3.2.1",
     "ts-loader": "^9.2.5",

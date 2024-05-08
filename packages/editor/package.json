@@ -47,7 +47,7 @@
     "fuzzyjs": "^5.0.1",
     "graphql-editor-worker": "^7.2.8",
     "graphql-js-tree": "^2.0.1",
-    "graphql-language-service": "3.1.4",
+    "graphql-language-service": "3.2.5",
     "html-to-image": "^1.10.8",
     "re-resizable": "^6.9.1",
     "react-laag": "^2.0.4",

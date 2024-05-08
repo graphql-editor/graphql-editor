@@ -31,7 +31,7 @@
     "d3": "^7.8.4",
     "elkjs": "^0.8.2",
     "graphql-js-tree": "^2.0.1",
-    "graphql-language-service": "3.1.4"
+    "graphql-language-service": "3.2.5"
   },
   "config": {
     "commitizen": {
