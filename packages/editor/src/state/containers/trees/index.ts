@@ -312,10 +312,11 @@ const useTreesStateContainer = createContainer(() => {
   const updateFieldOnNode = (
     node: ParserField,
     i: number,
-    updatedField: ParserField
+    updatedField: ParserField,
+    parentNode: string
   ) => {
     updateNode(node, () =>
-      mutationRoot.updateFieldOnNode(node, i, updatedField)
+      mutationRoot.updateFieldOnNode(node, i, updatedField, parentNode)
     );
   };
 

@@ -144,7 +144,7 @@ export const useGqlServices = (options: SchemaServicesOptions = {}) => {
               });
             if (bridge) {
               const suggestions = getAutocompleteSuggestions(
-                bridge.schema,
+                bridge.schema as GraphQLSchema,
                 bridge.document,
                 bridge.position,
                 bridge.token as ContextTokenForCodeMirror

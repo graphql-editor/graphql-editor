@@ -30,8 +30,8 @@
     "@qix/elkjs-patched": "^0.8.0-patch3",
     "d3": "^7.8.4",
     "elkjs": "^0.8.2",
-    "graphql-js-tree": "^1.0.9",
-    "graphql-language-service": "3.1.4"
+    "graphql-js-tree": "^2.0.1",
+    "graphql-language-service": "3.2.5"
   },
   "config": {
     "commitizen": {

@@ -163,7 +163,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
   parentNode,
   ...sharedProps
 }) => {
-  const { setEditMode } = useRelationsState();
+  const { setEditMode, editMode } = useRelationsState();
   const { setSelectedNodeId } = useTreesState();
   const [openedNode, setOpenedNode] = useState<{
     type:
@@ -359,7 +359,8 @@ export const ActiveNode: React.FC<NodeProps> = ({
                       {
                         ...node,
                         name: newName,
-                      }
+                      },
+                      editMode
                     );
                     return;
                   }
@@ -499,7 +500,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                       }
                       onDelete={() => removeFieldFromNode(node, a)}
                       onUpdate={(updatedNode) => {
-                        updateFieldOnNode(node, i, updatedNode);
+                        updateFieldOnNode(node, i, updatedNode, editMode);
                       }}
                     />
                   </div>
