@@ -186,7 +186,12 @@ const useTreesStateContainer = createContainer(() => {
   };
 
   const relatedToSelectedTypes = (activeNode?: ParserField) => {
-    const parents = activeNode?.args.flatMap((ana) => ana.args);
+    const parents = allNodes.nodes.filter((node) =>
+      activeNode?.args
+        .flatMap((ana) => ana.args)
+        .map((ana) => getTypeName(ana.type.fieldType))
+        .includes(node.name)
+    );
     const inputs = allNodes.nodes.filter((an) =>
       an.args.find(
         (ana) =>
@@ -230,7 +235,7 @@ const useTreesStateContainer = createContainer(() => {
     );
 
     const notBaseTypes = argsTypeRelated
-      .concat(parents || [])
+      .concat(parents)
       .concat(inputs)
       .concat(interfacesRelatedToActiveNode)
       .concat(nodesRelatedToActiveInterface)
