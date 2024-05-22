@@ -23,7 +23,7 @@ export const BackgroundFTUX = ({
     <Container direction="column" align="center" justify="center" gap="2rem">
       <Stack direction="column" gap="4rem">
         <Stack direction="column" gap="1rem">
-          {!schema.length ? (
+          {!schema ? (
             <Typography>
               Your schema is empty! Please create your first node.
             </Typography>
