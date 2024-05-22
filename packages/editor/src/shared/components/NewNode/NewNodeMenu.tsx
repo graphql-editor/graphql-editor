@@ -59,14 +59,12 @@ export const NewNodeMenu = React.forwardRef<
     type: string
   ) => {
     const doesNodeAlreadyExist = tree.nodes.find(
-      (node) =>
-        node.name.toLowerCase() === nodeName.toLowerCase() &&
-        node.data.type === data
+      (node) => node.name.toLowerCase() === nodeName.toLowerCase()
     );
     if (doesNodeAlreadyExist) {
       setNodeName("");
       createToast({
-        message: "Node creation failed. Node already exists.",
+        message: "Node creation failed. Node with given name already exists.",
         variant: "error",
       });
     } else {
