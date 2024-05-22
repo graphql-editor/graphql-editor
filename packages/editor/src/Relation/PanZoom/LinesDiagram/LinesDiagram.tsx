@@ -273,6 +273,7 @@ export const LinesDiagram = React.forwardRef<
     // compose existing positions
     if (!nodes.length) {
       setSimulatedNodes([]);
+      setConnections([]);
       return;
     }
     if (!editMode) {
