@@ -351,6 +351,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
                     source: "outside",
                   })
                 }
+                schema={schema.code}
               />
             )}
             {routes.pane === "docs" && <Docs />}

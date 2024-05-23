@@ -79,6 +79,7 @@ export const EmbeddedEditor = ({ schema, theme }: EmbeddedEditorProps) => {
           setInitialSchema={(s) => {
             //noop
           }}
+          schema={schema.code}
         />
         <NodeNavigation
           isCollapsed={isCollapsed}

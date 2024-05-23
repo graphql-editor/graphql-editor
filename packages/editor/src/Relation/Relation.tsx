@@ -15,8 +15,9 @@ import { ImportSchema } from "@/shared/dialogs/ImportSchema";
 
 export const Relation: React.FC<{
   setInitialSchema: (s: string) => void;
+  schema: string;
   title?: React.ReactNode;
-}> = ({ setInitialSchema, title }) => {
+}> = ({ setInitialSchema, title, schema }) => {
   const { activeNode, focusMode, allNodes } = useTreesState();
   const {
     filteredFocusedNodes,
@@ -109,6 +110,7 @@ export const Relation: React.FC<{
             onImport={() => {
               setPopupsState({ import: true });
             }}
+            schema={schema}
           />
         </AnimatePresence>
       )}
