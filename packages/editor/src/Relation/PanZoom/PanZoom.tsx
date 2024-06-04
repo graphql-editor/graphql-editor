@@ -35,7 +35,8 @@ export const PanZoom: React.FC<{
   hide?: boolean;
   title?: React.ReactNode;
   parentClass: "focus" | "all";
-}> = ({ nodes, hide, parentClass, title }) => {
+  useInternalWorker?: boolean;
+}> = ({ nodes, hide, parentClass, title, useInternalWorker }) => {
   const mainRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const linesRef = useRef<LinesDiagramApi>(null);
@@ -280,6 +281,7 @@ export const PanZoom: React.FC<{
         setLoading={(e) => {
           setLargeSimulationLoading(e);
         }}
+        useInternalWorker={useInternalWorker}
       />
     );
   }, [

@@ -1,4 +1,4 @@
-import { NumberNode } from "graphql-editor-worker";
+import { NumberNode } from "@/editor-worker";
 import { manageDomNode } from "@/shared/hooks/manageDomNode";
 import { ReactZoomPanPinchState } from "react-zoom-pan-pinch";
 import { useRef } from "react";

@@ -1,4 +1,5 @@
-import { GraphQLEditorWorker } from "graphql-editor-worker";
+import { GraphQLEditorWorker as ExternalGraphQLEditorWorker } from "graphql-editor-worker";
+import { GraphQLEditorWorker as InternalGraphQLEditorWorker } from "@/editor-worker";
 import { GraphQLSchema } from "graphql";
 import {
   LanguageService,
@@ -30,9 +31,13 @@ export class EnrichedLanguageService extends LanguageService {
   async getNodeAtPosition(
     schema: GraphQLSchema,
     document: string,
-    position: GraphQLPosition
+    position: GraphQLPosition,
+    useInternalWorker?: boolean
   ): Promise<ContextToken | null> {
     if (schema) {
+      const GraphQLEditorWorker = useInternalWorker
+        ? InternalGraphQLEditorWorker
+        : ExternalGraphQLEditorWorker;
       const token = await GraphQLEditorWorker.getTokenAtPosition(
         document,
         position
@@ -48,7 +53,8 @@ export class EnrichedLanguageService extends LanguageService {
     T extends { lineNumber: number; column: number }
   >(
     model: monaco.editor.ITextModel,
-    position: T
+    position: T,
+    useInternalWorker?: boolean
   ): Promise<null | BridgeOptions> {
     const graphQLPosition = toGraphQLPosition(position);
     const document = model.getValue();
@@ -61,7 +67,8 @@ export class EnrichedLanguageService extends LanguageService {
     const tokenAtPosition = await this.getNodeAtPosition(
       schema,
       document,
-      graphQLPosition
+      graphQLPosition,
+      useInternalWorker
     );
 
     if (!tokenAtPosition) {
@@ -153,16 +160,20 @@ export class EnrichedLanguageService extends LanguageService {
     decorationSources: DecorationsSource[],
     model: monaco.editor.ITextModel,
     monacoInstance: typeof monaco,
-    editorInstance: monaco.editor.IStandaloneCodeEditor
+    editorInstance: monaco.editor.IStandaloneCodeEditor,
+    useInternalWorker?: boolean
   ): Promise<void> {
     for (const source of decorationSources) {
-      source.forDocument({
-        monaco: monacoInstance,
-        editor: editorInstance,
-        document: model.getValue(),
-        model,
-        languageService: this,
-      });
+      source.forDocument(
+        {
+          monaco: monacoInstance,
+          editor: editorInstance,
+          document: model.getValue(),
+          model,
+          languageService: this,
+        },
+        useInternalWorker
+      );
     }
   }
 
@@ -170,7 +181,8 @@ export class EnrichedLanguageService extends LanguageService {
     rawDiagnosticsSources: DiagnosticsSource[],
     model: monaco.editor.ITextModel,
     monacoInstance: typeof monaco,
-    libraries?: string
+    libraries?: string,
+    useInternalWorker?: boolean
   ): Promise<void> {
     const diagnosticsSources = [
       ...rawDiagnosticsSources,
@@ -204,11 +216,14 @@ export class EnrichedLanguageService extends LanguageService {
                 c = [c, cutUnnecessary(c, libraries)].join("\n");
               }
             }
-            const s = await source.forDocument({
-              languageService: this,
-              model,
-              document: c,
-            });
+            const s = await source.forDocument(
+              {
+                languageService: this,
+                model,
+                document: c,
+              },
+              useInternalWorker
+            );
             return s;
           } catch (e) {
             return null;
@@ -224,7 +239,8 @@ export class EnrichedLanguageService extends LanguageService {
   }
 
   getModelChangeHandler(
-    libraries?: string
+    libraries?: string,
+    useInternalWorker?: boolean
   ): (
     editorInstance: monaco.editor.IStandaloneCodeEditor,
     monacoInstance: typeof monaco,
@@ -248,13 +264,15 @@ export class EnrichedLanguageService extends LanguageService {
           diagnosticsSources,
           model,
           monacoInstance,
-          libraries
+          libraries,
+          useInternalWorker
         ),
         this.handleDecorations(
           decorationsSources,
           model,
           monacoInstance,
-          editorInstance
+          editorInstance,
+          useInternalWorker
         ),
       ]);
     };

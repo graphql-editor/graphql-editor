@@ -11,7 +11,8 @@ import {
 import { EnrichedLanguageService } from "./EnrichedLanguageService";
 import { GraphQLError, GraphQLSchema } from "graphql";
 import { emptyLocation, locToRange } from "./utils";
-import { GraphQLEditorWorker } from "graphql-editor-worker";
+import { GraphQLEditorWorker as ExternalGraphQLEditorWorker } from "graphql-editor-worker";
+import { GraphQLEditorWorker as InternalGraphQLEditorWorker } from "@/editor-worker";
 import { monacoSetDecorations } from "@/editor/code/monaco/decorations";
 import { useTheme, useTreesState } from "@/state/containers";
 import { findCurrentNodeName } from "@/editor/code/guild/editor/onCursor";
@@ -52,6 +53,7 @@ export type SchemaServicesOptions = {
     editorInstance: monaco.editor.IStandaloneCodeEditor,
     monacoInstance: typeof monaco
   ) => monaco.editor.IActionDescriptor[];
+  useInternalWorker?: boolean;
 };
 
 const cursorIndex = {
@@ -87,7 +89,11 @@ export const useSchemaServices = (options: SchemaServicesOptions) => {
         },
       })
     );
-  }, [options.schema?.libraries, options.schema?.code]);
+  }, [
+    options.schema?.libraries,
+    options.schema?.code,
+    options.useInternalWorker,
+  ]);
 
   const selectNodeUnderCursor = async <
     T extends { lineNumber: number; column: number }
@@ -98,7 +104,7 @@ export const useSchemaServices = (options: SchemaServicesOptions) => {
   ) => {
     // move to worker
     languageService
-      .buildBridgeForProviders(model, e)
+      .buildBridgeForProviders(model, e, options.useInternalWorker)
       .then((bridge) => {
         if (bridge && options.select) {
           const {
@@ -152,7 +158,11 @@ export const useSchemaServices = (options: SchemaServicesOptions) => {
 
             if (model && position) {
               const bridge = await languageService
-                .buildBridgeForProviders(model, position)
+                .buildBridgeForProviders(
+                  model,
+                  position,
+                  options.useInternalWorker
+                )
                 .catch(() => {
                   //noop
                 });
@@ -166,7 +176,8 @@ export const useSchemaServices = (options: SchemaServicesOptions) => {
       }
 
       const handler = languageService.getModelChangeHandler(
-        options.schema?.libraries
+        options.schema?.libraries,
+        options.useInternalWorker
       );
       handler(
         editorRef,
@@ -285,6 +296,9 @@ export const useSchemaServices = (options: SchemaServicesOptions) => {
     },
     onValidate: () => {
       const currentValue = editorRef?.getModel()?.getValue();
+      const GraphQLEditorWorker = options.useInternalWorker
+        ? InternalGraphQLEditorWorker
+        : ExternalGraphQLEditorWorker;
       if (currentValue) {
         GraphQLEditorWorker.validate(
           currentValue,

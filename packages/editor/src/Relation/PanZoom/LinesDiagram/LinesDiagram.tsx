@@ -9,11 +9,12 @@ import { useTreesState } from "@/state/containers/trees";
 import { Node } from "./Node";
 import styled from "@emotion/styled";
 import { ParserField } from "graphql-js-tree";
+import { GraphQLEditorWorker as ExternalGraphQLEditorWorker } from "graphql-editor-worker";
 import {
-  GraphQLEditorWorker,
-  NumberNode,
+  GraphQLEditorWorker as InternalGraphQLEditorWorker,
   RelativeNumberConnection,
-} from "graphql-editor-worker";
+  NumberNode,
+} from "@/editor-worker";
 import { runAfterFramePaint } from "@/shared/hooks/useMarkFramePaint";
 import { useRelationsState } from "@/state/containers";
 import { RelationPath, Lines } from "@/Relation/PanZoom/LinesDiagram/Lines";
@@ -85,6 +86,7 @@ type LinesDiagramProps = {
   isReadOnly?: boolean;
   parentClass: "focus" | "all";
   setViewportParams: (props: ViewportParams) => void;
+  useInternalWorker?: boolean;
 };
 
 export interface LinesDiagramApi {
@@ -103,7 +105,7 @@ export const LinesDiagram = React.forwardRef<
   LinesDiagramApi,
   LinesDiagramProps
 >((props, ref) => {
-  const { nodes, setLoading, mainRef, isReadOnly } = props;
+  const { nodes, setLoading, mainRef, isReadOnly, useInternalWorker } = props;
   const {
     isLibrary,
     setSelectedNodeId,
@@ -147,6 +149,9 @@ export const LinesDiagram = React.forwardRef<
     }
   };
 
+  const GraphQLEditorWorker = useInternalWorker
+    ? InternalGraphQLEditorWorker
+    : ExternalGraphQLEditorWorker;
   useEffect(() => {
     const selectDisposable = DOMEvents.selectNode.disposable(
       (nodeId?: string) => {

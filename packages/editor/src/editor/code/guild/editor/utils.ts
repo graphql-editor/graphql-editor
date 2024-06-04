@@ -10,7 +10,8 @@ import {
 } from "graphql-language-service";
 import * as monaco from "monaco-editor";
 import type { EnrichedLanguageService } from "./EnrichedLanguageService";
-import { GraphQLEditorWorker } from "graphql-editor-worker";
+import { GraphQLEditorWorker as ExternalGraphQLEditorWorker } from "graphql-editor-worker";
+import { GraphQLEditorWorker as InternalGraphQLEditorWorker } from "@/editor-worker";
 import {
   Parser,
   TypeSystemDefinition,
@@ -57,7 +58,8 @@ export type HoverSource = {
 
 export type DiagnosticsSource = {
   forDocument(
-    options: Pick<BridgeOptions, "document" | "languageService" | "model">
+    options: Pick<BridgeOptions, "document" | "languageService" | "model">,
+    useInternalWorker?: boolean
   ):
     | monaco.editor.IMarkerData[]
     | null
@@ -65,9 +67,12 @@ export type DiagnosticsSource = {
 };
 
 export const coreDiagnosticsSource: DiagnosticsSource = {
-  async forDocument({ document }) {
+  async forDocument({ document }, useInternalWorker) {
+    const GraphQLEditorWorker = useInternalWorker
+      ? InternalGraphQLEditorWorker
+      : ExternalGraphQLEditorWorker;
     const errors = await GraphQLEditorWorker.validate(document);
-    const markers = errors.flatMap((e) => {
+    const markers = errors.flatMap((e: any) => {
       if (e.__typename === "global") {
         return [
           {
@@ -81,7 +86,7 @@ export const coreDiagnosticsSource: DiagnosticsSource = {
         ];
       }
       return (
-        e.error.locations?.map((l) => {
+        e.error.locations?.map((l: any) => {
           const r = getRange(
             {
               ...l,
@@ -108,10 +113,11 @@ export type DecorationsSource = {
   forDocument(
     options: Pick<BridgeOptions, "document" | "languageService" | "model"> & {
       editor:
-        | monaco.editor.IStandaloneCodeEditor
-        | monaco.editor.IStandaloneDiffEditor;
+      | monaco.editor.IStandaloneCodeEditor
+      | monaco.editor.IStandaloneDiffEditor;
       monaco: typeof monaco;
-    }
+    },
+    useInternalWorker?: boolean
   ): void | Promise<void>;
 };
 
@@ -205,8 +211,8 @@ export type EditorAction = {
   contextMenuOrder?: number;
   onRun: (options: {
     editor:
-      | monaco.editor.IStandaloneCodeEditor
-      | monaco.editor.IStandaloneDiffEditor;
+    | monaco.editor.IStandaloneCodeEditor
+    | monaco.editor.IStandaloneDiffEditor;
     monaco: typeof monaco;
     bridge: BridgeOptions;
   }) => void;

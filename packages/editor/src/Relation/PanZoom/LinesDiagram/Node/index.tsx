@@ -12,7 +12,7 @@ import {
 } from "@aexol-studio/styling-system";
 import { ActiveType } from "@/Relation/PanZoom/LinesDiagram/Node/Field/ActiveType";
 import { Field } from "@/Relation/PanZoom/LinesDiagram/Node/Field";
-import { NumberNode } from "graphql-editor-worker";
+import { NumberNode } from "@/editor-worker";
 import { DOMClassNames } from "@/shared/hooks/DOMClassNames";
 import { useClickDetector } from "@/shared/hooks/useClickDetector";
 import {

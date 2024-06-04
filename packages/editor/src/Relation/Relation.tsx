@@ -17,7 +17,8 @@ export const Relation: React.FC<{
   setInitialSchema: (s: string) => void;
   schema: string;
   title?: React.ReactNode;
-}> = ({ setInitialSchema, title, schema }) => {
+  useInternalWorker?: boolean;
+}> = ({ setInitialSchema, title, schema, useInternalWorker }) => {
   const { activeNode, focusMode, allNodes } = useTreesState();
   const {
     filteredFocusedNodes,
@@ -56,6 +57,7 @@ export const Relation: React.FC<{
             parentClass="all"
             nodes={filteredRelationNodes}
             title={title}
+            useInternalWorker={useInternalWorker}
           />
         </TransformWrapper>
       </>
@@ -85,6 +87,7 @@ export const Relation: React.FC<{
                   title={title}
                   parentClass="focus"
                   nodes={nodesToShow}
+                  useInternalWorker={useInternalWorker}
                 />
               </TransformWrapper>
             </FocusOverlay>

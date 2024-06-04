@@ -4,7 +4,8 @@ import { CodePane, CodePaneApi, CodePaneProps, DiffSchema } from "./code";
 import { PassedSchema } from "@/Models";
 import { DynamicResize } from "./code/Components";
 import { ParserTree } from "graphql-js-tree";
-import { GraphQLEditorWorker } from "graphql-editor-worker";
+import { GraphQLEditorWorker as ExternalGraphQLEditorWorker } from "graphql-editor-worker";
+import { GraphQLEditorWorker as InternalGraphQLEditorWorker } from "@/editor-worker";
 import {
   useErrorsState,
   useTreesState,
@@ -95,6 +96,8 @@ export interface EditorProps
   fontFamilySans?: string;
   disableExport?: boolean;
   disableImport?: boolean;
+  // useWorker internally
+  useInternalWorker?: true;
 }
 
 export interface ExternalEditorAPI {
@@ -125,6 +128,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
       disableExport,
       disableImport,
       onEditorMount,
+      useInternalWorker,
     },
     ref
   ) => {
@@ -149,6 +153,10 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
     const { routes, set } = useRouter();
 
     const codePaneApi: React.ForwardedRef<CodePaneApi> = React.createRef();
+
+    const GraphQLEditorWorker = useInternalWorker
+      ? InternalGraphQLEditorWorker
+      : ExternalGraphQLEditorWorker;
 
     const reset = () => {
       setSnapshots([]);
@@ -259,7 +267,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
       if (schema.source === "tree") {
         return;
       }
-      generateTreeFromSchema(schema);
+      generateTreeFromSchema(schema, useInternalWorker);
     }, [schema]);
 
     useEffect(() => {
@@ -352,6 +360,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
                   })
                 }
                 schema={schema.code}
+                useInternalWorker={useInternalWorker}
               />
             )}
             {routes.pane === "docs" && <Docs />}

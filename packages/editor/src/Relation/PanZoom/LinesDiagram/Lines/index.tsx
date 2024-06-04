@@ -3,7 +3,7 @@ import { getTypeName, Options, ParserField } from "graphql-js-tree";
 import React from "react";
 import { useTheme } from "@/state/containers";
 import styled from "@emotion/styled";
-import { NumberNode, RelativeNumberConnection } from "graphql-editor-worker";
+import { RelativeNumberConnection, NumberNode } from "@/editor-worker";
 
 const RelationsContainer = styled.svg`
   width: 100%;

@@ -13,7 +13,8 @@ import {
   createSchemaDefinition,
   TypeSystemExtension,
 } from "graphql-js-tree";
-import { GraphQLEditorWorker } from "graphql-editor-worker";
+import { GraphQLEditorWorker as ExternalGraphQLEditorWorker } from "graphql-editor-worker";
+import { GraphQLEditorWorker as InternalGraphQLEditorWorker } from "@/editor-worker/worker";
 import {
   BuiltInScalars,
   isBaseScalar,
@@ -283,11 +284,17 @@ const useTreesStateContainer = createContainer(() => {
     },
     [_setSelectedNodeId, allNodes, selectedNodeId?.value?.id, focusMode]
   );
-  const generateTreeFromSchema = async (schema: PassedSchema) => {
+  const generateTreeFromSchema = async (
+    schema: PassedSchema,
+    useInternalWorker?: boolean
+  ) => {
     if (!schema.code && !schema.libraries) {
       setTree({ nodes: [] }, true);
       return;
     }
+    const GraphQLEditorWorker = useInternalWorker
+      ? InternalGraphQLEditorWorker
+      : ExternalGraphQLEditorWorker;
     try {
       await GraphQLEditorWorker.generateTree({
         schema: schema.code,
