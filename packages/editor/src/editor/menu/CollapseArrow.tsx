@@ -9,7 +9,7 @@ const Container = styled.div<{ isCollapsed?: boolean; isRight?: true }>`
   cursor: pointer;
   height: 24px;
   width: 20px;
-  border-radius: ${(p) => p.theme.radius}px;
+  border-radius: ${(p) => p.theme.border.primary.radius}px;
   background-color: ${({ theme }) => theme.neutrals.L6};
   position: absolute;
   z-index: 2;

@@ -173,7 +173,7 @@ const CreateNodeItem = styled.div<{ type: string }>`
   border-left: 1px solid
     ${({ type, theme }) => theme.colors[type as keyof typeof theme.colors]};
   transition: ${transition};
-  border-radius: ${(p) => p.theme.radius}px;
+  border-radius: ${(p) => p.theme.border.primary.radius}px;
   :hover {
     background-color: ${({ theme }) => theme.neutrals.L5};
   }
@@ -194,7 +194,7 @@ const CreationInput = styled.input<{ type: string }>`
   font-size: 16px;
   outline: 0;
   background-color: ${(p) => p.theme.neutrals.L6};
-  border-radius: ${(p) => p.theme.radius}px;
+  border-radius: ${(p) => p.theme.border.primary.radius}px;
   padding: 1rem;
 `;
 

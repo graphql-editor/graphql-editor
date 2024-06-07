@@ -156,7 +156,7 @@ const ZoomWrapper = styled.div`
   border-color: ${({ theme }) => theme.neutrals.L2};
   border-style: solid;
   border-width: 1px;
-  border-radius: ${(p) => p.theme.radius}px;
+  border-radius: ${(p) => p.theme.border.primary.radius}px;
   gap: 8px;
   font-family: ${({ theme }) => theme.fontFamilySans};
 `;

@@ -15,7 +15,7 @@ const Message = styled.textarea`
   font-family: ${({ theme }) => theme.fontFamily};
   font-size: 14px;
   padding: 30px;
-  color: ${({ theme }) => theme.error};
+  color: ${({ theme }) => theme.alert.error.L2};
   background-color: ${({ theme }) => theme.neutrals.L6};
   border: 0;
   position: relative;

@@ -15,7 +15,7 @@ const Wrapper = styled.div`
   height: 100%;
   position: relative;
   overflow: auto;
-  background: ${MainTheme.background.default};
+  background: ${MainTheme.neutrals.L6};
   color: ${MainTheme.text.default};
   padding: 40px;
   font-family: ${fontFamilySans};
@@ -27,7 +27,7 @@ const Main = styled.div`
 const Tile = styled.a`
   border-radius: 10px;
   padding: 40px;
-  background-color: ${MainTheme.neutral[500]};
+  background-color: ${MainTheme.neutrals.L5};
   cursor: pointer;
   margin: 10px;
   text-decoration: none;
@@ -35,9 +35,9 @@ const Tile = styled.a`
   border: 1px solid transparent;
   transition: ${vars.transition};
   :hover {
-    border: 1px solid ${MainTheme.accents[200]};
-    color: ${MainTheme.accents[200]};
-    background-color: ${MainTheme.neutral[600]};
+    border: 1px solid ${MainTheme.accent.L2};
+    color: ${MainTheme.accent.L2};
+    background-color: ${MainTheme.neutrals.L6};
   }
 `;
 

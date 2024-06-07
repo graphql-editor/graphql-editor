@@ -13,7 +13,7 @@ const Wrapper = styled(motion.div)`
 
 const Content = styled.div`
   background: ${({ theme }) => theme.neutrals.L4};
-  border-radius: ${(p) => p.theme.radius}px;
+  border-radius: ${(p) => p.theme.border.primary.radius}px;
   padding: 0;
   box-shadow: ${({ theme }) => theme.shadow};
   display: flex;

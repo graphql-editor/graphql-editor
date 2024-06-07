@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { PassedSchema } from "graphql-editor";
+import { MainTheme, PassedSchema } from "graphql-editor";
 import * as schemas from "../schema";
 import { GraphQLEditor } from "graphql-editor";
+import { themeColors } from "@aexol-studio/styling-system";
 
 export const VeryLongSchema = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
@@ -26,6 +27,7 @@ export const VeryLongSchema = () => {
           setMySchema(props);
         }}
         schema={mySchema}
+        theme={{ ...MainTheme, ...themeColors("graphqleditor", "light") }}
       />
     </div>
   );

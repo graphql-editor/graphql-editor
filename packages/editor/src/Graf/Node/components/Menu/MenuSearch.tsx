@@ -19,7 +19,7 @@ const Wrapper = styled.div`
 
 const Main = styled.input`
   background-color: ${({ theme }) => theme.neutrals.L7};
-  border-radius: ${(p) => p.theme.radius}px;
+  border-radius: ${(p) => p.theme.border.primary.radius}px;
   color: ${({ theme }) => theme.text.default};
   width: auto;
   flex: 1;

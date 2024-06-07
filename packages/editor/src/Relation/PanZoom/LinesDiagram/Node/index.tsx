@@ -42,7 +42,7 @@ const Content = styled.div<ContentProps>`
   padding: 12px;
   position: relative;
   text-rendering: optimizeSpeed;
-  border-radius: ${(p) => p.theme.radius}px;
+  border-radius: ${(p) => p.theme.border.primary.radius}px;
   transition: 0.25s all ease-in-out;
   z-index: 1;
   flex: 1 0 auto;
@@ -74,7 +74,7 @@ const Content = styled.div<ContentProps>`
       border-color: ${({ theme, nodeType }) =>
         theme.colors[nodeType]
           ? theme.colors[nodeType]
-          : `${theme.dividerMain}88`};
+          : `${theme.divider.main}88`};
       .editNode {
         display: flex;
       }
@@ -169,7 +169,7 @@ const EditNodeContainer = styled.div`
 `;
 const SmallClickableButton = styled.div`
   background-color: ${(p) => p.theme.neutrals.L4};
-  color: ${(p) => p.theme.button.standalone.active};
+  color: ${(p) => p.theme.content.standalone.active};
   padding: 0.25rem 0.5rem;
   display: flex;
   align-items: center;
@@ -184,10 +184,10 @@ const SmallClickableButton = styled.div`
   }
 `;
 const EditNodeClickableButton = styled(SmallClickableButton)`
-  border-radius: ${(p) => p.theme.radius}px;
+  border-radius: ${(p) => p.theme.border.primary.radius}px;
 `;
 const FocusNodeClickableButton = styled(SmallClickableButton)`
-  border-radius: ${(p) => p.theme.radius}px;
+  border-radius: ${(p) => p.theme.border.primary.radius}px;
 `;
 
 const NameInRelation = styled.span`
@@ -205,8 +205,8 @@ const EditToSeeWhole = styled(Stack)`
   margin: 1rem -12px;
   background: ${(p) => p.theme.neutrals.L5};
   width: calc(100% + 26px);
-  border-bottom-left-radius: ${(p) => p.theme.radius}px;
-  border-bottom-right-radius: ${(p) => p.theme.radius}px;
+  border-bottom-left-radius: ${(p) => p.theme.border.primary.radius}px;
+  border-bottom-right-radius: ${(p) => p.theme.border.primary.radius}px;
   cursor: pointer;
   transition: ${transition};
   :hover {
