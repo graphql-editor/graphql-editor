@@ -37,12 +37,12 @@ const Content = styled.div<ContentProps>`
   max-width: ${(p) =>
     p.printPreviewActive
       ? PRINT_PREVIEW_RELATION_NODE_MAX_WIDTH
-      : RELATION_NODE_MAX_WIDTH};
+      : RELATION_NODE_MAX_WIDTH}px;
   background-color: ${({ theme }) => `${theme.neutrals.L6}`};
   padding: 12px;
   position: relative;
   text-rendering: optimizeSpeed;
-  border-radius: ${(p) => p.theme.border.primary.radius}px;
+  border-radius: ${(p) => p.theme.border.primary.radius};
   transition: 0.25s all ease-in-out;
   z-index: 1;
   flex: 1 0 auto;
@@ -184,10 +184,10 @@ const SmallClickableButton = styled.div`
   }
 `;
 const EditNodeClickableButton = styled(SmallClickableButton)`
-  border-radius: ${(p) => p.theme.border.primary.radius}px;
+  border-radius: ${(p) => p.theme.border.primary.radius};
 `;
 const FocusNodeClickableButton = styled(SmallClickableButton)`
-  border-radius: ${(p) => p.theme.border.primary.radius}px;
+  border-radius: ${(p) => p.theme.border.primary.radius};
 `;
 
 const NameInRelation = styled.span`
@@ -205,8 +205,8 @@ const EditToSeeWhole = styled(Stack)`
   margin: 1rem -12px;
   background: ${(p) => p.theme.neutrals.L5};
   width: calc(100% + 26px);
-  border-bottom-left-radius: ${(p) => p.theme.border.primary.radius}px;
-  border-bottom-right-radius: ${(p) => p.theme.border.primary.radius}px;
+  border-bottom-left-radius: ${(p) => p.theme.border.primary.radius};
+  border-bottom-right-radius: ${(p) => p.theme.border.primary.radius};
   cursor: pointer;
   transition: ${transition};
   :hover {

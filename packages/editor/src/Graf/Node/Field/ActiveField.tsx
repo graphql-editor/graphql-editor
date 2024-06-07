@@ -291,7 +291,7 @@ const AbsoluteActions = styled.div`
   display: flex;
   margin-left: auto;
   margin-right: -0.5rem;
-  border-radius: ${(p) => p.theme.border.primary.radius}px;
+  border-radius: ${(p) => p.theme.border.primary.radius};
 `;
 const OutputArrow = styled.div<{ opened?: boolean }>`
   pointer-events: all;

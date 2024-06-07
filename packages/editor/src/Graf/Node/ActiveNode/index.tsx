@@ -86,7 +86,7 @@ const NodeContainer = styled.div`
   background-color: ${({ theme }) => theme.neutrals.L5};
   display: flex;
   flex-flow: column nowrap;
-  border-radius: ${(p) => p.theme.border.primary.radius}px;
+  border-radius: ${(p) => p.theme.border.primary.radius};
   pointer-events: all;
   border: 1px solid ${({ theme }) => `${theme.divider.main}`};
 `;

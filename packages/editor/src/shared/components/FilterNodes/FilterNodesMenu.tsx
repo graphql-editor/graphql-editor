@@ -89,7 +89,7 @@ const CreateNodeItem = styled.div<{ type?: string; active?: boolean }>`
         ? theme.colors[type as keyof typeof theme.colors]
         : theme.text.default};
   transition: ${transition};
-  border-radius: ${(p) => p.theme.border.primary.radius}px;
+  border-radius: ${(p) => p.theme.border.primary.radius};
   :hover {
     background-color: ${({ theme }) => theme.neutrals.L5};
   }
