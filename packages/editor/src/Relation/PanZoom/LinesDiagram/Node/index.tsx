@@ -54,7 +54,7 @@ const Content = styled.div<ContentProps>`
   cursor: pointer;
   border-width: 2px;
   border-style: ${({ isLibrary }) => (isLibrary ? "dashed" : "solid")};
-  border-color: ${({ theme }) => `${theme.dividerMain}88`};
+  border-color: ${({ theme }) => `${theme.divider.main}88`};
   &:hover {
     border-color: ${({ theme, nodeType }) =>
       theme.colors[nodeType] ? theme.colors[nodeType] : `${theme.accent.L1}00`};
