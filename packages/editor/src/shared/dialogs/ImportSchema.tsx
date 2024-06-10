@@ -15,6 +15,7 @@ import {
   IntrospectionSchema,
   printSchema,
 } from "graphql";
+import { useTheme } from "@/state/containers";
 
 export const ImportSchema: React.FC<{
   onClose: () => void;
@@ -26,6 +27,7 @@ export const ImportSchema: React.FC<{
   const [headers, setHeaders] = useState<[string, string][]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { createToast } = useToasts();
+  const { theme } = useTheme();
 
   useEffect(() => {
     setImportURL("");
@@ -204,6 +206,7 @@ export const ImportSchema: React.FC<{
           }}
           fullWidth
           label="https://yourschema.com/graphql"
+          wrapperCss={{ background: theme.neutrals.L7 }}
         />
         <Stack direction="column" gap="1rem">
           <Checkbox
@@ -228,6 +231,7 @@ export const ImportSchema: React.FC<{
                   headers[i][0] = e.target.value;
                   setHeaders([...headers]);
                 }}
+                wrapperCss={{ background: theme.neutrals.L7 }}
               />
               <TextField
                 onChange={(e) => {
@@ -237,6 +241,7 @@ export const ImportSchema: React.FC<{
                 variant="border-bottom"
                 label="value"
                 value={v}
+                wrapperCss={{ background: theme.neutrals.L7 }}
               />
             </Stack>
           ))}

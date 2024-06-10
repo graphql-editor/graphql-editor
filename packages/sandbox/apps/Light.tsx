@@ -64,10 +64,10 @@ export const Light = () => {
     //   L2: "#15449F",
     //   L7: "#7EB1FC",
     // },
-    // text: {
-    //   ...stylingSystemTheme.text,
-    //   contrast: "#292D48",
-    // },
+    text: {
+      ...stylingSystemTheme.text,
+      contrast: "#292D48",
+    },
   };
   return (
     <div

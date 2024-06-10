@@ -169,13 +169,13 @@ const CreateNodeItem = styled.div<{ type: string }>`
     color: ${({ theme }) => theme.text.default};
   }
 
-  background-color: ${({ theme }) => theme.neutrals.L5};
+  background-color: ${({ theme }) => theme.neutrals.L6};
   border-left: 1px solid
     ${({ type, theme }) => theme.colors[type as keyof typeof theme.colors]};
   transition: ${transition};
   border-radius: ${(p) => p.theme.border.primary.radius};
   :hover {
-    background-color: ${({ theme }) => theme.neutrals.L5};
+    background-color: ${({ theme }) => theme.neutrals.L7};
   }
 `;
 const CreateNodeName = styled.div`
@@ -187,13 +187,12 @@ const CreationInput = styled.input<{ type: string }>`
   border: 0;
   width: 100%;
   height: 3rem;
-  background-color: ${({ theme }) => theme.neutrals.L5};
   color: ${({ theme }) => theme.text.active};
   border-left: 1px solid
     ${({ type, theme }) => theme.colors[type as keyof typeof theme.colors]};
   font-size: 16px;
   outline: 0;
-  background-color: ${(p) => p.theme.neutrals.L6};
+  background-color: ${({ theme }) => theme.neutrals.L7};
   border-radius: ${(p) => p.theme.border.primary.radius};
   padding: 1rem;
 `;

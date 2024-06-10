@@ -21,14 +21,14 @@ const Sidebar = styled.div`
   background: ${({ theme }) => theme.neutrals.L6};
   color: ${({ theme }) => theme.text.disabled};
   z-index: 4;
-  border: 0 solid ${({ theme }) => theme.neutrals.L7};
-  border-right-width: 1px;
-  border-left-width: 1px;
+  border: 0 solid ${({ theme }) => theme.neutrals.L8};
+  border-right-width: 2px;
+  border-left-width: 2px;
   position: relative;
   transition: width 0.5s ease-in-out;
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
   font-family: ${({ theme }) => theme.fontFamilySans};
 `;
 const Filler = styled.div`
