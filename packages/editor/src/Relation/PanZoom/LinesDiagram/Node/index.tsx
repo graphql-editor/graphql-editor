@@ -5,6 +5,7 @@ import { transition } from "@/vars";
 import styled from "@emotion/styled";
 import { EditorTheme } from "@/gshared/theme/MainTheme";
 import {
+  Button,
   ChevronRightDouble,
   EagleEye,
   PenLine,
@@ -167,27 +168,15 @@ const EditNodeContainer = styled.div`
   top: 0;
   transform: translateY(calc(-100% - 0.5rem));
 `;
-const SmallClickableButton = styled.div`
-  background-color: ${(p) => p.theme.neutrals.L4};
-  color: ${(p) => p.theme.content.standalone.active};
+const SmallClickableButton = styled(Button)`
+  font-size: 14px;
+  text-transform: none;
   padding: 0.25rem 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: ${transition};
-  gap: 0.25rem;
-  pointer-events: all;
-  cursor: pointer;
-  z-index: 1;
-  :hover {
-    background-color: ${(p) => p.theme.neutrals.L2};
+
+  & > svg {
+    width: 16px;
+    height: 16px;
   }
-`;
-const EditNodeClickableButton = styled(SmallClickableButton)`
-  border-radius: ${(p) => p.theme.border.primary.radius};
-`;
-const FocusNodeClickableButton = styled(SmallClickableButton)`
-  border-radius: ${(p) => p.theme.border.primary.radius};
 `;
 
 const NameInRelation = styled.span`
@@ -284,7 +273,8 @@ export const Node: React.FC<NodeProps> = (props) => {
           <ActiveType type={field.type} />
           {!printPreviewActive && (
             <EditNodeContainer className="editNode">
-              <FocusNodeClickableButton
+              <SmallClickableButton
+                variant="neutral"
                 {...dataIt("nodeFocus")}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -297,8 +287,9 @@ export const Node: React.FC<NodeProps> = (props) => {
               >
                 <span>{isFieldFocused ? "Unfocus" : "Focus"}</span>
                 <EagleEye width={16} height={16} />
-              </FocusNodeClickableButton>
-              <EditNodeClickableButton
+              </SmallClickableButton>
+              <SmallClickableButton
+                variant="neutral"
                 {...dataIt("nodeEditExpand")}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -311,7 +302,7 @@ export const Node: React.FC<NodeProps> = (props) => {
                 ) : (
                   <PenLine width={16} height={16} />
                 )}
-              </EditNodeClickableButton>
+              </SmallClickableButton>
             </EditNodeContainer>
           )}
         </NodeTitle>

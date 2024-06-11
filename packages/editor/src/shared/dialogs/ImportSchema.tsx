@@ -224,7 +224,6 @@ export const ImportSchema: React.FC<{
           {headers.map(([k, v], i) => (
             <Stack key={i} gap="1rem">
               <TextField
-                variant="border-bottom"
                 label="key"
                 value={k}
                 onChange={(e) => {
@@ -238,7 +237,6 @@ export const ImportSchema: React.FC<{
                   headers[i][1] = e.target.value;
                   setHeaders([...headers]);
                 }}
-                variant="border-bottom"
                 label="value"
                 value={v}
                 wrapperCss={{ background: theme.neutrals.L7 }}
