@@ -25,7 +25,7 @@ const Errors = styled(Stack)`
   pointer-events: all;
   background-color: ${(p) => p.theme.neutrals.L4};
   padding: 0.5rem;
-  border-radius: ${(p) => p.theme.radius}px;
+  border-radius: ${(p) => p.theme.border.primary.radius};
 `;
 
 const List = styled(Stack)`

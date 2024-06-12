@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { GraphQLEditor, PassedSchema } from "graphql-editor";
+import { GraphQLEditor, MainTheme, PassedSchema } from "graphql-editor";
 import * as schemas from "../schema";
+import { themeColors } from "@aexol-studio/styling-system";
 
 export const Light = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
@@ -8,6 +9,10 @@ export const Light = () => {
     libraries: "",
     source: "outside",
   });
+  const lightTheme = {
+    ...MainTheme,
+    ...themeColors("graphqleditor", "light"),
+  };
   return (
     <div
       style={{
@@ -25,6 +30,7 @@ export const Light = () => {
           setMySchema(props);
         }}
         schema={mySchema}
+        theme={lightTheme}
       />
     </div>
   );

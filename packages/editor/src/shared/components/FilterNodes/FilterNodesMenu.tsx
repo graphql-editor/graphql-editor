@@ -82,16 +82,16 @@ const CreateNodeItem = styled.div<{ type?: string; active?: boolean }>`
     height: 1rem;
   }
 
-  background-color: ${({ theme }) => theme.neutrals.L5};
+  background-color: ${({ theme }) => theme.neutrals.L6};
   border-left: 1px solid
     ${({ type, theme }) =>
       type
         ? theme.colors[type as keyof typeof theme.colors]
         : theme.text.default};
   transition: ${transition};
-  border-radius: ${(p) => p.theme.radius}px;
+  border-radius: ${(p) => p.theme.border.primary.radius};
   :hover {
-    background-color: ${({ theme }) => theme.neutrals.L5};
+    background-color: ${({ theme }) => theme.neutrals.L7};
   }
 `;
 const CreateNodeName = styled.div`

@@ -59,7 +59,7 @@ const OpenedNode = styled.div`
 const MainNodeArea = styled.div`
   position: relative;
   transition: border-color 0.25s ease-in-out;
-  border-color: ${({ theme }) => `${theme.dividerMain}`};
+  border-color: ${({ theme }) => `${theme.divider.main}`};
   flex: 1;
   display: flex;
   flex-flow: column nowrap;
@@ -86,9 +86,9 @@ const NodeContainer = styled.div`
   background-color: ${({ theme }) => theme.neutrals.L5};
   display: flex;
   flex-flow: column nowrap;
-  border-radius: ${(p) => p.theme.radius}px;
+  border-radius: ${(p) => p.theme.border.primary.radius};
   pointer-events: all;
-  border: 1px solid ${({ theme }) => `${theme.dividerMain}`};
+  border: 1px solid ${({ theme }) => `${theme.divider.main}`};
 `;
 
 const NodeFieldsContainer = styled.div`
@@ -106,7 +106,7 @@ const DirectivePlacements = styled.div`
   align-items: flex-start;
   padding: 1rem;
   gap: 1rem;
-  border-bottom: 1px solid ${({ theme }) => theme.dividerMain};
+  border-bottom: 1px solid ${({ theme }) => theme.divider.main};
 `;
 const NodeInterfaces = styled.div<{ isHidden?: boolean }>`
   display: ${({ isHidden }) => (isHidden ? "none" : "flex")};
@@ -116,7 +116,7 @@ const NodeInterfaces = styled.div<{ isHidden?: boolean }>`
   gap: 1rem;
   align-items: flex-start;
   padding: 1rem;
-  border-bottom: 1px solid ${({ theme }) => theme.dividerMain};
+  border-bottom: 1px solid ${({ theme }) => theme.divider.main};
 `;
 
 const DndContainer = styled.div`

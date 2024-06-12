@@ -24,7 +24,7 @@ const NodeInterfaceBlock = styled.div<{ isLocked?: boolean }>`
   padding: 0.25rem 0.5rem;
   color: ${({ theme }) => theme.colors.interface};
   font-size: 12px;
-  border-radius: ${(p) => p.theme.radius}px;
+  border-radius: ${(p) => p.theme.border.primary.radius};
   position: relative;
   cursor: pointer;
   border: 1px solid currentColor;

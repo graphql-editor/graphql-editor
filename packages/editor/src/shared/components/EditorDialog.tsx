@@ -21,7 +21,7 @@ export const EditorDialog: React.FC<
   );
 };
 const Title = styled(Typography)`
-  border-bottom: ${(p) => p.theme.dividerMain} 1px solid;
+  border-bottom: ${(p) => p.theme.divider.main} 1px solid;
   margin-bottom: 1rem;
 `;
 

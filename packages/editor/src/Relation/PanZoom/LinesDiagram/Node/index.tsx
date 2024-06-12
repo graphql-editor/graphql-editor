@@ -5,6 +5,7 @@ import { transition } from "@/vars";
 import styled from "@emotion/styled";
 import { EditorTheme } from "@/gshared/theme/MainTheme";
 import {
+  Button,
   ChevronRightDouble,
   EagleEye,
   PenLine,
@@ -37,12 +38,12 @@ const Content = styled.div<ContentProps>`
   max-width: ${(p) =>
     p.printPreviewActive
       ? PRINT_PREVIEW_RELATION_NODE_MAX_WIDTH
-      : RELATION_NODE_MAX_WIDTH};
+      : RELATION_NODE_MAX_WIDTH}px;
   background-color: ${({ theme }) => `${theme.neutrals.L6}`};
   padding: 12px;
   position: relative;
   text-rendering: optimizeSpeed;
-  border-radius: ${(p) => p.theme.radius}px;
+  border-radius: ${(p) => p.theme.border.primary.radius};
   transition: 0.25s all ease-in-out;
   z-index: 1;
   flex: 1 0 auto;
@@ -54,7 +55,7 @@ const Content = styled.div<ContentProps>`
   cursor: pointer;
   border-width: 2px;
   border-style: ${({ isLibrary }) => (isLibrary ? "dashed" : "solid")};
-  border-color: ${({ theme }) => `${theme.dividerMain}88`};
+  border-color: ${({ theme }) => `${theme.divider.main}88`};
   &:hover {
     border-color: ${({ theme, nodeType }) =>
       theme.colors[nodeType] ? theme.colors[nodeType] : `${theme.accent.L1}00`};
@@ -74,7 +75,7 @@ const Content = styled.div<ContentProps>`
       border-color: ${({ theme, nodeType }) =>
         theme.colors[nodeType]
           ? theme.colors[nodeType]
-          : `${theme.dividerMain}88`};
+          : `${theme.divider.main}88`};
       .editNode {
         display: flex;
       }
@@ -167,27 +168,15 @@ const EditNodeContainer = styled.div`
   top: 0;
   transform: translateY(calc(-100% - 0.5rem));
 `;
-const SmallClickableButton = styled.div`
-  background-color: ${(p) => p.theme.neutrals.L4};
-  color: ${(p) => p.theme.button.standalone.active};
+const SmallClickableButton = styled(Button)`
+  font-size: 14px;
+  text-transform: none;
   padding: 0.25rem 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: ${transition};
-  gap: 0.25rem;
-  pointer-events: all;
-  cursor: pointer;
-  z-index: 1;
-  :hover {
-    background-color: ${(p) => p.theme.neutrals.L2};
+
+  & > svg {
+    width: 16px;
+    height: 16px;
   }
-`;
-const EditNodeClickableButton = styled(SmallClickableButton)`
-  border-radius: ${(p) => p.theme.radius}px;
-`;
-const FocusNodeClickableButton = styled(SmallClickableButton)`
-  border-radius: ${(p) => p.theme.radius}px;
 `;
 
 const NameInRelation = styled.span`
@@ -205,8 +194,8 @@ const EditToSeeWhole = styled(Stack)`
   margin: 1rem -12px;
   background: ${(p) => p.theme.neutrals.L5};
   width: calc(100% + 26px);
-  border-bottom-left-radius: ${(p) => p.theme.radius}px;
-  border-bottom-right-radius: ${(p) => p.theme.radius}px;
+  border-bottom-left-radius: ${(p) => p.theme.border.primary.radius};
+  border-bottom-right-radius: ${(p) => p.theme.border.primary.radius};
   cursor: pointer;
   transition: ${transition};
   :hover {
@@ -284,7 +273,8 @@ export const Node: React.FC<NodeProps> = (props) => {
           <ActiveType type={field.type} />
           {!printPreviewActive && (
             <EditNodeContainer className="editNode">
-              <FocusNodeClickableButton
+              <SmallClickableButton
+                variant="neutral"
                 {...dataIt("nodeFocus")}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -297,8 +287,9 @@ export const Node: React.FC<NodeProps> = (props) => {
               >
                 <span>{isFieldFocused ? "Unfocus" : "Focus"}</span>
                 <EagleEye width={16} height={16} />
-              </FocusNodeClickableButton>
-              <EditNodeClickableButton
+              </SmallClickableButton>
+              <SmallClickableButton
+                variant="neutral"
                 {...dataIt("nodeEditExpand")}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -311,7 +302,7 @@ export const Node: React.FC<NodeProps> = (props) => {
                 ) : (
                   <PenLine width={16} height={16} />
                 )}
-              </EditNodeClickableButton>
+              </SmallClickableButton>
             </EditNodeContainer>
           )}
         </NodeTitle>

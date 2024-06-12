@@ -360,7 +360,7 @@ const IconContainer = styled.div<{
 }>`
   display: flex;
   transition: ${transition};
-  color: ${({ theme }) => theme.button.standalone.disabled};
+  color: ${({ theme }) => theme.content.standalone.disabled};
   :hover {
     color: ${({ theme }) => theme.text.active};
   }

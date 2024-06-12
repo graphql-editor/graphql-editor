@@ -26,7 +26,7 @@ const Main = styled.textarea`
 const MainWrapper = styled.div`
   padding: 0.33rem;
   border: 0;
-  border-bottom-color: ${({ theme }) => `${theme.dividerMain}`};
+  border-bottom-color: ${({ theme }) => `${theme.divider.main}`};
   border-bottom-width: 1px;
   border-bottom-style: solid;
   display: flex;

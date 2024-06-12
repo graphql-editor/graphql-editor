@@ -32,7 +32,7 @@ export const ErrorLock = styled.div`
   left: 0;
   background: ${({ theme }) => theme.neutrals.L6};
   cursor: pointer;
-  color: ${({ theme }) => theme.error};
+  color: ${({ theme }) => theme.alert.error.L2};
   font-family: ${({ theme }) => theme.fontFamily};
   font-size: 14px;
   padding: 30px;

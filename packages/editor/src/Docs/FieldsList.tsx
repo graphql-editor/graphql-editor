@@ -34,7 +34,7 @@ const FieldsWrapper = styled(Stack)`
   border: 1px solid ${(p) => p.theme.neutrals.L5};
   position: relative;
   padding: 1rem;
-  border-radius: ${(p) => p.theme.radius}px;
+  border-radius: ${(p) => p.theme.border.primary.radius};
 `;
 
 const TitleWrapper = styled.div<{ isType: boolean }>`

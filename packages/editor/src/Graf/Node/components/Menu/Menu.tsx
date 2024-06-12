@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 
 const Wrapper = styled(motion.div)`
   width: 220px;
-  border-radius: ${(p) => p.theme.border.primary.radius}px;
+  border-radius: ${(p) => p.theme.border.primary.radius};
   border: 1px solid ${(p) => p.theme.neutrals.L3};
   font-family: ${({ theme }) => theme.fontFamilySans};
   z-index: 2;
@@ -13,7 +13,7 @@ const Wrapper = styled(motion.div)`
 
 const Content = styled.div`
   background: ${({ theme }) => theme.neutrals.L4};
-  border-radius: ${(p) => p.theme.radius}px;
+  border-radius: ${(p) => p.theme.border.primary.radius};
   padding: 0;
   box-shadow: ${({ theme }) => theme.shadow};
   display: flex;

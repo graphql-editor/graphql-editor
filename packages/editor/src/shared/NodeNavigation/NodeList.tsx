@@ -32,7 +32,7 @@ const Title = styled.div<TitleProps>`
   transition: ${transition};
   svg {
     color: ${({ theme, open }) =>
-      open ? theme.text.active : theme.button.standalone.disabled};
+      open ? theme.text.active : theme.content.standalone.disabled};
     transition: ${transition};
     transform-origin: 50%;
     transform: ${({ open }) => (open ? "rotate(0deg)" : "rotate(-90deg)")};

@@ -20,7 +20,7 @@ const Main = styled.div<{ isSelected?: boolean }>`
   gap: 0.5rem;
   font-size: 14px;
   cursor: pointer;
-  border-radius: ${(p) => p.theme.radius}px;
+  border-radius: ${(p) => p.theme.border.primary.radius};
   scroll-snap-align: end;
   background-color: ${({ isSelected, theme }) =>
     isSelected && theme.neutrals.L5};
