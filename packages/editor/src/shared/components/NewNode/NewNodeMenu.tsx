@@ -58,6 +58,13 @@ export const NewNodeMenu = React.forwardRef<
     data: TypeDefinition | TypeSystemDefinition,
     type: string
   ) => {
+    if (!nodeName) {
+      createToast({
+        message: "Cannot create node without name.",
+        variant: "error",
+      });
+      return;
+    }
     const doesNodeAlreadyExist = tree.nodes.find(
       (node) =>
         node.name.toLowerCase() === nodeName.toLowerCase() &&
