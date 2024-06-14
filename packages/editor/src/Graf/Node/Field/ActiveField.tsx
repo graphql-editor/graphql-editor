@@ -218,7 +218,6 @@ export const ActiveField: React.FC<FieldProps> = ({
       <AbsoluteActions className="field-actions">
         {!inputDisabled &&
           !isArgumentNode &&
-          !isFromInterface &&
           node.data.type !== TypeSystemDefinition.UnionMemberDefinition && (
             <Tooltip title="Field arguments and directives">
               <FieldPort
