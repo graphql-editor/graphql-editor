@@ -15,6 +15,7 @@ import {
   TypedMenuItem,
 } from "@/Graf/Node/components";
 import { sortNodes } from "@/shared/components/ContextMenu/sort";
+import { useRelationsState } from "@/state/containers/relations";
 interface NodeAddFieldMenuProps {
   node: ParserField;
   hideMenu: () => void;
@@ -25,6 +26,7 @@ export const NodeAddFieldMenu = React.forwardRef<
   NodeAddFieldMenuProps
 >(({ node, hideMenu, ...props }, ref) => {
   const { allNodes, addFieldToNode } = useTreesState();
+  const { editMode } = useRelationsState();
   const [menuSearchValue, setMenuSearchValue] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -71,7 +73,8 @@ export const NodeAddFieldMenu = React.forwardRef<
           },
         },
       }),
-      name
+      name,
+      editMode
     );
     setMenuSearchValue("");
     return;

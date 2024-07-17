@@ -325,7 +325,12 @@ const useTreesStateContainer = createContainer(() => {
     );
   };
 
-  const addFieldToNode = (node: ParserField, f: ParserField, name?: string) => {
+  const addFieldToNode = (
+    node: ParserField,
+    f: ParserField,
+    name: string,
+    parentNode: string
+  ) => {
     updateNode(node, () => {
       let newName = name || f.name[0].toLowerCase() + f.name.slice(1);
       const existingNodes =
@@ -334,10 +339,14 @@ const useTreesStateContainer = createContainer(() => {
       if (existingNodes.length > 0) {
         newName = `${newName}${existingNodes.length}`;
       }
-      mutationRoot.addFieldToNode(node, {
-        ...f,
-        name: newName,
-      });
+      mutationRoot.addFieldToNode(
+        node,
+        {
+          ...f,
+          name: newName,
+        },
+        parentNode
+      );
     });
   };
   const renameNode = (node: ParserField, newName: string) => {
@@ -347,13 +356,17 @@ const useTreesStateContainer = createContainer(() => {
     }
     updateNode(node, () => mutationRoot.renameRootNode(node, newName));
   };
-  const removeFieldFromNode = (node: ParserField, field: ParserField) => {
+  const removeFieldFromNode = (
+    node: ParserField,
+    field: ParserField,
+    parentNode: string
+  ) => {
     updateNode(node, () => {
       if (field.data.type === Instances.Argument) {
         node.args = node.args.filter((a) => a.id !== field.id);
         return;
       }
-      mutationRoot.removeNode(field);
+      mutationRoot.removeNode(field, parentNode);
     });
   };
   const removeNode = (node: ParserField) => {
