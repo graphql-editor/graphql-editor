@@ -498,7 +498,7 @@ export const ActiveNode: React.FC<NodeProps> = ({
                       outputOpen={
                         openedNode?.type === "output" && openedNode?.index === i
                       }
-                      onDelete={() => removeFieldFromNode(node, a)}
+                      onDelete={() => removeFieldFromNode(node, a, editMode)}
                       onUpdate={(updatedNode) => {
                         updateFieldOnNode(node, i, updatedNode, editMode);
                       }}

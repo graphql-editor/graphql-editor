@@ -46,7 +46,7 @@
     "framer-motion": "^10.12.16",
     "fuzzyjs": "^5.0.1",
     "graphql-editor-worker": "^7.2.14",
-    "graphql-js-tree": "^2.0.2",
+    "graphql-js-tree": "^3.0.1",
     "graphql-language-service": "3.2.5",
     "html-to-image": "^1.10.8",
     "re-resizable": "^6.9.1",
