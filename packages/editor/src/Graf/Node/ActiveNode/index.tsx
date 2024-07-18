@@ -216,6 +216,9 @@ export const ActiveNode: React.FC<NodeProps> = ({
 
   useEffect(() => {
     setOpenedNode(undefined);
+    if (selectedNodeId?.value?.id && selectedNodeId?.value?.id !== editMode) {
+      setEditMode(selectedNodeId?.value?.id);
+    }
   }, [selectedNodeId?.value?.id]);
 
   const openedNodeNode = openedNode
