@@ -1,12 +1,12 @@
-import type * as monaco from 'monaco-editor';
-export const settings: monaco.editor.IStandaloneEditorConstructionOptions = {
+import type { editor } from "monaco-editor";
+export const settings: editor.IStandaloneEditorConstructionOptions = {
   glyphMargin: true,
-  theme: 'graphql-editor',
+  theme: "graphql-editor",
   smoothScrolling: true,
 };
 export const diffEditorSettings = (
-  override: monaco.editor.IDiffEditorConstructionOptions = {},
-): monaco.editor.IDiffEditorConstructionOptions => ({
+  override: editor.IDiffEditorConstructionOptions = {}
+): editor.IDiffEditorConstructionOptions => ({
   glyphMargin: true,
   renderSideBySide: true,
   smoothScrolling: true,

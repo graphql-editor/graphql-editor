@@ -1,7 +1,7 @@
-import type * as monaco from "monaco-editor";
+import type { editor } from "monaco-editor";
 import { themed } from "@/Theming/utils";
 
-const rules = themed<monaco.editor.ITokenThemeRule[]>(({ text, accent }) => [
+const rules = themed<editor.ITokenThemeRule[]>(({ text, accent }) => [
   { token: "keyword.gql", foreground: accent.L1 },
   { token: "type.identifier.gql", foreground: accent.L2 },
   { token: "key.identifier.gql", foreground: text.active },
@@ -27,7 +27,7 @@ const rules = themed<monaco.editor.ITokenThemeRule[]>(({ text, accent }) => [
   },
 ]);
 
-const colors = themed<monaco.editor.IColors>(
+const colors = themed<editor.IColors>(
   ({ neutrals, text, alert, colors: { scalar } }) => ({
     "editor.foreground": text.active,
     "editor.background": neutrals.L6,
@@ -37,7 +37,7 @@ const colors = themed<monaco.editor.IColors>(
   })
 );
 
-export const theme = themed<monaco.editor.IStandaloneThemeData>((theme) => ({
+export const theme = themed<editor.IStandaloneThemeData>((theme) => ({
   base: "vs-dark",
   inherit: true,
   rules: rules(theme),

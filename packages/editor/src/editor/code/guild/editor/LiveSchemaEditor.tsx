@@ -1,6 +1,6 @@
 import React, { useEffect, useImperativeHandle } from "react";
 import MonacoEditor, { EditorProps } from "@monaco-editor/react";
-import type * as monaco from "monaco-editor";
+import type { editor, IDisposable } from "monaco-editor";
 import { EnrichedLanguageService } from "./EnrichedLanguageService";
 import { GraphQLError, GraphQLSchema } from "graphql";
 import {
@@ -13,7 +13,7 @@ import { theme as MonacoTheme } from "@/editor/code/monaco";
 
 export type LiveSchemaEditorProps = SchemaServicesOptions & {
   onBlur?: (value: string) => void;
-  onEditorMount?: (editor: monaco.editor.IStandaloneCodeEditor) => void;
+  onEditorMount?: (editor: editor.IStandaloneCodeEditor) => void;
   onLanguageServiceReady?: (languageService: EnrichedLanguageService) => void;
   onSchemaChange?: (schema: GraphQLSchema, sdl: string) => void;
   onSchemaError?: (
@@ -24,7 +24,7 @@ export type LiveSchemaEditorProps = SchemaServicesOptions & {
 } & Omit<EditorProps, "language">;
 
 export type LiveSchemaEditorApi = SchemaEditorApi & {
-  receive: (e: monaco.editor.IModelContentChangedEvent) => void;
+  receive: (e: editor.IModelContentChangedEvent) => void;
 };
 
 function BaseSchemaEditor(
@@ -65,8 +65,7 @@ function BaseSchemaEditor(
     }
   }, [languageService, props.onLanguageServiceReady]);
 
-  const [onBlurHandler, setOnBlurSubscription] =
-    React.useState<monaco.IDisposable>();
+  const [onBlurHandler, setOnBlurSubscription] = React.useState<IDisposable>();
 
   useEffect(() => {
     if (editorRef && props.onBlur) {

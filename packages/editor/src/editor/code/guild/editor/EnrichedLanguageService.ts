@@ -6,7 +6,7 @@ import {
   IPosition as GraphQLPosition,
   ContextToken,
 } from "graphql-language-service";
-import * as monaco from "monaco-editor";
+import type { editor, languages, IMarkdownString } from "monaco-editor";
 import {
   BridgeOptions,
   coreDefinitionSource,
@@ -22,6 +22,7 @@ import {
   cutUnnecessary,
 } from "./utils";
 import { mergeSDLs } from "graphql-js-tree";
+import { MarkerSeverity } from "@/enums";
 
 // TODO: cache decorations and diagnostics
 // const lastHandledForDocument = "";
@@ -46,10 +47,7 @@ export class EnrichedLanguageService extends LanguageService {
   }
   public async buildBridgeForProviders<
     T extends { lineNumber: number; column: number }
-  >(
-    model: monaco.editor.ITextModel,
-    position: T
-  ): Promise<null | BridgeOptions> {
+  >(model: editor.ITextModel, position: T): Promise<null | BridgeOptions> {
     const graphQLPosition = toGraphQLPosition(position);
     const document = model.getValue();
     const schema = await this.getSchema();
@@ -80,7 +78,7 @@ export class EnrichedLanguageService extends LanguageService {
 
   getDefinitionProvider(
     rawSources: DefinitionSource[]
-  ): monaco.languages.DefinitionProvider {
+  ): languages.DefinitionProvider {
     const sources = [...rawSources, coreDefinitionSource];
 
     return {
@@ -98,18 +96,16 @@ export class EnrichedLanguageService extends LanguageService {
 
         const nestedArrays = (
           await Promise.all(sources.map((source) => source.forNode(bridge)))
-        ).filter(Boolean) as unknown as monaco.languages.Location[][];
+        ).filter(Boolean) as unknown as languages.Location[][];
 
-        const items = ([] as monaco.languages.Location[]).concat(
-          ...nestedArrays
-        );
+        const items = ([] as languages.Location[]).concat(...nestedArrays);
 
         return items;
       },
     };
   }
 
-  getHoverProvider(rawSources: HoverSource[]): monaco.languages.HoverProvider {
+  getHoverProvider(rawSources: HoverSource[]): languages.HoverProvider {
     const sources = [...rawSources, coreHoverSource];
     return {
       provideHover: async (model, position) => {
@@ -134,7 +130,7 @@ export class EnrichedLanguageService extends LanguageService {
         );
 
         return {
-          contents: contents.filter<monaco.IMarkdownString>(removeFalsey),
+          contents: contents.filter<IMarkdownString>(removeFalsey),
           range: toMonacoRange(
             getRange(
               {
@@ -151,9 +147,9 @@ export class EnrichedLanguageService extends LanguageService {
 
   private async handleDecorations(
     decorationSources: DecorationsSource[],
-    model: monaco.editor.ITextModel,
-    monacoInstance: typeof monaco,
-    editorInstance: monaco.editor.IStandaloneCodeEditor
+    model: editor.ITextModel,
+    monacoInstance: any,
+    editorInstance: editor.IStandaloneCodeEditor
   ): Promise<void> {
     for (const source of decorationSources) {
       source.forDocument({
@@ -168,8 +164,8 @@ export class EnrichedLanguageService extends LanguageService {
 
   private async handleDiagnostics(
     rawDiagnosticsSources: DiagnosticsSource[],
-    model: monaco.editor.ITextModel,
-    monacoInstance: typeof monaco,
+    model: editor.ITextModel,
+    monacoInstance: any,
     libraries?: string
   ): Promise<void> {
     const diagnosticsSources = [
@@ -197,7 +193,7 @@ export class EnrichedLanguageService extends LanguageService {
                     endLineNumber: 19999,
                     startColumn: 0,
                     startLineNumber: 0,
-                    severity: monaco.MarkerSeverity.Warning,
+                    severity: MarkerSeverity.Warning,
                   },
                 ];
               } else {
@@ -217,17 +213,15 @@ export class EnrichedLanguageService extends LanguageService {
       )
     ).filter(removeFalsey);
 
-    const markerData = ([] as monaco.editor.IMarkerData[]).concat(
-      ...nestedArrays
-    );
+    const markerData = ([] as editor.IMarkerData[]).concat(...nestedArrays);
     monacoInstance.editor.setModelMarkers(model, "graphql", markerData);
   }
 
   getModelChangeHandler(
     libraries?: string
   ): (
-    editorInstance: monaco.editor.IStandaloneCodeEditor,
-    monacoInstance: typeof monaco,
+    editorInstance: editor.IStandaloneCodeEditor,
+    monacoInstance: any,
     diagnosticsSources: DiagnosticsSource[],
     decorationsSources: DecorationsSource[]
   ) => void {

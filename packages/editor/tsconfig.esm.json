@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "ESNext",
     "jsx": "react",
-    "module": "commonjs",
+    "module": "ESNext",
     "moduleResolution": "node",
     "experimentalDecorators": true,
     "declaration": true,
@@ -11,7 +11,7 @@
     "noUnusedLocals": true,
     "esModuleInterop": true,
     "strict": true,
-    "outDir": "./lib",
+    "outDir": "./lib/esm",
     "lib": ["es6", "es7", "esnext", "dom"],
     "rootDir": "./src",
     "baseUrl": "./src/",

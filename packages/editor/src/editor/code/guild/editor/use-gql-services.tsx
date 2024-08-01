@@ -1,5 +1,11 @@
 import React from "react";
-import * as monaco from "monaco-editor";
+import type {
+  CancellationToken,
+  editor,
+  languages,
+  IRange as MonacoIRange,
+  Position,
+} from "monaco-editor";
 import {
   DecorationsSource,
   DefinitionSource,
@@ -21,6 +27,7 @@ import {
 } from "graphql-language-service";
 import { PassedSchema } from "@/Models";
 import { EditorError } from "graphql-editor-worker/lib/validation";
+import { CompletionItemInsertTextRule, CompletionItemKindEnum } from "@/enums";
 
 export type SchemaServicesOptions = {
   schema?: PassedSchema;
@@ -41,9 +48,9 @@ export type SchemaServicesOptions = {
   ) => void;
   sharedLanguageService?: EnrichedLanguageService;
   keyboardShortcuts?: (
-    editorInstance: monaco.editor.IStandaloneCodeEditor,
-    monacoInstance: typeof monaco
-  ) => monaco.editor.IActionDescriptor[];
+    editorInstance: editor.IStandaloneCodeEditor,
+    monacoInstance: any
+  ) => editor.IActionDescriptor[];
 };
 
 const compileSchema = ({
@@ -58,12 +65,12 @@ const compileSchema = ({
 
 export const useGqlServices = (options: SchemaServicesOptions = {}) => {
   const [editorRef, setEditor] =
-    React.useState<monaco.editor.IStandaloneCodeEditor | null>(null);
+    React.useState<editor.IStandaloneCodeEditor | null>(null);
   const [internalCodeErrors, setInternalCodeErrors] = React.useState<
     EditorError[]
   >([]);
   const [decorationIds, setDecorationIds] = React.useState<string[]>([]);
-  const [monacoRef, setMonaco] = React.useState<typeof monaco | null>(null);
+  const [monacoRef, setMonaco] = React.useState<any | null>(null);
   const { theme } = useTheme();
   const languageService = React.useMemo(
     () =>
@@ -132,10 +139,10 @@ export const useGqlServices = (options: SchemaServicesOptions = {}) => {
       const completionProviderDisposable =
         monacoRef.languages.registerCompletionItemProvider("graphql", {
           provideCompletionItems: async (
-            model: monaco.editor.IReadOnlyModel,
-            position: monaco.Position,
-            _context: monaco.languages.CompletionContext,
-            _token: monaco.CancellationToken
+            model: editor.IReadOnlyModel,
+            position: Position,
+            _context: languages.CompletionContext,
+            _token: CancellationToken
           ) => {
             const bridge = await languageService
               .buildBridgeForProviders(model, position)
@@ -227,7 +234,7 @@ export const useGqlServices = (options: SchemaServicesOptions = {}) => {
   };
 };
 
-export function toMonacoRange(range: IRange): monaco.IRange {
+export function toMonacoRange(range: IRange): MonacoIRange {
   return {
     startLineNumber: range.start.line + 1,
     startColumn: range.start.character + 1,
@@ -238,16 +245,16 @@ export function toMonacoRange(range: IRange): monaco.IRange {
 export function toCompletion(
   entry: CompletionItem,
   range?: IRange
-): monaco.languages.CompletionItem {
-  const results: monaco.languages.CompletionItem = {
+): languages.CompletionItem {
+  const results: languages.CompletionItem = {
     label: entry.label,
     insertText: entry.insertText ?? entry.label,
-    insertTextRules:
-      monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+    insertTextRules: CompletionItemInsertTextRule.InsertAsSnippet,
     sortText: entry.sortText,
     filterText: entry.filterText,
     documentation: entry.documentation,
     detail: entry.detail,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     range: range ? toMonacoRange(range) : undefined,
     kind: entry.kind!,
@@ -290,42 +297,34 @@ export enum CompletionItemKind {
 
 export function toCompletionItemKind(
   kind: CompletionItemKind
-): monaco.languages.CompletionItemKind {
-  return kind in kindMap
-    ? kindMap[kind]
-    : monaco.languages.CompletionItemKind.Text;
+): CompletionItemKindEnum {
+  return kind in kindMap ? kindMap[kind] : CompletionItemKindEnum.Text;
 }
 
-const kindMap: Record<CompletionItemKind, monaco.languages.CompletionItemKind> =
-  {
-    [CompletionItemKind.Text]: monaco.languages.CompletionItemKind.Text,
-    [CompletionItemKind.Method]: monaco.languages.CompletionItemKind.Method,
-    [CompletionItemKind.Function]: monaco.languages.CompletionItemKind.Function,
-    [CompletionItemKind.Constructor]:
-      monaco.languages.CompletionItemKind.Constructor,
-    [CompletionItemKind.Field]: monaco.languages.CompletionItemKind.Field,
-    [CompletionItemKind.Variable]: monaco.languages.CompletionItemKind.Variable,
-    [CompletionItemKind.Class]: monaco.languages.CompletionItemKind.Class,
-    [CompletionItemKind.Interface]:
-      monaco.languages.CompletionItemKind.Interface,
-    [CompletionItemKind.Module]: monaco.languages.CompletionItemKind.Module,
-    [CompletionItemKind.Property]: monaco.languages.CompletionItemKind.Property,
-    [CompletionItemKind.Unit]: monaco.languages.CompletionItemKind.Unit,
-    [CompletionItemKind.Value]: monaco.languages.CompletionItemKind.Value,
-    [CompletionItemKind.Enum]: monaco.languages.CompletionItemKind.Enum,
-    [CompletionItemKind.Keyword]: monaco.languages.CompletionItemKind.Keyword,
-    [CompletionItemKind.Snippet]: monaco.languages.CompletionItemKind.Snippet,
-    [CompletionItemKind.Color]: monaco.languages.CompletionItemKind.Color,
-    [CompletionItemKind.File]: monaco.languages.CompletionItemKind.File,
-    [CompletionItemKind.Reference]:
-      monaco.languages.CompletionItemKind.Reference,
-    [CompletionItemKind.Folder]: monaco.languages.CompletionItemKind.Folder,
-    [CompletionItemKind.EnumMember]:
-      monaco.languages.CompletionItemKind.EnumMember,
-    [CompletionItemKind.Constant]: monaco.languages.CompletionItemKind.Constant,
-    [CompletionItemKind.Struct]: monaco.languages.CompletionItemKind.Struct,
-    [CompletionItemKind.Event]: monaco.languages.CompletionItemKind.Event,
-    [CompletionItemKind.Operator]: monaco.languages.CompletionItemKind.Operator,
-    [CompletionItemKind.TypeParameter]:
-      monaco.languages.CompletionItemKind.TypeParameter,
-  };
+const kindMap: Record<CompletionItemKind, CompletionItemKindEnum> = {
+  [CompletionItemKind.Text]: CompletionItemKindEnum.Text,
+  [CompletionItemKind.Method]: CompletionItemKindEnum.Method,
+  [CompletionItemKind.Function]: CompletionItemKindEnum.Function,
+  [CompletionItemKind.Constructor]: CompletionItemKindEnum.Constructor,
+  [CompletionItemKind.Field]: CompletionItemKindEnum.Field,
+  [CompletionItemKind.Variable]: CompletionItemKindEnum.Variable,
+  [CompletionItemKind.Class]: CompletionItemKindEnum.Class,
+  [CompletionItemKind.Interface]: CompletionItemKindEnum.Interface,
+  [CompletionItemKind.Module]: CompletionItemKindEnum.Module,
+  [CompletionItemKind.Property]: CompletionItemKindEnum.Property,
+  [CompletionItemKind.Unit]: CompletionItemKindEnum.Unit,
+  [CompletionItemKind.Value]: CompletionItemKindEnum.Value,
+  [CompletionItemKind.Enum]: CompletionItemKindEnum.Enum,
+  [CompletionItemKind.Keyword]: CompletionItemKindEnum.Keyword,
+  [CompletionItemKind.Snippet]: CompletionItemKindEnum.Snippet,
+  [CompletionItemKind.Color]: CompletionItemKindEnum.Color,
+  [CompletionItemKind.File]: CompletionItemKindEnum.File,
+  [CompletionItemKind.Reference]: CompletionItemKindEnum.Reference,
+  [CompletionItemKind.Folder]: CompletionItemKindEnum.Folder,
+  [CompletionItemKind.EnumMember]: CompletionItemKindEnum.EnumMember,
+  [CompletionItemKind.Constant]: CompletionItemKindEnum.Constant,
+  [CompletionItemKind.Struct]: CompletionItemKindEnum.Struct,
+  [CompletionItemKind.Event]: CompletionItemKindEnum.Event,
+  [CompletionItemKind.Operator]: CompletionItemKindEnum.Operator,
+  [CompletionItemKind.TypeParameter]: CompletionItemKindEnum.TypeParameter,
+};

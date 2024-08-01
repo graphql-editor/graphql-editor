@@ -8,7 +8,13 @@ import {
   getHoverInformation,
   getRange,
 } from "graphql-language-service";
-import * as monaco from "monaco-editor";
+import type {
+  IRange as MonacoIRange,
+  editor,
+  IMarkdownString,
+  languages,
+} from "monaco-editor";
+import { MarkerSeverity } from "@/enums";
 import type { EnrichedLanguageService } from "./EnrichedLanguageService";
 import { GraphQLEditorWorker } from "graphql-editor-worker";
 import {
@@ -24,7 +30,7 @@ export function removeFalsey<T>(obj: T | null): obj is T {
   return !!obj;
 }
 
-export function locToRange(loc: Location): monaco.IRange {
+export function locToRange(loc: Location): MonacoIRange {
   return {
     startLineNumber: loc.startToken.line,
     startColumn: loc.startToken.column,
@@ -33,7 +39,7 @@ export function locToRange(loc: Location): monaco.IRange {
   };
 }
 
-export const emptyLocation: monaco.IRange = {
+export const emptyLocation: MonacoIRange = {
   startLineNumber: 0,
   startColumn: 0,
   endLineNumber: 0,
@@ -44,7 +50,7 @@ export type BridgeOptions = {
   schema: GraphQLSchema;
   document: string;
   position: GraphQLPosition;
-  model: monaco.editor.ITextModel;
+  model: editor.ITextModel;
   token: ContextToken;
   languageService: EnrichedLanguageService;
 };
@@ -52,16 +58,13 @@ export type BridgeOptions = {
 export type HoverSource = {
   forNode(
     options: BridgeOptions
-  ): monaco.IMarkdownString | null | Promise<monaco.IMarkdownString | null>;
+  ): IMarkdownString | null | Promise<IMarkdownString | null>;
 };
 
 export type DiagnosticsSource = {
   forDocument(
     options: Pick<BridgeOptions, "document" | "languageService" | "model">
-  ):
-    | monaco.editor.IMarkerData[]
-    | null
-    | Promise<monaco.editor.IMarkerData[] | null>;
+  ): editor.IMarkerData[] | null | Promise<editor.IMarkerData[] | null>;
 };
 
 export const coreDiagnosticsSource: DiagnosticsSource = {
@@ -75,9 +78,9 @@ export const coreDiagnosticsSource: DiagnosticsSource = {
             startLineNumber: 0,
             endLineNumber: 1000,
             message: e.text,
-            severity: monaco.MarkerSeverity.Error,
+            severity: MarkerSeverity.Error,
             endColumn: 1000,
-          } as monaco.editor.IMarkerData,
+          } as editor.IMarkerData,
         ];
       }
       return (
@@ -96,7 +99,7 @@ export const coreDiagnosticsSource: DiagnosticsSource = {
             startLineNumber: r.start.line + 1,
             endLineNumber: r.end.line + 1,
             message: e.error.message,
-          } as monaco.editor.IMarkerData;
+          } as editor.IMarkerData;
         }) || []
       );
     });
@@ -107,10 +110,8 @@ export const coreDiagnosticsSource: DiagnosticsSource = {
 export type DecorationsSource = {
   forDocument(
     options: Pick<BridgeOptions, "document" | "languageService" | "model"> & {
-      editor:
-        | monaco.editor.IStandaloneCodeEditor
-        | monaco.editor.IStandaloneDiffEditor;
-      monaco: typeof monaco;
+      editor: editor.IStandaloneCodeEditor | editor.IStandaloneDiffEditor;
+      monaco: any;
     }
   ): void | Promise<void>;
 };
@@ -118,10 +119,7 @@ export type DecorationsSource = {
 export type DefinitionSource = {
   forNode(
     options: BridgeOptions
-  ):
-    | monaco.languages.Definition[]
-    | null
-    | Promise<monaco.languages.Definition[] | null>;
+  ): languages.Definition[] | null | Promise<languages.Definition[] | null>;
 };
 
 export const coreDefinitionSource: DefinitionSource = {
@@ -166,9 +164,7 @@ export function toGraphQLPosition<
   return new Position(position.lineNumber - 1, position.column - 1);
 }
 
-export function toMarkerData(
-  diagnostic: Diagnostic
-): monaco.editor.IMarkerData {
+export function toMarkerData(diagnostic: Diagnostic): editor.IMarkerData {
   return {
     startLineNumber: diagnostic.range.start.line + 1,
     endLineNumber: diagnostic.range.end.line + 1,
@@ -181,7 +177,7 @@ export function toMarkerData(
   };
 }
 
-export function toMonacoRange(range: GraphQLRange): monaco.IRange {
+export function toMonacoRange(range: GraphQLRange): MonacoIRange {
   return {
     startLineNumber: range.start.line + 1,
     startColumn: range.start.character + 1,
@@ -204,16 +200,14 @@ export type EditorAction = {
   contextMenuGroupId?: string;
   contextMenuOrder?: number;
   onRun: (options: {
-    editor:
-      | monaco.editor.IStandaloneCodeEditor
-      | monaco.editor.IStandaloneDiffEditor;
-    monaco: typeof monaco;
+    editor: editor.IStandaloneCodeEditor | editor.IStandaloneDiffEditor;
+    monaco: any;
     bridge: BridgeOptions;
   }) => void;
 };
 
 export function showWidgetInPosition(
-  editorInstance: monaco.editor.IStandaloneCodeEditor,
+  editorInstance: editor.IStandaloneCodeEditor,
   position: BridgeOptions["position"],
   htmlElement: HTMLElement
 ): void {

@@ -5,10 +5,17 @@
   "license": "MIT",
   "description": "Visual node editor for GraphQL",
   "homepage": "https://graphqleditor.com",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "./lib/cjs/index.js",
+  "module": "./lib/esm/index.js",
+  "types": "./lib/cjs/index.d.ts",
+  "files": [
+    "lib/cjs",
+    "lib/esm"
+  ],
   "scripts": {
-    "build": "rimraf lib tsconfig.build.tsbuildinfo && ttsc --build tsconfig.build.json",
+    "build:cjs": "ttsc --build tsconfig.cjs.json",
+    "build:esm": "ttsc --build tsconfig.esm.json",
+    "build": "rimraf lib tsconfig.build.tsbuildinfo && npm run build:esm && npm run build:cjs",
     "start": "ttsc --build tsconfig.build.json --watch",
     "test": "jest",
     "updatedeps": "npm i graphql-js-tree@latest",
@@ -28,17 +35,17 @@
     "@monaco-editor/react": ">=4.2.2",
     "css-loader": ">=6.2.0",
     "file-loader": ">=6.2.0",
-    "monaco-editor": ">=0.27.0",
     "react": ">=18",
     "react-dom": ">=18",
     "webpack": ">=5.53.0",
-    "worker-loader": ">=3.0.8"
+    "worker-loader": ">=3.0.8",
+    "@emotion/react": "^11.9.3",
+    "@emotion/styled": "^11.9.3"
   },
   "dependencies": {
-    "@aexol-studio/hooks": "^0.2.8",
-    "@aexol-studio/styling-system": "^0.2.21",
-    "@emotion/react": "^11.9.3",
-    "@emotion/styled": "^11.9.3",
+    "@aexol-studio/hooks": "0.2.8",
+    "@aexol-studio/styling-system": "0.2.21",
+    "monaco-editor": ">=0.27.0",
     "color2k": "^1.2.4",
     "d3": "^7.8.4",
     "diff": "^5.1.0",
@@ -62,7 +69,16 @@
     }
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.25.3",
+    "@babel/preset-react": "^7.24.7",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-commonjs": "^26.0.1",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4",
     "@types/d3": "^7.4.0",
-    "@types/diff": "^5.0.2"
+    "@types/diff": "^5.0.2",
+    "rollup": "^4.19.1",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-typescript2": "^0.36.0"
   }
 }

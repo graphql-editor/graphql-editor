@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "module": "esnext",
-    "moduleResolution": "node",
     "jsx": "react",
+    "module": "commonjs",
+    "moduleResolution": "node",
     "experimentalDecorators": true,
     "declaration": true,
     "incremental": true,
@@ -11,11 +11,9 @@
     "noUnusedLocals": true,
     "esModuleInterop": true,
     "strict": true,
-    "outDir": "./lib",
-    "sourceMap": true,
-    "composite": true,
+    "outDir": "./lib/cjs",
     "lib": ["es6", "es7", "esnext", "dom"],
-    "rootDir": "./",
+    "rootDir": "./src",
     "baseUrl": "./src/",
     "paths": {
       "@/*": ["./*"]
@@ -29,7 +27,19 @@
         "afterDeclarations": true
       }
     ],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "composite": true
   },
-  "exclude": ["lib", "sandbox", "docs", "__mocks__", "jest.config.js"]
+  "exclude": [
+    "lib",
+    "sandbox",
+    "cloud",
+    "docs",
+    "cypress",
+    "cypress.config.ts",
+    "jest.config.js",
+    "__mocks__",
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ]
 }

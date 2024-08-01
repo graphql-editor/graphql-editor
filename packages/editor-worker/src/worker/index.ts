@@ -1,18 +1,28 @@
 import { ParserTree } from "graphql-js-tree";
 import { ContextToken, IPosition } from "graphql-language-service";
 import type { WorkerEvents } from "@/worker/validation.worker";
-const ValidationWorker = new Worker(
-  new URL("./validation.worker.js", import.meta.url)
-);
+
+const isNode =
+  typeof process !== "undefined" &&
+  process.versions != null &&
+  process.versions.node != null;
+
+const validationWorker = isNode
+  ? null
+  : new Worker(new URL("./validation.worker.js", import.meta.url), {
+      type: "module",
+    });
 
 const send = <T extends keyof WorkerEvents>(
   key: T,
   data: WorkerEvents[T]["args"]
 ): Promise<WorkerEvents[T]["returned"]> => {
-  return new Promise((resolve, reject) => {
+  // eslint-disable-next-line no-async-promise-executor
+  return new Promise(async (resolve, reject) => {
     const id = Math.random().toString(8);
-    ValidationWorker.postMessage({ ...data, event: key, id });
-    ValidationWorker.addEventListener(
+    if (!validationWorker) return;
+    validationWorker.postMessage({ ...data, event: key, id });
+    validationWorker.addEventListener(
       "message",
       (
         message: MessageEvent<
