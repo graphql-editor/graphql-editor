@@ -13,9 +13,7 @@
     "lib/esm"
   ],
   "scripts": {
-    "build:cjs": "ttsc --build tsconfig.cjs.json",
-    "build:esm": "ttsc --build tsconfig.esm.json",
-    "build": "rimraf lib tsconfig.build.tsbuildinfo && npm run build:esm && npm run build:cjs",
+    "build": "rimraf lib && rollup -c",
     "start": "npm run build -- --watch",
     "test": "jest",
     "updatedeps": "npm i graphql-js-tree@latest",
