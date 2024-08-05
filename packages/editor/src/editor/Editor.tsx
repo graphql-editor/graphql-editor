@@ -22,6 +22,7 @@ import { useRouter, EditorRoutes } from "@/state/containers/router";
 import { ErrorsList } from "@/shared/errors/ErrorsList";
 import { NodeNavigation } from "@/shared/NodeNavigation";
 import type * as monaco from "monaco-editor";
+import { ThemeVersion } from "@aexol-studio/styling-system";
 
 const Main = styled.div`
   display: flex;
@@ -95,6 +96,7 @@ export interface EditorProps
   fontFamilySans?: string;
   disableExport?: boolean;
   disableImport?: boolean;
+  themeVersion?: ThemeVersion;
 }
 
 export interface ExternalEditorAPI {

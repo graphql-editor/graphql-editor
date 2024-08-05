@@ -25,7 +25,7 @@ export { DiffSchema } from "@/editor/code/DiffEditorPane";
 
 export const GraphQLEditor = React.forwardRef<ExternalEditorAPI, EditorProps>(
   ({ ...props }, ref) => {
-    const baseITheme = themeColors("graphqleditor", "dark");
+    const baseITheme = themeColors("graphqleditor", props?.themeVersion ?? 'light');
     const combinedTheme = {
       ...MainTheme,
       ...baseITheme,

@@ -11,6 +11,7 @@ export const DynamicResize: React.FunctionComponent<{
   maxWidth?: string | number;
   minWidth?: string | number;
   enable?: Enable;
+  minHeight?: string | number;
   children?: React.ReactNode;
 }> = ({
   children,
@@ -19,6 +20,7 @@ export const DynamicResize: React.FunctionComponent<{
   disabledClass,
   maxWidth = "94%",
   minWidth = "90",
+  minHeight = "100%",
   enable,
 }) => {
   const ref = React.createRef<Resizable>();
@@ -54,6 +56,7 @@ export const DynamicResize: React.FunctionComponent<{
       onResize={resizeCallback}
       maxWidth={maxWidth}
       minWidth={minWidth}
+      minHeight={minHeight}
       enable={enableObj}
     >
       {children}

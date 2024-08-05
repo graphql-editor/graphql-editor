@@ -84,7 +84,7 @@ function BaseSchemaEditor(
   }, [theme, monacoRef]);
   return (
     <MonacoEditor
-      height={"auto"}
+      height="90vh"
       {...props}
       beforeMount={(monaco) => {
         setMonaco(monaco);

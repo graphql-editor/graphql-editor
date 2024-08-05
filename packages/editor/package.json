@@ -16,7 +16,7 @@
     "build:cjs": "ttsc --build tsconfig.cjs.json",
     "build:esm": "ttsc --build tsconfig.esm.json",
     "build": "rimraf lib tsconfig.build.tsbuildinfo && npm run build:esm && npm run build:cjs",
-    "start": "ttsc --build tsconfig.build.json --watch",
+    "start": "npm run build -- --watch",
     "test": "jest",
     "updatedeps": "npm i graphql-js-tree@latest",
     "lint": "eslint \"./src/**/*.{ts,js}\" --quiet --fix && prettier --write \"./src/**/*.{ts,js}\" "
