@@ -22,6 +22,7 @@ import { useRouter, EditorRoutes } from "@/state/containers/router";
 import { ErrorsList } from "@/shared/errors/ErrorsList";
 import { NodeNavigation } from "@/shared/NodeNavigation";
 import type * as monaco from "monaco-editor";
+import { FileTree, FTree } from "@/editor/files/FileTree";
 
 const Main = styled.div`
   display: flex;
@@ -75,6 +76,11 @@ export interface EditorProps
   readonly?: boolean;
   // Code and libraries
   schema: PassedSchema;
+  leafs?: {
+    schemas: FTree[];
+    onClick: (t: FTree) => void;
+    current: string;
+  };
   // force expand/hide sidebar
   // schemas to compare usually latest its the first schema second one is compared
   diffSchemas?: [DiffSchema, DiffSchema];
@@ -125,6 +131,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
       disableExport,
       disableImport,
       onEditorMount,
+      leafs,
     },
     ref
   ) => {
@@ -269,6 +276,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
         });
       }
     }, [routes.code, routes.pane]);
+    console.log({ leafs });
     return (
       <Main
         onKeyDown={(e) => {
@@ -284,6 +292,20 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
           toggleCode={routes.code === "on"}
           setSchema={setSchema}
           readOnly={readonly}
+          toggleFiles={routes.files === "on"}
+          setToggleFiles={
+            leafs
+              ? () =>
+                  set(
+                    {
+                      ...routes,
+                      files: routes.files === "on" ? undefined : "on",
+                      source: "internal",
+                    },
+                    "internal"
+                  )
+              : undefined
+          }
           setToggleCode={() =>
             set(
               {
@@ -303,6 +325,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
           disableExport={disableExport}
           disableImport={disableImport}
         />
+        {!!leafs && routes.files === "on" && <FileTree {...leafs} />}
         {routes.pane !== "diff" && (
           <DynamicResize
             enable={{ right: true }}

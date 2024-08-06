@@ -4,6 +4,7 @@ export const DataIds = {
   sidebar: "sidebar-menu",
   //sidebar
   menuCode: "menu-code",
+  menuFiles: "menu-files",
   menuRelations: "menu-relations",
   menuDocs: "menu-docs",
   menuExport: "menu-export",

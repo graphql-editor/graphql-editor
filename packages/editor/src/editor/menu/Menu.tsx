@@ -5,6 +5,7 @@ import {
   Tool,
   Code,
   File,
+  Files,
   Filter,
   ArrowNarrowUpMove,
   ArrowNarrowBottomAlignment,
@@ -90,6 +91,8 @@ export type ActivePane = "diff" | "relation" | "docs";
 export interface MenuProps {
   setToggleCode: (v: boolean) => void;
   toggleCode: boolean;
+  setToggleFiles?: (v: boolean) => void;
+  toggleFiles?: boolean;
   activePane?: ActivePane;
   excludePanes?: ActivePane[];
   setActivePane: (pane?: ActivePane) => void;
@@ -105,6 +108,8 @@ export interface MenuProps {
 export const Menu = ({
   toggleCode,
   setToggleCode,
+  toggleFiles,
+  setToggleFiles,
   setActivePane,
   activePane,
   setSchema,
@@ -158,6 +163,19 @@ export const Menu = ({
             <Code />
           </MenuItem>
         </Tooltip>
+        {!!setToggleFiles && (
+          <Tooltip title="Toggle files" position="right-bottom">
+            <MenuItem
+              className={toggleFiles ? "toggle-active" : ""}
+              onClick={() => {
+                setToggleFiles(!toggleFiles);
+              }}
+              {...dataIt("menuCode")}
+            >
+              <Files />
+            </MenuItem>
+          </Tooltip>
+        )}
         {!excludePanes.includes("relation") && (
           <Tooltip title="Relations" position="right-center">
             <MenuItem
