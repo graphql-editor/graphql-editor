@@ -61,6 +61,7 @@
     "typescript-transform-paths": "^3.3.1"
   },
   "dependencies": {
+    "@aexol-studio/styling-system": "^0.2.26",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
     "@qix/elkjs-patched": "^0.8.0-patch3",

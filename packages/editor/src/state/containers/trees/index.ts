@@ -207,10 +207,10 @@ const useTreesStateContainer = createContainer(() => {
     );
     const nodesRelatedToActiveInterface =
       activeNode &&
-        activeNode.data.type === TypeDefinition.InterfaceTypeDefinition
+      activeNode.data.type === TypeDefinition.InterfaceTypeDefinition
         ? allNodes.nodes.filter((node) =>
-          node.interfaces.includes(activeNode.name)
-        )
+            node.interfaces.includes(activeNode.name)
+          )
         : [];
     const nodeExtensions = allNodes.nodes.filter(
       (node) =>

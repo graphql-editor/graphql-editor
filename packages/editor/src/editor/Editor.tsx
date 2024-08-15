@@ -79,6 +79,10 @@ export interface EditorProps
   leafs?: {
     schemas: FTree[];
     onClick: (t: FTree) => void;
+    onCopy: (t: FTree) => void;
+    onRename: (oldTree: FTree, newTree: FTree) => void;
+    onDelete: (t: FTree) => void;
+    onAdd: (t: FTree) => void;
     current: string;
   };
   // force expand/hide sidebar

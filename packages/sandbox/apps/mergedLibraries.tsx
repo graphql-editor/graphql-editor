@@ -19,6 +19,7 @@ const leafs = [
 
 export const MergedLibraries = () => {
   const [currentSchema, setCurrentSchema] = useState("src/main/schema.graphql");
+  const [leafFiles, setLeafFiles] = useState(leafs);
   const [mySchema, setMySchema] = useState<PassedSchema>({
     code: schemas.mergedLibs.code,
     libraries: schemas.mergedLibs.libraries,
@@ -27,9 +28,10 @@ export const MergedLibraries = () => {
   useEffect(() => {
     setMySchema({
       source: "outside",
-      code: leafs.find((l) => l.dir === currentSchema).content,
+      code: leafFiles.find((l) => l.dir === currentSchema).content,
     });
-  }, [currentSchema]);
+  }, [currentSchema, leafFiles]);
+
   return (
     <div
       style={{
@@ -43,9 +45,21 @@ export const MergedLibraries = () => {
     >
       <GraphQLEditor
         leafs={{
-          schemas: leafs,
+          schemas: leafFiles,
           onClick: (f) => {
             setCurrentSchema(f.dir);
+          },
+          onDelete: (f) => {
+            console.log({ f, leafFiles });
+            if (f.dir === currentSchema) {
+              setCurrentSchema("");
+            }
+            setLeafFiles((lf) => lf.filter((l) => l.dir !== f.dir));
+          },
+          onCopy: (f) => {},
+          onRename: (o, n) => {},
+          onAdd: (d) => {
+            setLeafFiles((lf) => [...lf, { content: "", dir: d.dir }]);
           },
           current: currentSchema,
         }}
