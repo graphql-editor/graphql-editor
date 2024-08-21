@@ -2,33 +2,61 @@ import { SingleFile } from "@/editor/files/SingleFile";
 import { Dir, ForFileTree } from "@/editor/files/types";
 import { Stack, Typography } from "@aexol-studio/styling-system";
 import styled from "@emotion/styled";
-import React, { useMemo } from "react";
+import React, { useMemo, useCallback } from "react";
 
 export interface FTree {
   dir: string;
 }
+
 interface DirComponentProps extends ForFileTree {
   dirs: Dir[];
   level?: number;
+  onDrop: (source: string, target: string) => void;
 }
 
 const DirComponent: React.FC<DirComponentProps> = ({
   dirs,
   level = 0,
+  onDrop,
   ...rest
 }) => {
+  const handleDrop = useCallback(
+    (source: string, target: string) => {
+      // prevent root from being moved
+      if (source === target || source.split("/").length === 1) {
+        return;
+      }
+
+      onDrop(source, target);
+    },
+    [onDrop]
+  );
+
   return (
     <>
       {dirs.map((d) => {
         if (d.children?.length) {
           return (
             <React.Fragment key={d.name}>
-              <SingleFile {...rest} d={d} level={level} />
-              <DirComponent {...rest} level={level + 1} dirs={d.children} />
+              <SingleFile {...rest} d={d} level={level} onDrop={handleDrop} />
+              <DirComponent
+                {...rest}
+                level={level + 1}
+                dirs={d.children}
+                onDrop={handleDrop}
+              />
             </React.Fragment>
           );
         } else {
-          return <SingleFile key={d.fromDir} {...rest} d={d} level={level} />;
+          return (
+            <SingleFile
+              key={d.fromDir}
+              {...rest}
+              d={d}
+              level={level}
+              onDrop={handleDrop}
+            />
+          );
         }
       })}
     </>
@@ -42,8 +70,18 @@ export const FileTree: React.FC<{
   onDelete: (t: FTree) => void;
   onAdd: (t: FTree) => void;
   onRename: (oldTree: FTree, newTree: FTree) => void;
+  onMove: (source: FTree, target: FTree) => void;
   current: string;
-}> = ({ schemas, onClick, current, onDelete, onRename, onCopy, onAdd }) => {
+}> = ({
+  schemas,
+  onClick,
+  current,
+  onDelete,
+  onRename,
+  onCopy,
+  onAdd,
+  onMove,
+}) => {
   const trees = useMemo(() => {
     const result: Dir[] = [];
     const level: Record<string, any> = { result };
@@ -66,6 +104,14 @@ export const FileTree: React.FC<{
     });
     return result;
   }, [schemas]);
+
+  const handleDrop = useCallback(
+    (source: string, target: string) => {
+      onMove({ dir: source }, { dir: target });
+    },
+    [onMove]
+  );
+
   return (
     <Main direction="column">
       <Typography
@@ -83,6 +129,7 @@ export const FileTree: React.FC<{
         onAdd={(d) => onAdd({ dir: d.fromDir })}
         onClick={(d) => onClick({ dir: d.fromDir })}
         dirs={trees}
+        onDrop={handleDrop}
       />
     </Main>
   );

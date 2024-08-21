@@ -83,6 +83,7 @@ export interface EditorProps
     onRename: (oldTree: FTree, newTree: FTree) => void;
     onDelete: (t: FTree) => void;
     onAdd: (t: FTree) => void;
+    onMove: (source: FTree, target: FTree) => void;
     current: string;
   };
   // force expand/hide sidebar

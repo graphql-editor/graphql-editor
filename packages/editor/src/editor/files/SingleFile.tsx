@@ -16,11 +16,13 @@ interface Dir {
 export interface SingleFileProps extends ForFileTree {
   d: Dir;
   level?: number;
+  onDrop: (source: string, target: string) => void;
 }
 
 export const SingleFile: React.FC<SingleFileProps> = ({
   d,
   level = 0,
+  onDrop,
   ...rest
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -78,6 +80,20 @@ export const SingleFile: React.FC<SingleFileProps> = ({
     return baseItems;
   }, [rest.onCopy, rest.onDelete, d]);
 
+  const handleDragStart = (e: React.DragEvent) => {
+    e.dataTransfer.setData("text/plain", d.fromDir);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const sourceDir = e.dataTransfer.getData("text/plain");
+    onDrop(sourceDir, d.fromDir);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
   return (
     <DropdownMenu
       open={isOpen}
@@ -96,6 +112,10 @@ export const SingleFile: React.FC<SingleFileProps> = ({
           e.preventDefault();
           setIsOpen(true);
         }}
+        onDragStart={handleDragStart}
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        draggable
         leftLevel={level}
       >
         {!d.children?.length && <File />}
