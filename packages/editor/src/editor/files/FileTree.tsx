@@ -67,11 +67,13 @@ export const FileTree: React.FC<{
   schemas: FTree[];
   onClick: (t: FTree) => void;
   onCopy: (t: FTree) => void;
+  onPaste: (t: FTree) => void;
   onDelete: (t: FTree) => void;
   onAdd: (t: FTree) => void;
   onRename: (oldTree: FTree, newTree: FTree) => void;
   onMove: (source: FTree, target: FTree) => void;
   current: string;
+  copiedFile: string;
 }> = ({
   schemas,
   onClick,
@@ -79,8 +81,10 @@ export const FileTree: React.FC<{
   onDelete,
   onRename,
   onCopy,
+  onPaste,
   onAdd,
   onMove,
+  copiedFile,
 }) => {
   const trees = useMemo(() => {
     const result: Dir[] = [];
@@ -124,12 +128,14 @@ export const FileTree: React.FC<{
       <DirComponent
         onRename={(d, n) => onRename({ dir: d.fromDir }, { dir: n })}
         onCopy={(d) => onCopy({ dir: d.fromDir })}
+        onPaste={(d) => onPaste({ dir: d.fromDir })}
         onDelete={(d) => onDelete({ dir: d.fromDir })}
         current={current}
         onAdd={(d) => onAdd({ dir: d.fromDir })}
         onClick={(d) => onClick({ dir: d.fromDir })}
         dirs={trees}
         onDrop={handleDrop}
+        copiedFile={copiedFile}
       />
     </Main>
   );

@@ -21,6 +21,8 @@ const leafs = [
 
 export const MergedLibraries = () => {
   const [currentSchema, setCurrentSchema] = useState("src/main/schema.graphql");
+  const [copiedFile, setCopiedFile] = useState("");
+
   const [leafFiles, setLeafFiles] = useState(
     leafs.sort((a, b) => a.dir.localeCompare(b.dir))
   );
@@ -37,7 +39,7 @@ export const MergedLibraries = () => {
 
     setMySchema({
       source: "outside",
-      code: leafFiles.find((l) => l.dir === currentSchema).content,
+      code: leafFiles.find((l) => l.dir === currentSchema)?.content || "",
     });
   }, [currentSchema, leafFiles]);
 
@@ -73,13 +75,20 @@ export const MergedLibraries = () => {
       }
 
       setLeafFiles((prevLeafFiles) => {
-        const isTargetDirectory = !targetDir.endsWith(".graphql");
+        const isTargetDirectory = !targetDir.includes(".");
 
         if (!isTargetDirectory) {
           console.warn(
             "Cannot move onto a file. Moving to parent directory instead."
           );
           targetDir = targetDir.split("/").slice(0, -1).join("/");
+        }
+
+        if (targetDir.startsWith(`${sourceDir}/`)) {
+          console.warn(
+            "Cannot move a parent directory into one of its subdirectories."
+          );
+          return prevLeafFiles;
         }
 
         // prevent move if the same
@@ -140,6 +149,117 @@ export const MergedLibraries = () => {
     [leafFiles, currentSchema]
   );
 
+  const onPaste = useCallback(
+    (target: FTree) => {
+      if (!copiedFile) {
+        return;
+      }
+
+      const targetDir = target.dir;
+      const isDirectory = !copiedFile.includes(".");
+
+      if (isDirectory) {
+        const filesToCopy = leafFiles.filter(
+          (file) =>
+            file.dir === copiedFile || file.dir.startsWith(`${copiedFile}/`)
+        );
+
+        if (filesToCopy.length === 0) {
+          return;
+        }
+
+        const baseNameToCopy = copiedFile.split("/").pop() || "directory";
+        let newDir = `${targetDir}/${baseNameToCopy}`;
+
+        // auto-rename dir
+        if (leafFiles.some((file) => file.dir.startsWith(newDir))) {
+          const baseName = generateUniqueName(
+            baseNameToCopy,
+            targetDir,
+            undefined
+          );
+          newDir = `${targetDir}/${baseName}`;
+        }
+
+        setLeafFiles((prevLeafFiles) => {
+          const newFiles = filesToCopy.map((file) => {
+            const relativePath = file.dir.replace(copiedFile, "");
+            return {
+              ...file,
+              dir: `${newDir}${relativePath}`,
+            };
+          });
+
+          return [...prevLeafFiles, ...newFiles].sort((a, b) =>
+            a.dir.localeCompare(b.dir)
+          );
+        });
+      } else {
+        const copiedFileObj = leafFiles.find((f) => f.dir === copiedFile);
+        if (!copiedFileObj) return;
+
+        const baseNameToCopy = copiedFile.split("/").pop() || "file";
+        const extension = baseNameToCopy.includes(".")
+          ? baseNameToCopy.split(".").pop()
+          : "";
+
+        let newDir = `${targetDir}/${baseNameToCopy}`;
+
+        // auto-rename file
+        if (leafFiles.some((file) => file.dir === newDir)) {
+          let baseName = baseNameToCopy.split(".")[0];
+          baseName = generateUniqueName(baseName, targetDir, extension || "");
+          newDir = `${targetDir}/${baseName}`;
+        }
+
+        if (extension && !newDir.endsWith(`.${extension}`)) {
+          newDir += `.${extension}`;
+        }
+
+        setLeafFiles((prevLeafFiles) => [
+          ...prevLeafFiles,
+          { ...copiedFileObj, dir: newDir },
+        ]);
+      }
+
+      setCopiedFile("");
+    },
+    [copiedFile, leafFiles]
+  );
+
+  const onRename = useCallback(
+    (oldPath: FTree, newPath: FTree) => {
+      let newDir = newPath.dir;
+      if (!newDir.includes("/")) {
+        newDir = oldPath.dir.split("/").slice(0, -1).join("/") + "/" + newDir;
+      }
+
+      if (leafFiles.some((file) => file.dir === newDir)) {
+        console.warn("A file or directory with this name already exists.");
+        return;
+      }
+
+      const updatedLeafFiles = leafFiles.map((file) => {
+        if (file.dir === oldPath.dir) {
+          return { ...file, dir: newDir };
+        }
+
+        if (file.dir.startsWith(`${oldPath.dir}/`)) {
+          const relativePath = file.dir.slice(oldPath.dir.length);
+          return { ...file, dir: `${newDir}${relativePath}` };
+        }
+        return file;
+      });
+
+      setLeafFiles(updatedLeafFiles.sort((a, b) => a.dir.localeCompare(b.dir)));
+
+      if (currentSchema === oldPath.dir) {
+        setCurrentSchema(newDir);
+      }
+    },
+    [leafFiles, currentSchema]
+  );
+
   return (
     <div
       style={{
@@ -164,12 +284,16 @@ export const MergedLibraries = () => {
             }
             setLeafFiles((lf) => lf.filter((l) => l.dir !== f.dir));
           },
-          onCopy: (f) => {},
-          onRename: (o, n) => {},
+          onCopy: (f) => {
+            setCopiedFile(f.dir);
+          },
+          onPaste,
+          onRename,
           onAdd: (d) => {
             setLeafFiles((lf) => [...lf, { content: "", dir: d.dir }]);
           },
-          onMove: onMove,
+          onMove,
+          copiedFile,
           current: currentSchema,
         }}
         path="libraries"

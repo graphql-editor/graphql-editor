@@ -80,11 +80,13 @@ export interface EditorProps
     schemas: FTree[];
     onClick: (t: FTree) => void;
     onCopy: (t: FTree) => void;
+    onPaste: (t: FTree) => void;
     onRename: (oldTree: FTree, newTree: FTree) => void;
     onDelete: (t: FTree) => void;
     onAdd: (t: FTree) => void;
     onMove: (source: FTree, target: FTree) => void;
     current: string;
+    copiedFile: string;
   };
   // force expand/hide sidebar
   // schemas to compare usually latest its the first schema second one is compared

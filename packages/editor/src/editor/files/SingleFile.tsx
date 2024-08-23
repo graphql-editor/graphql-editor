@@ -31,6 +31,7 @@ export const SingleFile: React.FC<SingleFileProps> = ({
     newName: "",
   });
   const currentInputRef = useRef<HTMLInputElement>(null);
+
   useOutsideClick(currentInputRef, () => {
     if (isRenaming) rest.onRename(d, isRenaming.newName);
     setIsRenaming({
@@ -53,10 +54,6 @@ export const SingleFile: React.FC<SingleFileProps> = ({
         onClick: () => rest.onDelete(d),
       },
       {
-        name: "Copy",
-        onClick: () => rest.onCopy(d),
-      },
-      {
         name: "Rename",
         onClick: () =>
           setIsRenaming({
@@ -64,8 +61,20 @@ export const SingleFile: React.FC<SingleFileProps> = ({
             renaming: true,
           }),
       },
+      {
+        name: "Copy",
+        onClick: () => rest.onCopy(d),
+      },
     ];
-    if (d.children) {
+
+    if (rest.copiedFile && d.children && d.children.length > 0) {
+      baseItems.push({
+        name: "Paste",
+        onClick: () => rest.onPaste(d),
+      });
+    }
+
+    if (d.children && d.children.length > 0) {
       baseItems.push({
         name: "Add new schema in folder",
         onClick: () => {
@@ -77,8 +86,9 @@ export const SingleFile: React.FC<SingleFileProps> = ({
         },
       });
     }
+
     return baseItems;
-  }, [rest.onCopy, rest.onDelete, d]);
+  }, [rest.onCopy, rest.onDelete, d, rest.copiedFile]);
 
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.setData("text/plain", d.fromDir);
@@ -92,6 +102,21 @@ export const SingleFile: React.FC<SingleFileProps> = ({
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      rest.onRename(d, isRenaming.newName);
+      setIsRenaming({
+        renaming: false,
+        newName: "",
+      });
+    } else if (e.key === "Escape") {
+      setIsRenaming({
+        renaming: false,
+        newName: "",
+      });
+    }
   };
 
   return (
@@ -132,6 +157,7 @@ export const SingleFile: React.FC<SingleFileProps> = ({
                 newName: e.target.value,
               }))
             }
+            onKeyDown={handleKeyDown}
           />
         )}
       </Entry>
