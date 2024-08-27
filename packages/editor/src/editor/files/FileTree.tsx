@@ -6,6 +6,7 @@ import React, { useMemo, useCallback } from "react";
 
 export interface FTree {
   dir: string;
+  isFolder?: boolean;
 }
 
 interface DirComponentProps extends ForFileTree {
@@ -35,14 +36,14 @@ const DirComponent: React.FC<DirComponentProps> = ({
   return (
     <>
       {dirs.map((d) => {
-        if (d.children?.length) {
+        if (d.isFolder) {
           return (
             <React.Fragment key={d.name}>
               <SingleFile {...rest} d={d} level={level} onDrop={handleDrop} />
               <DirComponent
                 {...rest}
                 level={level + 1}
-                dirs={d.children}
+                dirs={d.children || []}
                 onDrop={handleDrop}
               />
             </React.Fragment>
@@ -89,7 +90,7 @@ export const FileTree: React.FC<{
   const trees = useMemo(() => {
     const result: Dir[] = [];
     const level: Record<string, any> = { result };
-    schemas.forEach(({ dir }) => {
+    schemas.forEach(({ dir, isFolder }) => {
       dir.split("/").reduce(
         ([r, acc], name, i, a) => {
           const accumlatedPath = `${acc ? acc + "/" : ""}${name}`;
@@ -98,6 +99,7 @@ export const FileTree: React.FC<{
             r.result.push({
               name,
               children: r[name].result,
+              isFolder,
               fromDir: accumlatedPath,
             });
           }
@@ -115,6 +117,8 @@ export const FileTree: React.FC<{
     },
     [onMove]
   );
+
+  console.log({ trees });
 
   return (
     <Main direction="column">

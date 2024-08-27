@@ -1,5 +1,5 @@
 import { Entry, EntryText, EntryInput } from "@/editor/files/Entry";
-import { ForFileTree } from "@/editor/files/types";
+import { Dir, ForFileTree } from "@/editor/files/types";
 import { useOutsideClick } from "@aexol-studio/hooks";
 import { DropdownMenu, File, Folder } from "@aexol-studio/styling-system";
 import React, { useMemo, useRef, useState } from "react";
@@ -8,11 +8,6 @@ export interface FTree {
   dir: string;
 }
 
-interface Dir {
-  name: string;
-  children?: Dir[];
-  fromDir: string;
-}
 export interface SingleFileProps extends ForFileTree {
   d: Dir;
   level?: number;
@@ -143,8 +138,8 @@ export const SingleFile: React.FC<SingleFileProps> = ({
         draggable
         leftLevel={level}
       >
-        {!d.children?.length && <File />}
-        {!!d.children?.length && <Folder />}
+        {!d.isFolder && <File />}
+        {!!d.isFolder && <Folder />}
         {!isRenaming.renaming && <EntryText>{d.name}</EntryText>}
         {isRenaming.renaming && (
           <EntryInput

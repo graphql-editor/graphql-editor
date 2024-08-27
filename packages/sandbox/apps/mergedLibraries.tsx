@@ -6,16 +6,32 @@ import { FTree } from "graphql-editor/lib/editor/files/FileTree";
 
 const leafs = [
   {
+    dir: "src/modules/google",
+    isFolder: true,
+  },
+  {
     dir: "src/modules/google/schema.graphql",
     content: schemas.googleDirections,
+  },
+  {
+    dir: "src/modules/pizza",
+    isFolder: true,
   },
   {
     dir: "src/modules/pizza/schema.graphql",
     content: schemas.pizza,
   },
   {
+    dir: "src/main",
+    isFolder: true,
+  },
+  {
     dir: "src/main/schema.graphql",
     content: schemas.food,
+  },
+  {
+    dir: "src/qqq",
+    isFolder: true,
   },
 ];
 
