@@ -33,13 +33,11 @@ export const MergedLibraries = () => {
   });
 
   useEffect(() => {
-    if (currentSchema === "") {
-      return;
-    }
-
     setMySchema({
       source: "outside",
-      code: leafFiles.find((l) => l.dir === currentSchema)?.content || "",
+      code: currentSchema
+        ? leafFiles.find((l) => l.dir === currentSchema)?.content || ""
+        : "",
     });
   }, [currentSchema, leafFiles]);
 
@@ -69,6 +67,7 @@ export const MergedLibraries = () => {
     (source: FTree, target: FTree) => {
       const sourceDir = source.dir;
       let targetDir = target.dir;
+      const currentSchemaTmp = currentSchema;
 
       if (sourceDir === currentSchema) {
         setCurrentSchema("");
@@ -142,6 +141,17 @@ export const MergedLibraries = () => {
         const filteredLeafFiles = updatedLeafFiles.filter(
           (file) => !file.dir.startsWith(sourceDir)
         );
+
+        if (
+          sourceDir === currentSchemaTmp ||
+          currentSchemaTmp.startsWith(`${sourceDir}/`)
+        ) {
+          if (!newDir.includes(".")) {
+            setCurrentSchema(newDir + "/" + currentSchemaTmp.split("/").pop());
+          } else {
+            setCurrentSchema(newDir);
+          }
+        }
 
         return filteredLeafFiles.sort((a, b) => a.dir.localeCompare(b.dir));
       });
@@ -278,7 +288,6 @@ export const MergedLibraries = () => {
             setCurrentSchema(f.dir);
           },
           onDelete: (f) => {
-            console.log({ f, leafFiles });
             if (f.dir === currentSchema) {
               setCurrentSchema("");
             }
