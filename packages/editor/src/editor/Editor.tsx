@@ -283,7 +283,6 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
         });
       }
     }, [routes.code, routes.pane]);
-    console.log({ leafs });
     return (
       <Main
         onKeyDown={(e) => {

@@ -2,7 +2,7 @@ import { SingleFile } from "@/editor/files/SingleFile";
 import { Dir, ForFileTree } from "@/editor/files/types";
 import { Stack, Typography } from "@aexol-studio/styling-system";
 import styled from "@emotion/styled";
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback, useState } from "react";
 
 export interface FTree {
   dir: string;
@@ -12,6 +12,7 @@ export interface FTree {
 interface DirComponentProps extends ForFileTree {
   dirs: Dir[];
   level?: number;
+  expanded?: boolean;
   onDrop: (source: string, target: string) => void;
 }
 
@@ -19,8 +20,10 @@ const DirComponent: React.FC<DirComponentProps> = ({
   dirs,
   level = 0,
   onDrop,
+  expanded,
   ...rest
 }) => {
+  const [childrenExpanded, setChildrenExpanded] = useState<string[]>([]);
   const handleDrop = useCallback(
     (source: string, target: string) => {
       // prevent root from being moved
@@ -35,31 +38,45 @@ const DirComponent: React.FC<DirComponentProps> = ({
 
   return (
     <>
-      {dirs.map((d) => {
-        if (d.isFolder) {
-          return (
-            <React.Fragment key={d.name}>
-              <SingleFile {...rest} d={d} level={level} onDrop={handleDrop} />
-              <DirComponent
+      {expanded &&
+        dirs.map((d) => {
+          if (d.isFolder) {
+            return (
+              <React.Fragment key={d.name}>
+                <SingleFile
+                  {...rest}
+                  d={d}
+                  level={level}
+                  onDrop={handleDrop}
+                  onClick={() => {
+                    setChildrenExpanded((c) =>
+                      c.includes(d.fromDir)
+                        ? c.filter((cc) => cc !== d.fromDir)
+                        : [...c, d.fromDir]
+                    );
+                  }}
+                />
+                <DirComponent
+                  {...rest}
+                  expanded={childrenExpanded.includes(d.fromDir)}
+                  level={level + 1}
+                  dirs={d.children || []}
+                  onDrop={handleDrop}
+                />
+              </React.Fragment>
+            );
+          } else {
+            return (
+              <SingleFile
+                key={d.fromDir}
                 {...rest}
-                level={level + 1}
-                dirs={d.children || []}
+                d={d}
+                level={level}
                 onDrop={handleDrop}
               />
-            </React.Fragment>
-          );
-        } else {
-          return (
-            <SingleFile
-              key={d.fromDir}
-              {...rest}
-              d={d}
-              level={level}
-              onDrop={handleDrop}
-            />
-          );
-        }
-      })}
+            );
+          }
+        })}
     </>
   );
 };
@@ -118,17 +135,11 @@ export const FileTree: React.FC<{
     [onMove]
   );
 
-  console.log({ trees });
-
   return (
     <Main direction="column">
-      <Typography
-        color="accentL1"
-        variant="Body 3 SB"
-        css={{ paddingBottom: "0.5rem" }}
-      >
+      <SchemasLabel color="accentL1" variant="Body 3 SB">
         Schemas
-      </Typography>
+      </SchemasLabel>
       <DirComponent
         onRename={(d, n) => onRename({ dir: d.fromDir }, { dir: n })}
         onCopy={(d) => onCopy({ dir: d.fromDir })}
@@ -137,6 +148,7 @@ export const FileTree: React.FC<{
         current={current}
         onAdd={(d) => onAdd({ dir: d.fromDir })}
         onClick={(d) => onClick({ dir: d.fromDir })}
+        expanded
         dirs={trees}
         onDrop={handleDrop}
         copiedFile={copiedFile}
@@ -145,9 +157,18 @@ export const FileTree: React.FC<{
   );
 };
 
+const SchemasLabel = styled(Typography)`
+  background: ${(p) => p.theme.neutrals.L7};
+  position: sticky;
+  top: 0;
+  padding-block: 0.5rem;
+  z-index: 2;
+`;
+
 const Main = styled(Stack)`
   background: ${(p) => p.theme.neutrals.L7};
   width: 20rem;
-  padding: 0.5rem;
+  padding: 0 0.5rem;
   border-right: 1px solid ${(p) => p.theme.divider.main};
+  overflow-y: auto;
 `;

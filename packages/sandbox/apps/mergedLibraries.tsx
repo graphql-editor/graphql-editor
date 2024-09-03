@@ -22,6 +22,70 @@ const leafs = [
     content: schemas.pizza,
   },
   {
+    dir: "src/modules2/google",
+    isFolder: true,
+  },
+  {
+    dir: "src/modules2/google/schema.graphql",
+    content: schemas.googleDirections,
+  },
+  {
+    dir: "src/module2s/pizza",
+    isFolder: true,
+  },
+  {
+    dir: "src/modules2/pizza/schema.graphql",
+    content: schemas.pizza,
+  },
+  {
+    dir: "src/module3s/google",
+    isFolder: true,
+  },
+  {
+    dir: "src/module3s/google/schema.graphql",
+    content: schemas.googleDirections,
+  },
+  {
+    dir: "src/module3s/pizza",
+    isFolder: true,
+  },
+  {
+    dir: "src/module3s/pizza/schema.graphql",
+    content: schemas.pizza,
+  },
+  {
+    dir: "src/modules4/google",
+    isFolder: true,
+  },
+  {
+    dir: "src/modules4/google/schema.graphql",
+    content: schemas.googleDirections,
+  },
+  {
+    dir: "src/modules4/pizza",
+    isFolder: true,
+  },
+  {
+    dir: "src/modules4/pizza/schema.graphql",
+    content: schemas.pizza,
+  },
+  {
+    dir: "src/modules5/google",
+    isFolder: true,
+  },
+  {
+    dir: "src/modules5/google/schema.graphql",
+    content: schemas.googleDirections,
+  },
+  {
+    dir: "src/modules5/pizza",
+    isFolder: true,
+  },
+  {
+    dir: "src/modules5/pizza/schema.graphql",
+    content: schemas.pizza,
+  },
+  {
     dir: "src/main",
     isFolder: true,
   },

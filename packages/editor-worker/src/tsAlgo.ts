@@ -137,9 +137,6 @@ export const sortNodesTs = ({
       ) {
         return;
       }
-      if (n.name === "neworpan" || n.name === "Coords") {
-        console.log("source", n.id, "target", relatedNode.id);
-      }
       connections.push({
         source: n.id,
         target: relatedNode.id,

@@ -124,7 +124,7 @@ export const SingleFile: React.FC<SingleFileProps> = ({
       <Entry
         isActive={isActive}
         onClick={(e) => {
-          if (e.button === 0 && !d.children?.length) {
+          if (e.button === 0) {
             rest.onClick(d);
           }
         }}
