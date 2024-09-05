@@ -1,7 +1,13 @@
 import { Entry, EntryText, EntryInput } from "@/editor/files/Entry";
 import { Dir, ForFileTree } from "@/editor/files/types";
 import { useOutsideClick } from "@aexol-studio/hooks";
-import { DropdownMenu, File, Folder } from "@aexol-studio/styling-system";
+import {
+  DiagramProject,
+  DropdownMenu,
+  File,
+  Folder,
+} from "@aexol-studio/styling-system";
+import styled from "@emotion/styled";
 import React, { useMemo, useRef, useState } from "react";
 
 export interface FTree {
@@ -12,15 +18,18 @@ export interface SingleFileProps extends ForFileTree {
   d: Dir;
   level?: number;
   onDrop: (source: string, target: string) => void;
+  isOpenDropdownDir?: string;
+  setIsOpenDropdownDir: (dir: string) => void;
 }
 
 export const SingleFile: React.FC<SingleFileProps> = ({
   d,
   level = 0,
   onDrop,
+  isOpenDropdownDir,
+  setIsOpenDropdownDir,
   ...rest
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
   const [isRenaming, setIsRenaming] = useState({
     renaming: false,
     newName: "",
@@ -77,6 +86,7 @@ export const SingleFile: React.FC<SingleFileProps> = ({
           rest.onAdd({
             fromDir: d.fromDir + "/" + schemaName,
             name: schemaName,
+            modified: true,
           });
         },
       });
@@ -116,10 +126,13 @@ export const SingleFile: React.FC<SingleFileProps> = ({
 
   return (
     <DropdownMenu
-      open={isOpen}
-      onChange={(e) => (e ? undefined : setIsOpen(e))}
+      open={isOpenDropdownDir === d.fromDir}
+      onChange={(e) =>
+        e ? undefined : setIsOpenDropdownDir(e ? d.fromDir : "")
+      }
       menuItems={menuItems}
       actionType="icon"
+      dropdownPosition="right-bottom"
     >
       <Entry
         isActive={isActive}
@@ -130,7 +143,7 @@ export const SingleFile: React.FC<SingleFileProps> = ({
         }}
         onContextMenu={(e) => {
           e.preventDefault();
-          setIsOpen(true);
+          setIsOpenDropdownDir(d.fromDir);
         }}
         onDragStart={handleDragStart}
         onDrop={handleDrop}
@@ -138,7 +151,7 @@ export const SingleFile: React.FC<SingleFileProps> = ({
         draggable
         leftLevel={level}
       >
-        {!d.isFolder && <File />}
+        {!d.isFolder && <FileIconComponent fileName={d.fromDir} />}
         {!!d.isFolder && <Folder />}
         {!isRenaming.renaming && <EntryText>{d.name}</EntryText>}
         {isRenaming.renaming && (
@@ -159,3 +172,19 @@ export const SingleFile: React.FC<SingleFileProps> = ({
     </DropdownMenu>
   );
 };
+
+const FileIconComponent = ({ fileName }: { fileName: string }) => {
+  if (fileName.endsWith(".graphql") || fileName.endsWith(".gql")) {
+    return (
+      <ColoredIcon>
+        <DiagramProject />
+      </ColoredIcon>
+    );
+  }
+  return <File />;
+};
+
+const ColoredIcon = styled.div`
+  display: contents;
+  color: ${(p) => p.theme.additionals.addP[2]};
+`;

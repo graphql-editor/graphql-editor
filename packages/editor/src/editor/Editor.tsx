@@ -23,6 +23,7 @@ import { ErrorsList } from "@/shared/errors/ErrorsList";
 import { NodeNavigation } from "@/shared/NodeNavigation";
 import type * as monaco from "monaco-editor";
 import { FileTree, FTree } from "@/editor/files/FileTree";
+import { BackgroundFTUXNoFileSelected } from "@/Relation/FTUX/BackgroundFTUXNoFileSelected";
 
 const Main = styled.div`
   display: flex;
@@ -85,8 +86,9 @@ export interface EditorProps
     onDelete: (t: FTree) => void;
     onAdd: (t: FTree) => void;
     onMove: (source: FTree, target: FTree) => void;
-    current: string;
+    current?: string;
     copiedFile: string;
+    schemasLabel?: string;
   };
   // force expand/hide sidebar
   // schemas to compare usually latest its the first schema second one is compared
@@ -283,6 +285,9 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
         });
       }
     }, [routes.code, routes.pane]);
+
+    const leafSchemaSelected = leafs ? !!leafs.current : true;
+
     return (
       <Main
         onKeyDown={(e) => {
@@ -291,116 +296,132 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
           }
         }}
       >
-        <Menu
-          schema={schema.code}
-          libraries={schema.libraries}
-          path={path}
-          toggleCode={routes.code === "on"}
-          setSchema={setSchema}
-          readOnly={readonly}
-          toggleFiles={routes.files === "on"}
-          setToggleFiles={
-            leafs
-              ? () =>
-                  set(
-                    {
-                      ...routes,
-                      files: routes.files === "on" ? undefined : "on",
-                      source: "internal",
-                    },
-                    "internal"
-                  )
-              : undefined
-          }
-          setToggleCode={() =>
-            set(
-              {
-                ...routes,
-                code: routes.code === "off" ? "on" : "off",
-                source: "internal",
-              },
-              "internal"
-            )
-          }
-          activePane={routes.pane}
-          excludePanes={diffSchemas ? undefined : ["diff"]}
-          setActivePane={(p) => {
-            const newState: typeof routes = { ...routes, pane: p };
-            set(newState, "internal");
-          }}
-          disableExport={disableExport}
-          disableImport={disableImport}
-        />
-        {!!leafs && routes.files === "on" && <FileTree {...leafs} />}
-        {routes.pane !== "diff" && (
-          <DynamicResize
-            enable={{ right: true }}
-            disabledClass={!routes.pane ? "full-screen-container" : undefined}
-            resizeCallback={(e, r, c) => {
-              setSidebarSize(c.getBoundingClientRect().width);
-            }}
-            width={
-              !routes.pane ? "100%" : routes.code === "on" ? sidebarSize : 0
-            }
-          >
-            <Sidebar
-              className={!routes.pane ? "full-screen-container" : undefined}
-            >
-              <CodePane
-                size={
-                  !routes.pane ? 100000 : routes.code === "on" ? sidebarSize : 0
-                }
-                onChange={(v, passGraphValidation) => {
-                  setSchema({
-                    ...schema,
-                    code: v,
-                    source: "code",
-                    passGraphValidation,
-                  });
-                }}
-                onEditorMount={onEditorMount}
-                ref={codePaneApi}
-                onContentChange={onContentChange}
-                schema={schema}
-                fullScreen={!routes.pane}
-                readonly={readonly}
-              />
-            </Sidebar>
-          </DynamicResize>
-        )}
-        {(routes.pane === "relation" || routes.pane === "docs") && (
-          <ErrorOuterContainer>
-            {routes.pane === "relation" && (
-              <Relation
-                title={title}
-                setInitialSchema={(s) =>
-                  setSchema({
-                    code: s,
-                    libraries: schema.libraries,
-                    source: "outside",
-                  })
-                }
-                schema={schema.code}
-              />
-            )}
-            {routes.pane === "docs" && <Docs />}
-            <NodeNavigation
-              isCollapsed={routes.navigationCollapsed}
-              setIsCollapsed={(collapsed) => {
-                set({
-                  ...routes,
-                  navigationCollapsed: collapsed,
-                });
+        {!!leafs && routes.files !== "off" && <FileTree {...leafs} />}
+        {leafSchemaSelected ? (
+          <>
+            <Menu
+              schema={schema.code}
+              libraries={schema.libraries}
+              path={path}
+              toggleCode={routes.code === "on"}
+              setSchema={setSchema}
+              readOnly={readonly}
+              toggleFiles={routes.files !== "off"}
+              setToggleFiles={
+                leafs
+                  ? () =>
+                      set(
+                        {
+                          ...routes,
+                          files: routes.files === "off" ? undefined : "off",
+                          source: "internal",
+                        },
+                        "internal"
+                      )
+                  : undefined
+              }
+              setToggleCode={() =>
+                set(
+                  {
+                    ...routes,
+                    code: routes.code === "off" ? "on" : "off",
+                    source: "internal",
+                  },
+                  "internal"
+                )
+              }
+              activePane={routes.pane}
+              excludePanes={diffSchemas ? undefined : ["diff"]}
+              setActivePane={(p) => {
+                const newState: typeof routes = { ...routes, pane: p };
+                set(newState, "internal");
               }}
+              disableExport={disableExport}
+              disableImport={disableImport}
             />
-            {!!codeErrors.length &&
-              (routes.pane === "docs" || routes.pane === "relation") && (
-                <ErrorsList>{errorsItems}</ErrorsList>
-              )}
-          </ErrorOuterContainer>
-        )}
-        {routes.pane === "diff" && diffSchemas && (
-          <DiffEditor schemas={diffSchemas} />
+            {routes.pane !== "diff" && (
+              <DynamicResize
+                enable={{ right: true }}
+                disabledClass={
+                  !routes.pane ? "full-screen-container" : undefined
+                }
+                resizeCallback={(e, r, c) => {
+                  setSidebarSize(c.getBoundingClientRect().width);
+                }}
+                width={
+                  !routes.pane ? "100%" : routes.code === "on" ? sidebarSize : 0
+                }
+              >
+                <Sidebar
+                  className={!routes.pane ? "full-screen-container" : undefined}
+                >
+                  <CodePane
+                    size={
+                      !routes.pane
+                        ? 100000
+                        : routes.code === "on"
+                        ? sidebarSize
+                        : 0
+                    }
+                    onChange={(v, passGraphValidation) => {
+                      setSchema({
+                        ...schema,
+                        code: v,
+                        source: "code",
+                        passGraphValidation,
+                      });
+                    }}
+                    onEditorMount={onEditorMount}
+                    ref={codePaneApi}
+                    onContentChange={onContentChange}
+                    schema={schema}
+                    fullScreen={!routes.pane}
+                    readonly={readonly}
+                  />
+                </Sidebar>
+              </DynamicResize>
+            )}
+            {(routes.pane === "relation" || routes.pane === "docs") && (
+              <ErrorOuterContainer>
+                {routes.pane === "relation" && (
+                  <Relation
+                    title={title}
+                    setInitialSchema={(s) =>
+                      setSchema({
+                        code: s,
+                        libraries: schema.libraries,
+                        source: "outside",
+                      })
+                    }
+                    schema={schema.code}
+                  />
+                )}
+                {routes.pane === "docs" && <Docs />}
+                <NodeNavigation
+                  isCollapsed={routes.navigationCollapsed}
+                  setIsCollapsed={(collapsed) => {
+                    set({
+                      ...routes,
+                      navigationCollapsed: collapsed,
+                    });
+                  }}
+                />
+                {!!codeErrors.length &&
+                  (routes.pane === "docs" || routes.pane === "relation") && (
+                    <ErrorsList>{errorsItems}</ErrorsList>
+                  )}
+              </ErrorOuterContainer>
+            )}
+            {routes.pane === "diff" && diffSchemas && (
+              <DiffEditor schemas={diffSchemas} />
+            )}
+          </>
+        ) : (
+          <BackgroundFTUXNoFileSelected
+            onStartCoding={() => {
+              leafs?.onAdd({ dir: "schema.graphql" });
+            }}
+          />
         )}
       </Main>
     );

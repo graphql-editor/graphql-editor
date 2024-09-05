@@ -14,4 +14,5 @@ export interface Dir {
   children?: Dir[];
   fromDir: string;
   isFolder?: boolean;
+  modified: boolean;
 }

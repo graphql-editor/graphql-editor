@@ -14,6 +14,8 @@ interface DirComponentProps extends ForFileTree {
   level?: number;
   expanded?: boolean;
   onDrop: (source: string, target: string) => void;
+  isOpenDropdownDir?: string;
+  setIsOpenDropdownDir: (dir: string) => void;
 }
 
 const DirComponent: React.FC<DirComponentProps> = ({
@@ -37,7 +39,7 @@ const DirComponent: React.FC<DirComponentProps> = ({
   );
 
   return (
-    <>
+    <List leftLevel={level}>
       {expanded &&
         dirs.map((d) => {
           if (d.isFolder) {
@@ -77,7 +79,7 @@ const DirComponent: React.FC<DirComponentProps> = ({
             );
           }
         })}
-    </>
+    </List>
   );
 };
 
@@ -90,9 +92,11 @@ export const FileTree: React.FC<{
   onAdd: (t: FTree) => void;
   onRename: (oldTree: FTree, newTree: FTree) => void;
   onMove: (source: FTree, target: FTree) => void;
-  current: string;
+  current?: string;
   copiedFile: string;
+  schemasLabel?: string;
 }> = ({
+  schemasLabel = "Schemas",
   schemas,
   onClick,
   current,
@@ -104,6 +108,8 @@ export const FileTree: React.FC<{
   onMove,
   copiedFile,
 }) => {
+  const [isOpenDropdownDir, setIsOpenDropdownDir] = useState("");
+
   const trees = useMemo(() => {
     const result: Dir[] = [];
     const level: Record<string, any> = { result };
@@ -138,9 +144,11 @@ export const FileTree: React.FC<{
   return (
     <Main direction="column">
       <SchemasLabel color="accentL1" variant="Body 3 SB">
-        Schemas
+        {schemasLabel}
       </SchemasLabel>
       <DirComponent
+        isOpenDropdownDir={isOpenDropdownDir}
+        setIsOpenDropdownDir={(d) => setIsOpenDropdownDir(d)}
         onRename={(d, n) => onRename({ dir: d.fromDir }, { dir: n })}
         onCopy={(d) => onCopy({ dir: d.fromDir })}
         onPaste={(d) => onPaste({ dir: d.fromDir })}
@@ -161,14 +169,25 @@ const SchemasLabel = styled(Typography)`
   background: ${(p) => p.theme.neutrals.L7};
   position: sticky;
   top: 0;
-  padding-block: 0.5rem;
+  padding-block: 1rem;
   z-index: 2;
 `;
 
 const Main = styled(Stack)`
   background: ${(p) => p.theme.neutrals.L7};
-  width: 20rem;
-  padding: 0 0.5rem;
-  border-right: 1px solid ${(p) => p.theme.divider.main};
+  width: 16rem;
+  padding: 0 1rem;
   overflow-y: auto;
+`;
+
+const List = styled.div<{ leftLevel: number }>`
+  ::before {
+    content: "";
+    position: absolute;
+    width: 2px;
+    height: 100%;
+    border-left: 1px solid ${(p) => p.theme.divider.main};
+    margin-left: ${(p) => p.leftLevel * 0.5}rem;
+  }
+  position: relative;
 `;

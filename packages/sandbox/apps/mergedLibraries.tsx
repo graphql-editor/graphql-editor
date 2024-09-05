@@ -4,7 +4,11 @@ import { PassedSchema } from "graphql-editor";
 import * as schemas from "../schema";
 import { FTree } from "graphql-editor/lib/editor/files/FileTree";
 
-const leafs = [
+const leafs: Array<{
+  dir: string;
+  isFolder?: boolean;
+  content?: string;
+}> = [
   {
     dir: "src/modules/google",
     isFolder: true,
@@ -100,17 +104,33 @@ const leafs = [
 ];
 
 export const MergedLibraries = () => {
-  const [currentSchema, setCurrentSchema] = useState("src/main/schema.graphql");
+  const [currentSchema, setCurrentSchema] = useState<string>();
   const [copiedFile, setCopiedFile] = useState("");
 
   const [leafFiles, setLeafFiles] = useState(
     leafs.sort((a, b) => a.dir.localeCompare(b.dir))
   );
   const [mySchema, setMySchema] = useState<PassedSchema>({
-    code: schemas.mergedLibs.code,
-    libraries: schemas.mergedLibs.libraries,
+    code: "",
     source: "outside",
   });
+
+  useEffect(() => {
+    if (currentSchema) {
+      let change = false;
+      leafFiles.forEach((lf) => {
+        if (lf.dir === currentSchema) {
+          if (lf.content !== mySchema.code) {
+            change = true;
+            lf.content = mySchema.code;
+          }
+        }
+      });
+      if (change) {
+        setLeafFiles([...leafFiles]);
+      }
+    }
+  }, [mySchema.code]);
 
   useEffect(() => {
     setMySchema({
@@ -363,6 +383,7 @@ export const MergedLibraries = () => {
     >
       <GraphQLEditor
         leafs={{
+          schemasLabel: "mailik",
           schemas: leafFiles,
           onClick: (f) => {
             setCurrentSchema(f.dir);

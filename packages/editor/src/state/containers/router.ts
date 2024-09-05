@@ -6,7 +6,7 @@ type ValuesType = {
   pane?: ActivePane;
   code: "on" | "off";
   source?: "internal" | "initial";
-  files?: "on";
+  files?: "off";
   navigationCollapsed?: boolean;
 };
 
