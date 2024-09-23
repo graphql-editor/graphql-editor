@@ -21,6 +21,7 @@ export type LiveSchemaEditorProps = SchemaServicesOptions & {
     sdl: string,
     languageService: EnrichedLanguageService
   ) => void;
+  numberOfSupportedNodes?: number;
 } & Omit<EditorProps, "language">;
 
 export type LiveSchemaEditorApi = SchemaEditorApi & {
@@ -94,6 +95,17 @@ function BaseSchemaEditor(
       onMount={(editor, monaco) => {
         setEditor(editor);
         props.onMount && props.onMount(editor, monaco);
+        if (props.numberOfSupportedNodes) {
+          editor.onKeyDown((event) => {
+            const { keyCode, ctrlKey, metaKey } = event;
+            if (
+              (keyCode === 33 || keyCode === 52 || keyCode === 54) &&
+              (metaKey || ctrlKey)
+            ) {
+              event.preventDefault();
+            }
+          });
+        }
       }}
       keepCurrentModel
       onChange={(newValue, ev) => {

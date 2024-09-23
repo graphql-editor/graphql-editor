@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { PassedSchema, GraphQLEditor } from "graphql-editor";
 import * as schemas from "../schema";
 
-export const withSchema = () => {
+export const limitSupportedNodes = () => {
   const [mySchema, setMySchema] = useState<PassedSchema>({
     code: schemas.billabeeSchema,
     libraries: "",
@@ -25,10 +25,11 @@ export const withSchema = () => {
           setMySchema(props);
         }}
         schema={mySchema}
-        numberOfSupportedNodes={10}
+        numberOfSupportedNodes={20}
       />
     </div>
   );
 };
 
-withSchema.description = "Part schema of a big delivery service Deliverer.";
+limitSupportedNodes.description =
+  "Part schema of a big delivery service Deliverer with limited supported number of Nodes";

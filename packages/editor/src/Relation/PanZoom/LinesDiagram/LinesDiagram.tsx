@@ -85,6 +85,7 @@ type LinesDiagramProps = {
   isReadOnly?: boolean;
   parentClass: "focus" | "all";
   setViewportParams: (props: ViewportParams) => void;
+  numberOfSupportedNodes?: number;
 };
 
 export interface LinesDiagramApi {
@@ -103,7 +104,8 @@ export const LinesDiagram = React.forwardRef<
   LinesDiagramApi,
   LinesDiagramProps
 >((props, ref) => {
-  const { nodes, setLoading, mainRef, isReadOnly } = props;
+  const { nodes, setLoading, mainRef, isReadOnly, numberOfSupportedNodes } =
+    props;
   const {
     isLibrary,
     setSelectedNodeId,
@@ -328,12 +330,17 @@ export const LinesDiagram = React.forwardRef<
   const NodesContainer = useMemo(() => {
     return (
       <>
-        {simulatedNodes?.map((n) => (
+        {simulatedNodes?.map((n, index) => (
           <NodePane x={n.x} id={`${n.id}`} y={n.y} key={n.parserField.id}>
             <Node
               isReadOnly={isReadOnly}
               isLibrary={isLibrary(n.parserField)}
               numberNode={n}
+              isDisabled={
+                numberOfSupportedNodes && index > numberOfSupportedNodes
+                  ? true
+                  : false
+              }
             />
           </NodePane>
         ))}

@@ -20,3 +20,4 @@ export * from "./VeryLongSchema";
 export * from "./livesocket";
 export * from "./exoticDirectives";
 export * from "./justcode";
+export * from "./limitSupportedNodes";

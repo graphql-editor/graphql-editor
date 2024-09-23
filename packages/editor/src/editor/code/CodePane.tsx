@@ -28,6 +28,7 @@ import type * as monaco from "monaco-editor";
 
 export interface CodePaneOuterProps {
   readonly?: boolean;
+  numberOfSupportedNodes?: number;
 }
 
 export type CodePaneProps = Pick<LiveSchemaEditorProps, "onContentChange"> & {
@@ -41,11 +42,12 @@ export type CodePaneProps = Pick<LiveSchemaEditorProps, "onContentChange"> & {
 export type CodePaneApi = Pick<LiveSchemaEditorApi, "receive">;
 
 /**
- * React compontent holding GraphQL IDE
+ * React component holding GraphQL IDE
  */
 export const CodePane = React.forwardRef<CodePaneApi, CodePaneProps>(
   (props, ref) => {
-    const { schema, readonly, onChange, fullScreen } = props;
+    const { schema, readonly, onChange, fullScreen, numberOfSupportedNodes } =
+      props;
     const { theme } = useTheme();
     const { selectedNodeId, setSelectedNodeId, allNodes } = useTreesState();
     const { errorRowNumber } = useErrorsState();
@@ -60,8 +62,9 @@ export const CodePane = React.forwardRef<CodePaneApi, CodePaneProps>(
         ...settings,
         fontFamily: theme.fontFamily,
         readOnly: readonly,
+        contextmenu: !numberOfSupportedNodes,
       }),
-      [readonly]
+      [readonly, numberOfSupportedNodes]
     );
 
     useEffect(() => {
@@ -156,6 +159,7 @@ export const CodePane = React.forwardRef<CodePaneApi, CodePaneProps>(
             schema={schema}
             options={codeSettings}
             select={selectFunction}
+            numberOfSupportedNodes={numberOfSupportedNodes}
           />
         )}
       </CodeContainer>

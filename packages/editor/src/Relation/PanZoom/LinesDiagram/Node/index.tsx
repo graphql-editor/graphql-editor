@@ -119,6 +119,17 @@ const Content = styled.div<ContentProps>`
       font-size: 14px;
     }
   }
+  position: relative;
+`;
+
+const BlurredContent = styled.div`
+  backdrop-filter: blur(3px);
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  z-index: 10;
 `;
 
 const NodeRelationFields = styled.div<
@@ -209,10 +220,11 @@ interface NodeProps {
   isLibrary?: boolean;
   isReadOnly?: boolean;
   optimized?: boolean;
+  isDisabled?: boolean;
 }
 
 export const Node: React.FC<NodeProps> = (props) => {
-  const { numberNode, isLibrary, isReadOnly } = props;
+  const { numberNode, isLibrary, isReadOnly, isDisabled } = props;
   const { parserField: field } = numberNode;
   const { setSelectedNodeId, focusNode, focusMode, exitFocus } =
     useTreesState();
@@ -273,6 +285,7 @@ export const Node: React.FC<NodeProps> = (props) => {
           <ActiveType type={field.type} />
           {!printPreviewActive && (
             <EditNodeContainer className="editNode">
+              {isDisabled && <BlurredContent />}
               <SmallClickableButton
                 variant="neutral"
                 {...dataIt("nodeFocus")}
@@ -337,6 +350,7 @@ export const Node: React.FC<NodeProps> = (props) => {
       }}
       printPreviewActive={printPreviewActive}
     >
+      {isDisabled && <BlurredContent />}
       {NodeContent}
       {RelationFields}
     </Content>

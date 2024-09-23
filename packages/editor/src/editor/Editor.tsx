@@ -110,6 +110,8 @@ export interface EditorProps
   fontFamilySans?: string;
   disableExport?: boolean;
   disableImport?: boolean;
+  // Enter number of supported nodes for schema, rest would be blurred and disabled
+  numberOfSupportedNodes?: number;
 }
 
 export interface ExternalEditorAPI {
@@ -141,6 +143,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
       disableImport,
       onEditorMount,
       leafs,
+      numberOfSupportedNodes,
     },
     ref
   ) => {
@@ -377,6 +380,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
                     schema={schema}
                     fullScreen={!routes.pane}
                     readonly={readonly}
+                    numberOfSupportedNodes={numberOfSupportedNodes}
                   />
                 </Sidebar>
               </DynamicResize>
@@ -394,6 +398,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
                       })
                     }
                     schema={schema.code}
+                    numberOfSupportedNodes={numberOfSupportedNodes}
                   />
                 )}
                 {routes.pane === "docs" && <Docs />}

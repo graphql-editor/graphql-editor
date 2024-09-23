@@ -17,7 +17,8 @@ export const Relation: React.FC<{
   setInitialSchema: (s: string) => void;
   schema: string;
   title?: React.ReactNode;
-}> = ({ setInitialSchema, title, schema }) => {
+  numberOfSupportedNodes?: number;
+}> = ({ setInitialSchema, title, schema, numberOfSupportedNodes }) => {
   const { activeNode, focusMode, allNodes } = useTreesState();
   const {
     filteredFocusedNodes,
@@ -56,6 +57,7 @@ export const Relation: React.FC<{
             parentClass="all"
             nodes={filteredRelationNodes}
             title={title}
+            numberOfSupportedNodes={numberOfSupportedNodes}
           />
         </TransformWrapper>
       </>
@@ -85,6 +87,7 @@ export const Relation: React.FC<{
                   title={title}
                   parentClass="focus"
                   nodes={nodesToShow}
+                  numberOfSupportedNodes={numberOfSupportedNodes}
                 />
               </TransformWrapper>
             </FocusOverlay>
