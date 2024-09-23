@@ -119,7 +119,6 @@ const Content = styled.div<ContentProps>`
       font-size: 14px;
     }
   }
-  position: relative;
 `;
 
 const BlurredContent = styled.div`
