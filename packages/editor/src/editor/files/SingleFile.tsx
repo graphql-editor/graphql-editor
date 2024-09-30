@@ -71,14 +71,14 @@ export const SingleFile: React.FC<SingleFileProps> = ({
       },
     ];
 
-    if (rest.copiedFile && d.children && d.children.length > 0) {
+    if (rest.copiedFile && d.isFolder) {
       baseItems.push({
         name: "Paste",
         onClick: () => rest.onPaste(d),
       });
     }
 
-    if (d.children && d.children.length > 0) {
+    if (d.isFolder) {
       baseItems.push({
         name: "Add new schema in folder",
         onClick: () => {

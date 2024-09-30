@@ -244,7 +244,7 @@ export const MergedLibraries = () => {
 
         if (
           sourceDir === currentSchemaTmp ||
-          currentSchemaTmp.startsWith(`${sourceDir}/`)
+          currentSchemaTmp?.startsWith(`${sourceDir}/`)
         ) {
           if (!newDir.includes(".")) {
             setCurrentSchema(newDir + "/" + currentSchemaTmp.split("/").pop());
@@ -341,7 +341,11 @@ export const MergedLibraries = () => {
     (oldPath: FTree, newPath: FTree) => {
       let newDir = newPath.dir;
       if (!newDir.includes("/")) {
-        newDir = oldPath.dir.split("/").slice(0, -1).join("/") + "/" + newDir;
+        const additionalDirLevel = oldPath.dir.includes("/") ? "/" : "";
+        newDir = `${oldPath.dir
+          .split("/")
+          .slice(0, -1)
+          .join("/")}${additionalDirLevel}${newDir}`;
       }
 
       if (leafFiles.some((file) => file.dir === newDir)) {

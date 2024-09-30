@@ -36,6 +36,7 @@ export type CodePaneProps = Pick<LiveSchemaEditorProps, "onContentChange"> & {
   onChange: (v: string, passGraphValidation?: boolean) => void;
   onEditorMount?: (editor: monaco.editor.IStandaloneCodeEditor) => void;
   fullScreen?: boolean;
+  disableCodePaneContextMenu?: boolean;
 } & CodePaneOuterProps;
 
 export type CodePaneApi = Pick<LiveSchemaEditorApi, "receive">;
@@ -45,7 +46,13 @@ export type CodePaneApi = Pick<LiveSchemaEditorApi, "receive">;
  */
 export const CodePane = React.forwardRef<CodePaneApi, CodePaneProps>(
   (props, ref) => {
-    const { schema, readonly, onChange, fullScreen } = props;
+    const {
+      schema,
+      readonly,
+      onChange,
+      fullScreen,
+      disableCodePaneContextMenu,
+    } = props;
     const { theme } = useTheme();
     const { selectedNodeId, setSelectedNodeId, allNodes } = useTreesState();
     const { errorRowNumber } = useErrorsState();
@@ -60,6 +67,7 @@ export const CodePane = React.forwardRef<CodePaneApi, CodePaneProps>(
         ...settings,
         fontFamily: theme.fontFamily,
         readOnly: readonly,
+        contextmenu: disableCodePaneContextMenu ? false : true,
       }),
       [readonly]
     );
