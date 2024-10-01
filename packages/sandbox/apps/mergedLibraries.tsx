@@ -199,7 +199,8 @@ export const MergedLibraries = () => {
         }
 
         const baseNameToMove = sourceDir.split("/").pop() || "file";
-        let newDir = `${targetDir}/${baseNameToMove}`;
+        const additionalDirLevel = targetDir.length ? "/" : "";
+        let newDir = `${targetDir}${additionalDirLevel}${baseNameToMove}`;
 
         const handleConflict = (
           baseName: string,
@@ -207,8 +208,8 @@ export const MergedLibraries = () => {
         ) => {
           const newName = generateUniqueName(baseName, targetDir, extension);
           return extension
-            ? `${targetDir}/${newName}.${extension}`
-            : `${targetDir}/${newName}`;
+            ? `${targetDir}${additionalDirLevel}${newName}.${extension}`
+            : `${targetDir}${additionalDirLevel}${newName}`;
         };
 
         // auto-rename file
@@ -244,7 +245,7 @@ export const MergedLibraries = () => {
 
         if (
           sourceDir === currentSchemaTmp ||
-          currentSchemaTmp.startsWith(`${sourceDir}/`)
+          currentSchemaTmp?.startsWith(`${sourceDir}/`)
         ) {
           if (!newDir.includes(".")) {
             setCurrentSchema(newDir + "/" + currentSchemaTmp.split("/").pop());
@@ -341,7 +342,11 @@ export const MergedLibraries = () => {
     (oldPath: FTree, newPath: FTree) => {
       let newDir = newPath.dir;
       if (!newDir.includes("/")) {
-        newDir = oldPath.dir.split("/").slice(0, -1).join("/") + "/" + newDir;
+        const additionalDirLevel = oldPath.dir.includes("/") ? "/" : "";
+        newDir = `${oldPath.dir
+          .split("/")
+          .slice(0, -1)
+          .join("/")}${additionalDirLevel}${newDir}`;
       }
 
       if (leafFiles.some((file) => file.dir === newDir)) {

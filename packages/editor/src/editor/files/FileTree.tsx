@@ -1,6 +1,6 @@
 import { SingleFile } from "@/editor/files/SingleFile";
 import { Dir, ForFileTree } from "@/editor/files/types";
-import { Stack, Typography } from "@aexol-studio/styling-system";
+import { Folder, Stack, Typography } from "@aexol-studio/styling-system";
 import styled from "@emotion/styled";
 import React, { useMemo, useCallback, useState } from "react";
 
@@ -29,7 +29,7 @@ const DirComponent: React.FC<DirComponentProps> = ({
   const handleDrop = useCallback(
     (source: string, target: string) => {
       // prevent root from being moved
-      if (source === target || source.split("/").length === 1) {
+      if (source === target) {
         return;
       }
 
@@ -146,6 +146,16 @@ export const FileTree: React.FC<{
       <SchemasLabel color="accentL1" variant="Body 3 SB">
         {schemasLabel}
       </SchemasLabel>
+      <MainRoot
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => {
+          const source = e.dataTransfer.getData("text/plain");
+          const basename = source.split("/")[source.split("/").length - 1];
+          handleDrop(source, basename);
+        }}
+      >
+        <Folder height={12} width={12} />
+      </MainRoot>
       <DirComponent
         isOpenDropdownDir={isOpenDropdownDir}
         setIsOpenDropdownDir={(d) => setIsOpenDropdownDir(d)}
@@ -178,6 +188,11 @@ const Main = styled(Stack)`
   width: 16rem;
   padding: 0 1rem;
   overflow-y: auto;
+`;
+
+const MainRoot = styled.div`
+  width: 100%;
+  color: ${(p) => p.theme.accent.L1};
 `;
 
 const List = styled.div<{ leftLevel: number }>`

@@ -110,6 +110,7 @@ export interface EditorProps
   fontFamilySans?: string;
   disableExport?: boolean;
   disableImport?: boolean;
+  disableCodePaneContextMenu?: boolean;
 }
 
 export interface ExternalEditorAPI {
@@ -141,6 +142,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
       disableImport,
       onEditorMount,
       leafs,
+      disableCodePaneContextMenu,
     },
     ref
   ) => {
@@ -377,6 +379,7 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
                     schema={schema}
                     fullScreen={!routes.pane}
                     readonly={readonly}
+                    disableCodePaneContextMenu={disableCodePaneContextMenu}
                   />
                 </Sidebar>
               </DynamicResize>
@@ -419,7 +422,23 @@ export const Editor = React.forwardRef<ExternalEditorAPI, EditorProps>(
         ) : (
           <BackgroundFTUXNoFileSelected
             onStartCoding={() => {
-              leafs?.onAdd({ dir: "schema.graphql" });
+              const mainDirSchemaFileName = "schema.graphql";
+              const doesSchemaAlreadyExist = leafs?.schemas.find(
+                (el) => el.dir === mainDirSchemaFileName
+              );
+              if (doesSchemaAlreadyExist) {
+                const numberOfGraphqlFiles = leafs?.schemas.filter(
+                  (el) =>
+                    !el.dir.includes("/") &&
+                    !el.isFolder &&
+                    el.dir.includes(".graphql")
+                ).length;
+                leafs?.onAdd({
+                  dir: `schema_${numberOfGraphqlFiles || 0 + 1}.graphql`,
+                });
+              } else {
+                leafs?.onAdd({ dir: mainDirSchemaFileName });
+              }
             }}
           />
         )}
