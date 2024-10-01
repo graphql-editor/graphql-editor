@@ -199,7 +199,8 @@ export const MergedLibraries = () => {
         }
 
         const baseNameToMove = sourceDir.split("/").pop() || "file";
-        let newDir = `${targetDir}/${baseNameToMove}`;
+        const additionalDirLevel = targetDir.length ? "/" : "";
+        let newDir = `${targetDir}${additionalDirLevel}${baseNameToMove}`;
 
         const handleConflict = (
           baseName: string,
@@ -207,8 +208,8 @@ export const MergedLibraries = () => {
         ) => {
           const newName = generateUniqueName(baseName, targetDir, extension);
           return extension
-            ? `${targetDir}/${newName}.${extension}`
-            : `${targetDir}/${newName}`;
+            ? `${targetDir}${additionalDirLevel}${newName}.${extension}`
+            : `${targetDir}${additionalDirLevel}${newName}`;
         };
 
         // auto-rename file
