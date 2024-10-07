@@ -1,5 +1,6 @@
-[![GraphQLEditor Editor](assets/logo.gif)](https://graphqleditor.com)
-
+<p align="center">
+  <img src="assets/logo.gif">
+</p>
 <h3 align="center">Graph sorcery, that makes reading GraphQL schemas easier!</h3>
 <div align="center">
 
@@ -9,35 +10,23 @@
 [![npm downloads](https://img.shields.io/npm/dt/graphql-editor.svg?style=for-the-badge)](https://www.npmjs.com/package/graphql-editor)
 [![Twitter](https://img.shields.io/twitter/follow/GraphQLEditor?label=follow&logo=twitter&style=for-the-badge)](https://twitter.com/GraphQLEditor)
 
-**[Website](https://graphqleditor.com)**&nbsp;&nbsp;|&nbsp;&nbsp;
-**[Docs](https://graphqleditor.com/docs)**
+**[Website](https://graphqleditor.com)**&nbsp;&nbsp;|&nbsp;&nbsp;**[Documentation](https://graphqleditor.com/docs)**&nbsp;&nbsp;|&nbsp;&nbsp;**[Discord](https://discord.gg/wVcZdmd)**
 
 ![graphql-editor-gif](https://user-images.githubusercontent.com/779748/217845783-0f3c5cc3-d74d-4589-bfcb-79b49664935c.gif)
 
 </div>
 
+<br />
+
 GraphQLEditor makes it easier to understand GraphQL schemas. Create a schema by using visual blocks system. GraphQL Editor will transform them into code.
 
 With GraphQL Editor you can create visual diagrams without writing any code or present your schema in a nice way!
-
-## How it works
-
-Create GraphQL nodes and connect them to generate a database schema. You can also use builtin text IDE with GraphQL syntax validation
-
-## 💡 What is GraphQL Editor?
 
 <h4>GraphQL Editor is Graph based system for reading and designing the GraphQL schema</h4>
 
 > GraphQL Editor is a GraphQL visualizer and designer. It allows you to create and display GraphQL schemas as a visual graph.
 
-## 🚀 Features
-
-- Visual GraphQL Editing.
-- GraphQL Monaco based IDE
-- Selection observer. When node is clicked in visual Graph it automatically scrolls the code to the same node. When cursor is moved in code space
-- Automatically bound interfaces. When interface is implemented on type fields of the interface add to the type. If it is already implemented editing interface edits all implementing nodes
-- Writing,generating and displaying GraphQL Documentation in markdown. Generating GraphQL docs out of GraphQL descriptions in markdown
-- Comparing different versions of GraphQL schemas with special node-sort sorting nodes and its fields to show the real difference in GraphQL Schema on AST omitting line numbers
+<br />
 
 ## Table of contents
 
@@ -60,9 +49,24 @@ Create GraphQL nodes and connect them to generate a database schema. You can als
 - [GraphQL Tutorials](#graphql-tutorials)
 - [Authors](#authors)
 
-## License
+<br />
 
-MIT
+## How It Works
+
+Create GraphQL nodes and connect them to generate a database schema. You can also use builtin text IDE with GraphQL syntax validation
+
+<br />
+
+## 🚀 Features
+
+- Visual GraphQL Editing.
+- GraphQL Monaco based IDE
+- Selection observer. When node is clicked in visual Graph it automatically scrolls the code to the same node. When cursor is moved in code space
+- Automatically bound interfaces. When interface is implemented on type fields of the interface add to the type. If it is already implemented editing interface edits all implementing nodes
+- Writing,generating and displaying GraphQL Documentation in markdown. Generating GraphQL docs out of GraphQL descriptions in markdown
+- Comparing different versions of GraphQL schemas with special node-sort sorting nodes and its fields to show the real difference in GraphQL Schema on AST omitting line numbers
+
+<br />
 
 ## Installation
 
@@ -73,6 +77,8 @@ npm i -D worker-loader css-loader file-loader webpack
 ```
 npm i  graphql-editor react react-dom monaco-editor @monaco-editor/react
 ```
+
+<br />
 
 ## GraphQL SDL Editor
 
@@ -125,7 +131,9 @@ export const App = () => {
 render(<App />, document.getElementById('root'));
 ```
 
-### GraphQLEditor component props
+<br />
+
+### GraphQLEditor Component Props
 
 **GraphQLEditor**
 
@@ -141,6 +149,10 @@ render(<App />, document.getElementById('root'));
 | onTreeChange  | `(tree: ParserTree) => void`                          | Function that could be fired if tree changes                                           | false    |           |
 | placeholder   | `string`                                              | placeholder - empty editor                                                             | false    |           |
 
+
+<br />
+
+
 **PassedSchema**
 
 | property  | type     | description                    |
@@ -148,9 +160,13 @@ render(<App />, document.getElementById('root'));
 | code      | `string` | value of the schema code       |
 | libraries | `string` | value of the current libraries |
 
+<br />
+
 **ActivePane**
 
 `"relation" | "diagram" | "diff"`
+
+<br />
 
 ## GraphQL Gql Editor
 
@@ -192,7 +208,9 @@ export const App = () => {
 render(<App />, document.getElementById('root'));
 ```
 
-### GraphQLGqlEditor component props
+<br />
+
+### GraphQLGqlEditor Component Props
 
 **GraphQLEditor**
 
@@ -204,6 +222,10 @@ render(<App />, document.getElementById('root'));
 | setGql      | `(props: PassedSchema, isInvalid?: boolean) => void;` | set value of the gql       | true     | undefined |
 | readonly    | `boolean`                                             | lock editing               | false    | false     |
 | theme       | `EditorTheme`                                         | current theme              | false    | MainTheme |
+
+
+<br />
+
 
 ### GraphQL Embedded Readonly Editor
 
@@ -237,26 +259,37 @@ export const embeddedEditor = () => {
 };
 ```
 
+<br />
+
+## MORE INFO
+
 ## Support
 
-[Join our Discord Channel](https://discord.gg/wVcZdmd)
+For support and help, join our [Discord Channel](https://discord.gg/wVcZdmd).
 
-## Team
+## <span><img src="https://github.com/user-attachments/assets/3a9c2be0-99dc-4a91-a506-834022adccae" width=24px></span>&nbsp;&nbsp;About Us
 
-[GraphQL Editor Website](https://graphqleditor.com)
+We are devs and contributors to the GraphQL ecosystem with a lot of experience. We want to enter Vendure to create developer-friendly e-commerce solutions that don't rely on clunky and outdated stuff like Shopify's Liquid wrapped with JavaScript.
 
-## Underlying Parsing technology
-
-Whole graphql-editor parsing stuff is based on underlying [zeus](https://github.com/graphql-editor/graphql-zeus) technology.
-
-## GraphQL Tutorials
-
-[Interactive GraphQL Tutorial](https://app.graphqleditor.com/?step=intro)
-
-[GraphQL Blog](https://blog.graphqleditor.com/)
-
-## Authors
+**Authors:**
 
 - [Artur Czemiel](https://github.com/aexol)
 - [GraphQL Editor](https://graphqleditor.com)
 - [Aexol](https://aexol.com)
+
+<br />
+
+## Underlying Parsing Technology
+
+GraphQL-Editor parsing is based on underlying [Zeus](https://github.com/graphql-editor/graphql-zeus) technology.
+
+<br />
+
+## GraphQL Tutorials
+
+To learn more about how to use GraphQL, we recommend:
+
+- [Interactive GraphQL Tutorial](https://app.graphqleditor.com/?step=intro)
+- [GraphQL Blog](https://blog.graphqleditor.com/)
+
+<br />
