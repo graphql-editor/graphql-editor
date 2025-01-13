@@ -37,9 +37,11 @@ const colors = themed<monaco.editor.IColors>(
   })
 );
 
-export const theme = themed<monaco.editor.IStandaloneThemeData>((theme) => ({
-  base: "vs-dark",
-  inherit: true,
-  rules: rules(theme),
-  colors: colors(theme),
-}));
+export const MonacoTheme = themed<monaco.editor.IStandaloneThemeData>(
+  (theme) => ({
+    base: "vs-dark",
+    inherit: true,
+    rules: rules(theme),
+    colors: colors(theme),
+  })
+);

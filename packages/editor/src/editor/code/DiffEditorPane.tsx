@@ -1,10 +1,9 @@
 import React, { useMemo } from "react";
-import { theme as MonacoTheme, diffEditorSettings } from "./monaco";
-
 import { useTheme } from "@/state/containers";
-import { SchemaDiffEditor } from "@/editor/code/guild";
 import { CodeContainer } from "@/editor/code/style/Code";
 import { dataIt } from "@/Models";
+import SchemaDiffEditor from "@/GraphQLCodeEditor/SchemaDiffEditor";
+import { diffEditorSettings, MonacoTheme } from "@/GraphQLCodeEditor/monaco";
 
 export interface DiffSchema {
   name: string;
@@ -43,8 +42,6 @@ export const DiffEditorPane = ({ schema, newSchema }: DiffEditorPaneProps) => {
             theme="graphql-editor"
             options={{
               ...codeSettings,
-              modifiedAriaLabel: schema.name,
-              originalAriaLabel: newSchema.name,
             }}
           />
         </CodeContainer>

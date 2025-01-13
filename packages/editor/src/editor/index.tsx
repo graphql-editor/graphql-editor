@@ -11,10 +11,8 @@ import {
 import { ThemeProvider as ScThemeProvider } from "@emotion/react";
 import { LayoutStateProvider } from "@/state/containers/layout";
 import { SortStateProvider } from "@/state/containers/sort";
-import { GqlEditor, GqlEditorProps } from "@/editor/GqlEditor";
 import { MainTheme } from "@/gshared/theme/MainTheme";
 import { RouterProvider, EditorRoutes } from "@/state/containers/router";
-import { EmbeddedEditor, EmbeddedEditorProps } from "@/editor/EmbeddedEditor";
 import { themeColors, ToastsProvider } from "@aexol-studio/styling-system";
 import { CodePane, CodePaneApi, CodePaneProps } from "@/editor/code";
 import { ErrorsList } from "@/shared/errors/ErrorsList";
@@ -58,65 +56,6 @@ export const GraphQLEditor = React.forwardRef<ExternalEditorAPI, EditorProps>(
     );
   }
 );
-
-export const EmbeddedGraphQLEditor = ({ ...props }: EmbeddedEditorProps) => {
-  const baseITheme = themeColors("graphqleditor", "dark");
-  const combinedTheme = {
-    ...MainTheme,
-    ...baseITheme,
-  };
-  const theme = props.theme || combinedTheme;
-  return (
-    <ThemeProvider initialState={theme}>
-      <RouterProvider>
-        <ErrorsStateProvider>
-          <TreesStateProvider>
-            <RelationsProvider>
-              <SortStateProvider>
-                <LayoutStateProvider>
-                  <RelationNodesProvider>
-                    <ScThemeProvider theme={theme}>
-                      <ToastsProvider>
-                        <EmbeddedEditor {...props} />
-                      </ToastsProvider>
-                    </ScThemeProvider>
-                  </RelationNodesProvider>
-                </LayoutStateProvider>
-              </SortStateProvider>
-            </RelationsProvider>
-          </TreesStateProvider>
-        </ErrorsStateProvider>
-      </RouterProvider>
-    </ThemeProvider>
-  );
-};
-
-export const GraphQLGqlEditor = ({ ...props }: GqlEditorProps) => {
-  const baseITheme = themeColors("graphqleditor", "dark");
-  const combinedTheme = {
-    ...MainTheme,
-    ...baseITheme,
-  };
-  const theme = props.theme || combinedTheme;
-
-  return (
-    <ThemeProvider initialState={theme}>
-      <RouterProvider>
-        <ErrorsStateProvider>
-          <TreesStateProvider>
-            <SortStateProvider>
-              <LayoutStateProvider>
-                <ScThemeProvider theme={theme}>
-                  <GqlEditor {...props} />
-                </ScThemeProvider>
-              </LayoutStateProvider>
-            </SortStateProvider>
-          </TreesStateProvider>
-        </ErrorsStateProvider>
-      </RouterProvider>
-    </ThemeProvider>
-  );
-};
 
 const SdlEditor = React.forwardRef<CodePaneApi, CodePaneProps>((props, ref) => {
   const { errorsItems } = useErrorsState();

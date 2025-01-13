@@ -5,15 +5,8 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { settings } from "./monaco";
 import { useErrorsState, useTheme, useTreesState } from "@/state/containers";
 
-import {
-  LiveSchemaEditor,
-  LiveSchemaEditorApi,
-  LiveSchemaEditorProps,
-} from "@/editor/code/guild";
-import { theme as MonacoTheme } from "@/editor/code/monaco";
 import {
   OperationType,
   ParserField,
@@ -25,12 +18,17 @@ import { Maybe } from "graphql-language-service";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import { PassedSchema, dataIt } from "@/Models";
 import type * as monaco from "monaco-editor";
+import GraphQLCodeEditor, {
+  GraphQLCodeEditorProps,
+  SchemaEditorApi,
+} from "@/GraphQLCodeEditor/GraphQLCodeEditor";
+import { MonacoTheme, settings } from "@/GraphQLCodeEditor/monaco";
 
 export interface CodePaneOuterProps {
   readonly?: boolean;
 }
 
-export type CodePaneProps = Pick<LiveSchemaEditorProps, "onContentChange"> & {
+export type CodePaneProps = Pick<GraphQLCodeEditorProps, "onContentChange"> & {
   size: number | string;
   schema: PassedSchema;
   onChange: (v: string, passGraphValidation?: boolean) => void;
@@ -38,7 +36,7 @@ export type CodePaneProps = Pick<LiveSchemaEditorProps, "onContentChange"> & {
   fullScreen?: boolean;
 } & CodePaneOuterProps;
 
-export type CodePaneApi = Pick<LiveSchemaEditorApi, "receive">;
+export type CodePaneApi = Pick<SchemaEditorApi, "receive">;
 
 /**
  * React compontent holding GraphQL IDE
@@ -52,7 +50,7 @@ export const CodePane = React.forwardRef<CodePaneApi, CodePaneProps>(
     const [temporaryString, setTemporaryString] = useState(schema.code);
     const debouncedTemporaryString = useDebouncedValue(temporaryString, 800);
 
-    const liveEditorApi: React.ForwardedRef<LiveSchemaEditorApi> =
+    const liveEditorApi: React.ForwardedRef<SchemaEditorApi> =
       React.createRef();
 
     const codeSettings = useMemo(
@@ -135,7 +133,7 @@ export const CodePane = React.forwardRef<CodePaneApi, CodePaneProps>(
     return (
       <CodeContainer {...dataIt("codeView")}>
         {theme && (
-          <LiveSchemaEditor
+          <GraphQLCodeEditor
             onContentChange={props.onContentChange}
             height="100%"
             ref={liveEditorApi}

@@ -1,4 +1,4 @@
-import { mapEditorErrorToMonacoDecoration } from "@/editor/code/monaco/errors";
+import { mapEditorErrorToMonacoDecoration } from "@/GraphQLCodeEditor/monaco/errors";
 import { themed } from "@/Theming/utils";
 import { EditorError } from "graphql-editor-worker/lib/validation";
 import type * as monaco from "monaco-editor";
